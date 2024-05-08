@@ -491,7 +491,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return B.SizedBox_null_null_null_null;
     },
-    $signature: 512
+    $signature: 513
   };
   C.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(_) {
@@ -589,7 +589,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return B.SizedBox_0_0_null_null;
       }
     },
-    $signature: 274
+    $signature: 273
   };
   C.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -609,7 +609,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 82
+    $signature: 77
   };
   C.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -625,6 +625,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (failure instanceof A.GetOIDCConfigurationFailure) {
         A.Localizations_of(this.context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         return A.Intl__message("Can not verify SSO configuration, please check with your system administrator", _null, "canNotVerifySSOConfiguration", _null, _null);
+      } else if (failure instanceof A.GetTokenOIDCFailure && failure.exception instanceof A.NoSuitableBrowserForOIDCException) {
+        A.Localizations_of(this.context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+        return A.Intl__message("No suitable browser for OIDC, please check with your system administrator", _null, "noSuitableBrowserForOIDC", _null, _null);
       } else {
         t1 = this.context;
         if (failure instanceof A.FeatureFailure) {
@@ -777,5 +780,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "fqyL/pIbfdxt0y7NWnfzUKrMrVQ=");
+})($__dart_deferred_initializers__, "DyhkXyP/4a3L9a0mcvOOe6L+GQc=");
 ;

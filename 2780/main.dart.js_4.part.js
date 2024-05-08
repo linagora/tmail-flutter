@@ -365,7 +365,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = _this.minHeight;
       t1 = t1.direction;
       t1 = t1 === C.TextDirection_0 ? 'dir="rtl"' : "";
-      _this._htmlData = '      <!DOCTYPE html>\n      <html>\n      <head>\n      <meta name="viewport" content="width=device-width, initial-scale=1.0">\n      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n      <style>\n        .tmail-content {\n          min-height: ' + A.S(t4) + "px;\n          min-width: 300px;\n          overflow: auto;\n        }\n                  .tmail-content::-webkit-scrollbar {\n            display: none;\n          }\n          .tmail-content {\n            -ms-overflow-style: none;  /* IE and Edge */\n            scrollbar-width: none;  /* Firefox */\n          }\n        \n            .tmail-tooltip .tooltiptext {\n      visibility: hidden;\n      max-width: 400px;\n      background-color: black;\n      color: #fff;\n      text-align: center;\n      border-radius: 6px;\n      padding: 5px 8px 5px 8px;\n      white-space: nowrap; \n      overflow: hidden;\n      text-overflow: ellipsis;\n      position: absolute;\n      z-index: 1;\n    }\n    .tmail-tooltip:hover .tooltiptext {\n      visibility: visible;\n    }\n  \n      </style>\n      </head>\n      <body " + t1 + ' style = "overflow-x: hidden">\n      <div class="tmail-content">' + t2 + "</div>\n      " + ("      <script type=\"text/javascript\">\n        window.parent.addEventListener('message', handleMessage, false);\n        window.addEventListener('click', handleOnClickLink, true);\n        window.addEventListener('load', handleOnLoad);\n        window.addEventListener('beforeunload', (event) => {\n          window.parent.removeEventListener('message', handleMessage, false);\n        });\n      \n        function handleMessage(e) {\n          if (e && e.data && e.data.includes(\"toIframe:\")) {\n            var data = JSON.parse(e.data);\n            if (data[\"view\"].includes(\"" + t3 + '")) {\n              if (data["type"].includes("getHeight")) {\n                var height = document.body.scrollHeight;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlHeight", "height": height}), "*");\n              }\n              if (data["type"].includes("getWidth")) {\n                var width = document.body.scrollWidth;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlWidth", "width": width}), "*");\n              }\n              if (data["type"].includes("execCommand")) {\n                if (data["argument"] === null) {\n                  document.execCommand(data["command"], false);\n                } else {\n                  document.execCommand(data["command"], false, data["argument"]);\n                }\n              }\n            }\n          }\n        }\n        \n        function handleOnClickLink(e) {\n           let link = e.target;\n           let textContent = e.target.textContent;\n           if (link && isValidMailtoLink(link)) {\n              window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: OpenLink", "url": "" + link}), "*");\n              e.preventDefault();\n           } else if (textContent && isValidMailtoLink(textContent)) {\n              window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: OpenLink", "url": "" + textContent}), "*");\n              e.preventDefault();\n           }\n        }\n        \n        function isValidMailtoLink(string) {\n          let url;\n          \n          try {\n            url = new URL(string);\n          } catch (_) {\n            return false;  \n          }\n        \n          return url.protocol === "mailto:";\n        }\n\n        function handleOnLoad() {\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "message": "iframeHasBeenLoaded"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toIframe: getHeight"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + "\", \"type\": \"toIframe: getWidth\"}), \"*\");\n        }\n      </script>\n          <script type=\"text/javascript\">\n        document.addEventListener('wheel', function(e) {\n          e.ctrlKey && e.preventDefault();\n        }, {\n          passive: false,\n        });\n        window.addEventListener('keydown', function(e) {\n          if (event.metaKey || event.ctrlKey) {\n            switch (event.key) {\n              case '=':\n              case '-':\n                event.preventDefault();\n                break;\n            }\n          }\n        });\n      </script>\n        <script>\n      const lazyImages = document.querySelectorAll('[lazy]');\n      const lazyImageObserver = new IntersectionObserver((entries, observer) => {\n        entries.forEach((entry) => {\n          if (entry.isIntersecting) {\n            const lazyImage = entry.target;\n            const src = lazyImage.dataset.src;\n            lazyImage.tagName.toLowerCase() === 'img'\n              ? lazyImage.src = src\n              : lazyImage.style.backgroundImage = \"url('\" + src + \"')\";\n            lazyImage.removeAttribute('lazy');\n            observer.unobserve(lazyImage);\n          }\n        });\n      });\n      \n      lazyImages.forEach((lazyImage) => {\n        lazyImageObserver.observe(lazyImage);\n      });\n    </script>\n  ") + "\n      </body>\n      </html> \n    ";
+      _this._htmlData = '      <!DOCTYPE html>\n      <html>\n      <head>\n      <meta name="viewport" content="width=device-width, initial-scale=1.0">\n      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n      <style>\n        .tmail-content {\n          min-height: ' + A.S(t4) + "px;\n          min-width: 300px;\n          overflow: auto;\n        }\n                  .tmail-content::-webkit-scrollbar {\n            display: none;\n          }\n          .tmail-content {\n            -ms-overflow-style: none;  /* IE and Edge */\n            scrollbar-width: none;  /* Firefox */\n          }\n        \n            .tmail-tooltip .tooltiptext {\n      visibility: hidden;\n      max-width: 400px;\n      background-color: black;\n      color: #fff;\n      text-align: center;\n      border-radius: 6px;\n      padding: 5px 8px 5px 8px;\n      white-space: nowrap; \n      overflow: hidden;\n      text-overflow: ellipsis;\n      position: absolute;\n      z-index: 1;\n    }\n    .tmail-tooltip:hover .tooltiptext {\n      visibility: visible;\n    }\n  \n      </style>\n      </head>\n      <body " + t1 + ' style = "overflow-x: hidden">\n      <div class="tmail-content">' + t2 + "</div>\n      " + ("      <script type=\"text/javascript\">\n        window.parent.addEventListener('message', handleMessage, false);\n        window.addEventListener('click', handleOnClickLink, true);\n        window.addEventListener('load', handleOnLoad);\n        window.addEventListener('pagehide', (event) => {\n          window.parent.removeEventListener('message', handleMessage, false);\n        });\n      \n        function handleMessage(e) {\n          if (e && e.data && e.data.includes(\"toIframe:\")) {\n            var data = JSON.parse(e.data);\n            if (data[\"view\"].includes(\"" + t3 + '")) {\n              if (data["type"].includes("getHeight")) {\n                var height = document.body.scrollHeight;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlHeight", "height": height}), "*");\n              }\n              if (data["type"].includes("getWidth")) {\n                var width = document.body.scrollWidth;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlWidth", "width": width}), "*");\n              }\n              if (data["type"].includes("execCommand")) {\n                if (data["argument"] === null) {\n                  document.execCommand(data["command"], false);\n                } else {\n                  document.execCommand(data["command"], false, data["argument"]);\n                }\n              }\n            }\n          }\n        }\n        \n        function handleOnClickLink(e) {\n           let link = e.target;\n           let textContent = e.target.textContent;\n           if (link && isValidMailtoLink(link)) {\n              window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: OpenLink", "url": "" + link}), "*");\n              e.preventDefault();\n           } else if (textContent && isValidMailtoLink(textContent)) {\n              window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: OpenLink", "url": "" + textContent}), "*");\n              e.preventDefault();\n           }\n        }\n        \n        function isValidMailtoLink(string) {\n          let url;\n          \n          try {\n            url = new URL(string);\n          } catch (_) {\n            return false;  \n          }\n        \n          return url.protocol === "mailto:";\n        }\n\n        function handleOnLoad() {\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "message": "iframeHasBeenLoaded"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toIframe: getHeight"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + "\", \"type\": \"toIframe: getWidth\"}), \"*\");\n        }\n      </script>\n          <script type=\"text/javascript\">\n        document.addEventListener('wheel', function(e) {\n          e.ctrlKey && e.preventDefault();\n        }, {\n          passive: false,\n        });\n        window.addEventListener('keydown', function(e) {\n          if (event.metaKey || event.ctrlKey) {\n            switch (event.key) {\n              case '=':\n              case '-':\n                event.preventDefault();\n                break;\n            }\n          }\n        });\n      </script>\n        <script>\n      const lazyImages = document.querySelectorAll('[lazy]');\n      const lazyImageObserver = new IntersectionObserver((entries, observer) => {\n        entries.forEach((entry) => {\n          if (entry.isIntersecting) {\n            const lazyImage = entry.target;\n            const src = lazyImage.dataset.src;\n            lazyImage.tagName.toLowerCase() === 'img'\n              ? lazyImage.src = src\n              : lazyImage.style.backgroundImage = \"url('\" + src + \"')\";\n            lazyImage.removeAttribute('lazy');\n            observer.unobserve(lazyImage);\n          }\n        });\n      });\n      \n      lazyImages.forEach((lazyImage) => {\n        lazyImageObserver.observe(lazyImage);\n      });\n    </script>\n  ") + "\n      </body>\n      </html> \n    ";
       t1 = document.createElement("iframe");
       t1.toString;
       t2 = _this.___HtmlContentViewerOnWebState__actualWidth_A;
@@ -548,13 +548,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.UserInformationWidget.prototype = {
     build$1(context) {
-      var t1, t2, t3, t4, t5, _this = this, _null = null;
-      $.$get$Get();
-      t1 = $.GetInstance__getInstance;
-      if (t1 == null)
-        t1 = $.GetInstance__getInstance = C.C_GetInstance;
-      t1.find$1$1$tag(0, _null, type$.ImagePaths);
-      t1 = _this.padding;
+      var t2, t3, t4, t5, _this = this, _null = null,
+        t1 = _this.padding;
       if (t1 == null)
         t1 = D.EdgeInsetsDirectional_16_16_4_16;
       t2 = new A.AvatarBuilder();
@@ -577,9 +572,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         t3.push(new A.Padding(D.EdgeInsetsDirectional_0_10_0_0, A.Transform$(_null, B.MaterialTextButton$(20, E.TextStyle_kmC0, A.Intl__message("Manage account", _null, "manage_account", _null, _null), _null, 15, _null, _null, _this.onSubtitleClick, _null, C.EdgeInsetsDirectional_8_8_8_8, _null), _null, t5, true), _null));
       }
-      t2 = A._setArrayType([t2, C.SizedBox_16_null_null_null, A.Expanded$(A.Column$(t3, C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1)], t4);
-      t2.push(C.SizedBox_16_null_null_null);
-      return A.Container$(_null, A.Row$(t2, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(_null, _null, _this.border, _null, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, t1, _null, _null, _null);
+      return A.Container$(_null, A.Row$(A._setArrayType([t2, C.SizedBox_16_null_null_null, A.Expanded$(A.Column$(t3, C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1), C.SizedBox_16_null_null_null], t4), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(_null, _null, _this.border, _null, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, t1, _null, _null, _null);
     }
   };
   B.UserSettingPopupMenuMixin.prototype = {
@@ -728,7 +721,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 187
+    $signature: 186
   };
   B._HtmlContentViewerOnWebState_initState__closure.prototype = {
     call$0() {
@@ -777,7 +770,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(D.Align_Ktb);
       return new A.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
     },
-    $signature: 606
+    $signature: 607
   };
   B._HtmlContentViewerOnWebState_build__closure.prototype = {
     call$2(context, snapshot) {
@@ -808,14 +801,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 79
+    $signature: 76
   };
   B.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 79
+    $signature: 76
   };
   B.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -868,7 +861,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       AppLocalizations: findType("AppLocalizations"),
       BoxConstraints: findType("BoxConstraints"),
       ContainerLayer: findType("ContainerLayer0"),
-      ImagePaths: findType("ImagePaths"),
       JSArray_BoxShadow: findType("JSArray<BoxShadow>"),
       JSArray_Object: findType("JSArray<Object>"),
       JSArray_PopupMenuEntry_dynamic: findType("JSArray<PopupMenuEntry<@>>"),
@@ -933,5 +925,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "RAGPCzl9DCz0s2QVD19IYi2oiYQ=");
+})($__dart_deferred_initializers__, "LR35w4672o2I/5WoG/BmVNv6MdY=");
 ;
