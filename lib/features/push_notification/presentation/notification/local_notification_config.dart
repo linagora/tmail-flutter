@@ -2,7 +2,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class LocalNotificationConfig {
   static const String NOTIFICATION_CHANNEL = 'New Email';
-  static const int MIN_EMAILS_TO_GROUP  = 3;
 
   static const iosInitializationSettings = DarwinInitializationSettings();
   static const androidInitializationSettings = AndroidInitializationSettings('notification_icon');
@@ -16,6 +15,7 @@ class LocalNotificationConfig {
   NotificationDetails generateNotificationDetails({
     StyleInformation? styleInformation,
     bool setAsGroup = false,
+    bool silent = false,
     String? groupId,
   }) {
     return NotificationDetails(
@@ -28,6 +28,7 @@ class LocalNotificationConfig {
         priority: Priority.high,
         setAsGroupSummary: setAsGroup,
         styleInformation: styleInformation,
+        silent: silent,
         groupAlertBehavior: setAsGroup
           ? GroupAlertBehavior.summary
           : GroupAlertBehavior.all,
