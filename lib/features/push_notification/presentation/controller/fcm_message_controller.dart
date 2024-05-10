@@ -13,6 +13,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
+import 'package:model/model.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
@@ -21,7 +22,6 @@ import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart'
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
-import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
@@ -43,7 +43,6 @@ class FcmMessageController extends FcmBaseController {
   AccountId? _currentAccountId;
   Session? _currentSession;
   UserName? _userName;
-  Map<String, dynamic>? _payloadData;
 
   GetAuthenticatedAccountInteractor? _getAuthenticatedAccountInteractor;
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
@@ -90,21 +89,21 @@ class FcmMessageController extends FcmBaseController {
   void _handleForegroundMessageAction(Map<String, dynamic> payloadData) {
     log('FcmMessageController::_handleForegroundMessageAction():payloadData: $payloadData | _currentAccountId: $_currentAccountId');
     if (_currentAccountId != null && _userName != null) {
-      final stateChange = _parsingPayloadData(payloadData);
+      final stateChange = FcmUtils.instance.convertFirebaseDataMessageToStateChange(payloadData);
       final mapTypeState = stateChange.getMapTypeState(_currentAccountId!);
-      _mappingTypeStateToAction(mapTypeState, _currentAccountId!, _userName!, session: _currentSession);
+      _mappingTypeStateToAction(
+        mapTypeState,
+        _currentAccountId!,
+        _userName!,
+        session: _currentSession);
     }
   }
 
   void _handleBackgroundMessageAction(Map<String, dynamic> payloadData) async {
     log('FcmMessageController::_handleBackgroundMessageAction():payloadData: $payloadData');
-    _payloadData = payloadData;
+    final stateChange = FcmUtils.instance.convertFirebaseDataMessageToStateChange(payloadData);
     await _initialAppConfig();
-    _getAuthenticatedAccount();
-  }
-
-  StateChange? _parsingPayloadData(Map<String, dynamic> payloadData) {
-    return FcmUtils.instance.convertFirebaseDataMessageToStateChange(payloadData);
+    _getAuthenticatedAccount(stateChange: stateChange);
   }
 
   void _mappingTypeStateToAction(
@@ -199,26 +198,13 @@ class FcmMessageController extends FcmBaseController {
     FcmTokenController.instance.initialBindingInteractor();
   }
 
-  void _getAuthenticatedAccount() {
+  void _getAuthenticatedAccount({StateChange? stateChange}) {
     if (_getAuthenticatedAccountInteractor != null) {
-      consumeState(_getAuthenticatedAccountInteractor!.execute());
-    } else {
-      _clearPayloadData();
-      logError('FcmMessageController::_getAuthenticatedAccount():_getAuthenticatedAccountInteractor is null');
+      consumeState(_getAuthenticatedAccountInteractor!.execute(stateChange: stateChange));
     }
-  }
-
-  void _handleGetAuthenticatedAccountSuccess(GetAuthenticatedAccountSuccess success) {
-    _currentAccountId = success.account.accountId;
-    _userName = success.account.userName;
-    if (!PlatformInfo.isAndroid) {
-      _dynamicUrlInterceptors?.changeBaseUrl(success.account.apiUrl);
-    }
-    log('FcmMessageController::_handleGetAuthenticatedAccountSuccess():_currentAccountId: $_currentAccountId | _userName: $_userName');
   }
 
   void _handleGetAccountByOidcSuccess(GetStoredTokenOidcSuccess storedTokenOidcSuccess) {
-    log('FcmMessageController::_handleGetAccountByOidcSuccess():');
     _dynamicUrlInterceptors?.setJmapUrl(storedTokenOidcSuccess.baseUrl.toString());
     _authorizationInterceptors?.setTokenAndAuthorityOidc(
       newToken: storedTokenOidcSuccess.tokenOidc,
@@ -227,14 +213,24 @@ class FcmMessageController extends FcmBaseController {
 
     if (PlatformInfo.isAndroid) {
       _dynamicUrlInterceptors?.changeBaseUrl(storedTokenOidcSuccess.baseUrl.toString());
-      _getSessionAction();
+      _getSessionAction(stateChange: storedTokenOidcSuccess.stateChange);
     } else {
-      _pushActionFromRemoteMessageBackground();
+      _dynamicUrlInterceptors?.changeBaseUrl(storedTokenOidcSuccess.personalAccount.apiUrl);
+
+      final accountId = storedTokenOidcSuccess.personalAccount.accountId;
+      final username = storedTokenOidcSuccess.personalAccount.userName;
+      final stateChange = storedTokenOidcSuccess.stateChange;
+
+      if (accountId != null && username != null && stateChange != null) {
+        _pushActionFromRemoteMessageBackground(
+          accountId: accountId,
+          userName: username,
+          stateChange: stateChange);
+      }
     }
   }
 
   void _handleGetAccountByBasicAuthSuccess(GetCredentialViewState credentialViewState) {
-    log('FcmMessageController::_handleGetAccountByBasicAuthSuccess():');
     _dynamicUrlInterceptors?.setJmapUrl(credentialViewState.baseUrl.toString());
     _authorizationInterceptors?.setBasicAuthorization(
       credentialViewState.userName,
@@ -242,61 +238,73 @@ class FcmMessageController extends FcmBaseController {
     );
     if (PlatformInfo.isAndroid) {
       _dynamicUrlInterceptors?.changeBaseUrl(credentialViewState.baseUrl.toString());
-      _getSessionAction();
+      _getSessionAction(stateChange: credentialViewState.stateChange);
     } else {
-      _pushActionFromRemoteMessageBackground();
+      _dynamicUrlInterceptors?.changeBaseUrl(credentialViewState.personalAccount.apiUrl);
+
+      final accountId = credentialViewState.personalAccount.accountId;
+      final username = credentialViewState.personalAccount.userName;
+      final stateChange = credentialViewState.stateChange;
+
+      if (accountId != null && username != null && stateChange != null) {
+        _pushActionFromRemoteMessageBackground(
+          accountId: accountId,
+          userName: username,
+          stateChange: stateChange);
+      }
     }
   }
 
-  void _getSessionAction() {
+  void _getSessionAction({StateChange? stateChange}) {
     if (_getSessionInteractor != null) {
-      consumeState(_getSessionInteractor!.execute());
-    } else {
-      _clearPayloadData();
-      logError('FcmMessageController::_getSessionAction():_getSessionInteractor is null');
+      consumeState(_getSessionInteractor!.execute(stateChange: stateChange));
     }
   }
 
   void _handleGetSessionSuccess(GetSessionSuccess success) {
-    _currentSession = success.session;
-    _userName = success.session.username;
-    final apiUrl = success.session.getQualifiedApiUrl(baseUrl: _dynamicUrlInterceptors?.jmapUrl);
-    log('FcmMessageController::_pushActionFromRemoteMessageBackground():apiUrl: $apiUrl');
-    if (apiUrl.isNotEmpty) {
-      _dynamicUrlInterceptors?.changeBaseUrl(apiUrl);
-      _pushActionFromRemoteMessageBackground();
-    } else {
-      _clearPayloadData();
-      logError('FcmMessageController::_handleGetSessionSuccess():apiUrl is null');
+    try {
+      final apiUrl = success.session.getQualifiedApiUrl(baseUrl: _dynamicUrlInterceptors?.jmapUrl);
+      final stateChange = success.stateChange;
+
+      if (apiUrl.isNotEmpty && stateChange != null) {
+        _dynamicUrlInterceptors?.changeBaseUrl(apiUrl);
+
+        _pushActionFromRemoteMessageBackground(
+          accountId: success.session.personalAccount.accountId,
+          userName: success.session.username,
+          stateChange: stateChange,
+          session: success.session);
+      }
+    } catch (e) {
+      logError('FcmMessageController::_handleGetSessionSuccess: Exception $e');
     }
   }
 
-  void _pushActionFromRemoteMessageBackground() {
-    log('FcmMessageController::_pushActionFromRemoteMessageBackground():_payloadData: $_payloadData | _currentAccountId: $_currentAccountId | _currentSession: $_currentSession');
-    if (_payloadData?.isNotEmpty == true && _currentAccountId != null && _userName != null) {
-      final stateChange = _parsingPayloadData(_payloadData!);
-      final mapTypeState = stateChange.getMapTypeState(_currentAccountId!);
-      _mappingTypeStateToAction(mapTypeState, _currentAccountId!, _userName!, isForeground: false, session: _currentSession);
-    }
-    _clearPayloadData();
-  }
+  void _pushActionFromRemoteMessageBackground({
+    required AccountId accountId,
+    required UserName userName,
+    required StateChange stateChange,
+    Session? session
+  }) {
+    final mapTypeState = stateChange.getMapTypeState(accountId);
 
-  void _clearPayloadData() {
-    _payloadData = null;
+    _mappingTypeStateToAction(
+      mapTypeState,
+      accountId,
+      userName,
+      isForeground: false,
+      session: session);
   }
 
   @override
   void handleFailureViewState(Failure failure) {
     log('FcmMessageController::_handleFailureViewState(): $failure');
-    _clearPayloadData();
   }
 
   @override
   void handleSuccessViewState(Success success) {
     log('FcmMessageController::_handleSuccessViewState(): $success');
-    if (success is GetAuthenticatedAccountSuccess) {
-      _handleGetAuthenticatedAccountSuccess(success);
-    } else if (success is GetSessionSuccess) {
+    if (success is GetSessionSuccess) {
       _handleGetSessionSuccess(success);
     } else if (success is GetStoredTokenOidcSuccess) {
       _handleGetAccountByOidcSuccess(success);
