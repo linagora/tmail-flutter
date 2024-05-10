@@ -1,4 +1,4 @@
-# 44. Memory leak with js lifecycle
+# 45. Memory leak with js lifecycle
 
 Date: 2024-04-09
 
