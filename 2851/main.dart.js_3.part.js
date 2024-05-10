@@ -7403,10 +7403,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _this.super$State$initState();
       t1 = _this._widget;
       _this.___WebEditorState__editorController_A = t1.editorController;
-      A.log("_WebEditorState::initState:height: " + A.S(t1.height) + " | width: " + A.S(t1.width), C.Level_3);
-      t1 = _this._widget.height;
-      _this.dropZoneHeight = t1 - 50;
-      _this._htmlEditorHeight.set$value(0, t1);
+      t2 = t1.height;
+      A.log("_WebEditorState::initState:height: " + A.S(t2) + " | width: " + A.S(t1.width), C.Level_3);
+      _this.dropZoneHeight = t2 - 50;
+      _this._htmlEditorHeight.set$value(0, t2);
       t1 = _this._widget.width - 90;
       _this.dropZoneWidth = t1;
       A.log("_WebEditorState::initState:dropZoneWidth: " + A.S(t1) + " | dropZoneHeight: " + A.S(_this.dropZoneHeight), C.Level_3);
@@ -7428,8 +7428,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1._evaluateJavascriptWeb$1$data(A.LinkedHashMap_LinkedHashMap$_literal(["type", "toIframe: updateBodyDirection", "direction", t2._core$_name], type$.String, type$.nullable_Object));
       }
       t1 = oldWidget.height;
-      A.log(_s42_ + A.S(t1) + " | current: " + A.S(_this._widget.height), C.Level_3);
       t2 = _this._widget.height;
+      A.log(_s42_ + A.S(t1) + " | current: " + A.S(t2), C.Level_3);
       if (t1 !== t2)
         _this._htmlEditorHeight.set$value(0, t2);
       _this.super$State$didUpdateWidget(oldWidget);
@@ -20373,5 +20373,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "cHmGfBUCstLsYI4UTXFZEd8vRYA=");
+})($__dart_deferred_initializers__, "2bhzOQZWM3LTThyw45oW2Yd7gMc=");
 ;
