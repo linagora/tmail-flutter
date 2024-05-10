@@ -2,6 +2,8 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
+import 'package:jmap_dart_client/jmap/push/state_change.dart';
+import 'package:model/account/personal_account.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
@@ -16,13 +18,15 @@ class GetStoredTokenOidcInteractor {
 
   GetStoredTokenOidcInteractor(this._authenticationOIDCRepository, this._credentialRepository);
 
-  Stream<Either<Failure, Success>> execute(String tokenIdHash) async* {
+  Stream<Either<Failure, Success>> execute({
+    required PersonalAccount personalAccount,
+    StateChange? stateChange
+  }) async* {
     try {
-      log('GetStoredTokenOidcInteractor::execute(): tokenIdHash: $tokenIdHash');
       yield Right<Failure, Success>(LoadingState());
       final futureValue = await Future.wait([
         _credentialRepository.getBaseUrl(),
-        _authenticationOIDCRepository.getStoredTokenOIDC(tokenIdHash),
+        _authenticationOIDCRepository.getStoredTokenOIDC(personalAccount.id),
         _authenticationOIDCRepository.getStoredOidcConfiguration(),
       ], eagerError: true);
 
@@ -33,7 +37,12 @@ class GetStoredTokenOidcInteractor {
       log('GetStoredTokenOidcInteractor::execute(): oidcConfiguration: $oidcConfiguration');
 
       if (_isCredentialValid(baseUrl)) {
-        yield Right(GetStoredTokenOidcSuccess(baseUrl, tokenOidc, oidcConfiguration));
+        yield Right(GetStoredTokenOidcSuccess(
+          baseUrl,
+          tokenOidc,
+          oidcConfiguration,
+          personalAccount,
+          stateChange: stateChange));
       } else {
         yield Left(GetStoredTokenOidcFailure(InvalidBaseUrl()));
       }
