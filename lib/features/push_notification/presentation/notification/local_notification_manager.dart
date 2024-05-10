@@ -100,7 +100,7 @@ class LocalNotificationManager {
     if (PlatformInfo.isAndroid) {
       return await _localNotificationsPlugin
         .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
-        ?.requestPermission() ?? false;
+        ?.requestNotificationsPermission() ?? false;
     } else if (PlatformInfo.isIOS) {
       return await _localNotificationsPlugin
         .resolvePlatformSpecificImplementation<IOSFlutterLocalNotificationsPlugin>()
@@ -132,79 +132,68 @@ class LocalNotificationManager {
   Future<void> showPushNotification({
     required String id,
     required String title,
+    bool silent = false,
     String? message,
     EmailAddress? emailAddress,
     String? payload,
-    bool isInboxStyle = true,
     String? groupId,
   }) async {
-    if (isInboxStyle) {
-      final inboxStyleInformation = InboxStyleInformation(
-        [message?.addBlockTag('p', attribute: 'style="color:#6D7885;"') ?? ''],
-        htmlFormatLines: true,
-        contentTitle: title,
-        htmlFormatContentTitle: true,
-        summaryText: (emailAddress?.asString() ?? '').addBlockTag('b'),
-        htmlFormatSummaryText: true,
-      );
+    final inboxStyleInformation = InboxStyleInformation(
+      [message?.addBlockTag('p', attribute: 'style="color:#6D7885;"') ?? ''],
+      htmlFormatLines: true,
+      contentTitle: title,
+      htmlFormatContentTitle: true,
+      summaryText: (emailAddress?.asString() ?? '').addBlockTag('b'),
+      htmlFormatSummaryText: true);
 
-      await _localNotificationsPlugin.show(
-        id.hashCode,
-        title,
-        message,
-        LocalNotificationConfig.instance.generateNotificationDetails(
-          styleInformation: inboxStyleInformation,
-          groupId: groupId
-        ),
-        payload: payload
-      );
-    } else {
-      await _localNotificationsPlugin.show(
-        id.hashCode,
-        title,
-        message,
-        LocalNotificationConfig.instance.generateNotificationDetails(
-          styleInformation: const DefaultStyleInformation(true, true),
-          groupId: groupId
-        ),
-        payload: payload
-      );
-    }
+    await _localNotificationsPlugin.show(
+      id.hashCode,
+      title,
+      message,
+      LocalNotificationConfig.instance.generateNotificationDetails(
+        styleInformation: inboxStyleInformation,
+        groupId: groupId,
+        silent: silent
+      ),
+      payload: payload);
   }
 
   Future<void> removeNotification(String id) async {
     return _localNotificationsPlugin.cancel(id.hashCode);
   }
 
-  Future<void> groupPushNotification({required String groupId}) async {
+  Future<int> getCountActiveNotificationByGroupOnAndroid({required String groupId}) async {
     final activeNotifications = await _localNotificationsPlugin
       .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
       ?.getActiveNotifications() ?? [];
 
     final listActiveNotificationByGroup = activeNotifications
-      .where((notification) => notification.groupKey == groupId)
+      .where((notification) => notification.groupKey == groupId && notification.id != groupId.hashCode)
       .toList();
-    log('LocalNotificationManager::groupPushNotification(): groupId = $groupId | activeNotifications = ${activeNotifications.length} | listActiveNotificationByGroup = ${listActiveNotificationByGroup.length}');
-    if (listActiveNotificationByGroup.length >= LocalNotificationConfig.MIN_EMAILS_TO_GROUP) {
-      final inboxStyleInformation = InboxStyleInformation(
-        [''],
-        summaryText: currentContext != null
-          ? AppLocalizations.of(currentContext!).totalNewMessagePushNotification(listActiveNotificationByGroup.length).addBlockTag('b')
-          : '${listActiveNotificationByGroup.length} new emails'.addBlockTag('b'),
-        htmlFormatSummaryText: true,
-      );
+    log('LocalNotificationManager::getCountActiveNotificationByGroupOnAndroid(): groupId = $groupId | activeNotifications = ${activeNotifications.length} | listActiveNotificationByGroup = ${listActiveNotificationByGroup.length}');
+    return listActiveNotificationByGroup.length;
+  }
 
-      await _localNotificationsPlugin.show(
-        groupId.hashCode,
-        null,
-        null,
-        LocalNotificationConfig.instance.generateNotificationDetails(
-          setAsGroup: true,
-          styleInformation: inboxStyleInformation,
-          groupId: groupId
-        ),
-      );
-    }
+  Future<void> groupPushNotificationOnAndroid({required String groupId, required int countNotifications}) async {
+    log('LocalNotificationManager::groupPushNotificationOnAndroid:groupId = $groupId');
+    final inboxStyleInformation = InboxStyleInformation(
+      [''],
+      summaryText: currentContext != null
+        ? AppLocalizations.of(currentContext!).totalNewMessagePushNotification(countNotifications).addBlockTag('b')
+        : '$countNotifications new emails'.addBlockTag('b'),
+      htmlFormatSummaryText: true,
+    );
+
+    await _localNotificationsPlugin.show(
+      groupId.hashCode,
+      null,
+      null,
+      LocalNotificationConfig.instance.generateNotificationDetails(
+        setAsGroup: true,
+        styleInformation: inboxStyleInformation,
+        groupId: groupId
+      ),
+    );
   }
 
   Future<void> removeGroupPushNotification(String groupId) async {

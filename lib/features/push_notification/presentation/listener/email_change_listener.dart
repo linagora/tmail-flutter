@@ -173,17 +173,19 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  Future<void> _showLocalNotification(
-    UserName userName,
-    PresentationEmail presentationEmail
-  ) async {
-    await LocalNotificationManager.instance.showPushNotification(
+  Future<void> _showLocalNotification({
+    required UserName userName,
+    required PresentationEmail presentationEmail,
+    bool silent = false,
+  }) async {
+    return await LocalNotificationManager.instance.showPushNotification(
       id: presentationEmail.id?.id.value ?? '',
       title: presentationEmail.subject ?? '',
       message: presentationEmail.preview,
       emailAddress: presentationEmail.firstFromAddress,
       payload: NotificationPayload(emailId: presentationEmail.id).encodeToString,
-      groupId: userName.value
+      groupId: userName.value,
+      silent: silent
     );
   }
 
@@ -267,11 +269,20 @@ class EmailChangeListener extends ChangeListener {
     }
 
     for (var presentationEmail in emailList) {
-      await _showLocalNotification(userName, presentationEmail);
+      await _showLocalNotification(
+        userName: userName,
+        presentationEmail: presentationEmail,
+        silent: PlatformInfo.isAndroid
+      );
     }
 
     if (PlatformInfo.isAndroid) {
-      await LocalNotificationManager.instance.groupPushNotification(groupId: userName.value);
+      final countNotifications = await LocalNotificationManager.instance
+        .getCountActiveNotificationByGroupOnAndroid(groupId: userName.value);
+
+      await LocalNotificationManager.instance.groupPushNotificationOnAndroid(
+        groupId: userName.value,
+        countNotifications: countNotifications);
     }
 
     _emailsAvailablePushNotification.clear();
