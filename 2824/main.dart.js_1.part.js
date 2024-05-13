@@ -456,25 +456,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1665
+    $signature: 1673
   };
   C.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1666
+    $signature: 1674
   };
   C.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1667
+    $signature: 1675
   };
   C.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1668
+    $signature: 1676
   };
   C.BaseLoginView_buildUserNameInput_closure.prototype = {
     call$2(_, loginUsername) {
@@ -491,7 +491,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return B.SizedBox_null_null_null_null;
     },
-    $signature: 511
+    $signature: 459
   };
   C.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(_) {
@@ -589,7 +589,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return B.SizedBox_0_0_null_null;
       }
     },
-    $signature: 272
+    $signature: 308
   };
   C.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -609,7 +609,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 82
+    $signature: 76
   };
   C.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -625,6 +625,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (failure instanceof A.GetOIDCConfigurationFailure) {
         A.Localizations_of(this.context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         return A.Intl__message("Can not verify SSO configuration, please check with your system administrator", _null, "canNotVerifySSOConfiguration", _null, _null);
+      } else if (failure instanceof A.GetTokenOIDCFailure && failure.exception instanceof A.NoSuitableBrowserForOIDCException) {
+        A.Localizations_of(this.context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+        return A.Intl__message("No suitable browser for OIDC, please check with your system administrator", _null, "noSuitableBrowserForOIDC", _null, _null);
       } else {
         t1 = this.context;
         if (failure instanceof A.FeatureFailure) {
@@ -641,7 +644,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 1669
+    $signature: 1677
   };
   C.LoginMessageWidget_build_closure0.prototype = {
     call$1(success) {
@@ -662,19 +665,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return "";
     },
-    $signature: 1670
+    $signature: 1678
   };
   C.LoginMessageWidget_build_closure1.prototype = {
     call$1(failure) {
       return B.Color_4293281350;
     },
-    $signature: 1671
+    $signature: 1679
   };
   C.LoginMessageWidget_build_closure2.prototype = {
     call$1(success) {
       return B.Color_4278190080;
     },
-    $signature: 1672
+    $signature: 1680
   };
   C._LoginTextInputBuilderState_build_closure.prototype = {
     call$0() {
@@ -777,5 +780,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "PJLVrdFZHgkJE+M5NzdLanByH7A=");
+})($__dart_deferred_initializers__, "g7D+FVSRcFaGvodUsWFxLp+ku4M=");
 ;
