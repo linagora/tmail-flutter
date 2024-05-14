@@ -28,5 +28,5 @@ When new emails come, the BE will fire notification payload without `content-ava
 2. TODO: Test this changes by:
    1. Build the iOS app on MacOS with release mode on real iPhone, login and when the app is in email view, put the app in background mode or kill the app. Leave the phone plugged into MacOS machine.
    2. Open XCode > Window > Devices & Simulators, choose the iPhone currently plugged in, choose "Open Console" and start streaming log
-   3. Use TMail from the web to send an email to self, expected to see `[com.linagora.ios.teammail] Received remote notification request <ID> [ waking: 0, hasAlertContent: 1, hasSound: 0 hasBadge: 0 hasContentAvailable: 0 hasMutableContent: 1 pushType: Alert]` in the Console app after no longer than 1 minute
+   3. Use TwakeMail from the web to send an email to self, expected to see `[com.linagora.ios.teammail] Received remote notification request <ID> [ waking: 0, hasAlertContent: 1, hasSound: 0 hasBadge: 0 hasContentAvailable: 0 hasMutableContent: 1 pushType: Alert]` in the Console app after no longer than 1 minute
    4. The iPhone should received a push notification not long after, and inside the Console app should print out the information about `com.linagora.ios.teammail.TwakeMailNSE` works.
