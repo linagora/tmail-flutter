@@ -3,13 +3,9 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/attachment/attachment_list_styles.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_dialog_body_builder.dart';
-
-typedef OnDownloadAttachmentFileAction = void Function(Attachment attachment);
-typedef OnViewAttachmentFileAction = void Function(Attachment attachment);
-typedef OnDownloadAllButtonAction = void Function();
-typedef OnCancelButtonAction = void Function();
-typedef OnCloseButtonAction = void Function();
 
 class AttachmentListDialogBuilder extends StatelessWidget {
 

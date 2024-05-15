@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:model/email/attachment.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/attachment/attachment_list_styles.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_action_button_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_item_widget.dart';
@@ -16,6 +17,7 @@ class AttachmentListBottomSheetBodyBuilder extends StatelessWidget {
   final ScrollController scrollController;
   final OnDownloadAllButtonAction? onDownloadAllButtonAction;
   final OnDownloadAttachmentFileAction? onDownloadAttachmentFileAction;
+  final OnViewAttachmentFileAction? onViewAttachmentFileAction;
   final OnCancelButtonAction? onCancelButtonAction;
   final OnCloseButtonAction? onCloseButtonAction;
 
@@ -27,6 +29,7 @@ class AttachmentListBottomSheetBodyBuilder extends StatelessWidget {
     required this.scrollController,
     this.onDownloadAllButtonAction,
     this.onDownloadAttachmentFileAction,
+    this.onViewAttachmentFileAction,
     this.onCancelButtonAction,
     this.onCloseButtonAction,
   });
@@ -100,6 +103,7 @@ class AttachmentListBottomSheetBodyBuilder extends StatelessWidget {
                                 return AttachmentListItemWidget(
                                   attachment: attachments[index],
                                   downloadAttachmentAction: onDownloadAttachmentFileAction,
+                                  viewAttachmentAction: onViewAttachmentFileAction,
                                 );
                               },
                               separatorBuilder: (context, index) {

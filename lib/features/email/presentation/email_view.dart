@@ -343,20 +343,8 @@ class EmailView extends GetWidget<SingleEmailController> {
               onDragEnd: (details) {
                 controller.mailboxDashBoardController.disableDraggableApp();
               },
-              downloadAttachmentAction: (attachment) {
-                if (PlatformInfo.isWeb) {
-                  controller.downloadAttachmentForWeb(attachment);
-                } else {
-                  controller.exportAttachment(context, attachment);
-                }
-              },
-              // viewAttachmentAction: (attachment) {
-              //   if (PlatformInfo.isWeb) {
-              //     controller.viewAttachmentForWeb(attachment);
-              //   } else {
-              //     controller.exportAttachment(context, attachment);
-              //   }
-              // },
+              downloadAttachmentAction: (attachment) => controller.handleDownloadAttachmentAction(context, attachment),
+              viewAttachmentAction: (attachment) => controller.handleViewAttachmentAction(context, attachment),
               onTapShowAllAttachmentFile: () => controller.openAttachmentList(context, controller.attachments),
             );
           } else {
