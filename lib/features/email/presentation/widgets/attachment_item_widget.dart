@@ -13,14 +13,14 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_
 import 'package:tmail_ui_user/features/email/presentation/styles/attachment/attachment_item_widget_style.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 
-typedef OnDownloadAttachmentFileActionClick = void Function(Attachment attachment);
-typedef OnViewAttachmentFileActionClick = void Function(Attachment attachment);
+typedef OnDownloadAttachmentFileAction = void Function(Attachment attachment);
+typedef OnViewAttachmentFileAction = void Function(Attachment attachment);
 
 class AttachmentItemWidget extends StatelessWidget {
 
   final Attachment attachment;
-  final OnDownloadAttachmentFileActionClick? downloadAttachmentAction;
-  final OnViewAttachmentFileActionClick? viewAttachmentAction;
+  final OnDownloadAttachmentFileAction? downloadAttachmentAction;
+  final OnViewAttachmentFileAction? viewAttachmentAction;
 
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();

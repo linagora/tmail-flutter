@@ -19,8 +19,8 @@ class EmailAttachmentsWidget extends StatelessWidget {
   final List<Attachment> attachments;
   final OnDragAttachmentStarted? onDragStarted;
   final OnDragAttachmentEnd? onDragEnd;
-  final OnDownloadAttachmentFileActionClick? downloadAttachmentAction;
-  final OnViewAttachmentFileActionClick? viewAttachmentAction;
+  final OnDownloadAttachmentFileAction? downloadAttachmentAction;
+  final OnViewAttachmentFileAction? viewAttachmentAction;
   final ResponsiveUtils responsiveUtils;
   final ImagePaths imagePaths;
   final OnTapActionCallback? onTapShowAllAttachmentFile;
@@ -109,14 +109,13 @@ class EmailAttachmentsWidget extends StatelessWidget {
                           onDragStarted: onDragStarted,
                           onDragEnd: onDragEnd,
                           downloadAttachmentAction: downloadAttachmentAction,
-                          viewAttachmentAction: PlatformInfo.isCanvasKit
-                            ? viewAttachmentAction
-                            : null,
+                          viewAttachmentAction: viewAttachmentAction,
                       );
                     } else {
                       return AttachmentItemWidget(
                           attachment: attachment,
-                          downloadAttachmentAction: downloadAttachmentAction
+                          downloadAttachmentAction: downloadAttachmentAction,
+                          viewAttachmentAction: viewAttachmentAction,
                       );
                     }
                   }).toList(),

@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/attachment/attachment_list_styles.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_bottom_sheet_body_builder.dart';
 
-typedef OnDownloadAttachmentFileAction = void Function(Attachment attachment);
 typedef OnDownloadAllButtonAction = void Function();
 typedef OnCancelButtonAction = void Function();
 typedef OnCloseButtonAction = void Function();
@@ -20,6 +20,7 @@ class AttachmentListBottomSheetBuilder {
 
   OnDownloadAllButtonAction? _onDownloadAllButtonAction;
   OnDownloadAttachmentFileAction? _onDownloadAttachmentFileAction;
+  OnViewAttachmentFileAction? _onViewAttachmentFileAction;
   OnCancelButtonAction? _onCancelButtonAction;
   OnCloseButtonAction? _onCloseButtonAction;
 
@@ -38,6 +39,10 @@ class AttachmentListBottomSheetBuilder {
 
   void onDownloadAttachmentFileAction(OnDownloadAttachmentFileAction onDownloadAttachmentFileAction) {
     _onDownloadAttachmentFileAction = onDownloadAttachmentFileAction;
+  }
+
+  void onViewAttachmentFileAction(OnViewAttachmentFileAction onViewAttachmentFileAction) {
+    _onViewAttachmentFileAction = onViewAttachmentFileAction;
   }
 
   void onCancelButtonAction(OnCancelButtonAction onCancelButtonAction) {
@@ -62,6 +67,7 @@ class AttachmentListBottomSheetBuilder {
         scrollController: _scrollController,
         onDownloadAllButtonAction: _onDownloadAllButtonAction,
         onDownloadAttachmentFileAction: _onDownloadAttachmentFileAction,
+        onViewAttachmentFileAction: _onViewAttachmentFileAction,
         onCancelButtonAction: _onCancelButtonAction,
         onCloseButtonAction: _onCloseButtonAction,
       ),
