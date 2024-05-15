@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/maybe_calendar_even
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_reject_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/download_message_as_eml_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
@@ -81,6 +82,7 @@ const fallbackGenerators = {
   MockSpec<AcceptCalendarEventInteractor>(),
   MockSpec<MaybeCalendarEventInteractor>(),
   MockSpec<RejectCalendarEventInteractor>(),
+  MockSpec<DownloadMessageAsEMLInteractor>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -112,6 +114,7 @@ void main() {
   final responsiveUtils = MockResponsiveUtils();
   final uuid = MockUuid();
   final printEmailInteractor = MockPrintEmailInteractor();
+  final downloadMessageAsEMLInteractor = MockDownloadMessageAsEMLInteractor();
 
   late SingleEmailController singleEmailController;
 
@@ -161,6 +164,7 @@ void main() {
       storeOpenedEmailInteractor,
       viewAttachmentForWebInteractor,
       printEmailInteractor,
+      downloadMessageAsEMLInteractor,
     );
   });
 

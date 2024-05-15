@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-04-19T16:31:35.757887",
+  "@@last_modified": "2024-05-15T11:16:30.181676",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3716,6 +3716,18 @@
   },
   "youMayAttendThisMeeting": "You may attend this meeting",
   "@youMayAttendThisMeeting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "downloadMessageAsEML": "Download message as EML",
+  "@downloadMessageAsEML": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "downloadMessageAsEMLInProgress": "Download message as EML in progress",
+  "@downloadMessageAsEMLInProgress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

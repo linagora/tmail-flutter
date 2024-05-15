@@ -473,6 +473,8 @@ class EmailView extends GetWidget<SingleEmailController> {
         EmailActionType.unsubscribe,
       if (mailboxContain?.isArchive == false)
         EmailActionType.archiveMessage,
+      if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit)
+        EmailActionType.downloadMessageAsEML
     ];
 
     if (position == null) {

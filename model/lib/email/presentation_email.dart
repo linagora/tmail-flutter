@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:equatable/equatable.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -21,6 +22,7 @@ import 'package:model/mailbox/select_mode.dart';
 class PresentationEmail with EquatableMixin {
 
   final EmailId? id;
+  final Id? blobId;
   final Map<KeyWordIdentifier, bool>? keywords;
   final UnsignedInt? size;
   final UTCDate? receivedAt;
@@ -44,6 +46,7 @@ class PresentationEmail with EquatableMixin {
 
   PresentationEmail({
     this.id,
+    this.blobId,
     this.keywords,
     this.size,
     this.receivedAt,
@@ -142,6 +145,7 @@ class PresentationEmail with EquatableMixin {
   @override
   List<Object?> get props => [
     id,
+    blobId,
     keywords,
     size,
     receivedAt,

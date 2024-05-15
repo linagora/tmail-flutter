@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
@@ -42,6 +43,7 @@ import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reject_
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reply_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachments_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/download_message_as_eml_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
@@ -57,6 +59,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/maybe_calendar_even
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_reject_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/download_message_as_eml_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
@@ -123,6 +126,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final StoreOpenedEmailInteractor _storeOpenedEmailInteractor;
   final ViewAttachmentForWebInteractor _viewAttachmentForWebInteractor;
   final PrintEmailInteractor _printEmailInteractor;
+  final DownloadMessageAsEMLInteractor _downloadMessageAsEMLInteractor;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
@@ -171,6 +175,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._storeOpenedEmailInteractor,
     this._viewAttachmentForWebInteractor,
     this._printEmailInteractor,
+    this._downloadMessageAsEMLInteractor,
   );
 
   @override
@@ -231,6 +236,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _handlePrintEmailSuccess(success);
     } else if (success is CalendarEventReplySuccess) {
       _calendarEventSuccess(success);
+    } else if (success is StartDownloadMessageAsEML) {
+      _showMessageWhenStartingDownloadMessageAsEML();
     }
   }
 
@@ -1141,6 +1148,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       case EmailActionType.printAll:
         _printEmail(context, presentationEmail);
         break;
+      case EmailActionType.downloadMessageAsEML:
+        _downloadMessageAsEML(presentationEmail);
+        break;
       default:
         break;
     }
@@ -1770,6 +1780,41 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).eventReplyWasSentUnsuccessfully);
+    }
+  }
+
+  void _downloadMessageAsEML(PresentationEmail presentationEmail) {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final session = mailboxDashBoardController.sessionCurrent;
+
+    if (accountId == null || session == null) {
+      consumeState(Stream.value(Left(DownloadMessageAsEMLFailure(NotFoundSessionException()))));
+      return;
+    }
+
+    final blobId = presentationEmail.blobId;
+    if (blobId == null) {
+      consumeState(Stream.value(Left(DownloadMessageAsEMLFailure(NotFoundEmailBlobIdException()))));
+      return;
+    }
+
+    final baseDownloadUrl = session.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
+
+    consumeState(_downloadMessageAsEMLInteractor.execute(
+      accountId,
+      baseDownloadUrl,
+      blobId,
+      presentationEmail.getEmailTitle()
+    ));
+  }
+
+  void _showMessageWhenStartingDownloadMessageAsEML() {
+    if (currentOverlayContext != null && currentContext != null) {
+      appToast.showToastMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).downloadMessageAsEMLInProgress,
+        leadingSVGIconColor: AppColor.primaryColor,
+        leadingSVGIcon: imagePaths.icDownloadAttachment);
     }
   }
 }

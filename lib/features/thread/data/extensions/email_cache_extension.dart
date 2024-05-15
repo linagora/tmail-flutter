@@ -34,7 +34,8 @@ extension EmailCacheExtension on EmailCache {
         : null,
       headerCalendarEvent: headerCalendarEvent != null
         ? Map.fromIterables(headerCalendarEvent!.keys.map((value) => IndividualHeaderIdentifier(value)), headerCalendarEvent!.values)
-        : null
+        : null,
+      blobId: blobId != null ? Id(blobId!) : null,
     );
   }
 

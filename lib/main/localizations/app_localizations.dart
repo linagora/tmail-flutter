@@ -3879,4 +3879,18 @@ class AppLocalizations {
       name: 'youMayAttendThisMeeting',
     );
   }
+
+  String get downloadMessageAsEML {
+    return Intl.message(
+      'Download message as EML',
+      name: 'downloadMessageAsEML',
+    );
+  }
+
+  String get downloadMessageAsEMLInProgress {
+    return Intl.message(
+      'Download message as EML in progress',
+      name: 'downloadMessageAsEMLInProgress'
+    );
+  }
 }

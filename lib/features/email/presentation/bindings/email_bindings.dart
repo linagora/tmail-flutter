@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/email/data/repository/email_repository_im
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/download_message_as_eml_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_state_interactor.dart';
@@ -69,7 +70,8 @@ class EmailBindings extends BaseBindings {
       Get.find<GetAllIdentitiesInteractor>(),
       Get.find<StoreOpenedEmailInteractor>(),
       Get.find<ViewAttachmentForWebInteractor>(),
-      Get.find<PrintEmailInteractor>()
+      Get.find<PrintEmailInteractor>(),
+      Get.find<DownloadMessageAsEMLInteractor>(),
     ));
   }
 
@@ -152,6 +154,11 @@ class EmailBindings extends BaseBindings {
         Get.find<DownloadAttachmentForWebInteractor>()));
     Get.lazyPut(() => StoreOpenedEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => PrintEmailInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => DownloadMessageAsEMLInteractor(
+      Get.find<EmailRepository>(),
+      Get.find<CredentialRepository>(),
+      Get.find<AccountRepository>(),
+      Get.find<AuthenticationOIDCRepository>()));
     IdentityInteractorsBindings().dependencies();
   }
 

@@ -133,6 +133,8 @@ extension EmailActionTypeExtension on EmailActionType {
         return imagePaths.icUnsubscribe;
       case EmailActionType.archiveMessage:
         return imagePaths.icMailboxArchived;
+      case EmailActionType.downloadMessageAsEML:
+        return imagePaths.icDownloadAttachment;
       default:
         return '';
     }
@@ -152,6 +154,8 @@ extension EmailActionTypeExtension on EmailActionType {
         return AppLocalizations.of(context).unsubscribe;
       case EmailActionType.archiveMessage:
         return AppLocalizations.of(context).archiveMessage;
+      case EmailActionType.downloadMessageAsEML:
+        return AppLocalizations.of(context).downloadMessageAsEML;
       default:
         return '';
     }

@@ -44,6 +44,7 @@ extension PresentationEmailExtension on PresentationEmail {
   PresentationEmail toggleSelect() {
     return PresentationEmail(
       id: this.id,
+      blobId: blobId,
       keywords: keywords,
       size: size,
       receivedAt: receivedAt,
@@ -67,6 +68,7 @@ extension PresentationEmailExtension on PresentationEmail {
   PresentationEmail toSelectedEmail({required SelectMode selectMode}) {
     return PresentationEmail(
       id: this.id,
+      blobId: blobId,
       keywords: keywords,
       size: size,
       receivedAt: receivedAt,
@@ -90,6 +92,7 @@ extension PresentationEmailExtension on PresentationEmail {
   Email toEmail() {
     return Email(
       id: this.id,
+      blobId: blobId,
       keywords: keywords,
       size: size,
       receivedAt: receivedAt,
@@ -146,6 +149,7 @@ extension PresentationEmailExtension on PresentationEmail {
 
     return PresentationEmail(
       id: this.id,
+      blobId: blobId,
       keywords: keywords,
       size: size,
       receivedAt: receivedAt,
@@ -182,6 +186,7 @@ extension PresentationEmailExtension on PresentationEmail {
   PresentationEmail withRouteWeb(Uri routeWeb) {
     return PresentationEmail(
       id: this.id,
+      blobId: blobId,
       keywords: keywords,
       size: size,
       receivedAt: receivedAt,
@@ -205,6 +210,7 @@ extension PresentationEmailExtension on PresentationEmail {
   PresentationEmail updateKeywords(Map<KeyWordIdentifier, bool>? newKeywords) {
     return PresentationEmail(
       id: this.id,
+      blobId: blobId,
       keywords: newKeywords,
       size: size,
       receivedAt: receivedAt,
@@ -228,6 +234,7 @@ extension PresentationEmailExtension on PresentationEmail {
   PresentationEmail syncPresentationEmail({PresentationMailbox? mailboxContain, Uri? routeWeb}) {
     return PresentationEmail(
       id: this.id,
+      blobId: blobId,
       keywords: keywords,
       size: size,
       receivedAt: receivedAt,

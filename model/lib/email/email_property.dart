@@ -1,6 +1,7 @@
 
 class EmailProperty {
   static const String id = 'id';
+  static const String blobId = 'blobId';
   static const String keywords = 'keywords';
   static const String size = 'size';
   static const String receivedAt = 'receivedAt';

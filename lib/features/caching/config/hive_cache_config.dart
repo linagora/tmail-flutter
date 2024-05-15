@@ -66,7 +66,9 @@ class HiveCacheConfig {
     await UpgradeHiveDatabaseStepsV7(cachingManager).onUpgrade(oldVersion, newVersion);
     await UpgradeHiveDatabaseStepsV10(cachingManager).onUpgrade(oldVersion, newVersion);
 
-    await cachingManager.storeCacheVersion(newVersion);
+    if (oldVersion != newVersion) {
+      await cachingManager.storeCacheVersion(newVersion);
+    }
   }
 
   Future<void> initializeEncryptionKey() async {
