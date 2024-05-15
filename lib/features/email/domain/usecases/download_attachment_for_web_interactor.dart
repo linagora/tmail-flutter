@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
+import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/account/account_request.dart';
@@ -33,7 +34,8 @@ class DownloadAttachmentForWebInteractor {
       Attachment attachment,
       AccountId accountId,
       String baseDownloadUrl,
-      StreamController<Either<Failure, Success>> onReceiveController
+      StreamController<Either<Failure, Success>> onReceiveController,
+      {CancelToken? cancelToken}
   ) async* {
     try {
       yield Right<Failure, Success>(StartDownloadAttachmentForWeb(taskId, attachment));
@@ -59,7 +61,8 @@ class DownloadAttachmentForWebInteractor {
         accountId,
         baseDownloadUrl,
         accountRequest,
-        onReceiveController
+        onReceiveController,
+        cancelToken: cancelToken
       );
 
       yield Right<Failure, Success>(

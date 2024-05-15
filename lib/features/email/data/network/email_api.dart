@@ -336,6 +336,7 @@ class EmailAPI with HandleSetErrorMixin {
       String baseDownloadUrl,
       AccountRequest accountRequest,
       StreamController<Either<Failure, Success>> onReceiveController,
+      {CancelToken? cancelToken}
   ) async {
     final authentication = accountRequest.authenticationType == AuthenticationType.oidc
         ? accountRequest.bearerToken
@@ -352,6 +353,7 @@ class EmailAPI with HandleSetErrorMixin {
         options: Options(
             headers: headerParam,
             responseType: ResponseType.bytes),
+        cancelToken: cancelToken,
         onReceiveProgress: (downloaded, total) {
           log('EmailAPI::downloadFileForWeb(): downloaded = $downloaded | total: $total');
           double progress = 0;
