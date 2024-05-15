@@ -81,22 +81,25 @@
             <span class="open-button" id="open-button-id" onClick= {handleOpenTwakeMailApp()}></span>
         </div>
     </div>
+
+    <!-- This script installs pdf.js for pdf_render -->
+    <script
+        src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/build/pdf.min.js"
+        type="text/javascript"
+    ></script>
+    <script type="text/javascript">
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/build/pdf.worker.min.js";
+      pdfRenderOptions = {
+        cMapUrl: "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/cmaps/",
+        cMapPacked: true,
+      };
+    </script>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
   <script>
     loadLanguageResources().finally(initialWorkerService);
   </script>
-  <script src="https://unpkg.com/pica/dist/pica.min.js" ></script>
-  <!-- This script installs pdf.min.js to render the PDF page as an image in the
-      application and load in syncfusion_flutter_pdfviewer widget -->
-  <script src="//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.min.js"></script>
-  <script type="text/javascript">
-    pdfjsLib.GlobalWorkerOptions.workerSrc = "//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/pdf.worker.min.js";
-  </script>
-    <!-- This script to specify the version of the Pdf.js library in printing dependency -->
-  <script>
-    var dartPdfJsVersion = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.11.338/";
-  </script>
+  <script src="https://unpkg.com/pica/dist/pica.min.js" ></script> 
 </body>
 </html>

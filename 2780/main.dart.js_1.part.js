@@ -257,7 +257,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.Container$(_null, A.ElevatedButton$(false, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_etK1, _null, _null, _null, _null, _null), B.Clip_0, _null, D.ValueKey_loginSubmitForm, _null, _null, _null, t1, _null, t4), B.Clip_0, _null, _null, _null, _null, 48, _null, B.EdgeInsetsDirectional_24_0_24_16, _null, _null, _null, t3.size._dx);
     },
     buildInputCredentialForm$1(context) {
-      return new C.AutofillGroup(new A.Padding(B.EdgeInsetsDirectional_24_0_24_0, A.Column$(A._setArrayType([this.buildUserNameInput$1(context), B.SizedBox_null_24_null_null, this.buildPasswordInput$1(context), D.SizedBox_null_40_null_null], type$.JSArray_Widget), B.CrossAxisAlignment_2, null, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), null), null);
+      return new C.AutofillGroup(new A.Padding(B.EdgeInsetsDirectional_24_0_24_0, A.Column$(A._setArrayType([this.buildUserNameInput$1(context), B.SizedBox_null_24_null_null, this.buildPasswordInput$1(context), D.SizedBox_null_40_null_null], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), null), null);
     },
     buildUserNameInput$1(context) {
       var t2, t3, t4, t5, t6, t7, _this = this, _null = null, _s5_ = "email",
@@ -312,7 +312,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = _this._buildAppLogo$1(context);
       A.Localizations_of(context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       t2 = type$.JSArray_Widget;
-      t1 = A.Column$(A._setArrayType([new A.Padding(D.EdgeInsets_0_67_0_0, t1, _null), new A.Padding(D.EdgeInsets_0_67_0_0, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY26, _null, _null, _null, _null, _null), _null), new A.Obx(new C.LoginView__buildMobileForm_closure(_this), _null), new A.Obx(new C.LoginView__buildMobileForm_closure0(_this, context), _null), _this._buildLoadingProgress$1(context), D.Padding_sav], t2), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
+      t1 = A.Column$(A._setArrayType([new A.Padding(D.EdgeInsets_0_67_0_0, t1, _null), new A.Padding(D.EdgeInsets_0_67_0_0, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY26, _null, _null, _null, _null, _null), _null), new A.Obx(new C.LoginView__buildMobileForm_closure(_this), _null), new A.Obx(new C.LoginView__buildMobileForm_closure0(_this, context), _null), _this._buildLoadingProgress$1(context), D.Padding_sav], t2), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
       t3 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
       A._instanceType(_this)._eval$1("GetWidget.S")._as(t3._jsWeakMap.get(_this)).toString;
@@ -345,13 +345,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       t4._as(t3.get(_this)).toString;
       t9 = type$.JSArray_Widget;
-      t8 = A.Column$(A._setArrayType([t2, new A.Padding(B.EdgeInsets_0_24_0_0, t5, _null), new A.Padding(B.EdgeInsets_0_16_0_0, t6, _null), new A.Padding(B.EdgeInsets_0_16_0_0, t7, _null), new A.Padding(B.EdgeInsets_0_16_0_0, t8, _null), new A.Padding(D.EdgeInsets_0_44_0_0, A.SvgPicture$asset("assets/images/ic_login_graphic.svg", B.Alignment_0_0, _null, B.BoxFit_0, _null, _null, _null), _null)], t9), B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_2, B.MainAxisSize_1, B.VerticalDirection_1);
+      t8 = A.Column$(A._setArrayType([t2, new A.Padding(B.EdgeInsets_0_24_0_0, t5, _null), new A.Padding(B.EdgeInsets_0_16_0_0, t6, _null), new A.Padding(B.EdgeInsets_0_16_0_0, t7, _null), new A.Padding(B.EdgeInsets_0_16_0_0, t8, _null), new A.Padding(D.EdgeInsets_0_44_0_0, A.SvgPicture$asset("assets/images/ic_login_graphic.svg", B.Alignment_0_0, _null, B.BoxFit_0, _null, _null, _null), _null)], t9), B.CrossAxisAlignment_0, B.MainAxisAlignment_2, B.MainAxisSize_1, B.VerticalDirection_1);
       t7 = _this._buildAppLogo$1(context);
       A.Localizations_of(context, B.Type_AppLocalizations_swi, t1).toString;
-      t7 = A.Container$(_null, A.Column$(A._setArrayType([new A.Padding(D.EdgeInsets_0_66_0_0, t7, _null), new A.Padding(D.EdgeInsets_0_67_0_0, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY26, _null, _null, _null, _null, _null), _null), new A.Obx(new C.LoginView__buildWebForm_closure(_this), _null), new A.Obx(new C.LoginView__buildWebForm_closure0(_this, context), _null), _this._buildLoadingProgress$1(context), D.Padding_sav], t9), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), B.Clip_2, _null, _null, D.ShapeDecoration_MLv, _null, 684, _null, _null, D.EdgeInsets_31_0_31_0, _null, _null, 458);
+      t7 = A.Container$(_null, A.Column$(A._setArrayType([new A.Padding(D.EdgeInsets_0_66_0_0, t7, _null), new A.Padding(D.EdgeInsets_0_67_0_0, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY26, _null, _null, _null, _null, _null), _null), new A.Obx(new C.LoginView__buildWebForm_closure(_this), _null), new A.Obx(new C.LoginView__buildWebForm_closure0(_this, context), _null), _this._buildLoadingProgress$1(context), D.Padding_sav], t9), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), B.Clip_2, _null, _null, D.ShapeDecoration_MLv, _null, 684, _null, _null, D.EdgeInsets_31_0_31_0, _null, _null, 458);
       A.Expando__checkType(_this);
       t4._as(t3.get(_this)).toString;
-      return new A.Padding(D.EdgeInsets_0_60_0_60, A.Row$(A._setArrayType([new A.Padding(D.EdgeInsets_0_0_86_0, t8, _null), A.Column$(A._setArrayType([t7, new A.Padding(D.EdgeInsets_0_44_0_10, A.SvgPicture$asset("assets/images/power_by_linagora.svg", B.Alignment_0_0, _null, B.BoxFit_0, 44, _null, 97), _null)], t9), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1)], t9), B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_2, B.MainAxisSize_1, _null), _null);
+      return new A.Padding(D.EdgeInsets_0_60_0_60, A.Row$(A._setArrayType([new A.Padding(D.EdgeInsets_0_0_86_0, t8, _null), A.Column$(A._setArrayType([t7, new A.Padding(D.EdgeInsets_0_44_0_10, A.SvgPicture$asset("assets/images/power_by_linagora.svg", B.Alignment_0_0, _null, B.BoxFit_0, 44, _null, 97), _null)], t9), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1)], t9), B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_2, B.MainAxisSize_1, _null), _null);
     },
     _buildAppLogo$1(buildContext) {
       var _null = null,
@@ -376,7 +376,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = A.Intl__message("Privacy policy", _null, "privacyPolicy", _null, _null);
       t3 = A.TapGestureRecognizer$(_null, _null);
       t3.onTap = new C.PrivacyLinkWidget_build_closure(this);
-      return A.Column$(A._setArrayType([t2, A.RichText$(_null, _null, _null, B.TextOverflow_0, _null, _null, true, _null, A.TextSpan$(_null, _null, _null, _null, _null, t3, _null, _null, E.TextStyle_kmC0, t1), B.TextAlign_4, _null, _null, B._LinearTextScaler_1, B.TextWidthBasis_0)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1);
+      return A.Column$(A._setArrayType([t2, A.RichText$(_null, _null, _null, B.TextOverflow_0, _null, _null, true, _null, A.TextSpan$(_null, _null, _null, _null, _null, t3, _null, _null, E.TextStyle_kmC0, t1), B.TextAlign_4, _null, _null, B._LinearTextScaler_1, B.TextWidthBasis_0)], type$.JSArray_Widget), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1);
     }
   };
   C.LoginInputDecorationBuilder.prototype = {
@@ -456,25 +456,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1669
+    $signature: 1699
   };
   C.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1670
+    $signature: 1700
   };
   C.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1671
+    $signature: 1701
   };
   C.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1672
+    $signature: 1702
   };
   C.BaseLoginView_buildUserNameInput_closure.prototype = {
     call$2(_, loginUsername) {
@@ -491,7 +491,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return B.SizedBox_null_null_null_null;
     },
-    $signature: 513
+    $signature: 518
   };
   C.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(_) {
@@ -589,7 +589,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return B.SizedBox_0_0_null_null;
       }
     },
-    $signature: 273
+    $signature: 276
   };
   C.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -609,7 +609,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 77
+    $signature: 76
   };
   C.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -644,7 +644,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 1673
+    $signature: 1703
   };
   C.LoginMessageWidget_build_closure0.prototype = {
     call$1(success) {
@@ -665,19 +665,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return "";
     },
-    $signature: 1674
+    $signature: 1704
   };
   C.LoginMessageWidget_build_closure1.prototype = {
     call$1(failure) {
       return B.Color_4293281350;
     },
-    $signature: 1675
+    $signature: 1705
   };
   C.LoginMessageWidget_build_closure2.prototype = {
     call$1(success) {
       return B.Color_4278190080;
     },
-    $signature: 1676
+    $signature: 1706
   };
   C._LoginTextInputBuilderState_build_closure.prototype = {
     call$0() {
@@ -760,7 +760,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.List_ECL = A._setArrayType(makeConstList([D.BoxShadow_SSw]), A.findType("JSArray<BoxShadow>"));
     D.ShapeDecoration_MLv = new A.ShapeDecoration(B.Color_4294967295, null, null, D.List_ECL, B.RoundedRectangleBorder_27D11);
     D.ValueKey_login_loading_icon = new A.ValueKey("login_loading_icon", type$.ValueKey_String);
-    D.SizedBox_0ia = new A.SizedBox(40, 40, B.CircularProgressIndicator_EKW1, D.ValueKey_login_loading_icon);
+    D.SizedBox_0ia = new A.SizedBox(40, 40, B.CircularProgressIndicator_EKW0, D.ValueKey_login_loading_icon);
     D.SizedBox_null_40_null_null = new A.SizedBox(null, 40, null, null);
     D.SuggestionsBoxDecoration_dLJ = new A.SuggestionsBoxDecoration(B.BorderRadius_tLn11);
     D.TextStyle_INA = new A.TextStyle(true, B.Color_4285887861, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -780,5 +780,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "DyhkXyP/4a3L9a0mcvOOe6L+GQc=");
+})($__dart_deferred_initializers__, "4SDixjCSg2dadPXKQqT+Pprvo+c=");
 ;

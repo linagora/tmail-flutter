@@ -239,7 +239,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = padding == null ? C.EdgeInsets_8_8_8_8 : padding,
         t2 = A.ColorNullableExtension_asFilter(iconColor),
         iconWidget = new A.Padding(t1, A.SvgPicture$asset(icon, C.Alignment_0_0, t2, C.BoxFit_0, iconSize, _null, iconSize), _null);
-      return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, tooltip != null ? A.Tooltip$(iconWidget, _null, tooltip) : iconWidget, C.CircleBorder_Umb, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, onTap, _null, onTapDown, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
+      return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, tooltip != null ? A.Tooltip$(iconWidget, tooltip) : iconWidget, C.CircleBorder_Umb, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, onTap, _null, onTapDown, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
     },
     VacationResponseExtension_get_vacationResponderIsReady(_this) {
       var t1, t2, startDate;
@@ -405,7 +405,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     build$1(context) {
       var _null = null,
         t1 = A._setArrayType([A.SvgPicture$asset(this.icon, C.Alignment_0_0, A.ColorNullableExtension_asFilter(_null), C.BoxFit_0, 20, _null, 20), C.SizedBox_12_null_null_null, A.Expanded$(A.Text$(this.name, _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY11, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget);
-      return A.InkWell$(false, _null, true, new A.Padding(D.EdgeInsets_20_16_20_16, new A.SizedBox(_null, _null, A.Row$(t1, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.PopupMenuItemWidget_build_closure(this), _null, _null, _null, _null, _null, _null, _null, _null);
+      return A.InkWell$(false, _null, true, new A.Padding(D.EdgeInsets_20_16_20_16, new A.SizedBox(_null, _null, A.Row$(t1, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.PopupMenuItemWidget_build_closure(this), _null, _null, _null, _null, _null, _null, _null);
     }
   };
   B._ElevatedButtonWithIcon.prototype = {
@@ -522,7 +522,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     popupItem$5$colorIcon$onCallbackAction$styleName(iconAction, nameAction, colorIcon, onCallbackAction, styleName) {
       var _null = null,
         t1 = A.SvgPicture$asset(iconAction, C.Alignment_0_0, A.ColorNullableExtension_asFilter(colorIcon), C.BoxFit_0, 20, _null, 20);
-      return A.InkWell$(false, _null, true, new A.Padding(D.EdgeInsets_20_16_20_16, new A.SizedBox(_null, _null, A.Row$(A._setArrayType([t1, C.SizedBox_12_null_null_null, A.Expanded$(A.Text$(nameAction, _null, _null, _null, _null, _null, _null, _null, _null, styleName, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, onCallbackAction, _null, _null, _null, _null, _null, _null, _null, _null);
+      return A.InkWell$(false, _null, true, new A.Padding(D.EdgeInsets_20_16_20_16, new A.SizedBox(_null, _null, A.Row$(A._setArrayType([t1, C.SizedBox_12_null_null_null, A.Expanded$(A.Text$(nameAction, _null, _null, _null, _null, _null, _null, _null, _null, styleName, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, onCallbackAction, _null, _null, _null, _null, _null, _null, _null);
     }
   };
   B.MaterialTextButton.prototype = {
@@ -543,7 +543,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = A.TextStyle$(_null, _null, t3, _null, _null, _null, _null, _null, _null, _null, _null, _this.labelSize, _null, _null, t4, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null);
         t3 = t4;
       }
-      return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, new A.Padding(t2, A.Text$(_this.label, _null, _null, _null, _this.overflow, _null, _null, _this.softWrap, _null, t3, _null, _null, _null, _null, _null), _null), new A.RoundedRectangleBorder(t1, C.BorderSide_8xm), true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onLongPress, _this.onTap, _null, _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
+      return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, new A.Padding(t2, A.Text$(_this.label, _null, _null, _null, _this.overflow, _null, _null, _this.softWrap, _null, t3, _null, _null, _null, _null, _null), _null), new A.RoundedRectangleBorder(t1, C.BorderSide_8xm), true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onLongPress, _this.onTap, _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
     }
   };
   B.UserInformationWidget.prototype = {
@@ -572,7 +572,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         t3.push(new A.Padding(D.EdgeInsetsDirectional_0_10_0_0, A.Transform$(_null, B.MaterialTextButton$(20, E.TextStyle_kmC0, A.Intl__message("Manage account", _null, "manage_account", _null, _null), _null, 15, _null, _null, _this.onSubtitleClick, _null, C.EdgeInsetsDirectional_8_8_8_8, _null), _null, t5, true), _null));
       }
-      return A.Container$(_null, A.Row$(A._setArrayType([t2, C.SizedBox_16_null_null_null, A.Expanded$(A.Column$(t3, C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1), C.SizedBox_16_null_null_null], t4), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(_null, _null, _this.border, _null, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, t1, _null, _null, _null);
+      return A.Container$(_null, A.Row$(A._setArrayType([t2, C.SizedBox_16_null_null_null, A.Expanded$(A.Column$(t3, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1), C.SizedBox_16_null_null_null], t4), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(_null, _null, _this.border, _null, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, t1, _null, _null, _null);
     }
   };
   B.UserSettingPopupMenuMixin.prototype = {
@@ -592,7 +592,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _userInformation$2(context, userProfile) {
       var _null = null;
       if (userProfile != null)
-        return new A.SizedBox(300, _null, A.ListTile$(false, C.EdgeInsets_20_0_20_0, _null, _null, true, _null, false, _null, _null, _null, false, _null, _null, _null, _null, _null, A.Text$(userProfile.email, _null, _null, 1, _null, _null, _null, _null, _null, C.TextStyle_chs3, _null, _null, _null, _null, _null), _null, _null), _null);
+        return new A.SizedBox(300, _null, A.ListTile$(C.EdgeInsets_20_0_20_0, _null, _null, _null, A.Text$(userProfile.email, _null, _null, 1, _null, _null, _null, _null, _null, C.TextStyle_chs3, _null, _null, _null, _null, _null), _null), _null);
       return C.SizedBox_0_0_null_null;
     },
     _settingAction$2(context, onCallBack) {
@@ -662,7 +662,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3.push(A.buildTextButton(A.Intl__message("Vacation setting", _null, "vacationSetting", _null, _null), C.Color_0, 36, new B.VacationNotificationMessageWidget__buildBodyForMobile_closure0(_this), 10, C.TextStyle_yzp2, 150));
       }
       t3.push(C.Spacer_null);
-      return A.Column$(A._setArrayType([t2, A.Row$(t3, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null)], t1), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
+      return A.Column$(A._setArrayType([t2, A.Row$(t3, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null)], t1), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
     }
   };
   var typesOffset = hunkHelpers.updateTypes(["bool(PortalLinkScope)"]);
@@ -721,7 +721,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 186
+    $signature: 184
   };
   B._HtmlContentViewerOnWebState_initState__closure.prototype = {
     call$0() {
@@ -747,7 +747,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 418
+    $signature: 423
   };
   B._HtmlContentViewerOnWebState__setUpWeb_closure0.prototype = {
     call$0() {
@@ -770,7 +770,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(D.Align_Ktb);
       return new A.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
     },
-    $signature: 607
+    $signature: 609
   };
   B._HtmlContentViewerOnWebState_build__closure.prototype = {
     call$2(context, snapshot) {
@@ -788,7 +788,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1657
+    $signature: 1686
   };
   B.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -801,14 +801,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 76
+    $signature: 78
   };
   B.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 76
+    $signature: 78
   };
   B.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -925,5 +925,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "LR35w4672o2I/5WoG/BmVNv6MdY=");
+})($__dart_deferred_initializers__, "by5BcRkLnx7fbe7lvKEJmB2oIaY=");
 ;
