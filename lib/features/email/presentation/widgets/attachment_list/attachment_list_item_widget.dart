@@ -14,13 +14,11 @@ import 'package:tmail_ui_user/features/email/presentation/styles/attachment/atta
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
 
-typedef OnDownloadAttachmentFileActionClick = void Function(Attachment attachment);
-
 class AttachmentListItemWidget extends StatelessWidget {
 
   final Attachment attachment;
-  final OnDownloadAttachmentFileActionClick? downloadAttachmentAction;
-  final OnViewAttachmentFileActionClick? viewAttachmentAction;
+  final OnDownloadAttachmentFileAction? downloadAttachmentAction;
+  final OnViewAttachmentFileAction? viewAttachmentAction;
 
   final _imagePaths = Get.find<ImagePaths>();
 

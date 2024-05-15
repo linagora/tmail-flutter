@@ -12,8 +12,8 @@ class DraggableAttachmentItemWidget extends StatelessWidget{
   final Attachment attachment;
   final OnDragAttachmentStarted? onDragStarted;
   final OnDragAttachmentEnd? onDragEnd;
-  final OnDownloadAttachmentFileActionClick? downloadAttachmentAction;
-  final OnViewAttachmentFileActionClick? viewAttachmentAction;
+  final OnDownloadAttachmentFileAction? downloadAttachmentAction;
+  final OnViewAttachmentFileAction? viewAttachmentAction;
 
   const DraggableAttachmentItemWidget({
     Key? key,
