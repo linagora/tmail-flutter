@@ -44,8 +44,8 @@ class Attachment with EquatableMixin {
     final downloadUri = downloadUriTemplate.expand({
       'accountId' : accountId.id.value,
       'blobId' : '${blobId?.value}',
-      'name' : '$name',
-      'type' : '${type?.mimeType}',
+      'name' : name ?? '',
+      'type' : type?.mimeType ?? '',
     });
     return Uri.decodeFull(downloadUri);
   }

@@ -47,7 +47,6 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/email_property.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
-import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
@@ -60,6 +59,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
+import 'package:tmail_ui_user/features/email/data/utils/download_utils.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
@@ -69,22 +69,23 @@ import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_ex
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
-import 'package:uri/uri.dart';
 import 'package:uuid/uuid.dart';
 
 class EmailAPI with HandleSetErrorMixin {
-
-  static const String accountIdProperty = 'accountId';
-  static const String blobIdProperty = 'blobId';
-  static const String nameProperty = 'name';
-  static const String typeProperty = 'type';
 
   final HttpClient _httpClient;
   final DownloadManager _downloadManager;
   final DioClient _dioClient;
   final Uuid _uuid;
+  final DownloadUtils _downloadUtils;
 
-  EmailAPI(this._httpClient, this._downloadManager, this._dioClient, this._uuid);
+  EmailAPI(
+    this._httpClient,
+    this._downloadManager,
+    this._dioClient,
+    this._uuid,
+    this._downloadUtils,
+  );
 
   Future<Email> getEmailContent(Session session, AccountId accountId, EmailId emailId) async {
     final processingInvocation = ProcessingInvocation();
@@ -753,16 +754,13 @@ class EmailAPI with HandleSetErrorMixin {
       ? accountRequest.bearerToken
       : accountRequest.basicAuth;
 
-    final fileName = subjectEmail.isEmpty
-      ? '${_uuid.v1()}.eml'
-      : '$subjectEmail.eml';
+    final fileName = _downloadUtils.createEMLFileName(subjectEmail);
 
-    final downloadUrl = _getDownloadUrl(
+    final downloadUrl = _downloadUtils.getEMLDownloadUrl(
       baseDownloadUrl: baseDownloadUrl,
       accountId: accountId,
       blobId: blobId,
-      fileName: fileName,
-      mimeType: Constant.octetStreamMimeType
+      subject: subjectEmail
     );
 
     final headerParam = _dioClient.getHeaders();
@@ -782,24 +780,5 @@ class EmailAPI with HandleSetErrorMixin {
     } else {
       throw NotFoundByteFileDownloadedException();
     }
-  }
-
-  String _getDownloadUrl({
-    required String baseDownloadUrl,
-    required AccountId accountId,
-    required Id blobId,
-    String? fileName,
-    String? mimeType,
-  }) {
-    final downloadUriTemplate = UriTemplate(baseDownloadUrl);
-    final downloadUri = downloadUriTemplate.expand({
-      accountIdProperty : accountId.asString,
-      blobIdProperty : blobId.value,
-      nameProperty : '$fileName',
-      typeProperty : '$mimeType',
-    });
-    final downloadUriDecoded = Uri.decodeFull(downloadUri);
-    log('EmailAPI::getDownloadUrl:downloadUriDecoded = $downloadUriDecoded');
-    return downloadUriDecoded;
   }
 }
