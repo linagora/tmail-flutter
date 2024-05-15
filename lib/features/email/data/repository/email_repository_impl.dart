@@ -152,7 +152,8 @@ class EmailRepositoryImpl extends EmailRepository {
       AccountId accountId,
       String baseDownloadUrl,
       AccountRequest accountRequest,
-      StreamController<Either<Failure, Success>> onReceiveController
+      StreamController<Either<Failure, Success>> onReceiveController,
+      {CancelToken? cancelToken}
   ) {
     return emailDataSource[DataSourceType.network]!.downloadAttachmentForWeb(
         taskId,
@@ -160,7 +161,8 @@ class EmailRepositoryImpl extends EmailRepository {
         accountId,
         baseDownloadUrl,
         accountRequest,
-        onReceiveController);
+        onReceiveController,
+        cancelToken: cancelToken);
   }
 
   @override

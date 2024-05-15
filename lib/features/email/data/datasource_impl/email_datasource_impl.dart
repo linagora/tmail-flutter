@@ -133,7 +133,8 @@ class EmailDataSourceImpl extends EmailDataSource {
       AccountId accountId,
       String baseDownloadUrl,
       AccountRequest accountRequest,
-      StreamController<Either<Failure, Success>> onReceiveController
+      StreamController<Either<Failure, Success>> onReceiveController,
+      {CancelToken? cancelToken}
   ) {
     return Future.sync(() async {
       return await emailAPI.downloadAttachmentForWeb(
@@ -142,7 +143,8 @@ class EmailDataSourceImpl extends EmailDataSource {
           accountId,
           baseDownloadUrl,
           accountRequest,
-          onReceiveController);
+          onReceiveController,
+          cancelToken: cancelToken);
     }).catchError(_exceptionThrower.throwException);
   }
 
