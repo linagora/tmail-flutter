@@ -1,7 +1,7 @@
 # Security policy
 
 We believe in transparency to mitigate security risks. All known vulnerabilities are available on 
-our [security page](docs/modules/ROOT/pages/security.adoc).
+our [security page](https://github.com/linagora/tmail-backend/blob/master/docs/modules/ROOT/pages/security.adoc).
 
 We disclose such security issues only once a released version addressing the issue is available.
 
