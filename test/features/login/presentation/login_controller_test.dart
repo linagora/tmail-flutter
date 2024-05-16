@@ -35,11 +35,18 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oi
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../email/presentation/controller/single_email_controller_test.mocks.dart';
-import '../../mailbox_dashboard/presentation/controller/mailbox_dashboard_controller_test.mocks.dart';
 import 'login_controller_test.mocks.dart';
 
 @GenerateNiceMocks([
+  MockSpec<AuthorizationInterceptors>(),
+  MockSpec<DynamicUrlInterceptors>(),
+  MockSpec<DeleteCredentialInteractor>(),
+  MockSpec<LogoutOidcInteractor>(),
+  MockSpec<DeleteAuthorityOidcInteractor>(),
+  MockSpec<AppToast>(),
+  MockSpec<ImagePaths>(),
+  MockSpec<ResponsiveUtils>(),
+  MockSpec<Uuid>(),
   MockSpec<AuthenticationInteractor>(),
   MockSpec<CheckOIDCIsAvailableInteractor>(),
   MockSpec<GetOIDCIsAvailableInteractor>(),
@@ -53,6 +60,11 @@ import 'login_controller_test.mocks.dart';
   MockSpec<SaveLoginUsernameOnMobileInteractor>(),
   MockSpec<GetAllRecentLoginUsernameOnMobileInteractor>(),
   MockSpec<DNSLookupToGetJmapUrlInteractor>(),
+  MockSpec<GetSessionInteractor>(),
+  MockSpec<GetAuthenticatedAccountInteractor>(),
+  MockSpec<UpdateAuthenticationAccountInteractor>(),
+  MockSpec<CachingManager>(),
+  MockSpec<LanguageCacheManager>(),
 ])
 void main() {
   late MockAuthenticationInteractor mockAuthenticationInteractor;
