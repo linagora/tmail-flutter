@@ -59,7 +59,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
-import 'package:tmail_ui_user/features/email/data/utils/download_utils.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
@@ -77,15 +76,8 @@ class EmailAPI with HandleSetErrorMixin {
   final DownloadManager _downloadManager;
   final DioClient _dioClient;
   final Uuid _uuid;
-  final DownloadUtils _downloadUtils;
 
-  EmailAPI(
-    this._httpClient,
-    this._downloadManager,
-    this._dioClient,
-    this._uuid,
-    this._downloadUtils,
-  );
+  EmailAPI(this._httpClient, this._downloadManager, this._dioClient, this._uuid);
 
   Future<Email> getEmailContent(Session session, AccountId accountId, EmailId emailId) async {
     final processingInvocation = ProcessingInvocation();
@@ -740,45 +732,6 @@ class EmailAPI with HandleSetErrorMixin {
       return getEmailRecoveryActionResponse!.list.firstWhere((element) => element.id == emailRecoveryActionId);
     } else {
       throw NotFoundEmailRecoveryActionException();
-    }
-  }
-
-  Future<void> downloadMessageAsEML(
-    AccountId accountId,
-    String baseDownloadUrl,
-    AccountRequest accountRequest,
-    Id blobId,
-    String subjectEmail,
-  ) async {
-    final authentication = accountRequest.authenticationType == AuthenticationType.oidc
-      ? accountRequest.bearerToken
-      : accountRequest.basicAuth;
-
-    final fileName = _downloadUtils.createEMLFileName(subjectEmail);
-
-    final downloadUrl = _downloadUtils.getEMLDownloadUrl(
-      baseDownloadUrl: baseDownloadUrl,
-      accountId: accountId,
-      blobId: blobId,
-      subject: subjectEmail
-    );
-
-    final headerParam = _dioClient.getHeaders();
-    headerParam[HttpHeaders.authorizationHeader] = authentication;
-    headerParam[HttpHeaders.acceptHeader] = DioClient.jmapHeader;
-
-    final result = await _dioClient.get(
-      downloadUrl,
-      options: Options(
-        headers: headerParam,
-        responseType: ResponseType.bytes
-      )
-    );
-
-    if (result is Uint8List) {
-      _downloadManager.createAnchorElementDownloadFileWeb(result, fileName);
-    } else {
-      throw NotFoundByteFileDownloadedException();
     }
   }
 }

@@ -3887,10 +3887,10 @@ class AppLocalizations {
     );
   }
 
-  String get downloadMessageAsEMLInProgress {
+  String get downloadMessageAsEMLFailed {
     return Intl.message(
-      'Download message as EML in progress',
-      name: 'downloadMessageAsEMLInProgress'
+      'Download message as EML failed',
+      name: 'downloadMessageAsEMLFailed',
     );
   }
 }

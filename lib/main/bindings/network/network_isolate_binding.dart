@@ -6,7 +6,6 @@ import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
-import 'package:tmail_ui_user/features/email/data/utils/download_utils.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
@@ -64,8 +63,7 @@ class NetworkIsolateBindings extends Bindings {
       httpClient,
       Get.find<DownloadManager>(tag: BindingTag.isolateTag),
       Get.find<DioClient>(tag: BindingTag.isolateTag),
-      Get.find<Uuid>(),
-      Get.find<DownloadUtils>(),
+      Get.find<Uuid>()
     ), tag: BindingTag.isolateTag);
   }
 

@@ -1,14 +1,17 @@
 import 'dart:ui';
 
+import 'package:core/data/constants/constant.dart';
 import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/email/eml_attachment.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
@@ -268,5 +271,13 @@ extension PresentationEmailExtension on PresentationEmail {
     }
 
     return false;
+  }
+
+  EMLAttachment createEMLAttachment() {
+    return EMLAttachment(
+      blobId: blobId,
+      name: getEmailTitle().isEmpty ? '${blobId?.value}.eml' : '${getEmailTitle()}.eml',
+      type: MediaType.parse(Constant.octetStreamMimeType)
+    );
   }
 }

@@ -20,6 +20,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mdn/disposition.dart';
 import 'package:jmap_dart_client/jmap/mdn/mdn.dart';
 import 'package:mime/mime.dart';
+import 'package:model/email/eml_attachment.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -43,7 +44,6 @@ import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reject_
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reply_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachments_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/download_message_as_eml_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
@@ -59,7 +59,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/maybe_calendar_even
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_reject_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/download_message_as_eml_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
@@ -126,7 +125,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final StoreOpenedEmailInteractor _storeOpenedEmailInteractor;
   final ViewAttachmentForWebInteractor _viewAttachmentForWebInteractor;
   final PrintEmailInteractor _printEmailInteractor;
-  final DownloadMessageAsEMLInteractor _downloadMessageAsEMLInteractor;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
@@ -175,7 +173,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._storeOpenedEmailInteractor,
     this._viewAttachmentForWebInteractor,
     this._printEmailInteractor,
-    this._downloadMessageAsEMLInteractor,
   );
 
   @override
@@ -236,8 +233,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _handlePrintEmailSuccess(success);
     } else if (success is CalendarEventReplySuccess) {
       _calendarEventSuccess(success);
-    } else if (success is StartDownloadMessageAsEML) {
-      _showMessageWhenStartingDownloadMessageAsEML();
     }
   }
 
@@ -817,7 +812,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else {
       consumeState(Stream.value(
         Left(DownloadAttachmentForWebFailure(
-          attachmentBlobId: attachment.blobId,
+          attachment: attachment,
           exception: NotFoundSessionException()))
       ));
     }
@@ -838,7 +833,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else {
       consumeState(Stream.value(
         Left(ViewAttachmentForWebFailure(
-          attachmentBlobId: attachment.blobId,
+          attachment: attachment,
           exception: NotFoundSessionException()))
       ));
     }
@@ -883,12 +878,16 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       mailboxDashBoardController.deleteDownloadTask(failure.taskId!);
     }
 
-    _updateAttachmentsViewState(failure.attachmentBlobId, Left(failure));
+    if (failure.attachment != null) {
+      _updateAttachmentsViewState(failure.attachment?.blobId, Left(failure));
+    }
 
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).attachment_download_failed);
+        failure.attachment is EMLAttachment
+          ? AppLocalizations.of(currentContext!).downloadMessageAsEMLFailed
+          : AppLocalizations.of(currentContext!).attachment_download_failed);
     }
   }
 
@@ -1784,37 +1783,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _downloadMessageAsEML(PresentationEmail presentationEmail) {
-    final accountId = mailboxDashBoardController.accountId.value;
-    final session = mailboxDashBoardController.sessionCurrent;
-
-    if (accountId == null || session == null) {
-      consumeState(Stream.value(Left(DownloadMessageAsEMLFailure(NotFoundSessionException()))));
+    final emlAttachment = presentationEmail.createEMLAttachment();
+    if (emlAttachment.blobId == null) {
+      consumeState(Stream.value(Left(DownloadAttachmentForWebFailure(exception: NotFoundEmailBlobIdException()))));
       return;
     }
 
-    final blobId = presentationEmail.blobId;
-    if (blobId == null) {
-      consumeState(Stream.value(Left(DownloadMessageAsEMLFailure(NotFoundEmailBlobIdException()))));
-      return;
-    }
-
-    final baseDownloadUrl = session.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
-
-    consumeState(_downloadMessageAsEMLInteractor.execute(
-      accountId,
-      baseDownloadUrl,
-      blobId,
-      presentationEmail.getEmailTitle()
-    ));
-  }
-
-  void _showMessageWhenStartingDownloadMessageAsEML() {
-    if (currentOverlayContext != null && currentContext != null) {
-      appToast.showToastMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).downloadMessageAsEMLInProgress,
-        leadingSVGIconColor: AppColor.primaryColor,
-        leadingSVGIcon: imagePaths.icDownloadAttachment);
-    }
+    downloadAttachmentForWeb(emlAttachment);
   }
 }

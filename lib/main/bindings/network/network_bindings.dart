@@ -13,7 +13,6 @@ import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/network/mdn_api.dart';
-import 'package:tmail_ui_user/features/email/data/utils/download_utils.dart';
 import 'package:tmail_ui_user/features/home/data/network/session_api.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
@@ -112,7 +111,6 @@ class NetworkBindings extends Bindings {
       Get.find<DownloadManager>(),
       Get.find<DioClient>(),
       Get.find<Uuid>(),
-      Get.find<DownloadUtils>(),
     ));
     Get.put(RuleFilterAPI(Get.find<HttpClient>()));
     Get.put(VacationAPI(Get.find<HttpClient>()));

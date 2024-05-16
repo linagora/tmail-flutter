@@ -22,7 +22,7 @@ class ViewAttachmentForWebSuccess extends DownloadAttachmentForWebSuccess {
 
 class ViewAttachmentForWebFailure extends DownloadAttachmentForWebFailure {
   ViewAttachmentForWebFailure({
-    required super.attachmentBlobId,
+    required super.attachment,
     super.taskId,
     super.exception,
   });

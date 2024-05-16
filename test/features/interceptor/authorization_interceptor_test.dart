@@ -59,7 +59,7 @@ void main() {
     };
     final baseOption = BaseOptions(headers: headers);
     dio = Dio(baseOption)
-      ..options.baseUrl = baseUrl;;
+      ..options.baseUrl = baseUrl;
 
     authenticationClient = MockAuthenticationClientBase();
     tokenOidcCacheManager = MockTokenOidcCacheManager();
