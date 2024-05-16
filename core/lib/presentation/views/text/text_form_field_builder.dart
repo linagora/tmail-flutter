@@ -75,7 +75,7 @@ class _TextFieldFormBuilderState extends State<TextFormFieldBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
+    return TextField(
       key: widget.key,
       controller: _controller,
       cursorColor: widget.cursorColor,
@@ -105,7 +105,7 @@ class _TextFieldFormBuilderState extends State<TextFormFieldBuilder> {
           }
         }
       },
-      onFieldSubmitted: widget.onTextSubmitted,
+      onSubmitted: widget.onTextSubmitted,
       onTap: widget.onTap,
     );
   }

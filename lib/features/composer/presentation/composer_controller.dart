@@ -1948,7 +1948,7 @@ class ComposerController extends BaseController {
       return;
     }
 
-    if (fileUpload.type?.startsWith(MediaTypeExtension.imageType) == true) {
+    if (fileUpload.type?.startsWith(Constant.imageType) == true) {
       final fileInfo = await fileUpload.toFileInfo();
       if (fileInfo != null) {
         _uploadInlineAttachmentsAction(fileInfo);

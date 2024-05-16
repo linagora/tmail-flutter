@@ -73,6 +73,8 @@ dependencies:
 
   linkify: 5.0.0
 
+  printing: 5.12.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

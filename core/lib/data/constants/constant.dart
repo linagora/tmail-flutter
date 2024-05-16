@@ -4,4 +4,6 @@ class Constant {
   static const pdfMimeType = 'application/pdf';
   static const textHtmlMimeType = 'text/html';
   static const octetStreamMimeType = 'application/octet-stream';
+  static const pdfExtension = '.pdf';
+  static const imageType = 'image';
 }

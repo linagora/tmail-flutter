@@ -99,6 +99,11 @@ dependencies:
       url: https://github.com/linagora/dns_client.git
       ref: twake-supported
 
+  pdf_render:
+    git:
+      url: https://github.com/linagora/flutter_pdf_render.git
+      ref: master
+
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.6
 

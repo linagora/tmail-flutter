@@ -14,3 +14,4 @@ linter:
     constant_identifier_names: false
     non_constant_identifier_names: false
     unnecessary_string_escapes: false
+    avoid_web_libraries_in_flutter: false
