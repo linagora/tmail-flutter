@@ -26,21 +26,34 @@ import 'package:tmail_ui_user/features/login/domain/usecases/update_authenticati
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../email/presentation/controller/single_email_controller_test.mocks.dart';
-import '../../mailbox_dashboard/presentation/controller/mailbox_dashboard_controller_test.mocks.dart';
 import 'home_controller_test.mocks.dart';
 
 @GenerateNiceMocks([
+  MockSpec<AuthorizationInterceptors>(),
+  MockSpec<DynamicUrlInterceptors>(),
+  MockSpec<DeleteCredentialInteractor>(),
+  MockSpec<LogoutOidcInteractor>(),
+  MockSpec<DeleteAuthorityOidcInteractor>(),
+  MockSpec<AppToast>(),
+  MockSpec<ImagePaths>(),
+  MockSpec<ResponsiveUtils>(),
+  MockSpec<Uuid>(),
   MockSpec<CleanupEmailCacheInteractor>(),
   MockSpec<CleanupRecentSearchCacheInteractor>(),
   MockSpec<CleanupRecentLoginUrlCacheInteractor>(),
   MockSpec<CleanupRecentLoginUsernameCacheInteractor>(),
+  MockSpec<EmailReceiveManager>(),
+  MockSpec<GetSessionInteractor>(),
+  MockSpec<GetAuthenticatedAccountInteractor>(),
+  MockSpec<UpdateAuthenticationAccountInteractor>(),
+  MockSpec<CachingManager>(),
+  MockSpec<LanguageCacheManager>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-
 
   late HomeController homeController;
   late MockCleanupEmailCacheInteractor cleanupEmailCacheInteractor;
@@ -53,8 +66,8 @@ void main() {
   late MockGetAuthenticatedAccountInteractor mockGetAuthenticatedAccountInteractor;
   late MockUpdateAuthenticationAccountInteractor mockUpdateAuthenticationAccountInteractor;
 
-  late CachingManager mockCachingManager;
-  late LanguageCacheManager mockLanguageCacheManager;
+  late MockCachingManager mockCachingManager;
+  late MockLanguageCacheManager mockLanguageCacheManager;
   late MockAuthorizationInterceptors mockAuthorizationInterceptors;
   late MockDynamicUrlInterceptors mockDynamicUrlInterceptors;
   late MockDeleteCredentialInteractor mockDeleteCredentialInteractor;
