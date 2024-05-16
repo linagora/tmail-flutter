@@ -26,6 +26,9 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/update_email_dra
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_restored_deleted_message_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/restore_deleted_message_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
@@ -92,7 +95,6 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
     if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../email/presentation/controller/single_email_controller_test.mocks.dart';
 import 'mailbox_dashboard_controller_test.mocks.dart';
 
 mockControllerCallback() => InternalFinalCallback<void>(callback: () {});
@@ -103,6 +105,9 @@ const fallbackGenerators = {
 
 @GenerateNiceMocks([
   // write mock specs for unavailable dependencies
+  MockSpec<MoveToMailboxInteractor>(),
+  MockSpec<MarkAsStarEmailInteractor>(),
+  MockSpec<MarkAsEmailReadInteractor>(),
   MockSpec<DeleteEmailPermanentlyInteractor>(),
   MockSpec<MarkAsMailboxReadInteractor>(),
   MockSpec<GetComposerCacheOnWebInteractor>(),
@@ -153,6 +158,17 @@ const fallbackGenerators = {
   MockSpec<LoadMoreEmailsInMailboxInteractor>(),
   MockSpec<SearchEmailInteractor>(),
   MockSpec<SearchMoreEmailInteractor>(),
+  MockSpec<AuthorizationInterceptors>(),
+  MockSpec<DynamicUrlInterceptors>(),
+  MockSpec<DeleteCredentialInteractor>(),
+  MockSpec<LogoutOidcInteractor>(),
+  MockSpec<DeleteAuthorityOidcInteractor>(),
+  MockSpec<AppToast>(),
+  MockSpec<ImagePaths>(),
+  MockSpec<ResponsiveUtils>(),
+  MockSpec<Uuid>(),
+  MockSpec<CachingManager>(),
+  MockSpec<LanguageCacheManager>(),
 ])
 void main() {
   // mock mailbox dashboard controller direct dependencies
