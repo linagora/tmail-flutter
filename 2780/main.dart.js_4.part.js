@@ -788,7 +788,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1686
+    $signature: 1688
   };
   B.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -801,14 +801,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 78
+    $signature: 81
   };
   B.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 78
+    $signature: 81
   };
   B.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -901,6 +901,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_0_12_12_0 = new A.EdgeInsets(0, 12, 12, 0);
     D.EdgeInsets_0_4_0_0 = new A.EdgeInsets(0, 4, 0, 0);
     D.EdgeInsets_0_4_0_4 = new A.EdgeInsets(0, 4, 0, 4);
+    D.EdgeInsets_0_5_0_5 = new A.EdgeInsets(0, 5, 0, 5);
     D.EdgeInsets_0_6_0_0 = new A.EdgeInsets(0, 6, 0, 0);
     D.EdgeInsets_16_12_16_12 = new A.EdgeInsets(16, 12, 16, 12);
     D.EdgeInsets_20_16_20_16 = new A.EdgeInsets(20, 16, 20, 16);
@@ -925,5 +926,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "by5BcRkLnx7fbe7lvKEJmB2oIaY=");
+})($__dart_deferred_initializers__, "4LV23+aamx12DIDNwH4Jmwt0VP4=");
 ;
