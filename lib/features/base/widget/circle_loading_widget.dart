@@ -4,9 +4,15 @@ import 'package:tmail_ui_user/features/base/styles/circle_loading_widget_styles.
 class CircleLoadingWidget extends StatelessWidget {
 
   final double? size;
+  final double? strokeWidth;
   final EdgeInsetsGeometry? padding;
 
-  const CircleLoadingWidget({super.key, this.size, this.padding});
+  const CircleLoadingWidget({
+    super.key,
+    this.size,
+    this.padding,
+    this.strokeWidth
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,9 +22,9 @@ class CircleLoadingWidget extends StatelessWidget {
         child: SizedBox(
           width: size ?? CircleLoadingWidgetStyles.size,
           height: size ?? CircleLoadingWidgetStyles.size,
-          child: const CircularProgressIndicator(
+          child: CircularProgressIndicator(
             color: CircleLoadingWidgetStyles.progressColor,
-            strokeWidth: CircleLoadingWidgetStyles.width,
+            strokeWidth: strokeWidth ?? CircleLoadingWidgetStyles.width,
           )
         ),
       );
@@ -26,9 +32,9 @@ class CircleLoadingWidget extends StatelessWidget {
       return SizedBox(
         width: size ?? CircleLoadingWidgetStyles.size,
         height: size ?? CircleLoadingWidgetStyles.size,
-        child: const CircularProgressIndicator(
+        child: CircularProgressIndicator(
           color: CircleLoadingWidgetStyles.progressColor,
-          strokeWidth: CircleLoadingWidgetStyles.width,
+          strokeWidth: strokeWidth ?? CircleLoadingWidgetStyles.width,
         )
       );
     }

@@ -1,5 +1,5 @@
-
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:core/data/model/print_attachment.dart';
 import 'package:core/utils/app_logger.dart';
@@ -8,8 +8,16 @@ import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:html/dom.dart';
 import 'package:html/parser.dart';
+import 'package:printing/printing.dart';
 
 class PrintUtils {
+
+  Future<void> printPDFFile(Uint8List bytes, String fileName) async {
+    await Printing.layoutPdf(
+      name: fileName,
+      onLayout: (_) => bytes);
+  }
+
   Element? _createUserInformationElement({
     required String appName,
     required String userName,
