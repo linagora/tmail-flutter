@@ -8,6 +8,7 @@ class ThreadConstants {
   static final defaultLimit = UnsignedInt(maxCountEmails);
   static final propertiesDefault = Properties({
     EmailProperty.id,
+    EmailProperty.blobId,
     EmailProperty.subject,
     EmailProperty.from,
     EmailProperty.to,
@@ -29,6 +30,7 @@ class ThreadConstants {
 
   static final propertiesQuickSearch = Properties({
     EmailProperty.id,
+    EmailProperty.blobId,
     EmailProperty.subject,
     EmailProperty.from,
     EmailProperty.to,
@@ -53,6 +55,7 @@ class ThreadConstants {
 
   static final propertiesGetDetailedEmail = Properties({
     EmailProperty.id,
+    EmailProperty.blobId,
     EmailProperty.subject,
     EmailProperty.from,
     EmailProperty.to,
@@ -74,6 +77,7 @@ class ThreadConstants {
 
   static final propertiesCalendarEvent = Properties({
     EmailProperty.id,
+    EmailProperty.blobId,
     EmailProperty.subject,
     EmailProperty.from,
     EmailProperty.to,

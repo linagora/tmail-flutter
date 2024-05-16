@@ -72,7 +72,7 @@ class DownloadAttachmentForWebInteractor {
     } catch (exception) {
       yield Left<Failure, Success>(
         DownloadAttachmentForWebFailure(
-          attachmentBlobId: attachment.blobId,
+          attachment: attachment,
           taskId: taskId,
           exception: exception
         )

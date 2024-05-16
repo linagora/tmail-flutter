@@ -1,6 +1,5 @@
 
 import 'package:collection/collection.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';

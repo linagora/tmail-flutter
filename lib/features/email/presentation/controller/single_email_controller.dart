@@ -20,6 +20,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mdn/disposition.dart';
 import 'package:jmap_dart_client/jmap/mdn/mdn.dart';
 import 'package:mime/mime.dart';
+import 'package:model/email/eml_attachment.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -28,6 +29,7 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
@@ -810,7 +812,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else {
       consumeState(Stream.value(
         Left(DownloadAttachmentForWebFailure(
-          attachmentBlobId: attachment.blobId,
+          attachment: attachment,
           exception: NotFoundSessionException()))
       ));
     }
@@ -831,7 +833,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else {
       consumeState(Stream.value(
         Left(ViewAttachmentForWebFailure(
-          attachmentBlobId: attachment.blobId,
+          attachment: attachment,
           exception: NotFoundSessionException()))
       ));
     }
@@ -876,12 +878,16 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       mailboxDashBoardController.deleteDownloadTask(failure.taskId!);
     }
 
-    _updateAttachmentsViewState(failure.attachmentBlobId, Left(failure));
+    if (failure.attachment != null) {
+      _updateAttachmentsViewState(failure.attachment?.blobId, Left(failure));
+    }
 
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).attachment_download_failed);
+        failure.attachment is EMLAttachment
+          ? AppLocalizations.of(currentContext!).downloadMessageAsEMLFailed
+          : AppLocalizations.of(currentContext!).attachment_download_failed);
     }
   }
 
@@ -1140,6 +1146,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         break;
       case EmailActionType.printAll:
         _printEmail(context, presentationEmail);
+        break;
+      case EmailActionType.downloadMessageAsEML:
+        _downloadMessageAsEML(presentationEmail);
         break;
       default:
         break;
@@ -1771,5 +1780,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).eventReplyWasSentUnsuccessfully);
     }
+  }
+
+  void _downloadMessageAsEML(PresentationEmail presentationEmail) {
+    final emlAttachment = presentationEmail.createEMLAttachment();
+    if (emlAttachment.blobId == null) {
+      consumeState(Stream.value(Left(DownloadAttachmentForWebFailure(exception: NotFoundEmailBlobIdException()))));
+      return;
+    }
+
+    downloadAttachmentForWeb(emlAttachment);
   }
 }

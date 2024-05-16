@@ -27,5 +27,6 @@ enum EmailActionType {
   unsubscribe,
   composeFromUnsubscribeMailtoLink,
   archiveMessage,
-  printAll
+  printAll,
+  downloadMessageAsEML
 }

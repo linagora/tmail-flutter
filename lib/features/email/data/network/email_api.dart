@@ -351,12 +351,12 @@ class EmailAPI with HandleSetErrorMixin {
             headers: headerParam,
             responseType: ResponseType.bytes),
         onReceiveProgress: (downloaded, total) {
-          log('DownloadClient::downloadFileForWeb(): downloaded = $downloaded | total: $total');
+          log('EmailAPI::downloadFileForWeb(): downloaded = $downloaded | total: $total');
           double progress = 0;
-          if (downloaded > 0 && total > downloaded) {
+          if (downloaded > 0 && total >= downloaded) {
             progress = (downloaded / total) * 100;
           }
-          log('DownloadClient::downloadFileForWeb(): progress = ${progress.round()}%');
+          log('EmailAPI::downloadFileForWeb(): progress = ${progress.round()}%');
           onReceiveController.add(Right(DownloadingAttachmentForWeb(
               taskId,
               attachment,

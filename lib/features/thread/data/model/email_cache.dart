@@ -54,6 +54,9 @@ class EmailCache extends HiveObject with EquatableMixin {
   @HiveField(14)
   Map<String, String?>? headerCalendarEvent;
 
+  @HiveField(15)
+  final String? blobId;
+
   EmailCache(
     this.id,
     {
@@ -71,6 +74,7 @@ class EmailCache extends HiveObject with EquatableMixin {
       this.replyTo,
       this.mailboxIds,
       this.headerCalendarEvent,
+      this.blobId,
     }
   );
 
@@ -91,5 +95,6 @@ class EmailCache extends HiveObject with EquatableMixin {
     hasAttachment,
     mailboxIds,
     headerCalendarEvent,
+    blobId,
   ];
 }
