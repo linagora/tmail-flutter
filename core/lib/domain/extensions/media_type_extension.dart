@@ -3,8 +3,6 @@ import 'package:core/domain/preview/supported_preview_file_types.dart';
 import 'package:http_parser/http_parser.dart';
 
 extension MediaTypeExtension on MediaType {
-  static const String imageType = 'image';
-
   bool isAndroidSupportedPreview() => SupportedPreviewFileTypes.androidSupportedTypes.contains(mimeType);
 
   bool isIOSSupportedPreview() => SupportedPreviewFileTypes.iOSSupportedTypes.containsKey(mimeType);

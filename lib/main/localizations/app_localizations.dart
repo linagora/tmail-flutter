@@ -3893,4 +3893,39 @@ class AppLocalizations {
       name: 'downloadMessageAsEMLFailed',
     );
   }
+
+  String get download {
+    return Intl.message(
+      'Download',
+      name: 'download',
+    );
+  }
+
+  String get print {
+    return Intl.message(
+      'Print',
+      name: 'print',
+    );
+  }
+
+  String get page {
+    return Intl.message(
+      'Page',
+      name: 'page',
+    );
+  }
+
+  String get zoomIn {
+    return Intl.message(
+      'Zoom In',
+      name: 'zoomIn',
+    );
+  }
+
+  String get zoomOut {
+    return Intl.message(
+      'Zoom Out',
+      name: 'zoomOut',
+    );
+  }
 }

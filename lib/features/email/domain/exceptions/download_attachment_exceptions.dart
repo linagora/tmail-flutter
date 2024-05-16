@@ -1,0 +1,1 @@
+class DownloadAttachmentInteractorIsNull implements Exception {}

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-05-16T11:36:53.008027",
+  "@@last_modified": "2024-04-05T12:00:06.899366",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3728,6 +3728,36 @@
   },
   "downloadMessageAsEMLFailed": "Download message as EML failed",
   "@downloadMessageAsEMLFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "download": "Download",
+  "@download": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "print": "Print",
+  "@print": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "page": "Page",
+  "@page": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "zoomIn": "Zoom In",
+  "@zoomIn": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "zoomOut": "Zoom Out",
+  "@zoomOut": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
