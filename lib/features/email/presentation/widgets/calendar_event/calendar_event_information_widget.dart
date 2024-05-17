@@ -1,9 +1,9 @@
-
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_information_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_date_icon_widget.dart';
@@ -23,19 +23,22 @@ class CalendarEventInformationWidget extends StatelessWidget {
   final OnOpenComposerAction? onOpenComposerAction;
   final OnCalendarEventReplyActionClick onCalendarEventReplyActionClick;
   final bool calendarEventReplying;
+  final PresentationEmail? presentationEmail;
 
-  const CalendarEventInformationWidget({
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+
+  CalendarEventInformationWidget({
     super.key,
     required this.calendarEvent,
     required this.onCalendarEventReplyActionClick,
     required this.calendarEventReplying,
     this.onOpenNewTabAction,
     this.onOpenComposerAction,
+    this.presentationEmail,
   });
 
   @override
   Widget build(BuildContext context) {
-    final responsiveUtils = Get.find<ResponsiveUtils>();
     return Container(
       clipBehavior: Clip.antiAlias,
       decoration: const ShapeDecoration(
@@ -51,7 +54,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
       margin: const EdgeInsetsDirectional.symmetric(
         vertical: CalendarEventInformationWidgetStyles.verticalMargin,
         horizontal: CalendarEventInformationWidgetStyles.horizontalMargin),
-      child: responsiveUtils.isPortraitMobile(context)
+      child: _responsiveUtils.isPortraitMobile(context)
         ? Column(
             children: [
               CalendarDateIconWidget(
@@ -118,6 +121,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                       margin: EdgeInsetsDirectional.zero,
                       onCalendarEventReplyActionClick: onCalendarEventReplyActionClick,
                       calendarEventReplying: calendarEventReplying,
+                      presentationEmail: presentationEmail,
                     ),
                   ],
                 ),
@@ -188,6 +192,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                       margin: EdgeInsetsDirectional.zero,
                       onCalendarEventReplyActionClick: onCalendarEventReplyActionClick,
                       calendarEventReplying: calendarEventReplying,
+                      presentationEmail: presentationEmail,
                     ),
                   ],
                 ),

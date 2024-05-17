@@ -10,6 +10,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/model.dart';
@@ -28,6 +29,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/store_event_attendance_status_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/view_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
@@ -81,6 +83,7 @@ const fallbackGenerators = {
   MockSpec<AcceptCalendarEventInteractor>(),
   MockSpec<MaybeCalendarEventInteractor>(),
   MockSpec<RejectCalendarEventInteractor>(),
+  MockSpec<StoreEventAttendanceStatusInteractor>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -112,6 +115,7 @@ void main() {
   final responsiveUtils = MockResponsiveUtils();
   final uuid = MockUuid();
   final printEmailInteractor = MockPrintEmailInteractor();
+  final storeEventAttendanceStatusInteractor = MockStoreEventAttendanceStatusInteractor();
 
   late SingleEmailController singleEmailController;
 
@@ -161,6 +165,7 @@ void main() {
       storeOpenedEmailInteractor,
       viewAttachmentForWebInteractor,
       printEmailInteractor,
+      storeEventAttendanceStatusInteractor,
     );
   });
 
@@ -269,6 +274,7 @@ void main() {
 
   group('calendar event reply test:', () {
     final blobId = Id('abc123');
+    final emailId = EmailId(Id('xyz123'));
     final calendarEvent = CalendarEvent();
 
     group('accept test:', () {
@@ -290,11 +296,11 @@ void main() {
                 calendarEventList: [calendarEvent])]));
 
         // act
-        singleEmailController.onCalendarEventReplyAction(EventActionType.yes);
-        await untilCalled(acceptCalendarEventInteractor.execute(any, any));
+        singleEmailController.onCalendarEventReplyAction(EventActionType.yes, emailId);
+        await untilCalled(acceptCalendarEventInteractor.execute(any, any, any));
 
         // assert
-        verify(acceptCalendarEventInteractor.execute(testAccountId, {blobId})).called(1);
+        verify(acceptCalendarEventInteractor.execute(testAccountId, {blobId}, emailId)).called(1);
       });
     });
 
@@ -317,11 +323,11 @@ void main() {
               calendarEventList: [calendarEvent])]));
 
         // act
-        singleEmailController.onCalendarEventReplyAction(EventActionType.maybe);
-        await untilCalled(maybeCalendarEventInteractor.execute(any, any));
+        singleEmailController.onCalendarEventReplyAction(EventActionType.maybe, emailId);
+        await untilCalled(maybeCalendarEventInteractor.execute(any, any, any));
 
         // assert
-        verify(maybeCalendarEventInteractor.execute(testAccountId, {blobId})).called(1);
+        verify(maybeCalendarEventInteractor.execute(testAccountId, {blobId}, emailId)).called(1);
       });
     });
 
@@ -344,11 +350,11 @@ void main() {
               calendarEventList: [calendarEvent])]));
         
         // act
-        singleEmailController.onCalendarEventReplyAction(EventActionType.no);
-        await untilCalled(rejectCalendarEventInteractor.execute(any, any));
+        singleEmailController.onCalendarEventReplyAction(EventActionType.no, emailId);
+        await untilCalled(rejectCalendarEventInteractor.execute(any, any, any));
 
         // assert
-        verify(rejectCalendarEventInteractor.execute(testAccountId, {blobId})).called(1);
+        verify(rejectCalendarEventInteractor.execute(testAccountId, {blobId}, emailId)).called(1);
       });
     });
   });

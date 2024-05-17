@@ -116,6 +116,12 @@ class PresentationEmail with EquatableMixin {
 
   bool get isSubscribed => keywords?.containsKey(KeyWordIdentifierExtension.unsubscribeMail) == true;
 
+  bool get isAcceptedEventAttendance => keywords?.containsKey(KeyWordIdentifierExtension.acceptedEventAttendance) == true;
+
+  bool get isTentativelyAcceptedEventAttendance => keywords?.containsKey(KeyWordIdentifierExtension.tentativelyAcceptedEventAttendance) == true;
+
+  bool get isRejectedEventAttendance => keywords?.containsKey(KeyWordIdentifierExtension.rejectedEventAttendance) == true;
+
   bool get isAnsweredAndForwarded => isAnswered && isForwarded;
 
   bool get withAttachments => hasAttachment == true;

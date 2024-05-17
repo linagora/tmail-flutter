@@ -371,28 +371,32 @@ class EmailView extends GetWidget<SingleEmailController> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              CalendarEventInformationWidget(
+              Obx(() => CalendarEventInformationWidget(
                 calendarEvent: calendarEvent,
                 onOpenComposerAction: controller.openNewComposerAction,
                 onOpenNewTabAction: controller.openNewTabAction,
-                onCalendarEventReplyActionClick: controller.onCalendarEventReplyAction,
+                onCalendarEventReplyActionClick: (eventActionType) =>
+                    controller.onCalendarEventReplyAction(eventActionType, presentationEmail.id!),
                 calendarEventReplying: controller.calendarEventProcessing,
-              ),
+                presentationEmail: controller.currentEmail,
+              )),
               if (calendarEvent.getTitleEventAction(context, emailAddressSender ?? []).isNotEmpty)
                 CalendarEventActionBannerWidget(
                   calendarEvent: calendarEvent,
                   listEmailAddressSender: emailAddressSender ?? []
                 ),
-              CalendarEventDetailWidget(
+              Obx(() => CalendarEventDetailWidget(
                 calendarEvent: calendarEvent,
                 emailContent: controller.currentEmailLoaded?.htmlContent ?? '',
                 isDraggableAppActive: controller.mailboxDashBoardController.isDraggableAppActive,
                 onOpenComposerAction: controller.openNewComposerAction,
                 onOpenNewTabAction: controller.openNewTabAction,
                 onMailtoDelegateAction: controller.openMailToLink,
-                onCalendarEventReplyActionClick: controller.onCalendarEventReplyAction,
+                onCalendarEventReplyActionClick: (eventActionType) =>
+                    controller.onCalendarEventReplyAction(eventActionType, presentationEmail.id!),
                 calendarEventReplying: controller.calendarEventProcessing,
-              ),
+                presentationEmail: controller.currentEmail,
+              )),
             ],
           )
         else if (presentationEmail.id == controller.currentEmail?.id)

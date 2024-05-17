@@ -4,6 +4,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_id.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_accept_response.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/calendar_event_exceptions.dart';
@@ -19,6 +20,7 @@ void main() {
   final acceptCalendarEventInteractor = AcceptCalendarEventInteractor(calendarEventRepository);
   final accountId = AccountId(Id('123'));
   final blobId = Id('123321');
+  final emailId = EmailId(Id('abcde'));
 
   group('calendar event accept interactor test:', () {
     test('should emit CalendarEventAccepted when repo return data', () {
@@ -32,10 +34,10 @@ void main() {
 
       // assert
       expect(
-        acceptCalendarEventInteractor.execute(accountId, {blobId}),
+        acceptCalendarEventInteractor.execute(accountId, {blobId}, emailId),
         emitsInOrder([
           Right(CalendarEventAccepting()),
-          Right(CalendarEventAccepted(calendarEventAcceptResponse))]));
+          Right(CalendarEventAccepted(calendarEventAcceptResponse, emailId))]));
     });
 
     test('should emit CalendarEventAcceptFailure when repo throw exception', () {
@@ -45,7 +47,7 @@ void main() {
 
       // assert
       expect(
-        acceptCalendarEventInteractor.execute(accountId, {blobId}),
+        acceptCalendarEventInteractor.execute(accountId, {blobId}, emailId),
         emitsInOrder([
           Right(CalendarEventAccepting()),
           Left(CalendarEventAcceptFailure(exception: exception))]));
