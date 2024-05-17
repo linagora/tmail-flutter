@@ -18,6 +18,7 @@ void main() {
   final accountId = AccountId(Id('123'));
   final blobId = Id('123321');
   final emailId = EmailId(Id('abcde'));
+  const language = 'en';
 
   group('calendar event maybe interactor should emit expected states', () {
     test('when repo return data', () {
@@ -26,12 +27,12 @@ void main() {
         accountId,
         null,
         maybe: [EventId(blobId.value)]);
-      when(calendarEventRepository.maybeEventInvitation(any, any))
+      when(calendarEventRepository.maybeEventInvitation(any, any, any))
         .thenAnswer((_) async => calendarEventMaybeResponse);
 
       // assert
       expect(
-        maybeCalendarEventInteractor.execute(accountId, {blobId}, emailId),
+        maybeCalendarEventInteractor.execute(accountId, {blobId}, emailId, language),
         emitsInOrder([
           Right(CalendarEventMaybeReplying()),
           Right(CalendarEventMaybeSuccess(calendarEventMaybeResponse, emailId))]));
@@ -40,11 +41,11 @@ void main() {
     test('when repo throw exception', () {
       // arrange
       final exception = NotMaybeableCalendarEventException();
-      when(calendarEventRepository.maybeEventInvitation(any, any)).thenThrow(exception);
+      when(calendarEventRepository.maybeEventInvitation(any, any, any)).thenThrow(exception);
 
       // assert
       expect(
-        maybeCalendarEventInteractor.execute(accountId, {blobId}, emailId),
+        maybeCalendarEventInteractor.execute(accountId, {blobId}, emailId, language),
         emitsInOrder([
           Right(CalendarEventMaybeReplying()),
           Left(CalendarEventMaybeFailure(exception: exception))]));
