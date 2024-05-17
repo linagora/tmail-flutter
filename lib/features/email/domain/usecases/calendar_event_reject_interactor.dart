@@ -16,10 +16,12 @@ class RejectCalendarEventInteractor {
     AccountId accountId,
     Set<Id> blobIds,
     EmailId emailId,
+    String? language
   ) async* {
     try {
       yield Right(CalendarEventRejecting());
-      final result = await _calendarEventRepository.rejectEventInvitation(accountId, blobIds);
+      final result = await _calendarEventRepository
+        .rejectEventInvitation(accountId, blobIds, language);
       yield Right(CalendarEventRejected(result, emailId));
     } catch (e) {
       yield Left(CalendarEventRejectFailure(exception: e));

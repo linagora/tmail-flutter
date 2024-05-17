@@ -21,17 +21,32 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
   }
 
   @override
-  Future<CalendarEventAcceptResponse> acceptEventInvitation(AccountId accountId, Set<Id> blobIds) {
-    return _calendarEventDataSource[DataSourceType.network]!.acceptEventInvitation(accountId, blobIds);
+  Future<CalendarEventAcceptResponse> acceptEventInvitation(
+    AccountId accountId,
+    Set<Id> blobIds,
+    String? language
+  ) {
+    return _calendarEventDataSource[DataSourceType.network]!
+      .acceptEventInvitation(accountId, blobIds, language);
   }
 
   @override
-  Future<CalendarEventMaybeResponse> maybeEventInvitation(AccountId accountId, Set<Id> blobIds) {
-    return _calendarEventDataSource[DataSourceType.network]!.maybeEventInvitation(accountId, blobIds);
+  Future<CalendarEventMaybeResponse> maybeEventInvitation(
+    AccountId accountId,
+    Set<Id> blobIds,
+    String? language
+  ) {
+    return _calendarEventDataSource[DataSourceType.network]!
+      .maybeEventInvitation(accountId, blobIds, language);
   }
   
   @override
-  Future<CalendarEventRejectResponse> rejectEventInvitation(AccountId accountId, Set<Id> blobIds) {
-    return _calendarEventDataSource[DataSourceType.network]!.rejectEventInvitation(accountId, blobIds);
+  Future<CalendarEventRejectResponse> rejectEventInvitation(
+    AccountId accountId,
+    Set<Id> blobIds,
+    String? language
+  ) {
+    return _calendarEventDataSource[DataSourceType.network]!
+      .rejectEventInvitation(accountId, blobIds, language);
   }
 }

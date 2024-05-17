@@ -16,10 +16,12 @@ class AcceptCalendarEventInteractor {
     AccountId accountId,
     Set<Id> blobIds,
     EmailId emailId,
+    String? language
   ) async* {
     try {
       yield Right(CalendarEventAccepting());
-      final result = await _calendarEventRepository.acceptEventInvitation(accountId, blobIds);
+      final result = await _calendarEventRepository
+        .acceptEventInvitation(accountId, blobIds, language);
       yield Right(CalendarEventAccepted(result, emailId));
     } catch (e) {
       yield Left(CalendarEventAcceptFailure(exception: e));

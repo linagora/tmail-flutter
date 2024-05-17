@@ -1,6 +1,9 @@
 
+import 'dart:ui';
+
 import 'package:core/presentation/extensions/uri_extension.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/calendar_event_capability.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_properties.dart';
 import 'package:jmap_dart_client/jmap/core/capability/empty_capability.dart';
@@ -62,5 +65,36 @@ extension SessionExtension on Session {
       }
     }
     throw NotFoundPersonalAccountException();
+  }
+
+  ({
+    bool isAvailable,
+    CalendarEventCapability? calendarEventCapability
+  }) validateCalendarEventCapability(AccountId accountId) {
+    final capability = getCapabilityProperties<CalendarEventCapability>(
+      accountId,
+      CapabilityIdentifier.jamesCalendarEvent);
+    
+    return (isAvailable: capability != null, calendarEventCapability: capability);
+  }
+
+  String? getLanguageForCalendarEvent(
+    Locale locale,
+    AccountId accountId,
+  ) {
+    final validation = validateCalendarEventCapability(accountId);
+    if (!validation.isAvailable) return null;
+
+    final supportedLanguages = validation.calendarEventCapability!.replySupportedLanguage;
+    if (supportedLanguages == null) return null;
+
+    final currentLanguage = locale.languageCode;
+    if (supportedLanguages.contains(currentLanguage)) {
+      return currentLanguage;
+    } else if (supportedLanguages.contains('en')) {
+      return 'en';
+    } else {
+      return supportedLanguages.firstOrNull;
+    }
   }
 }

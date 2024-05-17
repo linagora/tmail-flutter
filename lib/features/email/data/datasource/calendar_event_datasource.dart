@@ -9,9 +9,18 @@ import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_ev
 abstract class CalendarEventDataSource {
   Future<List<BlobCalendarEvent>> parse(AccountId accountId, Set<Id> blobIds);
 
-  Future<CalendarEventAcceptResponse> acceptEventInvitation(AccountId accountId, Set<Id> blobIds);
+  Future<CalendarEventAcceptResponse> acceptEventInvitation(
+    AccountId accountId,
+    Set<Id> blobIds,
+    String? language);
 
-  Future<CalendarEventMaybeResponse> maybeEventInvitation(AccountId accountId, Set<Id> blobIds);
+  Future<CalendarEventMaybeResponse> maybeEventInvitation(
+    AccountId accountId,
+    Set<Id> blobIds,
+    String? language);
   
-  Future<CalendarEventRejectResponse> rejectEventInvitation(AccountId accountId, Set<Id> blobIds);
+  Future<CalendarEventRejectResponse> rejectEventInvitation(
+    AccountId accountId,
+    Set<Id> blobIds,
+    String? language);
 }

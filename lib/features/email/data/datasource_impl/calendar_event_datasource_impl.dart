@@ -24,23 +24,32 @@ class CalendarEventDataSourceImpl extends CalendarEventDataSource {
   }
   
   @override
-  Future<CalendarEventAcceptResponse> acceptEventInvitation(AccountId accountId, Set<Id> blobIds) {
+  Future<CalendarEventAcceptResponse> acceptEventInvitation(
+    AccountId accountId,
+    Set<Id> blobIds,
+    String? language) {
     return Future.sync(() async {
-      return await _calendarEventAPI.acceptEventInvitation(accountId, blobIds);
+      return await _calendarEventAPI.acceptEventInvitation(accountId, blobIds, language);
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<CalendarEventMaybeResponse> maybeEventInvitation(AccountId accountId, Set<Id> blobIds) {
+  Future<CalendarEventMaybeResponse> maybeEventInvitation(
+    AccountId accountId,
+    Set<Id> blobIds,
+    String? language) {
     return Future.sync(() async {
-      return await _calendarEventAPI.maybe(accountId, blobIds);
+      return await _calendarEventAPI.maybeEventInvitation(accountId, blobIds, language);
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<CalendarEventRejectResponse> rejectEventInvitation(AccountId accountId, Set<Id> blobIds) {
+  Future<CalendarEventRejectResponse> rejectEventInvitation(
+    AccountId accountId,
+    Set<Id> blobIds,
+    String? language) {
     return Future.sync(() async {
-      return await _calendarEventAPI.reject(accountId, blobIds);
+      return await _calendarEventAPI.rejectEventInvitation(accountId, blobIds, language);
     }).catchError(_exceptionThrower.throwException);
   }
 }
