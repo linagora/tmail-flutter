@@ -4,6 +4,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_id.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_maybe_response.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/calendar_event_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_maybe_state.dart';
@@ -16,6 +17,7 @@ void main() {
   final maybeCalendarEventInteractor = MaybeCalendarEventInteractor(calendarEventRepository);
   final accountId = AccountId(Id('123'));
   final blobId = Id('123321');
+  final emailId = EmailId(Id('abcde'));
 
   group('calendar event maybe interactor should emit expected states', () {
     test('when repo return data', () {
@@ -29,10 +31,10 @@ void main() {
 
       // assert
       expect(
-        maybeCalendarEventInteractor.execute(accountId, {blobId}),
+        maybeCalendarEventInteractor.execute(accountId, {blobId}, emailId),
         emitsInOrder([
           Right(CalendarEventMaybeReplying()),
-          Right(CalendarEventMaybeSuccess(calendarEventMaybeResponse))]));
+          Right(CalendarEventMaybeSuccess(calendarEventMaybeResponse, emailId))]));
     });
 
     test('when repo throw exception', () {
@@ -42,7 +44,7 @@ void main() {
 
       // assert
       expect(
-        maybeCalendarEventInteractor.execute(accountId, {blobId}),
+        maybeCalendarEventInteractor.execute(accountId, {blobId}, emailId),
         emitsInOrder([
           Right(CalendarEventMaybeReplying()),
           Left(CalendarEventMaybeFailure(exception: exception))]));

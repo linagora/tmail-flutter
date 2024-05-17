@@ -1,7 +1,7 @@
-
-import 'package:core/core.dart';
+import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_detail_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_button_widget.dart';
@@ -23,6 +23,7 @@ class CalendarEventDetailWidget extends StatelessWidget {
   final OnMailtoDelegateAction? onMailtoDelegateAction;
   final OnCalendarEventReplyActionClick onCalendarEventReplyActionClick;
   final bool calendarEventReplying;
+  final PresentationEmail? presentationEmail;
 
   const CalendarEventDetailWidget({
     super.key,
@@ -34,6 +35,7 @@ class CalendarEventDetailWidget extends StatelessWidget {
     this.onOpenNewTabAction,
     this.onOpenComposerAction,
     this.onMailtoDelegateAction,
+    this.presentationEmail,
   });
 
   @override
@@ -95,7 +97,9 @@ class CalendarEventDetailWidget extends StatelessWidget {
             ),
           CalendarEventActionButtonWidget(
             onCalendarEventReplyActionClick: onCalendarEventReplyActionClick,
-            calendarEventReplying: calendarEventReplying),
+            calendarEventReplying: calendarEventReplying,
+            presentationEmail: presentationEmail,
+          ),
         ],
       ),
     );

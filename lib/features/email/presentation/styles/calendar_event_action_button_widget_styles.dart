@@ -11,6 +11,8 @@ class CalendarEventActionButtonWidgetStyles {
 
   static const Color backgroundColor = Colors.transparent;
   static Color loadingBackgroundColor = Colors.grey.shade300;
+  static const Color selectedBackgroundColor = AppColor.disableSendEmailButtonColor;
+  static const Color selectedTextColor = Colors.white;
   static const Color textColor = AppColor.primaryColor;
 
   static const FontWeight fontWeight = FontWeight.w500;

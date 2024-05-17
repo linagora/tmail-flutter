@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/store_event_attendance_status_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/view_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
@@ -69,7 +70,8 @@ class EmailBindings extends BaseBindings {
       Get.find<GetAllIdentitiesInteractor>(),
       Get.find<StoreOpenedEmailInteractor>(),
       Get.find<ViewAttachmentForWebInteractor>(),
-      Get.find<PrintEmailInteractor>()
+      Get.find<PrintEmailInteractor>(),
+      Get.find<StoreEventAttendanceStatusInteractor>(),
     ));
   }
 
@@ -152,6 +154,7 @@ class EmailBindings extends BaseBindings {
         Get.find<DownloadAttachmentForWebInteractor>()));
     Get.lazyPut(() => StoreOpenedEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => PrintEmailInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => StoreEventAttendanceStatusInteractor(Get.find<EmailRepository>()));
     IdentityInteractorsBindings().dependencies();
   }
 

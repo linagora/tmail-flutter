@@ -3,6 +3,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/calendar_event_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_accept_state.dart';
 
@@ -13,12 +14,13 @@ class AcceptCalendarEventInteractor {
 
   Stream<Either<Failure, Success>> execute(
     AccountId accountId,
-    Set<Id> blobIds
+    Set<Id> blobIds,
+    EmailId emailId,
   ) async* {
     try {
       yield Right(CalendarEventAccepting());
       final result = await _calendarEventRepository.acceptEventInvitation(accountId, blobIds);
-      yield Right(CalendarEventAccepted(result));
+      yield Right(CalendarEventAccepted(result, emailId));
     } catch (e) {
       yield Left(CalendarEventAcceptFailure(exception: e));
     }
