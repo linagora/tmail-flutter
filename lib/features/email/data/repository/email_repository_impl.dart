@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dar
 import 'package:tmail_ui_user/features/email/data/datasource/print_file_datasource.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
+import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
@@ -236,5 +237,19 @@ class EmailRepositoryImpl extends EmailRepository {
   @override
   Future<void> printEmail(EmailPrint emailPrint) {
     return _printFileDataSource.printEmail(emailPrint);
+  }
+
+  @override
+  Future<Email> storeEventAttendanceStatus(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    EventActionType eventActionType
+  ) {
+    return emailDataSource[DataSourceType.network]!.storeEventAttendanceStatus(
+      session,
+      accountId,
+      emailId,
+      eventActionType);
   }
 }
