@@ -106,4 +106,6 @@ class EmailFixtures {
       keywords: {KeyWordIdentifier.emailSeen : true},
       mailboxIds: {MailboxFixtures.inboxMailbox.id! : true}
   );
+
+  static final emailId =  EmailId(Id("382312d0-fa5c-11eb-b647-2fef1ee78d9e"));
 }
