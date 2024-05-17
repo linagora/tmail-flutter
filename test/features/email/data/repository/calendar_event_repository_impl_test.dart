@@ -22,6 +22,7 @@ void main() {
   final calendarEventRepository = CalendarEventRepositoryImpl(calendarEventDataSource);
   final accountId = AccountId(Id('123'));
   final blobId = Id('blobId');
+  const language = 'en';
 
   group('calendar event repository test:', () {
     final calendarEventAcceptResponseresponse = CalendarEventAcceptResponse(
@@ -31,11 +32,11 @@ void main() {
 
     test('should return response when data source return response', () async {
       // arrange
-      when(calendarEventNetworkDataSource.acceptEventInvitation(any, any))
+      when(calendarEventNetworkDataSource.acceptEventInvitation(any, any, any))
         .thenAnswer((_) async => calendarEventAcceptResponseresponse);
 
       // act
-      final response = await calendarEventRepository.acceptEventInvitation(accountId, {blobId});
+      final response = await calendarEventRepository.acceptEventInvitation(accountId, {blobId}, language);
       
       // assert
       expect(response, calendarEventAcceptResponseresponse);
@@ -43,12 +44,12 @@ void main() {
 
     test('should throw exception when data source throw exception', () {
       // arrange
-      when(calendarEventNetworkDataSource.acceptEventInvitation(any, any))
+      when(calendarEventNetworkDataSource.acceptEventInvitation(any, any, any))
         .thenThrow(NotAcceptableCalendarEventException());
       
       // assert
       expect(
-        () => calendarEventRepository.acceptEventInvitation(accountId, {blobId}),
+        () => calendarEventRepository.acceptEventInvitation(accountId, {blobId}, language),
         throwsA(isA<NotAcceptableCalendarEventException>()));
     });
   });
@@ -61,11 +62,11 @@ void main() {
 
     test('should return response when data source return response', () async {
       // arrange
-      when(calendarEventNetworkDataSource.maybeEventInvitation(any, any))
+      when(calendarEventNetworkDataSource.maybeEventInvitation(any, any, any))
         .thenAnswer((_) async => calendarEventMaybeResponse);
 
       // act
-      final response = await calendarEventRepository.maybeEventInvitation(accountId, {blobId});
+      final response = await calendarEventRepository.maybeEventInvitation(accountId, {blobId}, language);
       
       // assert
       expect(response, calendarEventMaybeResponse);
@@ -73,12 +74,12 @@ void main() {
 
     test('should throw exception when data source throw exception', () {
       // arrange
-      when(calendarEventNetworkDataSource.maybeEventInvitation(any, any))
+      when(calendarEventNetworkDataSource.maybeEventInvitation(any, any, any))
         .thenThrow(NotMaybeableCalendarEventException());
       
       // assert
       expect(
-        () => calendarEventRepository.maybeEventInvitation(accountId, {blobId}),
+        () => calendarEventRepository.maybeEventInvitation(accountId, {blobId}, language),
         throwsA(isA<NotMaybeableCalendarEventException>()));
     });
   });
@@ -91,11 +92,11 @@ void main() {
 
     test('should return response when data source return response', () async {
       // arrange
-      when(calendarEventNetworkDataSource.rejectEventInvitation(any, any))
+      when(calendarEventNetworkDataSource.rejectEventInvitation(any, any, any))
         .thenAnswer((_) async => calendarEventRejectResponseresponse);
 
       // act
-      final response = await calendarEventRepository.rejectEventInvitation(accountId, {blobId});
+      final response = await calendarEventRepository.rejectEventInvitation(accountId, {blobId}, language);
       
       // assert
       expect(response, calendarEventRejectResponseresponse);
@@ -103,12 +104,12 @@ void main() {
 
     test('should throw exception when data source throw exception', () {
       // arrange
-      when(calendarEventNetworkDataSource.rejectEventInvitation(any, any))
+      when(calendarEventNetworkDataSource.rejectEventInvitation(any, any, any))
         .thenThrow(NotRejectableCalendarEventException());
       
       // assert
       expect(
-        () => calendarEventRepository.rejectEventInvitation(accountId, {blobId}),
+        () => calendarEventRepository.rejectEventInvitation(accountId, {blobId}, language),
         throwsA(isA<NotRejectableCalendarEventException>()));
     });
   });

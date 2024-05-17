@@ -18,6 +18,7 @@ void main() {
   final accountId = AccountId(Id('123'));
   final blobId = Id('123321');
   final emailId = EmailId(Id('abcde'));
+  const language = 'en';
 
   group('calendar event reject interactor test:', () {
     test('should emit CalendarEventRejected when repo return data', () {
@@ -26,12 +27,12 @@ void main() {
         accountId,
         null,
         rejected: [EventId(blobId.value)]);
-      when(calendarEventRepository.rejectEventInvitation(any, any))
+      when(calendarEventRepository.rejectEventInvitation(any, any, any))
         .thenAnswer((_) async => calendarEventRejectResponse);
 
       // assert
       expect(
-        rejectCalendarEventInteractor.execute(accountId, {blobId}, emailId),
+        rejectCalendarEventInteractor.execute(accountId, {blobId}, emailId, language),
         emitsInOrder([
           Right(CalendarEventRejecting()),
           Right(CalendarEventRejected(calendarEventRejectResponse, emailId))]));
@@ -40,11 +41,11 @@ void main() {
     test('should emit CalendarEventRejectFailure when repo throw exception', () {
       // arrange
       final exception = NotRejectableCalendarEventException();
-      when(calendarEventRepository.rejectEventInvitation(any, any)).thenThrow(exception);
+      when(calendarEventRepository.rejectEventInvitation(any, any, any)).thenThrow(exception);
 
       // assert
       expect(
-        rejectCalendarEventInteractor.execute(accountId, {blobId}, emailId),
+        rejectCalendarEventInteractor.execute(accountId, {blobId}, emailId, language),
         emitsInOrder([
           Right(CalendarEventRejecting()),
           Left(CalendarEventRejectFailure(exception: exception))]));

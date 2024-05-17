@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/foundation.dart';
@@ -5,6 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/calendar_event_capability.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
@@ -125,7 +129,11 @@ void main() {
   final testAccountId = AccountId(Id('123'));
   final google = Uri.parse('https://www.google.com');
   final testSession =
-      Session({}, {}, {}, UserName('data'), google, google, google, google, State('1'));
+      Session({
+        CapabilityIdentifier.jamesCalendarEvent: CalendarEventCapability(
+          replySupportedLanguage: ['en', 'fr'],
+        ),
+      }, {}, {}, UserName('data'), google, google, google, google, State('1'));
   const testTaskId = 'taskId';
   final testDownloadTaskId = DownloadTaskId(testTaskId);
   final testBytes = Uint8List(123);
@@ -279,6 +287,11 @@ void main() {
     final blobId = Id('abc123');
     final emailId = EmailId(Id('xyz123'));
     final calendarEvent = CalendarEvent();
+    const locale = Locale('en', 'US');
+
+    setUp(() {
+      Get.locale = locale;
+    });
 
     group('accept test:', () {
       final acceptCalendarEventInteractor = MockAcceptCalendarEventInteractor();
@@ -289,6 +302,7 @@ void main() {
         when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(null));
         when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
         when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+        when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
         singleEmailController.onInit();
         Get.put<AcceptCalendarEventInteractor>(acceptCalendarEventInteractor);
           mailboxDashboardController.accountId.refresh();
@@ -300,10 +314,10 @@ void main() {
 
         // act
         singleEmailController.onCalendarEventReplyAction(EventActionType.yes, emailId);
-        await untilCalled(acceptCalendarEventInteractor.execute(any, any, any));
+        await untilCalled(acceptCalendarEventInteractor.execute(any, any, any, any));
 
         // assert
-        verify(acceptCalendarEventInteractor.execute(testAccountId, {blobId}, emailId)).called(1);
+        verify(acceptCalendarEventInteractor.execute(testAccountId, {blobId}, emailId, locale.languageCode)).called(1);
       });
     });
 
@@ -316,6 +330,7 @@ void main() {
         when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(null));
         when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
         when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+        when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
         singleEmailController.onInit();
         Get.put<MaybeCalendarEventInteractor>(maybeCalendarEventInteractor);
         mailboxDashboardController.accountId.refresh();
@@ -327,10 +342,10 @@ void main() {
 
         // act
         singleEmailController.onCalendarEventReplyAction(EventActionType.maybe, emailId);
-        await untilCalled(maybeCalendarEventInteractor.execute(any, any, any));
+        await untilCalled(maybeCalendarEventInteractor.execute(any, any, any, any));
 
         // assert
-        verify(maybeCalendarEventInteractor.execute(testAccountId, {blobId}, emailId)).called(1);
+        verify(maybeCalendarEventInteractor.execute(testAccountId, {blobId}, emailId, locale.languageCode)).called(1);
       });
     });
 
@@ -343,6 +358,7 @@ void main() {
         when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(null));
         when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
         when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+        when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
         singleEmailController.onInit();
         Get.put<RejectCalendarEventInteractor>(rejectCalendarEventInteractor);
         mailboxDashboardController.accountId.refresh();
@@ -354,10 +370,10 @@ void main() {
         
         // act
         singleEmailController.onCalendarEventReplyAction(EventActionType.no, emailId);
-        await untilCalled(rejectCalendarEventInteractor.execute(any, any, any));
+        await untilCalled(rejectCalendarEventInteractor.execute(any, any, any, any));
 
         // assert
-        verify(rejectCalendarEventInteractor.execute(testAccountId, {blobId}, emailId)).called(1);
+        verify(rejectCalendarEventInteractor.execute(testAccountId, {blobId}, emailId, locale.languageCode)).called(1);
       });
     });
   });
