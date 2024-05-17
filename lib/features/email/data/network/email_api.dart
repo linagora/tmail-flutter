@@ -60,6 +60,8 @@ import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
+import 'package:tmail_ui_user/features/email/domain/extensions/email_id_extensions.dart';
+import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
@@ -732,6 +734,46 @@ class EmailAPI with HandleSetErrorMixin {
       return getEmailRecoveryActionResponse!.list.firstWhere((element) => element.id == emailRecoveryActionId);
     } else {
       throw NotFoundEmailRecoveryActionException();
+    }
+  }
+
+  Future<Email> storeEventAttendanceStatus(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    EventActionType eventActionType
+  ) async {
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addUpdates(emailId.generateMapUpdateObjectEventAttendanceStatus(eventActionType));
+
+    final getEmailMethod = GetEmailMethod(accountId)
+      ..addIds({emailId.id})
+      ..addProperties(Properties({EmailProperty.keywords}));
+
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+
+    requestBuilder.invocation(setEmailMethod);
+
+    final getEmailInvocation = requestBuilder.invocation(getEmailMethod);
+
+    final capabilities = setEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final response = await (requestBuilder
+        ..usings(capabilities))
+      .build()
+      .execute();
+
+    final getEmailResponse = response.parse<GetEmailResponse>(
+      getEmailInvocation.methodCallId,
+      GetEmailResponse.deserialize);
+
+    final listEmails = getEmailResponse?.list ?? [];
+
+    if (listEmails.isNotEmpty) {
+      return listEmails.first;
+    } else {
+      throw NotFoundEmailException();
     }
   }
 }
