@@ -236,7 +236,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else if (success is PrintEmailSuccess) {
       _handlePrintEmailSuccess(success);
     } else if (success is CalendarEventReplySuccess) {
-      _calendarEventSuccess(success);
+      calendarEventSuccess(success);
     } else if (success is StoreEventAttendanceStatusSuccess) {
       _showToastMessageEventAttendanceSuccess(success);
     }
@@ -1768,7 +1768,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _calendarEventSuccess(CalendarEventReplySuccess success) {
+  void calendarEventSuccess(CalendarEventReplySuccess success) {
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
 

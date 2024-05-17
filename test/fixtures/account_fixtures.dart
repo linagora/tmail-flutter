@@ -5,7 +5,7 @@ import 'package:model/account/authentication_type.dart';
 import 'package:model/account/personal_account.dart';
 
 class AccountFixtures {
-  static final aliceAccountId = AccountId(Id('411ce'));
+  static final aliceAccountId = AccountId(Id('29883977c13473ae7cb7678ef767cbfbaffc8a44a6e463d971d23a65c1dc4af6'));
   static final aliceAccount = PersonalAccount(
     'dab',
     AuthenticationType.oidc,

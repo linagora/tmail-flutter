@@ -1,4 +1,3 @@
-import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/account/account.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
@@ -8,12 +7,13 @@ import 'package:jmap_dart_client/jmap/core/capability/mdn_capability.dart';
 import 'package:jmap_dart_client/jmap/core/capability/submission_capability.dart';
 import 'package:jmap_dart_client/jmap/core/capability/vacation_capability.dart';
 import 'package:jmap_dart_client/jmap/core/capability/websocket_capability.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/collation_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+
+import 'account_fixtures.dart';
 
 class SessionFixtures {
   static final aliceSession = Session(
@@ -48,8 +48,8 @@ class SessionFixtures {
       CapabilityIdentifier.jmapMdn: MdnCapability(),
     },
     {
-      AccountId(Id('29883977c13473ae7cb7678ef767cbfbaffc8a44a6e463d971d23a65c1dc4af6')): Account(
-        AccountName('bob@domain.tld'),
+      AccountFixtures.aliceAccountId: Account(
+        AccountName('alice@domain.tld'),
         true,
         false,
         {
@@ -85,16 +85,16 @@ class SessionFixtures {
       )
     },
     {
-      CapabilityIdentifier.jmapSubmission: AccountId(Id('29883977c13473ae7cb7678ef767cbfbaffc8a44a6e463d971d23a65c1dc4af6')),
-      CapabilityIdentifier.jmapWebSocket: AccountId(Id('29883977c13473ae7cb7678ef767cbfbaffc8a44a6e463d971d23a65c1dc4af6')),
-      CapabilityIdentifier.jmapCore: AccountId(Id('29883977c13473ae7cb7678ef767cbfbaffc8a44a6e463d971d23a65c1dc4af6')),
-      CapabilityIdentifier.jmapMail: AccountId(Id('29883977c13473ae7cb7678ef767cbfbaffc8a44a6e463d971d23a65c1dc4af6')),
-      CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:quota')): AccountId(Id('29883977c13473ae7cb7678ef767cbfbaffc8a44a6e463d971d23a65c1dc4af6')),
-      CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:shares')): AccountId(Id('29883977c13473ae7cb7678ef767cbfbaffc8a44a6e463d971d23a65c1dc4af6')),
-      CapabilityIdentifier.jmapVacationResponse: AccountId(Id('29883977c13473ae7cb7678ef767cbfbaffc8a44a6e463d971d23a65c1dc4af6')),
-      CapabilityIdentifier.jmapMdn: AccountId(Id('29883977c13473ae7cb7678ef767cbfbaffc8a44a6e463d971d23a65c1dc4af6')),
+      CapabilityIdentifier.jmapSubmission: AccountFixtures.aliceAccountId,
+      CapabilityIdentifier.jmapWebSocket: AccountFixtures.aliceAccountId,
+      CapabilityIdentifier.jmapCore: AccountFixtures.aliceAccountId,
+      CapabilityIdentifier.jmapMail: AccountFixtures.aliceAccountId,
+      CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:quota')): AccountFixtures.aliceAccountId,
+      CapabilityIdentifier(Uri.parse('urn:apache:james:params:jmap:mail:shares')): AccountFixtures.aliceAccountId,
+      CapabilityIdentifier.jmapVacationResponse: AccountFixtures.aliceAccountId,
+      CapabilityIdentifier.jmapMdn: AccountFixtures.aliceAccountId,
     },
-    UserName('bob@domain.tld'),
+    UserName('alice@domain.tld'),
     Uri.parse('http://domain.com/jmap'),
     Uri.parse('http://domain.com/download/{accountId}/{blobId}/?type={type}&name={name}'),
     Uri.parse('http://domain.com/upload/{accountId}'),

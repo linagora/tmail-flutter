@@ -10,12 +10,14 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_accept_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
+import 'package:tmail_ui_user/features/email/domain/state/calendar_event_accept_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/view_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
@@ -45,6 +47,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oi
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../fixtures/email_fixtures.dart';
 import 'single_email_controller_test.mocks.dart';
 
 mockControllerCallback() => InternalFinalCallback<void>(callback: () {});
@@ -307,8 +310,8 @@ void main() {
     group('maybe test:', () {
       final maybeCalendarEventInteractor = MockMaybeCalendarEventInteractor();
 
-      test('should call execute on AcceptCalendarEventInteractor '
-      'when onCalendarEventReplyAction is called on EventActionType.yes', () async {
+      test('should call execute on MaybeCalendarEventInteractor '
+      'when onCalendarEventReplyAction is called on EventActionType.maybe', () async {
         // arrange
         when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(null));
         when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
@@ -335,7 +338,7 @@ void main() {
       final rejectCalendarEventInteractor = MockRejectCalendarEventInteractor();
 
       test('should call execute on RejectCalendarEventInteractor '
-      'when onCalendarEventReplyAction is called on EventActionType.yes', () async {
+      'when onCalendarEventReplyAction is called on EventActionType.no', () async {
         // arrange
         when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(null));
         when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
@@ -355,6 +358,79 @@ void main() {
 
         // assert
         verify(rejectCalendarEventInteractor.execute(testAccountId, {blobId}, emailId)).called(1);
+      });
+    });
+  });
+
+  group('StoreEventAttendanceStatusInteractor test', () {
+    group('calendarEventSuccess method test', () {
+      test(
+        'SHOULD call execute on StoreEventAttendanceStatusInteractor\n'
+        'WHEN calendarEventSuccess method is called',
+      () {
+        when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
+
+        final eventAcceptedSuccess = CalendarEventAccepted(
+          CalendarEventAcceptResponse(testAccountId, null),
+          EmailFixtures.emailId);
+
+        singleEmailController.calendarEventSuccess(eventAcceptedSuccess);
+
+        verify(storeEventAttendanceStatusInteractor.execute(
+          testSession,
+          testAccountId,
+          EmailFixtures.emailId,
+          EventActionType.yes,
+        )).called(1);
+      });
+    });
+
+    group('onCalendarEventReplyAction method test', () {
+      test(
+        'SHOULD call execute on StoreEventAttendanceStatusInteractor\n'
+        'WHEN onCalendarEventReplyAction is called on EventActionType.yes\n'
+        'AND return success',
+      () async {
+        final acceptCalendarEventInteractor = MockAcceptCalendarEventInteractor();
+        final blobId = Id('abc123');
+        final emailId = EmailId(Id('xyz123'));
+        final calendarEvent = CalendarEvent();
+
+        when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
+        when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(null));
+        when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
+        when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+
+        singleEmailController.onInit();
+
+        Get.put<AcceptCalendarEventInteractor>(acceptCalendarEventInteractor);
+
+        mailboxDashboardController.accountId.refresh();
+
+        singleEmailController.handleSuccessViewState(
+          ParseCalendarEventSuccess([
+            BlobCalendarEvent(
+              blobId: blobId,
+              calendarEventList: [calendarEvent]
+            )
+          ])
+        );
+
+        singleEmailController.onCalendarEventReplyAction(EventActionType.yes, emailId);
+
+        singleEmailController.calendarEventSuccess(CalendarEventAccepted(
+          CalendarEventAcceptResponse(testAccountId, null),
+          emailId
+        ));
+
+        await untilCalled(storeEventAttendanceStatusInteractor.execute(any, any, any, any));
+
+        verify(storeEventAttendanceStatusInteractor.execute(
+          testSession,
+          testAccountId,
+          emailId,
+          EventActionType.yes,
+        )).called(1);
       });
     });
   });
