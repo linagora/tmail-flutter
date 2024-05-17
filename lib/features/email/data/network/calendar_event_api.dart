@@ -49,11 +49,18 @@ class CalendarEventAPI {
     }
   }
 
-  Future<CalendarEventAcceptResponse> acceptEventInvitation(AccountId accountId, Set<Id> blobIds) async {
+  Future<CalendarEventAcceptResponse> acceptEventInvitation(
+    AccountId accountId,
+    Set<Id> blobIds,
+    String? language
+  ) async {
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
     final calendarEventAcceptMethod = CalendarEventAcceptMethod(
       accountId,
       blobIds: blobIds.toList());
+    if (language != null) {
+      calendarEventAcceptMethod.addLanguage(language);
+    }
     final calendarEventAcceptInvocation = requestBuilder.invocation(calendarEventAcceptMethod);
     final response = await (requestBuilder..usings(calendarEventAcceptMethod.requiredCapabilities))
       .build()
@@ -70,11 +77,18 @@ class CalendarEventAPI {
     return calendarEventAcceptResponse;
   }
 
-  Future<CalendarEventMaybeResponse> maybe(AccountId accountId, Set<Id> blobIds) async {
+  Future<CalendarEventMaybeResponse> maybeEventInvitation(
+    AccountId accountId,
+    Set<Id> blobIds,
+    String? language
+  ) async {
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
     final calendarEventMaybeMethod = CalendarEventMaybeMethod(
       accountId,
       blobIds: blobIds.toList());
+    if (language != null) {
+      calendarEventMaybeMethod.addLanguage(language);
+    }
     final calendarEventMaybeInvocation = requestBuilder.invocation(calendarEventMaybeMethod);
     final response = await (requestBuilder..usings(calendarEventMaybeMethod.requiredCapabilities))
       .build()
@@ -91,11 +105,18 @@ class CalendarEventAPI {
     return calendarEventMaybeResponse;
   }
 
-  Future<CalendarEventRejectResponse> reject(AccountId accountId, Set<Id> blobIds) async {
+  Future<CalendarEventRejectResponse> rejectEventInvitation(
+    AccountId accountId,
+    Set<Id> blobIds,
+    String? language
+  ) async {
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
     final calendarEventRejectMethod = CalendarEventRejectMethod(
       accountId,
       blobIds: blobIds.toList());
+    if (language != null) {
+      calendarEventRejectMethod.addLanguage(language);
+    }
     final calendarEventRejectInvocation = requestBuilder.invocation(calendarEventRejectMethod);
     final response = await (requestBuilder..usings(calendarEventRejectMethod.requiredCapabilities))
       .build()

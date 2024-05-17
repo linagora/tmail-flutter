@@ -16,10 +16,12 @@ class MaybeCalendarEventInteractor {
     AccountId accountId,
     Set<Id> blobIds,
     EmailId emailId,
+    String? language
   ) async* {
     try {
       yield Right(CalendarEventMaybeReplying());
-      final result = await _calendarEventRepository.maybeEventInvitation(accountId, blobIds);
+      final result = await _calendarEventRepository
+        .maybeEventInvitation(accountId, blobIds, language);
       yield Right(CalendarEventMaybeSuccess(result, emailId));
     } catch (e) {
       yield Left(CalendarEventMaybeFailure(exception: e));

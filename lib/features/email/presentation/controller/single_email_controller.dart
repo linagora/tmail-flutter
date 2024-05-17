@@ -100,6 +100,7 @@ import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
@@ -1729,42 +1730,63 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _acceptCalendarEventAction(EmailId emailId) {
     if (_acceptCalendarEventInteractor == null
       || _displayingEventBlobId == null
-      || mailboxDashBoardController.accountId.value == null) {
-        consumeState(Stream.value(Left(CalendarEventAcceptFailure())));
+      || mailboxDashBoardController.accountId.value == null
+      || mailboxDashBoardController.sessionCurrent == null
+      || mailboxDashBoardController.sessionCurrent
+        !.validateCalendarEventCapability(mailboxDashBoardController.accountId.value!)
+        .isAvailable == false
+    ) {
+      consumeState(Stream.value(Left(CalendarEventAcceptFailure())));
     } else {
       consumeState(_acceptCalendarEventInteractor!.execute(
         mailboxDashBoardController.accountId.value!,
         {_displayingEventBlobId!},
-        emailId
-      ));
+        emailId,
+        mailboxDashBoardController.sessionCurrent!.getLanguageForCalendarEvent(
+          LocalizationService.getLocaleFromLanguage(),
+          mailboxDashBoardController.accountId.value!)));
     }
   }
 
   void _rejectCalendarEventAction(EmailId emailId) {
     if (_rejectCalendarEventInteractor == null
       || _displayingEventBlobId == null
-      || mailboxDashBoardController.accountId.value == null) {
-        consumeState(Stream.value(Left(CalendarEventRejectFailure())));
+      || mailboxDashBoardController.accountId.value == null
+      || mailboxDashBoardController.sessionCurrent == null
+      || mailboxDashBoardController.sessionCurrent
+        !.validateCalendarEventCapability(mailboxDashBoardController.accountId.value!)
+        .isAvailable == false
+    ) {
+      consumeState(Stream.value(Left(CalendarEventRejectFailure())));
     } else {
       consumeState(_rejectCalendarEventInteractor!.execute(
         mailboxDashBoardController.accountId.value!,
         {_displayingEventBlobId!},
-        emailId
-      ));
+        emailId,
+        mailboxDashBoardController.sessionCurrent!.getLanguageForCalendarEvent(
+          LocalizationService.getLocaleFromLanguage(),
+          mailboxDashBoardController.accountId.value!)));
     }
   }
 
   void _maybeCalendarEventAction(EmailId emailId) {
     if (_maybeCalendarEventInteractor == null
       || _displayingEventBlobId == null
-      || mailboxDashBoardController.accountId.value == null) {
-        consumeState(Stream.value(Left(CalendarEventMaybeFailure())));
+      || mailboxDashBoardController.accountId.value == null
+      || mailboxDashBoardController.sessionCurrent == null
+      || mailboxDashBoardController.sessionCurrent
+        !.validateCalendarEventCapability(mailboxDashBoardController.accountId.value!)
+        .isAvailable == false
+    ) {
+      consumeState(Stream.value(Left(CalendarEventMaybeFailure())));
     } else {
       consumeState(_maybeCalendarEventInteractor!.execute(
         mailboxDashBoardController.accountId.value!,
         {_displayingEventBlobId!},
-        emailId
-      ));
+        emailId,
+        mailboxDashBoardController.sessionCurrent!.getLanguageForCalendarEvent(
+          LocalizationService.getLocaleFromLanguage(),
+          mailboxDashBoardController.accountId.value!)));
     }
   }
 
