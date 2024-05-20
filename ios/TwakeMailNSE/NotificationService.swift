@@ -94,13 +94,14 @@ class NotificationService: UNNotificationServiceExtension {
                                                                       badgeCount: emails.count,
                                                                       userInfo: [JmapConstants.EMAIL_ID : email.id])
                                         return self.notify()
+                                    } else {
+                                        self.showNewNotification(title: email.getSenderName(),
+                                                                 subtitle: email.subject,
+                                                                 body: email.preview,
+                                                                 badgeCount: emails.count,
+                                                                 notificationId: email.id,
+                                                                 userInfo: [JmapConstants.EMAIL_ID : email.id])
                                     }
-                                    self.showNewNotification(title: email.getSenderName(),
-                                                             subtitle: email.subject,
-                                                             body: email.preview,
-                                                             badgeCount: emails.count,
-                                                             notificationId: email.id,
-                                                             userInfo: [JmapConstants.EMAIL_ID : email.id])
                                 }
                             } else {
                                 self.showModifiedNotification(title: emails.first!.getSenderName(),
@@ -157,8 +158,7 @@ class NotificationService: UNNotificationServiceExtension {
         content.userInfo = userInfo
 
         // Create a notification trigger
-        let triggerDateTime = Calendar.current.dateComponents([.hour, .minute, .second], from: Date())
-        let trigger = UNCalendarNotificationTrigger(dateMatching: triggerDateTime, repeats: false)
+         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 2, repeats: false)
         // Create a notification request
         let request = UNNotificationRequest(identifier: notificationId, content: content, trigger: trigger)
 
