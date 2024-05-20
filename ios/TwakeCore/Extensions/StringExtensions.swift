@@ -2,12 +2,10 @@ import Foundation
 
 extension String {
     func convertISO8601StringToDate() -> Date? {
-        let dateFormatter = ISO8601DateFormatter()
-        dateFormatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        if let date = dateFormatter.date(from: self) {
-            return date
-        }
-        return nil
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        return dateFormatter.date(from: self)
     }
     
     func convertUTCDateToLocalDate() -> Date? {
