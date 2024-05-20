@@ -28,6 +28,7 @@
 		F53D1E862B2E401B00051FD0 /* JmapRequestGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E852B2E401B00051FD0 /* JmapRequestGenerator.swift */; };
 		F53D1E882B2E4B3B00051FD0 /* AuthenticationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E872B2E4B3B00051FD0 /* AuthenticationType.swift */; };
 		F53D1E8A2B2E4BB700051FD0 /* TokenOidc.swift in Sources */ = {isa = PBXBuildFile; fileRef = F53D1E892B2E4BB700051FD0 /* TokenOidc.swift */; };
+		F55114CF2BFBACFA00E41E93 /* DateConversionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F55114CE2BFBACFA00E41E93 /* DateConversionTests.swift */; };
 		F5550D292B4E90A7003DD2AE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F5550D2C2B4E90A7003DD2AE /* Localizable.strings */; };
 		F5550D2A2B4E90A7003DD2AE /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = F5550D2C2B4E90A7003DD2AE /* Localizable.strings */; };
 		F5630C762B2CDFDA003CC0FD /* KeychainController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F5630C752B2CDFDA003CC0FD /* KeychainController.swift */; };
@@ -66,6 +67,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = F52F992C27FD6EB900346091;
 			remoteInfo = TeamMailShareExtension;
+		};
+		F55114D02BFBACFA00E41E93 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 97C146ED1CF9000F007C117D;
+			remoteInfo = Runner;
 		};
 		F5D4EA052B2ABF090090DDFC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -136,6 +144,8 @@
 		F53D1E852B2E401B00051FD0 /* JmapRequestGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JmapRequestGenerator.swift; sourceTree = "<group>"; };
 		F53D1E872B2E4B3B00051FD0 /* AuthenticationType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationType.swift; sourceTree = "<group>"; };
 		F53D1E892B2E4BB700051FD0 /* TokenOidc.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TokenOidc.swift; sourceTree = "<group>"; };
+		F55114CC2BFBACFA00E41E93 /* TwakeMailTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TwakeMailTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F55114CE2BFBACFA00E41E93 /* DateConversionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateConversionTests.swift; sourceTree = "<group>"; };
 		F5550D2B2B4E90A7003DD2AE /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F5550D2D2B4E90C6003DD2AE /* vi */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = vi; path = vi.lproj/Localizable.strings; sourceTree = "<group>"; };
 		F5550D2E2B4E90D5003DD2AE /* fr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = fr; path = fr.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -181,6 +191,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F55114C92BFBACFA00E41E93 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F5D4E9FD2B2ABF090090DDFC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -220,6 +237,7 @@
 				97C146F01CF9000F007C117D /* Runner */,
 				F52F992E27FD6EB900346091 /* TeamMailShareExtension */,
 				F5D4EA012B2ABF090090DDFC /* TwakeMailNSE */,
+				F55114CD2BFBACFA00E41E93 /* TwakeMailTests */,
 				97C146EF1CF9000F007C117D /* Products */,
 				F62B48DC0DFBD6D5D355E5FE /* Pods */,
 				601CDD7C97AAAE9C3FB007DB /* Frameworks */,
@@ -232,6 +250,7 @@
 				97C146EE1CF9000F007C117D /* Runner.app */,
 				F52F992D27FD6EB900346091 /* TeamMailShareExtension.appex */,
 				F5D4EA002B2ABF090090DDFC /* TwakeMailNSE.appex */,
+				F55114CC2BFBACFA00E41E93 /* TwakeMailTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -328,6 +347,14 @@
 				F53D1E852B2E401B00051FD0 /* JmapRequestGenerator.swift */,
 			);
 			path = Utils;
+			sourceTree = "<group>";
+		};
+		F55114CD2BFBACFA00E41E93 /* TwakeMailTests */ = {
+			isa = PBXGroup;
+			children = (
+				F55114CE2BFBACFA00E41E93 /* DateConversionTests.swift */,
+			);
+			path = TwakeMailTests;
 			sourceTree = "<group>";
 		};
 		F5630C742B2CDFC5003CC0FD /* Keychain */ = {
@@ -487,6 +514,24 @@
 			productReference = F52F992D27FD6EB900346091 /* TeamMailShareExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
+		F55114CB2BFBACFA00E41E93 /* TwakeMailTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F55114D52BFBACFA00E41E93 /* Build configuration list for PBXNativeTarget "TwakeMailTests" */;
+			buildPhases = (
+				F55114C82BFBACFA00E41E93 /* Sources */,
+				F55114C92BFBACFA00E41E93 /* Frameworks */,
+				F55114CA2BFBACFA00E41E93 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F55114D12BFBACFA00E41E93 /* PBXTargetDependency */,
+			);
+			name = TwakeMailTests;
+			productName = TwakeMailTests;
+			productReference = F55114CC2BFBACFA00E41E93 /* TwakeMailTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		F5D4E9FF2B2ABF090090DDFC /* TwakeMailNSE */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = F5D4EA0B2B2ABF090090DDFC /* Build configuration list for PBXNativeTarget "TwakeMailNSE" */;
@@ -525,6 +570,10 @@
 					F52F992C27FD6EB900346091 = {
 						CreatedOnToolsVersion = 13.2.1;
 					};
+					F55114CB2BFBACFA00E41E93 = {
+						CreatedOnToolsVersion = 15.1;
+						TestTargetID = 97C146ED1CF9000F007C117D;
+					};
 					F5D4E9FF2B2ABF090090DDFC = {
 						CreatedOnToolsVersion = 15.1;
 					};
@@ -553,6 +602,7 @@
 				97C146ED1CF9000F007C117D /* Runner */,
 				F52F992C27FD6EB900346091 /* TeamMailShareExtension */,
 				F5D4E9FF2B2ABF090090DDFC /* TwakeMailNSE */,
+				F55114CB2BFBACFA00E41E93 /* TwakeMailTests */,
 			);
 		};
 /* End PBXProject section */
@@ -575,6 +625,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F52F993327FD6EB900346091 /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F55114CA2BFBACFA00E41E93 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -684,6 +741,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		F55114C82BFBACFA00E41E93 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F55114CF2BFBACFA00E41E93 /* DateConversionTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		F5D4E9FC2B2ABF090090DDFC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -727,6 +792,11 @@
 			isa = PBXTargetDependency;
 			target = F52F992C27FD6EB900346091 /* TeamMailShareExtension */;
 			targetProxy = F52F993527FD6EB900346091 /* PBXContainerItemProxy */;
+		};
+		F55114D12BFBACFA00E41E93 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 97C146ED1CF9000F007C117D /* Runner */;
+			targetProxy = F55114D02BFBACFA00E41E93 /* PBXContainerItemProxy */;
 		};
 		F5D4EA062B2ABF090090DDFC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1136,6 +1206,117 @@
 			};
 			name = Profile;
 		};
+		F55114D22BFBACFA00E41E93 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = KUT463DS29;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = KUT463DS29;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail.TwakeMailTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
+			};
+			name = Debug;
+		};
+		F55114D32BFBACFA00E41E93 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = KUT463DS29;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = KUT463DS29;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail.TwakeMailTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
+			};
+			name = Release;
+		};
+		F55114D42BFBACFA00E41E93 /* Profile */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				CODE_SIGN_STYLE = Manual;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = KUT463DS29;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = KUT463DS29;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.linagora.ios.teammail.TwakeMailTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Runner";
+			};
+			name = Profile;
+		};
 		F5D4EA082B2ABF090090DDFC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1294,6 +1475,16 @@
 				F52F993927FD6EB900346091 /* Debug */,
 				F52F993A27FD6EB900346091 /* Release */,
 				F52F993B27FD6EB900346091 /* Profile */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F55114D52BFBACFA00E41E93 /* Build configuration list for PBXNativeTarget "TwakeMailTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F55114D22BFBACFA00E41E93 /* Debug */,
+				F55114D32BFBACFA00E41E93 /* Release */,
+				F55114D42BFBACFA00E41E93 /* Profile */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
