@@ -3881,5 +3881,47 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "eventReplyWasSentUnsuccessfully": "Hồi đáp sự kiện không thành công!",
+  "@eventReplyWasSentUnsuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "downloadMessageAsEMLFailed": "Tải xuống email thất bại",
+  "@downloadMessageAsEMLFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noSuitableBrowserForOIDC": "Không có trình duyệt phù hợp để thực hiện OIDC, hãy liên hệ với quản trị viên",
+  "@noSuitableBrowserForOIDC": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youWillAttendThisMeeting": "Bạn sẽ tham gia sự kiện",
+  "@youWillAttendThisMeeting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youWillNotAttendThisMeeting": "Bạn sẽ không tham gia sự kiện",
+  "@youWillNotAttendThisMeeting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youMayAttendThisMeeting": "Bạn có thể tham gia sự kiện",
+  "@youMayAttendThisMeeting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "downloadMessageAsEML": "Tải xuống email dưới dạng EML",
+  "@downloadMessageAsEML": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
