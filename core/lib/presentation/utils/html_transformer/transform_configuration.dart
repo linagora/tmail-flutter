@@ -43,7 +43,6 @@ class TransformConfiguration {
     if (PlatformInfo.isWeb)
       const RemoveTooltipLinkTransformer(),
     const SignatureTransformer(),
-    const RemoveLazyLoadingForBackgroundImageTransformer(),
     const RemoveCollapsedSignatureButtonTransformer(),
   ]);
 
