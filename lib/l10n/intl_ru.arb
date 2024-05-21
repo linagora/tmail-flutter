@@ -3881,5 +3881,47 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "youMayAttendThisMeeting": "Вы возможно придете на эту встречу",
+  "@youMayAttendThisMeeting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "downloadMessageAsEML": "Скачать сообщения как EML",
+  "@downloadMessageAsEML": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "downloadMessageAsEMLFailed": "Не удалось скачать сообщения как EML",
+  "@downloadMessageAsEMLFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noSuitableBrowserForOIDC": "Браузер не подходит для OIDC, свяжитесь с вашим системным администратором",
+  "@noSuitableBrowserForOIDC": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "eventReplyWasSentUnsuccessfully": "Ответ на событие успешно отправлен!",
+  "@eventReplyWasSentUnsuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youWillAttendThisMeeting": "Вы придете на эту встречу",
+  "@youWillAttendThisMeeting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youWillNotAttendThisMeeting": "Вы не придете на эту встречу",
+  "@youWillNotAttendThisMeeting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
