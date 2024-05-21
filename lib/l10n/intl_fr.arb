@@ -2722,7 +2722,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleRecipientSendingEmail": "À: {recipients}",
+  "titleRecipientSendingEmail": "À : {recipients}",
   "@titleRecipientSendingEmail": {
     "type": "text",
     "placeholders_order": [
@@ -3484,7 +3484,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "conditionTitleRulesFilterAfterCombiner": "des conditions suivantes sont remplies:",
+  "conditionTitleRulesFilterAfterCombiner": "des conditions suivantes sont remplies :",
   "@conditionTitleRulesFilterAfterCombiner": {
     "type": "text",
     "placeholders_order": [],
@@ -3872,6 +3872,48 @@
   },
   "selectAllMessagesOfThisPage": "Sélectionnez tous les messages de cette page",
   "@selectAllMessagesOfThisPage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noSuitableBrowserForOIDC": "Aucun navigateur approprié pour OIDC, veuillez vérifier auprès de votre administrateur système",
+  "@noSuitableBrowserForOIDC": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "eventReplyWasSentUnsuccessfully": "La réponse à l'évènement n'a pas été envoyée !",
+  "@eventReplyWasSentUnsuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youWillAttendThisMeeting": "Vous participerez à cette réunion",
+  "@youWillAttendThisMeeting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youWillNotAttendThisMeeting": "Vous ne participerez pas à cette réunion",
+  "@youWillNotAttendThisMeeting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youMayAttendThisMeeting": "Vous participerez peut-être à cette réunion",
+  "@youMayAttendThisMeeting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "downloadMessageAsEML": "Télécharger le message au format EML",
+  "@downloadMessageAsEML": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "downloadMessageAsEMLFailed": "Échec du téléchargement du message au format EML",
+  "@downloadMessageAsEMLFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
