@@ -3731,5 +3731,29 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "notification": "Notification",
+  "@notification": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allowAppToSendYouNotifications": "Allow app to send you notifications",
+  "@allowAppToSendYouNotifications": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "doYouWantToEnableNotificationInSetting": "Do you want to enable notification in setting?",
+  "@doYouWantToEnableNotificationInSetting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cantTurnOnNotification": "Can't turn on notification",
+  "@cantTurnOnNotification": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

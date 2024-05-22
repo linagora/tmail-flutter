@@ -3893,4 +3893,32 @@ class AppLocalizations {
       name: 'downloadMessageAsEMLFailed',
     );
   }
+
+  String get notification {
+    return Intl.message(
+      'Notification',
+      name: 'notification',
+    );
+  }
+
+  String get allowAppToSendYouNotifications {
+    return Intl.message(
+      'Allow app to send you notifications',
+      name: 'allowAppToSendYouNotifications',
+    );
+  }
+
+  String get doYouWantToEnableNotificationInSetting {
+    return Intl.message(
+      'Do you want to enable notification in setting?',
+      name: 'doYouWantToEnableNotificationInSetting',
+    );
+  }
+
+  String get cantTurnOnNotification {
+    return Intl.message(
+      'Can\'t turn on notification',
+      name: 'cantTurnOnNotification',
+    );
+  }
 }

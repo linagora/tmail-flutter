@@ -211,6 +211,7 @@ class ImagePaths {
   String get icRecoverDeletedMessages => _getImagePath('ic_recover_deleted_messages.svg');
   String get icPrinter => _getImagePath('ic_printer.svg');
   String get icAlwaysReadReceipt => _getImagePath('ic_always_read_receipt.svg');
+  String get icNotification => _getImagePath('ic_notification.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

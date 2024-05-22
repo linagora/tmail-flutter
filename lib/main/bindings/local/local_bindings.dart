@@ -33,6 +33,7 @@ import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/data/local/notification_setting_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
@@ -107,6 +108,7 @@ class LocalBindings extends Bindings {
       Get.find<LocalSpamReportManager>(),
       Get.find<KeychainSharingManager>(),
     ));
+    Get.put(NotificationSettingCacheManager(Get.find<SharedPreferences>()));
   }
 
   void _bindingException() {

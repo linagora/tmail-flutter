@@ -1,0 +1,7 @@
+import 'package:tmail_ui_user/features/manage_account/domain/state/notification_setting_state.dart';
+
+class TogglingAppNotificationSettingCache extends NotificationSettingHandling {}
+
+class ToggleAppNotificationSettingCacheSuccess extends NotificationSettingSuccess {}
+
+class ToggleAppNotificationSettingCacheFailure extends NotificationSettingFailure {}
