@@ -1,4 +1,27 @@
-## [0.11.3414] - 2024-05-03
+## [0.11.4] - 2024-05-22
+### Fixed
+- #2599 Prevent notification flood by set silent for all notification except group notification
+- #2860 Improve notification for iOS to update with APN requirements
+- #2850 Replace new TWP app's icons
+- #825 Download email as EML file
+- #2858 Store CalendarEvent actions in `keywords`
+- #2859 Insert l10n in CalendarEvent actions
+- Translation vn, fr
+
+### Added
+- #2425 CalendarEvent actions: Adccept/Maybe/Reject
+
+## [0.11.3-patch4-16] - 2024-05-07
+### Fixed
+- #2835 Change properly exception handler for AuthenticationOIDCDatasource
+- #2830 Add forward recipient directly when click on Add recipient button
+
+## [0.11.3-patch4-15] - 2024-05-18
+### Fixed
+- Upgrade AppAuth library in iOS
+- Fix iOS build
+
+## [0.11.3-patch4-14] - 2024-05-03
 ### Fixed
 - FR translation for read receipt
 - #2810 Handle crashed when no browser available for OIDC
