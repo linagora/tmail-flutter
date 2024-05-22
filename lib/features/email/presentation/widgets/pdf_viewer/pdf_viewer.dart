@@ -7,8 +7,10 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' as dartz;
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
@@ -57,6 +59,8 @@ class _PDFViewerState extends State<PDFViewer> {
   final PdfViewerController _pdfViewerController = PdfViewerController();
   final ValueNotifier<Object?> _pdfViewStateNotifier = ValueNotifier<Object?>(null);
 
+  final DeviceInfoPlugin _deviceInfoPlugin = Get.find<DeviceInfoPlugin>();
+
   @override
   void initState() {
     super.initState();
@@ -98,6 +102,10 @@ class _PDFViewerState extends State<PDFViewer> {
       );
     });
   }
+
+  bool isBrowserSupportedPrinting(BrowserName? browserName) => !(browserName == BrowserName.edge
+    || browserName == BrowserName.firefox
+    || browserName == BrowserName.safari);
 
   @override
   void dispose() {
@@ -199,17 +207,24 @@ class _PDFViewerState extends State<PDFViewer> {
               valueListenable: _pdfViewStateNotifier,
               builder: (context, viewState, child) {
                 if (viewState is DownloadAttachmentForWebSuccess) {
-                  return TopBarPDFViewer(
-                    attachment: widget.attachment,
-                    downloadAction: () => widget.downloadAction?.call(
-                      viewState.bytes,
-                      widget.attachment.generateFileName()
-                    ),
-                    printAction: () => widget.printAction?.call(
-                      viewState.bytes,
-                      widget.attachment.generateFileName()
-                    ),
-                  );
+                  return FutureBuilder<BaseDeviceInfo>(
+                    future: _deviceInfoPlugin.deviceInfo,
+                    builder: (context, deviceInfo) {
+                      BrowserName? browserName;
+                      if (deviceInfo.hasData && deviceInfo.data is WebBrowserInfo) {
+                        browserName = (deviceInfo.data as WebBrowserInfo).browserName;
+                      }
+                      return TopBarPDFViewer(
+                        attachment: widget.attachment,
+                        downloadAction: () => widget.downloadAction?.call(
+                          viewState.bytes,
+                          widget.attachment.generateFileName()
+                        ),
+                        printAction: isBrowserSupportedPrinting(browserName) ?
+                          () => widget.printAction?.call(viewState.bytes, widget.attachment.generateFileName())
+                          : null,
+                      );
+                    });
                 }
                 return child ?? const SizedBox.shrink();
               },
