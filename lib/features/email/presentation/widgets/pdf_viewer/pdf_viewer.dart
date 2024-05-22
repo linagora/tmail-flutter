@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:math';
-import 'dart:typed_data';
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -10,6 +9,7 @@ import 'package:dartz/dartz.dart' as dartz;
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:model/download/download_task_id.dart';
@@ -159,7 +159,8 @@ class _PDFViewerState extends State<PDFViewer> {
                             top += height + padding;
                           }
                           return rect;
-                        }
+                        },
+                        onClickOutSidePageViewer: _closeView
                       ),
                     );
                   } else if (viewState is DownloadingAttachmentForWeb) {
@@ -272,5 +273,10 @@ class _PDFViewerState extends State<PDFViewer> {
         ],
       ),
     );
+  }
+
+  void _closeView() {
+    _downloadAttachmentCancelToken?.cancel();
+    Navigator.maybeOf(context)?.pop();
   }
 }
