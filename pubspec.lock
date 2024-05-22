@@ -1363,8 +1363,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: c76f69fb8db912e8420751e219e77d930dda1a28
+      ref: trigger-click-outside-event-page-view
+      resolved-ref: "4f1a9a9386ced299c11a6634e21f4129503e0313"
       url: "https://github.com/linagora/flutter_pdf_render.git"
     source: git
     version: "1.4.7"
