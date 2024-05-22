@@ -26,6 +26,8 @@ import 'package:tmail_ui_user/features/email/domain/usecases/store_list_new_emai
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/get_app_notification_setting_cache_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_app_notification_setting_cache_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_to_push_notification_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_email_changes_to_remove_notification_state.dart';
@@ -59,6 +61,7 @@ class EmailChangeListener extends ChangeListener {
   GetListDetailedEmailByIdInteractor? _getListDetailedEmailByIdInteractor;
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
   StoreListNewEmailInteractor? _storeListNewEmailInteractor;
+  GetAppNotificationSettingCacheInteractor? _getAppNotificationSettingCacheInteractor;
 
   jmap.State? _newStateEmailDelivery;
   AccountId? _accountId;
@@ -80,6 +83,7 @@ class EmailChangeListener extends ChangeListener {
       _getListDetailedEmailByIdInteractor = getBinding<GetListDetailedEmailByIdInteractor>();
       _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
       _storeListNewEmailInteractor = getBinding<StoreListNewEmailInteractor>();
+      _getAppNotificationSettingCacheInteractor = getBinding<GetAppNotificationSettingCacheInteractor>();
     } catch (e) {
       logError('EmailChangeListener::_internal(): IS NOT REGISTERED: ${e.toString()}');
     }
@@ -263,6 +267,25 @@ class EmailChangeListener extends ChangeListener {
     required List<PresentationEmail> emailList
   }) async {
     log('EmailChangeListener::_handleLocalPushNotification(): EMAIL_LENGTH = ${emailList.length}');
+
+    if (PlatformInfo.isAndroid) {
+      final notificationSettingEnabled = (await _getAppNotificationSettingCacheInteractor?.execute().last)
+        ?.fold(
+          (failure) => false,
+          (success) {
+            if (success is GetAppNotificationSettingCacheSuccess) {
+              return success.isEnabled;
+            } else {
+              return false;
+            }
+          }) ?? false;
+      if (!notificationSettingEnabled) {
+        _emailsAvailablePushNotification.clear();
+        return;
+      }
+    }
+
+
     if (emailList.isEmpty) {
       _emailsAvailablePushNotification.clear();
       return;

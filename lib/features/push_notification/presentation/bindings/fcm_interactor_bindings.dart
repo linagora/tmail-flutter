@@ -26,6 +26,12 @@ import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
+import 'package:tmail_ui_user/features/manage_account/data/datasource/notification_datasource.dart';
+import 'package:tmail_ui_user/features/manage_account/data/datasource_impl/notification_datasource_impl.dart';
+import 'package:tmail_ui_user/features/manage_account/data/local/notification_setting_cache_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/data/repository/notification_repository_impl.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/repository/notification_repository.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_app_notification_setting_cache_interactor.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
@@ -76,6 +82,7 @@ class FcmInteractorBindings extends InteractorsBindings {
     Get.lazyPut<HtmlDataSource>(() => Get.find<HtmlDataSourceImpl>());
     Get.lazyPut<StateDataSource>(() => Get.find<StateDataSourceImpl>());
     Get.lazyPut<PrintFileDataSource>(() => Get.find<PrintFileDataSourceImpl>());
+    Get.lazyPut<NotificationDataSource>(() => Get.find<NotificationDataSourceImpl>());
   }
 
   @override
@@ -126,6 +133,9 @@ class FcmInteractorBindings extends InteractorsBindings {
       Get.find<SendingEmailCacheManager>(),
       Get.find<FileUtils>(),
       Get.find<CacheExceptionThrower>()));
+    Get.lazyPut(() => NotificationDataSourceImpl(
+      Get.find<NotificationSettingCacheManager>(),
+      Get.find<RemoteExceptionThrower>()));
   }
 
   @override
@@ -155,12 +165,14 @@ class FcmInteractorBindings extends InteractorsBindings {
       Get.find<EmailRepository>()));
     Get.lazyPut(() => GetListDetailedEmailByIdInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => StoreListNewEmailInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => GetAppNotificationSettingCacheInteractor(Get.find<NotificationRepository>()));
   }
 
   @override
   void bindingsRepository() {
     Get.lazyPut<FCMRepository>(() => Get.find<FCMRepositoryImpl>());
     Get.lazyPut<EmailRepository>(() => Get.find<EmailRepositoryImpl>());
+    Get.lazyPut<NotificationRepository>(() => Get.find<NotificationRepositoryImpl>());
   }
 
   @override
@@ -184,5 +196,7 @@ class FcmInteractorBindings extends InteractorsBindings {
       Get.find<HtmlDataSource>(),
       Get.find<StateDataSource>(),
       Get.find<PrintFileDataSource>()));
+    Get.lazyPut(() => NotificationRepositoryImpl(
+      Get.find<NotificationDataSource>()));
   }
 }
