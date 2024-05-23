@@ -2743,12 +2743,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subMessageEventActionBannerCanceled": "\"لقد ألغينا الحدث بسبب سوء الأحوال الجوية.\"",
-  "@subMessageEventActionBannerCanceled": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "messagesHaveBeenResent": "تم إعادة إرسال الرسائل",
   "@messagesHaveBeenResent": {
     "type": "text",
@@ -2915,12 +2909,6 @@
   },
   "empty": "فارغ",
   "@empty": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "subMessageEventActionBannerUpdated": "\"تم تحديث الوقت ليناسب الجميع بشكل أفضل\"",
-  "@subMessageEventActionBannerUpdated": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
