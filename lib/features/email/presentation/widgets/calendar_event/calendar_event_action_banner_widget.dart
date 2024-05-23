@@ -1,5 +1,4 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -73,15 +72,6 @@ class CalendarEventActionBannerWidget extends StatelessWidget {
                   ]
                 )
               ),
-              if (calendarEvent.getSubTitleEventAction(context).isNotEmpty)
-                Text(
-                  calendarEvent.getSubTitleEventAction(context),
-                  style: const TextStyle(
-                    color: AppColor.colorSubTitleEventActionText,
-                    fontSize: CalendarEventActionBannerStyles.subTileTextSize,
-                    fontWeight: FontWeight.w400
-                  ),
-                )
             ]
           ))
         ]

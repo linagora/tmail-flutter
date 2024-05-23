@@ -3028,18 +3028,6 @@ class AppLocalizations {
       name: 'messageEventActionBannerOrganizerCanceled');
   }
 
-  String get subMessageEventActionBannerUpdated {
-    return Intl.message(
-      '"The time has been updated to better suit all of you"',
-      name: 'subMessageEventActionBannerUpdated');
-  }
-
-  String get subMessageEventActionBannerCanceled {
-    return Intl.message(
-      '"We are canceling the event due to bad weather."',
-      name: 'subMessageEventActionBannerCanceled');
-  }
-
   String get anAttendee {
     return Intl.message(
       'An attendee',
