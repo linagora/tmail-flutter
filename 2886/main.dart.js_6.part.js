@@ -3480,7 +3480,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(this.context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       return A.Row$(A._setArrayType([t4, B.SizedBox_12_null_null_null, A.Expanded$(A.Text$(A.Intl__message("Always request read receipts with outgoing messages", _null, "emailReadReceiptsToggleDescription", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_ufz, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 88
+    $signature: 87
   };
   C.EmailRulesView_build_closure.prototype = {
     call$0() {
@@ -4719,7 +4719,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 88
+    $signature: 87
   };
   C.SettingsFirstLevelView_build__closure2.prototype = {
     call$0() {
@@ -4752,7 +4752,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 88
+    $signature: 87
   };
   C.SettingsFirstLevelView_build__closure1.prototype = {
     call$0() {
@@ -4785,7 +4785,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 88
+    $signature: 87
   };
   C.SettingsFirstLevelView_build__closure0.prototype = {
     call$0() {
@@ -4818,7 +4818,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 88
+    $signature: 87
   };
   C.SettingsFirstLevelView_build__closure.prototype = {
     call$0() {
@@ -5132,7 +5132,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(this.context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       return A.Row$(A._setArrayType([t4, B.SizedBox_12_null_null_null, A.Expanded$(A.Text$(A.Intl__message("Allow app to send you notifications", _null, "allowAppToSendYouNotifications", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_ufz, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 88
+    $signature: 87
   };
   C.IdentitiesView__buildIdentitiesViewMobile_closure.prototype = {
     call$0() {
@@ -6048,5 +6048,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "vM9EUlN4/QTt31/Hn0CqBdFVU0w=");
+})($__dart_deferred_initializers__, "M+vDiAv7RKghXDbCIiBZDdquXO8=");
 ;
