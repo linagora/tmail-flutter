@@ -2923,18 +2923,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subMessageEventActionBannerUpdated": "\"The time has been updated to better suit all of you\"",
-  "@subMessageEventActionBannerUpdated": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "subMessageEventActionBannerCanceled": "\"We are canceling the event due to bad weather.\"",
-  "@subMessageEventActionBannerCanceled": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "anAttendee": "An attendee",
   "@anAttendee": {
     "type": "text",

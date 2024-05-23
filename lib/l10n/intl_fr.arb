@@ -2906,12 +2906,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subMessageEventActionBannerCanceled": "\"Nous annulons l'événement en raison du mauvais temps.\"",
-  "@subMessageEventActionBannerCanceled": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "deleteAllSpamEmails": "Supprimer tous les indésirables",
   "@deleteAllSpamEmails": {
     "type": "text",
@@ -3020,12 +3014,6 @@
   },
   "quotaWarningBannerTitle": "Vous manquez d'espace de stockage (90%).",
   "@quotaWarningBannerTitle": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "subMessageEventActionBannerUpdated": "\"L'heure a été mise à jour pour mieux convenir à chacun d'entre vous\"",
-  "@subMessageEventActionBannerUpdated": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

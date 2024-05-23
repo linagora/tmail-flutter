@@ -2798,12 +2798,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subMessageEventActionBannerCanceled": "\"Chúng tôi đang hủy bỏ sự kiện do thời tiết xấu.\"",
-  "@subMessageEventActionBannerCanceled": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "deleteAllSpamEmails": "Xóa tất cả tin nhắn rác",
   "@deleteAllSpamEmails": {
     "type": "text",
@@ -2972,12 +2966,6 @@
   },
   "messageDialogWhenStoreSendingEmailFirst": "May mắn thay, bạn vẫn có thể",
   "@messageDialogWhenStoreSendingEmailFirst": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "subMessageEventActionBannerUpdated": "\"Thời gian đã được cập nhật để phù hợp hơn với tất cả các bạn\"",
-  "@subMessageEventActionBannerUpdated": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

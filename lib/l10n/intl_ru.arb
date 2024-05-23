@@ -2912,12 +2912,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subMessageEventActionBannerCanceled": "«Мероприятие отменено из-за плохой погоды.»",
-  "@subMessageEventActionBannerCanceled": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "deleteAllSpamEmails": "Удалить все письма из спама",
   "@deleteAllSpamEmails": {
     "type": "text",
@@ -3026,12 +3020,6 @@
   },
   "quotaWarningBannerTitle": "У вас заканчивается место (90%).",
   "@quotaWarningBannerTitle": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "subMessageEventActionBannerUpdated": "«Время изменено, теперь оно лучше подходит всем»",
-  "@subMessageEventActionBannerUpdated": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
