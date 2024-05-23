@@ -99,17 +99,6 @@ extension CalendarEventExtension on CalendarEvent {
     }
   }
 
-  String getSubTitleEventAction(BuildContext context) {
-    switch(method) {
-      case EventMethod.refresh:
-        return AppLocalizations.of(context).subMessageEventActionBannerUpdated;
-      case EventMethod.cancel:
-        return AppLocalizations.of(context).subMessageEventActionBannerCanceled;
-      default:
-        return '';
-    }
-  }
-
   String getUserNameEventAction({
     required BuildContext context,
     required ImagePaths imagePaths,
