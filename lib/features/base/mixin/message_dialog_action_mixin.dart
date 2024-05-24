@@ -34,6 +34,8 @@ mixin MessageDialogActionMixin {
         Color? cancelButtonColor,
         EdgeInsetsGeometry? marginIcon,
         PopInvokedCallback? onPopInvoked,
+        bool isArrangeActionButtonsVertical = false,
+        int? titleActionButtonMaxLines,
       }
   ) async {
     final responsiveUtils = Get.find<ResponsiveUtils>();
@@ -41,7 +43,12 @@ mixin MessageDialogActionMixin {
 
     if (alignCenter) {
       final childWidget = PointerInterceptor(
-        child: (ConfirmDialogBuilder(imagePaths, listTextSpan: listTextSpan)
+        child: (ConfirmDialogBuilder(
+            imagePaths,
+            listTextSpan: listTextSpan,
+            titleActionButtonMaxLines: titleActionButtonMaxLines,
+            isArrangeActionButtonsVertical: isArrangeActionButtonsVertical
+          )
           ..key(const Key('confirm_dialog_action'))
           ..title(title ?? '')
           ..content(message)
@@ -92,7 +99,9 @@ mixin MessageDialogActionMixin {
               imagePaths,
               showAsBottomSheet: true,
               listTextSpan: listTextSpan,
-              maxWith: responsiveUtils.getSizeScreenShortestSide(context) - 16
+              maxWith: responsiveUtils.getSizeScreenShortestSide(context) - 16,
+              titleActionButtonMaxLines: titleActionButtonMaxLines,
+              isArrangeActionButtonsVertical: isArrangeActionButtonsVertical
             )
             ..key(const Key('confirm_dialog_action'))
             ..title(title ?? '')
@@ -168,7 +177,12 @@ mixin MessageDialogActionMixin {
         }
       } else {
         final childWidget = PointerInterceptor(
-          child: (ConfirmDialogBuilder(imagePaths, listTextSpan: listTextSpan)
+          child: (ConfirmDialogBuilder(
+              imagePaths,
+              listTextSpan: listTextSpan,
+              titleActionButtonMaxLines: titleActionButtonMaxLines,
+              isArrangeActionButtonsVertical: isArrangeActionButtonsVertical
+            )
             ..key(const Key('confirm_dialog_action'))
             ..title(title ?? '')
             ..content(message)
