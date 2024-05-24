@@ -1,3 +1,7 @@
+## [0.11.4001] - 2024-05-22
+### Fixed
+- #2890 Remove fake reason in parsing cancelled calendar event
+
 ## [0.11.4] - 2024-05-22
 ### Fixed
 - #2599 Prevent notification flood by set silent for all notification except group notification
