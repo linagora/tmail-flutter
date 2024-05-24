@@ -1923,6 +1923,8 @@ class ComposerController extends BaseController with DragDropFileMixin {
       alignCenter: true,
       outsideDismissible: false,
       autoPerformPopBack: false,
+      titleActionButtonMaxLines: 1,
+      isArrangeActionButtonsVertical: true,
       usePopScope: true,
       onConfirmAction: () => _handleSaveMessageToDraft(context),
       onCancelAction: () {
