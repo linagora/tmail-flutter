@@ -1853,19 +1853,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return "";
       }
     },
-    CalendarEventExtension_getSubTitleEventAction(_this, context) {
-      var _null = null;
-      switch (_this.method) {
-        case C.EventMethod_5:
-          A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-          return A.Intl__message('"The time has been updated to better suit all of you"', _null, "subMessageEventActionBannerUpdated", _null, _null);
-        case C.EventMethod_4:
-          A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-          return A.Intl__message('"We are canceling the event due to bad weather."', _null, "subMessageEventActionBannerCanceled", _null, _null);
-        default:
-          return "";
-      }
-    },
     CalendarEventExtension_getUserNameEventAction(_this, context, imagePaths, listEmailAddressSender) {
       var t1, _null = null;
       switch (_this.method) {
@@ -7454,10 +7441,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t5.push(new A.Padding(C.EdgeInsetsDirectional_0_0_8_0, A.SvgPicture$asset(B.CalendarEventExtension_getIconEventAction(t1, imagePaths), C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, 20), _null));
       t6 = A.TextStyle$(_null, _null, B.CalendarEventExtension_getColorEventActionText(t1, t2), _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null);
       t7 = B.CalendarEventExtension_getUserNameEventAction(t1, context, imagePaths, t2);
-      t4 = A._setArrayType([A.RichText$(_null, _null, _null, C.TextOverflow_0, _null, _null, true, _null, A.TextSpan$(A._setArrayType([A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, B.CalendarEventExtension_getColorEventActionText(t1, t2), _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_6_700, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), t7), A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, _null, B.CalendarEventExtension_getTitleEventAction(t1, context, t2))], type$.JSArray_InlineSpan), _null, _null, _null, _null, _null, _null, _null, t6, _null), C.TextAlign_4, _null, _null, C._LinearTextScaler_1, C.TextWidthBasis_0)], t4);
-      if (B.CalendarEventExtension_getSubTitleEventAction(t1, context).length !== 0)
-        t4.push(A.Text$(B.CalendarEventExtension_getSubTitleEventAction(t1, context), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mqh, _null, _null, _null, _null, _null));
-      t5.push(A.Expanded$(A.Column$(t4, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1), 1));
+      t5.push(A.Expanded$(A.Column$(A._setArrayType([A.RichText$(_null, _null, _null, C.TextOverflow_0, _null, _null, true, _null, A.TextSpan$(A._setArrayType([A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, B.CalendarEventExtension_getColorEventActionText(t1, t2), _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_6_700, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), t7), A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, _null, B.CalendarEventExtension_getTitleEventAction(t1, context, t2))], type$.JSArray_InlineSpan), _null, _null, _null, _null, _null, _null, _null, t6, _null), C.TextAlign_4, _null, _null, C._LinearTextScaler_1, C.TextWidthBasis_0)], t4), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1), 1));
       return A.Container$(_null, A.Row$(t5, C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(t3, _null, _null, C.BorderRadius_tLn3, _null, _null, _null, C.BoxShape_0), _null, _null, _null, E.EdgeInsets_16_12_16_12, C.EdgeInsets_12_12_12_12, _null, _null, _null);
     }
   };
@@ -7700,7 +7684,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     build$1(context) {
       var t1, t2, t3, t4, t5, _this = this, _null = null;
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      t1 = A.Text$(A.Intl__message("Attendees", _null, "attendees", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mqh0, _null, _null, _null, _null, _null);
+      t1 = A.Text$(A.Intl__message("Attendees", _null, "attendees", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mqh, _null, _null, _null, _null, _null);
       t2 = type$.JSArray_Widget;
       t3 = A._setArrayType([new B.OrganizerWidget(_this._widget.organizer, _null)], t2);
       t4 = _this.___EventAttendeeDetailWidgetState__attendeesDisplayed_A;
@@ -7724,7 +7708,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.find$1$1$tag(0, _null, type$.ResponsiveUtils);
       t1 = type$.AppLocalizations;
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
-      t2 = A.Text$(A.Intl__message("Who", _null, "who", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mqh0, _null, _null, _null, _null, _null);
+      t2 = A.Text$(A.Intl__message("Who", _null, "who", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mqh, _null, _null, _null, _null, _null);
       t3 = this.organizer;
       t4 = t3.mailto;
       t4 = t4 == null ? _null : t4.value;
@@ -7765,28 +7749,28 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       t1 = this.listHyperLink;
       t2 = A._arrayInstanceType(t1)._eval$1("MappedListIterable<1,HyperLinkWidget>");
-      return A.Row$(A._setArrayType([new A.SizedBox(100, _null, A.Text$(A.Intl__message("Link", _null, "link", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mqh0, _null, _null, _null, _null, _null), _null), A.Expanded$(A.Column$(A.List_List$of(new A.MappedListIterable(t1, new B.EventLinkDetailWidget_build_closure(), t2), true, t2._eval$1("ListIterable.E")), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
+      return A.Row$(A._setArrayType([new A.SizedBox(100, _null, A.Text$(A.Intl__message("Link", _null, "link", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mqh, _null, _null, _null, _null, _null), _null), A.Expanded$(A.Column$(A.List_List$of(new A.MappedListIterable(t1, new B.EventLinkDetailWidget_build_closure(), t2), true, t2._eval$1("ListIterable.E")), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     }
   };
   B.EventLocationDetailWidget.prototype = {
     build$1(context) {
       var _null = null;
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      return A.Row$(A._setArrayType([new A.SizedBox(100, _null, A.Text$(A.Intl__message("Location", _null, "location", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mqh0, _null, _null, _null, _null, _null), _null), A.Expanded$(B.Linkify$(D.List_EmailLinkifier_UrlLinkifier, new B.EventLocationDetailWidget_build_closure(this), C.LinkifyOptions_true_true_true, C.TextStyle_oHY0, this.locationEvent), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
+      return A.Row$(A._setArrayType([new A.SizedBox(100, _null, A.Text$(A.Intl__message("Location", _null, "location", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mqh, _null, _null, _null, _null, _null), _null), A.Expanded$(B.Linkify$(D.List_EmailLinkifier_UrlLinkifier, new B.EventLocationDetailWidget_build_closure(this), C.LinkifyOptions_true_true_true, C.TextStyle_oHY0, this.locationEvent), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     }
   };
   B.EventLocationInformationWidget.prototype = {
     build$1(context) {
       var _null = null;
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      return A.Row$(A._setArrayType([new A.SizedBox(100, _null, A.Text$(A.Intl__message("Where", _null, "where", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mqh0, _null, _null, _null, _null, _null), _null), A.Expanded$(B.Linkify$(D.List_EmailLinkifier_UrlLinkifier, new B.EventLocationInformationWidget_build_closure(this), C.LinkifyOptions_true_true_true, C.TextStyle_oHY0, this.locationEvent), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
+      return A.Row$(A._setArrayType([new A.SizedBox(100, _null, A.Text$(A.Intl__message("Where", _null, "where", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mqh, _null, _null, _null, _null, _null), _null), A.Expanded$(B.Linkify$(D.List_EmailLinkifier_UrlLinkifier, new B.EventLocationInformationWidget_build_closure(this), C.LinkifyOptions_true_true_true, C.TextStyle_oHY0, this.locationEvent), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     }
   };
   B.EventTimeWidgetWidget.prototype = {
     build$1(context) {
       var _null = null;
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      return A.Row$(A._setArrayType([new A.SizedBox(100, _null, A.Text$(A.Intl__message("Time", _null, "time", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mqh0, _null, _null, _null, _null, _null), _null), A.Expanded$(A.Text$(this.timeEvent, _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_oHY0, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
+      return A.Row$(A._setArrayType([new A.SizedBox(100, _null, A.Text$(A.Intl__message("Time", _null, "time", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mqh, _null, _null, _null, _null, _null), _null), A.Expanded$(A.Text$(this.timeEvent, _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_oHY0, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     }
   };
   B.EventTimeInformationWidget.prototype = {
@@ -7798,7 +7782,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = $.GetInstance__getInstance = C.C_GetInstance;
       t1.find$1$1$tag(0, _null, type$.ResponsiveUtils);
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      t1 = A.Text$(A.Intl__message("When", _null, "when", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mqh0, _null, _null, _null, _null, _null);
+      t1 = A.Text$(A.Intl__message("When", _null, "when", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mqh, _null, _null, _null, _null, _null);
       t2 = type$.MediaQuery;
       if (A.InheritedModel_inheritFrom(context, _null, t2).data.size.get$shortestSide() < 600) {
         t3 = A.InheritedModel_inheritFrom(context, _null, t2).data;
@@ -20291,8 +20275,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.TextStyle_kmC2 = new A.TextStyle(true, C.Color_4278221567, null, null, null, null, 15, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_kmC4 = new A.TextStyle(true, C.Color_4278221567, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.Color_4287861651 = new A.Color(4287861651);
-    D.TextStyle_mqh = new A.TextStyle(true, D.Color_4287861651, null, null, null, null, 13, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.TextStyle_mqh0 = new A.TextStyle(true, D.Color_4287861651, null, null, null, null, 16, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_mqh = new A.TextStyle(true, D.Color_4287861651, null, null, null, null, 16, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_oHY23 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 13, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_oHY21 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 15, C.FontWeight_5_600, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_oHY20 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 21, C.FontWeight_6_700, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -20361,5 +20344,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "dt+wPT/Mhp2fmhSUuQkjvHqMatY=");
+})($__dart_deferred_initializers__, "I8rEUQP3nsWHCX4GTF4demyXIiE=");
 ;
