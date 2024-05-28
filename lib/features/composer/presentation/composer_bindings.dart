@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_s
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/restore_email_inline_images_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_composed_email_to_local_storage_browser_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
@@ -211,6 +212,10 @@ class ComposerBindings extends BaseBindings {
     ));
     Get.lazyPut(() => RestoreEmailInlineImagesInteractor(
       Get.find<ComposerCacheRepository>()));
+    Get.lazyPut(() => StoreComposedEmailToLocalStorageBrowserInteractor(
+      Get.find<ComposerCacheRepository>(),
+      Get.find<ComposerRepository>(),
+    ));
 
     IdentityInteractorsBindings().dependencies();
   }
@@ -236,6 +241,7 @@ class ComposerBindings extends BaseBindings {
       Get.find<GetAlwaysReadReceiptSettingInteractor>(),
       Get.find<CreateNewAndSendEmailInteractor>(),
       Get.find<CreateNewAndSaveEmailToDraftsInteractor>(),
+      Get.find<StoreComposedEmailToLocalStorageBrowserInteractor>(),
     ));
   }
 
