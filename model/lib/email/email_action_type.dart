@@ -28,5 +28,6 @@ enum EmailActionType {
   composeFromUnsubscribeMailtoLink,
   archiveMessage,
   printAll,
-  downloadMessageAsEML
+  downloadMessageAsEML,
+  restoreComposedEmailFromLocalStorage
 }

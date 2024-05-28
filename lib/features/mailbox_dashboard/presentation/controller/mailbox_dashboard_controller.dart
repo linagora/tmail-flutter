@@ -81,9 +81,11 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_repor
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_app_dashboard_configuration_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composer_cache_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composed_email_from_local_storage_browser_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composed_email_from_local_storage_browser_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
@@ -189,6 +191,7 @@ class MailboxDashBoardController extends ReloadableController {
   final GetRestoredDeletedMessageInterator _getRestoredDeletedMessageInteractor;
   final RemoveComposerCacheOnWebInteractor _removeComposerCacheOnWebInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
+  final GetComposedEmailFromLocalStorageBrowserInteractor _getComposedEmailFromLocalStorageBrowserInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -269,6 +272,7 @@ class MailboxDashBoardController extends ReloadableController {
     this._getRestoredDeletedMessageInteractor,
     this._removeComposerCacheOnWebInteractor,
     this._getAllIdentitiesInteractor,
+    this._getComposedEmailFromLocalStorageBrowserInteractor,
   );
 
   @override
@@ -373,6 +377,8 @@ class MailboxDashBoardController extends ReloadableController {
       _handleGetRestoredDeletedMessageSuccess(success);
     } else if (success is GetAllIdentitiesSuccess) {
       _handleGetAllIdentitiesSuccess(success);
+    } else if (success is GetComposedEmailFromLocalStorageBrowserSuccess) {
+      goToComposer(ComposerArguments.fromLocalStorageBrowser(success.email));
     }
   }
 
@@ -1297,6 +1303,7 @@ class MailboxDashBoardController extends ReloadableController {
     _setUpComponentsFromSession(session);
     if (PlatformInfo.isWeb) {
       _handleComposerCache();
+      _restoreComposedEmailFromLocalStorageBrowser();
     }
   }
 
@@ -2545,6 +2552,10 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   List<Identity> get listIdentities => _identities ?? [];
+
+  void _restoreComposedEmailFromLocalStorageBrowser() {
+    consumeState(_getComposedEmailFromLocalStorageBrowserInteractor.execute());
+  }
 
   @override
   void onClose() {
