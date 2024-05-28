@@ -15,6 +15,7 @@ class DesktopAppBarComposerWidget extends StatelessWidget {
   final ScreenDisplayMode? displayMode;
   final OnChangeDisplayModeAction? onChangeDisplayModeAction;
   final BoxConstraints? constraints;
+  final VoidCallback? onOpenNewTabAction;
 
   final _imagePaths = Get.find<ImagePaths>();
 
@@ -25,6 +26,7 @@ class DesktopAppBarComposerWidget extends StatelessWidget {
     this.displayMode,
     this.onChangeDisplayModeAction,
     this.constraints,
+    this.onOpenNewTabAction,
   });
 
   @override
@@ -49,6 +51,16 @@ class DesktopAppBarComposerWidget extends StatelessWidget {
               child: Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  TMailButtonWidget.fromIcon(
+                    icon: _imagePaths.icOpenInNewTab,
+                    backgroundColor: Colors.transparent,
+                    tooltipMessage: AppLocalizations.of(context).openInNewTab,
+                    iconSize: AppBarComposerWidgetStyle.iconSize,
+                    iconColor: AppBarComposerWidgetStyle.iconColor,
+                    padding: AppBarComposerWidgetStyle.iconPadding,
+                    onTapActionCallback: onOpenNewTabAction
+                  ),
+                  const SizedBox(width: AppBarComposerWidgetStyle.space),
                   TMailButtonWidget.fromIcon(
                     icon: _imagePaths.icMinimize,
                     backgroundColor: Colors.transparent,
