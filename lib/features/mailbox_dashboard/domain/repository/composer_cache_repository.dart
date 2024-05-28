@@ -7,4 +7,8 @@ abstract class ComposerCacheRepository {
   ComposerCache getComposerCacheOnWeb();
 
   void removeComposerCacheOnWeb();
+
+  Future<void> storeComposedEmailToLocalStorageBrowser(Email email);
+
+  Future<Email> getComposedEmailFromLocalStorageBrowser();
 }
