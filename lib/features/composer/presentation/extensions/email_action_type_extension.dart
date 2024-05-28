@@ -31,6 +31,7 @@ extension EmailActionTypeExtension on EmailActionType {
       case EmailActionType.editDraft:
       case EmailActionType.editSendingEmail:
       case EmailActionType.reopenComposerBrowser:
+      case EmailActionType.restoreComposedEmailFromLocalStorage:
         return subject;
       default:
         return '';

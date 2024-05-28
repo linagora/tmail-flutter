@@ -104,6 +104,14 @@ class ComposerArguments extends RouterArguments {
       displayMode: composerCache.displayMode,
     );
 
+  factory ComposerArguments.fromLocalStorageBrowser(Email email) =>
+    ComposerArguments(
+      emailActionType: EmailActionType.restoreComposedEmailFromLocalStorage,
+      presentationEmail: email.toPresentationEmail(),
+      attachments: email.allAttachments,
+      emailContents: email.emailContentList.asHtmlString,
+    );
+
   factory ComposerArguments.replyEmail({
     required PresentationEmail presentationEmail,
     required String content,
