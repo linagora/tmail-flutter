@@ -288,6 +288,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 onCloseViewAction: () => controller.handleClickCloseComposer(context),
                 onChangeDisplayModeAction: controller.displayScreenTypeComposerAction,
                 constraints: constraints,
+                onOpenNewTabAction: controller.onOpenNewTabAction,
               )),
               ConstrainedBox(
                 constraints: BoxConstraints(
