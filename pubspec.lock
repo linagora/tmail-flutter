@@ -425,11 +425,11 @@ packages:
     source: path
     version: "1.0.0+1"
   enough_html_editor:
-    dependency: "direct overridden"
+    dependency: transitive
     description:
       path: "."
-      ref: "bugfix/fix-lost-part-of-content-with-long-text"
-      resolved-ref: cb615723b8d086024e91ab72fb3777e775751708
+      ref: cnb_supported
+      resolved-ref: "6409f47b01c5992906971f2d8fdb8be3278bf787"
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
     version: "0.0.5"
