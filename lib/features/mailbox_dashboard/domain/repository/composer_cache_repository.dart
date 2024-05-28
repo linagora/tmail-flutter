@@ -28,4 +28,8 @@ abstract class ComposerCacheRepository {
     String htmlContent,
     TransformConfiguration transformConfiguration,
     Map<String, String> mapUrlDownloadCID);
+
+  Future<void> storeComposedEmailToLocalStorageBrowser(Email email);
+
+  Future<Email> getComposedEmailFromLocalStorageBrowser();
 }
