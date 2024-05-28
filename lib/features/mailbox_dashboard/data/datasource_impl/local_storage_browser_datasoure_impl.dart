@@ -35,4 +35,11 @@ class LocalStorageBrowserDatasourceImpl extends LocalStorageBrowserDatasource {
       }
     }).catchError(_exceptionThrower.throwException);
   }
+
+  @override
+  Future<void> deleteComposedEmail() {
+    return Future.sync(() async {
+      return html.window.localStorage.remove(composedEmailLocalStorageKey);
+    }).catchError(_exceptionThrower.throwException);
+  }
 }

@@ -72,4 +72,9 @@ class ComposerCacheRepositoryImpl extends ComposerCacheRepository {
   Future<void> storeComposedEmailToLocalStorageBrowser(Email email) {
     return _localStorageBrowserDatasource.storeComposedEmail(email);
   }
+
+  @override
+  Future<void> deleteComposedEmailOnLocalStorageBrowser() {
+    return _localStorageBrowserDatasource.deleteComposedEmail();
+  }
 }

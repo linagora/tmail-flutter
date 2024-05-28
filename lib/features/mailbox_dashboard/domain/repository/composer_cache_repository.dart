@@ -32,4 +32,6 @@ abstract class ComposerCacheRepository {
   Future<void> storeComposedEmailToLocalStorageBrowser(Email email);
 
   Future<Email> getComposedEmailFromLocalStorageBrowser();
+
+  Future<void> deleteComposedEmailOnLocalStorageBrowser();
 }
