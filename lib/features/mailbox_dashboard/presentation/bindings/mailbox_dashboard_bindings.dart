@@ -62,6 +62,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/spam_re
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/search_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/spam_report_repository.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/delete_composed_email_on_local_storage_browser_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_app_dashboard_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
@@ -181,6 +182,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<RemoveComposerCacheOnWebInteractor>(),
       Get.find<GetAllIdentitiesInteractor>(),
       Get.find<GetComposedEmailFromLocalStorageBrowserInteractor>(),
+      Get.find<DeleteComposedEmailOnLocalStorageBrowserInteractor>(),
     ));
     Get.put(AdvancedFilterController());
   }
@@ -288,6 +290,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     );
     Get.lazyPut(() => GetComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => GetComposedEmailFromLocalStorageBrowserInteractor(Get.find<ComposerCacheRepository>()));
+    Get.lazyPut(() => DeleteComposedEmailOnLocalStorageBrowserInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => MarkAsEmailReadInteractor(
         Get.find<EmailRepository>(),

@@ -4,4 +4,6 @@ abstract class LocalStorageBrowserDatasource {
   Future<void> storeComposedEmail(Email email);
 
   Future<Email> getComposedEmail();
+
+  Future<void> deleteComposedEmail();
 }
