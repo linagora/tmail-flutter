@@ -7,17 +7,22 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/account/authentication_type.dart';
+import 'package:model/account/password.dart';
+import 'package:model/account/personal_account.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_url_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
+import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -31,6 +36,23 @@ import 'package:uuid/uuid.dart';
 import '../../email/presentation/controller/single_email_controller_test.mocks.dart';
 import '../../mailbox_dashboard/presentation/controller/mailbox_dashboard_controller_test.mocks.dart';
 import 'home_controller_test.mocks.dart';
+
+class TestHomeController extends HomeController {
+  TestHomeController(
+    super.cleanupEmailCacheInteractor,
+    super.emailReceiveManager,
+    super.cleanupRecentSearchCacheInteractor,
+    super.cleanupRecentLoginUrlCacheInteractor,
+    super.cleanupRecentLoginUsernameCacheInteractor);
+
+  bool goToLoginCalled = false;
+
+  @override
+  void goToLogin() {
+    goToLoginCalled = true;
+    super.goToLogin();
+  }
+}
 
 @GenerateNiceMocks([
   MockSpec<CleanupEmailCacheInteractor>(),
@@ -133,6 +155,41 @@ void main() {
       // Assert
       verifyNever(mockAppToast.showToastMessage(any, any));
       verifyNever(mockAppToast.showToastErrorMessage(any, any));
+    });
+  });
+
+  group("HomeController: Auto log out feature test:", () {
+    test(
+      'SHOULD log user out '
+      'WHEN user logged in with basic auth '
+      'AND user reloads TwakeMail '
+      'AND the app fails to get user session',
+    () async {
+      // arrange
+      when(mockGetAuthenticatedAccountInteractor.execute(stateChange: anyNamed('stateChange')))
+        .thenAnswer((_) => Stream.value(Right(GetCredentialViewState(
+          Uri.parse('https://test.com'),
+          UserName('value'),
+          Password('value'),
+          PersonalAccount(
+            'abc123',
+            AuthenticationType.basic,
+            isSelected: true)))));
+      when(mockGetSessionInteractor.execute(stateChange: anyNamed('stateChange')))
+        .thenAnswer((_) => Stream.value(Left(GetSessionFailure(Exception()))));
+      final homeController = TestHomeController(
+        cleanupEmailCacheInteractor,
+        emailReceiveManager,
+        cleanupRecentSearchCacheInteractor,
+        cleanupRecentLoginUrlCacheInteractor,
+        cleanupRecentLoginUsernameCacheInteractor);
+      
+      // act
+      homeController.onReady();
+      await Future.delayed(const Duration(microseconds: 500));
+      
+      // assert
+      expect(homeController.goToLoginCalled, true);
     });
   });
 }
