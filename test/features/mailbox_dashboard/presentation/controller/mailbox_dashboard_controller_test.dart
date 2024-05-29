@@ -2,10 +2,12 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/widgets.dart' hide State;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/account/account.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
@@ -15,7 +17,13 @@ import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:model/account/authentication_type.dart';
+import 'package:model/account/password.dart';
+import 'package:model/account/personal_account.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:model/oidc/oidc_configuration.dart';
+import 'package:model/oidc/token_id.dart';
+import 'package:model/oidc/token_oidc.dart';
 import 'package:model/user/user_profile.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rxdart/subjects.dart';
@@ -28,9 +36,13 @@ import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_ema
 import 'package:tmail_ui_user/features/email/domain/usecases/get_restored_deleted_message_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/restore_deleted_message_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
+import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
@@ -65,7 +77,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sending_email_interactor.dart';
@@ -87,6 +101,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_inter
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
     if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
@@ -94,6 +109,42 @@ import 'package:uuid/uuid.dart';
 
 import '../../../email/presentation/controller/single_email_controller_test.mocks.dart';
 import 'mailbox_dashboard_controller_test.mocks.dart';
+
+class TestMailboxDashboardController extends MailboxDashBoardController {
+  TestMailboxDashboardController(
+    super.moveToMailboxInteractor,
+    super.deleteEmailPermanentlyInteractor,
+    super.markAsMailboxReadInteractor,
+    super.getEmailCacheOnWebInteractor,
+    super.markAsEmailReadInteractor,
+    super.markAsStarEmailInteractor,
+    super.markAsMultipleEmailReadInteractor,
+    super.markAsStarMultipleEmailInteractor,
+    super.moveMultipleEmailToMailboxInteractor,
+    super.emptyTrashFolderInteractor,
+    super.deleteMultipleEmailsPermanentlyInteractor,
+    super.getEmailByIdInteractor,
+    super.sendEmailInteractor,
+    super.storeSendingEmailInteractor,
+    super.updateSendingEmailInteractor,
+    super.getAllSendingEmailInteractor,
+    super.storeSessionInteractor,
+    super.emptySpamFolderInteractor,
+    super.saveEmailAsDraftsInteractor,
+    super.updateEmailDraftsInteractor,
+    super.deleteSendingEmailInteractor,
+    super.unsubscribeEmailInteractor,
+    super.restoreDeletedMessageInteractor,
+    super.getRestoredDeletedMessageInteractor);
+
+  bool goToLoginCalled = false;
+
+  @override
+  void goToLogin() {
+    goToLoginCalled = true;
+    super.goToLogin();
+  }
+}
 
 mockControllerCallback() => InternalFinalCallback<void>(callback: () {});
 const fallbackGenerators = {
@@ -153,6 +204,8 @@ const fallbackGenerators = {
   MockSpec<LoadMoreEmailsInMailboxInteractor>(),
   MockSpec<SearchEmailInteractor>(),
   MockSpec<SearchMoreEmailInteractor>(),
+  MockSpec<GetAllVacationInteractor>(),
+  MockSpec<UpdateVacationInteractor>(),
 ])
 void main() {
   // mock mailbox dashboard controller direct dependencies
@@ -249,10 +302,12 @@ void main() {
   final context = MockBuildContext();
   const queryString = 'test text';
   final google = Uri.parse('https://www.google.com');
-  final testSession =
-      Session({}, {}, {}, UserName('data'), google, google, google, google, State('1'));
-  final testMailboxId = MailboxId(Id('1'));
   final testAccountId = AccountId(Id('123'));
+  final testSession =
+    Session({}, {
+      AccountId(Id('abc123')): Account(AccountName('data'), true, false, {})
+    }, {}, UserName('data'), google, google, google, google, State('1'));
+  final testMailboxId = MailboxId(Id('1'));
 
   group('search/sort/filter feature:', () {
     setUp(() {
@@ -468,5 +523,236 @@ void main() {
     });
 
     tearDown(Get.deleteAll);
+  });
+
+  group('MailboxDashboardController: Auto log out feature test:', () {
+
+    late TestMailboxDashboardController testMailboxDashboardController;
+
+    setUp(() {
+      // Bare minimum setup for MailboxDashboardController start
+      Get.put<RemoveEmailDraftsInteractor>(removeEmailDraftsInteractor);
+      Get.put<EmailReceiveManager>(emailReceiveManager);
+      Get.put<DownloadController>(downloadController);
+      Get.put<AppGridDashboardController>(appGridDashboardController);
+      Get.put<SpamReportController>(spamReportController);
+      Get.put<NetworkConnectionController>(networkConnectionController);
+      Get.put<CachingManager>(cachingManager);
+      Get.put<LanguageCacheManager>(languageCacheManager);
+      Get.put<AuthorizationInterceptors>(authorizationInterceptors);
+      Get.put<AuthorizationInterceptors>(
+        authorizationInterceptors,
+        tag: BindingTag.isolateTag,
+      );
+      Get.put<DynamicUrlInterceptors>(dynamicUrlInterceptors);
+      Get.put<DeleteCredentialInteractor>(deleteCredentialInteractor);
+      Get.put<LogoutOidcInteractor>(logoutOidcInteractor);
+      Get.put<DeleteAuthorityOidcInteractor>(deleteAuthorityOidcInteractor);
+      Get.put<AppToast>(appToast);
+      Get.put<ImagePaths>(imagePaths);
+      Get.put<ResponsiveUtils>(responsiveUtils);
+      Get.put<Uuid>(uuid);
+      Get.put<GetSessionInteractor>(getSessionInteractor);
+      Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
+      Get.put<UpdateAuthenticationAccountInteractor>(updateAuthenticationAccountInteractor);
+
+      Get.testMode = true;
+      PackageInfo.setMockInitialValues(
+        appName: '',
+        packageName: '',
+        version: '',
+        buildNumber: '',
+        buildSignature: '');
+
+      when(emailReceiveManager.pendingEmailAddressInfo).thenAnswer((_) => BehaviorSubject.seeded(null));
+      when(emailReceiveManager.pendingEmailContentInfo).thenAnswer((_) => BehaviorSubject.seeded(null));
+      when(emailReceiveManager.pendingFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
+
+      searchController = SearchController(
+        quickSearchEmailInteractor,
+        saveRecentSearchInteractor,
+        getAllRecentSearchLatestInteractor);
+      Get.put(searchController);
+
+      testMailboxDashboardController = TestMailboxDashboardController(
+        moveToMailboxInteractor,
+        deleteEmailPermanentlyInteractor,
+        markAsMailboxReadInteractor,
+        getEmailCacheOnWebInteractor,
+        markAsEmailReadInteractor,
+        markAsStarEmailInteractor,
+        markAsMultipleEmailReadInteractor,
+        markAsStarMultipleEmailInteractor,
+        moveMultipleEmailToMailboxInteractor,
+        emptyTrashFolderInteractor,
+        deleteMultipleEmailsPermanentlyInteractor,
+        getEmailByIdInteractor,
+        sendEmailInteractor,
+        storeSendingEmailInteractor,
+        updateSendingEmailInteractor,
+        getAllSendingEmailInteractor,
+        storeSessionInteractor,
+        emptySpamFolderInteractor,
+        saveEmailAsDraftsInteractor,
+        updateEmailDraftsInteractor,
+        deleteSendingEmailInteractor,
+        unsubscribeEmailInteractor,
+        restoreDeletedMessageInteractor,
+        getRestoredDeletedMessageInteractor);
+      // Bare minimum setup for MailboxDashboardController end
+
+      Get.put(CacheExceptionThrower());
+      Get.put<GetAllVacationInteractor>(MockGetAllVacationInteractor());
+      Get.put<UpdateVacationInteractor>(MockUpdateVacationInteractor());
+    });
+
+    tearDown(Get.deleteAll);
+
+    test(
+      'SHOULD log user out '
+      'WHEN user logged in with basic auth '
+      'AND user reloads mailbox dashboard page '
+      'AND the app fails to get user session',
+    () async {
+      // arrange
+      when(getAuthenticatedAccountInteractor.execute(stateChange: anyNamed('stateChange')))
+        .thenAnswer((_) => Stream.value(Right(GetCredentialViewState(
+          Uri.parse('https://test.com'),
+          UserName('value'),
+          Password('value'),
+          PersonalAccount(
+            'abc123',
+            AuthenticationType.basic,
+            isSelected: true)))));
+      when(getSessionInteractor.execute(stateChange: anyNamed('stateChange')))
+        .thenAnswer((_) => Stream.value(Left(GetSessionFailure(Exception()))));
+      
+      // act
+      testMailboxDashboardController.onReady();
+      await Future.delayed(const Duration(microseconds: 500));
+      
+      // assert
+      expect(testMailboxDashboardController.goToLoginCalled, true);
+    });
+
+    test(
+      'SHOULD log user out '
+      'WHEN user logged in with OIDC '
+      'AND user reloads mailbox dashboard page '
+      'AND the app fails to get user session',
+    () async {
+      // arrange
+      when(getAuthenticatedAccountInteractor.execute(stateChange: anyNamed('stateChange')))
+        .thenAnswer((_) => Stream.value(Right(GetStoredTokenOidcSuccess(
+          Uri.parse('https://test.com'),
+          TokenOIDC('token', TokenId('uuid'), 'refreshToken'),
+          OIDCConfiguration(authority: '', clientId: '', scopes: []),
+          PersonalAccount(
+            'abc123',
+            AuthenticationType.basic,
+            isSelected: true)))));
+      when(getSessionInteractor.execute(stateChange: anyNamed('stateChange')))
+        .thenAnswer((_) => Stream.value(Left(GetSessionFailure(Exception()))));
+      
+      // act
+      testMailboxDashboardController.onReady();
+      await Future.delayed(const Duration(microseconds: 500));
+      
+      // assert
+      expect(testMailboxDashboardController.goToLoginCalled, true);
+    });
+
+    test(
+      'SHOULD log user out '
+      'WHEN user logged in with OIDC '
+      'AND user reloads mailbox dashboard page '
+      'AND the app gets user session successfully '
+      'BUT there is no qualified api url in session',
+    () async {
+        // arrange
+        final testSession =
+          Session(
+            {},
+            {AccountId(Id('abc123')): Account(AccountName('data'), true, false, {})},
+            {},
+            UserName('data'),
+            Uri(),
+            google,
+            google,
+            google,
+            State('1'));
+        testMailboxDashboardController.sessionCurrent = testSession;
+        when(getAuthenticatedAccountInteractor.execute(stateChange: anyNamed('stateChange')))
+          .thenAnswer((_) => Stream.value(Right(GetStoredTokenOidcSuccess(
+            Uri.parse('https://test.com'),
+            TokenOIDC('token', TokenId('uuid'), 'refreshToken'),
+            OIDCConfiguration(authority: '', clientId: '', scopes: []),
+            PersonalAccount(
+              'abc123',
+              AuthenticationType.basic,
+              isSelected: true)))));
+        when(getSessionInteractor.execute(stateChange: anyNamed('stateChange')))
+          .thenAnswer((_) => Stream.value(Right(GetSessionSuccess(testSession))));
+        
+        // act
+        testMailboxDashboardController.onReady();
+        await Future.delayed(const Duration(microseconds: 500));
+        
+        // assert
+        expect(testMailboxDashboardController.goToLoginCalled, true);
+    });
+
+    test(
+      'SHOULD log user out '
+      'WHEN the app fails to get authenticated account',
+    () async {
+      // arrange
+      when(getAuthenticatedAccountInteractor.execute(stateChange: anyNamed('stateChange')))
+        .thenAnswer((_) => Stream.value(Left(
+          GetAuthenticatedAccountFailure(Exception()))));
+      
+      // act
+      testMailboxDashboardController.onReady();
+      await Future.delayed(const Duration(microseconds: 500));
+      
+      // assert
+      expect(testMailboxDashboardController.goToLoginCalled, true);
+    });
+
+    test(
+      'SHOULD log user out '
+      'WHEN user logged in with basic auth '
+      'AND user reloads mailbox dashboard page '
+      'AND the app fails to get credential',
+    () async {
+      // arrange
+      when(getAuthenticatedAccountInteractor.execute(stateChange: anyNamed('stateChange')))
+        .thenAnswer((_) => Stream.value(Left(GetCredentialFailure(Exception()))));
+      
+      // act
+      testMailboxDashboardController.onReady();
+      await Future.delayed(const Duration(microseconds: 500));
+      
+      // assert
+      expect(testMailboxDashboardController.goToLoginCalled, true);
+    });
+
+    test(
+      'SHOULD log user out '
+      'WHEN user logged in with OIDC '
+      'AND user reloads mailbox dashboard page '
+      'AND the app fails to get stored token oidc',
+    () async {
+      // arrange
+      when(getAuthenticatedAccountInteractor.execute(stateChange: anyNamed('stateChange')))
+        .thenAnswer((_) => Stream.value(Left(GetStoredTokenOidcFailure(Exception()))));
+      
+      // act
+      testMailboxDashboardController.onReady();
+      await Future.delayed(const Duration(microseconds: 500));
+      
+      // assert
+      expect(testMailboxDashboardController.goToLoginCalled, true);
+    });
   });
 }
