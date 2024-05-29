@@ -105,7 +105,6 @@ class ComposerController extends BaseController with DragDropFileMixin implement
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final networkConnectionController = Get.find<NetworkConnectionController>();
-  final _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
   final _beforeUnloadManager = Get.find<BeforeUnloadManager>();
 
   final composerArguments = Rxn<ComposerArguments>();
@@ -194,7 +193,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   ButtonState _closeComposerButtonState = ButtonState.enabled;
   ButtonState _saveToDraftButtonState = ButtonState.enabled;
   ButtonState _sendButtonState = ButtonState.enabled;
-  ButtonState _openNewTabButtonState = ButtonState.enabled;
+  ButtonState openNewTabButtonState = ButtonState.enabled;
 
   late Worker uploadInlineImageWorker;
   late Worker dashboardViewStateWorker;
@@ -355,7 +354,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     } else if (failure is GetAlwaysReadReceiptSettingFailure) {
       hasRequestReadReceipt.value = false;
     } else if (failure is StoreComposedEmailToLocalStorageBrowserFailure) {
-      _openNewTabButtonState = ButtonState.enabled;
+      openNewTabButtonState = ButtonState.enabled;
     }
   }
 
@@ -1180,7 +1179,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     if (session != null && accountId != null) {
-      final uploadUri = session.getUploadUri(accountId, jmapUrl: _dynamicUrlInterceptors.jmapUrl);
+      final uploadUri = session.getUploadUri(accountId, jmapUrl: dynamicUrlInterceptors.jmapUrl);
       uploadController.justUploadAttachmentsAction(
         uploadFiles: pickedFiles,
         uploadUri: uploadUri,
@@ -1736,7 +1735,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   void _handleUploadInlineSuccess(SuccessAttachmentUploadState uploadState) {
     uploadController.clearUploadInlineViewState();
 
-    final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors.jmapUrl);
+    final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
     final accountId = mailboxDashBoardController.accountId.value;
 
     if (baseDownloadUrl != null && accountId != null) {
@@ -2307,11 +2306,11 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   }
 
   Future<void> onOpenNewTabAction() async {
-    if (_openNewTabButtonState == ButtonState.disabled) {
+    if (openNewTabButtonState == ButtonState.disabled) {
       log('ComposerController::onOpenNewTabAction: OPENING NEW TAB COMPOSER');
       return;
     }
-    _openNewTabButtonState = ButtonState.disabled;
+    openNewTabButtonState = ButtonState.disabled;
 
     final arguments = composerArguments.value;
     final session = mailboxDashBoardController.sessionCurrent;
@@ -2353,7 +2352,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   }
 
   Future<void> _handleStoreComposedEmailToLocalStorageBrowserSuccess() async {
-    _openNewTabButtonState = ButtonState.enabled;
+    openNewTabButtonState = ButtonState.enabled;
 
     await AppUtils.launchLink(
       RouteUtils.createUrlWebLocationBar(AppRoutes.dashboard).toString()
