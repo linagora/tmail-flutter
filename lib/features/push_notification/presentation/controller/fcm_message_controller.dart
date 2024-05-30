@@ -26,6 +26,8 @@ import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.d
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/get_app_notification_setting_cache_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_app_notification_setting_cache_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/action/fcm_action.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_base_controller.dart';
@@ -43,11 +45,13 @@ class FcmMessageController extends FcmBaseController {
   AccountId? _currentAccountId;
   Session? _currentSession;
   UserName? _userName;
+  bool _appNotificationEnabled = false;
 
   GetAuthenticatedAccountInteractor? _getAuthenticatedAccountInteractor;
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
   AuthorizationInterceptors? _authorizationInterceptors;
   GetSessionInteractor? _getSessionInteractor;
+  GetAppNotificationSettingCacheInteractor? _getAppNotificationSettingCacheInteractor;
 
   FcmMessageController._internal();
 
@@ -103,6 +107,8 @@ class FcmMessageController extends FcmBaseController {
     log('FcmMessageController::_handleBackgroundMessageAction():payloadData: $payloadData');
     final stateChange = FcmUtils.instance.convertFirebaseDataMessageToStateChange(payloadData);
     await _initialAppConfig();
+    _appNotificationEnabled = await _getCurrentNotificationSettingCache();
+    EmailChangeListener.instance.updateAppPushNotificationEnabledStatus(_appNotificationEnabled);
     _getAuthenticatedAccount(stateChange: stateChange);
   }
 
@@ -194,6 +200,7 @@ class FcmMessageController extends FcmBaseController {
     _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
     _authorizationInterceptors = getBinding<AuthorizationInterceptors>();
     _getSessionInteractor = getBinding<GetSessionInteractor>();
+    _getAppNotificationSettingCacheInteractor = getBinding<GetAppNotificationSettingCacheInteractor>();
 
     FcmTokenController.instance.initialBindingInteractor();
   }
@@ -311,5 +318,18 @@ class FcmMessageController extends FcmBaseController {
     } else if (success is GetCredentialViewState) {
       _handleGetAccountByBasicAuthSuccess(success);
     }
+  }
+
+  Future<bool> _getCurrentNotificationSettingCache() async {
+    return (await _getAppNotificationSettingCacheInteractor?.execute().last)
+      ?.fold(
+        (failure) => false,
+        (success) {
+          if (success is GetAppNotificationSettingCacheSuccess) {
+            return success.isEnabled;
+          } else {
+            return false;
+          }
+        }) ?? false;
   }
 }
