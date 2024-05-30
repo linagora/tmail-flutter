@@ -19,7 +19,7 @@ jobs:
           - os: android
             runner: ubuntu-latest
           - os: ios
-            runner: macos-13
+            runner: macos-latest
     environment: dev
 
     steps:
