@@ -3911,5 +3911,35 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "download": "Tải xuống",
+  "@download": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "print": "In",
+  "@print": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "page": "Trang",
+  "@page": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "zoomIn": "Phóng to",
+  "@zoomIn": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "zoomOut": "Thu nhỏ",
+  "@zoomOut": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
