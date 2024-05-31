@@ -27,7 +27,7 @@ const RESOURCES = {"canvaskit/skwasm.worker.js": "bfb704a6c714a75da9ef320991e88b
 "index.html": "763700e9243f75cc41643156a6cac0c6",
 "/": "763700e9243f75cc41643156a6cac0c6",
 "favicon.svg": "6cfee8482999da091bc2e5cd304e745f",
-"main.dart.js": "dadb3aab05c49497153fcc84e2481778",
+"main.dart.js": "a17f365df867935aa3a817ae36f19a43",
 "main.dart.js_3.part.js": "bee137bf67a12edb5efb59a674517140",
 "assets/AssetManifest.json": "ffe5c159e54f8d32b5f6856dae71e702",
 "assets/configurations/app_dashboard.json": "2b7bca138d3e78b9913761082e429513",
