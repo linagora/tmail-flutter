@@ -369,7 +369,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 ),
               Obx(() => CalendarEventDetailWidget(
                 calendarEvent: calendarEvent,
-                emailContent: controller.currentEmailLoaded?.htmlContent ?? '',
+                emailContent: controller.currentEmailLoaded.value?.htmlContent ?? '',
                 isDraggableAppActive: controller.mailboxDashBoardController.isAttachmentDraggableAppActive,
                 onOpenComposerAction: controller.openNewComposerAction,
                 onOpenNewTabAction: controller.openNewTabAction,
