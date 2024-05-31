@@ -818,9 +818,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
 
     clearFocus(context);
 
-    if (toEmailAddressController.text.isNotEmpty
-        || ccEmailAddressController.text.isNotEmpty
-        || bccEmailAddressController.text.isNotEmpty) {
+    if (_isExistRecipientInputText) {
       _collapseAllRecipient();
       _autoCreateEmailTag();
     }
@@ -2305,12 +2303,25 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     }
   }
 
+  bool get _isExistRecipientInputText {
+    return toEmailAddressController.text.isNotEmpty
+      || ccEmailAddressController.text.isNotEmpty
+      || bccEmailAddressController.text.isNotEmpty;
+  }
+
   Future<void> onOpenNewTabAction() async {
     if (openNewTabButtonState == ButtonState.disabled) {
       log('ComposerController::onOpenNewTabAction: OPENING NEW TAB COMPOSER');
       return;
     }
     openNewTabButtonState = ButtonState.disabled;
+
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    if (_isExistRecipientInputText) {
+      _collapseAllRecipient();
+      _autoCreateEmailTag();
+    }
 
     final arguments = composerArguments.value;
     final session = mailboxDashBoardController.sessionCurrent;
