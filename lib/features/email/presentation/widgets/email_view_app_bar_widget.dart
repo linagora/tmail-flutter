@@ -8,6 +8,7 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -18,6 +19,7 @@ typedef OnMoreActionClick = void Function(PresentationEmail, RelativeRect?);
 class EmailViewAppBarWidget extends StatelessWidget {
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
+  final _singleEmailController = Get.find<SingleEmailController>();
 
   final PresentationEmail presentationEmail;
   final List<Widget>? optionsWidget;
@@ -99,11 +101,14 @@ class EmailViewAppBarWidget extends StatelessWidget {
                     presentationEmail.hasStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred
                   )
                 ),
-                if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit)
-                  ...[
-                    const SizedBox(width: EmailViewAppBarWidgetStyles.space),
-                    TMailButtonWidget.fromIcon(
+                Obx(() {
+                  if (_singleEmailController.currentEmailLoaded.value != null
+                    && PlatformInfo.isWeb
+                    && PlatformInfo.isCanvasKit
+                  ) {
+                    return TMailButtonWidget.fromIcon(
                       icon: _imagePaths.icPrinter,
+                      margin: const EdgeInsetsDirectional.only(start: EmailViewAppBarWidgetStyles.space),
                       iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
                       backgroundColor: Colors.transparent,
                       padding: EmailViewAppBarWidgetStyles.buttonPadding,
@@ -112,8 +117,11 @@ class EmailViewAppBarWidget extends StatelessWidget {
                         presentationEmail,
                         EmailActionType.printAll
                       )
-                    ),
-                  ],
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                }),
                 const SizedBox(width: EmailViewAppBarWidgetStyles.space),
                 TMailButtonWidget.fromIcon(
                   icon: _imagePaths.icDeleteComposer,
