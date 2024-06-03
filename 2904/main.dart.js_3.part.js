@@ -13779,7 +13779,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.EmailView_build__closure.prototype = {
     call$0() {
-      var t4, t5, t6, t7, t8, t9, t10, t11, t12, _null = null,
+      var t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, _null = null,
         _s26_ = "assets/images/ic_older.svg",
         _s26_0 = "assets/images/ic_newer.svg",
         t1 = this.currentEmail,
@@ -13815,11 +13815,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
         A.Expando__checkType(t2);
         t10 = t4._as(t3.get(t2)).emailSupervisorController.get$nextEmailActivated() ? C.Color_4278221567 : C.Color_4289640386;
-        t11 = type$.AppLocalizations;
-        A.Localizations_of(t7, C.Type_AppLocalizations_swi, t11).toString;
-        t12 = A.Intl__message("Newer", _null, "newer", _null, _null);
+        t11 = $.EmailViewStyles_pageViewIconSize;
+        t12 = type$.AppLocalizations;
+        A.Localizations_of(t7, C.Type_AppLocalizations_swi, t12).toString;
+        t13 = A.Intl__message("Newer", _null, "newer", _null, _null);
         A.Expando__checkType(t2);
-        t12 = A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, t9, t10, 20, _null, _null, 1 / 0, _null, t4._as(t3.get(t2)).emailSupervisorController.get$moveToNextEmail(), C.EdgeInsets_5_5_5_5, t12);
+        t13 = A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, t9, t10, t11, _null, _null, 1 / 0, _null, t4._as(t3.get(t2)).emailSupervisorController.get$moveToNextEmail(), C.EdgeInsets_5_5_5_5, t13);
         t8 = t7.dependOnInheritedWidgetOfExactType$1$0(t8).localizationsState._localizations$_locale;
         if (A.Bidi_isRtlLanguage(t8.get$languageCode(t8))) {
           A.Expando__checkType(t2);
@@ -13832,11 +13833,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
         A.Expando__checkType(t2);
         t9 = t4._as(t3.get(t2)).emailSupervisorController.get$previousEmailActivated() ? C.Color_4278221567 : C.Color_4289640386;
-        A.Localizations_of(t7, C.Type_AppLocalizations_swi, t11).toString;
-        t11 = A.Intl__message("Older", _null, "older", _null, _null);
+        t10 = $.EmailViewStyles_pageViewIconSize;
+        A.Localizations_of(t7, C.Type_AppLocalizations_swi, t12).toString;
+        t12 = A.Intl__message("Older", _null, "older", _null, _null);
         A.Expando__checkType(t2);
-        t11 = A._setArrayType([t12, A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, t8, t9, 20, _null, _null, 1 / 0, _null, t4._as(t3.get(t2)).emailSupervisorController.get$backToPreviousEmail(), C.EdgeInsets_5_5_5_5, t11)], type$.JSArray_Widget);
-        t3 = t11;
+        t12 = A._setArrayType([t13, A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, t8, t9, t10, _null, _null, 1 / 0, _null, t4._as(t3.get(t2)).emailSupervisorController.get$backToPreviousEmail(), C.EdgeInsets_5_5_5_5, t12)], type$.JSArray_Widget);
+        t3 = t12;
       } else
         t3 = _null;
       $.$get$Get();
@@ -14637,7 +14639,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.EmailViewAppBarWidget_build_closure.prototype = {
     call$2(context, constraints) {
-      var t5, t6, t7, t8, _null = null,
+      var t5, t6, t7, t8, t9, _null = null,
         t1 = type$.JSArray_Widget,
         t2 = A._setArrayType([], t1),
         t3 = this.$this,
@@ -14655,40 +14657,43 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t6 != null)
         C.JSArray_methods.addAll$1(t5, t6);
       t5.push(C.SizedBox_5_null_null_null);
-      t6 = type$.AppLocalizations;
-      A.Localizations_of(context, C.Type_AppLocalizations_swi, t6).toString;
-      t5.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_move_email.svg", _null, 20, _null, _null, 1 / 0, _null, new B.EmailViewAppBarWidget_build__closure(t3), C.EdgeInsets_5_5_5_5, A.Intl__message("Move message", _null, "move_message", _null, _null)));
+      t6 = $.EmailViewAppBarWidgetStyles_buttonIconSize;
+      t7 = type$.AppLocalizations;
+      A.Localizations_of(context, C.Type_AppLocalizations_swi, t7).toString;
+      t5.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_move_email.svg", _null, t6, _null, _null, 1 / 0, _null, new B.EmailViewAppBarWidget_build__closure(t3), C.EdgeInsets_5_5_5_5, A.Intl__message("Move message", _null, "move_message", _null, _null)));
       t5.push(C.SizedBox_5_null_null_null);
-      t7 = t3.presentationEmail;
-      t8 = t7.get$hasStarred() ? "assets/images/ic_star.svg" : "assets/images/ic_unstar.svg";
-      if (t7.get$hasStarred()) {
-        A.Localizations_of(context, C.Type_AppLocalizations_swi, t6).toString;
-        t7 = A.Intl__message("Not starred", _null, "not_starred", _null, _null);
+      t6 = t3.presentationEmail;
+      t8 = t6.get$hasStarred() ? "assets/images/ic_star.svg" : "assets/images/ic_unstar.svg";
+      t9 = $.EmailViewAppBarWidgetStyles_buttonIconSize;
+      if (t6.get$hasStarred()) {
+        A.Localizations_of(context, C.Type_AppLocalizations_swi, t7).toString;
+        t6 = A.Intl__message("Not starred", _null, "not_starred", _null, _null);
       } else {
-        A.Localizations_of(context, C.Type_AppLocalizations_swi, t6).toString;
-        t7 = A.Intl__message("Mark as starred", _null, "mark_as_starred", _null, _null);
+        A.Localizations_of(context, C.Type_AppLocalizations_swi, t7).toString;
+        t6 = A.Intl__message("Mark as starred", _null, "mark_as_starred", _null, _null);
       }
-      t5.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, t8, _null, 20, _null, _null, 1 / 0, _null, new B.EmailViewAppBarWidget_build__closure0(t3), C.EdgeInsets_5_5_5_5, t7));
-      t7 = $.$get$_context().$index(0, "flutterCanvasKit");
-      if (t7 != null) {
-        A.Localizations_of(context, C.Type_AppLocalizations_swi, t6).toString;
+      t5.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, t8, _null, t9, _null, _null, 1 / 0, _null, new B.EmailViewAppBarWidget_build__closure0(t3), C.EdgeInsets_5_5_5_5, t6));
+      t6 = $.$get$_context().$index(0, "flutterCanvasKit");
+      if (t6 != null) {
+        A.Localizations_of(context, C.Type_AppLocalizations_swi, t7).toString;
         C.JSArray_methods.addAll$1(t5, A._setArrayType([C.SizedBox_5_null_null_null, A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_printer.svg", _null, 20, _null, _null, 1 / 0, _null, new B.EmailViewAppBarWidget_build__closure1(t3), C.EdgeInsets_5_5_5_5, A.Intl__message("Print all", _null, "printAll", _null, _null))], t1));
       }
       t5.push(C.SizedBox_5_null_null_null);
       t1 = t3.get$canDeletePermanently() ? C.Color_4293281350 : C.Color_4278221567;
       if (t3.get$canDeletePermanently()) {
-        A.Localizations_of(context, C.Type_AppLocalizations_swi, t6).toString;
-        t7 = A.Intl__message("Delete permanently", _null, "delete_permanently", _null, _null);
+        A.Localizations_of(context, C.Type_AppLocalizations_swi, t7).toString;
+        t6 = A.Intl__message("Delete permanently", _null, "delete_permanently", _null, _null);
       } else {
-        A.Localizations_of(context, C.Type_AppLocalizations_swi, t6).toString;
-        t7 = A.Intl__message("Move to trash", _null, "move_to_trash", _null, _null);
+        A.Localizations_of(context, C.Type_AppLocalizations_swi, t7).toString;
+        t6 = A.Intl__message("Move to trash", _null, "move_to_trash", _null, _null);
       }
-      t5.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_delete_composer.svg", t1, 20, _null, _null, 1 / 0, _null, new B.EmailViewAppBarWidget_build__closure2(t3), C.EdgeInsets_5_5_5_5, t7));
+      t5.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_delete_composer.svg", t1, 20, _null, _null, 1 / 0, _null, new B.EmailViewAppBarWidget_build__closure2(t3), C.EdgeInsets_5_5_5_5, t6));
       t5.push(C.SizedBox_5_null_null_null);
-      A.Localizations_of(context, C.Type_AppLocalizations_swi, t6).toString;
-      t6 = A.Intl__message("More", _null, "more", _null, _null);
+      t6 = $.EmailViewAppBarWidgetStyles_buttonIconSize;
+      A.Localizations_of(context, C.Type_AppLocalizations_swi, t7).toString;
+      t7 = A.Intl__message("More", _null, "more", _null, _null);
       t1 = A.InheritedModel_inheritFrom(context, _null, t4).data.size.get$shortestSide() < 600 ? new B.EmailViewAppBarWidget_build__closure3(t3) : _null;
-      t5.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_more.svg", _null, 20, _null, _null, 1 / 0, !(A.InheritedModel_inheritFrom(context, _null, t4).data.size.get$shortestSide() < 600) ? new B.EmailViewAppBarWidget_build__closure4(t3) : _null, t1, C.EdgeInsets_5_5_5_5, t6));
+      t5.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_more.svg", _null, t6, _null, _null, 1 / 0, !(A.InheritedModel_inheritFrom(context, _null, t4).data.size.get$shortestSide() < 600) ? new B.EmailViewAppBarWidget_build__closure4(t3) : _null, t1, C.EdgeInsets_5_5_5_5, t7));
       t2.push(A.Row$(t5, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null));
       return A.Container$(_null, A.Row$(t2, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, D.BoxDecoration_2Hr, _null, 52, _null, _null, D.EdgeInsetsDirectional_16_0_16_0, _null, _null, _null);
     },
@@ -19928,6 +19933,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D._DragEndKind_0 = new B._DragEndKind(0, "dropped");
     D._DragEndKind_1 = new B._DragEndKind(1, "canceled");
   })();
+  (function staticFields() {
+    $.EmailViewAppBarWidgetStyles_buttonIconSize = 20;
+    $.EmailViewStyles_pageViewIconSize = 20;
+  })();
   (function lazyInitializers() {
     var _lazy = hunkHelpers.lazy;
     _lazy($, "FromComposerDropDownWidgetStyle_dropdownStyleData", "$get$FromComposerDropDownWidgetStyle_dropdownStyleData", () => {
@@ -19944,5 +19953,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "GicR5gLvFayzmwmFO5rgywSavGE=");
+})($__dart_deferred_initializers__, "lSaXpp2+bT4JK3kJzMxbji8e0YY=");
 ;

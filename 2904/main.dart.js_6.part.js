@@ -1801,7 +1801,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       B.JSArray_methods.addAll$1(t2, A._setArrayType([A.Text$(_this.label, _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_jjv0, _null, _null, _null, _null, _null), B.SizedBox_null_8_null_null], t1));
       t1 = context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale;
       t1 = A.Bidi_isRtlLanguage(t1.get$languageCode(t1)) ? B.TextDirection_0 : B.TextDirection_1;
-      t2.push(A.TextFieldBuilder$(false, _this.editingController, B.Color_4278221567, A.InputDecoration$(_null, _null, _null, B.EdgeInsets_12_16_12_16, _null, _null, _null, _null, true, D.OutlineInputBorder_WtG0, _null, D.OutlineInputBorder_0Qn0, _null, B.TextStyle_knt, _null, B.Color_4294112245, true, _null, B.FloatingLabelBehavior_0, _null, _null, D.OutlineInputBorder_EjN0, D.OutlineInputBorder_0Qn0, _null, _null, _null, _null, _null, E.TextStyle_g3y0, _this.hint, _null, _null, _null, _null, _null, true, _null, B.TextStyle_cMb1, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _this.focusNode, _null, B.TextInputType_0_null_null, _null, _null, _null, _null, _null, _null, _null, false, t1, B.TextInputAction_6, B.TextStyle_cMb1));
+      t2.push(A.TextFieldBuilder$(false, _this.editingController, B.Color_4278221567, A.InputDecoration$(_null, _null, _null, new A.EdgeInsets(12, 16, 12, 16), _null, _null, _null, _null, true, D.OutlineInputBorder_WtG0, _null, D.OutlineInputBorder_0Qn0, _null, B.TextStyle_knt, _null, B.Color_4294112245, true, _null, B.FloatingLabelBehavior_0, _null, _null, D.OutlineInputBorder_EjN0, D.OutlineInputBorder_0Qn0, _null, _null, _null, _null, _null, E.TextStyle_g3y0, _this.hint, _null, _null, _null, _null, _null, true, _null, B.TextStyle_cMb1, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _this.focusNode, _null, B.TextInputType_0_null_null, _null, _null, _null, _null, _null, _null, _null, false, t1, B.TextInputAction_6, B.TextStyle_cMb1));
       return A.Column$(t2, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
     }
   };
@@ -2523,7 +2523,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = A._setArrayType([A.Expanded$(A.Row$(A._setArrayType([A.Text$(C.LocaleExtension_getLanguageNameByCurrentLocale(t1, context), _null, _null, 1, B.TextOverflow_2, _null, _null, true, _null, B.TextStyle_oHY8, _null, _null, _null, _null, _null), A.Text$(" - " + C.LocaleExtension_getSourceLanguageName(t1), _null, _null, 1, B.TextOverflow_2, _null, _null, true, _null, B.TextStyle_oHY9, _null, _null, _null, _null, _null)], t2), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), 1)], t2);
       if (t1.$eq(0, this.localeSelected))
         t2.push(A.SvgPicture$asset("assets/images/ic_checked.svg", B.Alignment_0_0, _null, B.BoxFit_0, 20, _null, 20));
-      return A.Material$(B.Duration_200000, true, _null, A.InkWell$(false, B.BorderRadius_tLn4, true, new A.Padding(B.EdgeInsets_12_16_12_16, A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.LanguageItemWidget_build_closure(this), _null, _null, _null, _null, _null, _null, _null), B.Clip_0, B.Color_0, 0, _null, _null, _null, _null, _null, B.MaterialType_0);
+      return A.Material$(B.Duration_200000, true, _null, A.InkWell$(false, B.BorderRadius_tLn4, true, new A.Padding(D.EdgeInsets_12_16_12_16, A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.LanguageItemWidget_build_closure(this), _null, _null, _null, _null, _null, _null, _null), B.Clip_0, B.Color_0, 0, _null, _null, _null, _null, _null, B.MaterialType_0);
     }
   };
   C.MailboxVisibilityView.prototype = {
@@ -4309,7 +4309,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Expando__checkType(t1);
         t2 = t3._as(t2.get(t1)).accountMenuItemSelected;
         t2 = t2.get$value(t2) !== B.AccountMenuItem_5 ? new C.ManageAccountDashBoardView_build__closure(t1) : _null;
-        return F.VacationNotificationMessageWidget$(new C.ManageAccountDashBoardView_build__closure0(t1), t2, true, _null, D.EdgeInsets_24_16_24_0, _null, t4);
+        return F.VacationNotificationMessageWidget$(new C.ManageAccountDashBoardView_build__closure0(t1), t2, true, _null, new A.EdgeInsets(24, 16, 24, 0), _null, t4);
       } else {
         A.Expando__checkType(t1);
         t4 = t3._as(t2.get(t1)).vacationResponse;
@@ -4332,7 +4332,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t1 = t3._as(t2.get(t1)).vacationResponse;
           t1 = t1.get$value(t1);
           t1.toString;
-          return F.VacationNotificationMessageWidget$(_null, _null, true, D.Padding_ot1, D.EdgeInsets_24_16_24_0, B.EdgeInsets_16_10_16_10, t1);
+          return F.VacationNotificationMessageWidget$(_null, _null, true, D.Padding_ot1, new A.EdgeInsets(24, 16, 24, 0), B.EdgeInsets_16_10_16_10, t1);
         } else
           return B.SizedBox_0_0_null_null;
       }
@@ -4712,7 +4712,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Expando__checkType(t1);
         t2 = t3._as(t2.get(t1)).manageAccountDashboardController.accountMenuItemSelected;
         t2 = t2.get$value(t2) !== B.AccountMenuItem_5 ? new C.SettingsView_build__closure(t1) : _null;
-        return F.VacationNotificationMessageWidget$(new C.SettingsView_build__closure0(t1), t2, true, _null, D.EdgeInsetsDirectional_24_16_24_0, _null, t4);
+        return F.VacationNotificationMessageWidget$(new C.SettingsView_build__closure0(t1), t2, true, _null, new A.EdgeInsetsDirectional(24, 16, 24, 0), _null, t4);
       } else {
         A.Expando__checkType(t1);
         t4 = t3._as(t2.get(t1)).manageAccountDashboardController.vacationResponse;
@@ -4735,7 +4735,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t1 = t3._as(t2.get(t1)).manageAccountDashboardController.vacationResponse;
           t1 = t1.get$value(t1);
           t1.toString;
-          return F.VacationNotificationMessageWidget$(_null, _null, true, D.Padding_43h, D.EdgeInsetsDirectional_24_16_24_0, B.EdgeInsets_16_10_16_10, t1);
+          return F.VacationNotificationMessageWidget$(_null, _null, true, D.Padding_43h, new A.EdgeInsetsDirectional(24, 16, 24, 0), B.EdgeInsets_16_10_16_10, t1);
         } else
           return B.SizedBox_0_0_null_null;
       }
@@ -5726,7 +5726,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsetsDirectional_16_0_8_0 = new A.EdgeInsetsDirectional(16, 0, 8, 0);
     D.EdgeInsetsDirectional_20_0_10_0 = new A.EdgeInsetsDirectional(20, 0, 10, 0);
     D.EdgeInsetsDirectional_20_24_0_0 = new A.EdgeInsetsDirectional(20, 24, 0, 0);
-    D.EdgeInsetsDirectional_24_16_24_0 = new A.EdgeInsetsDirectional(24, 16, 24, 0);
     D.EdgeInsetsDirectional_32_20_0_0 = new A.EdgeInsetsDirectional(32, 20, 0, 0);
     D.EdgeInsets_0_0_0_2 = new A.EdgeInsets(0, 0, 0, 2);
     D.EdgeInsets_0_0_0_4 = new A.EdgeInsets(0, 0, 0, 4);
@@ -5738,13 +5737,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_0_6_0_0 = new A.EdgeInsets(0, 6, 0, 0);
     D.EdgeInsets_10_5_10_5 = new A.EdgeInsets(10, 5, 10, 5);
     D.EdgeInsets_12_12_0_12 = new A.EdgeInsets(12, 12, 0, 12);
+    D.EdgeInsets_12_16_12_16 = new A.EdgeInsets(12, 16, 12, 16);
     D.EdgeInsets_12_24_12_24 = new A.EdgeInsets(12, 24, 12, 24);
     D.EdgeInsets_12_6_12_6 = new A.EdgeInsets(12, 6, 12, 6);
     D.EdgeInsets_14_14_14_14 = new A.EdgeInsets(14, 14, 14, 14);
     D.EdgeInsets_16_16_16_15 = new A.EdgeInsets(16, 16, 16, 15);
     D.EdgeInsets_18_14_18_14 = new A.EdgeInsets(18, 14, 18, 14);
     D.EdgeInsets_20_24_20_24 = new A.EdgeInsets(20, 24, 20, 24);
-    D.EdgeInsets_24_16_24_0 = new A.EdgeInsets(24, 16, 24, 0);
     D.EdgeInsets_24_24_24_11 = new A.EdgeInsets(24, 24, 24, 11);
     D.EdgeInsets_24_28_24_28 = new A.EdgeInsets(24, 28, 24, 28);
     D.EdgeInsets_28_24_28_24 = new A.EdgeInsets(28, 24, 28, 24);
@@ -5809,5 +5808,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "zkKGenk8zKvH1ejUh6t2E+MsKrE=");
+})($__dart_deferred_initializers__, "5jQpoiLbN/g9HwqEaPC7wrwKBjE=");
 ;
