@@ -2988,9 +2988,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5 = C.SettingsUtils_getContentBackgroundColor(context, t2._as(t1.get(_this)).responsiveUtils);
       A.Expando__checkType(_this);
       t1 = C.SettingsUtils_getBoxDecorationForContent(context, t2._as(t1.get(_this)).responsiveUtils);
-      A.Localizations_of(context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       t2 = type$.JSArray_Widget;
-      return A.Container$(_null, A.Column$(A._setArrayType([new A.Obx(new C.NotificationView_build_closure(_this), _null), A.Expanded$(A.Container$(_null, A.ListView$(A._setArrayType([A.Text$(A.Intl__message("Notification", _null, "notification", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_apl, _null, _null, _null, _null, _null), B.SizedBox_null_8_null_null, new A.Obx(new C.NotificationView_build_closure0(_this, context), _null)], t2), _null, _null, B.ClampingScrollPhysics_null, _null, false, B.Axis_1, false), B.Clip_0, t5, _null, t1, _null, _null, _null, _null, B.EdgeInsets_0_8_0_0, _null, _null, _null), 1)], t2), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), B.Clip_0, t3, _null, _null, _null, _null, _null, _null, t4, _null, _null, _null);
+      return A.Container$(_null, A.Column$(A._setArrayType([new A.Obx(new C.NotificationView_build_closure(_this), _null), A.Expanded$(A.Container$(_null, A.ListView$(A._setArrayType([new A.Obx(new C.NotificationView_build_closure0(_this, context), _null)], t2), _null, _null, B.ClampingScrollPhysics_null, _null, false, B.Axis_1, false), B.Clip_0, t5, _null, t1, _null, _null, _null, _null, _null, _null, _null, _null), 1)], t2), B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), B.Clip_0, t3, _null, _null, _null, _null, _null, _null, t4, _null, _null, _null);
     }
   };
   C._NotificationView_GetWidget_AppLoaderMixin.prototype = {};
@@ -5105,7 +5104,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.NotificationView_build_closure0.prototype = {
     call$0() {
-      var t3, t4, t5, _null = null,
+      var t3, t4, t5, t6, t7, _null = null,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -5114,13 +5113,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = t3._as(t2.get(t1)).appNotificationSettingEnabled;
       if (t4.get$value(t4) == null)
         return B.SizedBox_0_0_null_null;
+      t4 = this.context;
+      t5 = type$.AppLocalizations;
+      A.Localizations_of(t4, B.Type_AppLocalizations_swi, t5).toString;
+      t6 = A.Text$(A.Intl__message("Show Notifications", _null, "showNotifications", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_weg, _null, _null, _null, _null, _null);
+      A.Localizations_of(t4, B.Type_AppLocalizations_swi, t5).toString;
+      t5 = type$.JSArray_Widget;
+      t6 = A.Expanded$(A.Column$(A._setArrayType([B.SizedBox_null_10_null_null, t6, B.SizedBox_null_12_null_null, A.Text$(A.Intl__message(string$.Allows, _null, string$.allows, _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_SZE, _null, _null, _null, _null, _null)], t5), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), 1);
       A.Expando__checkType(t1);
       t4 = t3._as(t2.get(t1)).get$toggleAppNotificationSetting();
       A.Expando__checkType(t1);
-      t5 = t3._as(t2.get(t1)).appNotificationSettingEnabled;
-      t5 = t5.get$value(t5);
-      t5.toString;
-      if (t5) {
+      t7 = t3._as(t2.get(t1)).appNotificationSettingEnabled;
+      t7 = t7.get$value(t7);
+      t7.toString;
+      if (t7) {
         A.Expando__checkType(t1);
         t3._as(t2.get(t1)).toString;
         t1 = "assets/images/ic_switch_on.svg";
@@ -5129,9 +5135,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3._as(t2.get(t1)).toString;
         t1 = "assets/images/ic_switch_off.svg";
       }
-      t4 = A.InkWell$(false, _null, true, new A.Padding(B.EdgeInsets_4_4_4_4, A.SvgPicture$asset(t1, B.Alignment_0_0, _null, B.BoxFit_0, 20, _null, 32), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t4, _null, _null, _null, _null, _null, _null, _null);
-      A.Localizations_of(this.context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      return A.Row$(A._setArrayType([t4, B.SizedBox_12_null_null_null, A.Expanded$(A.Text$(A.Intl__message(string$.Allows, _null, string$.allows, _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_ufz, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
+      return A.Row$(A._setArrayType([t6, B.SizedBox_12_null_null_null, A.InkWell$(false, _null, true, new A.Padding(B.EdgeInsets_4_4_4_4, A.SvgPicture$asset(t1, B.Alignment_0_0, _null, B.BoxFit_1, 32, _null, 52), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t4, _null, _null, _null, _null, _null, _null, _null)], t5), B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
     $signature: 91
   };
@@ -6029,6 +6033,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.TextStyle_1Gf1 = new A.TextStyle(true, B.Color_4294967295, null, null, null, null, 16, B.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_69t = new A.TextStyle(true, B.Color_4285034102, null, null, null, null, 16, null, null, null, null, null, 1.25, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_KAZ = new A.TextStyle(true, B.Color_4278221567, null, null, null, null, 15, B.FontWeight_3_400, null, null, null, null, null, null, null, null, null, B.TextDecoration_1, null, null, null, null, null, null, null, null);
+    D.TextStyle_SZE = new A.TextStyle(true, B.Color_4286680217, null, null, null, null, 15, null, null, null, null, null, 1.3333333333333333, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_apl = new A.TextStyle(true, B.Color_4278190080, null, null, null, null, 17, B.FontWeight_4_500, null, null, null, null, 1.411764705882353, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_cam = new A.TextStyle(true, B.Color_4289311938, null, null, null, null, 16, B.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_kmg2 = new A.TextStyle(true, B.Color_4293281350, null, null, null, null, 15, B.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -6036,6 +6041,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.TextStyle_omH0 = new A.TextStyle(true, B.Color_4285034102, null, null, null, null, 16, B.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_omH1 = new A.TextStyle(true, B.Color_4285034102, null, null, null, null, 16, B.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_ufz = new A.TextStyle(true, B.Color_4278190080, null, null, null, null, 16, null, null, null, null, null, 1.25, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_weg = new A.TextStyle(true, B.Color_4278190080, null, null, null, null, 17, B.FontWeight_4_500, null, null, null, null, 1.2941176470588236, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.ValueKey_account_menu_item_tile = new A.ValueKey("account_menu_item_tile", type$.ValueKey_String);
     D.ValueKey_back_to_dashboard_button = new A.ValueKey("back_to_dashboard_button", type$.ValueKey_String);
     D.ValueKey_button_add_identity = new A.ValueKey("button_add_identity", type$.ValueKey_String);
@@ -6051,5 +6057,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "dHUBQRtv7thS16qCkibxlg/S5nE=");
+})($__dart_deferred_initializers__, "ZEK+pFFjDHr9eR+Uv6m6NJyWBwA=");
 ;
