@@ -27,7 +27,7 @@ const RESOURCES = {"canvaskit/skwasm.worker.js": "bfb704a6c714a75da9ef320991e88b
 "index.html": "17b57a4698b8b56dcea7d3b21bba98d4",
 "/": "17b57a4698b8b56dcea7d3b21bba98d4",
 "favicon.svg": "6cfee8482999da091bc2e5cd304e745f",
-"main.dart.js": "73224fd028c4783b0edd0d19368e2d13",
+"main.dart.js": "c6268eea71327b188160ae98902b7633",
 "main.dart.js_3.part.js": "c6413919e4496ff87a940f337f67c30d",
 "assets/AssetManifest.json": "fc0c9cadb5be6d88d3e7282eb965b630",
 "assets/configurations/app_dashboard.json": "4fd734881af71fbcd0d0c586e4679ca0",
@@ -330,7 +330,7 @@ const RESOURCES = {"canvaskit/skwasm.worker.js": "bfb704a6c714a75da9ef320991e88b
 "worker_service/img/tmail-3x.png": "7b5f8e671c4f39ae5d1a67b46fe494d7",
 "worker_service/img/ic-close-2x.png": "4472c6a715b4bab53815806f07f59d0f",
 "worker_service/style.css": "3ec186c93eb7bdab17e882de738e3123",
-"main.dart.js_6.part.js": "2fb9d966f8ce4bc009d4a60894cd5145",
+"main.dart.js_6.part.js": "834178ab29d119376f283185faf1aab2",
 "flutter.js": "7d69e653079438abfbb24b82a655b0a4",
 "main.dart.js_5.part.js": "4a20c06152b44abe50bf6e92605e8072"};
 // The application shell files that are downloaded before a service worker can
