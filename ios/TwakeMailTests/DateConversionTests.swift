@@ -22,4 +22,24 @@ class DateConversionTests: XCTestCase {
         let date = invalidDateString.convertISO8601StringToDate()
         XCTAssertNil(date, "The conversion should return nil for an invalid date string.")
     }
+    
+    func testConvertValidDateToISO8601String() {
+        let validDate = Calendar.current.date(
+            from: DateComponents(
+                year: 2024,
+                month: 5,
+                day: 20,
+                hour: 22,
+                minute: 54,
+                second: 57,
+                nanosecond: 958000000
+            )
+        )
+        
+        
+        let expectedDateString = "2024-05-20T22:54:57.958"
+        let validDateString = validDate!.convertDateToISO8601String()
+        
+        XCTAssertEqual(validDateString, expectedDateString, "Converted date string does not match expected date string")
+    }
 }
