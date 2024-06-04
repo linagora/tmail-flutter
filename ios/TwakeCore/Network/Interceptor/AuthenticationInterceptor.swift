@@ -69,7 +69,7 @@ class AuthenticationInterceptor: RequestInterceptor {
     private func validateToRefreshToken(response: HTTPURLResponse, authenticationSSO: AuthenticationSSO) -> Bool {
         return response.statusCode == 401 &&
             !authenticationSSO.refreshToken.isEmpty &&
-            authenticationSSO.isExpiredTime()
+            authenticationSSO.isExpiredTime(currentDate: CoreUtils.shared.getCurrentDate())
     }
 
     // MARK: - Handle refresh token to get new token
