@@ -4043,4 +4043,46 @@ class AppLocalizations {
       'Show less',
       name: 'showLess');
   }
+
+  String get notification {
+    return Intl.message(
+      'Notification',
+      name: 'notification',
+    );
+  }
+
+  String get notificationsDisabled {
+    return Intl.message(
+      'Notifications disabled',
+      name: 'notificationsDisabled',
+    );
+  }
+
+  String get pleaseAllowNotifications {
+    return Intl.message(
+      'Please allow notifications from Twake Mail in the device\'s Settings',
+      name: 'pleaseAllowNotifications',
+    );
+  }
+
+  String get goToSettings {
+    return Intl.message(
+      'Go to Settings',
+      name: 'goToSettings',
+    );
+  }
+
+  String get allowsTwakeMailToNotifyYouWhenANewMessageArrivesOnYourPhone {
+    return Intl.message(
+      'Allows Twake Mail to notify you when a new message arrives on your phone',
+      name: 'allowsTwakeMailToNotifyYouWhenANewMessageArrivesOnYourPhone',
+    );
+  }
+
+  String get showNotifications {
+    return Intl.message(
+      'Show Notifications',
+      name: 'showNotifications',
+    );
+  }
 }
