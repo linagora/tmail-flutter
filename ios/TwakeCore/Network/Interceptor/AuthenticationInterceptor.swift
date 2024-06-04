@@ -41,12 +41,15 @@ class AuthenticationInterceptor: RequestInterceptor {
             }
 
             let newRefreshToken = tokenResponse.refreshToken ?? authenticationSSO.refreshToken
+            let expireTime = tokenResponse.expiresTime != nil
+                ? tokenResponse.expiresTime!.convertMillisecondsToISO8601String()
+                : nil
             
             self.authentication = AuthenticationSSO(
                 type: AuthenticationType.oidc,
                 accessToken: accessToken,
                 refreshToken: newRefreshToken,
-                expireTime: "\(tokenResponse.expiresTime ?? 0)"
+                expireTime: expireTime
             )
 
             self.keychainController.updateTokenOidc(
@@ -54,7 +57,7 @@ class AuthenticationInterceptor: RequestInterceptor {
                 newTokenOidc: TokenOidc(
                     token: accessToken,
                     tokenId: tokenResponse.tokenId,
-                    expiredTime: "\(tokenResponse.expiresTime ?? 0)",
+                    expiredTime: expireTime,
                     refreshToken: newRefreshToken
                 )
             )
