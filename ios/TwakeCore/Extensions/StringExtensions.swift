@@ -3,8 +3,8 @@ import Foundation
 extension String {
     func convertISO8601StringToDate() -> Date? {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSS"
-        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = CoreUtils.ISO8601_DATE_FORMAT
+        dateFormatter.locale = Locale(identifier: CoreUtils.EN_US_POSIX_LOCALE)
         return dateFormatter.date(from: self)
     }
     
