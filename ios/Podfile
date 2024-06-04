@@ -71,7 +71,7 @@ post_install do |installer|
           'PERMISSION_LOCATION=0',
 
           ## dart: PermissionGroup.notification
-          'PERMISSION_NOTIFICATIONS=0',
+          'PERMISSION_NOTIFICATIONS=1',
 
           ## dart: PermissionGroup.mediaLibrary
           'PERMISSION_MEDIA_LIBRARY=0',
