@@ -18,23 +18,15 @@ struct AuthenticationSSO: Authentication {
         return "Bearer \(accessToken)"
     }
 
-    func isExpiredTime() -> Bool {
+    func isExpiredTime(currentDate: Date) -> Bool {
         guard let expireTime else {
             return false
         }
-
-        if #available(iOSApplicationExtension 15, *) {
-            guard let expireDate = expireTime.convertISO8601StringToDate(),
-                  expireDate.isBefore(Date.now) else {
-                return true
-            }
+        
+        if let expireDate = expireTime.convertISO8601StringToDate() {
+            return expireDate.isBefore(currentDate)
         } else {
-            guard let expireDate = expireTime.convertISO8601StringToDate(),
-                  expireDate.isBefore(Date()) else {
-                return true
-            }
+            return false
         }
-
-        return false
     }
 }
