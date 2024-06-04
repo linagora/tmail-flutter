@@ -1,4 +1,6 @@
 PODS:
+  - app_settings (5.1.1):
+    - Flutter
   - AppAuth (1.7.4):
     - AppAuth/Core (= 1.7.4)
     - AppAuth/ExternalUserAgent (= 1.7.4)
@@ -185,6 +187,7 @@ PODS:
     - Flutter
 
 DEPENDENCIES:
+  - app_settings (from `.symlinks/plugins/app_settings/ios`)
   - better_open_file (from `.symlinks/plugins/better_open_file/ios`)
   - connectivity_plus (from `.symlinks/plugins/connectivity_plus/ios`)
   - contacts_service (from `.symlinks/plugins/contacts_service/ios`)
@@ -237,6 +240,8 @@ SPEC REPOS:
     - SwiftyGif
 
 EXTERNAL SOURCES:
+  app_settings:
+    :path: ".symlinks/plugins/app_settings/ios"
   better_open_file:
     :path: ".symlinks/plugins/better_open_file/ios"
   connectivity_plus:
@@ -295,6 +300,7 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/workmanager/ios"
 
 SPEC CHECKSUMS:
+  app_settings: 017320c6a680cdc94c799949d95b84cb69389ebc
   AppAuth: 182c5b88630569df5acb672720534756c29b3358
   better_open_file: 03cf320415d4d3f46b6e00adc4a567d76c1a399d
   connectivity_plus: 413a8857dd5d9f1c399a39130850d02fe0feaf7e
@@ -343,6 +349,6 @@ SPEC CHECKSUMS:
   url_launcher_ios: 68d46cc9766d0c41dbdc884310529557e3cd7a86
   workmanager: 0afdcf5628bbde6924c21af7836fed07b42e30e6
 
-PODFILE CHECKSUM: 91d9116a6c482e0d0b230a68097981fae7e4d07a
+PODFILE CHECKSUM: ded4724b53568389542fa0f7d7a64c05ffc03971
 
 COCOAPODS: 1.14.3
