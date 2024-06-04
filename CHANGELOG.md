@@ -1,3 +1,9 @@
+## [0.11.4002] - 2024-06-04
+### Added
+- #2764 Add PDFViewer to view preview PDF in email
+- Translate vi, ru, fr
+
+
 ## [0.11.4001] - 2024-05-22
 ### Fixed
 - #2890 Remove fake reason in parsing cancelled calendar event
@@ -513,6 +519,8 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.11.4002]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.4002
+[0.11.4001]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.4001
 [0.11.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.3
 [0.11.2]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.2
 [0.11.0]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.0
