@@ -7,6 +7,11 @@ on:
 
 name: Test Reports
 
+permissions:
+  contents: read
+  actions: read
+  checks: write
+
 jobs:
   reports:
     name: Upload test reports
@@ -14,8 +19,8 @@ jobs:
     steps:
       - uses: dorny/test-reporter@v1
         with:
-          artifact: test-reports
-          name: Flutter Tests
+          artifact: /test-reports-(.*)/
+          name: Flutter Tests - $1
           path: "*.json"
           reporter: flutter-json
           only-summary: "true"
