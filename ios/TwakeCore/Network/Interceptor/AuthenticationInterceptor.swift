@@ -36,15 +36,16 @@ class AuthenticationInterceptor: RequestInterceptor {
         }
 
         handleRefreshToken(tokenRefreshManager: tokenRefreshManager) { tokenResponse in
-            guard let accessToken = tokenResponse.accessToken,
-                  let refreshToken = tokenResponse.refreshToken else {
+            guard let accessToken = tokenResponse.accessToken else {
                 return completion(.doNotRetryWithError(error))
             }
 
+            let newRefreshToken = tokenResponse.refreshToken ?? authenticationSSO.refreshToken
+            
             self.authentication = AuthenticationSSO(
                 type: AuthenticationType.oidc,
                 accessToken: accessToken,
-                refreshToken: refreshToken,
+                refreshToken: newRefreshToken,
                 expireTime: "\(tokenResponse.expiresTime ?? 0)"
             )
 
@@ -54,7 +55,7 @@ class AuthenticationInterceptor: RequestInterceptor {
                     token: accessToken,
                     tokenId: tokenResponse.tokenId,
                     expiredTime: "\(tokenResponse.expiresTime ?? 0)",
-                    refreshToken: refreshToken
+                    refreshToken: newRefreshToken
                 )
             )
 
