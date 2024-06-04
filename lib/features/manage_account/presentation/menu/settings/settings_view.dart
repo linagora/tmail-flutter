@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/notification/notification_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
@@ -228,6 +229,8 @@ class SettingsView extends GetWidget<SettingsController> {
           }
         case AccountMenuItem.mailboxVisibility:
           return MailboxVisibilityView();
+        case AccountMenuItem.notification:
+          return const NotificationView();
         default:
           return const SizedBox.shrink();
       }

@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
@@ -138,6 +139,20 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           AccountMenuItem.languageAndRegion.getIcon(controller.imagePaths),
           () => controller.selectSettings(AccountMenuItem.languageAndRegion)
         ),
+        if (PlatformInfo.isMobile) ...[
+          Divider(
+            color: AppColor.colorDividerHorizontal,
+            height: 1,
+            indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
+            endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
+          ),
+          SettingFirstLevelTileBuilder(
+            AppLocalizations.of(context).notification,
+            controller.imagePaths.icNotification,
+            () => controller.selectSettings(AccountMenuItem.notification),
+            subtitle: AppLocalizations.of(context).allowsTwakeMailToNotifyYouWhenANewMessageArrivesOnYourPhone,
+          )
+        ],
         Divider(
           color: AppColor.colorDividerHorizontal,
           height: 1,
