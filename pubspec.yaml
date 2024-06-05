@@ -55,17 +55,19 @@ dependencies:
   rich_text_composer:
     git:
       url: https://github.com/linagora/rich-text-composer.git
-      ref: master
+      ref: cnb_supported
 
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: bugfix/composer-reply-memory-leak
+      ref: cnb_supported
 
+  # TODO: We will change it when the PR in upstream repository will be merged
+  # https://github.com/linagora/jmap-dart-client/pull/87
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: master
+      ref: migrate_cnb_to_master_5Jun
 
   contacts_service:
     git:
@@ -239,6 +241,8 @@ dependencies:
   desktop_drop: 0.4.4
 
   future_loading_dialog: 0.3.0
+
+  file_picker: 5.3.1
 
 dev_dependencies:
   flutter_test:

@@ -44,6 +44,8 @@ enum EventActionType {
           KeyWordIdentifierExtension.tentativelyAcceptedEventAttendance.generatePath(): null,
           KeyWordIdentifierExtension.rejectedEventAttendance.generatePath(): true,
         });
+      case EventActionType.mailToAttendees:
+        return PatchObject({});
     }
   }
 
@@ -55,6 +57,8 @@ enum EventActionType {
         return AppLocalizations.of(context).youMayAttendThisMeeting;
       case EventActionType.no:
         return AppLocalizations.of(context).youWillNotAttendThisMeeting;
+      case EventActionType.mailToAttendees:
+        return '';
     }
   }
 }

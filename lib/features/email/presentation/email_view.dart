@@ -16,7 +16,6 @@ import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
-import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
@@ -148,33 +147,30 @@ class EmailView extends GetWidget<SingleEmailController> {
                                     child: Obx(() => _buildEmailMessage(
                                       context: context,
                                       presentationEmail: currentEmail,
-                                      calendarEvent: controller.calendarEvent.value,
+                                      calendarEvent: controller.calendarEvent,
                                       maxBodyHeight: constraints.maxHeight
                                     ))
                                   )
                                 );
                               } else {
                                 return Obx(() {
-                                  final calendarEvent = controller.calendarEvent.value;
+                                  final calendarEvent = controller.calendarEvent;
                                   if (currentEmail.hasCalendarEvent && calendarEvent != null) {
                                     return Padding(
                                       padding: const EdgeInsetsDirectional.symmetric(horizontal: 4),
-                                      child: ScrollbarListView(
-                                        scrollController: controller.emailContentScrollController,
-                                        child: SingleChildScrollView(
-                                          physics : const ClampingScrollPhysics(),
-                                          child: Container(
-                                            width: double.infinity,
-                                            alignment: Alignment.center,
-                                            color: Colors.white,
-                                            child: _buildEmailMessage(
-                                              context: context,
-                                              presentationEmail: currentEmail,
-                                              calendarEvent: calendarEvent,
-                                              emailAddressSender: currentEmail.listEmailAddressSender.getListAddress(),
-                                            )
+                                      child: SingleChildScrollView(
+                                        physics : const ClampingScrollPhysics(),
+                                        child: Container(
+                                          width: double.infinity,
+                                          alignment: Alignment.center,
+                                          color: Colors.white,
+                                          child: _buildEmailMessage(
+                                            context: context,
+                                            presentationEmail: currentEmail,
+                                            calendarEvent: calendarEvent,
+                                            emailAddressSender: currentEmail.listEmailAddressSender.getListAddress(),
                                           )
-                                        ),
+                                        )
                                       ),
                                     );
                                   } else {
@@ -199,34 +195,31 @@ class EmailView extends GetWidget<SingleEmailController> {
                                 child: Obx(() => _buildEmailMessage(
                                   context: context,
                                   presentationEmail: currentEmail,
-                                  calendarEvent: controller.calendarEvent.value,
+                                  calendarEvent: controller.calendarEvent,
                                   maxBodyHeight: constraints.maxHeight
                                 ))
                               )
                             );
                           } else {
                             return Obx(() {
-                              final calendarEvent = controller.calendarEvent.value;
+                              final calendarEvent = controller.calendarEvent;
                               if (currentEmail.hasCalendarEvent && calendarEvent != null) {
                                 return Padding(
                                   padding: const EdgeInsetsDirectional.symmetric(horizontal: 4),
-                                  child: ScrollbarListView(
-                                    scrollController: controller.emailContentScrollController,
-                                    child: SingleChildScrollView(
-                                      physics : const ClampingScrollPhysics(),
-                                      child: Container(
-                                        width: double.infinity,
-                                        alignment: Alignment.center,
-                                        color: Colors.white,
-                                        child: _buildEmailMessage(
-                                          context: context,
-                                          presentationEmail: currentEmail,
-                                          calendarEvent: calendarEvent,
-                                          emailAddressSender: currentEmail.listEmailAddressSender.getListAddress(),
-                                          maxBodyHeight: constraints.maxHeight
-                                        )
+                                  child: SingleChildScrollView(
+                                    physics : const ClampingScrollPhysics(),
+                                    child: Container(
+                                      width: double.infinity,
+                                      alignment: Alignment.center,
+                                      color: Colors.white,
+                                      child: _buildEmailMessage(
+                                        context: context,
+                                        presentationEmail: currentEmail,
+                                        calendarEvent: calendarEvent,
+                                        emailAddressSender: currentEmail.listEmailAddressSender.getListAddress(),
+                                        maxBodyHeight: constraints.maxHeight
                                       )
-                                    ),
+                                    )
                                   ),
                                 );
                               } else {
@@ -367,6 +360,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                     controller.onCalendarEventReplyAction(eventActionType, presentationEmail.id!),
                 calendarEventReplying: controller.calendarEventProcessing,
                 presentationEmail: controller.currentEmail,
+                onMailtoAttendeesAction: controller.handleMailToAttendees,
               )),
               if (calendarEvent.getTitleEventAction(context, emailAddressSender ?? []).isNotEmpty)
                 CalendarEventActionBannerWidget(
@@ -384,6 +378,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                     controller.onCalendarEventReplyAction(eventActionType, presentationEmail.id!),
                 calendarEventReplying: controller.calendarEventProcessing,
                 presentationEmail: controller.currentEmail,
+                onMailtoAttendeesAction: controller.handleMailToAttendees,
               )),
             ],
           )

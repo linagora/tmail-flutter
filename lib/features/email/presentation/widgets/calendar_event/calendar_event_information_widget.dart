@@ -25,6 +25,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
   final OnCalendarEventReplyActionClick onCalendarEventReplyActionClick;
   final bool calendarEventReplying;
   final PresentationEmail? presentationEmail;
+  final OnMailtoAttendeesAction? onMailtoAttendeesAction;
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
@@ -36,6 +37,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
     this.onOpenNewTabAction,
     this.onOpenComposerAction,
     this.presentationEmail,
+    this.onMailtoAttendeesAction,
   });
 
   @override
@@ -123,6 +125,10 @@ class CalendarEventInformationWidget extends StatelessWidget {
                       onCalendarEventReplyActionClick: onCalendarEventReplyActionClick,
                       calendarEventReplying: calendarEventReplying,
                       presentationEmail: presentationEmail,
+                      onMailToAttendeesAction: () => onMailtoAttendeesAction?.call(
+                        calendarEvent.organizer,
+                        calendarEvent.participants,
+                      ),
                     ),
                   ],
                 ),
@@ -194,6 +200,10 @@ class CalendarEventInformationWidget extends StatelessWidget {
                       onCalendarEventReplyActionClick: onCalendarEventReplyActionClick,
                       calendarEventReplying: calendarEventReplying,
                       presentationEmail: presentationEmail,
+                      onMailToAttendeesAction: () => onMailtoAttendeesAction?.call(
+                        calendarEvent.organizer,
+                        calendarEvent.participants,
+                      ),
                     ),
                   ],
                 ),

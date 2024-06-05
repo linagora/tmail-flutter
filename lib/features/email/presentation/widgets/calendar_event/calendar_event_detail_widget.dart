@@ -1,6 +1,8 @@
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_detail_widget_styles.dart';
@@ -13,6 +15,8 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_title_widget.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
+typedef OnMailtoAttendeesAction = Function(CalendarOrganizer? organizer, List<CalendarAttendee>? participants);
+
 class CalendarEventDetailWidget extends StatelessWidget {
 
   final CalendarEvent calendarEvent;
@@ -24,6 +28,7 @@ class CalendarEventDetailWidget extends StatelessWidget {
   final OnCalendarEventReplyActionClick onCalendarEventReplyActionClick;
   final bool calendarEventReplying;
   final PresentationEmail? presentationEmail;
+  final OnMailtoAttendeesAction? onMailtoAttendeesAction;
 
   const CalendarEventDetailWidget({
     super.key,
@@ -36,6 +41,7 @@ class CalendarEventDetailWidget extends StatelessWidget {
     this.onOpenComposerAction,
     this.onMailtoDelegateAction,
     this.presentationEmail,
+    this.onMailtoAttendeesAction,
   });
 
   @override
@@ -99,6 +105,10 @@ class CalendarEventDetailWidget extends StatelessWidget {
             onCalendarEventReplyActionClick: onCalendarEventReplyActionClick,
             calendarEventReplying: calendarEventReplying,
             presentationEmail: presentationEmail,
+            onMailToAttendeesAction: () => onMailtoAttendeesAction?.call(
+              calendarEvent.organizer,
+              calendarEvent.participants,
+            ),
           ),
         ],
       ),
