@@ -74,8 +74,8 @@ import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_event_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
@@ -1800,7 +1800,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void handleViewAttachmentAction(BuildContext context, Attachment attachment) {
     if (PlatformInfo.isWeb) {
-      if (PlatformInfo.isCanvasKit && attachment.isDisplayedPDFIcon) {
+      if (PlatformInfo.isCanvasKit && attachment.validatePDFIcon()) {
         previewPDFFileAction(context, attachment);
       } else {
         downloadAttachmentForWeb(attachment);
@@ -1837,6 +1837,26 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           )
         );
       },
+    );
+  }
+
+  void handleMailToAttendees(CalendarOrganizer? organizer, List<CalendarAttendee>? attendees) {
+    final listEmailAddressAttendees = attendees
+      ?.map((attendee) => EmailAddress(attendee.name?.name, attendee.mailto?.mailAddress.value))
+      .toList() ?? [];
+
+    if (organizer != null) {
+      listEmailAddressAttendees.add(EmailAddress(organizer.name, organizer.mailto?.value));
+    }
+
+    final listEmailAddressMailTo = listEmailAddressAttendees
+      .where((emailAddress) => emailAddress.emailAddress.isNotEmpty && emailAddress.emailAddress != mailboxDashBoardController.sessionCurrent?.username.value)
+      .toSet()
+      .toList();
+
+    log('SingleEmailController::handleMailToAttendees: listEmailAddressMailTo = $listEmailAddressMailTo');
+    mailboxDashBoardController.goToComposer(
+      ComposerArguments.fromMailtoUri(listEmailAddress: listEmailAddressMailTo)
     );
   }
 }

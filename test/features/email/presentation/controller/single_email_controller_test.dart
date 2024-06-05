@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:core/core.dart';
 import 'package:core/utils/application_manager.dart';
 import 'package:dartz/dartz.dart' hide State;
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -185,6 +186,7 @@ void main() {
 
     setUp(() {
       Get.locale = locale;
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
     });
 
     group('accept test:', () {
@@ -270,9 +272,18 @@ void main() {
         verify(rejectCalendarEventInteractor.execute(testAccountId, {blobId}, emailId, locale.languageCode)).called(1);
       });
     });
+
+    tearDown(() {
+      debugDefaultTargetPlatformOverride = null;
+    });
   });
 
   group('StoreEventAttendanceStatusInteractor test', () {
+
+    setUp(() {
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+    });
+
     group('calendarEventSuccess method test', () {
       test(
         'SHOULD call execute on StoreEventAttendanceStatusInteractor\n'
@@ -342,6 +353,10 @@ void main() {
           EventActionType.yes,
         )).called(1);
       });
+    });
+
+    tearDown(() {
+      debugDefaultTargetPlatformOverride = null;
     });
   });
 }
