@@ -3,6 +3,7 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/application_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:mockito/annotations.dart';
@@ -65,6 +66,7 @@ import 'login_controller_test.mocks.dart';
   MockSpec<UpdateAuthenticationAccountInteractor>(),
   MockSpec<CachingManager>(),
   MockSpec<LanguageCacheManager>(),
+  MockSpec<ApplicationManager>(),
 ])
 void main() {
   late MockAuthenticationInteractor mockAuthenticationInteractor;
@@ -94,6 +96,7 @@ void main() {
   late MockImagePaths mockImagePaths;
   late MockResponsiveUtils mockResponsiveUtils;
   late MockUuid mockUuid;
+  late MockApplicationManager mockApplicationManager;
 
   late LoginController loginController;
 
@@ -130,6 +133,7 @@ void main() {
       mockImagePaths = MockImagePaths();
       mockResponsiveUtils = MockResponsiveUtils();
       mockUuid = MockUuid();
+      mockApplicationManager = MockApplicationManager();
 
       Get.put<GetSessionInteractor>(mockGetSessionInteractor);
       Get.put<GetAuthenticatedAccountInteractor>(mockGetAuthenticatedAccountInteractor);
@@ -149,6 +153,7 @@ void main() {
       Get.put<ImagePaths>(mockImagePaths);
       Get.put<ResponsiveUtils>(mockResponsiveUtils);
       Get.put<Uuid>(mockUuid);
+      Get.put<ApplicationManager>(mockApplicationManager);
       Get.testMode = true;
 
       loginController = LoginController(

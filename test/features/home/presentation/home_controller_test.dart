@@ -4,6 +4,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/application_manager.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -51,6 +52,7 @@ import 'home_controller_test.mocks.dart';
   MockSpec<UpdateAuthenticationAccountInteractor>(),
   MockSpec<CachingManager>(),
   MockSpec<LanguageCacheManager>(),
+  MockSpec<ApplicationManager>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -77,6 +79,7 @@ void main() {
   late MockImagePaths mockImagePaths;
   late MockResponsiveUtils mockResponsiveUtils;
   late MockUuid mockUuid;
+  late MockApplicationManager mockApplicationManager;
 
   setUpAll(() {
     cleanupEmailCacheInteractor = MockCleanupEmailCacheInteractor();
@@ -102,6 +105,7 @@ void main() {
     mockImagePaths = MockImagePaths();
     mockResponsiveUtils = MockResponsiveUtils();
     mockUuid = MockUuid();
+    mockApplicationManager = MockApplicationManager();
 
     Get.put<GetSessionInteractor>(mockGetSessionInteractor);
     Get.put<GetAuthenticatedAccountInteractor>(mockGetAuthenticatedAccountInteractor);
@@ -122,6 +126,7 @@ void main() {
     Get.put<ImagePaths>(mockImagePaths);
     Get.put<ResponsiveUtils>(mockResponsiveUtils);
     Get.put<Uuid>(mockUuid);
+    Get.put<ApplicationManager>(mockApplicationManager);
     Get.testMode = true;
 
     homeController = HomeController(

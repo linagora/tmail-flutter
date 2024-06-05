@@ -98,6 +98,8 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
         }
 
         return CalendarEventActionButtonWidgetStyles.backgroundColor;
+      case EventActionType.mailToAttendees:
+        return CalendarEventActionButtonWidgetStyles.backgroundColor;
     }
   }
 
@@ -120,6 +122,8 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
           return CalendarEventActionButtonWidgetStyles.selectedTextColor;
         }
 
+        return CalendarEventActionButtonWidgetStyles.textColor;
+      case EventActionType.mailToAttendees:
         return CalendarEventActionButtonWidgetStyles.textColor;
     }
   }
@@ -144,6 +148,8 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
         }
 
         return CalendarEventActionButtonWidgetStyles.textColor;
+      case EventActionType.mailToAttendees:
+        return CalendarEventActionButtonWidgetStyles.textColor;
     }
   }
 
@@ -164,6 +170,8 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
           return null;
         }
         return () => onCalendarEventReplyActionClick(eventActionType);
+      case EventActionType.mailToAttendees:
+        return onMailToAttendeesAction;
     }
   }
 }

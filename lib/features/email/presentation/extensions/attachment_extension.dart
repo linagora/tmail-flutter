@@ -4,4 +4,6 @@ import 'package:tmail_ui_user/features/upload/domain/extensions/media_type_exten
 
 extension AttachmentExtension on Attachment {
   String getIcon(ImagePaths imagePaths) => type?.getIcon(imagePaths, fileName: name) ?? imagePaths.icFileEPup;
+
+  bool validatePDFIcon() => type?.validatePDFIcon(fileName: name) ?? false;
 }

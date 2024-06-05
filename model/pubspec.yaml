@@ -30,10 +30,12 @@ dependencies:
     path: ../core
 
   ### Dependencies from git ###
+  # TODO: We will change it when the PR in upstream repository will be merged
+  # https://github.com/linagora/jmap-dart-client/pull/87
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: master
+      ref: migrate_cnb_to_master_5Jun
 
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.6

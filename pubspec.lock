@@ -521,7 +521,7 @@ packages:
     source: hosted
     version: "6.1.4"
   file_picker:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
       path: "."
       ref: "email_supported_5.3.1"
@@ -1058,8 +1058,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "bugfix/composer-reply-memory-leak"
-      resolved-ref: "7a20f8e924e403eb54f4a6177c3c8ecb0c7b3687"
+      ref: cnb_supported
+      resolved-ref: "978886d768e6540fc7dbe016dd83733c56ffb220"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"
@@ -1147,8 +1147,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: "21d15bc1a6a75e048ee1e3cd751dd0815492ce20"
+      ref: migrate_cnb_to_master_5Jun
+      resolved-ref: "49305a382ca77211a0668fd9fe196a3c057cdc8e"
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
     version: "0.0.1"

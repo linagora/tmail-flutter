@@ -17,7 +17,6 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
@@ -168,6 +167,8 @@ const fallbackGenerators = {
   MockSpec<CachingManager>(),
   MockSpec<LanguageCacheManager>(),
   MockSpec<RemoveComposerCacheOnWebInteractor>(),
+  MockSpec<ApplicationManager>(),
+  MockSpec<GetAllIdentitiesInteractor>(),
 ])
 void main() {
   // mock mailbox dashboard controller direct dependencies
@@ -303,12 +304,6 @@ void main() {
       Get.put<RemoveComposerCacheOnWebInteractor>(removeComposerCacheOnWebInteractor);
 
       Get.testMode = true;
-      PackageInfo.setMockInitialValues(
-        appName: '',
-        packageName: '',
-        version: '',
-        buildNumber: '',
-        buildSignature: '');
 
       when(emailReceiveManager.pendingEmailAddressInfo).thenAnswer((_) => BehaviorSubject.seeded(null));
       when(emailReceiveManager.pendingEmailContentInfo).thenAnswer((_) => BehaviorSubject.seeded(null));
