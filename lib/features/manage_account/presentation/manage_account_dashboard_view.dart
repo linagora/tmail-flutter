@@ -3,11 +3,11 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
-import 'package:core/presentation/views/text/slogan_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/state/banner_state.dart';
+import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/always_read_receipt/always_read_receipt_view.dart';
@@ -25,7 +25,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardController>
@@ -47,13 +46,8 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                 Container(width: 256, color: Colors.white,
                     padding: SettingsUtils.getPaddingHeaderSetting(context),
                     child: Row(children: [
-                      SloganBuilder(
-                        sizeLogo: 24,
-                        text: AppLocalizations.of(context).app_name,
-                        textAlign: TextAlign.center,
-                        textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-                        logoSVG: controller.imagePaths.icTMailLogo,
-                        onTapCallback: () => controller.backToMailboxDashBoard(context: context),
+                      ApplicationLogoWidthTextWidget(
+                        onTapAction: () => controller.backToMailboxDashBoard(context: context),
                       ),
                       ApplicationVersionWidget(
                         applicationManager: controller.applicationManager

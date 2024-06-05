@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
@@ -64,13 +65,7 @@ class MailboxView extends BaseMailboxView {
           start: controller.responsiveUtils.isDesktop(context) ? 32 : 16,
         ),
         child: Row(children: [
-          SloganBuilder(
-            sizeLogo: 24,
-            text: AppLocalizations.of(context).app_name,
-            textAlign: TextAlign.center,
-            textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-            logoSVG: controller.imagePaths.icTMailLogo
-          ),
+          ApplicationLogoWidthTextWidget(),
           ApplicationVersionWidget(
             applicationManager: controller.mailboxDashBoardController.applicationManager,
             padding: const EdgeInsets.only(top: 4),

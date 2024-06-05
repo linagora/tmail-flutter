@@ -5,6 +5,7 @@ import 'package:core/presentation/views/text/slogan_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
 import 'package:tmail_ui_user/features/login/presentation/base_login_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/privacy_link_widget.dart';
@@ -39,7 +40,7 @@ class LoginView extends BaseLoginView {
             children: [
               Padding(
                 padding: const EdgeInsets.only(top: 67),
-                child: _buildAppLogo(context)
+                child: ApplicationLogoWidthTextWidget()
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 67),
@@ -181,7 +182,7 @@ class LoginView extends BaseLoginView {
                   children: [
                     Padding(
                       padding: const EdgeInsets.only(top: 66),
-                      child: _buildAppLogo(context)
+                      child: ApplicationLogoWidthTextWidget()
                     ),
                     Padding(
                       padding: const EdgeInsets.only(top: 67),
@@ -218,27 +219,6 @@ class LoginView extends BaseLoginView {
           )
         ],
       )
-    );
-  }
-
-  Widget _buildAppLogo(BuildContext buildContext) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        SvgPicture.asset(
-          controller.imagePaths.icTMailLogo,
-          fit: BoxFit.fill,
-          width: 36,
-          height: 36,
-          alignment: Alignment.center),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 10),
-          child: Text(
-            AppLocalizations.of(buildContext).app_name,
-            style: const TextStyle(color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
-            textAlign: TextAlign.center),
-        ),
-      ]
     );
   }
 
