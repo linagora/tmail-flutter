@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/widgets/account_menu_item_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -25,13 +26,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                        color: Colors.white,
                        padding: const EdgeInsets.only(top: 16, bottom: 16, left: 16),
                        child: Row(children: [
-                         SloganBuilder(
-                           sizeLogo: 24,
-                           text: AppLocalizations.of(context).app_name,
-                           textAlign: TextAlign.center,
-                           textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-                           logoSVG: controller.imagePaths.icTMailLogo
-                         ),
+                         ApplicationLogoWidthTextWidget(),
                          ApplicationVersionWidget(
                            applicationManager:  controller.dashBoardController.applicationManager,
                            padding: const EdgeInsets.only(top: 4),
