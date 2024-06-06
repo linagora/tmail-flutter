@@ -188,11 +188,7 @@ class SearchEmailController extends BaseController
   }
 
   void _initializeTextInputFocus() {
-    textInputSearchFocus.addListener(() {
-      if (textInputSearchFocus.hasFocus) {
-        searchIsRunning.value = false;
-      }
-    });
+    textInputSearchFocus.addListener(_onSearchTextInputListener);
   }
 
   void _initWorkerListener() {
@@ -231,6 +227,12 @@ class SearchEmailController extends BaseController
         }
       }
     );
+  }
+
+  void _onSearchTextInputListener() {
+    if (textInputSearchFocus.hasFocus) {
+      searchIsRunning.value = false;
+    }
   }
 
   void _refreshEmailChanges() {
@@ -886,7 +888,9 @@ class SearchEmailController extends BaseController
 
   @override
   void onClose() {
+    textInputSearchFocus.removeListener(_onSearchTextInputListener);
     textInputSearchController.dispose();
+    textInputSearchFocus.dispose();
     resultSearchScrollController.dispose();
     _deBouncerTime.cancel();
     dashBoardViewStateWorker.dispose();
