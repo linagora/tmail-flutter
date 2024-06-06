@@ -1,13 +1,36 @@
-# Twake Mail Flutter mobile application
+# Twake Mail Client
 
-[![Gitter](https://badges.gitter.im/linagora/team-mail.svg)](https://gitter.im/linagora/team-mail?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
+[![Contributors](https://img.shields.io/github/contributors/linagora/tmail-flutter?label=Contributors
+)](
+  https://github.com/linagora/tmail-flutter/graphs/contributors
+)
+[![Issues](https://img.shields.io/github/issues/linagora/tmail-flutter?label=Issues
+)](https://github.com/linagora/tmail-flutter/issues)
 [![Documentation](https://img.shields.io/badge/Documentation-green.svg)](docs)
-[![Images docker](https://img.shields.io/badge/Images-docker-blue.svg)](https://hub.docker.com/r/linagora/tmail-web)
-[![Android application](https://img.shields.io/badge/App-Android-blue.svg)](https://play.google.com/store/apps/details?id=com.linagora.android.teammail)
-[![Ios application](https://img.shields.io/badge/App-Ios-blue.svg)](https://apps.apple.com/gr/app/teammail/id1587086189)
+[![Android application](https://img.shields.io/badge/App-Android-blue.svg)](https://play.google.com/store/apps/dev?id=8845244706987756601)
+[![Ios application](https://img.shields.io/badge/App-iOS-red.svg)](https://apps.apple.com/gr/developer/linagora/id1110867042)
 
-![LOGO](https://user-images.githubusercontent.com/6462404/202656316-8b77a7b6-0c1f-4f3e-932b-72bd446b6605.png)
+<p align="center">
+  <a href="https://github.com/linagora/twake-mail">
+   <img src="https://github.com/linagora/tmail-flutter/assets/146178981/08668d35-7bcd-4c16-9b3c-96de93b7c19a" alt="Logo">
+  </a>
 
+  <h3 align="center">twake-mail.com</h3>
+
+   <p align="center">
+    <a href="https://twake-mail.com">Website</a>
+    •
+    <a href="https://beta.twake.app/web/#/rooms">View Demo</a>
+    •
+    <a href="https://github.com/linagora/twake-mail/issues">Report Bug</a>
+    •
+    <a href="https://github.com/linagora/twake-mail/milestones">Roadmap</a>
+  </p>
+</p>
+
+---
+
+  
 
 This project aims at providing a multi-platform mobile email application, running the [JMAP protocol](https://jmap.io/) and will also deliver additional 
 features to the [Twake Mail back-end](https://github.com/linagora/tmail-backend).
