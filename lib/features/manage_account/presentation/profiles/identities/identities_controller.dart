@@ -38,7 +38,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class IdentitiesController extends BaseController {
 
-  final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
+  final accountDashBoardController = Get.find<ManageAccountDashBoardController>();
 
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final CreateNewIdentityInteractor _createNewIdentityInteractor;
@@ -95,8 +95,8 @@ class IdentitiesController extends BaseController {
   }
 
   void _registerObxStreamListener() {
-    ever(_accountDashBoardController.accountId, (accountId) {
-      final session = _accountDashBoardController.sessionCurrent;
+    ever(accountDashBoardController.accountId, (accountId) {
+      final session = accountDashBoardController.sessionCurrent;
       if (accountId != null && session != null) {
         _getAllIdentities(session, accountId);
       }
@@ -111,8 +111,8 @@ class IdentitiesController extends BaseController {
     identitySelected.value = null;
     listAllIdentities.clear();
 
-    final accountId = _accountDashBoardController.accountId.value;
-    final session = _accountDashBoardController.sessionCurrent;
+    final accountId = accountDashBoardController.accountId.value;
+    final session = accountDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
       _getAllIdentities(session, accountId);
     }
@@ -141,8 +141,8 @@ class IdentitiesController extends BaseController {
   }
 
   void goToCreateNewIdentity(BuildContext context) async {
-    final accountId = _accountDashBoardController.accountId.value;
-    final session = _accountDashBoardController.sessionCurrent;
+    final accountId = accountDashBoardController.accountId.value;
+    final session = accountDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
       final arguments = IdentityCreatorArguments(accountId, session);
 
@@ -204,8 +204,8 @@ class IdentitiesController extends BaseController {
   void _deleteIdentityAction(Identity identity) {
     popBack();
 
-    final session = _accountDashBoardController.sessionCurrent;
-    final accountId = _accountDashBoardController.accountId.value;
+    final session = accountDashBoardController.sessionCurrent;
+    final accountId = accountDashBoardController.accountId.value;
     if (accountId != null && session != null && identity.id != null) {
       consumeState(_deleteIdentityInteractor.execute(session, accountId, identity.id!));
     }
@@ -247,8 +247,8 @@ class IdentitiesController extends BaseController {
   }
 
   void goToEditIdentity(BuildContext context, Identity identity) async {
-    final accountId = _accountDashBoardController.accountId.value;
-    final session = _accountDashBoardController.sessionCurrent;
+    final accountId = accountDashBoardController.accountId.value;
+    final session = accountDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
       final arguments = IdentityCreatorArguments(
         accountId,

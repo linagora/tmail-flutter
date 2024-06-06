@@ -349,7 +349,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
         shouldEnsureVisible: true,
         hint: '',
         darkMode: false,
-        initialText: initContent,
+        initialText: initContent.isEmpty ? null : initContent,
         customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context)),
       ),
       htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
@@ -359,7 +359,12 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
       otherOptions: const html_editor_browser.OtherOptions(height: 200),
       callbacks: html_editor_browser.Callbacks(
         onBeforeCommand: controller.updateContentHtmlEditor,
-        onChangeContent: controller.updateContentHtmlEditor,
+        onChangeContent: (content) {
+          controller.updateContentHtmlEditor(content);
+          if (!controller.isLoadSignatureCompleted) {
+            controller.onLoadSignatureCompleted(content);
+          }
+        },
         onInit: () {
           controller.richTextWebController?.editorController.setFullScreen();
           controller.updateContentHtmlEditor(initContent);

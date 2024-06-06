@@ -8,6 +8,7 @@ import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/transform_html_signature_state.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identity_list_tile_builder.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identity_loading_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/signature_builder.dart';
 
 class IdentitiesRadioListBuilder extends StatelessWidget {
@@ -34,9 +35,22 @@ class IdentitiesRadioListBuilder extends StatelessWidget {
       ),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(16.0)),
-        child: responsiveUtils.isWebDesktop(context)
-          ? _buildIdentityViewHorizontal(context)
-          : _buildIdentityViewVertical(context))
+        child: Stack(
+          children: [
+            if (responsiveUtils.isWebDesktop(context))
+              _buildIdentityViewHorizontal(context)
+            else
+              _buildIdentityViewVertical(context),
+            Obx(() => Align(
+              alignment: AlignmentDirectional.topCenter,
+              child: IdentityLoadingWidget(
+                identityViewState: controller.viewState.value,
+                settingViewState: controller.accountDashBoardController.viewState.value
+              )
+            ))
+          ],
+        )
+      )
     );
   }
 
