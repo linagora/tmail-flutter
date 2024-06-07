@@ -101,15 +101,16 @@ class CalendarEventDetailWidget extends StatelessWidget {
                 organizer: calendarEvent.organizer!,
               ),
             ),
-          CalendarEventActionButtonWidget(
-            onCalendarEventReplyActionClick: onCalendarEventReplyActionClick,
-            calendarEventReplying: calendarEventReplying,
-            presentationEmail: presentationEmail,
-            onMailToAttendeesAction: () => onMailtoAttendeesAction?.call(
-              calendarEvent.organizer,
-              calendarEvent.participants,
+          if (calendarEvent.isDisplayedEventReplyAction)
+            CalendarEventActionButtonWidget(
+              onCalendarEventReplyActionClick: onCalendarEventReplyActionClick,
+              calendarEventReplying: calendarEventReplying,
+              presentationEmail: presentationEmail,
+              onMailToAttendeesAction: () => onMailtoAttendeesAction?.call(
+                calendarEvent.organizer,
+                calendarEvent.participants,
+              ),
             ),
-          ),
         ],
       ),
     );
