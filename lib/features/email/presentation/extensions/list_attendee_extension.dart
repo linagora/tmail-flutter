@@ -11,9 +11,12 @@ extension ListAttendeeExtension on List<CalendarAttendee> {
       .join(', ');
   }
 
-  List<CalendarAttendee> withoutOrganizer(CalendarOrganizer organizer) {
-  return where((attendee) => attendee.mailto?.mailAddress != organizer.mailto)
-    .whereNotNull()
-    .toList();
+  List<CalendarAttendee> withoutOrganizer(CalendarOrganizer? organizer) {
+    if (organizer == null) {
+      return this;
+    }
+    return where((attendee) => attendee.mailto?.mailAddress != organizer.mailto)
+      .whereNotNull()
+      .toList();
   }
 }

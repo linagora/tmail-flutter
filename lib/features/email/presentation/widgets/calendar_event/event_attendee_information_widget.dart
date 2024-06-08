@@ -11,9 +11,11 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 class EventAttendeeInformationWidget extends StatelessWidget {
 
   final List<CalendarAttendee> attendees;
-  final CalendarOrganizer organizer;
+  final CalendarOrganizer? organizer;
 
-  const EventAttendeeInformationWidget({
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+
+  EventAttendeeInformationWidget({
     super.key,
     required this.attendees,
     required this.organizer
@@ -21,7 +23,6 @@ class EventAttendeeInformationWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final responsiveUtils = Get.find<ResponsiveUtils>();
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -44,22 +45,26 @@ class EventAttendeeInformationWidget extends StatelessWidget {
               color: EventAttendeeInformationWidgetStyles.valueColor
             ),
             children: [
-              TextSpan(
-                text: '${organizer.mailto?.value} (${AppLocalizations.of(context).organizer})',
-                style: const TextStyle(
-                  color: EventAttendeeInformationWidgetStyles.valueOrganizerColor,
-                  fontSize: EventAttendeeInformationWidgetStyles.textSize,
-                  fontWeight: FontWeight.w500
-                ),
-              ),
-              const TextSpan(text: ', '),
-              TextSpan(text: attendees.withoutOrganizer(organizer).mailtoAsString)
+              if (organizer != null)
+                ...[
+                  TextSpan(
+                    text: '${organizer!.mailto?.value} (${AppLocalizations.of(context).organizer})',
+                    style: const TextStyle(
+                        color: EventAttendeeInformationWidgetStyles.valueOrganizerColor,
+                        fontSize: EventAttendeeInformationWidgetStyles.textSize,
+                        fontWeight: FontWeight.w500
+                    ),
+                  ),
+                  const TextSpan(text: ', '),
+                ],
+              if (attendees.isNotEmpty)
+                TextSpan(text: attendees.withoutOrganizer(organizer).mailtoAsString)
             ]
           ),
-          overflow: responsiveUtils.isPortraitMobile(context)
+          overflow: _responsiveUtils.isPortraitMobile(context)
             ? TextOverflow.clip
             : TextOverflow.ellipsis,
-          maxLines: responsiveUtils.isPortraitMobile(context) ? null : 2,
+          maxLines: _responsiveUtils.isPortraitMobile(context) ? null : 2,
         ))
       ],
     );
