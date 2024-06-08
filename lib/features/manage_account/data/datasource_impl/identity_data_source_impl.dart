@@ -1,7 +1,7 @@
 import 'package:core/presentation/utils/html_transformer/dom/block_code_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/block_quoted_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/image_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/dom/sanitize_tag_a_in_html_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
@@ -66,7 +66,7 @@ class IdentityDataSourceImpl extends IdentityDataSource {
           const RemoveScriptTransformer(),
           const BlockQuotedTransformer(),
           const BlockCodeTransformer(),
-          SanitizeTagAInHtmlTransformer(useTooltip: PlatformInfo.isWeb),
+          SanitizeHyperLinkTagInHtmlTransformer(useTooltip: PlatformInfo.isWeb),
           const ImageTransformer(),
         ]));
       return signatureUnescape;

@@ -4,11 +4,11 @@ import 'package:core/presentation/utils/html_transformer/sanitize_url.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:html/dom.dart';
 
-class SanitizeTagAInHtmlTransformer extends DomTransformer {
+class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
   final _sanitizeUrl = SanitizeUrl();
   final bool useTooltip;
-  
-  SanitizeTagAInHtmlTransformer({this.useTooltip = false});
+
+  SanitizeHyperLinkTagInHtmlTransformer({this.useTooltip = false});
 
   @override
   Future<void> process({
