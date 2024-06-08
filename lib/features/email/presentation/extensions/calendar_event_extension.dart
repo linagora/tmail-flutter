@@ -110,7 +110,7 @@ extension CalendarEventExtension on CalendarEvent {
       case EventMethod.refresh:
       case EventMethod.cancel:
       case EventMethod.declineCounter:
-        return getOrganizerNameEvent(context);
+        return organizerName;
       case EventMethod.reply:
       case EventMethod.counter:
         return getAttendeeNameEvent(context, listEmailAddressSender);
@@ -118,8 +118,6 @@ extension CalendarEventExtension on CalendarEvent {
         return '';
     }
   }
-
-  String getOrganizerNameEvent(BuildContext context) => organizer?.name ?? AppLocalizations.of(context).you;
 
   String get organizerName => organizer?.name ?? organizer?.mailto?.value ?? '';
 
