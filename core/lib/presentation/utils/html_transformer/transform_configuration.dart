@@ -2,11 +2,9 @@
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/base/text_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/dom/add_lazy_loading_for_background_image_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/dom/add_target_blank_in_tag_a_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/dom/add_tooltip_link_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/dom/blockcode_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/dom/blockquoted_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/hide_draft_signature_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/dom/block_code_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/block_quoted_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/image_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_collapsed_signature_button_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_lazy_loading_for_background_image_transformers.dart';
@@ -14,8 +12,9 @@ import 'package:core/presentation/utils/html_transformer/dom/remove_lazy_loading
 import 'package:core/presentation/utils/html_transformer/dom/remove_max_width_in_image_style_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_style_tag_outside_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/remove_tooltip_link_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/sanitize_tag_a_in_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/dom/sigature_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/dom/signature_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_html_transformers.dart';
 import 'package:core/utils/platform_info.dart';
 
@@ -57,9 +56,8 @@ class TransformConfiguration {
       const RemoveScriptTransformer(),
       const BlockQuotedTransformer(),
       const BlockCodeTransformer(),
-      const AddTargetBlankInTagATransformer(),
+      SanitizeTagAInHtmlTransformer(useTooltip: true),
       const ImageTransformer(),
-      const AddTooltipLinkTransformer(),
       const AddLazyLoadingForBackgroundImageTransformer(),
       const RemoveCollapsedSignatureButtonTransformer(),
     ]
@@ -80,7 +78,7 @@ class TransformConfiguration {
   ]);
 
   /// Provides easy access to a standard configuration that does not block external images.
-  static const TransformConfiguration standardConfiguration = TransformConfiguration(
+  static TransformConfiguration standardConfiguration = TransformConfiguration(
     standardDomTransformers,
     standardTextTransformers
   );
@@ -106,14 +104,14 @@ class TransformConfiguration {
     );
   }
 
-  static const List<DomTransformer> standardDomTransformers = [
-    RemoveScriptTransformer(),
-    BlockQuotedTransformer(),
-    BlockCodeTransformer(),
-    AddTargetBlankInTagATransformer(),
-    ImageTransformer(),
-    AddLazyLoadingForBackgroundImageTransformer(),
-    RemoveCollapsedSignatureButtonTransformer(),
+  static List<DomTransformer> standardDomTransformers = [
+    const RemoveScriptTransformer(),
+    const BlockQuotedTransformer(),
+    const BlockCodeTransformer(),
+    SanitizeTagAInHtmlTransformer(),
+    const ImageTransformer(),
+    const AddLazyLoadingForBackgroundImageTransformer(),
+    const RemoveCollapsedSignatureButtonTransformer(),
   ];
 
   static const List<TextTransformer> standardTextTransformers = [
