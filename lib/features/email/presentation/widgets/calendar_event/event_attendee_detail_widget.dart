@@ -15,7 +15,7 @@ class EventAttendeeDetailWidget extends StatefulWidget {
   static const int maxAttendeeDisplayed = 6;
 
   final List<CalendarAttendee> attendees;
-  final CalendarOrganizer organizer;
+  final CalendarOrganizer? organizer;
 
   const EventAttendeeDetailWidget({
     super.key,
@@ -59,10 +59,12 @@ class _EventAttendeeDetailWidgetState extends State<EventAttendeeDetailWidget> {
         Expanded(child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            OrganizerWidget(organizer: widget.organizer),
-            ..._attendeesDisplayed
-                .map((attendee) => AttendeeWidget(attendee: attendee, listAttendees: _attendeesDisplayed))
-                .toList(),
+            if (widget.organizer != null)
+              OrganizerWidget(organizer: widget.organizer!),
+            if (_attendeesDisplayed.isNotEmpty)
+              ..._attendeesDisplayed
+                  .map((attendee) => AttendeeWidget(attendee: attendee, listAttendees: _attendeesDisplayed))
+                  .toList(),
             if (!_isShowAllAttendee)
               Padding(
                 padding: const EdgeInsets.only(top: EventAttendeeDetailWidgetStyles.fieldTopPadding),
