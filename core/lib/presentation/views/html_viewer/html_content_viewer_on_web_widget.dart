@@ -145,7 +145,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
     final webViewActionScripts = '''
       <script type="text/javascript">
         window.parent.addEventListener('message', handleMessage, false);
-        window.addEventListener('click', handleOnClickLink, true);
         window.addEventListener('load', handleOnLoad);
         window.addEventListener('pagehide', (event) => {
           window.parent.removeEventListener('message', handleMessage, false);
@@ -174,34 +173,21 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           }
         }
         
-        function handleOnClickLink(e) {
-           let link = e.target;
-           let textContent = e.target.textContent;
-           if (link && isValidMailtoLink(link)) {
-              window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: OpenLink", "url": "" + link}), "*");
-              e.preventDefault();
-           } else if (textContent && isValidMailtoLink(textContent)) {
-              window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: OpenLink", "url": "" + textContent}), "*");
-              e.preventDefault();
-           }
+        function handleOnClickEmailLink(e) {
+           var href = this.href;
+           window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: OpenLink", "url": "" + href}), "*");
+           e.preventDefault();
         }
         
-        function isValidMailtoLink(string) {
-          let url;
-          
-          try {
-            url = new URL(string);
-          } catch (_) {
-            return false;  
-          }
-        
-          return url.protocol === "mailto:";
-        }
-
         function handleOnLoad() {
           window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "message": "$iframeOnLoadMessage"}), "*");
           window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toIframe: getHeight"}), "*");
           window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toIframe: getWidth"}), "*");
+          
+          var emailLinks = document.querySelectorAll('a[href^="mailto:"]');
+          for(var i=0; i < emailLinks.length; i++){
+              emailLinks[i].addEventListener('click', handleOnClickEmailLink);
+          }
         }
       </script>
     ''';
