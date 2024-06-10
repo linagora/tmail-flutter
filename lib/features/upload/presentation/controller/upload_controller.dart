@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:async/async.dart';
 import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
@@ -45,6 +47,9 @@ class UploadController extends BaseController {
   final StreamGroup<Either<Failure, Success>> _progressUploadInlineImageStateStreamGroup
     = StreamGroup<Either<Failure, Success>>.broadcast();
 
+  StreamSubscription? _uploadAttachmentStreamSubscription;
+  StreamSubscription? _uploadInlineImageStreamSubscription;
+
   final UploadFileStateList _uploadingStateFiles = UploadFileStateList();
   final UploadFileStateList _uploadingStateInlineFiles = UploadFileStateList();
 
@@ -58,17 +63,21 @@ class UploadController extends BaseController {
 
   @override
   void onClose() {
+    listUploadAttachments.clear();
     _uploadingStateFiles.clear();
-    _progressUploadStateStreamGroup.close();
     _uploadingStateInlineFiles.clear();
-    _progressUploadInlineImageStateStreamGroup.close();
+    uploadInlineViewState.value = Right(UIClosedState());
     dispatchState(Right(UIClosedState()));
+    _progressUploadStateStreamGroup.close();
+    _progressUploadInlineImageStateStreamGroup.close();
+    _uploadAttachmentStreamSubscription?.cancel();
+    _uploadInlineImageStreamSubscription?.cancel();
     super.onClose();
   }
 
   void _registerProgressUploadStateStream() {
-    _progressUploadStateStreamGroup.stream.listen(_handleProgressUploadStateStream);
-    _progressUploadInlineImageStateStreamGroup.stream.listen(_handleProgressUploadInlineImageStateStream);
+    _uploadAttachmentStreamSubscription = _progressUploadStateStreamGroup.stream.listen(_handleProgressUploadStateStream);
+    _uploadInlineImageStreamSubscription = _progressUploadInlineImageStateStreamGroup.stream.listen(_handleProgressUploadInlineImageStateStream);
   }
 
   void _handleProgressUploadStateStream(Either<Failure, Success> uploadState) {

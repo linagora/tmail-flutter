@@ -1,5 +1,8 @@
 
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/web/attachment_composer_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_item_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_header_composer_widget.dart';
@@ -28,12 +31,19 @@ class AttachmentComposerWidget extends StatefulWidget {
 
 class _AttachmentComposerWidgetState extends State<AttachmentComposerWidget> {
 
+  final ImagePaths _imagePaths = Get.find<ImagePaths>();
   bool _isCollapsed = false;
 
   @override
   void initState() {
     super.initState();
     _isCollapsed = widget.isCollapsed;
+  }
+
+  @override
+  void dispose() {
+    _isCollapsed = false;
+    super.dispose();
   }
 
   @override
@@ -66,8 +76,13 @@ class _AttachmentComposerWidgetState extends State<AttachmentComposerWidget> {
                   runSpacing: AttachmentComposerWidgetStyle.listItemSpace,
                   children: widget.listFileUploaded
                     .map((file) => AttachmentItemComposerWidget(
-                      fileState: file,
-                      onDeleteAttachmentAction: widget.onDeleteAttachmentAction
+                      fileIcon: file.getIcon(_imagePaths),
+                      fileName: file.fileName,
+                      fileSize: filesize(file.fileSize),
+                      uploadStatus: file.uploadStatus,
+                      percentUploading: file.percentUploading,
+                      uploadTaskId: file.uploadTaskId,
+                      onDeleteAttachmentAction: widget.onDeleteAttachmentAction,
                     ))
                     .toList(),
                 ),
