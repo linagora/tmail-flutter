@@ -1854,20 +1854,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
     },
     CalendarEventExtension_getUserNameEventAction(_this, context, imagePaths, listEmailAddressSender) {
-      var t1, _null = null;
       switch (_this.method) {
         case C.EventMethod_1:
         case C.EventMethod_3:
         case C.EventMethod_5:
         case C.EventMethod_4:
         case C.EventMethod_7:
-          t1 = _this.organizer;
-          t1 = t1 == null ? _null : t1.name;
-          if (t1 == null) {
-            A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-            t1 = A.Intl__message("You", _null, "you", _null, _null);
-          }
-          return t1;
+          return B.CalendarEventExtension_get_organizerName(_this);
         case C.EventMethod_2:
         case C.EventMethod_6:
           return B.CalendarEventExtension_getAttendeeNameEvent(_this, context, listEmailAddressSender);
@@ -2103,7 +2096,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.IterableNullableExtension_whereNotNull(new A.MappedListIterable(_this, new B.ListAttendeeExtension_get_mailtoAsString_closure(), A._arrayInstanceType(_this)._eval$1("MappedListIterable<1,String?>")), type$.String).join$1(0, ", ");
     },
     ListAttendeeExtension_withoutOrganizer(_this, organizer) {
-      var t1 = A.IterableNullableExtension_whereNotNull(new A.WhereIterable(_this, new B.ListAttendeeExtension_withoutOrganizer_closure(organizer), A._arrayInstanceType(_this)._eval$1("WhereIterable<1>")), type$.CalendarAttendee);
+      var t1;
+      if (organizer == null)
+        return _this;
+      t1 = A.IterableNullableExtension_whereNotNull(new A.WhereIterable(_this, new B.ListAttendeeExtension_withoutOrganizer_closure(organizer), A._arrayInstanceType(_this)._eval$1("WhereIterable<1>")), type$.CalendarAttendee);
       return A.List_List$of(t1, true, t1.$ti._eval$1("Iterable.E"));
     },
     ListAttendeeExtension_get_mailtoAsString_closure: function ListAttendeeExtension_get_mailtoAsString_closure() {
@@ -2223,10 +2219,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _EventAttendeeDetailWidgetState_build__closure: function _EventAttendeeDetailWidgetState_build__closure(t0) {
       this.$this = t0;
     },
-    EventAttendeeInformationWidget: function EventAttendeeInformationWidget(t0, t1, t2) {
-      this.attendees = t0;
-      this.organizer = t1;
-      this.key = t2;
+    EventAttendeeInformationWidget$(attendees, organizer) {
+      var t1;
+      $.$get$Get();
+      t1 = $.GetInstance__getInstance;
+      if (t1 == null)
+        t1 = $.GetInstance__getInstance = C.C_GetInstance;
+      return new B.EventAttendeeInformationWidget(attendees, organizer, t1.find$1$1$tag(0, null, type$.ResponsiveUtils), null);
+    },
+    EventAttendeeInformationWidget: function EventAttendeeInformationWidget(t0, t1, t2, t3) {
+      var _ = this;
+      _.attendees = t0;
+      _.organizer = t1;
+      _._event_attendee_information_widget$_responsiveUtils = t2;
+      _.key = t3;
     },
     EventBodyContentWidget: function EventBodyContentWidget(t0, t1, t2, t3) {
       var _ = this;
@@ -7361,13 +7367,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return C.EdgeInsets_0_16_0_16;
     },
     _buildEmailMessage$5$calendarEvent$context$emailAddressSender$maxBodyHeight$presentationEmail(calendarEvent, context, emailAddressSender, maxBodyHeight, presentationEmail) {
-      var t3, _this = this, _null = null,
+      var t3, t4, t5, usernameEvent, titleEvent, _this = this, _null = null,
         t1 = type$.JSArray_Widget,
         t2 = A._setArrayType([new B.EmailSubjectWidget(presentationEmail, _null), new A.Obx(new B.EmailView__buildEmailMessage_closure(_this, presentationEmail, maxBodyHeight, context), _null), new A.Obx(new B.EmailView__buildEmailMessage_closure0(_this), _null), new A.Obx(new B.EmailView__buildEmailMessage_closure1(_this, context), _null), new A.Obx(new B.EmailView__buildEmailMessage_closure2(_this), _null)], t1);
       if (calendarEvent != null) {
         t1 = A._setArrayType([new A.Obx(new B.EmailView__buildEmailMessage_closure3(_this, calendarEvent, presentationEmail), _null)], t1);
         t3 = emailAddressSender == null;
-        if (B.CalendarEventExtension_getTitleEventAction(calendarEvent, context, t3 ? A._setArrayType([], type$.JSArray_String) : emailAddressSender).length !== 0)
+        t4 = t3 ? A._setArrayType([], type$.JSArray_String) : emailAddressSender;
+        t5 = $.$get$GetWidget__cache();
+        A.Expando__checkType(_this);
+        usernameEvent = B.CalendarEventExtension_getUserNameEventAction(calendarEvent, context, A._instanceType(_this)._eval$1("GetWidget.S")._as(t5._jsWeakMap.get(_this)).imagePaths, t4);
+        titleEvent = B.CalendarEventExtension_getTitleEventAction(calendarEvent, context, t4);
+        if (usernameEvent.length !== 0 && titleEvent.length !== 0)
           t1.push(new B.CalendarEventActionBannerWidget(calendarEvent, t3 ? A._setArrayType([], type$.JSArray_String) : emailAddressSender, _null));
         t1.push(new A.Obx(new B.EmailView__buildEmailMessage_closure4(_this, calendarEvent, presentationEmail), _null));
         t2.push(A.Column$(t1, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1));
@@ -7575,7 +7586,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3.toString;
         t2.push(new B.EventTitleWidget(t3, _null));
       }
-      t2.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventBodyContentWidget(eventDesc, _this.isDraggableAppActive, _this.onMailtoDelegateAction, _null), _null));
+      if (eventDesc.length !== 0)
+        t2.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventBodyContentWidget(eventDesc, _this.isDraggableAppActive, _this.onMailtoDelegateAction, _null), _null));
       t2.push(_this._buildEventTimeWidget$0());
       if (B.CalendarEventExtension_get_videoConferences(t1).length !== 0)
         t2.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventLinkDetailWidget(B.CalendarEventExtension_get_videoConferences(t1), _null), _null));
@@ -7585,11 +7597,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventLocationDetailWidget(t3, _this.onOpenNewTabAction, _this.onOpenComposerAction, _null), _null));
       }
       t3 = t1.participants;
-      if ((t3 == null ? _null : t3.length !== 0) === true && t1.organizer != null) {
-        t3.toString;
-        t4 = t1.organizer;
-        t4.toString;
-        t2.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventAttendeeDetailWidget(t3, t4, _null), _null));
+      t4 = t3 == null;
+      if ((t4 ? _null : t3.length !== 0) === true || t1.organizer != null) {
+        if (t4)
+          t3 = A._setArrayType([], type$.JSArray_CalendarAttendee);
+        t2.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventAttendeeDetailWidget(t3, t1.organizer, _null), _null));
       }
       if (B.CalendarEventExtension_get_isDisplayedEventReplyAction(t1))
         t2.push(B.CalendarEventActionButtonWidget$(_this.calendarEventReplying, _null, _this.onCalendarEventReplyActionClick, _this.presentationEmail));
@@ -7614,60 +7626,64 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = t1.get$orientation(t1) === C.Orientation_0;
       } else
         t1 = false;
-      t2 = type$.AppLocalizations;
-      t3 = type$.JSArray_InlineSpan;
-      t4 = type$.JSArray_Widget;
-      t5 = _this.calendarEvent;
+      t2 = type$.JSArray_Widget;
+      t3 = _this.calendarEvent;
       if (t1) {
-        t1 = A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_oHY16, B.CalendarEventExtension_get_organizerName(t5));
-        A.Localizations_of(context, C.Type_AppLocalizations_swi, t2).toString;
-        t3 = A._setArrayType([A.RichText$(_null, _null, _null, C.TextOverflow_0, _null, _null, true, _null, A.TextSpan$(A._setArrayType([t1, A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, _null, A.Intl__message(_s33_, _null, _s36_, _null, _null))], t3), _null, _null, _null, _null, _null, _null, _null, C.TextStyle_oHY0, _null), C.TextAlign_4, _null, _null, C._LinearTextScaler_1, C.TextWidthBasis_0), C.SizedBox_null_8_null_null], t4);
-        t1 = t5.title;
-        if ((t1 == null ? _null : t1.length !== 0) === true) {
-          t1.toString;
-          t3.push(new B.EventTitleWidget(t1, _null));
+        t1 = A._setArrayType([], t2);
+        if (B.CalendarEventExtension_get_organizerName(t3).length !== 0) {
+          t4 = A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_oHY16, B.CalendarEventExtension_get_organizerName(t3));
+          A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+          t1.push(new A.Padding(C.EdgeInsets_0_0_0_8, A.RichText$(_null, _null, _null, C.TextOverflow_0, _null, _null, true, _null, A.TextSpan$(A._setArrayType([t4, A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, _null, A.Intl__message(_s33_, _null, _s36_, _null, _null))], type$.JSArray_InlineSpan), _null, _null, _null, _null, _null, _null, _null, C.TextStyle_oHY0, _null), C.TextAlign_4, _null, _null, C._LinearTextScaler_1, C.TextWidthBasis_0), _null));
         }
-        t3.push(_this._buildEventTimeInformationWidget$0());
-        t1 = t5.location;
-        if ((t1 == null ? _null : t1.length !== 0) === true) {
-          t1.toString;
-          t3.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventLocationInformationWidget(t1, _this.onOpenNewTabAction, _this.onOpenComposerAction, _null), _null));
+        t4 = t3.title;
+        if ((t4 == null ? _null : t4.length !== 0) === true) {
+          t4.toString;
+          t1.push(new B.EventTitleWidget(t4, _null));
         }
-        t1 = t5.participants;
-        if ((t1 == null ? _null : t1.length !== 0) === true && t5.organizer != null) {
-          t1.toString;
-          t2 = t5.organizer;
-          t2.toString;
-          t3.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventAttendeeInformationWidget(t1, t2, _null), _null));
+        t1.push(_this._buildEventTimeInformationWidget$0());
+        t4 = t3.location;
+        if ((t4 == null ? _null : t4.length !== 0) === true) {
+          t4.toString;
+          t1.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventLocationInformationWidget(t4, _this.onOpenNewTabAction, _this.onOpenComposerAction, _null), _null));
         }
-        if (B.CalendarEventExtension_get_isDisplayedEventReplyAction(t5))
-          t3.push(B.CalendarEventActionButtonWidget$(_this.calendarEventReplying, D.EdgeInsetsDirectional_0_0_0_0, _this.onCalendarEventReplyActionClick, _this.presentationEmail));
-        t1 = A.Column$(A._setArrayType([new B.CalendarDateIconWidget(t5, 1 / 0, _null), A.Container$(_null, A.Column$(t3, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_2, _null, _null, D.ShapeDecoration_5me, _null, _null, _null, _null, C.EdgeInsets_16_16_16_16, _null, _null, _null)], t4), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
+        t4 = t3.participants;
+        t5 = t4 == null;
+        if ((t5 ? _null : t4.length !== 0) === true || t3.organizer != null) {
+          if (t5)
+            t4 = A._setArrayType([], type$.JSArray_CalendarAttendee);
+          t1.push(new A.Padding(C.EdgeInsets_0_16_0_0, B.EventAttendeeInformationWidget$(t4, t3.organizer), _null));
+        }
+        if (B.CalendarEventExtension_get_isDisplayedEventReplyAction(t3))
+          t1.push(B.CalendarEventActionButtonWidget$(_this.calendarEventReplying, D.EdgeInsetsDirectional_0_0_0_0, _this.onCalendarEventReplyActionClick, _this.presentationEmail));
+        t1 = A.Column$(A._setArrayType([new B.CalendarDateIconWidget(t3, 1 / 0, _null), A.Container$(_null, A.Column$(t1, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_2, _null, _null, D.ShapeDecoration_5me, _null, _null, _null, _null, C.EdgeInsets_16_16_16_16, _null, _null, _null)], t2), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
       } else {
-        t1 = A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_oHY16, B.CalendarEventExtension_get_organizerName(t5));
-        A.Localizations_of(context, C.Type_AppLocalizations_swi, t2).toString;
-        t3 = A._setArrayType([A.RichText$(_null, _null, _null, C.TextOverflow_0, _null, _null, true, _null, A.TextSpan$(A._setArrayType([t1, A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, _null, A.Intl__message(_s33_, _null, _s36_, _null, _null))], t3), _null, _null, _null, _null, _null, _null, _null, C.TextStyle_oHY0, _null), C.TextAlign_4, _null, _null, C._LinearTextScaler_1, C.TextWidthBasis_0), C.SizedBox_null_8_null_null], t4);
-        t1 = t5.title;
-        if ((t1 == null ? _null : t1.length !== 0) === true) {
-          t1.toString;
-          t3.push(new B.EventTitleWidget(t1, _null));
+        t1 = A._setArrayType([], t2);
+        if (B.CalendarEventExtension_get_organizerName(t3).length !== 0) {
+          t4 = A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_oHY16, B.CalendarEventExtension_get_organizerName(t3));
+          A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+          t1.push(new A.Padding(C.EdgeInsets_0_0_0_8, A.RichText$(_null, _null, _null, C.TextOverflow_0, _null, _null, true, _null, A.TextSpan$(A._setArrayType([t4, A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, _null, A.Intl__message(_s33_, _null, _s36_, _null, _null))], type$.JSArray_InlineSpan), _null, _null, _null, _null, _null, _null, _null, C.TextStyle_oHY0, _null), C.TextAlign_4, _null, _null, C._LinearTextScaler_1, C.TextWidthBasis_0), _null));
         }
-        t3.push(_this._buildEventTimeInformationWidget$0());
-        t1 = t5.location;
-        if ((t1 == null ? _null : t1.length !== 0) === true) {
-          t1.toString;
-          t3.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventLocationInformationWidget(t1, _this.onOpenNewTabAction, _this.onOpenComposerAction, _null), _null));
+        t4 = t3.title;
+        if ((t4 == null ? _null : t4.length !== 0) === true) {
+          t4.toString;
+          t1.push(new B.EventTitleWidget(t4, _null));
         }
-        t1 = t5.participants;
-        if ((t1 == null ? _null : t1.length !== 0) === true && t5.organizer != null) {
-          t1.toString;
-          t2 = t5.organizer;
-          t2.toString;
-          t3.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventAttendeeInformationWidget(t1, t2, _null), _null));
+        t1.push(_this._buildEventTimeInformationWidget$0());
+        t4 = t3.location;
+        if ((t4 == null ? _null : t4.length !== 0) === true) {
+          t4.toString;
+          t1.push(new A.Padding(C.EdgeInsets_0_16_0_0, new B.EventLocationInformationWidget(t4, _this.onOpenNewTabAction, _this.onOpenComposerAction, _null), _null));
         }
-        if (B.CalendarEventExtension_get_isDisplayedEventReplyAction(t5))
-          t3.push(B.CalendarEventActionButtonWidget$(_this.calendarEventReplying, D.EdgeInsetsDirectional_0_0_0_0, _this.onCalendarEventReplyActionClick, _this.presentationEmail));
-        t1 = A.Row$(A._setArrayType([new B.CalendarDateIconWidget(t5, 100, _null), A.Expanded$(A.Container$(_null, A.Column$(t3, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_2, _null, _null, D.ShapeDecoration_5me0, _null, _null, _null, _null, C.EdgeInsets_16_16_16_16, _null, _null, _null), 1)], t4), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
+        t4 = t3.participants;
+        t5 = t4 == null;
+        if ((t5 ? _null : t4.length !== 0) === true || t3.organizer != null) {
+          if (t5)
+            t4 = A._setArrayType([], type$.JSArray_CalendarAttendee);
+          t1.push(new A.Padding(C.EdgeInsets_0_16_0_0, B.EventAttendeeInformationWidget$(t4, t3.organizer), _null));
+        }
+        if (B.CalendarEventExtension_get_isDisplayedEventReplyAction(t3))
+          t1.push(B.CalendarEventActionButtonWidget$(_this.calendarEventReplying, D.EdgeInsetsDirectional_0_0_0_0, _this.onCalendarEventReplyActionClick, _this.presentationEmail));
+        t1 = new A.IntrinsicHeight(A.Row$(A._setArrayType([new B.CalendarDateIconWidget(t3, 100, _null), A.Expanded$(A.Container$(_null, A.Column$(t1, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_2, _null, _null, D.ShapeDecoration_5me0, _null, _null, _null, _null, C.EdgeInsets_16_16_16_16, _null, _null, _null), 1)], t2), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null);
       }
       return A.Container$(_null, t1, C.Clip_2, _null, _null, D.ShapeDecoration_aL3, _null, _null, _null, D.EdgeInsetsDirectional_16_12_16_12, _null, _null, _null, _null);
     },
@@ -7701,11 +7717,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       t1 = A.Text$(A.Intl__message("Attendees", _null, "attendees", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mqh, _null, _null, _null, _null, _null);
       t2 = type$.JSArray_Widget;
-      t3 = A._setArrayType([new B.OrganizerWidget(_this._widget.organizer, _null)], t2);
+      t3 = A._setArrayType([], t2);
+      t4 = _this._widget.organizer;
+      if (t4 != null)
+        t3.push(new B.OrganizerWidget(t4, _null));
       t4 = _this.___EventAttendeeDetailWidgetState__attendeesDisplayed_A;
       t4 === $ && A.throwUnnamedLateFieldNI();
-      t5 = A._arrayInstanceType(t4)._eval$1("MappedListIterable<1,AttendeeWidget>");
-      C.JSArray_methods.addAll$1(t3, A.List_List$of(new A.MappedListIterable(t4, new B._EventAttendeeDetailWidgetState_build_closure(_this), t5), true, t5._eval$1("ListIterable.E")));
+      if (t4.length !== 0) {
+        t5 = A._arrayInstanceType(t4)._eval$1("MappedListIterable<1,AttendeeWidget>");
+        C.JSArray_methods.addAll$1(t3, A.List_List$of(new A.MappedListIterable(t4, new B._EventAttendeeDetailWidgetState_build_closure(_this), t5), true, t5._eval$1("ListIterable.E")));
+      }
       t4 = _this.___EventAttendeeDetailWidgetState__isShowAllAttendee_A;
       t4 === $ && A.throwUnnamedLateFieldNI();
       if (!t4)
@@ -7715,33 +7736,36 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.EventAttendeeInformationWidget.prototype = {
     build$1(context) {
-      var t1, t2, t3, t4, _null = null;
-      $.$get$Get();
-      t1 = $.GetInstance__getInstance;
-      if (t1 == null)
-        t1 = $.GetInstance__getInstance = C.C_GetInstance;
-      t1.find$1$1$tag(0, _null, type$.ResponsiveUtils);
-      t1 = type$.AppLocalizations;
+      var t2, t3, t4, t5, t6, _null = null,
+        t1 = type$.AppLocalizations;
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
       t2 = A.Text$(A.Intl__message("Who", _null, "who", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_mqh, _null, _null, _null, _null, _null);
-      t3 = this.organizer;
-      t4 = t3.mailto;
-      t4 = t4 == null ? _null : t4.value;
-      A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
-      t3 = A.TextSpan$(A._setArrayType([A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_U6R, A.S(t4) + " (" + A.Intl__message("Organizer", _null, "organizer", _null, _null) + ")"), D.TextSpan_HTJ, A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, _null, B.ListAttendeeExtension_get_mailtoAsString(B.ListAttendeeExtension_withoutOrganizer(this.attendees, t3)))], type$.JSArray_InlineSpan), _null, _null, _null, _null, _null, _null, _null, C.TextStyle_oHY0, _null);
-      t1 = type$.MediaQuery;
-      if (A.InheritedModel_inheritFrom(context, _null, t1).data.size.get$shortestSide() < 600) {
-        t4 = A.InheritedModel_inheritFrom(context, _null, t1).data;
+      t3 = type$.JSArray_InlineSpan;
+      t4 = A._setArrayType([], t3);
+      t5 = this.organizer;
+      if (t5 != null) {
+        t6 = t5.mailto;
+        t6 = t6 == null ? _null : t6.value;
+        A.Localizations_of(context, C.Type_AppLocalizations_swi, t1).toString;
+        C.JSArray_methods.addAll$1(t4, A._setArrayType([A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_U6R, A.S(t6) + " (" + A.Intl__message("Organizer", _null, "organizer", _null, _null) + ")"), D.TextSpan_HTJ], t3));
+      }
+      t1 = this.attendees;
+      if (t1.length !== 0)
+        t4.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, _null, B.ListAttendeeExtension_get_mailtoAsString(B.ListAttendeeExtension_withoutOrganizer(t1, t5))));
+      t1 = A.TextSpan$(t4, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_oHY0, _null);
+      t3 = type$.MediaQuery;
+      if (A.InheritedModel_inheritFrom(context, _null, t3).data.size.get$shortestSide() < 600) {
+        t4 = A.InheritedModel_inheritFrom(context, _null, t3).data;
         t4 = t4.get$orientation(t4) === C.Orientation_0;
       } else
         t4 = false;
       t4 = t4 ? C.TextOverflow_0 : C.TextOverflow_2;
-      if (A.InheritedModel_inheritFrom(context, _null, t1).data.size.get$shortestSide() < 600) {
-        t1 = A.InheritedModel_inheritFrom(context, _null, t1).data;
-        t1 = t1.get$orientation(t1) === C.Orientation_0;
+      if (A.InheritedModel_inheritFrom(context, _null, t3).data.size.get$shortestSide() < 600) {
+        t3 = A.InheritedModel_inheritFrom(context, _null, t3).data;
+        t3 = t3.get$orientation(t3) === C.Orientation_0;
       } else
-        t1 = false;
-      return A.Row$(A._setArrayType([new A.SizedBox(100, _null, t2, _null), A.Expanded$(A.RichText$(_null, _null, t1 ? _null : 2, t4, _null, _null, true, _null, t3, C.TextAlign_4, _null, _null, C._LinearTextScaler_1, C.TextWidthBasis_0), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
+        t3 = false;
+      return A.Row$(A._setArrayType([new A.SizedBox(100, _null, t2, _null), A.Expanded$(A.RichText$(_null, _null, t3 ? _null : 2, t4, _null, _null, true, _null, t1, C.TextAlign_4, _null, _null, C._LinearTextScaler_1, C.TextWidthBasis_0), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     }
   };
   B.EventBodyContentWidget.prototype = {
@@ -19953,6 +19977,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       Identity: findType("Identity"),
       ImagePaths: findType("ImagePaths"),
       JSArray_BoxShadow: findType("JSArray<BoxShadow>"),
+      JSArray_CalendarAttendee: findType("JSArray<CalendarAttendee>"),
       JSArray_EmailActionType: findType("JSArray<EmailActionType>"),
       JSArray_FilterMessageOption: findType("JSArray<FilterMessageOption>"),
       JSArray_InlineSpan: findType("JSArray<InlineSpan>"),
@@ -20359,5 +20384,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "aiHwf1Bn6ihv2Nn9udQ1u0cemlI=");
+})($__dart_deferred_initializers__, "uMqxut2KJt1McEigslhiCrJgR08=");
 ;
