@@ -2,7 +2,6 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:extended_text/extended_text.dart';
-import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -10,7 +9,7 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/attachment_item_composer_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/attachment_progress_loading_composer_widget.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
-import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
+import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_status.dart';
 
 typedef OnDeleteAttachmentAction = void Function(UploadTaskId uploadTaskId);
 
@@ -18,7 +17,12 @@ class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
 
   final _imagePaths = Get.find<ImagePaths>();
 
-  final UploadFileState fileState;
+  final String fileIcon;
+  final String fileName;
+  final String fileSize;
+  final UploadFileStatus uploadStatus;
+  final double percentUploading;
+  final UploadTaskId uploadTaskId;
   final double? maxWidth;
   final EdgeInsetsGeometry? itemMargin;
   final EdgeInsetsGeometry? itemPadding;
@@ -27,7 +31,12 @@ class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
 
   AttachmentItemComposerWidget({
     super.key,
-    required this.fileState,
+    required this.fileIcon,
+    required this.fileName,
+    required this.fileSize,
+    required this.uploadStatus,
+    required this.percentUploading,
+    required this.uploadTaskId,
     this.maxWidth,
     this.itemMargin,
     this.itemPadding,
@@ -55,7 +64,7 @@ class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
                 Row(
                   children: [
                     SvgPicture.asset(
-                      fileState.getIcon(_imagePaths),
+                      fileIcon,
                       width: AttachmentItemComposerWidgetStyle.iconSize,
                       height: AttachmentItemComposerWidgetStyle.iconSize,
                       fit: BoxFit.fill
@@ -64,7 +73,7 @@ class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
                     Expanded(
                       child: PlatformInfo.isCanvasKit
                         ? ExtendedText(
-                            fileState.fileName,
+                            fileName,
                             maxLines: 1,
                             overflowWidget: const TextOverflowWidget(
                               position: TextOverflowPosition.middle,
@@ -76,7 +85,7 @@ class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
                             style: AttachmentItemComposerWidgetStyle.labelTextStyle,
                           )
                         : Text(
-                            fileState.fileName,
+                            fileName,
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                             style: AttachmentItemComposerWidgetStyle.labelTextStyle,
@@ -84,14 +93,14 @@ class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
                     ),
                     const SizedBox(width: AttachmentItemComposerWidgetStyle.space),
                     Text(
-                      filesize(fileState.fileSize),
+                      fileSize,
                       style: AttachmentItemComposerWidgetStyle.sizeLabelTextStyle
                     ),
                   ],
                 ),
                 AttachmentProgressLoadingComposerWidget(
-                  fileState: fileState,
-                  padding: AttachmentItemComposerWidgetStyle.progressLoadingPadding,
+                  uploadStatus: uploadStatus,
+                  percentUploading: percentUploading,
                 )
               ],
             ),
@@ -103,7 +112,7 @@ class AttachmentItemComposerWidget extends StatelessWidget with AppLoaderMixin {
             borderRadius: AttachmentItemComposerWidgetStyle.deleteIconRadius,
             padding: AttachmentItemComposerWidgetStyle.deleteIconPadding,
             iconColor: AttachmentItemComposerWidgetStyle.deleteIconColor,
-            onTapActionCallback: () => onDeleteAttachmentAction?.call(fileState.uploadTaskId),
+            onTapActionCallback: () => onDeleteAttachmentAction?.call(uploadTaskId),
           )
         ],
       ),
