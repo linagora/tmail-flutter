@@ -770,6 +770,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
         AppLocalizations.of(context).message_dialog_send_email_without_a_subject,
         AppLocalizations.of(context).send_anyway,
         onConfirmAction: () => _handleSendMessages(context),
+        onCancelAction: popBack,
         autoPerformPopBack: false,
         title: AppLocalizations.of(context).empty_subject,
         showAsBottomSheet: true,
