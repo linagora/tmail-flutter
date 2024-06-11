@@ -86,3 +86,5 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'androidx.window:window:1.0.0'
 }
+
+apply plugin: 'com.google.firebase.crashlytics'

@@ -48,7 +48,7 @@ void log(String? value, {Level level = Level.info}) {
 void logError(String? value) => log(value, level: Level.error);
 
 // Take from: https://flutter.dev/docs/testing/errors
-void initLogger(VoidCallback runApp) {
+void initLogger(VoidCallback runApp, {Function(Object error, StackTrace stack)? onError}) {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
     FlutterError.onError = (details) {
@@ -58,6 +58,7 @@ void initLogger(VoidCallback runApp) {
     runApp.call();
   }, (error, stack) {
     logError('AppLogger::initLogger::runZonedGuarded:onError: $error | stack: $stack');
+    onError?.call(error, stack);
   });
 }
 
