@@ -830,7 +830,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
       return;
     }
 
-    if (Get.isDialogOpen == true) {
+    if (Get.isDialogOpen == true || Get.isBottomSheetOpen == true) {
       popBack();
     }
 
