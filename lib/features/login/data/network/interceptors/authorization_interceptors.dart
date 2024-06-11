@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.da
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
@@ -83,6 +84,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
     logError('AuthorizationInterceptors::onError(): TOKEN = ${_token?.expiredTime} | DIO_ERROR = $err | METHOD = ${err.requestOptions.method}');
+    FcmConfiguration().logError('AuthorizationInterceptors::onError: $err' );
     try {
       final requestOptions = err.requestOptions;
       final extraInRequest = requestOptions.extra;
@@ -210,6 +212,10 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   }
 
   Future<PersonalAccount> _updateCurrentAccount({required TokenOIDC tokenOIDC}) async {
+    FcmConfiguration().logEvent(
+      name: 'Update current account',
+      message: 'AuthorizationInterceptors::_updateCurrentAccount: $tokenOIDC'
+    );
     final currentAccount = await _accountCacheManager.getCurrentAccount();
 
     await _accountCacheManager.deleteCurrentAccount(currentAccount.id);
@@ -259,12 +265,19 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       _token!.refreshToken
     );
     log('AuthorizationInterceptors::_invokeRefreshTokenFromServer:newToken: $newToken');
+    FcmConfiguration().logEvent(
+      name: 'Refresh token',
+      message: 'AuthorizationInterceptors::_invokeRefreshTokenFromServer:newToken = $newToken'
+    );
     return newToken;
   }
 
   Future<TokenOIDC> _handleRefreshTokenOnIOSPlatform() async {
     final keychainToken = await _getTokenInKeychain(_token!);
-
+    FcmConfiguration().logEvent(
+      name: 'Refresh token',
+      message: 'AuthorizationInterceptors::_handleRefreshTokenOnIOSPlatform:keychainToken:newToken = $keychainToken'
+    );
     if (keychainToken == null) {
       final newToken = await _invokeRefreshTokenFromServer();
       final newAccount = await _updateCurrentAccount(tokenOIDC: newToken);

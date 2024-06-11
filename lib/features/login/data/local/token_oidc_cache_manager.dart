@@ -4,6 +4,7 @@ import 'package:tmail_ui_user/features/caching/clients/token_oidc_cache_client.d
 import 'package:tmail_ui_user/features/login/data/extensions/token_oidc_cache_extension.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/token_oidc_extension.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 
 class TokenOidcCacheManager {
   final TokenOidcCacheClient _tokenOidcCacheClient;
@@ -21,6 +22,10 @@ class TokenOidcCacheManager {
   }
 
   Future<void> persistOneTokenOidc(TokenOIDC tokenOIDC) async {
+    FcmConfiguration().logEvent(
+      name: 'Persist token oidc',
+      message: 'TokenOidcCacheManager::persistOneTokenOidc:tokenOIDC = $tokenOIDC'
+    );
     log('TokenOidcCacheManager::persistOneTokenOidc(): $tokenOIDC');
     await _tokenOidcCacheClient.clearAllData();
     log('TokenOidcCacheManager::persistOneTokenOidc(): key: ${tokenOIDC.tokenId.uuid}');

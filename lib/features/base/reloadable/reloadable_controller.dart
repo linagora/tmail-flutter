@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -34,6 +35,7 @@ abstract class ReloadableController extends BaseController {
         failure is GetStoredTokenOidcFailure ||
         failure is GetAuthenticatedAccountFailure) {
       log('ReloadableController::handleFailureViewState(): failure: $failure');
+      FcmConfiguration().logEvent(name: 'Go to login', message: 'ReloadableController::handleFailureViewState: $failure');
       goToLogin();
     } else if (failure is GetSessionFailure) {
       _handleGetSessionFailure(failure.exception);

@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/login/data/extensions/account_cache_exten
 import 'package:tmail_ui_user/features/login/data/extensions/list_account_cache_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/personal_account_extension.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 
 class AccountCacheManager {
   final AccountCacheClient _accountCacheClient;
@@ -26,6 +27,10 @@ class AccountCacheManager {
 
   Future<void> setCurrentAccount(PersonalAccount newAccount) async {
     log('AccountCacheManager::setCurrentAccount(): $newAccount');
+    FcmConfiguration().logEvent(
+      name: 'Set current account',
+      message: 'AccountCacheManager::setCurrentAccount: $newAccount'
+    );
     final newAccountCache = newAccount.toCache();
     final allAccounts = await _accountCacheClient.getAll();
     log('AccountCacheManager::setCurrentAccount::allAccounts(): $allAccounts');
@@ -45,6 +50,10 @@ class AccountCacheManager {
 
   Future<void> deleteCurrentAccount(String hashId) {
     log('AccountCacheManager::deleteCurrentAccount(): $hashId');
+    FcmConfiguration().logEvent(
+      name: 'Delete current account',
+      message: 'AccountCacheManager::deleteCurrentAccount:hashId = $hashId'
+    );
     return _accountCacheClient.deleteItem(hashId);
   }
 }

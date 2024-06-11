@@ -3,6 +3,8 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/application_manager.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/widgets.dart' hide State;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -68,6 +70,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sending_email_interactor.dart';
@@ -169,8 +172,12 @@ const fallbackGenerators = {
   MockSpec<RemoveComposerCacheOnWebInteractor>(),
   MockSpec<ApplicationManager>(),
   MockSpec<GetAllIdentitiesInteractor>(),
+  MockSpec<FirebaseAnalytics>(),
+  MockSpec<FirebaseCrashlytics>(),
 ])
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   // mock mailbox dashboard controller direct dependencies
   final moveToMailboxInteractor = MockMoveToMailboxInteractor();
   final deleteEmailPermanentlyInteractor =
@@ -271,8 +278,16 @@ void main() {
   final testMailboxId = MailboxId(Id('1'));
   final testAccountId = AccountId(Id('123'));
 
+  late MockFirebaseAnalytics mockFirebaseAnalytics;
+  late MockFirebaseCrashlytics mockFirebaseCrashlytics;
+
   group('search/sort/filter feature:', () {
     setUp(() {
+      mockFirebaseAnalytics = MockFirebaseAnalytics();
+      mockFirebaseCrashlytics = MockFirebaseCrashlytics();
+      FcmConfiguration().firebaseAnalytics = mockFirebaseAnalytics;
+      FcmConfiguration().firebaseCrashlytics = mockFirebaseCrashlytics;
+
       getEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
 
       Get.put<RemoveEmailDraftsInteractor>(removeEmailDraftsInteractor);

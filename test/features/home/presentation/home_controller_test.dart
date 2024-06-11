@@ -6,6 +6,8 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/application_manager.dart';
 import 'package:dartz/dartz.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:mockito/annotations.dart';
@@ -26,6 +28,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_a
 import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -53,6 +56,8 @@ import 'home_controller_test.mocks.dart';
   MockSpec<CachingManager>(),
   MockSpec<LanguageCacheManager>(),
   MockSpec<ApplicationManager>(),
+  MockSpec<FirebaseAnalytics>(),
+  MockSpec<FirebaseCrashlytics>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -80,8 +85,15 @@ void main() {
   late MockResponsiveUtils mockResponsiveUtils;
   late MockUuid mockUuid;
   late MockApplicationManager mockApplicationManager;
+  late MockFirebaseAnalytics mockFirebaseAnalytics;
+  late MockFirebaseCrashlytics mockFirebaseCrashlytics;
 
-  setUpAll(() {
+  setUpAll(() async {
+    mockFirebaseAnalytics = MockFirebaseAnalytics();
+    mockFirebaseCrashlytics = MockFirebaseCrashlytics();
+    FcmConfiguration().firebaseAnalytics = mockFirebaseAnalytics;
+    FcmConfiguration().firebaseCrashlytics = mockFirebaseCrashlytics;
+
     cleanupEmailCacheInteractor = MockCleanupEmailCacheInteractor();
     emailReceiveManager = MockEmailReceiveManager();
     cleanupRecentSearchCacheInteractor = MockCleanupRecentSearchCacheInteractor();

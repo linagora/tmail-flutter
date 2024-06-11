@@ -4,6 +4,8 @@ import 'dart:io';
 import 'package:core/data/constants/constant.dart';
 import 'package:core/data/network/dio_client.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:mockito/annotations.dart';
@@ -14,19 +16,24 @@ import 'package:tmail_ui_user/features/login/data/network/authentication_client/
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 import '../../fixtures/account_fixtures.dart';
 import '../../fixtures/oidc_fixtures.dart';
 import 'authorization_interceptor_test.mocks.dart';
 
-@GenerateMocks([
-  AuthenticationClientBase,
-  TokenOidcCacheManager,
-  AccountCacheManager,
-  IOSSharingManager
+@GenerateNiceMocks([
+  MockSpec<AuthenticationClientBase>(),
+  MockSpec<TokenOidcCacheManager>(),
+  MockSpec<AccountCacheManager>(),
+  MockSpec<IOSSharingManager>(),
+  MockSpec<FirebaseAnalytics>(),
+  MockSpec<FirebaseCrashlytics>(),
 ])
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late Dio dio;
   late DioAdapter dioAdapter;
   late AuthenticationClientBase authenticationClient;
@@ -52,7 +59,15 @@ void main() {
 
   final dataRequestSuccessfully = {'message': 'Request successfully!'};
 
+  late MockFirebaseAnalytics mockFirebaseAnalytics;
+  late MockFirebaseCrashlytics mockFirebaseCrashlytics;
+
   setUp(() {
+    mockFirebaseAnalytics = MockFirebaseAnalytics();
+    mockFirebaseCrashlytics = MockFirebaseCrashlytics();
+    FcmConfiguration().firebaseAnalytics = mockFirebaseAnalytics;
+    FcmConfiguration().firebaseCrashlytics = mockFirebaseCrashlytics;
+
     final headers = <String, dynamic>{
       HttpHeaders.acceptHeader: DioClient.jmapHeader,
       HttpHeaders.contentTypeHeader: Constant.contentTypeHeaderDefault

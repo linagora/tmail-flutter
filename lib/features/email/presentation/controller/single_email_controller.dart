@@ -97,6 +97,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_ident
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
@@ -186,6 +187,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _registerObxStreamListener();
     _listenDownloadAttachmentProgressState();
     super.onInit();
+  }
+
+  @override
+  void onReady() {
+    super.onReady();
+    FcmConfiguration().logCurrentScreen(
+      screenName: 'EmailView',
+      screenClass: 'SingleEmailController');
   }
 
   @override

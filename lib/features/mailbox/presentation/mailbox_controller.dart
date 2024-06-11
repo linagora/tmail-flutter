@@ -72,6 +72,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_ema
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
@@ -144,6 +145,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     _initCollapseMailboxCategories();
     mailboxListScrollController.addListener(_mailboxListScrollControllerListener);
     super.onReady();
+
+    FcmConfiguration().logCurrentScreen(screenName: 'MailboxView', screenClass: 'MailboxController');
   }
 
   @override

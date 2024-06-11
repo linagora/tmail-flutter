@@ -74,6 +74,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_id
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/get_always_read_receipt_setting_state.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_always_read_receipt_setting_interactor.dart';
@@ -224,6 +225,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
       Future.delayed(const Duration(milliseconds: 500), _checkContactPermission);
     }
     super.onReady();
+    FcmConfiguration().logCurrentScreen(screenName: 'ComposerView', screenClass: 'ComposerController');
   }
 
   @override

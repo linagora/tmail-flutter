@@ -118,6 +118,7 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_mailbox_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_mailbox_state_to_refresh_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
@@ -537,6 +538,9 @@ class MailboxDashBoardController extends ReloadableController {
       getAllSendingEmails();
       _storeSessionAction(session);
     }
+
+    FcmConfiguration().logUserProperty(name: 'username', value: session.username.value);
+    FcmConfiguration().logUserProperty(name: 'accountId', value: currentAccountId.asString);
   }
 
   void _handleMailtoURL(MailtoArguments arguments) {
