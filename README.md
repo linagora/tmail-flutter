@@ -14,19 +14,18 @@
 
 <p align="center">
   <a href="https://github.com/linagora/twake-mail">
-   <img src="https://github.com/linagora/tmail-flutter/assets/146178981/08668d35-7bcd-4c16-9b3c-96de93b7c19a" alt="Logo">
+   <img src="https://github.com/artembru/tmail-flutter/assets/146178981/c00629de-cfc3-4b7b-9560-9ac8e64fa91c" alt="Logo">
   </a>
+
+
+
 
   <h3 align="center">twake-mail.com</h3>
 
    <p align="center">
     <a href="https://twake-mail.com">Website</a>
     •
-    <a href="https://beta.twake.app/web/#/rooms">View Demo</a>
-    •
-    <a href="https://github.com/linagora/twake-mail/issues">Report Bug</a>
-    •
-    <a href="https://github.com/linagora/twake-mail/milestones">Roadmap</a>
+    <a href="https://github.com/linagora/tmail-flutter/issues">Report Bug</a>
   </p>
 </p>
 
