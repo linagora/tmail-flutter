@@ -5,8 +5,9 @@ import 'package:get/get.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile/tablet_container_view_style.dart';
-import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_container_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+
+typedef OnInsertImageAction = Function(BoxConstraints constraints);
 
 class TabletContainerView extends StatelessWidget {
 
