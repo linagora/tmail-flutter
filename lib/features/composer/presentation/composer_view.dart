@@ -36,18 +36,8 @@ class ComposerView extends GetWidget<ComposerController> {
     return ResponsiveWidget(
       responsiveUtils: controller.responsiveUtils,
       mobile: MobileContainerView(
-        keyboardRichTextController: controller.richTextMobileTabletController!.richTextController,
         onCloseViewAction: () => controller.handleClickCloseComposer(context),
         onClearFocusAction: () => controller.clearFocus(context),
-        onAttachFileAction: () => controller.isNetworkConnectionAvailable
-          ? controller.openPickAttachmentMenu(
-              context,
-              _pickAttachmentsActionTiles(context)
-            )
-          : null,
-        onInsertImageAction: (constraints) => controller.isNetworkConnectionAvailable
-          ? controller.insertImage(context, constraints.maxWidth)
-          : null,
         backgroundColor: MobileAppBarComposerWidgetStyle.backgroundColor,
         childBuilder: (context, constraints) => SafeArea(
           left: !controller.responsiveUtils.isLandscapeMobile(context),
@@ -75,6 +65,11 @@ class ComposerView extends GetWidget<ComposerController> {
                       _pickAttachmentsActionTiles(context)
                     ),
                     insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
+                    openRichToolbarAction: () =>
+                      controller.richTextMobileTabletController?.showFormatStyleBottomSheet(
+                        context: context,
+                        richTextController: controller.richTextMobileTabletController?.richTextController
+                      ),
                   ))
                 else
                   Obx(() => AppBarComposerWidget(
@@ -95,6 +90,11 @@ class ComposerView extends GetWidget<ComposerController> {
                       _pickAttachmentsActionTiles(context)
                     ),
                     insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
+                    openRichToolbarAction: () =>
+                      controller.richTextMobileTabletController?.showFormatStyleBottomSheet(
+                        context: context,
+                        richTextController: controller.richTextMobileTabletController?.richTextController
+                      ),
                   )),
                 Expanded(
                   child: SafeArea(
