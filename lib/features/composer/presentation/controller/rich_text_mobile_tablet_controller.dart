@@ -1,12 +1,15 @@
 import 'dart:io';
 
+import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/base_rich_text_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class RichTextMobileTabletController extends BaseRichTextController {
   HtmlEditorApi? htmlEditorApi;
@@ -43,6 +46,28 @@ class RichTextMobileTabletController extends BaseRichTextController {
       }
     } catch (e) {
       logError('RichTextMobileTabletController::insertImageData:Exception: $e');
+    }
+  }
+
+  Future<void> showFormatStyleBottomSheet({
+    required BuildContext context,
+    required RichTextController? richTextController
+  }) async {
+    if (Platform.isAndroid) {
+      await htmlEditorApi?.storeSelectionRange();
+      KeyboardUtils.hideSystemKeyboardMobile();
+    } else {
+      await htmlEditorApi?.unfocus();
+    }
+
+    if (context.mounted) {
+      richTextController?.showRichTextBottomSheet(
+        context: context,
+        titleFormatBottomSheet: AppLocalizations.of(context).titleFormat,
+        titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
+        titleForegroundBottomSheet: AppLocalizations.of(context).titleForeground,
+        titleBackgroundBottomSheet: AppLocalizations.of(context).titleBackground,
+      );
     }
   }
 
