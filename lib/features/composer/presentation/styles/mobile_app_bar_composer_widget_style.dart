@@ -7,7 +7,7 @@ class MobileAppBarComposerWidgetStyle {
   static const double iconSize = 24;
   static const double space = 12;
   static const double iconRadius = 8;
-  static const double sendButtonIconSize = 28;
+  static const double sendButtonIconSize = 30;
   static const double richTextIconSize = 28;
 
   static const Color backgroundColor = AppColor.colorComposerAppBar;
@@ -17,5 +17,5 @@ class MobileAppBarComposerWidgetStyle {
 
   static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.symmetric(horizontal: 12);
   static const EdgeInsetsGeometry iconPadding = EdgeInsetsDirectional.all(3);
-  static const EdgeInsetsGeometry richTextIconPadding = EdgeInsetsDirectional.all(2);
+  static const EdgeInsetsGeometry richTextIconPadding = EdgeInsetsDirectional.all(5);
 }

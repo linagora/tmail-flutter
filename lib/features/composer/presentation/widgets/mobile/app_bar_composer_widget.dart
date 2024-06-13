@@ -12,8 +12,9 @@ class AppBarComposerWidget extends StatelessWidget {
   final bool isNetworkConnectionAvailable;
   final VoidCallback onCloseViewAction;
   final VoidCallback sendMessageAction;
-  final VoidCallback attachFileAction;
-  final VoidCallback insertImageAction;
+  final VoidCallback? attachFileAction;
+  final VoidCallback? insertImageAction;
+  final VoidCallback openRichToolbarAction;
   final OnOpenContextMenuAction openContextMenuAction;
 
   final _imagePaths = Get.find<ImagePaths>();
@@ -24,9 +25,10 @@ class AppBarComposerWidget extends StatelessWidget {
     required this.onCloseViewAction,
     required this.sendMessageAction,
     required this.openContextMenuAction,
-    required this.attachFileAction,
-    required this.insertImageAction,
+    required this.openRichToolbarAction,
     this.isNetworkConnectionAvailable = false,
+    this.attachFileAction,
+    this.insertImageAction,
   });
 
   @override
@@ -47,8 +49,18 @@ class AppBarComposerWidget extends StatelessWidget {
             onTapActionCallback: onCloseViewAction
           ),
           const Spacer(),
+          TMailButtonWidget.fromIcon(
+            icon: _imagePaths.icRichToolbar,
+            iconColor: MobileAppBarComposerWidgetStyle.iconColor,
+            backgroundColor: Colors.transparent,
+            iconSize: MobileAppBarComposerWidgetStyle.richTextIconSize,
+            padding: MobileAppBarComposerWidgetStyle.richTextIconPadding,
+            tooltipMessage: AppLocalizations.of(context).formattingOptions,
+            onTapActionCallback: openRichToolbarAction,
+          ),
           if (isNetworkConnectionAvailable)
             ...[
+              const SizedBox(width: 4),
               TMailButtonWidget.fromIcon(
                 icon: _imagePaths.icAttachFile,
                 iconColor: MobileAppBarComposerWidgetStyle.iconColor,
@@ -57,7 +69,7 @@ class AppBarComposerWidget extends StatelessWidget {
                 tooltipMessage: AppLocalizations.of(context).attach_file,
                 onTapActionCallback: attachFileAction,
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 4),
               TMailButtonWidget.fromIcon(
                 icon: _imagePaths.icInsertImage,
                 iconColor: MobileAppBarComposerWidgetStyle.iconColor,
@@ -66,7 +78,7 @@ class AppBarComposerWidget extends StatelessWidget {
                 tooltipMessage: AppLocalizations.of(context).insertImage,
                 onTapActionCallback: insertImageAction,
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 4),
             ],
           TMailButtonWidget.fromIcon(
             icon: isSendButtonEnabled
