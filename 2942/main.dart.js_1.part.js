@@ -456,25 +456,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1722
+    $signature: 1731
   };
   C.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1723
+    $signature: 1732
   };
   C.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1724
+    $signature: 1733
   };
   C.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1725
+    $signature: 1734
   };
   C.BaseLoginView_buildUserNameInput_closure.prototype = {
     call$2(_, loginUsername) {
@@ -589,7 +589,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return B.SizedBox_0_0_null_null;
       }
     },
-    $signature: 172
+    $signature: 177
   };
   C.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -609,7 +609,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 79
+    $signature: 80
   };
   C.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -644,7 +644,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 1726
+    $signature: 1735
   };
   C.LoginMessageWidget_build_closure0.prototype = {
     call$1(success) {
@@ -665,19 +665,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return "";
     },
-    $signature: 1727
+    $signature: 1736
   };
   C.LoginMessageWidget_build_closure1.prototype = {
     call$1(failure) {
       return B.Color_4293281350;
     },
-    $signature: 1728
+    $signature: 1737
   };
   C.LoginMessageWidget_build_closure2.prototype = {
     call$1(success) {
       return B.Color_4278190080;
     },
-    $signature: 1729
+    $signature: 1738
   };
   C._LoginTextInputBuilderState_build_closure.prototype = {
     call$0() {
@@ -781,5 +781,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "CyxJMpABTgwWxhPrlnmjMzMDhMI=");
+})($__dart_deferred_initializers__, "KPZoHlhjW6pOdf3E0872Di4ft+0=");
 ;
