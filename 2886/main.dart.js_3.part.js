@@ -1439,12 +1439,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     AttachmentHeaderComposerWidget_build_closure: function AttachmentHeaderComposerWidget_build_closure(t0) {
       this.$this = t0;
     },
-    AttachmentItemComposerWidget: function AttachmentItemComposerWidget(t0, t1, t2, t3) {
+    AttachmentItemComposerWidget: function AttachmentItemComposerWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8) {
       var _ = this;
       _._attachment_item_composer_widget$_imagePaths = t0;
-      _.fileState = t1;
-      _.onDeleteAttachmentAction = t2;
-      _.key = t3;
+      _.fileIcon = t1;
+      _.fileName = t2;
+      _.fileSize = t3;
+      _.uploadStatus = t4;
+      _.percentUploading = t5;
+      _.uploadTaskId = t6;
+      _.onDeleteAttachmentAction = t7;
+      _.key = t8;
     },
     AttachmentItemComposerWidget_build_closure: function AttachmentItemComposerWidget_build_closure(t0) {
       this.$this = t0;
@@ -1452,8 +1457,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _AttachmentItemComposerWidget_StatelessWidget_AppLoaderMixin: function _AttachmentItemComposerWidget_StatelessWidget_AppLoaderMixin() {
     },
     AttachmentProgressLoadingComposerWidget: function AttachmentProgressLoadingComposerWidget(t0, t1, t2) {
-      this.fileState = t0;
-      this.padding = t1;
+      this.uploadStatus = t0;
+      this.percentUploading = t1;
       this.key = t2;
     },
     DraggableRecipientTagWidget$(emailAddress) {
@@ -1721,11 +1726,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.onToggleExpandAttachmentAction = t3;
       _.key = t4;
     },
-    _AttachmentComposerWidgetState: function _AttachmentComposerWidgetState(t0) {
+    _AttachmentComposerWidgetState: function _AttachmentComposerWidgetState(t0, t1) {
       var _ = this;
+      _._attachment_composer_widget$_imagePaths = t0;
       _._isCollapsed = false;
       _._widget = null;
-      _._debugLifecycleState = t0;
+      _._debugLifecycleState = t1;
       _._framework$_element = null;
     },
     _AttachmentComposerWidgetState_build_closure: function _AttachmentComposerWidgetState_build_closure(t0) {
@@ -8227,24 +8233,24 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.AttachmentItemComposerWidget.prototype = {
     build$1(context) {
-      var _null = null,
+      var _this = this, _null = null,
         t1 = A.Border_Border$all(C.Color_4293258483, 1),
-        t2 = this.fileState,
-        t3 = A.SvgPicture$asset(t2.getIcon$1(this._attachment_item_composer_widget$_imagePaths), C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, _null, 20),
+        t2 = A.SvgPicture$asset(_this.fileIcon, C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, _null, 20),
+        t3 = _this.fileName,
         t4 = type$.JSArray_Widget;
-      return A.Container$(_null, A.Row$(A._setArrayType([A.Expanded$(A.Column$(A._setArrayType([A.Row$(A._setArrayType([t3, C.SizedBox_8_null_null_null, A.Expanded$($.$get$_context().$index(0, "flutterCanvasKit") != null ? A.ExtendedText$(t2.get$fileName(), 1, C.TextOverflowWidget_null, C.TextStyle_oHY19) : A.Text$(t2.get$fileName(), _null, _null, 1, C.TextOverflow_2, _null, _null, _null, _null, C.TextStyle_oHY19, _null, _null, _null, _null, _null), 1), C.SizedBox_8_null_null_null, A.Text$(A.filesize(t2.get$fileSize(), 2), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY31, _null, _null, _null, _null, _null)], t4), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), new B.AttachmentProgressLoadingComposerWidget(t2, D.EdgeInsetsDirectional_0_8_0_0, _null)], t4), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1), 1), C.SizedBox_8_null_null_null, A.TMailButtonWidget_TMailButtonWidget$fromIcon(_null, 10, "assets/images/ic_cancel.svg", D.Color_4289638080, 18, _null, _null, 1 / 0, _null, new B.AttachmentItemComposerWidget_build_closure(this), D.EdgeInsetsDirectional_3_3_3_3, _null)], t4), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(C.Color_4294967295, _null, t1, C.BorderRadius_tLn4, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, C.EdgeInsetsDirectional_8_8_8_8, _null, _null, 260);
+      return A.Container$(_null, A.Row$(A._setArrayType([A.Expanded$(A.Column$(A._setArrayType([A.Row$(A._setArrayType([t2, C.SizedBox_8_null_null_null, A.Expanded$($.$get$_context().$index(0, "flutterCanvasKit") != null ? A.ExtendedText$(t3, 1, C.TextOverflowWidget_null, C.TextStyle_oHY19) : A.Text$(t3, _null, _null, 1, C.TextOverflow_2, _null, _null, _null, _null, C.TextStyle_oHY19, _null, _null, _null, _null, _null), 1), C.SizedBox_8_null_null_null, A.Text$(_this.fileSize, _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY31, _null, _null, _null, _null, _null)], t4), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), new B.AttachmentProgressLoadingComposerWidget(_this.uploadStatus, _this.percentUploading, _null)], t4), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1), 1), C.SizedBox_8_null_null_null, A.TMailButtonWidget_TMailButtonWidget$fromIcon(_null, 10, "assets/images/ic_cancel.svg", D.Color_4289638080, 18, _null, _null, 1 / 0, _null, new B.AttachmentItemComposerWidget_build_closure(_this), D.EdgeInsetsDirectional_3_3_3_3, _null)], t4), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(C.Color_4294967295, _null, t1, C.BorderRadius_tLn4, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, C.EdgeInsetsDirectional_8_8_8_8, _null, _null, 260);
     }
   };
   B._AttachmentItemComposerWidget_StatelessWidget_AppLoaderMixin.prototype = {};
   B.AttachmentProgressLoadingComposerWidget.prototype = {
     build$1(context) {
-      var t1 = this.fileState;
-      switch (t1.uploadStatus.index) {
+      var t1;
+      switch (this.uploadStatus.index) {
         case 0:
-          return new A.Padding(this.padding, D.LinearProgressIndicator_INh, null);
+          return D.Padding_wKl;
         case 1:
-          t1 = t1.uploadingProgress / 100;
-          return new A.Padding(this.padding, A.LinearPercentIndicator$(D.Color_4293128703, C.Radius_1_1, 2, C.EdgeInsets_0_0_0_0, t1 > 1 ? 1 : t1, C.Color_4278221567), null);
+          t1 = this.percentUploading;
+          return new A.Padding(D.EdgeInsetsDirectional_0_8_0_0, A.LinearPercentIndicator$(D.Color_4293128703, C.Radius_1_1, 2, C.EdgeInsets_0_0_0_0, t1 > 1 ? 1 : t1, C.Color_4278221567), null);
         case 2:
         case 3:
           return C.SizedBox_0_0_null_null;
@@ -8659,7 +8665,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.AttachmentComposerWidget.prototype = {
     createState$0() {
-      return new B._AttachmentComposerWidgetState(C._StateLifecycle_0);
+      $.$get$Get();
+      var t1 = $.GetInstance__getInstance;
+      if (t1 == null)
+        t1 = $.GetInstance__getInstance = C.C_GetInstance;
+      return new B._AttachmentComposerWidgetState(t1.find$1$1$tag(0, null, type$.ImagePaths), C._StateLifecycle_0);
     },
     onToggleExpandAttachmentAction$1(arg0) {
       return this.onToggleExpandAttachmentAction.call$1(arg0);
@@ -8669,6 +8679,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     initState$0() {
       this.super$State$initState();
       this._isCollapsed = this._widget.isCollapsed;
+    },
+    dispose$0() {
+      this._isCollapsed = false;
+      this.super$State$dispose();
     },
     build$1(context) {
       var t3, _this = this, _null = null,
@@ -15395,7 +15409,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.AttachmentItemComposerWidget_build_closure.prototype = {
     call$0() {
       var t1 = this.$this;
-      t1 = t1.onDeleteAttachmentAction.call$1(t1.fileState.uploadTaskId);
+      t1 = t1.onDeleteAttachmentAction.call$1(t1.uploadTaskId);
       return t1;
     },
     $signature: 0
@@ -15766,13 +15780,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B._AttachmentComposerWidgetState_build_closure0.prototype = {
     call$1(file) {
-      var t2,
-        t1 = this.$this._widget.onDeleteAttachmentAction;
+      var t5,
+        t1 = this.$this,
+        t2 = file.getIcon$1(t1._attachment_composer_widget$_imagePaths),
+        t3 = file.get$fileName(),
+        t4 = A.filesize(file.get$fileSize(), 2);
+      t1 = t1._widget.onDeleteAttachmentAction;
       $.$get$Get();
-      t2 = $.GetInstance__getInstance;
-      if (t2 == null)
-        t2 = $.GetInstance__getInstance = C.C_GetInstance;
-      return new B.AttachmentItemComposerWidget(t2.find$1$1$tag(0, null, type$.ImagePaths), file, t1, null);
+      t5 = $.GetInstance__getInstance;
+      if (t5 == null)
+        t5 = $.GetInstance__getInstance = C.C_GetInstance;
+      return new B.AttachmentItemComposerWidget(t5.find$1$1$tag(0, null, type$.ImagePaths), t2, t3, t4, file.uploadStatus, file.uploadingProgress / 100, file.uploadTaskId, t1, null);
     },
     $signature: typesOffset + 35
   };
@@ -22136,7 +22154,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EmailViewEmptyWidget_null = new B.EmailViewEmptyWidget(null);
     D.EmailView_null = new B.EmailView(null);
     D.Expanded_SsX = new A.Expanded(1, C.FlexFit_0, D.EmailView_null, null);
-    D.LinearProgressIndicator_INh = new A.LinearProgressIndicator(2, C.BorderRadius_tLn, null, D.Color_4293128703, C.Color_4278221567, null, null, null, null);
     D.Color_251658240 = new A.Color(251658240);
     D.BoxShadow_oyn33 = new A.BoxShadow(0, C.BlurStyle_0, D.Color_251658240, C.Offset_0_0, 4);
     D.List_01 = A._setArrayType(makeConstList([D.BoxShadow_oyn30, D.BoxShadow_oyn33]), type$.JSArray_BoxShadow);
@@ -22159,6 +22176,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Padding_90B = new A.Padding(C.EdgeInsets_8_0_8_0, D.Divider_4CA1, null);
     D.Padding_PqY = new A.Padding(D.EdgeInsetsDirectional_0_16_0_0, D.CupertinoLoadingWidget_null_null_null, null);
     D.Padding_lAj = new A.Padding(C.EdgeInsets_4_4_4_4, null, null);
+    D.LinearProgressIndicator_INh = new A.LinearProgressIndicator(2, C.BorderRadius_tLn, null, D.Color_4293128703, C.Color_4278221567, null, null, null, null);
+    D.Padding_wKl = new A.Padding(D.EdgeInsetsDirectional_0_8_0_0, D.LinearProgressIndicator_INh, null);
     D.VerticalDivider_86y = new A.VerticalDivider(2.5, 0.2, null, null, C.MaterialColor_Map_MUpTk_4288585374, null);
     D.Padding_wr1 = new A.Padding(E.EdgeInsets_0_5_0_5, D.VerticalDivider_86y, null);
     D.PageStorageKey_SJ9 = new A.PageStorageKey("list_presentation_email_in_threads", type$.PageStorageKey_String);
@@ -22322,5 +22341,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "nGKBO//ukvFNEKe1zkrdxPJg3hA=");
+})($__dart_deferred_initializers__, "9vtzcp/+rVe07B4KVijsL2+2UgA=");
 ;
