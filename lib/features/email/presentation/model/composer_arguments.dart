@@ -4,6 +4,8 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+
+import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
@@ -24,6 +26,10 @@ class ComposerArguments extends RouterArguments {
   final MessageIdsHeaderValue? references;
   final EmailId? previousEmailId;
   final List<Identity>? identities;
+  final Identity? selectedIdentity;
+  final List<Attachment>? inlineImages;
+  final bool? readRecepientEnabled;
+  final ScreenDisplayMode displayMode;
 
   ComposerArguments({
     this.emailActionType = EmailActionType.compose,
@@ -40,6 +46,10 @@ class ComposerArguments extends RouterArguments {
     this.references,
     this.previousEmailId,
     this.identities,
+    this.selectedIdentity,
+    this.inlineImages,
+    this.readRecepientEnabled,
+    this.displayMode = ScreenDisplayMode.normal
   });
 
   factory ComposerArguments.fromSendingEmail(SendingEmail sendingEmail) =>
@@ -83,15 +93,15 @@ class ComposerArguments extends RouterArguments {
   factory ComposerArguments.fromSessionStorageBrowser(ComposerCache composerCache) =>
     ComposerArguments(
       emailActionType: EmailActionType.reopenComposerBrowser,
-      presentationEmail: PresentationEmail(
-        id: composerCache.id,
-        subject: composerCache.subject,
-        from: composerCache.from,
-        to: composerCache.to,
-        cc: composerCache.cc,
-        bcc: composerCache.bcc,
-      ),
-      emailContents: composerCache.emailContentList.asHtmlString,
+      presentationEmail: composerCache.email?.toPresentationEmail(),
+      emailContents: composerCache.email?.emailContentList.asHtmlString,
+      attachments: composerCache.email?.allAttachments
+        .where((attachment) => attachment.disposition != ContentDisposition.inline)
+        .toList(),
+      selectedIdentity: composerCache.identity,
+      inlineImages: composerCache.email?.attachmentsWithCid,
+      readRecepientEnabled: composerCache.readReceipentEnabled,
+      displayMode: composerCache.displayMode,
     );
 
   factory ComposerArguments.replyEmail({
@@ -175,4 +185,46 @@ class ComposerArguments extends RouterArguments {
     references,
     identities,
   ];
+
+  ComposerArguments copyWith({
+    EmailActionType? emailActionType,
+    PresentationEmail? presentationEmail,
+    String? emailContents,
+    List<SharedMediaFile>? listSharedMediaFile,
+    List<EmailAddress>? listEmailAddress,
+    List<Attachment>? attachments,
+    Role? mailboxRole,
+    SendingEmail? sendingEmail,
+    String? subject,
+    String? body,
+    MessageIdsHeaderValue? messageId,
+    MessageIdsHeaderValue? references,
+    EmailId? previousEmailId,
+    List<Identity>? identities,
+    Identity? selectedIdentity,
+    List<Attachment>? inlineImages,
+    bool? readRecepientEnabled,
+    ScreenDisplayMode? displayMode,
+  }) {
+    return ComposerArguments(
+      emailActionType: emailActionType ?? this.emailActionType,
+      presentationEmail: presentationEmail ?? this.presentationEmail,
+      emailContents: emailContents ?? this.emailContents,
+      listSharedMediaFile: listSharedMediaFile ?? this.listSharedMediaFile,
+      listEmailAddress: listEmailAddress ?? this.listEmailAddress,
+      attachments: attachments ?? this.attachments,
+      mailboxRole: mailboxRole ?? this.mailboxRole,
+      sendingEmail: sendingEmail ?? this.sendingEmail,
+      subject: subject ?? this.subject,
+      body: body ?? this.body,
+      messageId: messageId ?? this.messageId,
+      references: references ?? this.references,
+      previousEmailId: previousEmailId ?? this.previousEmailId,
+      identities: identities ?? this.identities,
+      selectedIdentity: selectedIdentity ?? this.selectedIdentity,
+      inlineImages: inlineImages ?? this.inlineImages,
+      readRecepientEnabled: readRecepientEnabled ?? this.readRecepientEnabled,
+      displayMode: displayMode ?? this.displayMode,
+    );
+  }
 }
