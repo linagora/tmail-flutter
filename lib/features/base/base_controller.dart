@@ -23,6 +23,7 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
+import 'package:tmail_ui_user/features/base/before_unload_manager.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -169,7 +170,14 @@ abstract class BaseController extends GetxController
     if (!authorizationInterceptors.isAppRunning) {
       return;
     }
+    _executeBeforeUnloadAndLogOut(exception);
+  }
+
+  Future<void> _executeBeforeUnloadAndLogOut(Exception? exception) async {
     if (exception is BadCredentialsException || exception is ConnectionError) {
+      if (PlatformInfo.isWeb) {
+        await executeBeforeUnload();
+      }
       clearDataAndGoToLoginPage();
     }
   }
@@ -332,6 +340,11 @@ abstract class BaseController extends GetxController
     } else {
       await clearDataAndGoToLoginPage();
     }
+  }
+
+  Future<void> executeBeforeUnload() async {
+    final beforeUnloadManager = getBinding<BeforeUnloadManager>();
+    await beforeUnloadManager?.executeBeforeUnloadListeners();
   }
 
   Future<void> clearDataAndGoToLoginPage() async {
