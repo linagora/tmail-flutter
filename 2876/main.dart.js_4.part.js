@@ -813,7 +813,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1718
+    $signature: 1719
   };
   B.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -838,7 +838,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1719
+    $signature: 1720
   };
   B.UserSettingPopupMenuMixin__settingAction_closure.prototype = {
     call$0() {
@@ -971,5 +971,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "jOd6vrhntnhuwU3Sk5G6eKVr07E=");
+})($__dart_deferred_initializers__, "lUG7lQiKztcVXpQXted6CIvHkAo=");
 ;
