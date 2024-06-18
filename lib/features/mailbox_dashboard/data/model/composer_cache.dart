@@ -1,81 +1,44 @@
 import 'package:equatable/equatable.dart';
-import 'package:jmap_dart_client/http/converter/email/email_body_value_converter.dart';
-import 'package:jmap_dart_client/http/converter/email/email_mailbox_ids_converter.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_body_value.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/email/email_content.dart';
-import 'package:model/extensions/media_type_nullable_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 
 class ComposerCache with EquatableMixin {
 
-  final EmailId? id;
-  final Map<MailboxId, bool>? mailboxIds;
-  final String? subject;
-  final Set<EmailAddress>? from;
-  final Set<EmailAddress>? to;
-  final Set<EmailAddress>? cc;
-  final Set<EmailAddress>? bcc;
-  final Set<EmailAddress>? replyTo;
-  final Set<EmailBodyPart>? textBody;
-  final Set<EmailBodyPart>? htmlBody;
-  final Map<PartId, EmailBodyValue>? bodyValues;
+  final Email? email;
+  final Identity? identity;
+  final bool? readReceipentEnabled;
+  final ScreenDisplayMode displayMode;
 
   ComposerCache({
-    this.id,
-    this.mailboxIds,
-    this.subject,
-    this.from,
-    this.to,
-    this.cc,
-    this.bcc,
-    this.replyTo,
-    this.textBody,
-    this.htmlBody,
-    this.bodyValues,
+    required this.displayMode,
+    this.email,
+    this.identity,
+    this.readReceipentEnabled,
   });
-
-  factory ComposerCache.fromJson(Map<String, dynamic> json) {
-    return ComposerCache(
-      id: json['id'] != null ? EmailId(Id(json['id'])) : null,
-      mailboxIds: (json['mailboxIds'] as Map<String, dynamic>?)?.map((key, value) => EmailMailboxIdsConverter().parseEntry(key, value)),
-      subject: json['subject'] as String?,
-      from: (json['from'] as List<dynamic>?)?.map((json) => EmailAddress.fromJson(json)).toSet(),
-      to: (json['to'] as List<dynamic>?)?.map((json) => EmailAddress.fromJson(json)).toSet(),
-      cc: (json['cc'] as List<dynamic>?)?.map((json) => EmailAddress.fromJson(json)).toSet(),
-      bcc: (json['bcc'] as List<dynamic>?)?.map((json) => EmailAddress.fromJson(json)).toSet(),
-      bodyValues: (json['bodyValues'] as Map<String, dynamic>?)?.map((key, value) => EmailBodyValueConverter().parseEntry(key, value)),
-      replyTo: (json['replyTo'] as List<dynamic>?)?.map((json) => EmailAddress.fromJson(json)).toSet(),
-      textBody: (json['textBody'] as List<dynamic>?)?.map((json) => EmailBodyPart.fromJson(json)).toSet(),
-      htmlBody: (json['htmlBody'] as List<dynamic>?)?.map((json) => EmailBodyPart.fromJson(json)).toSet(),
-    );
-  }
 
   @override
   List<Object?> get props => [
-    id,
-    subject,
-    from,
-    to,
-    cc,
-    bcc,
-    replyTo,
+    email,
+    identity,
+    readReceipentEnabled
   ];
 
-  List<EmailContent> get emailContentList {
-    final newHtmlBody = htmlBody
-        ?.where((emailBody) => emailBody.partId != null && emailBody.type != null)
-        .toList() ?? <EmailBodyPart>[];
+  Map<String, dynamic> toJson() {
+    return <String, dynamic>{
+      'email': email?.toJson(),
+      'identity': identity?.toJson(),
+      'readReceipentEnabled': readReceipentEnabled,
+      'displayMode': displayMode.toJson()
+    };
+  }
 
-    final mapHtmlBody = { for (var emailBody in newHtmlBody) emailBody.partId! : emailBody.type! };
-
-    final emailContents = bodyValues?.entries
-        .map((entries) => EmailContent(mapHtmlBody[entries.key].toEmailContentType(), entries.value.value))
-        .toList();
-
-    return emailContents ?? [];
+  factory ComposerCache.fromJson(Map<String, dynamic> map) {
+    return ComposerCache(
+      displayMode: ScreenDisplayMode.fromJson(map['displayMode'] ?? ''),
+      email: map['email'] != null ? Email.fromJson(map['email']) : null,
+      identity: map['identity'] != null ? Identity.fromJson(map['identity']) : null,
+      readReceipentEnabled: map['readReceipentEnabled'] as bool?
+    );
   }
 }
