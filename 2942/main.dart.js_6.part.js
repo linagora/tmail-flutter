@@ -902,9 +902,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.$this = t0;
       this.context = t1;
     },
-    TraceLogView_build__closure: function TraceLogView_build__closure(t0, t1) {
+    TraceLogView_build__closure: function TraceLogView_build__closure(t0) {
       this.$this = t0;
-      this.context = t1;
     },
     _TraceLogView_GetWidget_AppLoaderMixin: function _TraceLogView_GetWidget_AppLoaderMixin() {
     },
@@ -3232,7 +3231,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       it.SchedulerBinding__postFrameCallbacks.push(t1.get$_postFrameCallback());
       it.WidgetsBinding__observers.push(t1);
     },
-    $signature: 1719
+    $signature: 1720
   };
   C._FadingEdgeScrollViewState__postFrameCallback_closure.prototype = {
     call$0() {
@@ -3320,7 +3319,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t7.toString;
       return new A.LinearGradient(t4, t3, B.TileMode_0, t5, t2, null).createShader$2$textDirection(0, t6, t7.textDirection);
     },
-    $signature: 1720
+    $signature: 1721
   };
   C._RadioState__widgetFillColor_closure.prototype = {
     call$1(states) {
@@ -3466,7 +3465,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(this.context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
       return A.Row$(A._setArrayType([t4, B.SizedBox_12_null_null_null, A.Expanded$(A.Text$(A.Intl__message("Always request read receipts with outgoing messages", _null, "emailReadReceiptsToggleDescription", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_ufz, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 101
+    $signature: 102
   };
   C.EmailRulesView_build_closure.prototype = {
     call$0() {
@@ -3672,7 +3671,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (accountId != null)
         t1._handleAddRecipients$2(accountId, listRecipientsSelected);
     },
-    $signature: 1721
+    $signature: 1722
   };
   C.ForwardView__buildAddRecipientsFormWidget_closure0.prototype = {
     call$1(exception) {
@@ -3692,7 +3691,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.showToastErrorMessage$2(t2, A.Intl__message("Incorrect email format", _null, "incorrectEmailFormat", _null, _null));
       }
     },
-    $signature: 1722
+    $signature: 1723
   };
   C._AutocompleteContactTextFieldWithTagsState_build_closure0.prototype = {
     call$1(focused) {
@@ -3774,7 +3773,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null;
       return A.Container$(_null, new A.ContactSuggestionBoxItem(suggestionEmailAddress, new C._AutocompleteContactTextFieldWithTagsState_build__closure0(this.$this, context, tagEditorState), _null, B.RoundedRectangleBorder_27D4, _null), B.Clip_0, _null, _null, _null, _null, _null, _null, _null, B.EdgeInsets_12_0_12_0, _null, _null, _null);
     },
-    $signature: 1723
+    $signature: 1724
   };
   C._AutocompleteContactTextFieldWithTagsState_build__closure0.prototype = {
     call$1(contact) {
@@ -4041,7 +4040,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = "";
       t1.deleteRecipients$2(this.context, t2);
     },
-    $signature: 1724
+    $signature: 1725
   };
   C.ListEmailForwardsWidget__buildTitleHeader_closure.prototype = {
     call$0() {
@@ -4126,7 +4125,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 /= 2;
       return A.ResponsiveWidget$(A.Column$(A._setArrayType([A.Text$(A.Intl__message(_s8_, _null, _s8_0, _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_jjv0, _null, _null, _null, _null, _null), B.SizedBox_null_8_null_null, new A.SizedBox(t3, _null, t1._buildLanguageMenu$2(context, t3), _null)], t4), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), _null, _null, t5, t1._change_language_button_widget$_responsiveUtils, _null, _null);
     },
-    $signature: 1725
+    $signature: 1726
   };
   C.ChangeLanguageButtonWidget__buildLanguageMenu_closure.prototype = {
     call$0() {
@@ -4561,7 +4560,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         case B.AccountMenuItem_7:
           t1 = $.LogTracking__instance;
           if (t1 == null)
-            t1 = $.LogTracking__instance = new A.LogTracking(false);
+            t1 = $.LogTracking__instance = new A.LogTracking(false, A.ListQueue$(null, type$.String));
           if (t1.enableTraceLog)
             return D.TraceLogView_null;
           else
@@ -4692,7 +4691,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 101
+    $signature: 102
   };
   C.SettingsFirstLevelView_build__closure2.prototype = {
     call$0() {
@@ -4725,7 +4724,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 101
+    $signature: 102
   };
   C.SettingsFirstLevelView_build__closure1.prototype = {
     call$0() {
@@ -4758,7 +4757,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 101
+    $signature: 102
   };
   C.SettingsFirstLevelView_build__closure0.prototype = {
     call$0() {
@@ -4791,7 +4790,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 101
+    $signature: 102
   };
   C.SettingsFirstLevelView_build__closure.prototype = {
     call$0() {
@@ -5034,7 +5033,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         case B.AccountMenuItem_7:
           t1 = $.LogTracking__instance;
           if (t1 == null)
-            t1 = $.LogTracking__instance = new A.LogTracking(false);
+            t1 = $.LogTracking__instance = new A.LogTracking(false, A.ListQueue$(null, type$.String));
           if (t1.enableTraceLog)
             return D.TraceLogView_null;
           else
@@ -5059,7 +5058,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.toString;
       return t1;
     },
-    $signature: 1726
+    $signature: 1727
   };
   C.IdentitiesView__buildIdentitiesViewMobile_closure.prototype = {
     call$0() {
@@ -5124,7 +5123,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(A.Expanded$(t3._buildListIdentityView$1(t5), 1));
       return A.Row$(t2, B.CrossAxisAlignment_0, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 1727
+    $signature: 1728
   };
   C.IdentitiesRadioListBuilder__buildIdentityViewHorizontal__closure.prototype = {
     call$0() {
@@ -5250,9 +5249,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t2 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).tracLog;
       if (t2.get$value(t2) != null) {
-        t2 = this.context;
-        A.Localizations_of(t2, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-        return A.TMailButtonWidget$(B.Color_4278221567, _null, 10, _null, false, _null, B.TextDirection_1, _null, _null, 8, _null, B.MainAxisSize_1, _null, 1 / 0, _null, 1 / 0, 0, _null, _null, new C.TraceLogView_build__closure(t1, t2), E.EdgeInsets_16_12_16_12, A.Intl__message("Export file", _null, "exportFile", _null, _null), _null, B.TextStyle_1Gf, _null, _null, _null, _null, false, _null);
+        A.Localizations_of(this.context, B.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
+        return A.TMailButtonWidget$(B.Color_4278221567, _null, 10, _null, false, _null, B.TextDirection_1, _null, _null, 8, _null, B.MainAxisSize_1, _null, 1 / 0, _null, 1 / 0, 0, _null, _null, new C.TraceLogView_build__closure(t1), E.EdgeInsets_16_12_16_12, A.Intl__message("Export file", _null, "exportFile", _null, _null), _null, B.TextStyle_1Gf, _null, _null, _null, _null, false, _null);
       } else
         return B.SizedBox_0_0_null_null;
     },
@@ -5271,7 +5269,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t3._as(t2.get(t1)).tracLog;
       t1 = t1.get$value(t1);
       t1.toString;
-      return t4.exportTraceLogFile$2(this.context, t1);
+      t4.consumeState$1(t4._exportTraceLogInteractor.execute$1(t1));
+      return null;
     },
     $signature: 0
   };
@@ -6020,5 +6019,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "//li8abf+KOe36q4j5xAhJ7ArcE=");
+})($__dart_deferred_initializers__, "DLRrFqHhicOIImDtr2ZTasO7KRY=");
 ;
