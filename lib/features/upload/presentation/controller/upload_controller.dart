@@ -206,6 +206,17 @@ class UploadController extends BaseController {
     _refreshListUploadAttachmentState();
   }
 
+  void initializeUploadInlineAttachments(List<Attachment> attachments) {
+    final listUploadFilesState = attachments
+        .map((attachment) => UploadFileState(
+            UploadTaskId(attachment.blobId!.value),
+            uploadStatus: UploadFileStatus.succeed,
+            attachment: attachment))
+        .toList();
+    _uploadingStateInlineFiles.addAll(listUploadFilesState);
+    _refreshListUploadAttachmentState();
+  }
+
   void deleteFileUploaded(UploadTaskId uploadId) {
     _uploadingStateFiles.deleteElementByUploadTaskId(uploadId);
     _refreshListUploadAttachmentState();

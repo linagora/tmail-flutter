@@ -9,6 +9,13 @@ class NotFoundInWebSessionException with EquatableMixin implements Exception {
   List<Object> get props => [];
 }
 
+class NotMatchInWebSessionException with EquatableMixin implements Exception {
+  const NotMatchInWebSessionException();
+
+  @override
+  List<Object> get props => [];
+}
+
 class SaveToWebSessionFailException with EquatableMixin implements Exception {
   final String? errorMessage;
 
