@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/composer/domain/repository/contact_reposi
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/restore_email_inline_images_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
@@ -208,6 +209,8 @@ class ComposerBindings extends BaseBindings {
       Get.find<MailboxRepository>(),
       Get.find<ComposerRepository>(),
     ));
+    Get.lazyPut(() => RestoreEmailInlineImagesInteractor(
+      Get.find<ComposerCacheRepository>()));
 
     IdentityInteractorsBindings().dependencies();
   }

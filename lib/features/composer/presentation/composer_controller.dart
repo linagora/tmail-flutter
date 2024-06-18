@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -26,6 +27,8 @@ import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/before_unload_handler.dart';
+import 'package:tmail_ui_user/features/base/before_unload_manager.dart';
 import 'package:tmail_ui_user/features/base/state/base_ui_state.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/compose_email_exception.dart';
@@ -34,6 +37,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_b
 import 'package:tmail_ui_user/features/composer/domain/state/generate_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_device_contact_suggestions_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/restore_email_inline_images_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
@@ -43,6 +47,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_a
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/restore_email_inline_images_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
@@ -91,11 +96,12 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:universal_html/html.dart' as html;
 
-class ComposerController extends BaseController with DragDropFileMixin {
+class ComposerController extends BaseController with DragDropFileMixin implements BeforeUnloadHandler {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final networkConnectionController = Get.find<NetworkConnectionController>();
   final _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
+  final _beforeUnloadManager = Get.find<BeforeUnloadManager>();
 
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
@@ -129,6 +135,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
   GetDeviceContactSuggestionsInteractor? _getDeviceContactSuggestionsInteractor;
+  RestoreEmailInlineImagesInteractor? _restoreEmailInlineImagesInteractor;
 
   List<EmailAddress> listToEmailAddress = <EmailAddress>[];
   List<EmailAddress> listCcEmailAddress = <EmailAddress>[];
@@ -162,6 +169,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
   StreamSubscription<html.Event>? _subscriptionOnDragOver;
   StreamSubscription<html.Event>? _subscriptionOnDragLeave;
   StreamSubscription<html.Event>? _subscriptionOnDrop;
+  StreamSubscription<String>? _composerCacheListener;
 
   RichTextMobileTabletController? richTextMobileTabletController;
   RichTextWebController? richTextWebController;
@@ -215,6 +223,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
     scrollControllerEmailAddress.addListener(_scrollControllerEmailAddressListener);
     _listenStreamEvent();
     _getAlwaysReadReceiptSetting();
+    _beforeUnloadManager.addListener(onBeforeUnload);
   }
 
   @override
@@ -241,6 +250,8 @@ class ComposerController extends BaseController with DragDropFileMixin {
     _subscriptionOnDragLeave?.cancel();
     _subscriptionOnDrop?.cancel();
     subjectEmailInputFocusNode?.removeListener(_subjectEmailInputFocusListener);
+    _composerCacheListener?.cancel();
+    _beforeUnloadManager.removeListener(onBeforeUnload);
     super.onClose();
   }
 
@@ -281,7 +292,8 @@ class ComposerController extends BaseController with DragDropFileMixin {
     super.handleSuccessViewState(success);
     if (success is GetEmailContentLoading ||
         success is TransformHtmlEmailContentLoading ||
-        success is TransformHtmlEmailContentSuccess) {
+        success is TransformHtmlEmailContentSuccess ||
+        success is RestoringEmailInlineImages) {
       emailContentsViewState.value = Right(success);
     } else if (success is LocalFilePickerSuccess) {
       _handlePickFileSuccess(success);
@@ -303,7 +315,16 @@ class ComposerController extends BaseController with DragDropFileMixin {
       maxWithEditor = null;
     } else if (success is GetAlwaysReadReceiptSettingSuccess) {
       hasRequestReadReceipt.value = success.alwaysReadReceiptEnabled;
+    } else if (success is RestoreEmailInlineImagesSuccess) {
+      _updateEditorContent(success);
     }
+  }
+
+  void _updateEditorContent(RestoreEmailInlineImagesSuccess success) {
+    richTextWebController?.editorController.setText(success.emailContent);
+    consumeState(Stream.value(Right(GetEmailContentSuccess(
+      htmlEmailContent: success.emailContent,
+      attachments: []))));
   }
 
   @override
@@ -314,7 +335,8 @@ class ComposerController extends BaseController with DragDropFileMixin {
     } else if (failure is LocalImagePickerFailure) {
       _handlePickImageFailure(failure);
     } else if (failure is GetEmailContentFailure ||
-        failure is TransformHtmlEmailContentFailure) {
+        failure is TransformHtmlEmailContentFailure ||
+        failure is RestoreEmailInlineImagesFailure) {
       emailContentsViewState.value = Left(failure);
     } else if (failure is GetAllIdentitiesFailure) {
       if (identitySelected.value == null) {
@@ -348,40 +370,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
     _subscriptionOnBeforeUnload = html.window.onBeforeUnload.listen((event) async {
       await _removeComposerCacheOnWebInteractor.execute();
 
-      if (composerArguments.value == null ||
-          mailboxDashBoardController.sessionCurrent == null ||
-          mailboxDashBoardController.accountId.value == null
-      ) {
-        log('ComposerController::_listenBrowserTabRefresh: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
-        return;
-      }
-
-      final emailContent = await _getContentInEditor();
-
-      await _saveComposerCacheOnWebInteractor.execute(CreateEmailRequest(
-        session: mailboxDashBoardController.sessionCurrent!,
-        accountId: mailboxDashBoardController.accountId.value!,
-        emailActionType: composerArguments.value!.emailActionType,
-        subject: subjectEmail.value ?? '',
-        emailContent: emailContent,
-        fromSender: composerArguments.value!.presentationEmail?.from ?? {},
-        toRecipients: listToEmailAddress.toSet(),
-        ccRecipients: listCcEmailAddress.toSet(),
-        bccRecipients: listBccEmailAddress.toSet(),
-        isRequestReadReceipt: hasRequestReadReceipt.value,
-        identity: identitySelected.value,
-        attachments: uploadController.attachmentsUploaded,
-        inlineAttachments: uploadController.mapInlineAttachments,
-        outboxMailboxId: mailboxDashBoardController.outboxMailbox?.mailboxId,
-        sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
-        draftsMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts],
-        draftsEmailId: _getDraftEmailId(),
-        answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
-        unsubscribeEmailId: composerArguments.value!.previousEmailId,
-        messageId: composerArguments.value!.messageId,
-        references: composerArguments.value!.references,
-        emailSendingQueue: composerArguments.value!.sendingEmail
-      ));
+      await _saveComposerCacheOnWebAction();
     });
 
     _subscriptionOnDragEnter = html.window.onDragEnter.listen((event) {
@@ -399,6 +388,56 @@ class ComposerController extends BaseController with DragDropFileMixin {
     _subscriptionOnDrop = html.window.onDrop.listen((event) {
       mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.inActive;
     });
+  }
+
+  Future<void> _saveComposerCacheOnWebAction() async {
+    _autoCreateEmailTag();
+
+    final createEmailRequest = await _generateCreateEmailRequest();
+    if (createEmailRequest == null) return;
+
+    await _saveComposerCacheOnWebInteractor.execute(
+      createEmailRequest,
+      mailboxDashBoardController.accountId.value!,
+      mailboxDashBoardController.sessionCurrent!.username,
+      displayMode: screenDisplayMode.value);
+  }
+
+  Future<CreateEmailRequest?> _generateCreateEmailRequest() async {
+    if (composerArguments.value == null ||
+        mailboxDashBoardController.sessionCurrent == null ||
+        mailboxDashBoardController.accountId.value == null
+    ) {
+      log('ComposerController::_generateCreateEmailRequest: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
+      return null;
+    }
+    
+    final emailContent = await _getContentInEditor();
+    
+    return CreateEmailRequest(
+      session: mailboxDashBoardController.sessionCurrent!,
+      accountId: mailboxDashBoardController.accountId.value!,
+      emailActionType: composerArguments.value!.emailActionType,
+      subject: subjectEmail.value ?? '',
+      emailContent: emailContent,
+      fromSender: composerArguments.value!.presentationEmail?.from ?? {},
+      toRecipients: listToEmailAddress.toSet(),
+      ccRecipients: listCcEmailAddress.toSet(),
+      bccRecipients: listBccEmailAddress.toSet(),
+      isRequestReadReceipt: hasRequestReadReceipt.value,
+      identity: identitySelected.value,
+      attachments: uploadController.attachmentsUploaded,
+      inlineAttachments: uploadController.mapInlineAttachments,
+      outboxMailboxId: mailboxDashBoardController.outboxMailbox?.mailboxId,
+      sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
+      draftsMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts],
+      draftsEmailId: _getDraftEmailId(),
+      answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
+      unsubscribeEmailId: composerArguments.value!.previousEmailId,
+      messageId: composerArguments.value!.messageId,
+      references: composerArguments.value!.references,
+      emailSendingQueue: composerArguments.value!.sendingEmail
+    );
   }
 
   void _scrollControllerEmailAddressListener() {
@@ -481,7 +520,7 @@ class ComposerController extends BaseController with DragDropFileMixin {
     if (arguments is ComposerArguments) {
       composerArguments.value = arguments;
 
-      _initIdentities(arguments.identities);
+      _initIdentities(arguments);
 
       injectAutoCompleteBindings(
         mailboxDashBoardController.sessionCurrent,
@@ -563,6 +602,10 @@ class ComposerController extends BaseController with DragDropFileMixin {
           _transformHtmlEmailContent(arguments.emailContents);
           break;
         case EmailActionType.reopenComposerBrowser:
+          if (!PlatformInfo.isWeb) return;
+
+          screenDisplayMode.value = arguments.displayMode;
+
           _initEmailAddress(
             presentationEmail: arguments.presentationEmail!,
             actionType: EmailActionType.reopenComposerBrowser
@@ -571,8 +614,22 @@ class ComposerController extends BaseController with DragDropFileMixin {
             presentationEmail: arguments.presentationEmail!,
             actionType: EmailActionType.reopenComposerBrowser
           );
-          _initAttachments(arguments.attachments ?? []);
-          _getEmailContentFromSessionStorageBrowser(arguments.emailContents!);
+          _initAttachments(
+            arguments.attachments ?? [],
+            inlineAttachments: arguments.inlineImages);
+
+          final accountId = mailboxDashBoardController.accountId.value;
+          final downloadUrl = mailboxDashBoardController.sessionCurrent
+            ?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
+          if (accountId == null || downloadUrl == null) return;
+          _getEmailContentFromSessionStorageBrowser(
+            htmlContent: arguments.emailContents ?? '',
+            inlineImages: arguments.inlineImages ?? [],
+            accountId: accountId,
+            downloadUrl: downloadUrl
+          );
+
+          hasRequestReadReceipt.value = arguments.readRecepientEnabled ?? false;
           break;
         case EmailActionType.composeFromUnsubscribeMailtoLink:
           if (arguments.subject != null) {
@@ -603,17 +660,26 @@ class ComposerController extends BaseController with DragDropFileMixin {
     subjectEmailInputController.text = newSubject;
   }
 
-  void _initAttachments(List<Attachment> attachments) {
+  void _initAttachments(List<Attachment> attachments, {List<Attachment>? inlineAttachments}) {
     if (attachments.isNotEmpty) {
       initialAttachments = attachments;
       uploadController.initializeUploadAttachments(attachments);
     }
+    if (inlineAttachments != null) {
+      uploadController.initializeUploadInlineAttachments(inlineAttachments);
+    }
   }
 
-  void _initIdentities(List<Identity>? identities) {
-    if (identities?.isNotEmpty == true) {
-      listFromIdentities.value = identities!;
-      identitySelected.value = identities.first;
+  void _initIdentities(ComposerArguments composerArguments) {
+    listFromIdentities.value = composerArguments.identities ?? [];
+    if (listFromIdentities.isEmpty) {
+      _getAllIdentities();
+    } else if (composerArguments.selectedIdentity != null
+      && listFromIdentities.contains(composerArguments.selectedIdentity!)
+    ) {
+      _selectIdentity(composerArguments.selectedIdentity!);
+    } else if (composerArguments.identities?.isNotEmpty == true) {
+      _selectIdentity(composerArguments.identities!.first);
     }
   }
 
@@ -632,7 +698,14 @@ class ComposerController extends BaseController with DragDropFileMixin {
       listFromIdentities.value = listIdentitiesMayDeleted;
 
       if (identitySelected.value == null) {
-        await _selectIdentity(listIdentitiesMayDeleted.first);
+        final selectedIdentityFromArguments = composerArguments.value?.selectedIdentity;
+        if (selectedIdentityFromArguments != null
+            && listFromIdentities.contains(selectedIdentityFromArguments)
+        ) {
+          await _selectIdentity(selectedIdentityFromArguments);
+        } else {
+          await _selectIdentity(listIdentitiesMayDeleted.firstOrNull);
+        }
       }
     }
     _autoFocusFieldWhenLauncher();
@@ -1226,13 +1299,20 @@ class ComposerController extends BaseController with DragDropFileMixin {
     ));
   }
 
-  void _getEmailContentFromSessionStorageBrowser(String content) {
-    consumeState(Stream.value(
-      Right(GetEmailContentSuccess(
-        htmlEmailContent: content,
-        attachments: [],
-      ))
-    ));
+  void _getEmailContentFromSessionStorageBrowser({
+    required String htmlContent,
+    required List<Attachment> inlineImages,
+    required AccountId accountId,
+    required String downloadUrl
+  }) {
+    _restoreEmailInlineImagesInteractor = getBinding<RestoreEmailInlineImagesInteractor>();
+    if (_restoreEmailInlineImagesInteractor == null) return;
+    consumeState(_restoreEmailInlineImagesInteractor!.execute(
+      htmlContent: htmlContent,
+      transformConfiguration: TransformConfiguration.forRestoreEmail(),
+      mapUrlDownloadCID: inlineImages.toMapCidImageDownloadUrl(
+        accountId: accountId,
+        downloadUrl: downloadUrl)));
   }
 
   void _getEmailContentFromContentShared(String content) {
@@ -1533,7 +1613,12 @@ class ComposerController extends BaseController with DragDropFileMixin {
   Future<void> _selectIdentity(Identity? newIdentity) async {
     final formerIdentity = identitySelected.value;
     identitySelected.value = newIdentity;
-    if (newIdentity != null) {
+    if (newIdentity == null) return;
+
+    if (composerArguments.value?.emailActionType == EmailActionType.reopenComposerBrowser) {
+      composerArguments.value = composerArguments.value?.copyWith(
+        emailActionType: EmailActionType.editDraft);
+    } else {
       await _applyIdentityForAllFieldComposer(formerIdentity, newIdentity);
     }
   }
@@ -2177,5 +2262,14 @@ class ComposerController extends BaseController with DragDropFileMixin {
     fromRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
     ccRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
     bccRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
+  }
+  
+  @override
+  Future<void> onBeforeUnload() async {
+    if (mailboxDashBoardController.accountId.value != null &&
+        mailboxDashBoardController.sessionCurrent?.username != null
+    ) {
+      await _saveComposerCacheOnWebAction();
+    }
   }
 }

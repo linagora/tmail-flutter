@@ -63,6 +63,8 @@ class TransformConfiguration {
 
   factory TransformConfiguration.forPreviewEmail() => TransformConfiguration.standardConfiguration;
 
+  factory TransformConfiguration.forRestoreEmail() => TransformConfiguration.fromDomTransformers([const ImageTransformer()]);
+
   factory TransformConfiguration.forPrintEmail() => TransformConfiguration.fromDomTransformers([
     if (PlatformInfo.isWeb)
       const RemoveTooltipLinkTransformer(),
