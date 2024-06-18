@@ -1059,7 +1059,7 @@ packages:
     description:
       path: "."
       ref: cnb_supported
-      resolved-ref: "978886d768e6540fc7dbe016dd83733c56ffb220"
+      resolved-ref: f0109bf2b0ee4554113f54716301dd96207c88eb
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"
