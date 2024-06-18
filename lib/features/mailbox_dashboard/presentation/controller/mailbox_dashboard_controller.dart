@@ -291,14 +291,12 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _handleComposerCache() async {
-    _getEmailCacheOnWebInteractor.execute().fold(
-      (failure) {},
-      (success) {
-        if (success is GetComposerCacheSuccess) {
-          goToComposer(ComposerArguments.fromSessionStorageBrowser(success.composerCache));
-        }
-      },
-    );
+    if (accountId.value == null || sessionCurrent == null) return;
+
+    consumeState(
+      _getEmailCacheOnWebInteractor.execute(
+        accountId.value!,
+        sessionCurrent!.username));
   }
 
   @override
@@ -373,6 +371,8 @@ class MailboxDashBoardController extends ReloadableController {
       _handleGetRestoredDeletedMessageSuccess(success);
     } else if (success is GetAllIdentitiesSuccess) {
       _handleGetAllIdentitiesSuccess(success);
+    } else if (success is GetComposerCacheSuccess) {
+      goToComposer(ComposerArguments.fromSessionStorageBrowser(success.composerCache));
     }
   }
 
@@ -397,6 +397,8 @@ class MailboxDashBoardController extends ReloadableController {
       _handleRestoreDeletedMessageFailed();
     } else if (failure is GetRestoredDeletedMessageFailure) {
       _handleRestoreDeletedMessageFailed();
+    } else if (failure is GetAllIdentitiesFailure) {
+      _removeComposerCacheOnWeb();
     }
   }
 
@@ -511,6 +513,10 @@ class MailboxDashBoardController extends ReloadableController {
     );
 
     _setUpComponentsFromSession(session);
+
+    if (PlatformInfo.isWeb) {
+      _handleComposerCache();
+    }
 
     if (PlatformInfo.isMobile && !_notificationManager.isNotificationClickedOnTerminate) {
       _handleClickLocalNotificationOnTerminated();
@@ -1401,7 +1407,9 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void goToComposer(ComposerArguments arguments) async {
-    final argumentsWithIdentity = arguments.withIdentity(identities: List.from(_identities ?? []));
+    final argumentsWithIdentity = arguments.withIdentity(
+      identities: List.from(_identities ?? []),
+      selectedIdentity: arguments.selectedIdentity);
 
     if (PlatformInfo.isWeb) {
       if (composerOverlayState.value == ComposerOverlayState.inActive) {
