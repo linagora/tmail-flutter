@@ -291,14 +291,12 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void _handleComposerCache() async {
-    _getEmailCacheOnWebInteractor.execute().fold(
-      (failure) {},
-      (success) {
-        if (success is GetComposerCacheSuccess) {
-          goToComposer(ComposerArguments.fromSessionStorageBrowser(success.composerCache));
-        }
-      },
-    );
+    if (accountId.value == null || sessionCurrent == null) return;
+
+    consumeState(
+      _getEmailCacheOnWebInteractor.execute(
+        accountId.value!,
+        sessionCurrent!.username));
   }
 
   @override
@@ -373,6 +371,8 @@ class MailboxDashBoardController extends ReloadableController {
       _handleGetRestoredDeletedMessageSuccess(success);
     } else if (success is GetAllIdentitiesSuccess) {
       _handleGetAllIdentitiesSuccess(success);
+    } else if (success is GetComposerCacheSuccess) {
+      goToComposer(ComposerArguments.fromSessionStorageBrowser(success.composerCache));
     }
   }
 
@@ -466,7 +466,7 @@ class MailboxDashBoardController extends ReloadableController {
     final arguments = Get.arguments;
     log('MailboxDashBoardController::_getSessionCurrent(): arguments = $arguments');
     if (arguments is Session) {
-      _handleSession(arguments);
+      _handleSessionFromArguments(arguments);
     } else if (arguments is MailtoArguments) {
       _handleMailtoURL(arguments);
     } else if (arguments is PreviewEmailArguments) {
@@ -499,7 +499,7 @@ class MailboxDashBoardController extends ReloadableController {
     }
   }
 
-  void _handleSession(Session session) {
+  void _handleSessionFromArguments(Session session) {
     log('MailboxDashBoardController::_handleSession:');
     updateAuthenticationAccount(
       session,
@@ -508,6 +508,10 @@ class MailboxDashBoardController extends ReloadableController {
     );
 
     _setUpComponentsFromSession(session);
+
+    if (PlatformInfo.isWeb) {
+      _handleComposerCache();
+    }
 
     if (PlatformInfo.isMobile && !_notificationManager.isNotificationClickedOnTerminate) {
       _handleClickLocalNotificationOnTerminated();
@@ -539,13 +543,13 @@ class MailboxDashBoardController extends ReloadableController {
   void _handleMailtoURL(MailtoArguments arguments) {
     log('MailboxDashBoardController::_handleMailtoURL:');
     routerParameters.value = arguments.toMapRouter();
-    _handleSession(arguments.session);
+    _handleSessionFromArguments(arguments.session);
   }
 
   void _handleOpenEmailAction(PreviewEmailArguments arguments) {
     log('MailboxDashBoardController::_handleOpenEmailAction:arguments: $arguments');
     dispatchRoute(DashboardRoutes.waiting);
-    _handleSession(arguments.session);
+    _handleSessionFromArguments(arguments.session);
     _handleNotificationMessageFromEmailId(arguments.emailId);
   }
 
@@ -1398,7 +1402,9 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void goToComposer(ComposerArguments arguments) async {
-    final argumentsWithIdentity = arguments.withIdentity(identities: List.from(_identities ?? []));
+    final argumentsWithIdentity = arguments.withIdentity(
+      identities: List.from(_identities ?? []),
+      selectedIdentity: arguments.selectedIdentity);
 
     if (PlatformInfo.isWeb) {
       if (composerOverlayState.value == ComposerOverlayState.inActive) {
