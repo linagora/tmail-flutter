@@ -789,8 +789,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.$this = t0;
       this.context = t1;
     },
-    _NotificationView_GetWidget_AppLoaderMixin: function _NotificationView_GetWidget_AppLoaderMixin() {
-    },
     IdentitiesView: function IdentitiesView(t0) {
       this.key = t0;
     },
@@ -2960,7 +2958,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.Container$(_null, new A.Obx(new C.NotificationView_build_closure(this, context), _null), B.Clip_0, t2, _null, _null, _null, _null, _null, _null, C.SettingsUtils_getMarginViewForSettingDetails(context, (t3 == null ? $.GetInstance__getInstance = B.C_GetInstance : t3).find$1$1$tag(0, _null, t1)), _null, _null, _null);
     }
   };
-  C._NotificationView_GetWidget_AppLoaderMixin.prototype = {};
   C.IdentitiesView.prototype = {
     build$1(context) {
       var _this = this, _null = null,
@@ -5796,7 +5793,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(C.ShaderMask, A.SingleChildRenderObjectWidget);
     _inheritMany(A.StatelessWidget, [C.BorderButtonField, C.MaterialTextIconButton, C.TextInputFieldBuilder, C.ContactInputTagItem, C.SettingDetailViewBuilder, C.EmailRulesItemWidget, C.EmailRulesHeaderWidget, C.EmailForwardItemWidget, C.ForwardHeaderWidget, C.ForwardWarningBanner, C.ChangeLanguageButtonWidget, C.LanguageAndRegionHeaderWidget, C.LanguageRegionOverlay, C.LanguageItemWidget, C.MailBoxVisibilityFolderTileBuilder, C.MailboxVisibilityHeaderWidget, C.AccountMenuItemTileBuilder, C.SettingFirstLevelTileBuilder, C.IdentitiesHeaderWidget, C.IdentitiesRadioListBuilder, C.IdentityListTileBuilder, C.SignatureBuilder, C.ProfilesView, C.ProfilesHeaderWidget]);
     _inheritMany(A.Object, [C.RecipientListIsEmptyException, C.RecipientListWithInvalidEmailsException]);
-    _inheritMany(A.GetWidget, [C._AlwaysReadReceiptView_GetWidget_AppLoaderMixin, C._EmailRulesView_GetWidget_AppLoaderMixin, C.ListEmailRulesWidget, C._ForwardView_GetWidget_AppLoaderMixin, C.ListEmailForwardsWidget, C.LanguageAndRegionView, C._MailboxVisibilityView_GetWidget_AppLoaderMixin, C._ManageAccountDashBoardView_GetWidget_UserSettingPopupMenuMixin, C.ManageAccountMenuView, C.SettingsFirstLevelView, C.SettingsView, C._NotificationView_GetWidget_AppLoaderMixin, C._IdentitiesView_GetWidget_PopupMenuWidgetMixin, C._VacationView_GetWidget_RichTextButtonMixin]);
+    _inheritMany(A.GetWidget, [C._AlwaysReadReceiptView_GetWidget_AppLoaderMixin, C._EmailRulesView_GetWidget_AppLoaderMixin, C.ListEmailRulesWidget, C._ForwardView_GetWidget_AppLoaderMixin, C.ListEmailForwardsWidget, C.LanguageAndRegionView, C._MailboxVisibilityView_GetWidget_AppLoaderMixin, C._ManageAccountDashBoardView_GetWidget_UserSettingPopupMenuMixin, C.ManageAccountMenuView, C.SettingsFirstLevelView, C.SettingsView, C.NotificationView, C._IdentitiesView_GetWidget_PopupMenuWidgetMixin, C._VacationView_GetWidget_RichTextButtonMixin]);
     _inherit(C.AlwaysReadReceiptView, C._AlwaysReadReceiptView_GetWidget_AppLoaderMixin);
     _inherit(C.EmailRulesView, C._EmailRulesView_GetWidget_AppLoaderMixin);
     _inheritMany(A.Closure2Args, [C.ListEmailRulesWidget_build__closure, C.ListEmailRulesWidget_build__closure0, C._AutocompleteContactTextFieldWithTagsState_build_closure5, C.ListEmailForwardsWidget_build__closure, C.ChangeLanguageButtonWidget_build_closure, C.LanguageRegionOverlay_build_closure, C.ManageAccountMenuView_build__closure, C.IdentitiesRadioListBuilder__buildListIdentityView__closure, C.SignatureBuilder_build_closure]);
@@ -5805,7 +5802,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(C._MailboxVisibilityView_GetWidget_AppLoaderMixin_MailboxWidgetMixin, C._MailboxVisibilityView_GetWidget_AppLoaderMixin);
     _inherit(C.MailboxVisibilityView, C._MailboxVisibilityView_GetWidget_AppLoaderMixin_MailboxWidgetMixin);
     _inherit(C.ManageAccountDashBoardView, C._ManageAccountDashBoardView_GetWidget_UserSettingPopupMenuMixin);
-    _inherit(C.NotificationView, C._NotificationView_GetWidget_AppLoaderMixin);
     _inherit(C._IdentitiesView_GetWidget_PopupMenuWidgetMixin_AppLoaderMixin, C._IdentitiesView_GetWidget_PopupMenuWidgetMixin);
     _inherit(C.IdentitiesView, C._IdentitiesView_GetWidget_PopupMenuWidgetMixin_AppLoaderMixin);
     _inherit(C.VacationView, C._VacationView_GetWidget_RichTextButtonMixin);
@@ -5819,7 +5815,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _mixin(C._MailboxVisibilityView_GetWidget_AppLoaderMixin, A.AppLoaderMixin);
     _mixin(C._MailboxVisibilityView_GetWidget_AppLoaderMixin_MailboxWidgetMixin, A.MailboxWidgetMixin);
     _mixin(C._ManageAccountDashBoardView_GetWidget_UserSettingPopupMenuMixin, F.UserSettingPopupMenuMixin);
-    _mixin(C._NotificationView_GetWidget_AppLoaderMixin, A.AppLoaderMixin);
     _mixin(C._IdentitiesView_GetWidget_PopupMenuWidgetMixin, F.PopupMenuWidgetMixin);
     _mixin(C._IdentitiesView_GetWidget_PopupMenuWidgetMixin_AppLoaderMixin, A.AppLoaderMixin);
     _mixin(C._VacationView_GetWidget_RichTextButtonMixin, A.RichTextButtonMixin);
@@ -5983,5 +5978,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "C8KgGgN5EVC5W5Jw4PbPK+379bQ=");
+})($__dart_deferred_initializers__, "XDY6UVAVMy0Na6GdqkI0xrDpyQ0=");
 ;
