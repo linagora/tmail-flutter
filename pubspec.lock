@@ -1480,6 +1480,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.1"
+  patrol:
+    dependency: "direct dev"
+    description:
+      name: patrol
+      sha256: "6112dd3b0a4b6d0fd1b77868d79d6dd5ef371a0186d6d6d41c821cf72e4b7e7e"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.1"
+  patrol_finders:
+    dependency: transitive
+    description:
+      name: patrol_finders
+      sha256: "2b51b43019d5db2a47b2fca53c1c54928a87459535d1ae966cd25d165641c7ce"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.1"
   pattern_formatter:
     dependency: transitive
     description:

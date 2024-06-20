@@ -269,6 +269,7 @@ dev_dependencies:
   json_serializable: 6.6.1
 
   http_mock_adapter: 0.4.2
+  patrol: ^3.0.1
 
   plugin_platform_interface: 2.1.8
 
@@ -355,3 +356,8 @@ flutter_native_splash:
 cider:
   link_template:
     tag: https://github.com/linagora/tmail-flutter/releases/tag/v%tag% # initial release link template
+
+patrol:
+  app_name: Twake Mail
+  android:
+    package_name: com.linagora.android.teammail
