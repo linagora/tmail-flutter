@@ -58,6 +58,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _HtmlContentViewerOnWebState_build__closure: function _HtmlContentViewerOnWebState_build__closure(t0) {
       this.$this = t0;
     },
+    CupertinoLoadingWidget: function CupertinoLoadingWidget(t0, t1, t2) {
+      this.size = t0;
+      this.padding = t1;
+      this.key = t2;
+    },
     PopupMenuItemWidget$(icon, $name, onTapCallback) {
       return new B.PopupMenuItemWidget(onTapCallback, icon, $name, null);
     },
@@ -422,6 +427,22 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.super$State$dispose();
     }
   };
+  B.CupertinoLoadingWidget.prototype = {
+    build$1(context) {
+      var item, _null = null,
+        t1 = this.size,
+        t2 = t1 == null,
+        t3 = t2 ? 24 : t1;
+      if (t2)
+        t1 = 24;
+      item = A.Center$(new A.SizedBox(t3, t1, A.CupertinoActivityIndicator$(C.Color_697934509, _null), _null), _null, _null);
+      t1 = this.padding;
+      if (t1 != null)
+        return new A.Padding(t1, item, _null);
+      else
+        return item;
+    }
+  };
   B.PopupMenuItemWidget.prototype = {
     build$1(context) {
       var _null = null,
@@ -746,7 +767,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 195
+    $signature: 175
   };
   B._HtmlContentViewerOnWebState_initState__closure.prototype = {
     call$0() {
@@ -772,7 +793,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 472
+    $signature: 425
   };
   B._HtmlContentViewerOnWebState__setUpWeb_closure0.prototype = {
     call$0() {
@@ -795,7 +816,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(D.Align_Ktb);
       return new A.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
     },
-    $signature: 211
+    $signature: 229
   };
   B._HtmlContentViewerOnWebState_build__closure.prototype = {
     call$2(context, snapshot) {
@@ -813,7 +834,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1719
+    $signature: 1728
   };
   B.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -838,21 +859,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1720
+    $signature: 1729
   };
   B.UserSettingPopupMenuMixin__settingAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 89
+    $signature: 93
   };
   B.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 89
+    $signature: 93
   };
   B.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -890,7 +911,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inheritMany(A.Closure, [B._HtmlContentViewerOnWebState_initState_closure, B._HtmlContentViewerOnWebState__setUpWeb_closure]);
     _inheritMany(A.Closure0Args, [B._HtmlContentViewerOnWebState_initState__closure, B._HtmlContentViewerOnWebState_initState__closure0, B._HtmlContentViewerOnWebState_initState__closure1, B._HtmlContentViewerOnWebState__setUpWeb_closure0, B.PopupMenuItemWidget_build_closure, B.UserSettingPopupMenuMixin__settingAction_closure, B.UserSettingPopupMenuMixin__logoutAction_closure, B.VacationNotificationMessageWidget__buildBodyForDesktop_closure, B.VacationNotificationMessageWidget__buildBodyForDesktop_closure0, B.VacationNotificationMessageWidget__buildBodyForMobile_closure, B.VacationNotificationMessageWidget__buildBodyForMobile_closure0]);
     _inheritMany(A.Closure2Args, [B._HtmlContentViewerOnWebState_build_closure, B._HtmlContentViewerOnWebState_build__closure, B._ApplicationVersionWidgetState_build_closure]);
-    _inheritMany(A.StatelessWidget, [B.PopupMenuItemWidget, B._ElevatedButtonWithIconChild, B.MaterialTextButton, B.UserInformationWidget, B.VacationNotificationMessageWidget]);
+    _inheritMany(A.StatelessWidget, [B.CupertinoLoadingWidget, B.PopupMenuItemWidget, B._ElevatedButtonWithIconChild, B.MaterialTextButton, B.UserInformationWidget, B.VacationNotificationMessageWidget]);
     _inherit(B._ElevatedButtonWithIcon, A.ElevatedButton);
     _inherit(B.PopupMenuDivider, A.PopupMenuEntry);
     _inheritMany(A.Object, [B.PortalLink, B.PopupMenuWidgetMixin, B.UserSettingPopupMenuMixin]);
@@ -898,7 +919,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(B.PortalTheater, A.SingleChildRenderObjectWidget);
     _inherit(B.RenderPortalTheater, A.RenderProxyBox);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]},"PopupMenuItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ElevatedButtonWithIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ElevatedButtonWithIconChild":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PopupMenuDivider":{"PopupMenuEntry":["0&"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PopupMenuDividerState":{"State0":["PopupMenuDivider"]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"ApplicationVersionWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ApplicationVersionWidgetState":{"State0":["ApplicationVersionWidget"]},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]},"CupertinoLoadingWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PopupMenuItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ElevatedButtonWithIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ElevatedButtonWithIconChild":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PopupMenuDivider":{"PopupMenuEntry":["0&"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PopupMenuDividerState":{"State0":["PopupMenuDivider"]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"ApplicationVersionWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ApplicationVersionWidgetState":{"State0":["ApplicationVersionWidget"]},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
   var type$ = (function rtii() {
     var findType = A.findType;
     return {
@@ -960,6 +981,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.PopupMenuDivider_null = new B.PopupMenuDivider(null);
     D.SizedBox_16_null_null_null = new A.SizedBox(16, null, null, null);
     D.SizedBox_24_null_null_null = new A.SizedBox(24, null, null, null);
+    D.CupertinoLoadingWidget_16_null_null = new B.CupertinoLoadingWidget(16, null, null);
     D.TextStyle_g3y0 = new A.TextStyle(true, C.Color_4286680217, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_jjv = new A.TextStyle(true, C.Color_4285364357, null, null, null, null, 13, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_oHY11 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 15, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -971,5 +993,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "lUG7lQiKztcVXpQXted6CIvHkAo=");
+})($__dart_deferred_initializers__, "J29nuXMIlNPUjsPHWRVysmmGKHo=");
 ;
