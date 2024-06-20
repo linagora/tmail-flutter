@@ -40,7 +40,7 @@ android {
 
     defaultConfig {
         applicationId "com.linagora.android.teammail"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
@@ -49,6 +49,8 @@ android {
         manifestPlaceholders = [
                 'appAuthRedirectScheme': 'teammail.mobile'
         ]
+        testInstrumentationRunner "pl.leancode.patrol.PatrolJUnitRunner"
+        testInstrumentationRunnerArguments clearPackageData: "true"
     }
 
     compileOptions {
@@ -72,7 +74,15 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.release
         }
+        debug {
+            minifyEnabled false
+        }
     }
+
+    testOptions {
+        execution "ANDROIDX_TEST_ORCHESTRATOR"
+    }
+
 }
 
 flutter {
@@ -85,4 +95,5 @@ dependencies {
     implementation 'androidx.work:work-runtime-ktx:2.7.0'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'androidx.window:window:1.0.0'
+    androidTestUtil "androidx.test:orchestrator:1.4.2"
 }
