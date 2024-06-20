@@ -139,13 +139,12 @@ class HtmlAnalyzer {
   }
 
   Future<String> removeCollapsedExpandedSignatureEffect({required String emailContent}) async {
-    log('HtmlAnalyzer::removeCollapsedExpandedSignatureEffect: BEFORE = $emailContent');
+    log('HtmlAnalyzer::removeCollapsedExpandedSignatureEffect');
     final document = parse(emailContent);
     final signatureElements = document.querySelectorAll('div.tmail-signature');
     await Future.wait(signatureElements.map((signatureTag) async {
       final signatureChildren = signatureTag.children;
       for (var child in signatureChildren) {
-        log('HtmlAnalyzer::removeCollapsedExpandedSignatureEffect: CHILD = ${child.outerHtml}');
         if (child.attributes['class']?.contains('tmail-signature-button') == true) {
           child.remove();
         } else if (child.attributes['class']?.contains('tmail-signature-content') == true) {
@@ -154,7 +153,6 @@ class HtmlAnalyzer {
       }
     }));
     final newContent = document.body?.innerHtml ?? emailContent;
-    log('HtmlAnalyzer::removeCollapsedExpandedSignatureEffect: AFTER = $newContent');
     return newContent;
   }
 }

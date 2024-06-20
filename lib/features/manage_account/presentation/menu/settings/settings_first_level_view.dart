@@ -159,6 +159,23 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
           endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
         ),
+        if (PlatformInfo.isMobile)
+          Column(
+            children: [
+              SettingFirstLevelTileBuilder(
+                AccountMenuItem.traceLog.getName(context),
+                AccountMenuItem.traceLog.getIcon(controller.imagePaths),
+                subtitle: AppLocalizations.of(context).traceLogSettingExplanation,
+                () => controller.selectSettings(AccountMenuItem.traceLog)
+              ),
+              Divider(
+                color: AppColor.colorDividerHorizontal,
+                height: 1,
+                indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
+                endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
+              ),
+            ]
+          ),
         SettingFirstLevelTileBuilder(
           AppLocalizations.of(context).sign_out,
           controller.imagePaths.icSignOut,

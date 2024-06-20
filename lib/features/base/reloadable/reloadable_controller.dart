@@ -30,10 +30,10 @@ abstract class ReloadableController extends BaseController {
 
   @override
   void handleFailureViewState(Failure failure) {
+    logError('ReloadableController::handleFailureViewState(): failure: $failure');
     if (failure is GetCredentialFailure ||
         failure is GetStoredTokenOidcFailure ||
         failure is GetAuthenticatedAccountFailure) {
-      log('ReloadableController::handleFailureViewState(): failure: $failure');
       goToLogin();
     } else if (failure is GetSessionFailure) {
       _handleGetSessionFailure(failure.exception);
@@ -44,6 +44,7 @@ abstract class ReloadableController extends BaseController {
 
   @override
   void handleSuccessViewState(Success success) {
+    log('ReloadableController::handleSuccessViewState: ${success.runtimeType}');
     if (success is GetCredentialViewState) {
       _handleGetCredentialSuccess(success);
     } else if (success is GetSessionSuccess) {
@@ -59,14 +60,17 @@ abstract class ReloadableController extends BaseController {
   * trigger reload by getting Credential again then setting up Interceptor and retrieving session
   * */
   void reload() {
+    log('ReloadableController::reload:');
     getAuthenticatedAccountAction();
   }
 
   void getAuthenticatedAccountAction() {
+    log('ReloadableController::getAuthenticatedAccountAction:');
     consumeState(_getAuthenticatedAccountInteractor.execute());
   }
 
   void _setUpInterceptors(GetCredentialViewState credentialViewState) {
+    log('ReloadableController::_setUpInterceptors:');
     dynamicUrlInterceptors.setJmapUrl(credentialViewState.baseUrl.origin);
     dynamicUrlInterceptors.changeBaseUrl(credentialViewState.baseUrl.origin);
     authorizationInterceptors.setBasicAuthorization(
@@ -80,15 +84,18 @@ abstract class ReloadableController extends BaseController {
   }
 
   void _handleGetCredentialSuccess(GetCredentialViewState credentialViewState) {
+    log('ReloadableController::_handleGetCredentialSuccess:');
     _setUpInterceptors(credentialViewState);
     getSessionAction();
   }
 
   void getSessionAction() {
+    log('ReloadableController::getSessionAction:');
     consumeState(_getSessionInteractor.execute());
   }
 
   void _handleGetSessionFailure(dynamic exception) {
+    logError('ReloadableController::_handleGetSessionFailure:exception = $exception');
     if (currentContext != null && currentOverlayContext != null && exception !is BadCredentialsException) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
@@ -99,6 +106,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   void _handleGetSessionSuccess(GetSessionSuccess success) {
+    log('ReloadableController::_handleGetSessionSuccess:');
     final session = success.session;
     final personalAccount = session.personalAccount;
     final apiUrl = session.getQualifiedApiUrl(baseUrl: dynamicUrlInterceptors.jmapUrl);
@@ -114,11 +122,13 @@ abstract class ReloadableController extends BaseController {
   void handleReloaded(Session session) {}
 
   void _handleGetStoredTokenOIDCSuccess(GetStoredTokenOidcSuccess tokenOidcSuccess) {
+    log('ReloadableController::_handleGetStoredTokenOIDCSuccess:');
     _setUpInterceptorsOidc(tokenOidcSuccess);
     getSessionAction();
   }
 
   void _setUpInterceptorsOidc(GetStoredTokenOidcSuccess tokenOidcSuccess) {
+    log('ReloadableController::_setUpInterceptorsOidc:');
     dynamicUrlInterceptors.setJmapUrl(tokenOidcSuccess.baseUrl.toString());
     dynamicUrlInterceptors.changeBaseUrl(tokenOidcSuccess.baseUrl.toString());
     authorizationInterceptors.setTokenAndAuthorityOidc(
@@ -139,6 +149,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   void updateAuthenticationAccount(Session session, AccountId accountId, UserName userName) {
+    log('ReloadableController::updateAuthenticationAccount:');
     final apiUrl = session.getQualifiedApiUrl(baseUrl: dynamicUrlInterceptors.jmapUrl);
     if (apiUrl.isNotEmpty) {
       consumeState(_updateAuthenticationAccountInteractor.execute(accountId, apiUrl, userName));

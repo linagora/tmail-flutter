@@ -21,15 +21,19 @@ class TokenOidcCacheManager {
   }
 
   Future<void> persistOneTokenOidc(TokenOIDC tokenOIDC) async {
-    log('TokenOidcCacheManager::persistOneTokenOidc(): $tokenOIDC');
+    log('TokenOidcCacheManager::persistOneTokenOidc(): TOKEN_ID_HASH = ${tokenOIDC.tokenIdHash}');
+    log('TokenOidcCacheManager::persistOneTokenOidc(): EXPIRED_TIME = ${tokenOIDC.expiredTime}');
     await _tokenOidcCacheClient.clearAllData();
-    log('TokenOidcCacheManager::persistOneTokenOidc(): key: ${tokenOIDC.tokenId.uuid}');
-    log('TokenOidcCacheManager::persistOneTokenOidc(): key\'s hash: ${tokenOIDC.tokenIdHash}');
-    log('TokenOidcCacheManager::persistOneTokenOidc(): token: ${tokenOIDC.token}');
-    await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenOIDC.toTokenOidcCache());
+    await _tokenOidcCacheClient.insertItem(
+      tokenOIDC.tokenIdHash,
+      tokenOIDC.toTokenOidcCache());
+    log('TokenOidcCacheManager::persistOneTokenOidc: SUCCESS');
   }
 
   Future<void> deleteTokenOidc() async {
+    log('TokenOidcCacheManager::deleteTokenOidc:');
     await _tokenOidcCacheClient.clearAllData();
   }
+
+  Future<void> closeTokenOIDCHiveCacheBox() => _tokenOidcCacheClient.closeBox();
 }

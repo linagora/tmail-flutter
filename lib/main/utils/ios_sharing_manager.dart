@@ -45,6 +45,7 @@ class IOSSharingManager {
   }
 
   Future saveKeyChainSharingSession(PersonalAccount personalAccount) async {
+    log('IOSSharingManager::saveKeyChainSharingSession:personalAccount = $personalAccount');
     try {
       if (!_validateToSaveKeychain(personalAccount)) {
         logError('IOSSharingManager::saveKeyChainSharingSession: account is null');
