@@ -26,31 +26,30 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._htmlData = _._webInit = null;
       _._html_content_viewer_on_web_widget$_isLoading = true;
       _.minHeight = 100;
+      _.___HtmlContentViewerOnWebState_sizeListener_F = $;
+      _._iframeLoaded = false;
       _._widget = null;
       _._debugLifecycleState = t0;
       _._framework$_element = null;
     },
-    _HtmlContentViewerOnWebState__setUpWeb_closure: function _HtmlContentViewerOnWebState__setUpWeb_closure(t0) {
+    _HtmlContentViewerOnWebState_initState_closure: function _HtmlContentViewerOnWebState_initState_closure(t0) {
       this.$this = t0;
     },
-    _HtmlContentViewerOnWebState__setUpWeb__closure: function _HtmlContentViewerOnWebState__setUpWeb__closure(t0) {
-      this.$this = t0;
-    },
-    _HtmlContentViewerOnWebState__setUpWeb___closure: function _HtmlContentViewerOnWebState__setUpWeb___closure(t0, t1) {
+    _HtmlContentViewerOnWebState_initState__closure: function _HtmlContentViewerOnWebState_initState__closure(t0, t1) {
       this.$this = t0;
       this.scrollHeightWithBuffer = t1;
     },
-    _HtmlContentViewerOnWebState__setUpWeb___closure0: function _HtmlContentViewerOnWebState__setUpWeb___closure0(t0) {
+    _HtmlContentViewerOnWebState_initState__closure0: function _HtmlContentViewerOnWebState_initState__closure0(t0) {
       this.$this = t0;
     },
-    _HtmlContentViewerOnWebState__setUpWeb___closure1: function _HtmlContentViewerOnWebState__setUpWeb___closure1(t0, t1) {
+    _HtmlContentViewerOnWebState_initState__closure1: function _HtmlContentViewerOnWebState_initState__closure1(t0, t1) {
       this.$this = t0;
       this.docWidth = t1;
     },
-    _HtmlContentViewerOnWebState__setUpWeb_closure0: function _HtmlContentViewerOnWebState__setUpWeb_closure0(t0) {
+    _HtmlContentViewerOnWebState__setUpWeb_closure: function _HtmlContentViewerOnWebState__setUpWeb_closure(t0) {
       this.iframe = t0;
     },
-    _HtmlContentViewerOnWebState__setUpWeb_closure1: function _HtmlContentViewerOnWebState__setUpWeb_closure1(t0) {
+    _HtmlContentViewerOnWebState__setUpWeb_closure0: function _HtmlContentViewerOnWebState__setUpWeb_closure0(t0) {
       this.$this = t0;
     },
     _HtmlContentViewerOnWebState_build_closure: function _HtmlContentViewerOnWebState_build_closure(t0) {
@@ -71,6 +70,30 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     PopupMenuItemWidget_build_closure: function PopupMenuItemWidget_build_closure(t0) {
       this.$this = t0;
+    },
+    _ElevatedButtonWithIcon$(icon, label, onPressed, style) {
+      var _null = null;
+      return new B._ElevatedButtonWithIcon(onPressed, _null, _null, _null, style, C.Clip_0, _null, false, _null, true, new B._ElevatedButtonWithIconChild(label, icon, _null), _null);
+    },
+    _ElevatedButtonWithIcon: function _ElevatedButtonWithIcon(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) {
+      var _ = this;
+      _.onPressed = t0;
+      _.onLongPress = t1;
+      _.onHover = t2;
+      _.onFocusChange = t3;
+      _.style = t4;
+      _.clipBehavior = t5;
+      _.focusNode = t6;
+      _.autofocus = t7;
+      _.statesController = t8;
+      _.isSemanticButton = t9;
+      _.child = t10;
+      _.key = t11;
+    },
+    _ElevatedButtonWithIconChild: function _ElevatedButtonWithIconChild(t0, t1, t2) {
+      this.label = t0;
+      this.icon = t1;
+      this.key = t2;
     },
     PopupMenuDivider: function PopupMenuDivider(t0) {
       this.key = t0;
@@ -322,6 +345,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _this.___HtmlContentViewerOnWebState__actualWidth_A = t1.widthContent;
       _this.___HtmlContentViewerOnWebState__createdViewId_A = _this._getRandString$1(10);
       _this._setUpWeb$0();
+      t1 = window;
+      t1.toString;
+      t1 = A._EventStreamSubscription$(t1, "message", new B._HtmlContentViewerOnWebState_initState_closure(_this), false, type$.MessageEvent);
+      _this.___HtmlContentViewerOnWebState_sizeListener_F !== $ && A.throwUnnamedLateFieldAI();
+      _this.___HtmlContentViewerOnWebState_sizeListener_F = t1;
     },
     didUpdateWidget$1(oldWidget) {
       var t1, t2, _this = this;
@@ -358,7 +386,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = _this.minHeight;
       t1 = t1.direction;
       t1 = t1 === C.TextDirection_0 ? 'dir="rtl"' : "";
-      _this._htmlData = '      <!DOCTYPE html>\n      <html>\n      <head>\n      <meta name="viewport" content="width=device-width, initial-scale=1.0">\n      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n      <style>\n        .tmail-content {\n          min-height: ' + A.S(t4) + "px;\n          min-width: 300px;\n          overflow: auto;\n        }\n                  .tmail-content::-webkit-scrollbar {\n            display: none;\n          }\n          .tmail-content {\n            -ms-overflow-style: none;  /* IE and Edge */\n            scrollbar-width: none;  /* Firefox */\n          }\n        \n            .tmail-tooltip .tooltiptext {\n      visibility: hidden;\n      max-width: 400px;\n      background-color: black;\n      color: #fff;\n      text-align: center;\n      border-radius: 6px;\n      padding: 5px 8px 5px 8px;\n      white-space: nowrap; \n      overflow: hidden;\n      text-overflow: ellipsis;\n      position: absolute;\n      z-index: 1;\n    }\n    .tmail-tooltip:hover .tooltiptext {\n      visibility: visible;\n    }\n  \n      </style>\n      </head>\n      <body " + t1 + ' style = "overflow-x: hidden">\n      <div class="tmail-content">' + t2 + "</div>\n      " + ('      <script type="text/javascript">\n        window.parent.addEventListener(\'message\', handleMessage, false);\n        window.addEventListener(\'click\', handleOnClickLink, true);\n      \n        function handleMessage(e) {\n          if (e && e.data && e.data.includes("toIframe:")) {\n            var data = JSON.parse(e.data);\n            if (data["view"].includes("' + t3 + '")) {\n              if (data["type"].includes("getHeight")) {\n                var height = document.body.scrollHeight;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlHeight", "height": height}), "*");\n              }\n              if (data["type"].includes("getWidth")) {\n                var width = document.body.scrollWidth;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlWidth", "width": width}), "*");\n              }\n              if (data["type"].includes("execCommand")) {\n                if (data["argument"] === null) {\n                  document.execCommand(data["command"], false);\n                } else {\n                  document.execCommand(data["command"], false, data["argument"]);\n                }\n              }\n            }\n          }\n        }\n        \n        function handleOnClickLink(e) {\n           let link = e.target;\n           let textContent = e.target.textContent;\n           if (link && isValidMailtoLink(link)) {\n              window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: OpenLink", "url": "" + link}), "*");\n              e.preventDefault();\n           } else if (textContent && isValidMailtoLink(textContent)) {\n              window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: OpenLink", "url": "" + textContent}), "*");\n              e.preventDefault();\n           }\n        }\n        \n        function isValidMailtoLink(string) {\n          let url;\n          \n          try {\n            url = new URL(string);\n          } catch (_) {\n            return false;  \n          }\n        \n          return url.protocol === "mailto:";\n        }\n      </script>\n          <script type="text/javascript">\n        document.addEventListener(\'wheel\', function(e) {\n          e.ctrlKey && e.preventDefault();\n        }, {\n          passive: false,\n        });\n        window.addEventListener(\'keydown\', function(e) {\n          if (event.metaKey || event.ctrlKey) {\n            switch (event.key) {\n              case \'=\':\n              case \'-\':\n                event.preventDefault();\n                break;\n            }\n          }\n        });\n      </script>\n        <script>\n      const lazyImages = document.querySelectorAll(\'[lazy]\');\n      const lazyImageObserver = new IntersectionObserver((entries, observer) => {\n        entries.forEach((entry) => {\n          if (entry.isIntersecting) {\n            const lazyImage = entry.target;\n            const src = lazyImage.dataset.src;\n            lazyImage.tagName.toLowerCase() === \'img\'\n              ? lazyImage.src = src\n              : lazyImage.style.backgroundImage = "url(\'" + src + "\')";\n            lazyImage.removeAttribute(\'lazy\');\n            observer.unobserve(lazyImage);\n          }\n        });\n      });\n      \n      lazyImages.forEach((lazyImage) => {\n        lazyImageObserver.observe(lazyImage);\n      });\n    </script>\n  ') + "\n      </body>\n      </html> \n    ";
+      _this._htmlData = '      <!DOCTYPE html>\n      <html>\n      <head>\n      <meta name="viewport" content="width=device-width, initial-scale=1.0">\n      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n      <style>\n        .tmail-content {\n          min-height: ' + A.S(t4) + "px;\n          min-width: 300px;\n          overflow: auto;\n        }\n                  .tmail-content::-webkit-scrollbar {\n            display: none;\n          }\n          .tmail-content {\n            -ms-overflow-style: none;  /* IE and Edge */\n            scrollbar-width: none;  /* Firefox */\n          }\n        \n            .tmail-tooltip .tooltiptext {\n      visibility: hidden;\n      max-width: 400px;\n      background-color: black;\n      color: #fff;\n      text-align: center;\n      border-radius: 6px;\n      padding: 5px 8px 5px 8px;\n      white-space: nowrap; \n      overflow: hidden;\n      text-overflow: ellipsis;\n      position: absolute;\n      z-index: 1;\n    }\n    .tmail-tooltip:hover .tooltiptext {\n      visibility: visible;\n    }\n  \n      </style>\n      </head>\n      <body " + t1 + ' style = "overflow-x: hidden">\n      <div class="tmail-content">' + t2 + "</div>\n      " + ("      <script type=\"text/javascript\">\n        window.parent.addEventListener('message', handleMessage, false);\n        window.addEventListener('click', handleOnClickLink, true);\n        window.addEventListener('load', handleOnLoad);\n        window.addEventListener('pagehide', (event) => {\n          window.parent.removeEventListener('message', handleMessage, false);\n        });\n      \n        function handleMessage(e) {\n          if (e && e.data && e.data.includes(\"toIframe:\")) {\n            var data = JSON.parse(e.data);\n            if (data[\"view\"].includes(\"" + t3 + '")) {\n              if (data["type"].includes("getHeight")) {\n                var height = document.body.scrollHeight;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlHeight", "height": height}), "*");\n              }\n              if (data["type"].includes("getWidth")) {\n                var width = document.body.scrollWidth;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlWidth", "width": width}), "*");\n              }\n              if (data["type"].includes("execCommand")) {\n                if (data["argument"] === null) {\n                  document.execCommand(data["command"], false);\n                } else {\n                  document.execCommand(data["command"], false, data["argument"]);\n                }\n              }\n            }\n          }\n        }\n        \n        function handleOnClickLink(e) {\n           let link = e.target;\n           let textContent = e.target.textContent;\n           if (link && isValidMailtoLink(link)) {\n              window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: OpenLink", "url": "" + link}), "*");\n              e.preventDefault();\n           } else if (textContent && isValidMailtoLink(textContent)) {\n              window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: OpenLink", "url": "" + textContent}), "*");\n              e.preventDefault();\n           }\n        }\n        \n        function isValidMailtoLink(string) {\n          let url;\n          \n          try {\n            url = new URL(string);\n          } catch (_) {\n            return false;  \n          }\n        \n          return url.protocol === "mailto:";\n        }\n\n        function handleOnLoad() {\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "message": "iframeHasBeenLoaded"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toIframe: getHeight"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + "\", \"type\": \"toIframe: getWidth\"}), \"*\");\n        }\n      </script>\n          <script type=\"text/javascript\">\n        document.addEventListener('wheel', function(e) {\n          e.ctrlKey && e.preventDefault();\n        }, {\n          passive: false,\n        });\n        window.addEventListener('keydown', function(e) {\n          if (event.metaKey || event.ctrlKey) {\n            switch (event.key) {\n              case '=':\n              case '-':\n                event.preventDefault();\n                break;\n            }\n          }\n        });\n      </script>\n        <script>\n      const lazyImages = document.querySelectorAll('[lazy]');\n      const lazyImageObserver = new IntersectionObserver((entries, observer) => {\n        entries.forEach((entry) => {\n          if (entry.isIntersecting) {\n            const lazyImage = entry.target;\n            const src = lazyImage.dataset.src;\n            lazyImage.tagName.toLowerCase() === 'img'\n              ? lazyImage.src = src\n              : lazyImage.style.backgroundImage = \"url('\" + src + \"')\";\n            lazyImage.removeAttribute('lazy');\n            observer.unobserve(lazyImage);\n          }\n        });\n      });\n      \n      lazyImages.forEach((lazyImage) => {\n        lazyImageObserver.observe(lazyImage);\n      });\n    </script>\n  ") + "\n      </body>\n      </html> \n    ";
       t1 = document.createElement("iframe");
       t1.toString;
       t2 = _this.___HtmlContentViewerOnWebState__actualWidth_A;
@@ -377,15 +405,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.width = "100%";
       t2 = t1.style;
       t2.height = "100%";
-      A._EventStreamSubscription$(t1, "load", new B._HtmlContentViewerOnWebState__setUpWeb_closure(_this), false, type$._ElementEventStreamImpl_Event._precomputed1);
       $.$get$platformViewRegistry();
       t2 = _this.___HtmlContentViewerOnWebState__createdViewId_A;
-      $.$get$PlatformViewManager_instance().registerFactory$3$isVisible(t2, new B._HtmlContentViewerOnWebState__setUpWeb_closure0(t1), true);
+      $.$get$PlatformViewManager_instance().registerFactory$3$isVisible(t2, new B._HtmlContentViewerOnWebState__setUpWeb_closure(t1), true);
       if (_this._framework$_element != null)
-        _this.setState$1(new B._HtmlContentViewerOnWebState__setUpWeb_closure1(_this));
+        _this.setState$1(new B._HtmlContentViewerOnWebState__setUpWeb_closure0(_this));
     },
     build$1(context) {
       return new A.LayoutBuilder(new B._HtmlContentViewerOnWebState_build_closure(this), null);
+    },
+    dispose$0() {
+      this._htmlData = null;
+      var t1 = this.___HtmlContentViewerOnWebState_sizeListener_F;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t1.cancel$0(0);
+      this.super$State$dispose();
     }
   };
   B.PopupMenuItemWidget.prototype = {
@@ -393,6 +427,32 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null,
         t1 = A._setArrayType([A.SvgPicture$asset(this.icon, C.Alignment_0_0, A.ColorNullableExtension_asFilter(_null), C.BoxFit_0, 20, _null, _null, 20), C.SizedBox_12_null_null_null, A.Expanded$(A.Text$(this.name, _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY11, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget);
       return A.InkWell$(false, _null, true, new A.Padding(D.EdgeInsets_20_16_20_16, new A.SizedBox(_null, _null, A.Row$(t1, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.PopupMenuItemWidget_build_closure(this), _null, _null, _null, _null, _null, _null, _null);
+    }
+  };
+  B._ElevatedButtonWithIcon.prototype = {
+    defaultStyleOf$1(context) {
+      var t1, scaledPadding;
+      A.Theme_of(context);
+      t1 = A.MediaQuery__maybeOf(context, C._MediaQueryAspect_4);
+      t1 = t1 == null ? null : t1.get$textScaler();
+      scaledPadding = A.ButtonStyleButton_scaledPadding(C.EdgeInsetsDirectional_16_0_24_0, D.EdgeInsetsDirectional_8_0_12_0, D.EdgeInsetsDirectional_4_0_6_0, (t1 == null ? C._LinearTextScaler_1 : t1).get$textScaleFactor());
+      return this.super$ElevatedButton$defaultStyleOf(context).copyWith$1$padding(new A.MaterialStatePropertyAll(scaledPadding, type$.MaterialStatePropertyAll_EdgeInsetsGeometry));
+    }
+  };
+  B._ElevatedButtonWithIconChild.prototype = {
+    build$1(context) {
+      var scale, gap, _null = null,
+        t1 = A.MediaQuery__maybeOf(context, C._MediaQueryAspect_4);
+      t1 = t1 == null ? _null : t1.get$textScaler();
+      scale = (t1 == null ? C._LinearTextScaler_1 : t1).get$textScaleFactor();
+      if (scale <= 1)
+        gap = 8;
+      else {
+        t1 = A.lerpDouble(8, 4, Math.min(scale - 1, 1));
+        t1.toString;
+        gap = t1;
+      }
+      return A.Row$(A._setArrayType([this.icon, new A.SizedBox(gap, _null, _null, _null), new A.Flexible(1, C.FlexFit_1, this.label, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_0, _null);
     }
   };
   B.PopupMenuDivider.prototype = {
@@ -520,13 +580,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.UserInformationWidget.prototype = {
     build$1(context) {
-      var t1, t2, t3, t4, t5, _this = this, _null = null;
-      $.$get$Get();
-      t1 = $.GetInstance__getInstance;
-      if (t1 == null)
-        t1 = $.GetInstance__getInstance = C.C_GetInstance;
-      t1.find$1$1$tag(0, _null, type$.ImagePaths);
-      t1 = _this.padding;
+      var t2, t3, t4, t5, _this = this, _null = null,
+        t1 = _this.padding;
       if (t1 == null)
         t1 = D.EdgeInsetsDirectional_16_16_4_16;
       t2 = new A.AvatarBuilder();
@@ -547,9 +602,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
         t3.push(new A.Padding(D.EdgeInsetsDirectional_0_10_0_0, A.Transform$(_null, B.MaterialTextButton$(20, E.TextStyle_kmC0, A.Intl__message("Manage account", _null, "manage_account", _null, _null), _null, 15, _null, _null, _this.onSubtitleClick, _null, C.EdgeInsetsDirectional_8_8_8_8, _null), _null, t5, true), _null));
       }
-      t2 = A._setArrayType([t2, C.SizedBox_16_null_null_null, A.Expanded$(A.Column$(t3, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1)], t4);
-      t2.push(C.SizedBox_16_null_null_null);
-      return A.Container$(_null, A.Row$(t2, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(_null, _null, _this.border, _null, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, t1, _null, _null, _null);
+      return A.Container$(_null, A.Row$(A._setArrayType([t2, D.SizedBox_16_null_null_null, A.Expanded$(A.Column$(t3, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1), D.SizedBox_16_null_null_null], t4), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(_null, _null, _this.border, _null, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, t1, _null, _null, _null);
     }
   };
   B.UserSettingPopupMenuMixin.prototype = {
@@ -638,128 +691,64 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     }
   };
   var typesOffset = hunkHelpers.updateTypes(["bool(PortalLinkScope)"]);
-  B._HtmlContentViewerOnWebState__setUpWeb_closure.prototype = {
+  B._HtmlContentViewerOnWebState_initState_closure.prototype = {
     call$1($event) {
-      return this.$call$body$_HtmlContentViewerOnWebState__setUpWeb_closure($event);
-    },
-    $call$body$_HtmlContentViewerOnWebState__setUpWeb_closure($event) {
-      var $async$goto = 0,
-        $async$completer = A._makeAsyncAwaitCompleter(type$.void),
-        $async$self = this, t3, t4, jsonGetHeight, jsonGetWidth, t1, t2;
-      var $async$call$1 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
-        if ($async$errorCode === 1)
-          return A._asyncRethrow($async$result, $async$completer);
-        while (true)
-          switch ($async$goto) {
-            case 0:
-              // Function start
-              t1 = $async$self.$this;
-              t2 = t1.___HtmlContentViewerOnWebState__createdViewId_A;
-              t2 === $ && A.throwUnnamedLateFieldNI();
-              t3 = type$.String;
-              t4 = type$.Object;
-              jsonGetHeight = A._JsonStringStringifier_stringify(A.LinkedHashMap_LinkedHashMap$_literal(["type", "toIframe: getHeight", "view", t2], t3, t4), null, null);
-              t2 = window;
-              t2.toString;
-              C.Window_methods.postMessage$2(t2, jsonGetHeight, "*");
-              jsonGetWidth = A._JsonStringStringifier_stringify(A.LinkedHashMap_LinkedHashMap$_literal(["type", "toIframe: getWidth", "view", t1.___HtmlContentViewerOnWebState__createdViewId_A], t3, t4), null, null);
-              t4 = window;
-              t4.toString;
-              C.Window_methods.postMessage$2(t4, jsonGetWidth, "*");
-              t4 = window;
-              t4.toString;
-              A._EventStreamSubscription$(t4, "message", new B._HtmlContentViewerOnWebState__setUpWeb__closure(t1), false, type$.MessageEvent);
-              // implicit return
-              return A._asyncReturn(null, $async$completer);
-          }
-      });
-      return A._asyncStartSync($async$call$1, $async$completer);
-    },
-    $signature: 262
-  };
-  B._HtmlContentViewerOnWebState__setUpWeb__closure.prototype = {
-    call$1($event) {
-      var t2, t3, docHeight, scrollHeightWithBuffer, docWidth, link, _this = this, _s4_ = "type", _s4_0 = "view",
+      var docHeight, scrollHeightWithBuffer, docWidth, link, _s4_ = "type",
         data = C.C_JsonCodec.decode$1(0, new A._AcceptStructuredCloneDart2Js([], []).convertNativeToDart_AcceptStructuredClone$2$mustCopy($event.data, true)),
-        t1 = J.getInterceptor$asx(data);
-      if (t1.$index(data, _s4_) != null)
-        if (J.contains$1$asx(t1.$index(data, _s4_), "toDart: htmlHeight")) {
-          t2 = t1.$index(data, _s4_0);
-          t3 = _this.$this.___HtmlContentViewerOnWebState__createdViewId_A;
-          t3 === $ && A.throwUnnamedLateFieldNI();
-          t3 = J.$eq$(t2, t3);
-          t2 = t3;
-        } else
-          t2 = false;
-      else
-        t2 = false;
-      if (t2) {
+        t1 = J.getInterceptor$asx(data),
+        t2 = t1.$index(data, "view"),
+        t3 = this.$this,
+        t4 = t3.___HtmlContentViewerOnWebState__createdViewId_A;
+      t4 === $ && A.throwUnnamedLateFieldNI();
+      if (!J.$eq$(t2, t4))
+        return;
+      if (J.$eq$(t1.$index(data, "message"), "iframeHasBeenLoaded"))
+        t3._iframeLoaded = true;
+      if (!t3._iframeLoaded)
+        return;
+      if (t1.$index(data, _s4_) != null && J.contains$1$asx(t1.$index(data, _s4_), "toDart: htmlHeight")) {
         docHeight = t1.$index(data, "height");
         if (docHeight == null) {
-          t2 = _this.$this.___HtmlContentViewerOnWebState__actualHeight_A;
+          t2 = t3.___HtmlContentViewerOnWebState__actualHeight_A;
           t2 === $ && A.throwUnnamedLateFieldNI();
           docHeight = t2;
         }
-        t2 = _this.$this;
-        t3 = t2._framework$_element;
-        if (t3 != null) {
+        t2 = t3._framework$_element;
+        if (t2 != null) {
           scrollHeightWithBuffer = J.$add$ansx(docHeight, 30);
-          if (J.$gt$n(scrollHeightWithBuffer, t2.minHeight))
-            t2.setState$1(new B._HtmlContentViewerOnWebState__setUpWeb___closure(t2, scrollHeightWithBuffer));
+          if (J.$gt$n(scrollHeightWithBuffer, t3.minHeight))
+            t3.setState$1(new B._HtmlContentViewerOnWebState_initState__closure(t3, scrollHeightWithBuffer));
         }
-        if (t2._framework$_element != null && t2._html_content_viewer_on_web_widget$_isLoading)
-          t2.setState$1(new B._HtmlContentViewerOnWebState__setUpWeb___closure0(t2));
+        if (t3._framework$_element != null && t3._html_content_viewer_on_web_widget$_isLoading)
+          t3.setState$1(new B._HtmlContentViewerOnWebState_initState__closure0(t3));
       }
-      if (t1.$index(data, _s4_) != null)
-        if (J.contains$1$asx(t1.$index(data, _s4_), "toDart: htmlWidth")) {
-          t2 = t1.$index(data, _s4_0);
-          t3 = _this.$this.___HtmlContentViewerOnWebState__createdViewId_A;
-          t3 === $ && A.throwUnnamedLateFieldNI();
-          t3 = J.$eq$(t2, t3);
-          t2 = t3;
-        } else
-          t2 = false;
-      else
-        t2 = false;
-      if (t2) {
+      if (t1.$index(data, _s4_) != null && J.contains$1$asx(t1.$index(data, _s4_), "toDart: htmlWidth")) {
         docWidth = t1.$index(data, "width");
         if (docWidth == null) {
-          t2 = _this.$this.___HtmlContentViewerOnWebState__actualWidth_A;
+          t2 = t3.___HtmlContentViewerOnWebState__actualWidth_A;
           t2 === $ && A.throwUnnamedLateFieldNI();
           docWidth = t2;
         }
-        t2 = _this.$this;
-        t3 = t2._framework$_element;
-        if (t3 != null)
-          if (J.$gt$n(docWidth, 300) && t2._widget.allowResizeToDocumentSize)
-            t2.setState$1(new B._HtmlContentViewerOnWebState__setUpWeb___closure1(t2, docWidth));
+        t2 = t3._framework$_element;
+        if (t2 != null)
+          if (J.$gt$n(docWidth, 300) && t3._widget.allowResizeToDocumentSize)
+            t3.setState$1(new B._HtmlContentViewerOnWebState_initState__closure1(t3, docWidth));
       }
-      if (t1.$index(data, _s4_) != null)
-        if (J.contains$1$asx(t1.$index(data, _s4_), "toDart: OpenLink")) {
-          t2 = t1.$index(data, _s4_0);
-          t3 = _this.$this.___HtmlContentViewerOnWebState__createdViewId_A;
-          t3 === $ && A.throwUnnamedLateFieldNI();
-          t3 = J.$eq$(t2, t3);
-          t2 = t3;
-        } else
-          t2 = false;
-      else
-        t2 = false;
-      if (t2) {
+      if (t1.$index(data, _s4_) != null && J.contains$1$asx(t1.$index(data, _s4_), "toDart: OpenLink")) {
         link = t1.$index(data, "url");
-        if (link != null && _this.$this._framework$_element != null) {
+        if (link != null && t3._framework$_element != null) {
           A._asString(link);
           if (C.JSString_methods.startsWith$1(link, "mailto:")) {
-            t1 = _this.$this._widget.mailtoDelegate;
+            t1 = t3._widget.mailtoDelegate;
             if (t1 != null)
               t1.call$1(A.Uri_parse(link, 0, null));
           }
         }
       }
     },
-    $signature: 212
+    $signature: 192
   };
-  B._HtmlContentViewerOnWebState__setUpWeb___closure.prototype = {
+  B._HtmlContentViewerOnWebState_initState__closure.prototype = {
     call$0() {
       var t1 = this.$this;
       t1.___HtmlContentViewerOnWebState__actualHeight_A = this.scrollHeightWithBuffer;
@@ -767,25 +756,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 0
   };
-  B._HtmlContentViewerOnWebState__setUpWeb___closure0.prototype = {
+  B._HtmlContentViewerOnWebState_initState__closure0.prototype = {
     call$0() {
       this.$this._html_content_viewer_on_web_widget$_isLoading = false;
     },
     $signature: 0
   };
-  B._HtmlContentViewerOnWebState__setUpWeb___closure1.prototype = {
+  B._HtmlContentViewerOnWebState_initState__closure1.prototype = {
     call$0() {
       this.$this.___HtmlContentViewerOnWebState__actualWidth_A = this.docWidth;
     },
     $signature: 0
   };
-  B._HtmlContentViewerOnWebState__setUpWeb_closure0.prototype = {
+  B._HtmlContentViewerOnWebState__setUpWeb_closure.prototype = {
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 485
+    $signature: 495
   };
-  B._HtmlContentViewerOnWebState__setUpWeb_closure1.prototype = {
+  B._HtmlContentViewerOnWebState__setUpWeb_closure0.prototype = {
     call$0() {
       this.$this._webInit = A.Future_Future$value(true, type$.bool);
     },
@@ -806,7 +795,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(D.Align_Ktb);
       return new A.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
     },
-    $signature: 245
+    $signature: 241
   };
   B._HtmlContentViewerOnWebState_build__closure.prototype = {
     call$2(context, snapshot) {
@@ -824,7 +813,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1687
+    $signature: 1731
   };
   B.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -849,21 +838,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1688
+    $signature: 1732
   };
   B.UserSettingPopupMenuMixin__settingAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 86
+    $signature: 97
   };
   B.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 86
+    $signature: 97
   };
   B.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -898,40 +887,38 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _inherit = hunkHelpers.inherit;
     _inheritMany(A.StatefulWidget, [B.HtmlContentViewerOnWeb, B.Portal, B.ApplicationVersionWidget]);
     _inheritMany(A.State0, [B._HtmlContentViewerOnWebState, B._PopupMenuDividerState, B._PortalState, B._ApplicationVersionWidgetState]);
-    _inheritMany(A.Closure, [B._HtmlContentViewerOnWebState__setUpWeb_closure, B._HtmlContentViewerOnWebState__setUpWeb__closure, B._HtmlContentViewerOnWebState__setUpWeb_closure0]);
-    _inheritMany(A.Closure0Args, [B._HtmlContentViewerOnWebState__setUpWeb___closure, B._HtmlContentViewerOnWebState__setUpWeb___closure0, B._HtmlContentViewerOnWebState__setUpWeb___closure1, B._HtmlContentViewerOnWebState__setUpWeb_closure1, B.PopupMenuItemWidget_build_closure, B.UserSettingPopupMenuMixin__settingAction_closure, B.UserSettingPopupMenuMixin__logoutAction_closure, B.VacationNotificationMessageWidget__buildBodyForDesktop_closure, B.VacationNotificationMessageWidget__buildBodyForDesktop_closure0, B.VacationNotificationMessageWidget__buildBodyForMobile_closure, B.VacationNotificationMessageWidget__buildBodyForMobile_closure0]);
+    _inheritMany(A.Closure, [B._HtmlContentViewerOnWebState_initState_closure, B._HtmlContentViewerOnWebState__setUpWeb_closure]);
+    _inheritMany(A.Closure0Args, [B._HtmlContentViewerOnWebState_initState__closure, B._HtmlContentViewerOnWebState_initState__closure0, B._HtmlContentViewerOnWebState_initState__closure1, B._HtmlContentViewerOnWebState__setUpWeb_closure0, B.PopupMenuItemWidget_build_closure, B.UserSettingPopupMenuMixin__settingAction_closure, B.UserSettingPopupMenuMixin__logoutAction_closure, B.VacationNotificationMessageWidget__buildBodyForDesktop_closure, B.VacationNotificationMessageWidget__buildBodyForDesktop_closure0, B.VacationNotificationMessageWidget__buildBodyForMobile_closure, B.VacationNotificationMessageWidget__buildBodyForMobile_closure0]);
     _inheritMany(A.Closure2Args, [B._HtmlContentViewerOnWebState_build_closure, B._HtmlContentViewerOnWebState_build__closure, B._ApplicationVersionWidgetState_build_closure]);
-    _inheritMany(A.StatelessWidget, [B.PopupMenuItemWidget, B.MaterialTextButton, B.UserInformationWidget, B.VacationNotificationMessageWidget]);
+    _inheritMany(A.StatelessWidget, [B.PopupMenuItemWidget, B._ElevatedButtonWithIconChild, B.MaterialTextButton, B.UserInformationWidget, B.VacationNotificationMessageWidget]);
+    _inherit(B._ElevatedButtonWithIcon, A.ElevatedButton);
     _inherit(B.PopupMenuDivider, A.PopupMenuEntry);
     _inheritMany(A.Object, [B.PortalLink, B.PopupMenuWidgetMixin, B.UserSettingPopupMenuMixin]);
     _inherit(B.PortalLinkScope, A.InheritedWidget);
     _inherit(B.PortalTheater, A.SingleChildRenderObjectWidget);
     _inherit(B.RenderPortalTheater, A.RenderProxyBox);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]},"PopupMenuItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PopupMenuDivider":{"PopupMenuEntry":["0&"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PopupMenuDividerState":{"State0":["PopupMenuDivider"]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"ApplicationVersionWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ApplicationVersionWidgetState":{"State0":["ApplicationVersionWidget"]},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]},"PopupMenuItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ElevatedButtonWithIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ElevatedButtonWithIconChild":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PopupMenuDivider":{"PopupMenuEntry":["0&"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PopupMenuDividerState":{"State0":["PopupMenuDivider"]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"ApplicationVersionWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ApplicationVersionWidgetState":{"State0":["ApplicationVersionWidget"]},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
   var type$ = (function rtii() {
     var findType = A.findType;
     return {
       AppLocalizations: findType("AppLocalizations"),
       BoxConstraints: findType("BoxConstraints"),
       ContainerLayer: findType("ContainerLayer0"),
-      ImagePaths: findType("ImagePaths"),
       JSArray_BoxShadow: findType("JSArray<BoxShadow>"),
       JSArray_Object: findType("JSArray<Object>"),
       JSArray_PopupMenuEntry_dynamic: findType("JSArray<PopupMenuEntry<@>>"),
       JSArray_Widget: findType("JSArray<Widget>"),
+      MaterialStatePropertyAll_EdgeInsetsGeometry: findType("MaterialStatePropertyAll<EdgeInsetsGeometry>"),
       MessageEvent: findType("MessageEvent"),
-      Object: findType("Object"),
       PortalLinkOverlay: findType("PortalLinkOverlay"),
       ResponsiveUtils: findType("ResponsiveUtils"),
       String: findType("String"),
       ValueKey_nullable_String: findType("ValueKey<String?>"),
-      _ElementEventStreamImpl_Event: findType("_ElementEventStreamImpl<Event>"),
       _LocalizationsScope: findType("_LocalizationsScope"),
       bool: findType("bool"),
       dynamic: findType("@"),
-      int: findType("int"),
-      void: findType("~")
+      int: findType("int")
     };
   })();
   (function constants() {
@@ -952,6 +939,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsetsDirectional_12_0_16_0 = new A.EdgeInsetsDirectional(12, 0, 16, 0);
     D.EdgeInsetsDirectional_16_0_0_0 = new A.EdgeInsetsDirectional(16, 0, 0, 0);
     D.EdgeInsetsDirectional_16_16_4_16 = new A.EdgeInsetsDirectional(16, 16, 4, 16);
+    D.EdgeInsetsDirectional_4_0_6_0 = new A.EdgeInsetsDirectional(4, 0, 6, 0);
+    D.EdgeInsetsDirectional_8_0_12_0 = new A.EdgeInsetsDirectional(8, 0, 12, 0);
     D.EdgeInsetsDirectional_8_0_4_0 = new A.EdgeInsetsDirectional(8, 0, 4, 0);
     D.EdgeInsets_0_0_16_0 = new A.EdgeInsets(0, 0, 16, 0);
     D.EdgeInsets_0_12_12_0 = new A.EdgeInsets(0, 12, 12, 0);
@@ -969,6 +958,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_8_5_8_5 = new A.EdgeInsets(8, 5, 8, 5);
     D.PageStorageKey_mailbox_list = new A.PageStorageKey("mailbox_list", A.findType("PageStorageKey<String>"));
     D.PopupMenuDivider_null = new B.PopupMenuDivider(null);
+    D.SizedBox_16_null_null_null = new A.SizedBox(16, null, null, null);
     D.SizedBox_24_null_null_null = new A.SizedBox(24, null, null, null);
     D.TextStyle_g3y0 = new A.TextStyle(true, C.Color_4286680217, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_jjv = new A.TextStyle(true, C.Color_4285364357, null, null, null, null, 13, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -981,5 +971,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "B7J1dAhom9Ya6DsWVCx219ZOyp4=");
+})($__dart_deferred_initializers__, "mbXP79hlMFVYSTieRJNxObc3H10=");
 ;
