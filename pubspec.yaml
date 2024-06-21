@@ -280,11 +280,6 @@ dependency_overrides:
       url: https://github.com/linagora/flutter_file_picker
       ref: email_supported_5.3.1
 
-  enough_html_editor:
-    git:
-      url: https://github.com/linagora/enough_html_editor.git
-      ref: cherry-pick-add-attachment-app-bar
-
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
