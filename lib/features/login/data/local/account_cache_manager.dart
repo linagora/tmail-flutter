@@ -35,8 +35,8 @@ class AccountCacheManager {
         .removeDuplicated()
         .whereNot((account) => account.accountId == newAccountCache.accountId)
         .toList();
+      await _accountCacheClient.clearAllData();
       if (newAllAccounts.isNotEmpty) {
-        await _accountCacheClient.clearAllData();
         await _accountCacheClient.updateMultipleItem(newAllAccounts.toMap());
       }
     }
