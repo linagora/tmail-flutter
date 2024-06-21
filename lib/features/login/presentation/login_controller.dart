@@ -173,7 +173,7 @@ class LoginController extends ReloadableController {
 
   @override
   void handleExceptionAction({Failure? failure, Exception? exception}) {
-    logError('LoginController::handleExceptionAction:exception: $exception | failure: ${failure.runtimeType}');
+    logError('LoginController::handleExceptionAction:exception: $exception | failure: $failure');
     if (failure is CheckOIDCIsAvailableFailure ||
         failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCConfigurationFailure ||

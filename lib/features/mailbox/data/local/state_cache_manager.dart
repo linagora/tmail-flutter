@@ -24,4 +24,6 @@ class StateCacheManager {
     final stateKey = TupleKey(stateCache.type.name, accountId.asString, userName.value).encodeKey;
     return await _stateCacheClient.insertItem(stateKey, stateCache);
   }
+
+  Future<void> closeStateHiveCacheBox() => _stateCacheClient.closeBox();
 }

@@ -1108,7 +1108,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
   }) async {
     final newEmailBody = await _getContentInEditor();
     final oldEmailBody = _initTextEditor ?? '';
-    log('ComposerController::_validateEmailChange: newEmailBody = $newEmailBody | oldEmailBody = $oldEmailBody');
     final isEmailBodyChanged = !oldEmailBody.trim().isSame(newEmailBody.trim());
 
     final newEmailSubject = subjectEmail.value ?? '';

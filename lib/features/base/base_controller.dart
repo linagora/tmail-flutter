@@ -153,7 +153,9 @@ abstract class BaseController extends GetxController
     return null;
   }
 
-  void handleErrorViewState(Object error, StackTrace stackTrace) {}
+  void handleErrorViewState(Object error, StackTrace stackTrace) {
+    logError('BaseController::handleErrorViewState: $error | $stackTrace');
+  }
 
   void handleExceptionAction({Failure? failure, Exception? exception}) {
     logError('BaseController::handleExceptionAction():failure: $failure | exception: $exception');
@@ -167,9 +169,11 @@ abstract class BaseController extends GetxController
     }
 
     if (!authorizationInterceptors.isAppRunning) {
+      logError('BaseController::handleExceptionAction:isAppRunning = false');
       return;
     }
     if (exception is BadCredentialsException || exception is ConnectionError) {
+      logError('BaseController::handleExceptionAction: exception is BadCredentialsException or ConnectionError');
       clearDataAndGoToLoginPage();
     }
   }
@@ -203,24 +207,8 @@ abstract class BaseController extends GetxController
     }
   }
 
-  void startFpsMeter() {
-    FpsManager().start();
-    fpsCallback = (fpsInfo) {
-      log('BaseController::startFpsMeter(): $fpsInfo');
-    };
-    if (fpsCallback != null) {
-      FpsManager().addFpsCallback(fpsCallback!);
-    }
-  }
-
-  void stopFpsMeter() {
-    FpsManager().stop();
-    if (fpsCallback != null) {
-      FpsManager().removeFpsCallback(fpsCallback!);
-    }
-  }
-
   void injectAutoCompleteBindings(Session? session, AccountId? accountId) {
+    log('BaseController::injectAutoCompleteBindings:');
     try {
       ContactAutoCompleteBindings().dependencies();
       requireCapability(session!, accountId!, [tmailContactCapabilityIdentifier]);
@@ -231,6 +219,7 @@ abstract class BaseController extends GetxController
   }
 
   void injectMdnBindings(Session? session, AccountId? accountId) {
+    log('BaseController::injectMdnBindings:');
     try {
       requireCapability(session!, accountId!, [CapabilityIdentifier.jmapMdn]);
       MdnInteractorBindings().dependencies();
@@ -240,6 +229,7 @@ abstract class BaseController extends GetxController
   }
 
   void injectForwardBindings(Session? session, AccountId? accountId) {
+    log('BaseController::injectForwardBindings:');
     try {
       requireCapability(session!, accountId!, [capabilityForward]);
       ForwardingInteractorsBindings().dependencies();
@@ -249,6 +239,7 @@ abstract class BaseController extends GetxController
   }
 
   void injectRuleFilterBindings(Session? session, AccountId? accountId) {
+    log('BaseController::injectRuleFilterBindings:');
     try {
       requireCapability(session!, accountId!, [capabilityRuleFilter]);
       EmailRulesInteractorBindings().dependencies();
@@ -258,6 +249,7 @@ abstract class BaseController extends GetxController
   }
 
   Future<void> injectFCMBindings(Session? session, AccountId? accountId) async {
+    log('BaseController::injectFCMBindings:');
     try {
       requireCapability(session!, accountId!, [FirebaseCapability.fcmIdentifier]);
       log('BaseController::injectFCMBindings: fcmAvailable = ${AppConfig.fcmAvailable}');
@@ -289,6 +281,7 @@ abstract class BaseController extends GetxController
     FirebaseCapability.fcmIdentifier.isSupported(session, accountId) && AppConfig.fcmAvailable;
 
   void goToLogin() {
+    log('BaseController::goToLogin:currentRoute = ${Get.currentRoute}');
     if (Get.currentRoute != AppRoutes.login) {
       pushAndPopAll(
         AppRoutes.login,
@@ -300,6 +293,7 @@ abstract class BaseController extends GetxController
   }
 
   void logout(Session? session, AccountId? accountId) async {
+    log('BaseController::logout:accountId = $accountId');
     if (session == null || accountId == null) {
       await clearDataAndGoToLoginPage();
       return;
@@ -317,6 +311,7 @@ abstract class BaseController extends GetxController
   }
 
   void _destroyFirebaseRegistration(FirebaseRegistrationId firebaseRegistrationId) async {
+    log('BaseController::_destroyFirebaseRegistration:firebaseRegistrationId = $firebaseRegistrationId');
     _destroyFirebaseRegistrationInteractor = getBinding<DestroyFirebaseRegistrationInteractor>();
     if (_destroyFirebaseRegistrationInteractor != null) {
       consumeState(_destroyFirebaseRegistrationInteractor!.execute(firebaseRegistrationId));
@@ -326,6 +321,7 @@ abstract class BaseController extends GetxController
   }
 
   void _getStoredFirebaseRegistrationFromCache() async {
+    log('BaseController::_getStoredFirebaseRegistrationFromCache:');
     _getStoredFirebaseRegistrationInteractor = getBinding<GetStoredFirebaseRegistrationInteractor>();
     if (_getStoredFirebaseRegistrationInteractor != null) {
       consumeState(_getStoredFirebaseRegistrationInteractor!.execute());
@@ -341,6 +337,7 @@ abstract class BaseController extends GetxController
   }
 
   Future<void> clearAllData() async {
+    log('BaseController::clearAllData:');
     if (isAuthenticatedWithOidc) {
       await _clearOidcAuthData();
     } else {
@@ -349,6 +346,7 @@ abstract class BaseController extends GetxController
   }
 
   Future<void> _clearBasicAuthData() async {
+    log('BaseController::_clearBasicAuthData:');
     await Future.wait([
       deleteCredentialInteractor.execute(),
       cachingManager.clearAll(),
@@ -363,6 +361,7 @@ abstract class BaseController extends GetxController
   }
 
   Future<void> _clearOidcAuthData() async {
+    log('BaseController::_clearOidcAuthData:');
     await Future.wait([
       deleteAuthorityOidcInteractor.execute(),
       cachingManager.clearAll(),

@@ -63,6 +63,7 @@ class CachingManager {
   );
 
   Future<void> clearAll() async {
+    log('CachingManager::clearAll:');
     await Future.wait([
       _stateCacheClient.clearAllData(),
       _mailboxCacheClient.clearAllData(),
@@ -85,6 +86,7 @@ class CachingManager {
   }
 
   Future<void> clearData() async {
+    log('CachingManager::clearData:');
     await Future.wait([
       _stateCacheClient.clearAllData(),
       _mailboxCacheClient.clearAllData(),
@@ -103,6 +105,7 @@ class CachingManager {
   }
 
   Future<void> clearEmailCacheAndStateCacheByTupleKey(AccountId accountId, Session session) {
+    log('CachingManager::clearEmailCacheAndStateCacheByTupleKey:');
     return Future.wait([
       _stateCacheClient.deleteItem(StateType.email.getTupleKeyStored(accountId, session.username)),
       _emailCacheClient.clearAllData(),
@@ -110,6 +113,7 @@ class CachingManager {
   }
 
   Future<void> clearEmailCacheAndAllStateCache() {
+    log('CachingManager::clearEmailCacheAndAllStateCache:');
     return Future.wait([
       _stateCacheClient.clearAllData(),
       _emailCacheClient.clearAllData(),
@@ -122,14 +126,17 @@ class CachingManager {
   }
 
   Future<int?> getLatestVersion() {
+    log('CachingManager::getLatestVersion:');
     return _hiveCacheVersionClient.getLatestVersion();
   }
 
   Future<void> closeHive() async {
+    log('CachingManager::closeHive:');
     return await HiveCacheConfig.instance.closeHive();
   }
 
   Future<void> clearAllFileInStorage() async {
+    log('CachingManager::clearAllFileInStorage:');
     await Future.wait([
       _fileUtils.removeFolder(CachingConstants.newEmailsContentFolderName),
       _fileUtils.removeFolder(CachingConstants.openedEmailContentFolderName),
@@ -137,6 +144,7 @@ class CachingManager {
   }
 
   Future<void> clearLoginRecentData() async {
+    log('CachingManager::clearLoginRecentData:');
     await Future.wait([
       _recentLoginUrlCacheClient.clearAllData(),
       _recentLoginUsernameCacheClient.clearAllData(),

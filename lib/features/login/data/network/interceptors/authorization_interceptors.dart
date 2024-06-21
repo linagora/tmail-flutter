@@ -76,13 +76,15 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       case AuthenticationType.none:
         break;
     }
-    log('AuthorizationInterceptors::onRequest(): URL = ${options.uri} | HEADER = ${options.headers} | DATA = ${options.data} | METHOD = ${options.method}');
+    log('AuthorizationInterceptors::onRequest(): URL = ${options.uri} | HEADER = ${options.headers}');
     super.onRequest(options, handler);
   }
 
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
-    logError('AuthorizationInterceptors::onError(): TOKEN = ${_token?.expiredTime} | DIO_ERROR = $err | METHOD = ${err.requestOptions.method}');
+    logError('AuthorizationInterceptors::onError(): DIO_ERROR = $err');
+    log('AuthorizationInterceptors::onError(): TOKEN_ID_HASH = ${_token?.tokenIdHash}');
+    log('AuthorizationInterceptors::onError(): EXPIRED_TIME = ${_token?.expiredTime}');
     try {
       final requestOptions = err.requestOptions;
       final extraInRequest = requestOptions.extra;
@@ -92,7 +94,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         responseStatusCode: err.response?.statusCode,
         tokenOIDC: _token
       )) {
-        log('AuthorizationInterceptors::onError:_validateToRefreshToken');
+        log('AuthorizationInterceptors::onError: Expired tokens begin to get new tokens');
         final newTokenOidc = PlatformInfo.isIOS
           ? await _handleRefreshTokenOnIOSPlatform()
           : await _handleRefreshTokenOnOtherPlatform();
@@ -177,6 +179,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     required int? responseStatusCode,
     required TokenOIDC? tokenOIDC
   }) {
+    log('AuthorizationInterceptors::validateToRefreshToken');
     return responseStatusCode == 401
       && _isAuthenticationOidcValid()
       && _isTokenNotEmpty(tokenOIDC)
@@ -188,6 +191,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     required String? authHeader,
     required TokenOIDC? tokenOIDC
   }) {
+    log('AuthorizationInterceptors::validateToRetryTheRequestWithNewToken:authHeader = $authHeader');
     return authHeader != null
       && _isTokenNotEmpty(tokenOIDC)
       && !_isTokenExpired(tokenOIDC)
@@ -210,8 +214,9 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   }
 
   Future<PersonalAccount> _updateCurrentAccount({required TokenOIDC tokenOIDC}) async {
+    log('AuthorizationInterceptors::_updateCurrentAccount:');
     final currentAccount = await _accountCacheManager.getCurrentAccount();
-
+    log('AuthorizationInterceptors::_updateCurrentAccount:currentAccount = $currentAccount');
     await _accountCacheManager.deleteCurrentAccount(currentAccount.id);
 
     await _tokenOidcCacheManager.persistOneTokenOidc(tokenOIDC);
@@ -224,6 +229,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       apiUrl: currentAccount.apiUrl,
       userName: currentAccount.userName
     );
+    log('AuthorizationInterceptors::_updateCurrentAccount:personalAccount = $personalAccount');
     await _accountCacheManager.setCurrentAccount(personalAccount);
 
     return personalAccount;
@@ -251,6 +257,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   }
 
   Future<TokenOIDC> _invokeRefreshTokenFromServer() async {
+    log('AuthorizationInterceptors::_invokeRefreshTokenFromServer:');
     final newToken = await _authenticationClient.refreshingTokensOIDC(
       _configOIDC!.clientId,
       _configOIDC!.redirectUrl,
@@ -258,13 +265,17 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       _configOIDC!.scopes,
       _token!.refreshToken
     );
-    log('AuthorizationInterceptors::_invokeRefreshTokenFromServer:newToken: $newToken');
+    log('AuthorizationInterceptors::_invokeRefreshTokenFromServer: NEW_TOKEN_ID_HASH = ${newToken.tokenIdHash}');
+    log('AuthorizationInterceptors::_invokeRefreshTokenFromServer: NEW_TOKEN_EXPIRED_TIME = ${newToken.expiredTime}');
+    log('AuthorizationInterceptors::_invokeRefreshTokenFromServer: NEW_TOKEN_REFRESH_TOKEN = ${newToken.refreshToken}');
+    log('AuthorizationInterceptors::_invokeRefreshTokenFromServer: NEW_TOKEN_ACCESS_TOKEN = ${newToken.token}');
     return newToken;
   }
 
   Future<TokenOIDC> _handleRefreshTokenOnIOSPlatform() async {
+    log('AuthorizationInterceptors::_handleRefreshTokenOnIOSPlatform:');
     final keychainToken = await _getTokenInKeychain(_token!);
-
+    log('AuthorizationInterceptors::_handleRefreshTokenOnIOSPlatform:keychainToken = $keychainToken');
     if (keychainToken == null) {
       final newToken = await _invokeRefreshTokenFromServer();
       final newAccount = await _updateCurrentAccount(tokenOIDC: newToken);
@@ -277,12 +288,14 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   }
 
   Future<TokenOIDC> _handleRefreshTokenOnOtherPlatform() async {
+    log('AuthorizationInterceptors::_handleRefreshTokenOnOtherPlatform:');
     final newToken = await _invokeRefreshTokenFromServer();
     await _updateCurrentAccount(tokenOIDC: newToken);
     return newToken;
   }
 
   void clear() {
+    log('AuthorizationInterceptors::clear:');
     _authorization = null;
     _token = null;
     _configOIDC = null;

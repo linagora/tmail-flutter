@@ -7,10 +7,10 @@ extension ListAccountCacheExtension on List<AccountCache> {
   List<AccountCache> unselected() => map((account) => account.unselected()).toList();
 
   List<AccountCache> removeDuplicated() {
+    log('ListAccountCacheExtension::removeDuplicated:BEFORE: $this');
     final listAccountId = map((account) => account.accountId).whereNotNull().toSet();
-    log('ListAccountCacheExtension::removeDuplicated:listAccountId: $listAccountId');
     retainWhere((account) => listAccountId.remove(account.accountId));
-    log('ListAccountCacheExtension::removeDuplicated:listAccount: $this');
+    log('ListAccountCacheExtension::removeDuplicated:AFTER: $this');
     return this;
   }
 

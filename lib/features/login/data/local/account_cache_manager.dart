@@ -35,6 +35,7 @@ class AccountCacheManager {
         .removeDuplicated()
         .whereNot((account) => account.accountId == newAccountCache.accountId)
         .toList();
+      log('AccountCacheManager::setCurrentAccount:newAllAccounts = $newAllAccounts');
       if (newAllAccounts.isNotEmpty) {
         await _accountCacheClient.clearAllData();
         await _accountCacheClient.updateMultipleItem(newAllAccounts.toMap());
@@ -47,4 +48,6 @@ class AccountCacheManager {
     log('AccountCacheManager::deleteCurrentAccount(): $hashId');
     return _accountCacheClient.deleteItem(hashId);
   }
+
+  Future<void> closeAccountHiveCacheBox() => _accountCacheClient.closeBox();
 }
