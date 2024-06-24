@@ -243,15 +243,6 @@ class ComposerView extends GetWidget<ComposerController> {
         keyboardRichTextController: controller.richTextMobileTabletController!.richTextController,
         onCloseViewAction: () => controller.handleClickCloseComposer(context),
         onClearFocusAction: () => controller.clearFocus(context),
-        onAttachFileAction: () => controller.isNetworkConnectionAvailable
-          ? controller.openPickAttachmentMenu(
-              context,
-              _pickAttachmentsActionTiles(context)
-            )
-          : null,
-        onInsertImageAction: (constraints) => controller.isNetworkConnectionAvailable
-          ? controller.insertImage(context, constraints.maxWidth)
-          : null,
         childBuilder: (context, constraints) => Container(
           color: ComposerStyle.mobileBackgroundColor,
           child: Column(
