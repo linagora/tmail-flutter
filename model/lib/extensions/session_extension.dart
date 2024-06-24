@@ -53,18 +53,18 @@ extension SessionExtension on Session {
     }
   }
 
-  JmapAccount get personalAccount {
+  JmapAccount get jmapPersonalAccount {
     if (accounts.isNotEmpty) {
-      final listPersonalAccount = accounts.entries
+      final listJMAPPersonalAccount = accounts.entries
         .map((entry) => entry.value.toJmapAccount(entry.key))
         .where((jmapAccount) => jmapAccount.isPersonal)
         .toList();
 
-      if (listPersonalAccount.isNotEmpty) {
-        return listPersonalAccount.first;
+      if (listJMAPPersonalAccount.isNotEmpty) {
+        return listJMAPPersonalAccount.first;
       }
     }
-    throw NotFoundPersonalAccountException();
+    throw NotFoundJMAPPersonalAccountException();
   }
 
   ({

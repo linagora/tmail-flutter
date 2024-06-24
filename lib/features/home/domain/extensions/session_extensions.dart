@@ -51,8 +51,8 @@ extension SessionExtensions on Session {
     try {
       if (GetUtils.isEmail(username.value)) {
         return username.value.split('@').last;
-      } else if (GetUtils.isEmail(personalAccount.name.value)) {
-        return personalAccount.name.value.split('@').last;
+      } else if (GetUtils.isEmail(jmapPersonalAccount.name.value)) {
+        return jmapPersonalAccount.name.value.split('@').last;
       } else {
         return '';
       }

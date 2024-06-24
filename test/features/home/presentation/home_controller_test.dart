@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cac
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_url_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
+import 'package:tmail_ui_user/features/home/domain/usecases/get_session_cache_interactor.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
@@ -46,6 +47,7 @@ import 'home_controller_test.mocks.dart';
   MockSpec<CleanupRecentSearchCacheInteractor>(),
   MockSpec<CleanupRecentLoginUrlCacheInteractor>(),
   MockSpec<CleanupRecentLoginUsernameCacheInteractor>(),
+  MockSpec<GetSessionCacheInteractor>(),
   MockSpec<EmailReceiveManager>(),
   MockSpec<GetSessionInteractor>(),
   MockSpec<GetAuthenticatedAccountInteractor>(),
@@ -63,6 +65,7 @@ void main() {
   late MockCleanupRecentSearchCacheInteractor cleanupRecentSearchCacheInteractor;
   late MockCleanupRecentLoginUrlCacheInteractor cleanupRecentLoginUrlCacheInteractor;
   late MockCleanupRecentLoginUsernameCacheInteractor cleanupRecentLoginUsernameCacheInteractor;
+  late MockGetSessionCacheInteractor getSessionCacheInteractor;
 
   late MockGetSessionInteractor mockGetSessionInteractor;
   late MockGetAuthenticatedAccountInteractor mockGetAuthenticatedAccountInteractor;
@@ -87,6 +90,7 @@ void main() {
     cleanupRecentSearchCacheInteractor = MockCleanupRecentSearchCacheInteractor();
     cleanupRecentLoginUrlCacheInteractor = MockCleanupRecentLoginUrlCacheInteractor();
     cleanupRecentLoginUsernameCacheInteractor = MockCleanupRecentLoginUsernameCacheInteractor();
+    getSessionCacheInteractor = MockGetSessionCacheInteractor();
 
     // mock reloadable controller
     mockGetSessionInteractor = MockGetSessionInteractor();
@@ -134,7 +138,8 @@ void main() {
       emailReceiveManager,
       cleanupRecentSearchCacheInteractor,
       cleanupRecentLoginUrlCacheInteractor,
-      cleanupRecentLoginUsernameCacheInteractor
+      cleanupRecentLoginUsernameCacheInteractor,
+      getSessionCacheInteractor
     );
   });
 

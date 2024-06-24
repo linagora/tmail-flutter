@@ -1,3 +1,6 @@
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -21,7 +24,11 @@ import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cac
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_url_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
+import 'package:tmail_ui_user/features/home/domain/state/get_session_cache_state.dart';
+import 'package:tmail_ui_user/features/home/domain/usecases/get_session_cache_interactor.dart';
+import 'package:tmail_ui_user/features/login/data/extensions/personal_account_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/preview_email_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/reopen_app_arguments.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_receiver.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -34,6 +41,7 @@ class HomeController extends ReloadableController {
   final CleanupRecentSearchCacheInteractor _cleanupRecentSearchCacheInteractor;
   final CleanupRecentLoginUrlCacheInteractor _cleanupRecentLoginUrlCacheInteractor;
   final CleanupRecentLoginUsernameCacheInteractor _cleanupRecentLoginUsernameCacheInteractor;
+  final GetSessionCacheInteractor _getSessionCacheInteractor;
 
   HomeController(
     this._cleanupEmailCacheInteractor,
@@ -41,6 +49,7 @@ class HomeController extends ReloadableController {
     this._cleanupRecentSearchCacheInteractor,
     this._cleanupRecentLoginUrlCacheInteractor,
     this._cleanupRecentLoginUsernameCacheInteractor,
+    this._getSessionCacheInteractor,
   );
 
   PersonalAccount? currentAccount;
@@ -90,7 +99,8 @@ class HomeController extends ReloadableController {
 
   static void downloadCallback(String id, DownloadTaskStatus status, int progress) {}
 
-  void _cleanupCache() async {
+  Future<void> _cleanupCache() async {
+    log('HomeController::_cleanupCache:');
     await HiveCacheConfig.instance.onUpgradeDatabase(cachingManager);
 
     await Future.wait([
@@ -98,7 +108,7 @@ class HomeController extends ReloadableController {
       _cleanupRecentSearchCacheInteractor.execute(RecentSearchCleanupRule()),
       _cleanupRecentLoginUrlCacheInteractor.execute(RecentLoginUrlCleanupRule()),
       _cleanupRecentLoginUsernameCacheInteractor.execute(RecentLoginUsernameCleanupRule()),
-    ]).then((value) => getAuthenticatedAccountAction());
+    ]).then((_) => getAuthenticatedAccountAction());
   }
 
   void _registerReceivingSharingIntent() {
@@ -128,6 +138,57 @@ class HomeController extends ReloadableController {
           _emailIdPreview = EmailId(Id(emailId!));
         }
       }
+    }
+  }
+
+  void _goToMailboxDashboardWithSession({
+    required PersonalAccount personalAccount,
+    required Session session
+  }) {
+    log('HomeController::_goToMailboxDashboardWithSession:');
+    popAndPush(
+      RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
+      arguments: ReopenAppArguments(
+        personalAccount: personalAccount,
+        session: session));
+  }
+
+  void _goToMailboxDashboardWithoutSession({required PersonalAccount personalAccount}) {
+    log('HomeController::_goToMailboxDashboardWithoutSession:');
+    popAndPush(
+      RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
+      arguments: ReopenAppArguments(personalAccount: personalAccount));
+  }
+
+  @override
+  void getSessionAction({PersonalAccount? personalAccount}) {
+    log('HomeController::getSessionAction:');
+    if (PlatformInfo.isMobile && personalAccount?.existAccountIdAndUserName == true) {
+      consumeState(_getSessionCacheInteractor.execute(personalAccount!));
+    } else {
+      super.getSessionAction();
+    }
+  }
+
+  @override
+  void handleSuccessViewState(Success success) {
+    log('HomeController::handleSuccessViewState: ${success.runtimeType}');
+    if (success is GetSessionCacheSuccess) {
+      _goToMailboxDashboardWithSession(
+        personalAccount: success.personalAccount,
+        session: success.session);
+    } else {
+      super.handleSuccessViewState(success);
+    }
+  }
+
+  @override
+  void handleFailureViewState(Failure failure) {
+    log('HomeController::handleFailureViewState: ${failure.runtimeType}');
+    if (failure is GetSessionCacheFailure) {
+      _goToMailboxDashboardWithoutSession(personalAccount: failure.personalAccount);
+    } else {
+      super.handleFailureViewState(failure);
     }
   }
 }

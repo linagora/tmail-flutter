@@ -6,6 +6,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/account/personal_account.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
@@ -81,10 +82,10 @@ abstract class ReloadableController extends BaseController {
 
   void _handleGetCredentialSuccess(GetCredentialViewState credentialViewState) {
     _setUpInterceptors(credentialViewState);
-    getSessionAction();
+    getSessionAction(personalAccount: credentialViewState.personalAccount);
   }
 
-  void getSessionAction() {
+  void getSessionAction({PersonalAccount? personalAccount}) {
     consumeState(_getSessionInteractor.execute());
   }
 
@@ -100,11 +101,15 @@ abstract class ReloadableController extends BaseController {
 
   void _handleGetSessionSuccess(GetSessionSuccess success) {
     final session = success.session;
-    final personalAccount = session.personalAccount;
+    final jmapPersonalAccount = session.jmapPersonalAccount;
     final apiUrl = session.getQualifiedApiUrl(baseUrl: dynamicUrlInterceptors.jmapUrl);
     if (apiUrl.isNotEmpty) {
       dynamicUrlInterceptors.changeBaseUrl(apiUrl);
-      updateAuthenticationAccount(session, personalAccount.accountId, session.username);
+      updateAuthenticationAccount(
+        apiUrl: apiUrl,
+        accountId: jmapPersonalAccount.accountId,
+        userName: session.username
+      );
       handleReloaded(session);
     } else {
       clearDataAndGoToLoginPage();
@@ -115,7 +120,7 @@ abstract class ReloadableController extends BaseController {
 
   void _handleGetStoredTokenOIDCSuccess(GetStoredTokenOidcSuccess tokenOidcSuccess) {
     _setUpInterceptorsOidc(tokenOidcSuccess);
-    getSessionAction();
+    getSessionAction(personalAccount: tokenOidcSuccess.personalAccount);
   }
 
   void _setUpInterceptorsOidc(GetStoredTokenOidcSuccess tokenOidcSuccess) {
@@ -138,10 +143,14 @@ abstract class ReloadableController extends BaseController {
     }
   }
 
-  void updateAuthenticationAccount(Session session, AccountId accountId, UserName userName) {
-    final apiUrl = session.getQualifiedApiUrl(baseUrl: dynamicUrlInterceptors.jmapUrl);
-    if (apiUrl.isNotEmpty) {
-      consumeState(_updateAuthenticationAccountInteractor.execute(accountId, apiUrl, userName));
-    }
+  void updateAuthenticationAccount({
+    required String apiUrl,
+    required AccountId accountId,
+    required UserName userName
+  }) {
+    consumeState(_updateAuthenticationAccountInteractor.execute(
+      accountId,
+      apiUrl,
+      userName));
   }
 }

@@ -158,7 +158,12 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
   bool get isAllUnSelected => dashboardController.listSendingEmails.isAllUnSelected();
 
   void refreshSendingQueue() {
-    dashboardController.getAllSendingEmails();
+    if (dashboardController.accountId.value != null
+        && dashboardController.sessionCurrent != null) {
+      dashboardController.getAllSendingEmails(
+        accountId: dashboardController.accountId.value!,
+        userName: dashboardController.sessionCurrent!.username);
+    }
   }
 
   void openMailboxMenu() {

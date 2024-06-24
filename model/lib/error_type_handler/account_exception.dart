@@ -1,2 +1,2 @@
 
-class NotFoundPersonalAccountException implements Exception {}
+class NotFoundJMAPPersonalAccountException implements Exception {}

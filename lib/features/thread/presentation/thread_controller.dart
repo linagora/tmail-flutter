@@ -142,8 +142,8 @@ class ThreadController extends BaseController with EmailActionController {
 
   @override
   void onReady() {
-    dispatchState(Right(LoadingState()));
     super.onReady();
+    consumeState(Stream.value(Right(GetAllEmailLoading())));
   }
 
   @override
@@ -421,6 +421,8 @@ class ThreadController extends BaseController with EmailActionController {
           error.message?.toString() ?? ''
         );
       }
+      clearState();
+    } else {
       clearState();
     }
   }

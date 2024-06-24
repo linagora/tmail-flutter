@@ -30,7 +30,7 @@ void main() {
   late MailboxRepository mailboxRepository;
 
   final sessionFixture = SessionFixtures.aliceSession;
-  final accountIdFixture = SessionFixtures.aliceSession.personalAccount.accountId;
+  final accountIdFixture = SessionFixtures.aliceSession.jmapPersonalAccount.accountId;
   final userNameFixture = SessionFixtures.aliceSession.username;
 
   group('[getAllMailbox] method test', () {

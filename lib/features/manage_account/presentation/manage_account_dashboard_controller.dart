@@ -85,7 +85,7 @@ class ManageAccountDashBoardController extends ReloadableController {
   void handleReloaded(Session session) {
     log('ManageAccountDashBoardController::handleReloaded:');
     sessionCurrent = session;
-    accountId.value = session.personalAccount.accountId;
+    accountId.value = session.jmapPersonalAccount.accountId;
     _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
     _getVacationResponse();
     _getParametersRouter();
@@ -95,7 +95,7 @@ class ManageAccountDashBoardController extends ReloadableController {
     final arguments = Get.arguments;
     if (arguments is ManageAccountArguments) {
       sessionCurrent = arguments.session;
-      accountId.value = arguments.session?.personalAccount.accountId;
+      accountId.value = arguments.session?.jmapPersonalAccount.accountId;
       previousUri = arguments.previousUri;
       _bindingInteractorForMenuItemView(sessionCurrent, accountId.value);
       _getVacationResponse();

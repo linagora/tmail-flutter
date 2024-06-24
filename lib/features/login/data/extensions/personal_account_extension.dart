@@ -11,4 +11,6 @@ extension PersonalAccountExtension on PersonalAccount {
       apiUrl: apiUrl,
       userName: userName?.value);
   }
+
+  bool get existAccountIdAndUserName => accountId != null && userName != null;
 }
