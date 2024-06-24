@@ -51,8 +51,8 @@ class TabletContainerView extends StatelessWidget {
                   backgroundKeyboardToolBarColor: TabletContainerViewStyle.keyboardToolbarBackgroundColor,
                   isLandScapeMode: _responsiveUtils.isLandscapeMobile(context),
                   insertAttachment: onAttachFileAction,
-                  insertImage: () => onInsertImageAction != null
-                    ? onInsertImageAction!(constraints)
+                  insertImage: onInsertImageAction != null
+                    ? () => onInsertImageAction!(constraints)
                     : null,
                   richTextController: keyboardRichTextController,
                   titleQuickStyleBottomSheet: AppLocalizations.of(context).titleQuickStyles,
