@@ -733,7 +733,8 @@ class ComposerController extends BaseController with DragDropFileMixin {
     }
 
     if (!isEnableEmailSendButton.value) {
-      showConfirmDialogAction(context,
+      showConfirmDialogAction(
+        context,
         AppLocalizations.of(context).message_dialog_send_email_without_recipient,
         AppLocalizations.of(context).add_recipients,
         title: AppLocalizations.of(context).sending_failed,
@@ -749,7 +750,8 @@ class ComposerController extends BaseController with DragDropFileMixin {
         .where((emailAddress) => !EmailUtils.isEmailAddressValid(emailAddress.emailAddress))
         .toList();
     if (listEmailAddressInvalid.isNotEmpty) {
-      showConfirmDialogAction(context,
+      showConfirmDialogAction(
+        context,
         AppLocalizations.of(context).message_dialog_send_email_with_email_address_invalid,
         AppLocalizations.of(context).fix_email_addresses,
         onConfirmAction: () {
@@ -766,7 +768,8 @@ class ComposerController extends BaseController with DragDropFileMixin {
     }
 
     if (subjectEmail.value == null || subjectEmail.isEmpty == true) {
-      showConfirmDialogAction(context,
+      showConfirmDialogAction(
+        context,
         AppLocalizations.of(context).message_dialog_send_email_without_a_subject,
         AppLocalizations.of(context).send_anyway,
         onConfirmAction: () => _handleSendMessages(context),

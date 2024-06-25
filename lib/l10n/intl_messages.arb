@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-03-19T12:10:23.549474",
+  "@@last_modified": "2024-06-25T11:38:27.513110",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3906,6 +3906,30 @@
   },
   "showNotifications": "Show Notifications",
   "@showNotifications": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "warningMessageWhenSynchronizeSessionFailure": "The current session has expired.\nPlease resynchronize or log in again with a new session.",
+  "@warningMessageWhenSynchronizeSessionFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "resynchronize": "Resynchronize",
+  "@resynchronize": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exitAndReLogin": "Exit & Re-login",
+  "@exitAndReLogin": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "warningMessageWhenResynchronizeSessionFailure": "Resynchronize session failure. You must log in again to continue using!",
+  "@warningMessageWhenResynchronizeSessionFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

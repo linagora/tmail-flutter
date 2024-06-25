@@ -4085,4 +4085,28 @@ class AppLocalizations {
       name: 'showNotifications',
     );
   }
+
+  String get warningMessageWhenSynchronizeSessionFailure {
+    return Intl.message(
+      'The current session has expired.\nPlease resynchronize or log in again with a new session.',
+      name: 'warningMessageWhenSynchronizeSessionFailure');
+  }
+
+  String get resynchronize {
+    return Intl.message(
+      'Resynchronize',
+      name: 'resynchronize');
+  }
+
+  String get exitAndReLogin {
+    return Intl.message(
+      'Exit & Re-login',
+      name: 'exitAndReLogin');
+  }
+
+  String get warningMessageWhenResynchronizeSessionFailure {
+    return Intl.message(
+      'Resynchronize session failure. You must log in again to continue using!',
+      name: 'warningMessageWhenResynchronizeSessionFailure');
+  }
 }

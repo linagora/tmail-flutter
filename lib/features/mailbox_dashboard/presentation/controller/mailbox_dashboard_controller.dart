@@ -1539,10 +1539,12 @@ class MailboxDashBoardController extends ReloadableController {
         vacationResponse.value = result.value1;
         dispatchMailboxUIAction(RefreshChangeMailboxAction(null));
       }
-      await Future.delayed(
-        const Duration(milliseconds: 500),
-        () => _replaceBrowserHistory(uri: result.value2)
-      );
+
+      if (PlatformInfo.isWeb) {
+        await Future.delayed(
+          const Duration(milliseconds: 500),
+          () => _replaceBrowserHistory(uri: result.value2));
+      }
     }
 
     if (accountId.value != null && sessionCurrent != null) {
@@ -1623,10 +1625,12 @@ class MailboxDashBoardController extends ReloadableController {
         vacationResponse.value = result.value1;
         dispatchMailboxUIAction(RefreshChangeMailboxAction(null));
       }
-      await Future.delayed(
-        const Duration(milliseconds: 500),
-        () => _replaceBrowserHistory(uri: result.value2)
-      );
+
+      if (PlatformInfo.isWeb) {
+        await Future.delayed(
+          const Duration(milliseconds: 500),
+          () => _replaceBrowserHistory(uri: result.value2));
+      }
     }
 
     if (accountId.value != null && sessionCurrent != null) {
@@ -2359,37 +2363,35 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _replaceBrowserHistory({Uri? uri}) {
     log('MailboxDashBoardController::_replaceBrowserHistory:uri: $uri');
-    if (PlatformInfo.isWeb) {
-      final selectedMailboxId = selectedMailbox.value?.id;
-      final selectedEmailId = selectedEmail.value?.id;
-      final isSearchRunning = searchController.isSearchEmailRunning;
-      String title = '';
-      if (selectedEmail.value != null) {
-        title = 'Email-${selectedEmailId?.asString ?? ''}';
-      } else if (isSearchRunning) {
-        title = 'SearchEmail';
-      } else {
-        title = 'Mailbox-${selectedMailboxId?.asString}';
-      }
-      RouteUtils.replaceBrowserHistory(
-        title: title,
-        url: uri ?? RouteUtils.createUrlWebLocationBar(
-          AppRoutes.dashboard,
-          router: NavigationRouter(
-            emailId: selectedEmail.value?.id,
-            mailboxId: isSearchRunning
-              ? null
-              : selectedMailboxId,
-            dashboardType: isSearchRunning
-              ? DashboardType.search
-              : DashboardType.normal,
-            searchQuery: isSearchRunning
-              ? searchController.searchQuery
-              : null
-          )
-        )
-      );
+    final selectedMailboxId = selectedMailbox.value?.id;
+    final selectedEmailId = selectedEmail.value?.id;
+    final isSearchRunning = searchController.isSearchEmailRunning;
+    String title = '';
+    if (selectedEmail.value != null) {
+      title = 'Email-${selectedEmailId?.asString ?? ''}';
+    } else if (isSearchRunning) {
+      title = 'SearchEmail';
+    } else {
+      title = 'Mailbox-${selectedMailboxId?.asString}';
     }
+    RouteUtils.replaceBrowserHistory(
+      title: title,
+      url: uri ?? RouteUtils.createUrlWebLocationBar(
+        AppRoutes.dashboard,
+        router: NavigationRouter(
+          emailId: selectedEmail.value?.id,
+          mailboxId: isSearchRunning
+            ? null
+            : selectedMailboxId,
+          dashboardType: isSearchRunning
+            ? DashboardType.search
+            : DashboardType.normal,
+          searchQuery: isSearchRunning
+            ? searchController.searchQuery
+            : null
+        )
+      )
+    );
   }
 
   bool _navigateToScreen() {
@@ -2465,7 +2467,18 @@ class MailboxDashBoardController extends ReloadableController {
     log('MailboxDashBoardController::_onBackButtonInterceptor:currentRoute: ${Get.currentRoute} | _isDialogViewOpen: $_isDialogViewOpen');
     if (_isDialogViewOpen) {
       popBack();
-      _replaceBrowserHistory();
+
+      if (PlatformInfo.isMobile) {
+        if (synchronizeSessionController.isShowingWarningDialogSessionExpired) {
+          synchronizeSessionController.resynchronizeSession();
+        } else if (synchronizeSessionController.isShowingWarningDialogResynchronizeSessionFailure) {
+          synchronizeSessionController.exitAndReLoginAction();
+        }
+      }
+
+      if (PlatformInfo.isWeb) {
+        _replaceBrowserHistory();
+      }
       return true;
     }
 
