@@ -250,3 +250,8 @@ There are many ways to help us, and amongst them:
  ### **Cool. I also want to write my own email application for JMAP. Can you help me?**
  
 You would be pleased to know we contributes a [JMAP Dart client](https://github.com/linagora/jmap-dart-client) that you can reuse to write your own applications. Feels free to open pull requests and enrich it!
+
+## How to contribute
+Everyone can contribute at their own level, even if they only give a few minutes of their time. Whatever you do, your help is very valuable.
+- Translation: https://hosted.weblate.org/projects/linagora/teammail/
+- We have several beginner-friendly issues labeled [good first issue](https://github.com/linagora/tmail-flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22), perfect for those who are new to open source or looking to make their first contribution.
