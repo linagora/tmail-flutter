@@ -587,6 +587,10 @@ class MailboxDashBoardController extends ReloadableController {
     }
 
     synchronizeSessionController.synchronizeSession();
+
+    if (!_notificationManager.isNotificationClickedOnTerminate) {
+      _handleClickLocalNotificationOnTerminated();
+    }
   }
 
   void injectDataBindings({Session? session, AccountId? accountId}) {
