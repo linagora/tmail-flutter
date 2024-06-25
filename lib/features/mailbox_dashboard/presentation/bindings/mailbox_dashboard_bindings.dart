@@ -72,12 +72,14 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_last_time_dismissed_spam_reported_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_spam_report_state_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/synchronize_latest_session_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/synchronize_session_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/identity_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identity_interactors_bindings.dart';
@@ -151,6 +153,8 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<StoreSpamReportStateInteractor>(),
       Get.find<GetSpamReportStateInteractor>(),
       Get.find<GetSpamMailboxCachedInteractor>()));
+
+    Get.put(SynchronizeSessionController(Get.find<SynchronizeLatestSessionInteractor>()));
 
     Get.put(MailboxDashBoardController(
       Get.find<MoveToMailboxInteractor>(),
@@ -343,6 +347,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<IdentityRepository>(),
       Get.find<IdentityUtils>()
     ));
+    Get.lazyPut(() => SynchronizeLatestSessionInteractor(Get.find<SessionRepository>()));
   }
 
   @override

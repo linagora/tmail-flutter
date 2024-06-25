@@ -60,6 +60,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/synchronize_session_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
@@ -133,6 +134,7 @@ const fallbackGenerators = {
   MockSpec<AppGridDashboardController>(),
   MockSpec<SpamReportController>(fallbackGenerators: fallbackGenerators),
   MockSpec<NetworkConnectionController>(fallbackGenerators: fallbackGenerators),
+  MockSpec<SynchronizeSessionController>(fallbackGenerators: fallbackGenerators),
   MockSpec<QuickSearchEmailInteractor>(),
   MockSpec<SaveRecentSearchInteractor>(),
   MockSpec<GetAllRecentSearchLatestInteractor>(),
@@ -210,6 +212,7 @@ void main() {
   final appGridDashboardController = MockAppGridDashboardController();
   final spamReportController = MockSpamReportController();
   final networkConnectionController = MockNetworkConnectionController();
+  final synchronizeSessionController = MockSynchronizeSessionController();
 
   // mock search controller direct dependencies
   final quickSearchEmailInteractor = MockQuickSearchEmailInteractor();
@@ -281,6 +284,7 @@ void main() {
       Get.put<AppGridDashboardController>(appGridDashboardController);
       Get.put<SpamReportController>(spamReportController);
       Get.put<NetworkConnectionController>(networkConnectionController);
+      Get.put<SynchronizeSessionController>(synchronizeSessionController);
       Get.put<CachingManager>(cachingManager);
       Get.put<LanguageCacheManager>(languageCacheManager);
       Get.put<AuthorizationInterceptors>(authorizationInterceptors);

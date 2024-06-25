@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_c
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filter_email_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/synchronizing_session_bar.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_banner_widget.dart';
@@ -109,6 +110,10 @@ class ThreadView extends GetWidget<ThreadController>
                                 return const SizedBox.shrink();
                               }
                             }),
+                          if (PlatformInfo.isMobile)
+                            Obx(() => SynchronizingSessionBar(
+                              viewState: controller.mailboxDashBoardController.synchronizeSessionController.viewState.value
+                            )),
                           SearchBarView(
                             key: const Key('email_search_bar_view'),
                             imagePaths: controller.imagePaths,

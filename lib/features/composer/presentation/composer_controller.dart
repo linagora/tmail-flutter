@@ -912,7 +912,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
   }) async {
     await showConfirmDialogAction(
       context,
-      title: '',
       AppLocalizations.of(context).warningMessageWhenSendEmailFailure,
       AppLocalizations.of(context).edit,
       cancelTitle: AppLocalizations.of(context).closeAnyway,
@@ -2126,7 +2125,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
   }) async {
     await showConfirmDialogAction(
       context,
-      title: '',
       AppLocalizations.of(context).warningMessageWhenSaveEmailToDraftsFailure,
       AppLocalizations.of(context).edit,
       cancelTitle: AppLocalizations.of(context).closeAnyway,

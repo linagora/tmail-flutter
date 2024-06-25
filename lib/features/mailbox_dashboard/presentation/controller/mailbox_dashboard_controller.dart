@@ -91,6 +91,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/synchronize_session_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -167,6 +168,7 @@ class MailboxDashBoardController extends ReloadableController {
   final AppGridDashboardController appGridDashboardController = Get.find<AppGridDashboardController>();
   final SpamReportController spamReportController = Get.find<SpamReportController>();
   final NetworkConnectionController networkConnectionController = Get.find<NetworkConnectionController>();
+  final SynchronizeSessionController synchronizeSessionController = Get.find<SynchronizeSessionController>();
 
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
@@ -535,9 +537,9 @@ class MailboxDashBoardController extends ReloadableController {
     sessionCurrent = session;
     accountId.value = currentAccountId;
 
-    _injectDataBindings(session: session, accountId: currentAccountId);
+    injectDataBindings(session: session, accountId: currentAccountId);
 
-    _fetchingData(
+    fetchingData(
       accountId: currentAccountId,
       session: session,
       userName: session.username);
@@ -568,31 +570,33 @@ class MailboxDashBoardController extends ReloadableController {
       sessionCurrent = arguments.session;
       accountId.value = arguments.personalAccount.accountId;
 
-      _injectDataBindings(
+      injectDataBindings(
         session: arguments.session!,
         accountId: arguments.personalAccount.accountId!);
 
-      _fetchingData(
+      fetchingData(
         accountId: arguments.personalAccount.accountId!,
         userName: arguments.personalAccount.userName!,
         session: arguments.session!);
     } else {
       accountId.value = arguments.personalAccount.accountId!;
 
-      _fetchingData(
+      fetchingData(
         accountId: arguments.personalAccount.accountId!,
         userName: arguments.personalAccount.userName!);
     }
+
+    synchronizeSessionController.synchronizeSession();
   }
 
-  void _injectDataBindings({Session? session, AccountId? accountId}) {
+  void injectDataBindings({Session? session, AccountId? accountId}) {
     injectAutoCompleteBindings(session, accountId);
     injectRuleFilterBindings(session, accountId);
     injectVacationBindings(session, accountId);
     injectFCMBindings(session, accountId);
   }
 
-  void _fetchingData({
+  void fetchingData({
     required AccountId accountId,
     Session? session,
     UserName? userName

@@ -23,8 +23,7 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
-import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
-import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
+import 'package:tmail_ui_user/features/base/consume_view_state_ui_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
@@ -61,9 +60,7 @@ import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:uuid/uuid.dart';
 
-abstract class BaseController extends GetxController
-    with MessageDialogActionMixin,
-        PopupContextMenuActionMixin {
+abstract class BaseController extends ConsumeViewStateUIController {
 
   final CachingManager cachingManager = Get.find<CachingManager>();
   final LanguageCacheManager languageCacheManager = Get.find<LanguageCacheManager>();
@@ -84,21 +81,9 @@ abstract class BaseController extends GetxController
   GetStoredFirebaseRegistrationInteractor? _getStoredFirebaseRegistrationInteractor;
   DestroyFirebaseRegistrationInteractor? _destroyFirebaseRegistrationInteractor;
 
-  final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   FpsCallback? fpsCallback;
 
-  void consumeState(Stream<Either<Failure, Success>> newStateStream) async {
-    newStateStream.listen(onData, onError: onError, onDone: onDone);
-  }
-
-  void dispatchState(Either<Failure, Success> newState) {
-    viewState.value = newState;
-  }
-
-  void clearState() {
-    viewState.value = Right(UIState.idle);
-  }
-
+  @override
   void onData(Either<Failure, Success> newState) {
     viewState.value = newState;
     viewState.value.fold(
@@ -118,6 +103,7 @@ abstract class BaseController extends GetxController
       handleSuccessViewState);
   }
 
+  @override
   void onError(Object error, StackTrace stackTrace) {
     logError('BaseController::onError():error: $error | stackTrace: $stackTrace');
     final exception = _performFilterExceptionInError(error);
@@ -127,8 +113,6 @@ abstract class BaseController extends GetxController
       handleErrorViewState(error, stackTrace);
     }
   }
-
-  void onDone() {}
 
   Exception? _performFilterExceptionInError(dynamic error) {
     logError('BaseController::_performFilterExceptionInError(): $error');
@@ -174,6 +158,7 @@ abstract class BaseController extends GetxController
     }
   }
 
+  @override
   void handleFailureViewState(Failure failure) async {
     logError('BaseController::handleFailureViewState(): ${failure.runtimeType}');
     if (failure is LogoutOidcFailure) {
@@ -188,6 +173,7 @@ abstract class BaseController extends GetxController
     }
   }
 
+  @override
   void handleSuccessViewState(Success success) async {
     log('BaseController::handleSuccessViewState(): ${success.runtimeType}');
     if (success is LogoutOidcSuccess) {
