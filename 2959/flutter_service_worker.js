@@ -24,7 +24,7 @@ const RESOURCES = {"worker_service/style.css": "3ec186c93eb7bdab17e882de738e3123
 "canvaskit/canvaskit.wasm": "64edb91684bdb3b879812ba2e48dd487",
 "canvaskit/skwasm.wasm": "4124c42a73efa7eb886d3400a1ed7a06",
 "version.json": "7df99b68f22db0fc86e92f2f1e8d2946",
-"main.dart.js": "4174881448600572574a87e515135073",
+"main.dart.js": "1a5991a9b1a45d3fffe2c0d3473ada78",
 "main.dart.js_5.part.js": "4a20c06152b44abe50bf6e92605e8072",
 "assets/NOTICES": "3ca368704e89fbaed85c3ceaf6453fa6",
 "assets/AssetManifest.bin": "7b47c2bfa51f1be7796124c916bebb99",
