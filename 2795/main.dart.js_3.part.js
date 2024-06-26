@@ -1386,10 +1386,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     TabletResponsiveContainerView_build_closure: function TabletResponsiveContainerView_build_closure(t0) {
       this.$this = t0;
     },
-    WebEditorView$($arguments, contentViewState, currentWebContent, editorController, height, onChangeContent, onDragEnter, onEditorSettings, onEditorTextSizeChanged, onFocus, onInitial, onMouseDown, onUnFocus, width) {
-      return new B.WebEditorView(editorController, $arguments, contentViewState, currentWebContent, onInitial, onChangeContent, onFocus, onUnFocus, onMouseDown, onEditorSettings, onEditorTextSizeChanged, width, height, onDragEnter, null);
+    WebEditorView$($arguments, contentViewState, currentWebContent, editorController, height, onChangeContent, onDragEnter, onEditorSettings, onEditorTextSizeChanged, onFocus, onInitial, onMouseDown, width) {
+      return new B.WebEditorView(editorController, $arguments, contentViewState, currentWebContent, onInitial, onChangeContent, onFocus, onMouseDown, onEditorSettings, onEditorTextSizeChanged, width, height, onDragEnter, null);
     },
-    WebEditorView: function WebEditorView(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) {
+    WebEditorView: function WebEditorView(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) {
       var _ = this;
       _.editorController = t0;
       _.$arguments = t1;
@@ -1398,14 +1398,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.onInitial = t4;
       _.onChangeContent = t5;
       _.onFocus = t6;
-      _.onUnFocus = t7;
-      _.onMouseDown = t8;
-      _.onEditorSettings = t9;
-      _.onEditorTextSizeChanged = t10;
-      _.width = t11;
-      _.height = t12;
-      _.onDragEnter = t13;
-      _.key = t14;
+      _.onMouseDown = t7;
+      _.onEditorSettings = t8;
+      _.onEditorTextSizeChanged = t9;
+      _.width = t10;
+      _.height = t11;
+      _.onDragEnter = t12;
+      _.key = t13;
     },
     WebEditorView_build_closure: function WebEditorView_build_closure(t0, t1) {
       this.$this = t0;
@@ -1701,9 +1700,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     RecipientTagItemWidget_build_closure0: function RecipientTagItemWidget_build_closure0(t0) {
       this.$this = t0;
-    },
-    SubjectComposerWidget$(focusNode, margin, onTextChange, padding, textController) {
-      return new B.SubjectComposerWidget(focusNode, textController, onTextChange, margin, padding, null);
     },
     SubjectComposerWidget: function SubjectComposerWidget(t0, t1, t2, t3, t4, t5) {
       var _ = this;
@@ -8215,7 +8211,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t2 = A.Directionality_maybeOf(context);
           if (t2 == null)
             t2 = C.TextDirection_1;
-          return B.WebEditorWidget$(t1, t2, _this.editorController, _this.height, _this.onChangeContent, _this.onDragEnter, _this.onEditorSettings, _this.onEditorTextSizeChanged, _this.onFocus, _this.onInitial, _this.onMouseDown, _this.onUnFocus, _this.width);
+          return B.WebEditorWidget$(t1, t2, _this.editorController, _this.height, _this.onChangeContent, _this.onDragEnter, _this.onEditorSettings, _this.onEditorTextSizeChanged, _this.onFocus, _this.onInitial, _this.onMouseDown, null, _this.width);
         case 9:
         case 10:
         case 11:
@@ -8240,7 +8236,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t2 = A.Directionality_maybeOf(context);
           if (t2 == null)
             t2 = C.TextDirection_1;
-          return B.WebEditorWidget$(t1, t2, _this.editorController, _this.height, _this.onChangeContent, _this.onDragEnter, _this.onEditorSettings, _this.onEditorTextSizeChanged, _this.onFocus, _this.onInitial, _this.onMouseDown, _this.onUnFocus, _this.width);
+          return B.WebEditorWidget$(t1, t2, _this.editorController, _this.height, _this.onChangeContent, _this.onDragEnter, _this.onEditorSettings, _this.onEditorTextSizeChanged, _this.onFocus, _this.onInitial, _this.onMouseDown, null, _this.width);
       }
     }
   };
@@ -8682,7 +8678,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = A.Text$(A.Intl__message("Subject", _null, "subject_email", _null, _null) + ":", _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_oHY12, _null, _null, _null, _null, _null);
       t2 = context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale;
       t2 = A.Bidi_isRtlLanguage(t2.get$languageCode(t2)) ? C.TextDirection_0 : C.TextDirection_1;
-      return A.Container$(_null, A.Row$(A._setArrayType([t1, C.SizedBox_12_null_null_null, A.Expanded$(A.TextFieldBuilder$(false, _this.textController, C.Color_4278221567, _null, _this.focusNode, _null, _null, 1, _null, _null, _null, _null, _this.onTextChange, _null, false, t2, _null, C.TextStyle_oHY0), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, D.BoxDecoration_rfJ, _null, _null, _null, _this.margin, _this.padding, _null, _null, _null);
+      return A.Container$(_null, A.Row$(A._setArrayType([t1, C.SizedBox_12_null_null_null, A.Expanded$(A.TextFieldBuilder$(false, _this.textController, C.Color_4278221567, _null, _this.focusNode, _null, _null, 1, _null, _null, _null, _this.onTextChange, _null, false, t2, _null, C.TextStyle_oHY0), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, D.BoxDecoration_rfJ, _null, _null, _null, _this.margin, _this.padding, _null, _null, _null);
     }
   };
   B.TitleComposerWidget.prototype = {
@@ -10421,7 +10417,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t9 = A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_dropdown.svg", C.Alignment_0_0, _null, C.BoxFit_1, _null, _null, _null, _null), _null, _null, _null, _null, _null, _null);
       } else
         t9 = _null;
-      return A.RawKeyboardListener$(false, A.TextFieldBuilder$(false, textEditingController, C.Color_4278221567, A.InputDecoration$(_null, new A.OutlineInputBorder(4, C.BorderRadius_tLn2, new A.BorderSide(C.Color_520093696, t5, C.BorderStyle_1, -1)), _null, C.EdgeInsetsDirectional_12_0_12_0, _null, _null, _null, _null, true, new A.OutlineInputBorder(4, C.BorderRadius_tLn2, new A.BorderSide(C.Color_520093696, t4, C.BorderStyle_1, -1)), _null, _null, _null, _null, _null, t3, true, _null, _null, _null, _null, new A.OutlineInputBorder(4, C.BorderRadius_tLn2, new A.BorderSide(C.Color_4278221567, t6, C.BorderStyle_1, -1)), _null, _null, _null, _null, _null, _null, t8, t7, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t9, _null, D.BoxConstraints_mlX5, _null, _null), _null, _null, _null, 1, _null, mouseCursor, onTap, _null, _null, new B.AdvancedSearchInputForm__buildTextField_closure(_this, isSelectFormList, onTap, context), isSelectFormList, C.TextDirection_1, t2, C.TextStyle_oHY3), t1, new B.AdvancedSearchInputForm__buildTextField_closure0(nextFocusNode));
+      return A.RawKeyboardListener$(false, A.TextFieldBuilder$(false, textEditingController, C.Color_4278221567, A.InputDecoration$(_null, new A.OutlineInputBorder(4, C.BorderRadius_tLn2, new A.BorderSide(C.Color_520093696, t5, C.BorderStyle_1, -1)), _null, C.EdgeInsetsDirectional_12_0_12_0, _null, _null, _null, _null, true, new A.OutlineInputBorder(4, C.BorderRadius_tLn2, new A.BorderSide(C.Color_520093696, t4, C.BorderStyle_1, -1)), _null, _null, _null, _null, _null, t3, true, _null, _null, _null, _null, new A.OutlineInputBorder(4, C.BorderRadius_tLn2, new A.BorderSide(C.Color_4278221567, t6, C.BorderStyle_1, -1)), _null, _null, _null, _null, _null, _null, t8, t7, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t9, _null, D.BoxConstraints_mlX5, _null, _null), _null, _null, _null, 1, _null, mouseCursor, onTap, _null, new B.AdvancedSearchInputForm__buildTextField_closure(_this, isSelectFormList, onTap, context), isSelectFormList, C.TextDirection_1, t2, C.TextStyle_oHY3), t1, new B.AdvancedSearchInputForm__buildTextField_closure0(nextFocusNode));
     }
   };
   B._AdvancedSearchInputForm_GetWidget_PopupContextMenuActionMixin.prototype = {};
@@ -11068,7 +11064,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = context.dependOnInheritedWidgetOfExactType$1$0(t1).localizationsState._localizations$_locale;
       t1 = A.Bidi_isRtlLanguage(t1.get$languageCode(t1)) ? C.TextDirection_0 : C.TextDirection_1;
       A.Localizations_of(context, C.Type_AppLocalizations_swi, t5).toString;
-      return A.Row$(A._setArrayType([t2, A.Expanded$(A.TextFieldBuilder$(false, t7, C.Color_4278221567, A.InputDecoration$(_null, C._NoInputBorder_uXA, _null, C.EdgeInsets_12_12_12_12, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, E.TextStyle_g3y0, A.Intl__message("Search emails", _null, "search_emails", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), t4, _null, C.TextInputType_0_null_null, 1, _null, _null, _null, _null, t6, new B.SearchEmailView__buildSearchInputForm_closure0(_this, context), false, t1, C.TextInputAction_4, C.TextStyle_cMb1), 1), new A.Obx(new B.SearchEmailView__buildSearchInputForm_closure1(_this, context), _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
+      return A.Row$(A._setArrayType([t2, A.Expanded$(A.TextFieldBuilder$(false, t7, C.Color_4278221567, A.InputDecoration$(_null, C._NoInputBorder_uXA, _null, C.EdgeInsets_12_12_12_12, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, E.TextStyle_g3y0, A.Intl__message("Search emails", _null, "search_emails", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), t4, _null, C.TextInputType_0_null_null, 1, _null, _null, _null, t6, new B.SearchEmailView__buildSearchInputForm_closure0(_this, context), false, t1, C.TextInputAction_4, C.TextStyle_cMb1), 1), new A.Obx(new B.SearchEmailView__buildSearchInputForm_closure1(_this, context), _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     },
     _buildListSearchFilterAction$1(context) {
       var t2, _this = this, _null = null,
@@ -11379,7 +11375,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale;
       t2 = A.Bidi_isRtlLanguage(t2.get$languageCode(t2)) ? C.TextDirection_0 : C.TextDirection_1;
       A.Localizations_of(context, C.Type_AppLocalizations_swi, type$.AppLocalizations).toString;
-      return A.TextFieldBuilder$(true, t1, C.Color_4278221567, A.InputDecoration$(_null, C._NoInputBorder_uXA, _null, C.EdgeInsets_0_0_0_0, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_chs3, A.Intl__message("Search for folders", _null, "searchForFolders", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, C.TextInputType_0_null_null, 1, _null, _null, _null, _null, t3, new B.SearchMailboxView__buildTextFieldSearchInput_closure(_this, context), false, t2, C.TextInputAction_4, C.TextStyle_oHY2);
+      return A.TextFieldBuilder$(true, t1, C.Color_4278221567, A.InputDecoration$(_null, C._NoInputBorder_uXA, _null, C.EdgeInsets_0_0_0_0, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_chs3, A.Intl__message("Search for folders", _null, "searchForFolders", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, C.TextInputType_0_null_null, 1, _null, _null, _null, t3, new B.SearchMailboxView__buildTextFieldSearchInput_closure(_this, context), false, t2, C.TextInputAction_4, C.TextStyle_oHY2);
     },
     _buildMailboxListView$1(context) {
       return new A.Obx(new B.SearchMailboxView__buildMailboxListView_closure(this, context), null);
@@ -13881,7 +13877,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t7 = t3._as(t2.get(t1)).subjectEmailInputController;
       A.Expando__checkType(t1);
-      return A.GestureDetector$(_null, A.Column$(A._setArrayType([new A.Obx(new B.ComposerView_build__closure5(t1, context, constraints), _null), new A.ConstrainedBox(new A.BoxConstraints(0, 1 / 0, 0, t4), t5, _null), B.SubjectComposerWidget$(t6, E.EdgeInsetsDirectional_16_0_0_0, t3._as(t2.get(t1)).get$setSubjectEmail(), D.EdgeInsetsDirectional_0_12_16_12, t7), A.Expanded$(new A.LayoutBuilder(new B.ComposerView_build__closure6(t1, constraints), _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.ComposerView_build__closure7(t1, context), _null, _null, _null, _null, _null, _null, _null, false, C.Offset_O5r);
+      return A.GestureDetector$(_null, A.Column$(A._setArrayType([new A.Obx(new B.ComposerView_build__closure5(t1, context, constraints), _null), new A.ConstrainedBox(new A.BoxConstraints(0, 1 / 0, 0, t4), t5, _null), new B.SubjectComposerWidget(t6, t7, t3._as(t2.get(t1)).get$setSubjectEmail(), E.EdgeInsetsDirectional_16_0_0_0, D.EdgeInsetsDirectional_0_12_16_12, _null), A.Expanded$(new A.LayoutBuilder(new B.ComposerView_build__closure6(t1, constraints), _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.ComposerView_build__closure7(t1, context), _null, _null, _null, _null, _null, _null, _null, false, C.Offset_O5r);
     },
     $signature: 324
   };
@@ -14141,7 +14137,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ComposerView_build___closure12.prototype = {
     call$0() {
-      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15,
+      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -14163,16 +14159,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t10 = t3._as(t2.get(t1)).get$handleOnFocusHtmlEditorWeb();
       A.Expando__checkType(t1);
-      t11 = t3._as(t2.get(t1)).get$handleOnUnFocusHtmlEditorWeb();
+      t11 = t3._as(t2.get(t1)).get$handleOnMouseDownHtmlEditorWeb();
       A.Expando__checkType(t1);
-      t12 = t3._as(t2.get(t1)).get$handleOnMouseDownHtmlEditorWeb();
+      t12 = t3._as(t2.get(t1)).richTextWebController.get$onEditorSettingsChange();
       A.Expando__checkType(t1);
-      t13 = t3._as(t2.get(t1)).richTextWebController.get$onEditorSettingsChange();
+      t13 = t3._as(t2.get(t1)).richTextWebController.get$onEditorTextSizeChanged();
+      t14 = this.constraints;
       A.Expando__checkType(t1);
-      t14 = t3._as(t2.get(t1)).richTextWebController.get$onEditorTextSizeChanged();
-      t15 = this.constraints;
-      A.Expando__checkType(t1);
-      return B.WebEditorView$(t5, t6, t7, t4, t15.maxHeight, t9, t3._as(t2.get(t1)).get$handleOnDragEnterHtmlEditorWeb(), t13, t14, t10, t8, t12, t11, t15.maxWidth);
+      return B.WebEditorView$(t5, t6, t7, t4, t14.maxHeight, t9, t3._as(t2.get(t1)).get$handleOnDragEnterHtmlEditorWeb(), t12, t13, t10, t8, t11, t14.maxWidth);
     },
     $signature: typesOffset + 2
   };
@@ -14329,7 +14323,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t7 = t3._as(t2.get(t1)).subjectEmailInputController;
       A.Expando__checkType(t1);
-      return A.GestureDetector$(_null, A.Column$(A._setArrayType([new A.Obx(new B.ComposerView_build___closure25(t1, context, constraints), _null), new A.ConstrainedBox(new A.BoxConstraints(0, 1 / 0, 0, t4), t5, _null), B.SubjectComposerWidget$(t6, D.EdgeInsetsDirectional_24_0_0_0, t3._as(t2.get(t1)).get$setSubjectEmail(), D.EdgeInsetsDirectional_0_12_24_12, t7), A.Expanded$(new A.LayoutBuilder(new B.ComposerView_build___closure26(t1, constraints), _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.ComposerView_build___closure27(t1, context), _null, _null, _null, _null, _null, _null, _null, false, C.Offset_O5r);
+      return A.GestureDetector$(_null, A.Column$(A._setArrayType([new A.Obx(new B.ComposerView_build___closure25(t1, context, constraints), _null), new A.ConstrainedBox(new A.BoxConstraints(0, 1 / 0, 0, t4), t5, _null), new B.SubjectComposerWidget(t6, t7, t3._as(t2.get(t1)).get$setSubjectEmail(), D.EdgeInsetsDirectional_24_0_0_0, D.EdgeInsetsDirectional_0_12_24_12, _null), A.Expanded$(new A.LayoutBuilder(new B.ComposerView_build___closure26(t1, constraints), _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.ComposerView_build___closure27(t1, context), _null, _null, _null, _null, _null, _null, _null, false, C.Offset_O5r);
     },
     $signature: 324
   };
@@ -14533,7 +14527,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ComposerView_build____closure3.prototype = {
     call$0() {
-      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15,
+      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -14555,18 +14549,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t10 = t3._as(t2.get(t1)).get$handleOnFocusHtmlEditorWeb();
       A.Expando__checkType(t1);
-      t11 = t3._as(t2.get(t1)).get$handleOnUnFocusHtmlEditorWeb();
+      t11 = t3._as(t2.get(t1)).get$handleOnMouseDownHtmlEditorWeb();
       A.Expando__checkType(t1);
-      t12 = t3._as(t2.get(t1)).get$handleOnMouseDownHtmlEditorWeb();
+      t12 = t3._as(t2.get(t1)).richTextWebController;
+      t12 = t12 == null ? null : t12.get$onEditorSettingsChange();
       A.Expando__checkType(t1);
       t13 = t3._as(t2.get(t1)).richTextWebController;
-      t13 = t13 == null ? null : t13.get$onEditorSettingsChange();
+      t13 = t13 == null ? null : t13.get$onEditorTextSizeChanged();
+      t14 = this.constraints;
       A.Expando__checkType(t1);
-      t14 = t3._as(t2.get(t1)).richTextWebController;
-      t14 = t14 == null ? null : t14.get$onEditorTextSizeChanged();
-      t15 = this.constraints;
-      A.Expando__checkType(t1);
-      return B.WebEditorView$(t5, t6, t7, t4, t15.maxHeight, t9, t3._as(t2.get(t1)).get$handleOnDragEnterHtmlEditorWeb(), t13, t14, t10, t8, t12, t11, t15.maxWidth);
+      return B.WebEditorView$(t5, t6, t7, t4, t14.maxHeight, t9, t3._as(t2.get(t1)).get$handleOnDragEnterHtmlEditorWeb(), t12, t13, t10, t8, t11, t14.maxWidth);
     },
     $signature: typesOffset + 2
   };
@@ -14788,7 +14780,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t7 = t3._as(t2.get(t1)).subjectEmailInputController;
       A.Expando__checkType(t1);
-      return A.GestureDetector$(_null, A.Column$(A._setArrayType([new A.Obx(new B.ComposerView_build__closure0(t1, context, constraints), _null), new A.ConstrainedBox(new A.BoxConstraints(0, 1 / 0, 0, t4), t5, _null), B.SubjectComposerWidget$(t6, D.EdgeInsetsDirectional_24_0_0_0, t3._as(t2.get(t1)).get$setSubjectEmail(), D.EdgeInsetsDirectional_0_12_24_12, t7), A.Expanded$(new A.LayoutBuilder(new B.ComposerView_build__closure1(t1, constraints), _null), 1), new A.Obx(new B.ComposerView_build__closure2(t1, context, constraints), _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.ComposerView_build__closure3(t1, context), _null, _null, _null, _null, _null, _null, _null, false, C.Offset_O5r);
+      return A.GestureDetector$(_null, A.Column$(A._setArrayType([new A.Obx(new B.ComposerView_build__closure0(t1, context, constraints), _null), new A.ConstrainedBox(new A.BoxConstraints(0, 1 / 0, 0, t4), t5, _null), new B.SubjectComposerWidget(t6, t7, t3._as(t2.get(t1)).get$setSubjectEmail(), D.EdgeInsetsDirectional_24_0_0_0, D.EdgeInsetsDirectional_0_12_24_12, _null), A.Expanded$(new A.LayoutBuilder(new B.ComposerView_build__closure1(t1, constraints), _null), 1), new A.Obx(new B.ComposerView_build__closure2(t1, context, constraints), _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.ComposerView_build__closure3(t1, context), _null, _null, _null, _null, _null, _null, _null, false, C.Offset_O5r);
     },
     $signature: 324
   };
@@ -14984,7 +14976,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ComposerView_build___closure5.prototype = {
     call$0() {
-      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15,
+      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -15006,16 +14998,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t10 = t3._as(t2.get(t1)).get$handleOnFocusHtmlEditorWeb();
       A.Expando__checkType(t1);
-      t11 = t3._as(t2.get(t1)).get$handleOnUnFocusHtmlEditorWeb();
+      t11 = t3._as(t2.get(t1)).get$handleOnMouseDownHtmlEditorWeb();
       A.Expando__checkType(t1);
-      t12 = t3._as(t2.get(t1)).get$handleOnMouseDownHtmlEditorWeb();
+      t12 = t3._as(t2.get(t1)).richTextWebController.get$onEditorSettingsChange();
       A.Expando__checkType(t1);
-      t13 = t3._as(t2.get(t1)).richTextWebController.get$onEditorSettingsChange();
+      t13 = t3._as(t2.get(t1)).richTextWebController.get$onEditorTextSizeChanged();
+      t14 = this.constraints;
       A.Expando__checkType(t1);
-      t14 = t3._as(t2.get(t1)).richTextWebController.get$onEditorTextSizeChanged();
-      t15 = this.constraints;
-      A.Expando__checkType(t1);
-      return B.WebEditorView$(t5, t6, t7, t4, t15.maxHeight, t9, t3._as(t2.get(t1)).get$handleOnDragEnterHtmlEditorWeb(), t13, t14, t10, t8, t12, t11, t15.maxWidth);
+      return B.WebEditorView$(t5, t6, t7, t4, t14.maxHeight, t9, t3._as(t2.get(t1)).get$handleOnDragEnterHtmlEditorWeb(), t12, t13, t10, t8, t11, t14.maxWidth);
     },
     $signature: typesOffset + 2
   };
@@ -15312,7 +15302,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A.Directionality_maybeOf(this.context);
       if (t3 == null)
         t3 = C.TextDirection_1;
-      return B.WebEditorWidget$(t2, t3, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onMouseDown, t1.onUnFocus, t1.width);
+      return B.WebEditorWidget$(t2, t3, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onMouseDown, null, t1.width);
     },
     $signature: typesOffset + 9
   };
@@ -15333,7 +15323,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = A.Directionality_maybeOf(this.context);
         if (t3 == null)
           t3 = C.TextDirection_1;
-        return B.WebEditorWidget$(t2, t3, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onMouseDown, t1.onUnFocus, t1.width);
+        return B.WebEditorWidget$(t2, t3, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onMouseDown, null, t1.width);
       }
     },
     $signature: 80
@@ -15354,7 +15344,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = A.Directionality_maybeOf(t2);
       if (t2 == null)
         t2 = C.TextDirection_1;
-      return B.WebEditorWidget$(t3, t2, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onMouseDown, t1.onUnFocus, t1.width);
+      return B.WebEditorWidget$(t3, t2, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onMouseDown, null, t1.width);
     },
     $signature: typesOffset + 9
   };
@@ -15377,7 +15367,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = A.Directionality_maybeOf(t2);
         if (t2 == null)
           t2 = C.TextDirection_1;
-        return B.WebEditorWidget$(t3, t2, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onMouseDown, t1.onUnFocus, t1.width);
+        return B.WebEditorWidget$(t3, t2, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onMouseDown, null, t1.width);
       }
     },
     $signature: 80
@@ -22436,5 +22426,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "0mRPXDj7NcAs6vyqitZJ47MN13Y=");
+})($__dart_deferred_initializers__, "OFsUaXiq2GQ5T91pP4xzGFIK6jQ=");
 ;

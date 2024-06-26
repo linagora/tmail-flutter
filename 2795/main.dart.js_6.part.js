@@ -1831,7 +1831,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       B.JSArray_methods.addAll$1(t2, A._setArrayType([A.Text$(_this.label, _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_jjv0, _null, _null, _null, _null, _null), B.SizedBox_null_8_null_null], t1));
       t1 = context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale;
       t1 = A.Bidi_isRtlLanguage(t1.get$languageCode(t1)) ? B.TextDirection_0 : B.TextDirection_1;
-      t2.push(A.TextFieldBuilder$(false, _this.editingController, B.Color_4278221567, A.InputDecoration$(_null, _null, _null, B.EdgeInsets_12_16_12_16, _null, _null, _null, _null, true, D.OutlineInputBorder_WtG0, _null, D.OutlineInputBorder_0Qn0, _null, B.TextStyle_knt, _null, B.Color_4294112245, true, _null, B.FloatingLabelBehavior_0, _null, _null, D.OutlineInputBorder_EjN0, D.OutlineInputBorder_0Qn0, _null, _null, _null, _null, _null, E.TextStyle_g3y0, _this.hint, _null, _null, _null, _null, _null, true, _null, B.TextStyle_cMb1, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _this.focusNode, _null, B.TextInputType_0_null_null, _null, _null, _null, _null, _null, _null, _null, false, t1, B.TextInputAction_6, B.TextStyle_cMb1));
+      t2.push(A.TextFieldBuilder$(false, _this.editingController, B.Color_4278221567, A.InputDecoration$(_null, _null, _null, B.EdgeInsets_12_16_12_16, _null, _null, _null, _null, true, D.OutlineInputBorder_WtG0, _null, D.OutlineInputBorder_0Qn0, _null, B.TextStyle_knt, _null, B.Color_4294112245, true, _null, B.FloatingLabelBehavior_0, _null, _null, D.OutlineInputBorder_EjN0, D.OutlineInputBorder_0Qn0, _null, _null, _null, _null, _null, E.TextStyle_g3y0, _this.hint, _null, _null, _null, _null, _null, true, _null, B.TextStyle_cMb1, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _this.focusNode, _null, B.TextInputType_0_null_null, _null, _null, _null, _null, _null, _null, false, t1, B.TextInputAction_6, B.TextStyle_cMb1));
       return A.Column$(t2, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1);
     }
   };
@@ -5012,7 +5012,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         case B.AccountMenuItem_2:
           A.Expando__checkType(t1);
           if (t3._as(t2.get(t1)).manageAccountDashboardController.get$isServerSettingsCapabilitySupported())
-            return D.AlwaysReadReceiptView_null;
+            return D.SafeArea_2Vk;
           else
             return B.SizedBox_0_0_null_null;
         case B.AccountMenuItem_4:
@@ -5030,7 +5030,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         case B.AccountMenuItem_6:
           return A.SafeArea$(true, C.MailboxVisibilityView$(), true, B.EdgeInsets_0_0_0_0, true, false);
         case B.AccountMenuItem_7:
-          return D.NotificationView_null;
+          return D.SafeArea_app;
         default:
           return B.SizedBox_0_0_null_null;
       }
@@ -5953,7 +5953,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.BoxShadow_oyn38 = new A.BoxShadow(0, B.BlurStyle_0, B.Color_335544320, B.Offset_0_8, 24);
     D.List_00 = A._setArrayType(makeConstList([D.BoxShadow_oyn38, B.BoxShadow_oyn0]), type$.JSArray_BoxShadow);
     D.MailboxVisibilityHeaderWidget_null = new C.MailboxVisibilityHeaderWidget(null);
-    D.NotificationView_null = new C.NotificationView(null);
     D.OtherOptions_150 = new A.OtherOptions(150);
     D.BorderSide_rtf0 = new A.BorderSide(B.Color_4293281350, 0.5, B.BorderStyle_1, -1);
     D.OutlineInputBorder_0Qn0 = new A.OutlineInputBorder(4, B.BorderRadius_tLn2, D.BorderSide_rtf0);
@@ -5969,9 +5968,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Radius_15_15 = new A.Radius(15, 15);
     D.BorderRadius_tLn28 = new A.BorderRadius(D.Radius_15_15, D.Radius_15_15, D.Radius_15_15, D.Radius_15_15);
     D.RoundedRectangleBorder_27D7 = new A.RoundedRectangleBorder(D.BorderRadius_tLn28, B.BorderSide_8xm);
+    D.SafeArea_2Vk = new A.SafeArea(true, false, true, true, B.EdgeInsets_0_0_0_0, D.AlwaysReadReceiptView_null, null);
     D.SafeArea_ErX = new A.SafeArea(true, false, true, true, B.EdgeInsets_0_0_0_0, D.LanguageAndRegionView_null, null);
     D.SettingsFirstLevelView_null = new C.SettingsFirstLevelView(null);
     D.SafeArea_PHx = new A.SafeArea(true, false, true, true, B.EdgeInsets_0_0_0_0, D.SettingsFirstLevelView_null, null);
+    D.NotificationView_null = new C.NotificationView(null);
+    D.SafeArea_app = new A.SafeArea(true, false, true, true, B.EdgeInsets_0_0_0_0, D.NotificationView_null, null);
     D.Size_8aB0 = new A.Size(1 / 0, 44);
     D.Size_8aB = new A.Size(1 / 0, 52);
     D.SizedBox_28_null_null_null = new A.SizedBox(28, null, null, null);
@@ -6007,5 +6009,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "bRe/6xMvZG3Pomu+Wrbz5Qwog8w=");
+})($__dart_deferred_initializers__, "DTJ17/v4/dEMxP+uVtgyuMDEU4o=");
 ;
