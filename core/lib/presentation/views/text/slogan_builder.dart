@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -14,8 +15,8 @@ class SloganBuilder extends StatelessWidget {
   final String? text;
   final TextStyle? textStyle;
   final TextAlign? textAlign;
-  final String? logoSVG;
   final String? logo;
+  final Uri? publicLogoUri;
   final double? sizeLogo;
   final OnTapCallback? onTapCallback;
   final EdgeInsetsGeometry? paddingText;
@@ -31,8 +32,8 @@ class SloganBuilder extends StatelessWidget {
     this.text,
     this.textStyle,
     this.textAlign,
-    this.logoSVG,
     this.logo,
+    this.publicLogoUri,
     this.sizeLogo,
     this.onTapCallback,
     this.padding,
@@ -94,9 +95,9 @@ class SloganBuilder extends StatelessWidget {
   }
 
   Widget _logoApp() {
-    if (logoSVG != null) {
+    if (logo != null && logo!.endsWith('svg')) {
       return SvgPicture.asset(
-        logoSVG!,
+        logo!,
         width: sizeLogo ?? 150,
         height: sizeLogo ?? 150);
     } else if (logo != null) {
@@ -104,9 +105,22 @@ class SloganBuilder extends StatelessWidget {
         image: AssetImage(logo!),
         fit: BoxFit.fill,
         width: sizeLogo ?? 150,
+        height: sizeLogo ?? 150);
+    } else if (publicLogoUri != null) {
+      return Image.network(
+        publicLogoUri.toString(),
+        fit: BoxFit.fill,
+        width: sizeLogo ?? 150,
         height: sizeLogo ?? 150,
-        alignment: Alignment.center);
+        errorBuilder: (_, error, stackTrace) {
+          return Container(
+            width: sizeLogo ?? 150,
+            height: sizeLogo ?? 150,
+            color: AppColor.textFieldHintColor,
+          );
+        });
+    } else {
+      return const SizedBox.shrink();
     }
-    return const SizedBox.shrink();
   }
 }

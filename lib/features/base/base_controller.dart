@@ -14,7 +14,6 @@ import 'package:dartz/dartz.dart';
 import 'package:fcm/model/firebase_capability.dart';
 import 'package:fcm/model/firebase_registration_id.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -57,7 +56,6 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:uuid/uuid.dart';
 
 abstract class BaseController extends GetxController
@@ -260,8 +258,6 @@ abstract class BaseController extends GetxController
       requireCapability(session!, accountId!, [FirebaseCapability.fcmIdentifier]);
       log('BaseController::injectFCMBindings: fcmAvailable = ${AppConfig.fcmAvailable}');
       if (AppConfig.fcmAvailable) {
-        final mapEnvData = Map<String, String>.from(dotenv.env);
-        await AppUtils.loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
         await FcmConfiguration.initialize();
         FcmInteractorBindings().dependencies();
         FcmService.instance.initialStreamController();

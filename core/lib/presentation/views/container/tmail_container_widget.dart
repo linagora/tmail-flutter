@@ -20,6 +20,7 @@ class TMailContainerWidget extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
   final List<BoxShadow>? boxShadow;
   final BoxBorder? border;
+  final Color? hoverColor;
 
   const TMailContainerWidget({
     super.key,
@@ -37,12 +38,13 @@ class TMailContainerWidget extends StatelessWidget {
     this.boxShadow,
     this.margin,
     this.border,
+    this.hoverColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final materialChild = Material(
-      color: Colors.transparent,
+      type: MaterialType.transparency,
       child: InkWell(
         onTap: onTapActionCallback,
         onTapDown: (detail) {
@@ -58,6 +60,7 @@ class TMailContainerWidget extends StatelessWidget {
             onTapActionAtPositionCallback!.call(position);
           }
         },
+        hoverColor: hoverColor,
         borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
         child: tooltipMessage != null
           ? Tooltip(

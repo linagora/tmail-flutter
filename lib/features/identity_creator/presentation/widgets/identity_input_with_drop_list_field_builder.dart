@@ -47,7 +47,7 @@ class IdentityInputWithDropListFieldBuilder extends StatelessWidget {
         controller: editingController,
         textInputAction: TextInputAction.done,
         decoration: (IdentityInputDecorationBuilder()
-          ..setContentPadding(const EdgeInsets.symmetric(
+          ..setContentPadding(EdgeInsets.symmetric(
               vertical: PlatformInfo.isWeb ? 16 : 12,
               horizontal: 12))
           ..setErrorText(_error))

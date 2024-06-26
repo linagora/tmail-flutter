@@ -1,3 +1,4 @@
+import 'package:core/utils/app_logger.dart';
 import 'package:date_format/date_format.dart' as date_format;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -13,8 +14,15 @@ class AppUtils {
 
   static const String envFileName = 'env.file';
 
-  static Future<void> loadEnvFile()  {
-    return dotenv.load(fileName: envFileName);
+  static Future<void> loadEnvFile() async {
+    await dotenv.load(fileName: envFileName);
+    final mapEnvData = Map<String, String>.from(dotenv.env);
+   try {
+     await AppUtils.loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
+   } catch (e) {
+     logError('AppUtils::loadEnvFile:loadFcmConfigFileToEnv: Exception = $e');
+     await dotenv.load(fileName: envFileName);
+   }
   }
 
   static Future<void> loadFcmConfigFileToEnv({Map<String, String>? currentMapEnvData})  {

@@ -10,13 +10,13 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:model/model.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:server_settings/server_settings/capability_server_settings.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/base/state/banner_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_user_profile_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
@@ -40,12 +40,11 @@ import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
-class ManageAccountDashBoardController extends ReloadableController {
+class ManageAccountDashBoardController extends ReloadableController with UserSettingPopupMenuMixin {
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
 
-  final appInformation = Rxn<PackageInfo>();
   final userProfile = Rxn<UserProfile>();
   final accountId = Rxn<AccountId>();
   final accountMenuItemSelected = AccountMenuItem.profiles.obs;
@@ -68,7 +67,6 @@ class ManageAccountDashBoardController extends ReloadableController {
   void onReady() {
     _initialPageLevel();
     _getArguments();
-    _getAppVersion();
     super.onReady();
   }
 
@@ -155,12 +153,6 @@ class ManageAccountDashBoardController extends ReloadableController {
     } catch (e) {
       logError('ManageAccountDashBoardController::injectVacationBindings(): $e');
     }
-  }
-
-  Future<void> _getAppVersion() async {
-    final info = await PackageInfo.fromPlatform();
-    log('ManageAccountDashBoardController::_getAppVersion(): ${info.version}');
-    appInformation.value = info;
   }
 
   void _getUserProfile() async {
@@ -369,6 +361,21 @@ class ManageAccountDashBoardController extends ReloadableController {
     }
 
     return false;
+  }
+
+  void handleClickAvatarAction(BuildContext context, RelativeRect position) {
+    openPopupMenuAction(
+      context,
+      position,
+      popupMenuUserSettingActionTile(
+        context,
+        userProfile.value,
+        onLogoutAction: () {
+          popBack();
+          logout(sessionCurrent, accountId.value);
+        }
+      )
+    );
   }
 
   @override

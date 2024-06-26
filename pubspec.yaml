@@ -152,15 +152,11 @@ dependencies:
 
   hive: 2.2.3
 
-  fk_user_agent: 2.1.0
-
   pointer_interceptor: 0.9.1
 
   rxdart: 0.27.7
 
   connectivity_plus: 3.0.3
-
-  package_info_plus: 4.2.0
 
   dropdown_button2: 2.0.0
 

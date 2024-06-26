@@ -9,7 +9,7 @@ class LinagoraApp with EquatableMixin{
   final String appName;
 
   @JsonKey(name: 'icon')
-  final String iconName;
+  final String? iconName;
 
   @JsonKey(name: 'appLink')
   final Uri appUri;
@@ -17,15 +17,17 @@ class LinagoraApp with EquatableMixin{
   final String? androidPackageId;
   final String? iosUrlScheme;
   final String? iosAppStoreLink;
+  final Uri? publicIconUri;
 
   LinagoraApp(
     this.appName,
-    this.iconName,
     this.appUri,
     {
+      this.iconName,
       this.androidPackageId,
       this.iosUrlScheme,
-      this.iosAppStoreLink
+      this.iosAppStoreLink,
+      this.publicIconUri
     }
   );
 
@@ -40,6 +42,7 @@ class LinagoraApp with EquatableMixin{
     appUri,
     androidPackageId,
     iosUrlScheme,
-    iosAppStoreLink
+    iosAppStoreLink,
+    publicIconUri
   ];
 }

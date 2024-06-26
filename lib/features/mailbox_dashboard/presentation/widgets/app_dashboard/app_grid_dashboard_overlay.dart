@@ -1,6 +1,6 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/app_dashboard/linagora_applications.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/app_grid_dashboard_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_dashboard/app_grid_dashboard_item.dart';
 
 class AppDashboardOverlay extends StatelessWidget {
@@ -17,18 +17,9 @@ class AppDashboardOverlay extends StatelessWidget {
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(24),
-          boxShadow: const [
-            BoxShadow(
-              color: AppColor.colorShadowLayerBottom,
-              blurRadius: 96,
-              offset: Offset.zero),
-            BoxShadow(
-              color: AppColor.colorShadowLayerTop,
-              blurRadius: 2,
-              offset: Offset.zero),
-          ]
+          boxShadow: AppGridDashboardStyle.cardShadow
         ),
-        padding: const EdgeInsets.all(24),
+        padding: AppGridDashboardStyle.padding,
         child: Wrap(children: _linagoraApplications.apps
           .map((app) => AppGridDashboardItem(app))
           .toList()),
@@ -38,13 +29,11 @@ class AppDashboardOverlay extends StatelessWidget {
 
   double get _widthAppGrid {
     if (_linagoraApplications.apps.length >= 3) {
-      return 342;
+      return AppGridDashboardStyle.hoverIconSize * 3 + AppGridDashboardStyle.padding.horizontal;
     } else if (_linagoraApplications.apps.length == 2) {
-      return 244;
-    } else if (_linagoraApplications.apps.length == 1) {
-      return 146;
+      return AppGridDashboardStyle.hoverIconSize * 2 + AppGridDashboardStyle.padding.horizontal;
     } else {
-      return 0;
+      return AppGridDashboardStyle.hoverIconSize + AppGridDashboardStyle.padding.horizontal;
     }
   }
 }

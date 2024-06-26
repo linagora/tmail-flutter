@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
@@ -205,7 +204,6 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => UploadController(Get.find<UploadAttachmentInteractor>()));
     Get.lazyPut(() => RichTextWebController());
     Get.lazyPut(() => ComposerController(
-      Get.find<DeviceInfoPlugin>(),
       Get.find<LocalFilePickerInteractor>(),
       Get.find<GetEmailContentInteractor>(),
       Get.find<GetAllIdentitiesInteractor>(),

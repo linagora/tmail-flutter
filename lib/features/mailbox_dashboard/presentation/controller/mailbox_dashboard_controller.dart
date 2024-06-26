@@ -3,6 +3,7 @@ import 'dart:convert';
 
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:core/core.dart';
+import 'package:core/utils/application_manager.dart';
 import 'package:dartz/dartz.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
@@ -23,7 +24,6 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:model/model.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
@@ -89,6 +89,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
@@ -152,7 +153,7 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:uuid/uuid.dart';
 
-class MailboxDashBoardController extends ReloadableController {
+class MailboxDashBoardController extends ReloadableController with UserSettingPopupMenuMixin {
 
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
@@ -161,6 +162,7 @@ class MailboxDashBoardController extends ReloadableController {
   final AppGridDashboardController appGridDashboardController = Get.find<AppGridDashboardController>();
   final SpamReportController spamReportController = Get.find<SpamReportController>();
   final NetworkConnectionController networkConnectionController = Get.find<NetworkConnectionController>();
+  final ApplicationManager applicationManager = Get.find<ApplicationManager>();
 
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
@@ -204,7 +206,6 @@ class MailboxDashBoardController extends ReloadableController {
   final mailboxUIAction = Rxn<MailboxUIAction>();
   final emailUIAction = Rxn<EmailUIAction>();
   final dashboardRoute = DashboardRoutes.waiting.obs;
-  final appInformation = Rxn<PackageInfo>();
   final currentSelectMode = SelectMode.INACTIVE.obs;
   final filterMessageOption = FilterMessageOption.all.obs;
   final listEmailSelected = <PresentationEmail>[].obs;
@@ -272,6 +273,9 @@ class MailboxDashBoardController extends ReloadableController {
   void onInit() {
     _registerStreamListener();
     BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.dashboard);
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      await applicationManager.initUserAgent();
+    });
     super.onInit();
   }
 
@@ -281,7 +285,6 @@ class MailboxDashBoardController extends ReloadableController {
     _registerPendingEmailContents();
     _registerPendingFileInfo();
     _handleArguments();
-    _getAppVersion();
     super.onReady();
   }
 
@@ -540,12 +543,6 @@ class MailboxDashBoardController extends ReloadableController {
     dispatchRoute(DashboardRoutes.waiting);
     _handleSession(arguments.session);
     _handleNotificationMessageFromEmailId(arguments.emailId);
-  }
-
-  Future<void> _getAppVersion() async {
-    final info = await PackageInfo.fromPlatform();
-    log('MailboxDashBoardController::_getAppVersion(): ${info.version}');
-    appInformation.value = info;
   }
 
   void _getVacationResponse() {
@@ -2487,6 +2484,28 @@ class MailboxDashBoardController extends ReloadableController {
 
   String get userEmail => userProfile.value?.email ?? '';
 
+  void handleClickAvatarAction(BuildContext context, RelativeRect position) {
+    openPopupMenuAction(
+      context,
+      position,
+      popupMenuUserSettingActionTile(
+        context,
+        userProfile.value,
+        onLogoutAction: () {
+          popBack();
+          logout(
+            sessionCurrent,
+            accountId.value
+          );
+        },
+        onSettingAction: () {
+          popBack();
+          goToSettings();
+        }
+      )
+    );
+  }
+
   @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();
@@ -2497,6 +2516,7 @@ class MailboxDashBoardController extends ReloadableController {
     _refreshActionEventController.close();
     _notificationManager.closeStream();
     _fcmService.closeStream();
+    applicationManager.releaseUserAgent();
     BackButtonInterceptor.removeByName(AppRoutes.dashboard);
     super.onClose();
   }

@@ -3,6 +3,7 @@ import 'package:core/data/utils/device_manager.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/application_manager.dart';
 import 'package:core/utils/config/app_config_loader.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
@@ -62,6 +63,7 @@ class CoreBindings extends Bindings {
     Get.put(AppConfigLoader());
     Get.put(FileUtils());
     Get.put(PrintUtils());
+    Get.put(ApplicationManager(Get.find<DeviceInfoPlugin>()));
   }
 
   void _bindingIsolate() {

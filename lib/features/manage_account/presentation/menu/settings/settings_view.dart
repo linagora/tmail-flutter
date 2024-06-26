@@ -48,7 +48,7 @@ class SettingsView extends GetWidget<SettingsController> {
             Obx(() {
               if (controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsValid == true) {
                 return VacationNotificationMessageWidget(
-                    margin: const EdgeInsetsDirectional.only(
+                    margin: EdgeInsetsDirectional.only(
                         start: PlatformInfo.isWeb ? 24 : 16,
                         end: PlatformInfo.isWeb ? 24 : 16,
                         top: 16),
@@ -62,7 +62,7 @@ class SettingsView extends GetWidget<SettingsController> {
                   || controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsStopped == true)
                   && controller.manageAccountDashboardController.inVacationSettings()) {
                 return VacationNotificationMessageWidget(
-                  margin: const EdgeInsetsDirectional.only(
+                  margin: EdgeInsetsDirectional.only(
                     start: PlatformInfo.isWeb ? 24 : 16,
                     end: PlatformInfo.isWeb ? 24 : 16,
                     top: 16),

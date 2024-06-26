@@ -2,6 +2,7 @@ import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/application_manager.dart';
 import 'package:flutter/widgets.dart' hide State;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -17,7 +18,6 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/user/user_profile.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_email_as_drafts_interactor.dart';
@@ -169,6 +169,7 @@ const fallbackGenerators = {
   MockSpec<Uuid>(),
   MockSpec<CachingManager>(),
   MockSpec<LanguageCacheManager>(),
+  MockSpec<ApplicationManager>(),
 ])
 void main() {
   // mock mailbox dashboard controller direct dependencies
@@ -212,6 +213,7 @@ void main() {
   final appGridDashboardController = MockAppGridDashboardController();
   final spamReportController = MockSpamReportController();
   final networkConnectionController = MockNetworkConnectionController();
+  final applicationManager = MockApplicationManager();
 
   // mock search controller direct dependencies
   final quickSearchEmailInteractor = MockQuickSearchEmailInteractor();
@@ -280,6 +282,7 @@ void main() {
       Get.put<AppGridDashboardController>(appGridDashboardController);
       Get.put<SpamReportController>(spamReportController);
       Get.put<NetworkConnectionController>(networkConnectionController);
+      Get.put<ApplicationManager>(applicationManager);
       Get.put<CachingManager>(cachingManager);
       Get.put<LanguageCacheManager>(languageCacheManager);
       Get.put<AuthorizationInterceptors>(authorizationInterceptors);
@@ -300,12 +303,6 @@ void main() {
       Get.put<UpdateAuthenticationAccountInteractor>(updateAuthenticationAccountInteractor);
 
       Get.testMode = true;
-      PackageInfo.setMockInitialValues(
-        appName: '',
-        packageName: '',
-        version: '',
-        buildNumber: '',
-        buildSignature: '');
 
       when(emailReceiveManager.pendingEmailAddressInfo).thenAnswer((_) => BehaviorSubject.seeded(null));
       when(emailReceiveManager.pendingEmailContentInfo).thenAnswer((_) => BehaviorSubject.seeded(null));

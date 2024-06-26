@@ -42,7 +42,7 @@ class ContactInputDecorationBuilder extends InputDecorationBuilder {
         color: AppColor.colorEmailAddressFull,
         fontWeight: FontWeight.w500,
         fontSize: 16),
-      contentPadding: const EdgeInsets.symmetric(
+      contentPadding: EdgeInsets.symmetric(
         vertical: PlatformInfo.isWeb ? 16 : 12,
         horizontal: 12),
       errorText: errorText,
