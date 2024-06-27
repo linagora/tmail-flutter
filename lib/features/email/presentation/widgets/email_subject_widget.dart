@@ -10,6 +10,10 @@ class EmailSubjectWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (presentationEmail.getEmailTitle().isEmpty) {
+      return const SizedBox.shrink();
+    }
+
     return Padding(
       padding: EmailSubjectStyles.padding,
       child: Text(
