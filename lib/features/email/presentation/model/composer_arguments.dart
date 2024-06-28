@@ -1,9 +1,11 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
+
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
@@ -26,6 +28,7 @@ class ComposerArguments extends RouterArguments {
   final List<Identity>? identities;
   final Identity? selectedIdentity;
   final List<Attachment>? inlineImages;
+  final bool? readRecepientEnabled;
 
   ComposerArguments({
     this.emailActionType = EmailActionType.compose,
@@ -44,6 +47,7 @@ class ComposerArguments extends RouterArguments {
     this.identities,
     this.selectedIdentity,
     this.inlineImages,
+    this.readRecepientEnabled,
   });
 
   factory ComposerArguments.fromSendingEmail(SendingEmail sendingEmail) =>
@@ -94,6 +98,7 @@ class ComposerArguments extends RouterArguments {
         .toList(),
       selectedIdentity: composerCache.identity,
       inlineImages: composerCache.email?.attachmentsWithCid,
+      readRecepientEnabled: composerCache.readReceipentEnabled,
     );
 
   factory ComposerArguments.replyEmail({
@@ -195,6 +200,7 @@ class ComposerArguments extends RouterArguments {
     List<Identity>? identities,
     Identity? selectedIdentity,
     List<Attachment>? inlineImages,
+    bool? readRecepientEnabled,
   }) {
     return ComposerArguments(
       emailActionType: emailActionType ?? this.emailActionType,
@@ -213,6 +219,7 @@ class ComposerArguments extends RouterArguments {
       identities: identities ?? this.identities,
       selectedIdentity: selectedIdentity ?? this.selectedIdentity,
       inlineImages: inlineImages ?? this.inlineImages,
+      readRecepientEnabled: readRecepientEnabled ?? this.readRecepientEnabled,
     );
   }
 }

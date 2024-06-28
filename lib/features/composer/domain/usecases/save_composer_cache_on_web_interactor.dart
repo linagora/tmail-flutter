@@ -29,7 +29,8 @@ class SaveComposerCacheOnWebInteractor {
         emailCreated,
         accountId: accountId,
         userName: userName,
-        identity: identity);
+        identity: identity,
+        readReceipentEnabled: createEmailRequest.isRequestReadReceipt);
       return Right(SaveComposerCacheSuccess());
     } catch (exception) {
       return Left(SaveComposerCacheFailure(exception));

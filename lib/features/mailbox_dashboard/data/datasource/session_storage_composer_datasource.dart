@@ -11,7 +11,8 @@ abstract class SessionStorageComposerDatasource {
     {
       required AccountId accountId,
       required UserName userName,
-      Identity? identity
+      Identity? identity,
+      bool? readReceipentEnabled,
     }
   );
 

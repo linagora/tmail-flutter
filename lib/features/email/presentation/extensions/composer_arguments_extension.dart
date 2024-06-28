@@ -21,6 +21,7 @@ extension ComposerArgumentsExtension on ComposerArguments {
       identities: identities,
       selectedIdentity: selectedIdentity,
       inlineImages: inlineImages,
+      readRecepientEnabled: readRecepientEnabled
     );
   }
 }

@@ -32,14 +32,16 @@ class ComposerCacheRepositoryImpl extends ComposerCacheRepository {
     {
       required AccountId accountId,
       required UserName userName,
-      Identity? identity
+      Identity? identity,
+      bool? readReceipentEnabled
     }
   ) {
     return composerCacheDataSource.saveComposerCacheOnWeb(
       email,
       accountId: accountId,
       userName: userName,
-      identity: identity);
+      identity: identity,
+      readReceipentEnabled: readReceipentEnabled);
   }
 
   @override

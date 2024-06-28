@@ -33,11 +33,7 @@ class SessionStorageComposerDatasourceImpl
       final result = html.window.sessionStorage.entries.firstWhereOrNull(
         (entry) => entry.key == keyWithIdentity);
       if (result != null) {
-        final composerCache = ComposerCache.fromJson(jsonDecode(result.value));
-        
-        return ComposerCache(
-          email: composerCache.email,
-          identity: composerCache.identity);
+        return ComposerCache.fromJson(jsonDecode(result.value));
       } else {
         throw NotFoundInWebSessionException();
       }
@@ -58,7 +54,8 @@ class SessionStorageComposerDatasourceImpl
     {
       required AccountId accountId,
       required UserName userName,
-      Identity? identity
+      Identity? identity,
+      bool? readReceipentEnabled
     }
   ) async {
     return Future.sync(() {
@@ -69,7 +66,8 @@ class SessionStorageComposerDatasourceImpl
       Map<String, String> entries = {
         composerCacheKey: jsonEncode(ComposerCache(
           email: email,
-          identity: identity
+          identity: identity,
+          readReceipentEnabled: readReceipentEnabled
         ).toJson())
       };
       html.window.sessionStorage.addAll(entries);

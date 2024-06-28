@@ -223,7 +223,6 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     createFocusNodeInput();
     scrollControllerEmailAddress.addListener(_scrollControllerEmailAddressListener);
     _listenStreamEvent();
-    _getAlwaysReadReceiptSetting();
     _beforeUnloadManager.addListener(onBeforeUnload);
   }
 
@@ -517,6 +516,9 @@ class ComposerController extends BaseController with DragDropFileMixin implement
       : Get.arguments;
     if (arguments is ComposerArguments) {
       composerArguments.value = arguments;
+      if (arguments.emailActionType != EmailActionType.reopenComposerBrowser) {
+        _initIdentities(arguments);
+      }
 
       _initIdentities(arguments);
 
@@ -624,6 +626,8 @@ class ComposerController extends BaseController with DragDropFileMixin implement
             accountId: accountId,
             downloadUrl: downloadUrl
           );
+
+          hasRequestReadReceipt.value = arguments.readRecepientEnabled ?? false;
           break;
         case EmailActionType.composeFromUnsubscribeMailtoLink:
           if (arguments.subject != null) {

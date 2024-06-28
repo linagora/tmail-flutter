@@ -6,22 +6,26 @@ class ComposerCache with EquatableMixin {
 
   final Email? email;
   final Identity? identity;
+  final bool? readReceipentEnabled;
 
   ComposerCache({
     this.email,
     this.identity,
+    this.readReceipentEnabled,
   });
 
   @override
   List<Object?> get props => [
     email,
-    identity
+    identity,
+    readReceipentEnabled
   ];
 
   Map<String, dynamic> toJson() {
     return <String, dynamic>{
       'email': email?.toJson(),
       'identity': identity?.toJson(),
+      'readReceipentEnabled': readReceipentEnabled
     };
   }
 
@@ -29,6 +33,7 @@ class ComposerCache with EquatableMixin {
     return ComposerCache(
       email: map['email'] != null ? Email.fromJson(map['email']) : null,
       identity: map['identity'] != null ? Identity.fromJson(map['identity']) : null,
+      readReceipentEnabled: map['readReceipentEnabled'] as bool?
     );
   }
 }
