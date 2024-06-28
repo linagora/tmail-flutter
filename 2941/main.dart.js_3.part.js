@@ -18346,7 +18346,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).goToComposer$1(A.ComposerArguments$(_null, _null, C.EmailActionType_3, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null));
+      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).goToComposer$1(A.ComposerArguments$(_null, _null, C.EmailActionType_3, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null));
     },
     $signature: 0
   };
@@ -20825,7 +20825,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController.goToComposer$1(A.ComposerArguments$(_null, _null, C.EmailActionType_3, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null));
+      return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController.goToComposer$1(A.ComposerArguments$(_null, _null, C.EmailActionType_3, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null));
     },
     $signature: 0
   };
@@ -22398,5 +22398,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "wgM5lzBDlt0foHZJvxRk3EZbhAA=");
+})($__dart_deferred_initializers__, "Pn8x3c9H+prxRltluBa3jUSPvtw=");
 ;
