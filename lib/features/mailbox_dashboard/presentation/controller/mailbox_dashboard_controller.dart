@@ -397,8 +397,6 @@ class MailboxDashBoardController extends ReloadableController {
       _handleRestoreDeletedMessageFailed();
     } else if (failure is GetRestoredDeletedMessageFailure) {
       _handleRestoreDeletedMessageFailed();
-    } else if (failure is GetAllIdentitiesFailure) {
-      _removeComposerCacheOnWeb();
     }
   }
 
