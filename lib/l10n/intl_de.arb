@@ -3358,5 +3358,21 @@
     "placeholders": {
       "maxSize": {}
     }
+  },
+  "toastMessageMarkAsMailboxReadSuccess": "",
+  "@toastMessageMarkAsMailboxReadSuccess": {
+    "type": "text",
+    "placeholders_order": [
+      "mailboxName"
+    ],
+    "placeholders": {
+      "mailboxName": {}
+    }
+  },
+  "Bad credentials": "",
+  "@Bad credentials": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
