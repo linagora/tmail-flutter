@@ -14,7 +14,7 @@ class PresentationMailbox with EquatableMixin {
   static const String templatesRole= 'templates';
   static const String outboxRole = 'outbox';
   static const String draftsRole = 'drafts';
-  static const String spamRole = 'spam';
+  static const String spamRole = 'junk';
   static const String archiveRole = 'archive';
   static const String recoveredRole = 'restored messages';
 
