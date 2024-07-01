@@ -430,8 +430,10 @@ class ComposerController extends BaseController with DragDropFileMixin {
 
   void _subjectEmailInputFocusListener() {
     if (subjectEmailInputFocusNode?.hasFocus == true) {
-      if (PlatformInfo.isMobile) {
-        htmlEditorApi?.unfocus();
+      if (PlatformInfo.isMobile
+          && currentContext != null
+          && !responsiveUtils.isScreenWithShortestSide(currentContext!)) {
+        richTextMobileTabletController?.richTextController.hideRichTextView();
       }
       _collapseAllRecipient();
       _autoCreateEmailTag();
@@ -454,15 +456,11 @@ class ComposerController extends BaseController with DragDropFileMixin {
     richTextMobileTabletController?.richTextController.onCreateHTMLEditor(
       editorApi,
       onEnterKeyDown: _onEnterKeyDown,
-      onFocus: () => _onEditorFocusOnMobile(context),
+      onFocus: _onEditorFocusOnMobile,
       onChangeCursor: (coordinates) {
         _onChangeCursorOnMobile(coordinates, context);
       },
     );
-  }
-
-  void onTapOutsideSubject(PointerDownEvent event) {
-    subjectEmailInputFocusNode?.unfocus();
   }
 
   void onLoadCompletedMobileEditorAction(HtmlEditorApi editorApi, WebUri? url) async {
@@ -1379,13 +1377,6 @@ class ComposerController extends BaseController with DragDropFileMixin {
     }
   }
 
-  void onEditorFocusChange(bool isFocus) {
-    if (isFocus) {
-      _collapseAllRecipient();
-      _autoCreateEmailTag();
-    }
-  }
-
   void _collapseAllRecipient() {
     toAddressExpandMode.value = ExpandMode.COLLAPSE;
     ccAddressExpandMode.value = ExpandMode.COLLAPSE;
@@ -1505,7 +1496,9 @@ class ComposerController extends BaseController with DragDropFileMixin {
           break;
       }
       _closeSuggestionBox();
-      if (PlatformInfo.isMobile) {
+      if (PlatformInfo.isMobile
+          && currentContext != null
+          && !responsiveUtils.isScreenWithShortestSide(currentContext!)) {
         richTextMobileTabletController?.richTextController.hideRichTextView();
       }
     } else {
@@ -1645,9 +1638,11 @@ class ComposerController extends BaseController with DragDropFileMixin {
     _closeComposerAction();
   }
 
-  Future<void> _onEditorFocusOnMobile(BuildContext context) async {
+  Future<void> _onEditorFocusOnMobile() async {
     if (PlatformInfo.isAndroid) {
-      FocusScope.of(context).unfocus();
+      if (FocusManager.instance.primaryFocus?.hasFocus == true) {
+        FocusManager.instance.primaryFocus?.unfocus();
+      }
       await Future.delayed(
         const Duration(milliseconds: 300),
         richTextMobileTabletController?.richTextController.showDeviceKeyboard);
@@ -1709,8 +1704,8 @@ class ComposerController extends BaseController with DragDropFileMixin {
     hasRequestReadReceipt.toggle();
   }
 
-  void _autoFocusFieldWhenLauncher() {
-    if (_hasInputFieldFocused) {
+  Future<void> _autoFocusFieldWhenLauncher() async {
+    if (await _hasInputFieldFocused()) {
       log('ComposerController::_autoFocusFieldWhenLauncher: INPUT_FIELD_FOCUS = true');
       return;
     }
@@ -1725,14 +1720,28 @@ class ComposerController extends BaseController with DragDropFileMixin {
       subjectEmailInputFocusNode?.requestFocus();
     } else if (PlatformInfo.isWeb) {
       richTextWebController?.editorController.setFocus();
+    } else if (PlatformInfo.isIOS) {
+      await richTextMobileTabletController?.htmlEditorApi?.requestFocus();
     }
   }
 
-  bool get _hasInputFieldFocused =>
-    toAddressFocusNode?.hasFocus == true ||
-    ccAddressFocusNode?.hasFocus == true ||
-    bccAddressFocusNode?.hasFocus == true ||
-    subjectEmailInputFocusNode?.hasFocus == true;
+  Future<bool> _hasInputFieldFocused() async {
+    if (PlatformInfo.isWeb) {
+      return toAddressFocusNode?.hasFocus == true ||
+        ccAddressFocusNode?.hasFocus == true ||
+        bccAddressFocusNode?.hasFocus == true ||
+        subjectEmailInputFocusNode?.hasFocus == true;
+    } else if (PlatformInfo.isMobile) {
+      final isEditorFocused = (await richTextMobileTabletController?.isEditorFocused) ?? false;
+      return toAddressFocusNode?.hasFocus == true ||
+        ccAddressFocusNode?.hasFocus == true ||
+        bccAddressFocusNode?.hasFocus == true ||
+        subjectEmailInputFocusNode?.hasFocus == true ||
+        isEditorFocused;
+    }
+    return false;
+  }
+
 
   void handleInitHtmlEditorWeb(String initContent) async {
     log('ComposerController::handleInitHtmlEditorWeb:');
@@ -1755,14 +1764,11 @@ class ComposerController extends BaseController with DragDropFileMixin {
     richTextWebController?.closeAllMenuPopup();
   }
 
-  void handleOnUnFocusHtmlEditorWeb() {
-    onEditorFocusChange(false);
-  }
-
   void handleOnMouseDownHtmlEditorWeb(BuildContext context) {
     Navigator.maybePop(context);
     FocusScope.of(context).unfocus();
-    onEditorFocusChange(true);
+    _collapseAllRecipient();
+    _autoCreateEmailTag();
   }
 
   FocusNode? getNextFocusOfToEmailAddress() {

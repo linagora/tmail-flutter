@@ -95,13 +95,13 @@ class VacationController extends BaseController {
   }
 
   void _initFocusListener() {
-    subjectTextFocusNode.addListener(() {
-      if (subjectTextFocusNode.hasFocus == true) {
-        if (PlatformInfo.isMobile) {
-          richTextControllerForMobile.hideRichTextView();
-        }
-      }
-    });
+    subjectTextFocusNode.addListener(_onSubjectTextListener);
+  }
+
+  void _onSubjectTextListener() {
+    if (subjectTextFocusNode.hasFocus && PlatformInfo.isMobile) {
+      richTextControllerForMobile.hideRichTextView();
+    }
   }
 
   void _getAllVacation() {
@@ -410,6 +410,7 @@ class VacationController extends BaseController {
 
   @override
   void onClose() {
+    subjectTextFocusNode.removeListener(_onSubjectTextListener);
     subjectTextFocusNode.dispose();
     subjectTextController.dispose();
     richTextControllerForMobile.dispose();

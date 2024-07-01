@@ -1,8 +1,8 @@
 import 'dart:io';
 
-import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
@@ -16,10 +16,12 @@ class RichTextMobileTabletController extends BaseRichTextController {
 
   final RichTextController richTextController = RichTextController();
 
+  Future<bool> get isEditorFocused async => await htmlEditorApi?.hasFocus() ?? false;
+
   void insertImage(InlineImage inlineImage) async {
-    bool isEditorFocused = await htmlEditorApi?.hasFocus() ?? false;
-    log('RichTextMobileTabletController::insertImage: isEditorFocused = $isEditorFocused');
-    if (!isEditorFocused) {
+    final isFocused = await isEditorFocused;
+    log('RichTextMobileTabletController::insertImage: isEditorFocused = $isFocused');
+    if (!isFocused) {
       await htmlEditorApi?.requestFocusLastChild();
     }
     if (inlineImage.base64Uri?.isNotEmpty == true) {
@@ -53,10 +55,9 @@ class RichTextMobileTabletController extends BaseRichTextController {
     required BuildContext context,
     required RichTextController? richTextController
   }) async {
-    if (Platform.isAndroid) {
-      await htmlEditorApi?.storeSelectionRange();
-      KeyboardUtils.hideSystemKeyboardMobile();
-    } else {
+    if (PlatformInfo.isAndroid) {
+      await htmlEditorApi?.hideKeyboard();
+    } else if (PlatformInfo.isIOS) {
       await htmlEditorApi?.unfocus();
     }
 
