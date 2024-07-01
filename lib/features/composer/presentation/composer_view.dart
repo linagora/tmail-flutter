@@ -201,7 +201,6 @@ class ComposerView extends GetWidget<ComposerController> {
                             onTextChange: controller.setSubjectEmail,
                             padding: ComposerStyle.mobileSubjectPadding,
                             margin: ComposerStyle.mobileSubjectMargin,
-                            onTapOutside: controller.onTapOutsideSubject,
                           ),
                           Obx(() {
                             if (controller.uploadController.listUploadAttachments.isNotEmpty) {
@@ -350,7 +349,6 @@ class ComposerView extends GetWidget<ComposerController> {
                         onTextChange: controller.setSubjectEmail,
                         padding: ComposerStyle.mobileSubjectPadding,
                         margin: ComposerStyle.mobileSubjectMargin,
-                        onTapOutside: controller.onTapOutsideSubject,
                       ),
                       Obx(() {
                         if (controller.uploadController.listUploadAttachments.isNotEmpty) {
