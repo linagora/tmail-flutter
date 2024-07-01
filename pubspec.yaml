@@ -55,12 +55,12 @@ dependencies:
   rich_text_composer:
     git:
       url: https://github.com/linagora/rich-text-composer.git
-      ref: cherry-pick-fix-rich-text-format-style
+      ref: cnb_supported
 
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: cherry-pick-fix-rich-text-format-style
+      ref: cnb_supported
 
   # TODO: We will change it when the PR in upstream repository will be merged
   # https://github.com/linagora/jmap-dart-client/pull/87
