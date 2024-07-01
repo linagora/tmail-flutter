@@ -236,7 +236,9 @@ class SettingsView extends GetWidget<SettingsController> {
           }
         case AccountMenuItem.alwaysReadReceipt:
           if (controller.manageAccountDashboardController.isServerSettingsCapabilitySupported) {
-            return const AlwaysReadReceiptView();
+            return const SafeArea(
+              top: false,
+              child: AlwaysReadReceiptView());
           } else {
             return const SizedBox.shrink();
           }
@@ -259,7 +261,9 @@ class SettingsView extends GetWidget<SettingsController> {
             top: false,
             child: MailboxVisibilityView());
         case AccountMenuItem.notification:
-          return const NotificationView();
+          return const SafeArea(
+            top: false,
+            child: NotificationView());
         default:
           return const SizedBox.shrink();
       }
