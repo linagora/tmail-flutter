@@ -2,9 +2,9 @@
 import 'dart:convert';
 
 import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/account/authentication_type.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
@@ -57,13 +57,14 @@ class IOSSharingManager {
         return Future.value(null);
       }
 
-      Tuple2<TokenOIDC?, String?> authenticationInfo = await Future.wait(
-        [
-          _getTokenOidc(tokeHashId: personalAccount.id),
-          _getCredentialAuthentication()
-        ],
-        eagerError: true
-      ).then((listValue) => Tuple2(listValue[0] as TokenOIDC?, listValue[1] as String?));
+      TokenOIDC? tokenOIDC;
+      String? credentialInfo;
+
+      if (personalAccount.authenticationType == AuthenticationType.oidc) {
+        tokenOIDC = await _getTokenOidc(tokeHashId: personalAccount.id);
+      } else {
+        credentialInfo = await _getCredentialAuthentication();
+      }
 
       final emailDeliveryState = await _getEmailDeliveryState(
         accountId: personalAccount.accountId!,
@@ -84,13 +85,15 @@ class IOSSharingManager {
         apiUrl: personalAccount.apiUrl!,
         emailState: emailState,
         emailDeliveryState: emailDeliveryState,
-        tokenOIDC: authenticationInfo.value1,
-        basicAuth: authenticationInfo.value2,
+        tokenOIDC: tokenOIDC,
+        basicAuth: credentialInfo,
         tokenEndpoint: tokenRecords?.tokenEndpoint,
         oidcScopes: tokenRecords?.scopes,
       );
-      log('IOSSharingManager::_saveKeyChainSharingSession: $keychainSharingSession');
+
       await _keychainSharingManager.save(keychainSharingSession);
+
+      log('IOSSharingManager::_saveKeyChainSharingSession: COMPLETED >> $keychainSharingSession');
     } catch (e) {
       logError('IOSSharingManager::_saveKeyChainSharingSession: Exception: $e');
     }

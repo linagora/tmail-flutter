@@ -21,8 +21,6 @@
 		F522E8862C0EE8B600DDA35B /* CoreUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F522E8852C0EE8B600DDA35B /* CoreUtils.swift */; };
 		F522E8872C0EE8B600DDA35B /* CoreUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F522E8852C0EE8B600DDA35B /* CoreUtils.swift */; };
 		F522E8882C0EE8B600DDA35B /* CoreUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = F522E8852C0EE8B600DDA35B /* CoreUtils.swift */; };
-		F522E88A2C0F117900DDA35B /* IntegerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F522E8892C0F117900DDA35B /* IntegerExtensions.swift */; };
-		F522E88B2C0F117900DDA35B /* IntegerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = F522E8892C0F117900DDA35B /* IntegerExtensions.swift */; };
 		F52F993027FD6EB900346091 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F52F992F27FD6EB900346091 /* ShareViewController.swift */; };
 		F52F993327FD6EB900346091 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F52F993127FD6EB900346091 /* MainInterface.storyboard */; };
 		F52F993727FD6EB900346091 /* TeamMailShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = F52F992D27FD6EB900346091 /* TeamMailShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -139,7 +137,6 @@
 		B2EAFF659572E6B9F5AFAAF8 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		F522E87E2C0EE23400DDA35B /* AuthenticationSSOTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationSSOTests.swift; sourceTree = "<group>"; };
 		F522E8852C0EE8B600DDA35B /* CoreUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreUtils.swift; sourceTree = "<group>"; };
-		F522E8892C0F117900DDA35B /* IntegerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntegerExtensions.swift; sourceTree = "<group>"; };
 		F52F992D27FD6EB900346091 /* TeamMailShareExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = TeamMailShareExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F52F992F27FD6EB900346091 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
 		F52F993227FD6EB900346091 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
@@ -446,7 +443,6 @@
 			children = (
 				F5E7D8782B38763B0009BB8A /* DateExtensions.swift */,
 				F5E7D87B2B38764F0009BB8A /* StringExtensions.swift */,
-				F522E8892C0F117900DDA35B /* IntegerExtensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -748,7 +744,6 @@
 			files = (
 				F5E7D87C2B38764F0009BB8A /* StringExtensions.swift in Sources */,
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
-				F522E88A2C0F117900DDA35B /* IntegerExtensions.swift in Sources */,
 				F5E7D8792B38763B0009BB8A /* DateExtensions.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
 				F522E8862C0EE8B600DDA35B /* CoreUtils.swift in Sources */,
@@ -787,7 +782,6 @@
 				F53D1E7F2B2E3C2600051FD0 /* JmapConstants.swift in Sources */,
 				F5E7D8822B3876F60009BB8A /* AuthenticationCredential.swift in Sources */,
 				F5D4EA032B2ABF090090DDFC /* NotificationService.swift in Sources */,
-				F522E88B2C0F117900DDA35B /* IntegerExtensions.swift in Sources */,
 				F522E8872C0EE8B600DDA35B /* CoreUtils.swift in Sources */,
 				F53D1E8A2B2E4BB700051FD0 /* TokenOidc.swift in Sources */,
 				F53D1E862B2E401B00051FD0 /* JmapRequestGenerator.swift in Sources */,

@@ -11,4 +11,8 @@ extension Date {
         dateFormatter.locale = Locale(identifier: CoreUtils.EN_US_POSIX_LOCALE)
         return dateFormatter.string(from: self)
     }
+    
+    func adding(seconds: Int) -> Date {
+        return self.addingTimeInterval(TimeInterval(seconds))
+    }
 }

@@ -15,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
+import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
 import 'package:uuid/uuid.dart';
 
 class CoreBindings extends Bindings {
@@ -64,6 +65,9 @@ class CoreBindings extends Bindings {
     Get.put(FileUtils());
     Get.put(PrintUtils());
     Get.put(ApplicationManager(Get.find<DeviceInfoPlugin>()));
+    if (PlatformInfo.isIOS) {
+      Get.put(IOSNotificationManager());
+    }
   }
 
   void _bindingIsolate() {
