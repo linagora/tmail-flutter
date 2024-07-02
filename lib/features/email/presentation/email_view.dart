@@ -362,7 +362,10 @@ class EmailView extends GetWidget<SingleEmailController> {
                 presentationEmail: controller.currentEmail,
                 onMailtoAttendeesAction: controller.handleMailToAttendees,
               )),
-              if (calendarEvent.getTitleEventAction(context, emailAddressSender ?? []).isNotEmpty)
+              if (_validateDisplayEventActionBanner(
+                  context: context,
+                  event: calendarEvent,
+                  emailAddressSender: emailAddressSender ?? []))
                 CalendarEventActionBannerWidget(
                   calendarEvent: calendarEvent,
                   listEmailAddressSender: emailAddressSender ?? []
@@ -470,6 +473,20 @@ class EmailView extends GetWidget<SingleEmailController> {
           })
       ],
     );
+  }
+
+  bool _validateDisplayEventActionBanner({
+    required BuildContext context,
+    required CalendarEvent event,
+    required List<String> emailAddressSender
+  }) {
+    final usernameEvent = event.getUserNameEventAction(
+      context: context,
+      imagePaths: controller.imagePaths,
+      listEmailAddressSender: emailAddressSender);
+    final titleEvent = event.getTitleEventAction(context, emailAddressSender);
+
+    return usernameEvent.isNotEmpty && titleEvent.isNotEmpty;
   }
 
   void _handleMoreEmailAction({

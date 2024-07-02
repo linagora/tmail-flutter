@@ -72,12 +72,13 @@ class CalendarEventDetailWidget extends StatelessWidget {
         children: [
           if (calendarEvent.title?.isNotEmpty == true)
             EventTitleWidget(title: calendarEvent.title!),
-          Padding(
-            padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
-            child: EventBodyContentWidget(
-              content: eventDesc,
-              isDraggableAppActive: isDraggableAppActive,
-              onMailtoDelegateAction: onMailtoDelegateAction)),
+          if (eventDesc.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
+              child: EventBodyContentWidget(
+                content: eventDesc,
+                isDraggableAppActive: isDraggableAppActive,
+                onMailtoDelegateAction: onMailtoDelegateAction)),
           _buildEventTimeWidget(),
           if (calendarEvent.videoConferences.isNotEmpty)
             Padding(
@@ -93,23 +94,24 @@ class CalendarEventDetailWidget extends StatelessWidget {
                 onOpenNewTabAction: onOpenNewTabAction,
               ),
             ),
-          if (calendarEvent.participants?.isNotEmpty == true && calendarEvent.organizer != null)
+          if (calendarEvent.participants?.isNotEmpty == true || calendarEvent.organizer != null)
             Padding(
               padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
               child: EventAttendeeDetailWidget(
-                attendees: calendarEvent.participants!,
-                organizer: calendarEvent.organizer!,
+                attendees: calendarEvent.participants ?? [],
+                organizer: calendarEvent.organizer,
               ),
             ),
-          CalendarEventActionButtonWidget(
-            onCalendarEventReplyActionClick: onCalendarEventReplyActionClick,
-            calendarEventReplying: calendarEventReplying,
-            presentationEmail: presentationEmail,
-            onMailToAttendeesAction: () => onMailtoAttendeesAction?.call(
-              calendarEvent.organizer,
-              calendarEvent.participants,
+          if (calendarEvent.isDisplayedEventReplyAction)
+            CalendarEventActionButtonWidget(
+              onCalendarEventReplyActionClick: onCalendarEventReplyActionClick,
+              calendarEventReplying: calendarEventReplying,
+              presentationEmail: presentationEmail,
+              onMailToAttendeesAction: () => onMailtoAttendeesAction?.call(
+                calendarEvent.organizer,
+                calendarEvent.participants,
+              ),
             ),
-          ),
         ],
       ),
     );
