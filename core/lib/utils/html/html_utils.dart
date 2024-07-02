@@ -30,7 +30,6 @@ class HtmlUtils {
 
   static const unregisterDropListener = (
     script: '''
-      console.log("unregisterDropListener");
       const editor = document.querySelector(".note-editable");
       const newEditor = editor.cloneNode(true);
       editor.parentNode.replaceChild(newEditor, editor);''',
@@ -76,12 +75,12 @@ class HtmlUtils {
     required String base64Data,
     required String mimeType
   }) {
+    log('HtmlUtils::convertBase64ToImageResourceData:');
     mimeType = validateHtmlImageResourceMimeType(mimeType);
     if (!base64Data.endsWith('==')) {
       base64Data.append('==');
     }
     final imageResource = 'data:$mimeType;base64,$base64Data';
-    log('HtmlUtils::convertBase64ToImageResourceData:imageResource: $imageResource');
     return imageResource;
   }
 

@@ -13,6 +13,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
+import 'package:tmail_ui_user/main/permissions/permission_service.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
@@ -52,6 +53,7 @@ class CoreBindings extends Bindings {
   void _bindingDeviceManager() {
     Get.put(DeviceInfoPlugin());
     Get.put(DeviceManager(Get.find<DeviceInfoPlugin>()));
+    Get.put(PermissionService());
   }
 
   void _bindingReceivingSharingStream() {
