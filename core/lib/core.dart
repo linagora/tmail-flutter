@@ -29,7 +29,6 @@ export 'presentation/utils/style_utils.dart';
 export 'presentation/utils/app_toast.dart';
 export 'presentation/utils/html_transformer/html_transform.dart';
 export 'presentation/utils/html_transformer/transform_configuration.dart';
-export 'presentation/utils/html_transformer/dom/add_tooltip_link_transformers.dart';
 export 'data/utils/device_manager.dart';
 export 'utils/app_logger.dart';
 export 'utils/benchmark.dart';
