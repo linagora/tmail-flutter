@@ -1,4 +1,4 @@
-# 48. Notification setting
+# 50. Android notification permission check
 
 Date: 2024-06-07
 
