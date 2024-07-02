@@ -520,11 +520,7 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleSession(Session session) {
     log('MailboxDashBoardController::_handleSession:');
-    updateAuthenticationAccount(
-      session,
-      session.personalAccount.accountId,
-      session.username
-    );
+    updateAccountCache(session);
 
     _setUpComponentsFromSession(session);
 

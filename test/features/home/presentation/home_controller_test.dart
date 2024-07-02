@@ -23,7 +23,7 @@ import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
@@ -49,7 +49,7 @@ import 'home_controller_test.mocks.dart';
   MockSpec<EmailReceiveManager>(),
   MockSpec<GetSessionInteractor>(),
   MockSpec<GetAuthenticatedAccountInteractor>(),
-  MockSpec<UpdateAuthenticationAccountInteractor>(),
+  MockSpec<UpdateAccountCacheInteractor>(),
   MockSpec<CachingManager>(),
   MockSpec<LanguageCacheManager>(),
   MockSpec<ApplicationManager>(),
@@ -66,7 +66,7 @@ void main() {
 
   late MockGetSessionInteractor mockGetSessionInteractor;
   late MockGetAuthenticatedAccountInteractor mockGetAuthenticatedAccountInteractor;
-  late MockUpdateAuthenticationAccountInteractor mockUpdateAuthenticationAccountInteractor;
+  late MockUpdateAccountCacheInteractor mockUpdateAccountCacheInteractor;
 
   late MockCachingManager mockCachingManager;
   late MockLanguageCacheManager mockLanguageCacheManager;
@@ -91,7 +91,7 @@ void main() {
     // mock reloadable controller
     mockGetSessionInteractor = MockGetSessionInteractor();
     mockGetAuthenticatedAccountInteractor = MockGetAuthenticatedAccountInteractor();
-    mockUpdateAuthenticationAccountInteractor = MockUpdateAuthenticationAccountInteractor();
+    mockUpdateAccountCacheInteractor = MockUpdateAccountCacheInteractor();
 
     //mock base controller
     mockCachingManager = MockCachingManager();
@@ -109,7 +109,7 @@ void main() {
 
     Get.put<GetSessionInteractor>(mockGetSessionInteractor);
     Get.put<GetAuthenticatedAccountInteractor>(mockGetAuthenticatedAccountInteractor);
-    Get.put<UpdateAuthenticationAccountInteractor>(mockUpdateAuthenticationAccountInteractor);
+    Get.put<UpdateAccountCacheInteractor>(mockUpdateAccountCacheInteractor);
 
     Get.put<CachingManager>(mockCachingManager);
     Get.put<LanguageCacheManager>(mockLanguageCacheManager);

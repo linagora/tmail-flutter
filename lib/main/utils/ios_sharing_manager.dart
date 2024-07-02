@@ -50,10 +50,11 @@ class IOSSharingManager {
     }
   }
 
-  Future saveKeyChainSharingSession(PersonalAccount personalAccount) async {
+  Future<void> saveKeyChainSharingSession(PersonalAccount personalAccount) async {
+    log('IOSSharingManager::saveKeyChainSharingSession: START ');
     try {
       if (!_validateToSaveKeychain(personalAccount)) {
-        logError('IOSSharingManager::saveKeyChainSharingSession: account is null');
+        logError('IOSSharingManager::saveKeyChainSharingSession: AccountId | Username | ApiUrl is NULL');
         return Future.value(null);
       }
 
@@ -93,7 +94,7 @@ class IOSSharingManager {
 
       await _keychainSharingManager.save(keychainSharingSession);
 
-      log('IOSSharingManager::_saveKeyChainSharingSession: COMPLETED >> $keychainSharingSession');
+      log('IOSSharingManager::_saveKeyChainSharingSession: << COMPLETED >> KeyChain = ${keychainSharingSession.toJson().toString()}');
     } catch (e) {
       logError('IOSSharingManager::_saveKeyChainSharingSession: Exception: $e');
     }

@@ -16,12 +16,16 @@ class NotificationService: UNNotificationServiceExtension {
         handler = contentHandler
         modifiedContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
-        guard let payloadData = request.content.userInfo as? [String: Any],
-              !keychainController.retrieveSharingSessions().isEmpty else {
-            self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
+        guard let payloadData = request.content.userInfo as? [String: Any] else {
+            self.showDefaultNotification(message: "Payload data is empty")
             return self.notify()
         }
 
+        guard !keychainController.retrieveSharingSessions().isEmpty else {
+            self.showDefaultNotification(message: "Keychain session is empty")
+            return self.notify()
+        }
+        
         if #available(iOSApplicationExtension 13.0, *) {
             Task {
                 await handlePushNotificationForNewEmail(payloadData: payloadData)
@@ -34,7 +38,7 @@ class NotificationService: UNNotificationServiceExtension {
     override func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
         // Use this as an opportunity to deliver your "best attempt" at modified content, otherwise the original push payload will be used.
-        self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
+        self.showDefaultNotification(message: "NSE timeout")
         self.notify()
     }
     
@@ -77,7 +81,7 @@ class NotificationService: UNNotificationServiceExtension {
                 onComplete: { (emails, errors) in
                     do {
                         if emails.isEmpty {
-                            self.showDefaultNotification(message: NSLocalizedString(self.newEmailDefaultMessageKey, comment: "Localizable"))
+                            self.showDefaultNotification(message: "List email is empty")
                             return self.notify()
                         } else {
                             self.keychainController.updateEmailDeliveryStateToKeychain(

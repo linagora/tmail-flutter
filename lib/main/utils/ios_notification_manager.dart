@@ -3,6 +3,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:flutter/services.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:model/model.dart';
 import 'package:rxdart/rxdart.dart';
 
 class IOSNotificationManager {
@@ -17,6 +18,7 @@ class IOSNotificationManager {
 
   void listenClickNotification() {
     _notificationInteractionChannel.setMethodCallHandler((methodCall) async {
+      log('IOSNotificationManager::listenClickNotification: $methodCall');
       if (methodCall.method == CURRENT_EMAIL_ID_IN_NOTIFICATION_CLICK_ON_FOREGROUND
           && methodCall.arguments != null) {
         final emailId = EmailId(Id(methodCall.arguments));
@@ -25,6 +27,7 @@ class IOSNotificationManager {
     });
 
     Stream.fromFuture(_getCurrentEmailIdInNotificationClick()).listen((emailId) {
+      log('IOSNotificationManager::listenClickNotification:_getCurrentEmailIdInNotificationClick:EmailId = ${emailId?.asString}');
       if (emailId != null) {
         setPendingCurrentEmailId(emailId);
       }

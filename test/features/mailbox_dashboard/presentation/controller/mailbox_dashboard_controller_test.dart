@@ -34,7 +34,7 @@ import 'package:tmail_ui_user/features/login/data/network/interceptors/authoriza
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_default_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
@@ -138,7 +138,7 @@ const fallbackGenerators = {
   MockSpec<GetAllRecentSearchLatestInteractor>(),
   MockSpec<GetSessionInteractor>(),
   MockSpec<GetAuthenticatedAccountInteractor>(),
-  MockSpec<UpdateAuthenticationAccountInteractor>(),
+  MockSpec<UpdateAccountCacheInteractor>(),
   MockSpec<CreateNewMailboxInteractor>(),
   MockSpec<DeleteMultipleMailboxInteractor>(),
   MockSpec<RenameMailboxInteractor>(),
@@ -234,7 +234,7 @@ void main() {
   // mock reloadable controller Get dependencies
   final getSessionInteractor = MockGetSessionInteractor();
   final getAuthenticatedAccountInteractor = MockGetAuthenticatedAccountInteractor();
-  final updateAuthenticationAccountInteractor = MockUpdateAuthenticationAccountInteractor();
+  final updateAccountCacheInteractor = MockUpdateAccountCacheInteractor();
 
   // mock mailbox controller direct dependencies
   final createNewMailboxInteractor = MockCreateNewMailboxInteractor();
@@ -299,7 +299,7 @@ void main() {
       Get.put<ApplicationManager>(applicationManager);
       Get.put<GetSessionInteractor>(getSessionInteractor);
       Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
-      Get.put<UpdateAuthenticationAccountInteractor>(updateAuthenticationAccountInteractor);
+      Get.put<UpdateAccountCacheInteractor>(updateAccountCacheInteractor);
       Get.put<GetAllIdentitiesInteractor>(getAllIdentitiesInteractor);
       Get.put<RemoveComposerCacheOnWebInteractor>(removeComposerCacheOnWebInteractor);
 

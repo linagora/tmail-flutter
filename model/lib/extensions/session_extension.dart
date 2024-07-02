@@ -67,6 +67,8 @@ extension SessionExtension on Session {
     throw NotFoundPersonalAccountException();
   }
 
+  AccountId get accountId => personalAccount.accountId;
+
   ({
     bool isAvailable,
     CalendarEventCapability? calendarEventCapability

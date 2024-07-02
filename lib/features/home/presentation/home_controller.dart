@@ -61,7 +61,7 @@ class HomeController extends ReloadableController {
 
   @override
   void handleReloaded(Session session) {
-    popAndPush(
+    pushAndPopAll(
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
       arguments: session);
   }
