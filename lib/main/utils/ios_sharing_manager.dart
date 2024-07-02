@@ -2,13 +2,15 @@
 import 'dart:convert';
 
 import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/account/authentication_type.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/push_notification/data/extensions/keychain_sharing_session_extension.dart';
@@ -20,12 +22,16 @@ class IOSSharingManager {
   final StateCacheManager _stateCacheManager;
   final TokenOidcCacheManager _tokenOidcCacheManager;
   final AuthenticationInfoCacheManager _authenticationInfoCacheManager;
+  final OidcConfigurationCacheManager _oidcConfigurationCacheManager;
+  final OIDCHttpClient _oidcHttpClient;
 
   IOSSharingManager(
     this._keychainSharingManager,
     this._stateCacheManager,
     this._tokenOidcCacheManager, 
-    this._authenticationInfoCacheManager
+    this._authenticationInfoCacheManager,
+    this._oidcConfigurationCacheManager,
+    this._oidcHttpClient,
   );
 
   bool _validateToSaveKeychain(PersonalAccount personalAccount) {
@@ -51,13 +57,14 @@ class IOSSharingManager {
         return Future.value(null);
       }
 
-      Tuple2<TokenOIDC?, String?> authenticationInfo = await Future.wait(
-        [
-          _getTokenOidc(tokeHashId: personalAccount.id),
-          _getCredentialAuthentication()
-        ],
-        eagerError: true
-      ).then((listValue) => Tuple2(listValue[0] as TokenOIDC?, listValue[1] as String?));
+      TokenOIDC? tokenOIDC;
+      String? credentialInfo;
+
+      if (personalAccount.authenticationType == AuthenticationType.oidc) {
+        tokenOIDC = await _getTokenOidc(tokeHashId: personalAccount.id);
+      } else {
+        credentialInfo = await _getCredentialAuthentication();
+      }
 
       final emailDeliveryState = await _getEmailDeliveryState(
         accountId: personalAccount.accountId!,
@@ -69,6 +76,8 @@ class IOSSharingManager {
         userName: personalAccount.userName!
       );
 
+      final tokenRecords = await _getTokenEndpointAndScopes();
+
       final keychainSharingSession = KeychainSharingSession(
         accountId: personalAccount.accountId!,
         userName: personalAccount.userName!,
@@ -76,11 +85,15 @@ class IOSSharingManager {
         apiUrl: personalAccount.apiUrl!,
         emailState: emailState,
         emailDeliveryState: emailDeliveryState,
-        tokenOIDC: authenticationInfo.value1,
-        basicAuth: authenticationInfo.value2
+        tokenOIDC: tokenOIDC,
+        basicAuth: credentialInfo,
+        tokenEndpoint: tokenRecords?.tokenEndpoint,
+        oidcScopes: tokenRecords?.scopes,
       );
-      log('IOSSharingManager::_saveKeyChainSharingSession: $keychainSharingSession');
+
       await _keychainSharingManager.save(keychainSharingSession);
+
+      log('IOSSharingManager::_saveKeyChainSharingSession: COMPLETED >> $keychainSharingSession');
     } catch (e) {
       logError('IOSSharingManager::_saveKeyChainSharingSession: Exception: $e');
     }
@@ -149,6 +162,21 @@ class IOSSharingManager {
       return emailState?.value;
     } catch (e) {
       logError('IOSSharingManager::_getEmailState:Exception: $e');
+      return null;
+    }
+  }
+
+  Future<({String? tokenEndpoint, List<String>? scopes})?> _getTokenEndpointAndScopes() async {
+    try {
+      final oidcConfig = await _oidcConfigurationCacheManager.getOidcConfiguration();
+      final oidcDiscoveryResponse = await _oidcHttpClient.discoverOIDC(oidcConfig);
+      log('IOSSharingManager::_getTokenEndpointAndScopes:oidcDiscoveryResponse = $oidcDiscoveryResponse | oidcConfig = $oidcConfig');
+      return (
+        tokenEndpoint: oidcDiscoveryResponse.tokenEndpoint,
+        scopes: oidcConfig.scopes
+      );
+    } catch (e) {
+      logError('IOSSharingManager::_getTokenEndpointAndScopes:Exception: $e');
       return null;
     }
   }

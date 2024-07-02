@@ -1,0 +1,64 @@
+
+import 'package:core/utils/app_logger.dart';
+import 'package:flutter/services.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:rxdart/rxdart.dart';
+
+class IOSNotificationManager {
+
+  static const _notificationInteractionChannel = MethodChannel('notification_interaction_channel');
+
+  static const String CURRENT_EMAIL_ID_IN_NOTIFICATION_CLICK_ON_FOREGROUND = 'current_email_id_in_notification_click_on_foreground';
+  static const String CURRENT_EMAIL_ID_IN_NOTIFICATION_CLICK = 'current_email_id_in_notification_click';
+
+  BehaviorSubject<EmailId?> _pendingCurrentEmailIdInNotification = BehaviorSubject.seeded(null);
+  BehaviorSubject<EmailId?> get pendingCurrentEmailIdInNotification => _pendingCurrentEmailIdInNotification;
+
+  void listenClickNotification() {
+    _notificationInteractionChannel.setMethodCallHandler((methodCall) async {
+      if (methodCall.method == CURRENT_EMAIL_ID_IN_NOTIFICATION_CLICK_ON_FOREGROUND
+          && methodCall.arguments != null) {
+        final emailId = EmailId(Id(methodCall.arguments));
+        setPendingCurrentEmailId(emailId);
+      }
+    });
+
+    Stream.fromFuture(_getCurrentEmailIdInNotificationClick()).listen((emailId) {
+      if (emailId != null) {
+        setPendingCurrentEmailId(emailId);
+      }
+    });
+  }
+
+  Future<EmailId?> _getCurrentEmailIdInNotificationClick() async {
+    try {
+      final emailId = await _notificationInteractionChannel.invokeMethod<String?>(CURRENT_EMAIL_ID_IN_NOTIFICATION_CLICK);
+      if (emailId?.isNotEmpty == true) {
+        return EmailId(Id(emailId!));
+      } else {
+        return null;
+      }
+    } catch (e) {
+      logError('IOSNotificationManager::getCurrentEmailIdInNotificationClick:Exception = $e');
+      return null;
+    }
+  }
+
+  void setPendingCurrentEmailId(EmailId emailId) async {
+    clearPendingCurrentEmailId();
+    _pendingCurrentEmailIdInNotification.add(emailId);
+  }
+
+  void clearPendingCurrentEmailId() {
+    if(_pendingCurrentEmailIdInNotification.isClosed) {
+      _pendingCurrentEmailIdInNotification = BehaviorSubject.seeded(null);
+    } else {
+      _pendingCurrentEmailIdInNotification.add(null);
+    }
+  }
+
+  void closePendingCurrentEmailIdInNotification() {
+    _pendingCurrentEmailIdInNotification.close();
+  }
+}

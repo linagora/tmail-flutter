@@ -36,16 +36,23 @@ class AuthenticationInterceptor: RequestInterceptor {
         }
 
         handleRefreshToken(tokenRefreshManager: tokenRefreshManager) { tokenResponse in
-            guard let accessToken = tokenResponse.accessToken,
-                  let refreshToken = tokenResponse.refreshToken else {
+            guard let accessToken = tokenResponse.accessToken else {
                 return completion(.doNotRetryWithError(error))
             }
 
+            let newRefreshToken = tokenResponse.refreshToken ?? authenticationSSO.refreshToken
+            
+            var expireTime: String? = nil
+            
+            if (tokenResponse.expiresTime != nil) {
+                expireTime = CoreUtils.shared.getCurrentDate().adding(seconds: tokenResponse.expiresTime!).convertDateToISO8601String()
+            }
+            
             self.authentication = AuthenticationSSO(
                 type: AuthenticationType.oidc,
                 accessToken: accessToken,
-                refreshToken: refreshToken,
-                expireTime: "\(tokenResponse.expiresTime ?? 0)"
+                refreshToken: newRefreshToken,
+                expireTime: expireTime
             )
 
             self.keychainController.updateTokenOidc(
@@ -53,8 +60,8 @@ class AuthenticationInterceptor: RequestInterceptor {
                 newTokenOidc: TokenOidc(
                     token: accessToken,
                     tokenId: tokenResponse.tokenId,
-                    expiredTime: "\(tokenResponse.expiresTime ?? 0)",
-                    refreshToken: refreshToken
+                    expiredTime: expireTime,
+                    refreshToken: newRefreshToken
                 )
             )
 
@@ -69,7 +76,7 @@ class AuthenticationInterceptor: RequestInterceptor {
     private func validateToRefreshToken(response: HTTPURLResponse, authenticationSSO: AuthenticationSSO) -> Bool {
         return response.statusCode == 401 &&
             !authenticationSSO.refreshToken.isEmpty &&
-            authenticationSSO.isExpiredTime()
+            authenticationSSO.isExpiredTime(currentDate: CoreUtils.shared.getCurrentDate())
     }
 
     // MARK: - Handle refresh token to get new token

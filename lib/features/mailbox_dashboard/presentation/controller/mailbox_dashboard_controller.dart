@@ -94,7 +94,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/comp
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/preview_email_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/refresh_action_view_event.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
@@ -153,6 +152,7 @@ import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
+import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
 import 'package:uuid/uuid.dart';
 
 class MailboxDashBoardController extends ReloadableController {
@@ -197,6 +197,7 @@ class MailboxDashBoardController extends ReloadableController {
   GetMailboxStateToRefreshInteractor? _getMailboxStateToRefreshInteractor;
   DeleteMailboxStateToRefreshInteractor? _deleteMailboxStateToRefreshInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
+  IOSNotificationManager? _iosNotificationManager;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -233,6 +234,8 @@ class MailboxDashBoardController extends ReloadableController {
   late StreamSubscription _emailAddressStreamSubscription;
   late StreamSubscription _emailContentStreamSubscription;
   late StreamSubscription _fileReceiveManagerStreamSubscription;
+
+  StreamSubscription? _currentEmailIdInNotificationIOSStreamSubscription;
 
   final StreamController<Either<Failure, Success>> _progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -272,7 +275,7 @@ class MailboxDashBoardController extends ReloadableController {
   );
 
   @override
-  void onInit() async {
+  void onInit() {
     _registerStreamListener();
     BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.dashboard);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -286,11 +289,14 @@ class MailboxDashBoardController extends ReloadableController {
     _registerPendingEmailAddress();
     _registerPendingEmailContents();
     _registerPendingFileInfo();
+    if (PlatformInfo.isIOS) {
+      _registerPendingCurrentEmailIdInNotification();
+    }
     _handleArguments();
     super.onReady();
   }
 
-  void _handleComposerCache() async {
+  void _handleComposerCache() {
     _getEmailCacheOnWebInteractor.execute().fold(
       (failure) {},
       (success) {
@@ -351,7 +357,7 @@ class MailboxDashBoardController extends ReloadableController {
     } else if (success is GetAppDashboardConfigurationSuccess) {
       appGridDashboardController.handleShowAppDashboard(success.linagoraApplications);
     } else if(success is GetEmailByIdSuccess) {
-      _moveToEmailDetailedView(success);
+      openEmailDetailedView(success.email);
     } else if (success is StoreSendingEmailSuccess) {
       _handleStoreSendingEmailSuccess(success);
     } else if (success is GetAllSendingEmailSuccess) {
@@ -392,7 +398,7 @@ class MailboxDashBoardController extends ReloadableController {
     }  else if (failure is MarkAsMailboxReadFailure) {
       _markAsReadMailboxFailure(failure);
     } else if (failure is GetEmailByIdFailure) {
-      _handleGetEmailDetailedFailed(failure);
+      _handleGetEmailByIdFailure(failure);
     } else if (failure is RestoreDeletedMessageFailure) {
       _handleRestoreDeletedMessageFailed();
     } else if (failure is GetRestoredDeletedMessageFailure) {
@@ -442,6 +448,18 @@ class MailboxDashBoardController extends ReloadableController {
       });
   }
 
+  void _registerPendingCurrentEmailIdInNotification() {
+    _iosNotificationManager = getBinding<IOSNotificationManager>();
+    _currentEmailIdInNotificationIOSStreamSubscription = _iosNotificationManager
+        ?.pendingCurrentEmailIdInNotification.stream
+        .listen((emailId) {
+          if (emailId != null) {
+            _iosNotificationManager?.clearPendingCurrentEmailId();
+            _handleNotificationMessageFromEmailId(emailId);
+          }
+        });
+  }
+
   void _registerStreamListener() {
     progressState.listen((state) {
       viewStateMarkAsReadMailbox.value = state;
@@ -458,7 +476,7 @@ class MailboxDashBoardController extends ReloadableController {
     _notificationManager.localNotificationStream.listen(_handleClickLocalNotificationOnForeground);
   }
 
-  void _handleClickLocalNotificationOnTerminated() async {
+  Future<void> _handleClickNotificationOnAndroidInTerminated() async {
     _notificationManager.activatedNotificationClickedOnTerminate = true;
     final notificationResponse = await _notificationManager.getCurrentNotificationResponse();
     log('MailboxDashBoardController::_handleClickLocalNotificationOnTerminated():payload: ${notificationResponse?.payload}');
@@ -467,13 +485,11 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleArguments() {
     final arguments = Get.arguments;
-    log('MailboxDashBoardController::_getSessionCurrent(): arguments = $arguments');
+    log('MailboxDashBoardController::_handleArguments():Arguments = ${arguments.runtimeType}');
     if (arguments is Session) {
       _handleSession(arguments);
     } else if (arguments is MailtoArguments) {
       _handleMailtoURL(arguments);
-    } else if (arguments is PreviewEmailArguments) {
-      _handleOpenEmailAction(arguments);
     } else {
       dispatchRoute(DashboardRoutes.thread);
       reload();
@@ -512,8 +528,8 @@ class MailboxDashBoardController extends ReloadableController {
 
     _setUpComponentsFromSession(session);
 
-    if (PlatformInfo.isMobile && !_notificationManager.isNotificationClickedOnTerminate) {
-      _handleClickLocalNotificationOnTerminated();
+    if (PlatformInfo.isAndroid && !_notificationManager.isNotificationClickedOnTerminate) {
+      _handleClickNotificationOnAndroidInTerminated();
     } else {
       dispatchRoute(DashboardRoutes.thread);
     }
@@ -543,13 +559,6 @@ class MailboxDashBoardController extends ReloadableController {
     log('MailboxDashBoardController::_handleMailtoURL:');
     routerParameters.value = arguments.toMapRouter();
     _handleSession(arguments.session);
-  }
-
-  void _handleOpenEmailAction(PreviewEmailArguments arguments) {
-    log('MailboxDashBoardController::_handleOpenEmailAction:arguments: $arguments');
-    dispatchRoute(DashboardRoutes.waiting);
-    _handleSession(arguments.session);
-    _handleNotificationMessageFromEmailId(arguments.emailId);
   }
 
   void _getVacationResponse() {
@@ -1791,14 +1800,7 @@ class MailboxDashBoardController extends ReloadableController {
     ));
   }
 
-  void _moveToEmailDetailedView(GetEmailByIdSuccess success) {
-    log('MailboxDashBoardController::_moveToEmailDetailedView(): ${success.email}');
-    setSelectedEmail(success.email);
-    dispatchRoute(DashboardRoutes.emailDetailed);
-  }
-
-  void _handleGetEmailDetailedFailed(GetEmailByIdFailure failure) {
-    logError('MailboxDashBoardController::_handleGetEmailDetailedFailed(): $failure');
+  void _handleGetEmailByIdFailure(GetEmailByIdFailure failure) {
     dispatchRoute(DashboardRoutes.thread);
   }
 
@@ -2549,6 +2551,10 @@ class MailboxDashBoardController extends ReloadableController {
   @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();
+    if (PlatformInfo.isIOS) {
+      _iosNotificationManager?.closePendingCurrentEmailIdInNotification();
+      _currentEmailIdInNotificationIOSStreamSubscription?.cancel();
+    }
     _emailAddressStreamSubscription.cancel();
     _emailContentStreamSubscription.cancel();
     _fileReceiveManagerStreamSubscription.cancel();

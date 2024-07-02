@@ -1,9 +1,7 @@
-
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/broadcast_channel/broadcast_channel.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/services.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -23,7 +21,6 @@ class FcmReceiver {
 
   static FcmReceiver get instance => _instance;
 
-  static const notificationInteractionChannel = MethodChannel('notification_interaction_channel');
   static const int MAX_COUNT_RETRY_TO_GET_FCM_TOKEN = 3;
 
   int _countRetryToGetFcmToken = 0;
@@ -36,22 +33,9 @@ class FcmReceiver {
     if (PlatformInfo.isWeb) {
       _onMessageBroadcastChannel();
       await _requestNotificationPermissionOnWeb();
-    } else if (PlatformInfo.isIOS) {
-      _setUpIOSNotificationInteraction();
-      await _onHandleFcmToken();
     } else {
       await _onHandleFcmToken();
     }
-  }
-
-  void _setUpIOSNotificationInteraction() {
-    notificationInteractionChannel.setMethodCallHandler((call) async {
-      log('FcmReceiver::_setUpIOSNotificationInteraction:notificationInteractionChannel: $call');
-      if (call.method == 'openEmail' && call.arguments is String) {
-        log('FcmReceiver::_setUpIOSNotificationInteraction:openEmail with id = ${call.arguments}');
-        FcmService.instance.handleOpenEmailFromNotification(call.arguments);
-      }
-    });
   }
 
   Future<void> _requestNotificationPermissionOnWeb() async {
@@ -117,19 +101,5 @@ class FcmReceiver {
         FcmService.instance.handleToken(newToken);
       }
     });
-  }
-
-  Future<Map<String, dynamic>?> getIOSInitialNotificationInfo() async {
-    try {
-      final notificationInfo = await notificationInteractionChannel.invokeMethod('getInitialNotificationInfo');
-      log('FcmReceiver::getIOSInitialNotificationInfo:notificationInfo: $notificationInfo');
-      if (notificationInfo != null && notificationInfo is Map<String, dynamic>) {
-        return notificationInfo;
-      }
-      return null;
-    } catch (e) {
-      logError('FcmReceiver::getIOSInitialNotificationInfo: Exception: $e');
-      return null;
-    }
   }
 }
