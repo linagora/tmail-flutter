@@ -48,6 +48,7 @@ class ImageTransformer extends DomTransformer {
           imageSource: src
         );
         imageElement.attributes['src'] = imageBase64 ?? src;
+        imageElement.attributes['id'] ??= src;
       } else if (src.startsWith('https://') || src.startsWith('http://')) {
         if (!imageElement.attributes.containsKey('loading')) {
           imageElement.attributes['loading'] = 'lazy';

@@ -12,6 +12,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:tmail_ui_user/features/base/before_unload_manager.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
@@ -64,6 +65,7 @@ class CoreBindings extends Bindings {
     Get.put(FileUtils());
     Get.put(PrintUtils());
     Get.put(ApplicationManager(Get.find<DeviceInfoPlugin>()));
+    Get.put(BeforeUnloadManager());
   }
 
   void _bindingIsolate() {

@@ -3,7 +3,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 
 extension ComposerArgumentsExtension on ComposerArguments {
 
-  ComposerArguments withIdentity({List<Identity>? identities}) {
+  ComposerArguments withIdentity({List<Identity>? identities, Identity? selectedIdentity}) {
     return ComposerArguments(
       emailActionType: emailActionType,
       presentationEmail: presentationEmail,
@@ -19,6 +19,9 @@ extension ComposerArgumentsExtension on ComposerArguments {
       references: references,
       previousEmailId: previousEmailId,
       identities: identities,
+      selectedIdentity: selectedIdentity,
+      inlineImages: inlineImages,
+      readRecepientEnabled: readRecepientEnabled
     );
   }
 }
