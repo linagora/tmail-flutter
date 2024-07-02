@@ -1,0 +1,22 @@
+appId: com.linagora.android.teammail
+---
+- launchApp
+- tapOn: "email"
+- inputText: "first"
+- tapOn: "Next"
+- tapOn: "https://"
+- inputText: "apisix.upn.integration-open-paas.org"
+- tapOn: "Next"
+- tapOn: 
+    text: "Username or email"
+    index: 0
+- inputText: "firstname100.surname100@upn.integration-open-paas.org"
+- tapOn:
+    text: "Password"
+    index: 0
+- inputText: "XXXXX"
+- tapOn: "Sign In"
+
+# test login
+- tapOn: "Inbox"
+- assertVisible: "firstname100.surname100@upn.integration-open-paas.org"
