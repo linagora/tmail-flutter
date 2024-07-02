@@ -48,11 +48,13 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multipl
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/delete_composed_email_on_local_storage_browser_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composed_email_from_local_storage_browser_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
@@ -169,6 +171,8 @@ const fallbackGenerators = {
   MockSpec<RemoveComposerCacheOnWebInteractor>(),
   MockSpec<ApplicationManager>(),
   MockSpec<GetAllIdentitiesInteractor>(),
+  MockSpec<GetComposedEmailFromLocalStorageBrowserInteractor>(),
+  MockSpec<DeleteComposedEmailOnLocalStorageBrowserInteractor>(),
 ])
 void main() {
   // mock mailbox dashboard controller direct dependencies
@@ -250,6 +254,8 @@ void main() {
   final refreshAllMailboxInteractor = MockRefreshAllMailboxInteractor();
   final removeComposerCacheOnWebInteractor = MockRemoveComposerCacheOnWebInteractor();
   final getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
+  final getComposedEmailFromLocalStorageBrowserInteractor = MockGetComposedEmailFromLocalStorageBrowserInteractor();
+  final deleteComposedEmailOnLocalStorageBrowserInteractor = MockDeleteComposedEmailOnLocalStorageBrowserInteractor();
   late MailboxController mailboxController;
 
   // mock thread controller direct dependencies
@@ -302,6 +308,8 @@ void main() {
       Get.put<UpdateAuthenticationAccountInteractor>(updateAuthenticationAccountInteractor);
       Get.put<GetAllIdentitiesInteractor>(getAllIdentitiesInteractor);
       Get.put<RemoveComposerCacheOnWebInteractor>(removeComposerCacheOnWebInteractor);
+      Get.put<GetComposedEmailFromLocalStorageBrowserInteractor>(getComposedEmailFromLocalStorageBrowserInteractor);
+      Get.put<DeleteComposedEmailOnLocalStorageBrowserInteractor>(deleteComposedEmailOnLocalStorageBrowserInteractor);
 
       Get.testMode = true;
 
@@ -340,6 +348,8 @@ void main() {
         getRestoredDeletedMessageInteractor,
         removeComposerCacheOnWebInteractor,
         getAllIdentitiesInteractor,
+        getComposedEmailFromLocalStorageBrowserInteractor,
+        deleteComposedEmailOnLocalStorageBrowserInteractor,
       );
       Get.put(mailboxDashboardController);
       mailboxDashboardController.onReady();
