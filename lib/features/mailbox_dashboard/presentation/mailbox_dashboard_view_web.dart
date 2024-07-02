@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/username_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
@@ -69,13 +70,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         alignment: Alignment.center,
                         height: 80,
                         child: Row(children: [
-                          SloganBuilder(
-                            sizeLogo: 24,
-                            text: AppLocalizations.of(context).app_name,
-                            textAlign: TextAlign.center,
-                            textStyle: const TextStyle(color: Colors.black, fontSize: 20, fontWeight: FontWeight.bold),
-                            logoSVG: controller.imagePaths.icTMailLogo,
-                            onTapCallback: controller.redirectToInboxAction,
+                          ApplicationLogoWidthTextWidget(
+                            onTapAction: controller.redirectToInboxAction,
                           ),
                           ApplicationVersionWidget(
                             applicationManager: controller.applicationManager

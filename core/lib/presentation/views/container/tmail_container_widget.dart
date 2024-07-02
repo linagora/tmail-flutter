@@ -21,6 +21,7 @@ class TMailContainerWidget extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
   final List<BoxShadow>? boxShadow;
   final BoxBorder? border;
+  final Color? hoverColor;
 
   const TMailContainerWidget({
     super.key,
@@ -39,27 +40,31 @@ class TMailContainerWidget extends StatelessWidget {
     this.boxShadow,
     this.margin,
     this.border,
+    this.hoverColor,
   });
 
   @override
   Widget build(BuildContext context) {
     final materialChild = Material(
-      color: Colors.transparent,
+      type: MaterialType.transparency,
       child: InkWell(
         onTap: onTapActionCallback,
-        onTapDown: (detail) {
-          if (onTapActionAtPositionCallback != null) {
-            final screenSize = MediaQuery.of(context).size;
-            final offset = detail.globalPosition;
-            final position = RelativeRect.fromLTRB(
-              offset.dx,
-              offset.dy,
-              screenSize.width - offset.dx,
-              screenSize.height - offset.dy,
-            );
-            onTapActionAtPositionCallback!.call(position);
-          }
-        },
+        onTapDown: onTapActionAtPositionCallback != null
+          ? (detail) {
+              if (onTapActionAtPositionCallback != null) {
+                final screenSize = MediaQuery.of(context).size;
+                final offset = detail.globalPosition;
+                final position = RelativeRect.fromLTRB(
+                  offset.dx,
+                  offset.dy,
+                  screenSize.width - offset.dx,
+                  screenSize.height - offset.dy,
+                );
+                onTapActionAtPositionCallback!.call(position);
+              }
+            }
+          : null,
+        hoverColor: hoverColor,
         onLongPress: onLongPressActionCallback,
         borderRadius: BorderRadius.all(Radius.circular(borderRadius)),
         child: tooltipMessage != null
