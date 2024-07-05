@@ -23,36 +23,39 @@ class SubjectComposerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: SubjectComposerWidgetStyle.borderColor,
-            width: 1
-          )
-        ),
-      ),
-      margin: margin,
-      padding: padding,
-      child: Row(
-        children: [
-          Text(
-            '${AppLocalizations.of(context).subject_email}:',
-            style: SubjectComposerWidgetStyle.labelTextStyle
-          ),
-          const SizedBox(width:SubjectComposerWidgetStyle.space),
-          Expanded(
-            child: TextFieldBuilder(
-              cursorColor: SubjectComposerWidgetStyle.cursorColor,
-              focusNode: focusNode,
-              onTextChange: onTextChange,
-              maxLines: 1,
-              textDirection: DirectionUtils.getDirectionByLanguage(context),
-              textStyle: SubjectComposerWidgetStyle.inputTextStyle,
-              controller: textController,
+    return Semantics(
+      label: 'Composer:subject',
+      child: Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: SubjectComposerWidgetStyle.borderColor,
+              width: 1
             )
-          )
-        ]
+          ),
+        ),
+        margin: margin,
+        padding: padding,
+        child: Row(
+          children: [
+            Text(
+              '${AppLocalizations.of(context).subject_email}:',
+              style: SubjectComposerWidgetStyle.labelTextStyle
+            ),
+            const SizedBox(width:SubjectComposerWidgetStyle.space),
+            Expanded(
+              child: TextFieldBuilder(
+                cursorColor: SubjectComposerWidgetStyle.cursorColor,
+                focusNode: focusNode,
+                onTextChange: onTextChange,
+                maxLines: 1,
+                textDirection: DirectionUtils.getDirectionByLanguage(context),
+                textStyle: SubjectComposerWidgetStyle.inputTextStyle,
+                controller: textController,
+              )
+            )
+          ]
+        ),
       ),
     );
   }
