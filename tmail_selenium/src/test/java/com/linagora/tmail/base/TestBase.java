@@ -27,6 +27,7 @@ public abstract class TestBase {
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
+        Boolean runHeadlessTest = true;
         int size = SupportedPlatform.values().length;
         Object[][] parameters = new Object[size][2];
         for (int i = 0; i < size; i++) {
@@ -34,10 +35,10 @@ public abstract class TestBase {
             Object[] config = new Object[2];
             switch (platform) {
                 case CHROME:
-                    config = configTestForChrome();
+                    config = configTestForChrome(runHeadlessTest);
                     break;
                 case FIREFOX:
-                    config = configTestForFirefox();
+                    config = configTestForFirefox(runHeadlessTest);
                     break;
                 default:
                     throw new UnsupportedPlatformException();
@@ -52,9 +53,12 @@ public abstract class TestBase {
         useCase.execute(webDriver, wait);
     }
 
-    private static Object[] configTestForChrome() {
+    private static Object[] configTestForChrome(Boolean headless) {
         ChromeOptions options = new ChromeOptions();
         options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
+        if (headless) {
+            options.addArguments("--headless=new");
+        }
         ChromeDriver webDriver = new ChromeDriver(options);
         WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofMillis(20000));
         Object[] config = new Object[2];
@@ -63,9 +67,12 @@ public abstract class TestBase {
         return config;
     }
 
-    private static Object[] configTestForFirefox() {
+    private static Object[] configTestForFirefox(Boolean headless) {
         FirefoxOptions options = new FirefoxOptions();
         options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
+        if (headless) {
+            options.addArguments("--headless");
+        }
         FirefoxDriver webDriver = new FirefoxDriver(options);
         WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofMillis(20000));
         Object[] config = new Object[2];
