@@ -3953,5 +3953,153 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "thisFileCannotBePicked": "Không thể chọn tệp.",
+  "@thisFileCannotBePicked": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "loadingPleaseWait": "Đang tiến hành ...",
+  "@loadingPleaseWait": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "closeAnyway": "Vẫn đóng",
+  "@closeAnyway": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discardChanges": "Huỷ bỏ thay đổi",
+  "@discardChanges": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "savingMessage": "Đang lưu thư",
+  "@savingMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "warningMessageWhenClickCloseComposer": "Lưu thư vào thư mục Nháp và đóng trình duyệt?",
+  "@warningMessageWhenClickCloseComposer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "warningMessageWhenSendEmailFailure": "Gửi thư không thành công.\nCó lỗi trong quá trình gửi thư.",
+  "@warningMessageWhenSendEmailFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "savingMessageToDraftFolder": "Đang lưu bản nháp",
+  "@savingMessageToDraftFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "canceling": "Huỷ bỏ",
+  "@canceling": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailToAttendees": "Gửi thư cho người tham dự",
+  "@mailToAttendees": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showMore": "Thêm (+{count})",
+  "@showMore": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "notificationsDisabled": "Đã tắt thông báo",
+  "@notificationsDisabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "status": "Trạng thái",
+  "@status": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "progress": "Tiến trình",
+  "@progress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveMessage": "Lưu thư",
+  "@saveMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showLess": "Hiển thị ít hơn",
+  "@showLess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notification": "Thông báo",
+  "@notification": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pleaseAllowNotifications": "Hãy cho phép Twake Mail thông báo bên trong Cài Đặt",
+  "@pleaseAllowNotifications": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showNotifications": "Hiển thị thông báo",
+  "@showNotifications": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "goToSettings": "Đi đến Cài Đặt",
+  "@goToSettings": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allowsTwakeMailToNotifyYouWhenANewMessageArrivesOnYourPhone": "Cho phép Twake Mail thông báo khi có tin nhắn mới",
+  "@allowsTwakeMailToNotifyYouWhenANewMessageArrivesOnYourPhone": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "creatingMessage": "Tạo thư",
+  "@creatingMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "warningMessageWhenSaveEmailToDraftsFailure": "Lưu bản nháp thất bại.\nCó lỗi trong quá trình lưu bản nháp.",
+  "@warningMessageWhenSaveEmailToDraftsFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sendingMessage": "Đang gửi thư",
+  "@sendingMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
