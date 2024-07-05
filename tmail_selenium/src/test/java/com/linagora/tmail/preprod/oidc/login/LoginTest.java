@@ -5,6 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.linagora.tmail.base.TestBase;
+import com.linagora.tmail.usecases.LoginUseCase;
 
 public class LoginTest extends TestBase {
 
@@ -14,6 +15,9 @@ public class LoginTest extends TestBase {
 
     @Test
     public void testLogin() {
-        testUseCase(new LoginUseCase());
+        testUseCase(new LoginUseCase(
+                "http://localhost:2023/",
+                "firstname100.surname100",
+                "secret100"));
     }
 }
