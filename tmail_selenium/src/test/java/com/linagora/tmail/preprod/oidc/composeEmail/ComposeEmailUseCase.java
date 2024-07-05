@@ -2,9 +2,7 @@ package com.linagora.tmail.preprod.oidc.composeEmail;
 
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.UnsupportedCommandException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -15,10 +13,6 @@ public class ComposeEmailUseCase extends UseCase {
 
     @Override
     public void execute(WebDriver webDriver, WebDriverWait wait) {
-        if (webDriver instanceof FirefoxDriver) {
-            throw new UnsupportedCommandException();
-        }
-
         LoginUseCase loginUseCase = new LoginUseCase();
         loginUseCase.execute(webDriver, wait);
 
