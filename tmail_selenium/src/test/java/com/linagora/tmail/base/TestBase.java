@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.After;
+import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.openqa.selenium.PageLoadStrategy;
 import org.openqa.selenium.WebDriver;
@@ -14,7 +15,8 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class TestBase {
+@RunWith(Parameterized.class)
+public abstract class TestBase {
     private WebDriver webDriver;
     private WebDriverWait wait;
 
@@ -48,7 +50,6 @@ public class TestBase {
 
     public void testUseCase(UseCase useCase) {
         useCase.execute(webDriver, wait);
-        dispose();
     }
 
     private static Object[] configTestForChrome() {
