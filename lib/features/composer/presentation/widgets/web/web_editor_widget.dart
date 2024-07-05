@@ -118,63 +118,66 @@ class _WebEditorState extends State<WebEditorWidget> {
     return ValueListenableBuilder(
       valueListenable: _htmlEditorHeight,
       builder: (context, height, _) {
-        return HtmlEditor(
-          key: Key('web_editor_$height'),
-          controller: _editorController,
-          htmlEditorOptions: HtmlEditorOptions(
-            shouldEnsureVisible: true,
-            hint: '',
-            darkMode: false,
-            initialText: widget.content,
-            customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: widget.direction),
-            spellCheck: true,
-            disableDragAndDrop: true,
-            webInitialScripts: UnmodifiableListView([
-              WebScript(
-                name: HtmlUtils.lineHeight100Percent.name,
-                script: HtmlUtils.lineHeight100Percent.script,
-              ),
-              WebScript(
-                name: HtmlUtils.registerDropListener.name,
-                script: HtmlUtils.registerDropListener.script,
-              ),
-              WebScript(
-                name: HtmlUtils.unregisterDropListener.name,
-                script: HtmlUtils.unregisterDropListener.script,
-              )
-            ])
-          ),
-          htmlToolbarOptions: const HtmlToolbarOptions(
-            toolbarType: ToolbarType.hide,
-            defaultToolbarButtons: [],
-          ),
-          otherOptions: OtherOptions(
-            height: height,
-            // dropZoneWidth: dropZoneWidth,
-            // dropZoneHeight: dropZoneHeight,
-          ),
-          callbacks: Callbacks(
-            onBeforeCommand: widget.onChangeContent,
-            onChangeContent: widget.onChangeContent,
-            onInit: () {
-              widget.onInitial?.call(widget.content);
-              if (!_dropListenerRegistered) {
-                _editorController.evaluateJavascriptWeb(
-                  HtmlUtils.registerDropListener.name);
-                _dropListenerRegistered = true;
-              }
-            },
-            onFocus: widget.onFocus,
-            onBlur: widget.onUnFocus,
-            onMouseDown: () => widget.onMouseDown?.call(context),
-            onChangeSelection: widget.onEditorSettings,
-            onChangeCodeview: widget.onChangeContent,
-            onTextFontSizeChanged: widget.onEditorTextSizeChanged,
-            onPaste: () => _editorController.evaluateJavascriptWeb(
-              HtmlUtils.lineHeight100Percent.name
+        return Semantics(
+          label: 'Composer:content',
+          child: HtmlEditor(
+            key: Key('web_editor_$height'),
+            controller: _editorController,
+            htmlEditorOptions: HtmlEditorOptions(
+              shouldEnsureVisible: true,
+              hint: '',
+              darkMode: false,
+              initialText: widget.content,
+              customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: widget.direction),
+              spellCheck: true,
+              disableDragAndDrop: true,
+              webInitialScripts: UnmodifiableListView([
+                WebScript(
+                  name: HtmlUtils.lineHeight100Percent.name,
+                  script: HtmlUtils.lineHeight100Percent.script,
+                ),
+                WebScript(
+                  name: HtmlUtils.registerDropListener.name,
+                  script: HtmlUtils.registerDropListener.script,
+                ),
+                WebScript(
+                  name: HtmlUtils.unregisterDropListener.name,
+                  script: HtmlUtils.unregisterDropListener.script,
+                )
+              ])
             ),
-            onDragEnter: widget.onDragEnter,
-            onDragLeave: (_) {},
+            htmlToolbarOptions: const HtmlToolbarOptions(
+              toolbarType: ToolbarType.hide,
+              defaultToolbarButtons: [],
+            ),
+            otherOptions: OtherOptions(
+              height: height,
+              // dropZoneWidth: dropZoneWidth,
+              // dropZoneHeight: dropZoneHeight,
+            ),
+            callbacks: Callbacks(
+              onBeforeCommand: widget.onChangeContent,
+              onChangeContent: widget.onChangeContent,
+              onInit: () {
+                widget.onInitial?.call(widget.content);
+                if (!_dropListenerRegistered) {
+                  _editorController.evaluateJavascriptWeb(
+                    HtmlUtils.registerDropListener.name);
+                  _dropListenerRegistered = true;
+                }
+              },
+              onFocus: widget.onFocus,
+              onBlur: widget.onUnFocus,
+              onMouseDown: () => widget.onMouseDown?.call(context),
+              onChangeSelection: widget.onEditorSettings,
+              onChangeCodeview: widget.onChangeContent,
+              onTextFontSizeChanged: widget.onEditorTextSizeChanged,
+              onPaste: () => _editorController.evaluateJavascriptWeb(
+                HtmlUtils.lineHeight100Percent.name
+              ),
+              onDragEnter: widget.onDragEnter,
+              onDragLeave: () {},
+            ),
           ),
         );
       }
