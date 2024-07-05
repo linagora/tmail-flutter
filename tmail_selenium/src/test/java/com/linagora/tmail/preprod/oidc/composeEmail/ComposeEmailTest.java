@@ -5,6 +5,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.linagora.tmail.base.TestBase;
+import com.linagora.tmail.usecases.ComposeEmailUseCase;
 
 public class ComposeEmailTest extends TestBase {
 
@@ -14,6 +15,10 @@ public class ComposeEmailTest extends TestBase {
 
     @Test
     public void testComposeEmail() {
-        testUseCase(new ComposeEmailUseCase());
+        testUseCase(new ComposeEmailUseCase(
+                "http://localhost:2023/",
+                "firstname100.surname100",
+                "secret100",
+                "firstname21.surname21"));
     }
 }
