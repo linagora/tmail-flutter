@@ -1,0 +1,28 @@
+name: Selenium Maven CI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup Chrome
+      uses: browser-actions/setup-chrome@v1.7.1
+
+    - name: Setup Firefox
+      uses: browser-actions/setup-firefox@v1.5.1      
+    
+    - name: Change directory to test
+      run: cd tmail_selenium
+    
+    - name: Set up JDK 22
+      uses: actions/setup-java@v3
+      with:
+        java-version: '22'
+        distribution: 'temurin'
+        cache: maven
+        
+    - name: Test
+      run: mvn test
