@@ -423,12 +423,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "Bad credentials": "Falsche Anmeldedaten",
-  "@Bad credentials": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "requiredPassword": "Passwort ist erforderlich",
   "@requiredPassword": {
     "type": "text",
@@ -1452,16 +1446,6 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
-  },
-  "toastMessageMarkAsMailboxReadSuccess": "Sie haben die maximale Dateigröße erreicht. Bitte laden Sie Dateien hoch, deren Gesamtgröße kleiner ist als {maxSize}",
-  "@toastMessageMarkAsMailboxReadSuccess": {
-    "type": "text",
-    "placeholders_order": [
-      "mailboxName"
-    ],
-    "placeholders": {
-      "mailboxName": {}
-    }
   },
   "toastMessageMarkAsMailboxReadHasSomeEmailFailure": "Sie haben {count} Nachrichten in „{mailboxName}“ als gelesen markiert",
   "@toastMessageMarkAsMailboxReadHasSomeEmailFailure": {

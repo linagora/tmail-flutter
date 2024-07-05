@@ -1,3 +1,22 @@
+## [0.11.5001] - 2024-07-05
+### Added
+- #2877 Notification settings inside app
+- #2901 Store composer cache to prevent user losts input when token need refresh
+
+### Fixed
+- #2644 Warning when sending large Email
+- #2677 Handle sending/saving email failed with progress dialog
+- #2684 Select text in Blue bar
+- #2717 Improving Composer UI in mobile to have more space to input recipients
+- #2671 Handle signature sometimes disappear
+- #2215 Communicating l10n to remote servers
+- #2919 Handle composer stability: memory leak, inout many recipients
+- #2868 Bold curso should correspond to the typing text
+- #2827 Prevent clicking reply before content is loaded
+- #2532 Update Attachment flow in mobile app
+- #2584 Improve composer mobile in toolbox (Text style, Attachment, Inline image)
+- #2475 Rich text not work in composer
+
 ## [0.11.4002] - 2024-06-04
 ### Added
 - #2764 Add PDFViewer to view preview PDF in email
