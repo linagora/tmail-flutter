@@ -95,11 +95,9 @@ class ComposerArguments extends RouterArguments {
       emailActionType: EmailActionType.reopenComposerBrowser,
       presentationEmail: composerCache.email?.toPresentationEmail(),
       emailContents: composerCache.email?.emailContentList.asHtmlString,
-      attachments: composerCache.email?.allAttachments
-        .where((attachment) => attachment.disposition != ContentDisposition.inline)
-        .toList(),
+      attachments: composerCache.email?.allAttachments.getListAttachmentsDisplayedOutside(composerCache.email?.htmlBodyAttachments ?? []),
       selectedIdentity: composerCache.identity,
-      inlineImages: composerCache.email?.attachmentsWithCid,
+      inlineImages: composerCache.email?.allAttachments.listAttachmentsDisplayedInContent,
       readRecepientEnabled: composerCache.readReceipentEnabled,
       displayMode: composerCache.displayMode,
     );
