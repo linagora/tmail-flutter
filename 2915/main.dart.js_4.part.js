@@ -746,7 +746,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 168
+    $signature: 185
   };
   B._HtmlContentViewerOnWebState_initState__closure.prototype = {
     call$0() {
@@ -772,7 +772,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 468
+    $signature: 577
   };
   B._HtmlContentViewerOnWebState__setUpWeb_closure0.prototype = {
     call$0() {
@@ -795,7 +795,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(D.Align_Ktb);
       return new A.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
     },
-    $signature: 233
+    $signature: 213
   };
   B._HtmlContentViewerOnWebState_build__closure.prototype = {
     call$2(context, snapshot) {
@@ -809,11 +809,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = t1._htmlData;
         t1 = t1.___HtmlContentViewerOnWebState__createdViewId_A;
         t1 === $ && A.throwUnnamedLateFieldNI();
-        return new A.SizedBox(t3, t2, A.HtmlElementView$(new A.ValueKey(t4, type$.ValueKey_nullable_String), t1), null);
+        return new A.SizedBox(t3, t2, new A.HtmlElementView(t1, null, null, new A.ValueKey(t4, type$.ValueKey_nullable_String)), null);
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1708
+    $signature: 1735
   };
   B.PopupMenuItemWidget_build_closure.prototype = {
     call$0() {
@@ -838,21 +838,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1709
+    $signature: 1736
   };
   B.UserSettingPopupMenuMixin__settingAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 91
+    $signature: 90
   };
   B.UserSettingPopupMenuMixin__logoutAction_closure.prototype = {
     call$0() {
       var t1 = this.onCallBack.call$0();
       return t1;
     },
-    $signature: 91
+    $signature: 90
   };
   B.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
     call$0() {
@@ -912,7 +912,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       MaterialStatePropertyAll_EdgeInsetsGeometry: findType("MaterialStatePropertyAll<EdgeInsetsGeometry>"),
       MessageEvent: findType("MessageEvent"),
       PortalLinkOverlay: findType("PortalLinkOverlay"),
-      ResponsiveUtils: findType("ResponsiveUtils0"),
+      ResponsiveUtils: findType("ResponsiveUtils"),
       String: findType("String"),
       ValueKey_nullable_String: findType("ValueKey<String?>"),
       _LocalizationsScope: findType("_LocalizationsScope"),
@@ -971,5 +971,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "/sB9WMrYDq4lP0y2lCv5dam72Rc=");
+})($__dart_deferred_initializers__, "q694lUf++y7t1b+cqVi0tLvOhGw=");
 ;
