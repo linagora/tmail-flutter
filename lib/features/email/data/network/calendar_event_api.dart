@@ -74,7 +74,11 @@ class CalendarEventAPI {
       throw NotAcceptableCalendarEventException();
     }
 
-    return calendarEventAcceptResponse;
+    if (calendarEventAcceptResponse.accepted?.isNotEmpty == true) {
+      return calendarEventAcceptResponse;
+    } else {
+      throw CannotReplyCalendarEventException(mapErrors: calendarEventAcceptResponse.notAccepted);
+    }
   }
 
   Future<CalendarEventMaybeResponse> maybeEventInvitation(
@@ -102,7 +106,11 @@ class CalendarEventAPI {
       throw NotMaybeableCalendarEventException();
     }
 
-    return calendarEventMaybeResponse;
+    if (calendarEventMaybeResponse.maybe?.isNotEmpty == true) {
+      return calendarEventMaybeResponse;
+    } else {
+      throw CannotReplyCalendarEventException(mapErrors: calendarEventMaybeResponse.notMaybe);
+    }
   }
 
   Future<CalendarEventRejectResponse> rejectEventInvitation(
@@ -130,6 +138,10 @@ class CalendarEventAPI {
       throw NotRejectableCalendarEventException();
     }
 
-    return calendarEventRejectResponse;
+    if (calendarEventRejectResponse.rejected?.isNotEmpty == true) {
+      return calendarEventRejectResponse;
+    } else {
+      throw CannotReplyCalendarEventException(mapErrors: calendarEventRejectResponse.notRejected);
+    }
   }
 }
