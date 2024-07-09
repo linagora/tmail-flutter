@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
+import 'package:tmail_ui_user/features/email/domain/exceptions/calendar_event_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
@@ -255,7 +256,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _showMessageWhenEmailPrintingFailed(failure);
     } else if (failure is CalendarEventReplyFailure
         || failure is StoreEventAttendanceStatusFailure) {
-      _calendarEventFailure();
+      _calendarEventFailure(failure);
     }
   }
 
@@ -1752,12 +1753,26 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       success.eventActionType.getToastMessageSuccess(currentContext!));
   }
 
-  void _calendarEventFailure() {
-    if (currentOverlayContext != null && currentContext != null) {
-      appToast.showToastErrorMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).eventReplyWasSentUnsuccessfully);
+  void _calendarEventFailure(Failure failure) {
+    if (currentOverlayContext == null || currentContext == null) {
+      return;
     }
+
+    if (failure is CalendarEventReplyFailure && failure.exception is CannotReplyCalendarEventException) {
+      final replyEventException = failure.exception as CannotReplyCalendarEventException;
+
+      if (replyEventException.mapErrors?.isNotEmpty == true) {
+        appToast.showToastErrorMessage(
+          currentOverlayContext!,
+          replyEventException.mapErrors!.values.first.description
+            ?? AppLocalizations.of(currentContext!).eventReplyWasSentUnsuccessfully);
+        return;
+      }
+    }
+
+    appToast.showToastErrorMessage(
+      currentOverlayContext!,
+      AppLocalizations.of(currentContext!).eventReplyWasSentUnsuccessfully);
   }
 
   void _downloadMessageAsEML(PresentationEmail presentationEmail) {
