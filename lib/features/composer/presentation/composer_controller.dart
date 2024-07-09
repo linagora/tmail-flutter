@@ -364,6 +364,12 @@ class ComposerController extends BaseController with DragDropFileMixin implement
         }
       });
     });
+
+    if (richTextWebController != null) {
+      ever(richTextWebController!.formattingOptionsState, (_) {
+        richTextWebController!.editorController.setFocus();
+      });
+    }
   }
 
   void _listenBrowserTabRefresh() {
@@ -462,7 +468,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     bccAddressFocusNodeKeyboard = FocusNode();
 
     subjectEmailInputFocusNode = FocusNode(
-      onKey: PlatformInfo.isWeb ? _subjectEmailInputOnKeyListener : null
+      onKeyEvent: PlatformInfo.isWeb ? _subjectEmailInputOnKeyListener : null,
     );
     subjectEmailInputFocusNode?.addListener(_subjectEmailInputFocusListener);
   }
@@ -479,8 +485,8 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     }
   }
 
-  KeyEventResult _subjectEmailInputOnKeyListener(FocusNode node, RawKeyEvent event) {
-    if (event is RawKeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
+  KeyEventResult _subjectEmailInputOnKeyListener(FocusNode node, KeyEvent event) {
+    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
       richTextWebController?.editorController.setFocus();
       return KeyEventResult.handled;
     }

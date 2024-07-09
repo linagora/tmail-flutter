@@ -60,7 +60,7 @@ dependencies:
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: cnb_supported
+      ref: sprint_25_flutter_3_22_2
 
   # TODO: We will change it when the PR in upstream repository will be merged
   # https://github.com/linagora/jmap-dart-client/pull/87
@@ -87,12 +87,9 @@ dependencies:
   flutter_date_range_picker:
     git:
       url: https://github.com/linagora/flutter-date-range-picker.git
-      ref: master
+      ref: sprint_25_flutter_3_22_2
 
-  super_tag_editor:
-    git:
-      url: https://github.com/dab246/super_tag_editor.git
-      ref: master
+  super_tag_editor: 0.3.0
 
   # TODO: We will change it when the PR in upstream repository will be merged
   # https://github.com/dietfriends/dns_client/pull/9
@@ -112,7 +109,7 @@ dependencies:
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.6
 
-  get: 4.6.5
+  get: 4.6.6
 
   intl_generator: 0.4.1
 
@@ -166,7 +163,7 @@ dependencies:
 
   flutter_portal: 1.1.3
 
-  timeago: 3.5.0
+  timeago: 3.7.0
 
   better_open_file: 3.6.4
 
@@ -194,7 +191,7 @@ dependencies:
 
   flutter_local_notifications: 16.2.0
 
-  fading_edge_scrollview: 3.0.0
+  fading_edge_scrollview: 4.1.1
 
   focused_menu_custom: 1.2.0
 
@@ -206,7 +203,7 @@ dependencies:
 
   flutter_appauth_platform_interface: 6.0.0
 
-  intl: 0.18.1
+  intl: 0.19.0
 
   external_app_launcher: 3.1.0
 
@@ -216,13 +213,13 @@ dependencies:
 
   flutter_keyboard_visibility: 6.0.0
 
-  extended_text: 12.0.0
+  extended_text: 13.0.2
 
   date_format: 2.0.7
 
   flutter_linkify: 6.0.0
 
-  flutter_slidable: 3.0.0
+  flutter_slidable: 3.1.0
 
   url_strategy: 0.2.0
 
@@ -252,7 +249,7 @@ dev_dependencies:
 
   build_runner: 2.3.3
 
-  mockito: 5.4.2
+  mockito: 5.4.4
 
   hive_generator: 2.0.0
 

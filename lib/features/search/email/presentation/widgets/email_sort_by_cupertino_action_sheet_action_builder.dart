@@ -1,7 +1,6 @@
 import 'package:core/presentation/views/bottom_popup/cupertino_action_sheet_no_icon_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/styles/email_sort_by_cupertino_action_sheet_action_builder_style.dart';
@@ -32,7 +31,7 @@ class EmailSortByCupertinoActionSheetActionBuilder extends CupertinoActionSheetN
     return Container(
       color: bgColor ?? EmailSortByCupertinoActionSheetActionBuilderStyle.backgroundColor,
       child: MouseRegion(
-        cursor: PlatformInfo.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+        cursor: PlatformInfo.isWeb ? WidgetStateMouseCursor.clickable : MouseCursor.defer,
         child: CupertinoActionSheetAction(
           key: key,
           child: Row(

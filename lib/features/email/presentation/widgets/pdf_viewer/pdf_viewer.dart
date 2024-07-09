@@ -123,10 +123,10 @@ class _PDFViewerState extends State<PDFViewer> {
 
   @override
   Widget build(BuildContext context) {
-    return RawKeyboardListener(
+    return KeyboardListener(
       focusNode: _keyboardFocusNode,
       autofocus: true,
-      onKey: _handleKeyboardEventListener,
+      onKeyEvent: _handleKeyboardEventListener,
       child: Center(
         child: Stack(
           children: [
@@ -287,8 +287,8 @@ class _PDFViewerState extends State<PDFViewer> {
     Navigator.maybeOf(context)?.pop();
   }
 
-  void _handleKeyboardEventListener(RawKeyEvent event) {
-    if (event is RawKeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
+  void _handleKeyboardEventListener(KeyEvent event) {
+    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
       _closeView();
     }
   }
