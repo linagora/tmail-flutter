@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:rule_filter/rule_filter/rule_condition_group.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/styles/rule_condition_combiner_bottom_sheet_styles.dart';
@@ -34,7 +33,7 @@ class RuleConditionCombinerSheetActionTileBuilder
       color: bgColor ?? RuleConditionCombinerBottomSheetStyles.defaultBgColor,
       child: MouseRegion(
         cursor: PlatformInfo.isWeb
-            ? MaterialStateMouseCursor.clickable
+            ? WidgetStateMouseCursor.clickable
             : MouseCursor.defer,
         child: CupertinoActionSheetAction(
           key: key,

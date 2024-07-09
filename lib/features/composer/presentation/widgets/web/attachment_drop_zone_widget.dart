@@ -65,7 +65,7 @@ class AttachmentDropZoneWidget extends StatelessWidget {
           ),
         );
       },
-      onAccept: onAttachmentDropZoneListener
+      onAcceptWithDetails: (details) => onAttachmentDropZoneListener?.call(details.data),
     );
   }
 }

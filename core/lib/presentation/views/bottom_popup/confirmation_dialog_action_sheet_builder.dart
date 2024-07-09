@@ -61,7 +61,7 @@ class ConfirmationDialogActionSheetBuilder {
                 padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
                 color: Colors.white,
                 child: MouseRegion(
-                  cursor: PlatformInfo.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+                  cursor: PlatformInfo.isWeb ? WidgetStateMouseCursor.clickable : MouseCursor.defer,
                   child: CupertinoActionSheetAction(
                     child: Text(
                         _messageText ?? '',
@@ -76,7 +76,7 @@ class ConfirmationDialogActionSheetBuilder {
               padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 10),
               color: Colors.white,
               child: MouseRegion(
-                cursor: PlatformInfo.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+                cursor: PlatformInfo.isWeb ? WidgetStateMouseCursor.clickable : MouseCursor.defer,
                 child: CupertinoActionSheetAction(
                   child: RichText(text: TextSpan(
                     style: _styleMessage ?? const TextStyle(fontSize: 14, color: AppColor.colorMessageConfirmDialog),
@@ -89,7 +89,7 @@ class ConfirmationDialogActionSheetBuilder {
           Container(
               color: Colors.white,
               child: MouseRegion(
-                cursor: PlatformInfo.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+                cursor: PlatformInfo.isWeb ? WidgetStateMouseCursor.clickable : MouseCursor.defer,
                 child: CupertinoActionSheetAction(
                   child: Text(
                       _confirmText ?? '',
@@ -100,7 +100,7 @@ class ConfirmationDialogActionSheetBuilder {
           ),
         ],
         cancelButton: MouseRegion(
-          cursor: PlatformInfo.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+          cursor: PlatformInfo.isWeb ? WidgetStateMouseCursor.clickable : MouseCursor.defer,
           child: CupertinoActionSheetAction(
             child: Text(
                 _cancelText ?? '',

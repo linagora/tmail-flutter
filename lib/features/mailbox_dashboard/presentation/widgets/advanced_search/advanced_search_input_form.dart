@@ -267,10 +267,10 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     FocusNode? currentFocusNode,
     FocusNode? nextFocusNode,
   }) {
-    return RawKeyboardListener(
+    return KeyboardListener(
       focusNode: currentFocusNode ?? FocusNode(),
-      onKey: (event) {
-        if (event is RawKeyDownEvent &&
+      onKeyEvent: (event) {
+        if (event is KeyDownEvent &&
             event.logicalKey == LogicalKeyboardKey.tab) {
           nextFocusNode?.requestFocus();
         }

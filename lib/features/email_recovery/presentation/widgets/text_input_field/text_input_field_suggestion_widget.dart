@@ -174,7 +174,7 @@ class _TextInputFieldSuggestionWidgetState extends State<TextInputFieldSuggestio
                   );
                 },
                 onHandleKeyEventAction: (event) {
-                  if (event is RawKeyDownEvent) {
+                  if (event is KeyDownEvent) {
                     switch (event.logicalKey) {
                       case LogicalKeyboardKey.tab:
                         widget.nextFocusNode?.requestFocus();

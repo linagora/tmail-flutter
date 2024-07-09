@@ -106,8 +106,8 @@ class SortByDropDownButton extends StatelessWidget {
             offset: SortByDropdownStyle.dropdownOffset,
             scrollbarTheme: ScrollbarThemeData(
               radius: SortByDropdownStyle.dropdownScrollbarRadius,
-              thickness: MaterialStateProperty.all<double>(SortByDropdownStyle.scrollbarThickness),
-              thumbVisibility: MaterialStateProperty.all<bool>(true),
+              thickness: WidgetStateProperty.all<double>(SortByDropdownStyle.scrollbarThickness),
+              thumbVisibility: WidgetStateProperty.all<bool>(true),
             )
           ),
           iconStyleData: IconStyleData(

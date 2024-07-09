@@ -1064,13 +1064,13 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  KeyEventResult handleKeyEvent(FocusNode node, RawKeyEvent event) {
+  KeyEventResult handleKeyEvent(FocusNode node, KeyEvent event) {
     final shiftEvent = event.logicalKey == LogicalKeyboardKey.shiftLeft || event.logicalKey == LogicalKeyboardKey.shiftRight;
-    if (event is RawKeyDownEvent && shiftEvent) {
+    if (event is KeyDownEvent && shiftEvent) {
       _rangeSelectionMode = true;
     }
 
-    if (event is RawKeyUpEvent && shiftEvent) {
+    if (event is KeyUpEvent && shiftEvent) {
       _rangeSelectionMode = false;
     }
     return shiftEvent
