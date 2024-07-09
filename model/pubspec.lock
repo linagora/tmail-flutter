@@ -603,8 +603,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: migrate_cnb_to_master_5Jun
-      resolved-ref: "49305a382ca77211a0668fd9fe196a3c057cdc8e"
+      ref: sprint25_from_migrate_5jun
+      resolved-ref: "4783ba7b56eb4dda591538d9c486375162a9da79"
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
     version: "0.0.1"
