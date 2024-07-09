@@ -51,14 +51,14 @@ class FromComposerDropDownWidgetStyle {
     offset: const Offset(0.0, -8.0),
     scrollbarTheme: ScrollbarThemeData(
       radius: const Radius.circular(40.0),
-      thickness: MaterialStateProperty.all<double>(6.0),
-      thumbVisibility: MaterialStateProperty.all<bool>(true),
+      thickness: WidgetStateProperty.all<double>(6.0),
+      thumbVisibility: WidgetStateProperty.all<bool>(true),
     )
   );
   static MenuItemStyleData menuIemStyleData = MenuItemStyleData(
     padding: const EdgeInsets.symmetric(horizontal: 12),
     height: 72,
-    overlayColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => Colors.white)
+    overlayColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) => Colors.white)
   );
 
   static const TextStyle prefixTextStyle = TextStyle(

@@ -56,4 +56,7 @@ class NotificationController extends FullLifeCycleController with FullLifeCycleM
   
   @override
   Future<void> onResumed() => _getNotificationSetting();
+  
+  @override
+  void onHidden() {}
 }

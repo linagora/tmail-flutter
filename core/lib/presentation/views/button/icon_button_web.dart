@@ -91,11 +91,11 @@ Widget buildTextButton(String text, {
     child: ElevatedButton(
         focusNode: focusNode,
         style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.resolveWith((states) => backgroundColor ?? AppColor.colorTextButton),
-            elevation: MaterialStateProperty.resolveWith((states) => 0),
-            padding: MaterialStateProperty.resolveWith<EdgeInsetsGeometry>(
-                (Set<MaterialState> states) => padding ?? const EdgeInsets.symmetric(horizontal: 8)),
-            shape: MaterialStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius ?? 0)))),
+            backgroundColor: WidgetStateProperty.resolveWith((states) => backgroundColor ?? AppColor.colorTextButton),
+            elevation: WidgetStateProperty.resolveWith((states) => 0),
+            padding: WidgetStateProperty.resolveWith<EdgeInsetsGeometry>(
+                (Set<WidgetState> states) => padding ?? const EdgeInsets.symmetric(horizontal: 8)),
+            shape: WidgetStateProperty.all(RoundedRectangleBorder(borderRadius: BorderRadius.circular(radius ?? 0)))),
         child: Text(
             text,
             textAlign: TextAlign.center,
@@ -127,17 +127,17 @@ Widget buildButtonWrapText(String name, {
       focusNode: focusNode,
       onPressed: () => onTap?.call(),
       style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color>(
-              (Set<MaterialState> states) => bgColor ?? AppColor.colorTextButton),
-          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+          backgroundColor: WidgetStateProperty.resolveWith<Color>(
+              (Set<WidgetState> states) => bgColor ?? AppColor.colorTextButton),
+          shape: WidgetStateProperty.all(RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(radius ?? 8),
               side: BorderSide(
                   width: borderColor != null ? 1 : 0,
                   color: borderColor ?? bgColor ?? AppColor.colorTextButton))),
-          padding: MaterialStateProperty.resolveWith<EdgeInsets>(
-              (Set<MaterialState> states) => const EdgeInsets.symmetric(horizontal: 16)),
-          elevation: MaterialStateProperty.resolveWith<double>(
-              (Set<MaterialState> states) => 0)),
+          padding: WidgetStateProperty.resolveWith<EdgeInsets>(
+              (Set<WidgetState> states) => const EdgeInsets.symmetric(horizontal: 16)),
+          elevation: WidgetStateProperty.resolveWith<double>(
+              (Set<WidgetState> states) => 0)),
       child: Text(name,
           textAlign: TextAlign.center,
           style: textStyle ??

@@ -41,7 +41,7 @@ class MailboxBottomSheetActionTileBuilder extends CupertinoActionSheetActionBuil
           child: Container(
             color: bgColor ?? Colors.white,
             child: MouseRegion(
-              cursor: PlatformInfo.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+              cursor: PlatformInfo.isWeb ? WidgetStateMouseCursor.clickable : MouseCursor.defer,
               child: CupertinoActionSheetAction(
                 key: key,
                 child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [

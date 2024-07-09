@@ -155,17 +155,17 @@ class EditTextDialogBuilder {
       child: ElevatedButton(
         onPressed: () => action?.call(),
         style: ButtonStyle(
-            foregroundColor: MaterialStateProperty.resolveWith<Color>(
-                  (Set<MaterialState> states) => bgColor ?? AppColor.colorTextButton),
-            backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                  (Set<MaterialState> states) => bgColor ?? AppColor.colorTextButton),
-            shape: MaterialStateProperty.all(RoundedRectangleBorder(
+            foregroundColor: WidgetStateProperty.resolveWith<Color>(
+                  (Set<WidgetState> states) => bgColor ?? AppColor.colorTextButton),
+            backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                  (Set<WidgetState> states) => bgColor ?? AppColor.colorTextButton),
+            shape: WidgetStateProperty.all(RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(8),
               side: BorderSide(width: 0, color: bgColor ?? AppColor.colorTextButton),
             )),
-            padding: MaterialStateProperty.resolveWith<EdgeInsets>(
-                    (Set<MaterialState> states) => const EdgeInsets.symmetric(horizontal: 16)),
-            elevation: MaterialStateProperty.resolveWith<double>((Set<MaterialState> states) => 0)),
+            padding: WidgetStateProperty.resolveWith<EdgeInsets>(
+                    (Set<WidgetState> states) => const EdgeInsets.symmetric(horizontal: 16)),
+            elevation: WidgetStateProperty.resolveWith<double>((Set<WidgetState> states) => 0)),
         child: Text(name ?? '',
             textAlign: TextAlign.center,
             style: TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: nameColor ?? Colors.white)),

@@ -156,15 +156,15 @@ class DropDownButtonWidget<T> extends StatelessWidget {
             offset: const Offset(0.0, -8.0),
             scrollbarTheme: ScrollbarThemeData(
               radius: const Radius.circular(40),
-              thickness: MaterialStateProperty.all<double>(6),
-              thumbVisibility: MaterialStateProperty.all<bool>(true),
+              thickness: WidgetStateProperty.all<double>(6),
+              thumbVisibility: WidgetStateProperty.all<bool>(true),
             ),
           ),
           iconStyleData: IconStyleData(icon: iconArrowDown ?? SvgPicture.asset(imagePaths.icDropDown)),
           menuItemStyleData: MenuItemStyleData(
             height: heightItem,
             padding: const EdgeInsets.symmetric(horizontal: 12),
-            overlayColor: MaterialStateProperty.resolveWith<Color>((Set<MaterialState> states) => supportSelectionIcon ? Colors.white : Colors.black12)
+            overlayColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) => supportSelectionIcon ? Colors.white : Colors.black12)
           ),
           onMenuStateChange: onMenuStateChange,
         ),

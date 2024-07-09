@@ -54,8 +54,8 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
     if (PlatformInfo.isWeb) {
       return DragTarget<List<PresentationEmail>>(
         builder: (_, __, ___) => _buildMailboxItem(context),
-        onAccept: (emails) {
-          widget.onDragEmailToMailboxAccepted?.call(emails, widget._presentationMailbox);
+        onAcceptWithDetails: (emails) {
+          widget.onDragEmailToMailboxAccepted?.call(emails.data, widget._presentationMailbox);
         }
       );
     } else {
