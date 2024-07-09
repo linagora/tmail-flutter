@@ -64,10 +64,10 @@ class TextInputFieldWidget extends StatelessWidget {
       ),
     );
 
-    return RawKeyboardListener(
+    return KeyboardListener(
       focusNode: currentFocusNode ?? FocusNode(),
-      onKey: (event) {
-        if (event is RawKeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
+      onKeyEvent: (event) {
+        if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
           nextFocusNode?.requestFocus();
         }
       },

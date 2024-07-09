@@ -114,10 +114,10 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
       }
   ) {
     return Obx(
-      () => RawKeyboardListener(
+      () => KeyboardListener(
         focusNode: FocusNode(),
-        onKey: (event) {
-          if (event is RawKeyDownEvent &&
+        onKeyEvent: (event) {
+          if (event is KeyDownEvent &&
               event.logicalKey == LogicalKeyboardKey.tab) {
             nextFocusNode?.requestFocus();
           }
@@ -145,10 +145,10 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
     FocusNode? nextFocusNode,
     double? minWidth,
   }) {
-    return RawKeyboardListener(
+    return KeyboardListener(
       focusNode: FocusNode(),
-      onKey: (event) {
-        if (event is RawKeyDownEvent &&
+      onKeyEvent: (event) {
+        if (event is KeyDownEvent &&
             event.logicalKey == LogicalKeyboardKey.tab) {
           nextFocusNode?.requestFocus();
         }

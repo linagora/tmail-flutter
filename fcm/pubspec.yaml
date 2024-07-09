@@ -38,7 +38,7 @@ dev_dependencies:
 
   json_serializable: 6.6.1
 
-  mockito: 5.4.2
+  mockito: 5.4.4
 
 flutter:
 

@@ -22,9 +22,9 @@ class CheckBoxHasAttachmentWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RawKeyboardListener(
+    return KeyboardListener(
       focusNode: FocusNode(),
-      onKey: (event) {
+      onKeyEvent: (event) {
         if (event.logicalKey == LogicalKeyboardKey.tab) {
           nextFocusNode?.requestFocus();
         }

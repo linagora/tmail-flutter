@@ -149,7 +149,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
             child: FocusScope(
               child: Focus(
                 onFocusChange: (focus) => widget.onFocusEmailAddressChangeAction?.call(widget.prefix, focus),
-                onKey: PlatformInfo.isWeb ? _recipientInputOnKeyListener : null,
+                onKeyEvent: PlatformInfo.isWeb ? _recipientInputOnKeyListener : null,
                 child: StatefulBuilder(
                   builder: (context, stateSetter) {
                     if (PlatformInfo.isWeb || widget.isTestingForWeb) {
@@ -230,7 +230,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                             },
                           );
                         },
-                        onAccept: (draggableEmailAddress) => _handleAcceptDraggableEmailAddressAction(draggableEmailAddress, stateSetter),
+                        onAcceptWithDetails: (draggableEmailAddress) => _handleAcceptDraggableEmailAddressAction(draggableEmailAddress.data, stateSetter),
                         onLeave: (draggableEmailAddress) {
                           if (_isDragging) {
                             stateSetter(() => _isDragging = false);
@@ -382,8 +382,8 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
     );
   }
 
-  KeyEventResult _recipientInputOnKeyListener(FocusNode node, RawKeyEvent event) {
-    if (event is RawKeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
+  KeyEventResult _recipientInputOnKeyListener(FocusNode node, KeyEvent event) {
+    if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
       widget.nextFocusNode?.requestFocus();
       widget.onFocusNextAddressAction?.call();
       return KeyEventResult.handled;

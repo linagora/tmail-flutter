@@ -178,7 +178,7 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
                         );
                       },
                       onHandleKeyEventAction: (event) {
-                        if (event is RawKeyDownEvent) {
+                        if (event is KeyDownEvent) {
                           switch (event.logicalKey) {
                             case LogicalKeyboardKey.tab:
                               widget.nextFocusNode?.requestFocus();

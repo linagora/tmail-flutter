@@ -31,7 +31,7 @@ class EmailRuleBottomSheetActionTileBuilder
       color: bgColor ?? Colors.white,
       child: MouseRegion(
         cursor: PlatformInfo.isWeb
-            ? MaterialStateMouseCursor.clickable
+            ? WidgetStateMouseCursor.clickable
             : MouseCursor.defer,
         child: CupertinoActionSheetAction(
           key: key,

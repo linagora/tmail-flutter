@@ -379,7 +379,7 @@ class ThreadView extends GetWidget<ThreadController>
         : Focus(
             focusNode: controller.focusNodeKeyBoard,
             autofocus: true,
-            onKey: controller.handleKeyEvent,
+            onKeyEvent: controller.handleKeyEvent,
             child: ListView.separated(
               key: const PageStorageKey('list_presentation_email_in_threads'),
               controller: controller.listEmailController,

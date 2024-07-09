@@ -39,7 +39,7 @@ mixin PopupContextMenuActionMixin {
 
   Widget buildCancelButton(BuildContext context) {
     return MouseRegion(
-      cursor: PlatformInfo.isWeb ? MaterialStateMouseCursor.clickable : MouseCursor.defer,
+      cursor: PlatformInfo.isWeb ? WidgetStateMouseCursor.clickable : MouseCursor.defer,
       child: CupertinoActionSheetAction(
         child: Text(
             AppLocalizations.of(context).cancel,

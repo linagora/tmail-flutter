@@ -93,7 +93,6 @@ class IdentitiesRadioListBuilder extends StatelessWidget {
       child: Obx(() => FadingEdgeScrollView.fromScrollView(
         gradientFractionOnStart: 0.3,
         gradientFractionOnEnd: 0.3,
-        shouldDisposeScrollController: true,
         child: ListView.builder(
           controller: ScrollController(),
           padding: const EdgeInsets.only(right: 12.0),

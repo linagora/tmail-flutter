@@ -89,8 +89,8 @@ class DateSelectionDropDownButton extends StatelessWidget {
             offset: DateSelectionDropdownButtonStyles.dropdownOffset,
             scrollbarTheme: ScrollbarThemeData(
               radius: DateSelectionDropdownButtonStyles.scrollbarRadius,
-              thickness: MaterialStateProperty.all<double>(DateSelectionDropdownButtonStyles.scrollbarThickness),
-              thumbVisibility: MaterialStateProperty.all<bool>(true),
+              thickness: WidgetStateProperty.all<double>(DateSelectionDropdownButtonStyles.scrollbarThickness),
+              thumbVisibility: WidgetStateProperty.all<bool>(true),
             ),
           ),
           iconStyleData: IconStyleData(
