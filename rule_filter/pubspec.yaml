@@ -17,7 +17,7 @@ dependencies:
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: migrate_cnb_to_master_5Jun
+      ref: sprint25_from_migrate_5jun
 
   ### Dependencies from pub.dev ###
   equatable: 2.0.5
