@@ -135,11 +135,11 @@ class EmailAddressDialogBuilder extends StatelessWidget {
                 height: 44,
                 child: TextButton(
                   style: ButtonStyle(
-                    foregroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) => AppColor.colorTextButton),
-                    backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                      (Set<MaterialState> states) => AppColor.colorItemEmailSelectedDesktop),
-                    shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                    foregroundColor: WidgetStateProperty.resolveWith<Color>(
+                      (Set<WidgetState> states) => AppColor.colorTextButton),
+                    backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                      (Set<WidgetState> states) => AppColor.colorItemEmailSelectedDesktop),
+                    shape: WidgetStateProperty.all(RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
                       side: const BorderSide(
                         width: 0,
@@ -161,11 +161,11 @@ class EmailAddressDialogBuilder extends StatelessWidget {
                   height: 44,
                   child: TextButton(
                       style: ButtonStyle(
-                          foregroundColor: MaterialStateProperty.resolveWith<Color>(
-                              (Set<MaterialState> states) => Colors.white),
-                          backgroundColor: MaterialStateProperty.resolveWith<Color>(
-                              (Set<MaterialState> states) => AppColor.colorTextButton),
-                          shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                          foregroundColor: WidgetStateProperty.resolveWith<Color>(
+                              (Set<WidgetState> states) => Colors.white),
+                          backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                              (Set<WidgetState> states) => AppColor.colorTextButton),
+                          shape: WidgetStateProperty.all(RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(8),
                               side: const BorderSide(
                                   width: 0,

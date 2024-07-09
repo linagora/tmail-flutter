@@ -103,7 +103,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
             ),
           );
         },
-        onAccept: (emails) => widget.onDragItemAccepted?.call(emails, widget.mailboxNode.item),
+        onAcceptWithDetails: (emails) => widget.onDragItemAccepted?.call(emails.data, widget.mailboxNode.item),
       );
     } else {
       if (widget.mailboxDisplayed == MailboxDisplayed.mailbox) {

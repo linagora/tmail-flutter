@@ -14,9 +14,9 @@ class ThemeUtils {
       dividerTheme: _dividerTheme,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       scrollbarTheme: ScrollbarThemeData(
-        thickness: MaterialStateProperty.all(8.0),
+        thickness: WidgetStateProperty.all(8.0),
         radius: const Radius.circular(8.0),
-        thumbColor: MaterialStateProperty.all(AppColor.thumbScrollbarColor)),
+        thumbColor: WidgetStateProperty.all(AppColor.thumbScrollbarColor)),
     );
   }
 
