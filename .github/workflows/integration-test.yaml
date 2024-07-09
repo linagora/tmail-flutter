@@ -1,0 +1,71 @@
+name: Integration tests
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "45 10 * * *" # 10:45 UTC (24 hour clock)
+
+env:
+  JAVA_VERSION: 17
+  FLUTTER_VERSION: 3.22.2
+
+jobs:
+  # desktop_integration_test:
+  #   name: Run integration tests on desktop browsers
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v4
+
+  #     - name: Set up Java
+  #       uses: actions/setup-java@v4
+  #       with:
+  #         java-version: ${{ env.JAVA_VERSION }}
+  #         distribution: "temurin"
+  #         cache: maven
+  #         cache-dependency-path: "tmail_selenium/pom.xml"
+
+  #     - name: Frontend configuration
+  #       env:
+  #         FRONTEND_CONFIG: ${{ secrets.FRONTEND_CONFIG }}
+  #       run: |
+  #         echo "$FRONTEND_CONFIG" > env.file
+  #       working-directory: tmail_selenium
+
+  #     - name: Run integration tests
+  #       run: ../scripts/integration-tests.sh
+  #       working-directory: tmail_selenium
+
+  mobile_integration_test:
+    name: Run integration tests on mobile apps
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: "temurin"
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Setup integration tests
+        env:
+          TMAIL_PATROL_CREDENTIALS: ${{ secrets.TMAIL_PATROL_CREDENTIALS }}
+        run: ./scripts/setup-mobile-integration-tests.sh
+
+      - name: Run integration tests
+        env:
+          BS_CREDENTIALS: ${{ secrets.BROWSERSTACK_CREDENTIALS }}
+        run: ./scripts/run-mobile-integration-tests.sh
