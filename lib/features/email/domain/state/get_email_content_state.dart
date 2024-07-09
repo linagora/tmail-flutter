@@ -7,12 +7,14 @@ class GetEmailContentLoading extends LoadingState {}
 
 class GetEmailContentSuccess extends UIState {
   final String htmlEmailContent;
-  final List<Attachment> attachments;
+  final List<Attachment>? attachments;
+  final List<Attachment>? inlineImages;
   final Email? emailCurrent;
 
   GetEmailContentSuccess({
     required this.htmlEmailContent,
-    required this.attachments,
+    this.attachments,
+    this.inlineImages,
     this.emailCurrent
   });
 
@@ -20,18 +22,21 @@ class GetEmailContentSuccess extends UIState {
   List<Object?> get props => [
     htmlEmailContent,
     attachments,
+    inlineImages,
     emailCurrent
   ];
 }
 
 class GetEmailContentFromCacheSuccess extends UIState {
   final String htmlEmailContent;
-  final List<Attachment> attachments;
+  final List<Attachment>? attachments;
+  final List<Attachment>? inlineImages;
   final Email? emailCurrent;
 
   GetEmailContentFromCacheSuccess({
     required this.htmlEmailContent,
-    required this.attachments,
+    this.attachments,
+    this.inlineImages,
     this.emailCurrent
   });
 
@@ -39,6 +44,7 @@ class GetEmailContentFromCacheSuccess extends UIState {
   List<Object?> get props => [
     htmlEmailContent,
     attachments,
+    inlineImages,
     emailCurrent,
   ];
 }

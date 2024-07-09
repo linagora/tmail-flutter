@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 
 class CreateEmailRequest with EquatableMixin {
@@ -34,6 +35,8 @@ class CreateEmailRequest with EquatableMixin {
   final MessageIdsHeaderValue? messageId;
   final MessageIdsHeaderValue? references;
   final SendingEmail? emailSendingQueue;
+  final bool isCaching;
+  final ScreenDisplayMode displayMode;
 
   CreateEmailRequest({
     required this.session,
@@ -57,7 +60,9 @@ class CreateEmailRequest with EquatableMixin {
     this.unsubscribeEmailId,
     this.messageId,
     this.references,
-    this.emailSendingQueue
+    this.emailSendingQueue,
+    this.isCaching = false,
+    this.displayMode = ScreenDisplayMode.normal,
   });
 
   @override
@@ -83,6 +88,8 @@ class CreateEmailRequest with EquatableMixin {
     unsubscribeEmailId,
     references,
     references,
-    emailSendingQueue
+    emailSendingQueue,
+    isCaching,
+    displayMode,
   ];
 }

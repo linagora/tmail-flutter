@@ -1,2 +1,0 @@
-
-class NotFoundLComposedEmailException implements Exception {}

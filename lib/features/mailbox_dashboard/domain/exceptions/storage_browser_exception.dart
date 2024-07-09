@@ -1,0 +1,2 @@
+
+class NotFoundDataInStorageBrowserException implements Exception {}

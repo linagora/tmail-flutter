@@ -28,7 +28,7 @@ class ComposerArguments extends RouterArguments {
   final List<Identity>? identities;
   final Identity? selectedIdentity;
   final List<Attachment>? inlineImages;
-  final bool? readRecepientEnabled;
+  final bool isRequestReadReceipt;
   final ScreenDisplayMode displayMode;
 
   ComposerArguments({
@@ -48,7 +48,7 @@ class ComposerArguments extends RouterArguments {
     this.identities,
     this.selectedIdentity,
     this.inlineImages,
-    this.readRecepientEnabled,
+    this.isRequestReadReceipt = false,
     this.displayMode = ScreenDisplayMode.normal
   });
 
@@ -95,26 +95,29 @@ class ComposerArguments extends RouterArguments {
       emailActionType: EmailActionType.reopenComposerBrowser,
       presentationEmail: composerCache.email?.toPresentationEmail(),
       emailContents: composerCache.email?.emailContentList.asHtmlString,
-      attachments: composerCache.email?.allAttachments
-        .where((attachment) => attachment.disposition != ContentDisposition.inline)
-        .toList(),
+      attachments: composerCache.email?.allAttachments.getListAttachmentsDisplayedOutside(composerCache.email?.htmlBodyAttachments ?? []),
       selectedIdentity: composerCache.identity,
-      inlineImages: composerCache.email?.attachmentsWithCid,
-      readRecepientEnabled: composerCache.readReceipentEnabled,
+      inlineImages: composerCache.email?.allAttachments.listAttachmentsDisplayedInContent,
+      isRequestReadReceipt: composerCache.isRequestReadReceipt,
       displayMode: composerCache.displayMode,
     );
 
-  factory ComposerArguments.fromLocalStorageBrowser(Email email) =>
+  factory ComposerArguments.fromLocalStorageBrowser(ComposerCache composerCache) =>
     ComposerArguments(
-      emailActionType: EmailActionType.restoreComposedEmailFromLocalStorage,
-      presentationEmail: email.toPresentationEmail(),
-      attachments: email.allAttachments,
-      emailContents: email.emailContentList.asHtmlString,
+      emailActionType: EmailActionType.composeEmailIntoNewTab,
+      presentationEmail: composerCache.email?.toPresentationEmail(),
+      emailContents: composerCache.email?.emailContentList.asHtmlString,
+      attachments: composerCache.email?.allAttachments.getListAttachmentsDisplayedOutside(composerCache.email?.htmlBodyAttachments ?? []),
+      selectedIdentity: composerCache.identity,
+      inlineImages: composerCache.email?.allAttachments.listAttachmentsDisplayedInContent,
+      isRequestReadReceipt: composerCache.isRequestReadReceipt,
+      displayMode: composerCache.displayMode,
     );
 
   factory ComposerArguments.replyEmail({
     required PresentationEmail presentationEmail,
     required String content,
+    required List<Attachment> inlineImages,
     Role? mailboxRole,
     MessageIdsHeaderValue? messageId,
     MessageIdsHeaderValue? references,
@@ -122,6 +125,7 @@ class ComposerArguments extends RouterArguments {
     emailActionType: EmailActionType.reply,
     presentationEmail: presentationEmail,
     emailContents: content,
+    inlineImages: inlineImages,
     mailboxRole: mailboxRole,
     messageId: messageId,
     references: references,
@@ -130,6 +134,7 @@ class ComposerArguments extends RouterArguments {
   factory ComposerArguments.replyAllEmail({
     required PresentationEmail presentationEmail,
     required String content,
+    required List<Attachment> inlineImages,
     Role? mailboxRole,
     MessageIdsHeaderValue? messageId,
     MessageIdsHeaderValue? references,
@@ -137,6 +142,7 @@ class ComposerArguments extends RouterArguments {
     emailActionType: EmailActionType.replyAll,
     presentationEmail: presentationEmail,
     emailContents: content,
+    inlineImages: inlineImages,
     mailboxRole: mailboxRole,
     messageId: messageId,
     references: references,
@@ -146,6 +152,7 @@ class ComposerArguments extends RouterArguments {
     required PresentationEmail presentationEmail,
     required String content,
     required List<Attachment> attachments,
+    required List<Attachment> inlineImages,
     MessageIdsHeaderValue? messageId,
     MessageIdsHeaderValue? references,
   }) => ComposerArguments(
@@ -153,6 +160,7 @@ class ComposerArguments extends RouterArguments {
     presentationEmail: presentationEmail,
     emailContents: content,
     attachments: attachments,
+    inlineImages: inlineImages,
     mailboxRole: presentationEmail.mailboxContain?.role,
     messageId: messageId,
     references: references,
@@ -211,7 +219,7 @@ class ComposerArguments extends RouterArguments {
     List<Identity>? identities,
     Identity? selectedIdentity,
     List<Attachment>? inlineImages,
-    bool? readRecepientEnabled,
+    bool? isRequestReadReceipt,
     ScreenDisplayMode? displayMode,
   }) {
     return ComposerArguments(
@@ -231,7 +239,7 @@ class ComposerArguments extends RouterArguments {
       identities: identities ?? this.identities,
       selectedIdentity: selectedIdentity ?? this.selectedIdentity,
       inlineImages: inlineImages ?? this.inlineImages,
-      readRecepientEnabled: readRecepientEnabled ?? this.readRecepientEnabled,
+      isRequestReadReceipt: isRequestReadReceipt ?? this.isRequestReadReceipt,
       displayMode: displayMode ?? this.displayMode,
     );
   }

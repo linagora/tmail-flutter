@@ -5,8 +5,8 @@ import 'package:dartz/dartz.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/restore_email_inline_images_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 
-class RestoreEmailInlineImagesInteractor {
-  RestoreEmailInlineImagesInteractor(this._composerCacheRepository);
+class ConvertImageCIDToBase46Interactor {
+  ConvertImageCIDToBase46Interactor(this._composerCacheRepository);
 
   final ComposerCacheRepository _composerCacheRepository;
 
@@ -17,8 +17,7 @@ class RestoreEmailInlineImagesInteractor {
   }) async* {
     try {
       yield Right(RestoringEmailInlineImages());
-      
-      final emailContent = await _composerCacheRepository.restoreEmailInlineImages(
+      final emailContent = await _composerCacheRepository.convertImageCIDToBase64(
         htmlContent,
         transformConfiguration,
         mapUrlDownloadCID);

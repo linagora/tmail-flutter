@@ -29,5 +29,5 @@ enum EmailActionType {
   archiveMessage,
   printAll,
   downloadMessageAsEML,
-  restoreComposedEmailFromLocalStorage
+  composeEmailIntoNewTab
 }

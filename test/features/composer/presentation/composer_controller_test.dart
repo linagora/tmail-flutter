@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:tmail_ui_user/features/base/before_unload_manager.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
@@ -21,7 +22,7 @@ import 'package:tmail_ui_user/features/login/data/network/interceptors/authoriza
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_composed_email_to_local_storage_browser_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_composer_cache_to_local_storage_browser_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -57,7 +58,7 @@ const fallbackGenerators = {
   MockSpec<GetAlwaysReadReceiptSettingInteractor>(),
   MockSpec<CreateNewAndSendEmailInteractor>(),
   MockSpec<CreateNewAndSaveEmailToDraftsInteractor>(),
-  MockSpec<StoreComposedEmailToLocalStorageBrowserInteractor>(),
+  MockSpec<SaveComposerCacheToLocalStorageBrowserInteractor>(),
   MockSpec<MailboxDashBoardController>(fallbackGenerators: fallbackGenerators),
   MockSpec<NetworkConnectionController>(fallbackGenerators: fallbackGenerators),
   MockSpec<CachingManager>(),
@@ -72,6 +73,7 @@ const fallbackGenerators = {
   MockSpec<ResponsiveUtils>(),
   MockSpec<Uuid>(),
   MockSpec<ApplicationManager>(),
+  MockSpec<BeforeUnloadManager>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -89,7 +91,7 @@ void main() {
   late MockGetAlwaysReadReceiptSettingInteractor mockGetAlwaysReadReceiptSettingInteractor;
   late MockCreateNewAndSendEmailInteractor mockCreateNewAndSendEmailInteractor;
   late MockCreateNewAndSaveEmailToDraftsInteractor mockCreateNewAndSaveEmailToDraftsInteractor;
-  late MockStoreComposedEmailToLocalStorageBrowserInteractor mockStoreComposedEmailToLocalStorageBrowserInteractor;
+  late MockSaveComposerCacheToLocalStorageBrowserInteractor mockSaveComposerCacheToLocalStorageBrowserInteractor;
 
   late MockNetworkConnectionController mockNetworkConnectionController;
   late MockMailboxDashBoardController mockMailboxDashBoardController;
@@ -106,6 +108,7 @@ void main() {
   late MockResponsiveUtils mockResponsiveUtils;
   late MockUuid mockUuid;
   late MockApplicationManager mockApplicationManager;
+  late MockBeforeUnloadManager mockBeforeUnloadManager;
 
   setUpAll(() {
     mockLocalFilePickerInteractor = MockLocalFilePickerInteractor();
@@ -120,7 +123,7 @@ void main() {
     mockGetAlwaysReadReceiptSettingInteractor = MockGetAlwaysReadReceiptSettingInteractor();
     mockCreateNewAndSendEmailInteractor = MockCreateNewAndSendEmailInteractor();
     mockCreateNewAndSaveEmailToDraftsInteractor = MockCreateNewAndSaveEmailToDraftsInteractor();
-    mockStoreComposedEmailToLocalStorageBrowserInteractor = MockStoreComposedEmailToLocalStorageBrowserInteractor();
+    mockSaveComposerCacheToLocalStorageBrowserInteractor = MockSaveComposerCacheToLocalStorageBrowserInteractor();
 
     mockNetworkConnectionController = MockNetworkConnectionController();
     mockMailboxDashBoardController = MockMailboxDashBoardController();
@@ -138,6 +141,7 @@ void main() {
     mockResponsiveUtils = MockResponsiveUtils();
     mockUuid = MockUuid();
     mockApplicationManager = MockApplicationManager();
+    mockBeforeUnloadManager = MockBeforeUnloadManager();
 
     Get.put<NetworkConnectionController>(mockNetworkConnectionController);
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
@@ -158,7 +162,8 @@ void main() {
     Get.put<ResponsiveUtils>(mockResponsiveUtils);
     Get.put<Uuid>(mockUuid);
     Get.put<ApplicationManager>(mockApplicationManager);
-    
+    Get.put<BeforeUnloadManager>(mockBeforeUnloadManager);
+
     Get.testMode = true;
 
     composerController = ComposerController(
@@ -174,7 +179,7 @@ void main() {
       mockGetAlwaysReadReceiptSettingInteractor,
       mockCreateNewAndSendEmailInteractor,
       mockCreateNewAndSaveEmailToDraftsInteractor,
-      mockStoreComposedEmailToLocalStorageBrowserInteractor,
+      mockSaveComposerCacheToLocalStorageBrowserInteractor,
     );
   });
 
@@ -193,10 +198,10 @@ void main() {
       // Act
       composerController.onOpenNewTabAction();
 
-      await untilCalled(mockStoreComposedEmailToLocalStorageBrowserInteractor.execute(any));
+      await untilCalled(mockSaveComposerCacheToLocalStorageBrowserInteractor.execute(any, any, any));
 
       // Assert
-      verify(mockStoreComposedEmailToLocalStorageBrowserInteractor.execute(any)).called(1);
+      verify(mockSaveComposerCacheToLocalStorageBrowserInteractor.execute(any, any, any)).called(1);
     });
   });
 

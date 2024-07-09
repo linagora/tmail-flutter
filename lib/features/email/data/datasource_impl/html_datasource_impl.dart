@@ -42,12 +42,14 @@ class HtmlDataSourceImpl extends HtmlDataSource {
   @override
   Future<Tuple2<String, Set<EmailBodyPart>>> replaceImageBase64ToImageCID({
     required String emailContent,
-    required Map<String, Attachment> inlineAttachments
+    required Map<String, Attachment> inlineAttachments,
+    bool isCaching = false
   }) {
     return Future.sync(() async {
       return await _htmlAnalyzer.replaceImageBase64ToImageCID(
         emailContent: emailContent,
-        inlineAttachments: inlineAttachments
+        inlineAttachments: inlineAttachments,
+        isCaching: isCaching
       );
     }).catchError(_exceptionThrower.throwException);
   }
@@ -58,6 +60,20 @@ class HtmlDataSourceImpl extends HtmlDataSource {
       return await _htmlAnalyzer.removeCollapsedExpandedSignatureEffect(
         emailContent: emailContent
       );
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<String> convertImageCIDToBase64(
+    String htmlContent,
+    TransformConfiguration transformConfiguration,
+    Map<String, String> mapUrlDownloadCID
+  ) {
+    return Future.sync(() async {
+      return await _htmlAnalyzer.convertImageCIDToBase64(
+        htmlContent,
+        mapUrlDownloadCID,
+        transformConfiguration);
     }).catchError(_exceptionThrower.throwException);
   }
 }

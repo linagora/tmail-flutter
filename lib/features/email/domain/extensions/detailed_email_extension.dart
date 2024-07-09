@@ -18,6 +18,7 @@ extension DetailedEmailExtension on DetailedEmail {
       emailContentPath: emailContentPath,
       messageId: messageId?.ids.toList(),
       references: references?.ids.toList(),
+      inlineImages: inlineImages?.toHiveCache(),
     );
   }
 
@@ -36,6 +37,7 @@ extension DetailedEmailExtension on DetailedEmail {
       emailContentPath: path,
       messageId: messageId,
       references: references,
+      inlineImages: inlineImages,
     );
   }
 }

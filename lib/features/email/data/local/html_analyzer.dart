@@ -107,7 +107,8 @@ class HtmlAnalyzer {
 
   Future<Tuple2<String, Set<EmailBodyPart>>> replaceImageBase64ToImageCID({
     required String emailContent,
-    required Map<String, Attachment> inlineAttachments
+    required Map<String, Attachment> inlineAttachments,
+    bool isCaching = false
   }) async {
     final document = parse(emailContent);
     final listImgTag = document.querySelectorAll('img[src^="data:image/"][id^="cid:"]');
@@ -116,7 +117,9 @@ class HtmlAnalyzer {
       final idImg = imgTag.attributes['id'];
       final cid = idImg!.replaceFirst('cid:', '').trim();
       imgTag.attributes['src'] = 'cid:$cid';
-      imgTag.attributes.remove('id');
+      if (!isCaching) {
+        imgTag.attributes.remove('id');
+      }
       return cid;
     })).then((listCid) {
       final listInlineAttachment = listCid
@@ -156,5 +159,16 @@ class HtmlAnalyzer {
     final newContent = document.body?.innerHtml ?? emailContent;
     log('HtmlAnalyzer::removeCollapsedExpandedSignatureEffect: AFTER = $newContent');
     return newContent;
+  }
+
+  Future<String> convertImageCIDToBase64(
+    String htmlContent,
+    Map<String, String> mapCidImageDownloadUrl,
+    TransformConfiguration transformConfiguration
+  ) async {
+    return await _htmlTransform.transformToHtml(
+      htmlContent: htmlContent,
+      mapCidImageDownloadUrl: mapCidImageDownloadUrl,
+      transformConfiguration: transformConfiguration);
   }
 }

@@ -10,12 +10,11 @@ import 'package:tmail_ui_user/features/composer/data/repository/composer_reposit
 import 'package:tmail_ui_user/features/composer/data/repository/contact_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/convert_image_cid_to_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/restore_email_inline_images_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_on_web_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_composed_email_to_local_storage_browser_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
@@ -46,6 +45,7 @@ import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repositor
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_composer_cache_to_local_storage_browser_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identity_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
@@ -210,9 +210,9 @@ class ComposerBindings extends BaseBindings {
       Get.find<MailboxRepository>(),
       Get.find<ComposerRepository>(),
     ));
-    Get.lazyPut(() => RestoreEmailInlineImagesInteractor(
+    Get.lazyPut(() => ConvertImageCIDToBase46Interactor(
       Get.find<ComposerCacheRepository>()));
-    Get.lazyPut(() => StoreComposedEmailToLocalStorageBrowserInteractor(
+    Get.lazyPut(() => SaveComposerCacheToLocalStorageBrowserInteractor(
       Get.find<ComposerCacheRepository>(),
       Get.find<ComposerRepository>(),
     ));
@@ -241,7 +241,7 @@ class ComposerBindings extends BaseBindings {
       Get.find<GetAlwaysReadReceiptSettingInteractor>(),
       Get.find<CreateNewAndSendEmailInteractor>(),
       Get.find<CreateNewAndSaveEmailToDraftsInteractor>(),
-      Get.find<StoreComposedEmailToLocalStorageBrowserInteractor>(),
+      Get.find<SaveComposerCacheToLocalStorageBrowserInteractor>(),
     ));
   }
 

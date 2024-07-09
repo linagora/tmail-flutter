@@ -427,18 +427,6 @@ class UploadController extends BaseController {
     uploadInlineViewState.value = Right(UIState.idle);
   }
 
-  List<Attachment> get inlineAttachmentsUploaded {
-    if (_uploadingStateInlineFiles.uploadingStateFiles.isEmpty) {
-      return List.empty();
-    }
-    return _uploadingStateInlineFiles.uploadingStateFiles
-        .whereNotNull()
-        .map((fileState) => fileState.attachment)
-        .whereNotNull()
-        .where((attachment) => attachment.cid != null)
-        .toList();
-  }
-
   List<FileInfo> get inlineAttachmentsPicked {
     if (_uploadingStateInlineFiles.uploadingStateFiles.isEmpty) {
       return List.empty();

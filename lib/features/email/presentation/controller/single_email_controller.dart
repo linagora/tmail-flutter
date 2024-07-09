@@ -468,6 +468,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         GetEmailContentSuccess(
           htmlEmailContent: emailLoaded.htmlContent,
           attachments: emailLoaded.attachments,
+          inlineImages: emailLoaded.inlineImages,
           emailCurrent: emailLoaded.emailCurrent
         )
       )));
@@ -500,22 +501,23 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     currentEmailLoaded.value = EmailLoaded(
       htmlContent: success.htmlEmailContent,
-      attachments: List.of(success.attachments),
+      attachments: List.of(success.attachments ?? []),
+      inlineImages: List.of(success.inlineImages ?? []),
       emailCurrent: success.emailCurrent,
     );
     emailSupervisorController.pushEmailQueue(currentEmailLoaded.value!);
 
     if (success.emailCurrent?.id == currentEmail?.id) {
-      attachments.value = success.attachments;
+      attachments.value = success.attachments ?? [];
       attachmentsViewState.value = {
         for (var attachment in attachments.where((item) => item.blobId != null))
           attachment.blobId!: Right(IdleDownloadAttachmentForWeb())
       };
 
-      if (_canParseCalendarEvent(blobIds: success.attachments.calendarEventBlobIds)) {
+      if (_canParseCalendarEvent(blobIds: success.attachments?.calendarEventBlobIds ?? {})) {
         _parseCalendarEventAction(
           accountId: mailboxDashBoardController.accountId.value!,
-          blobIds: success.attachments.calendarEventBlobIds,
+          blobIds: success.attachments?.calendarEventBlobIds ?? {},
           emailContents: success.htmlEmailContent
         );
       } else {
@@ -544,22 +546,23 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     currentEmailLoaded.value = EmailLoaded(
       htmlContent: success.htmlEmailContent,
-      attachments: List.of(success.attachments),
+      attachments: List.of(success.attachments ?? []),
+      inlineImages: List.of(success.inlineImages ?? []),
       emailCurrent: success.emailCurrent,
     );
     emailSupervisorController.pushEmailQueue(currentEmailLoaded.value!);
 
     if (success.emailCurrent?.id == currentEmail?.id) {
-      attachments.value = success.attachments;
+      attachments.value = success.attachments ?? [];
       attachmentsViewState.value = {
         for (var attachment in attachments.where((item) => item.blobId != null))
           attachment.blobId!: Right(IdleDownloadAttachmentForWeb())
       };
 
-      if (_canParseCalendarEvent(blobIds: success.attachments.calendarEventBlobIds)) {
+      if (_canParseCalendarEvent(blobIds: success.attachments?.calendarEventBlobIds ?? {})) {
         _parseCalendarEventAction(
           accountId: mailboxDashBoardController.accountId.value!,
-          blobIds: success.attachments.calendarEventBlobIds,
+          blobIds: success.attachments?.calendarEventBlobIds ?? {},
           emailContents: success.htmlEmailContent
         );
       } else {
@@ -576,6 +579,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           htmlEmailContent: success.htmlEmailContent,
           messageId: success.emailCurrent?.messageId,
           references: success.emailCurrent?.references,
+          inlineImages: success.inlineImages,
         );
 
         _storeOpenedEmailAction(
@@ -1342,6 +1346,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           ComposerArguments.replyEmail(
             presentationEmail: presentationEmail,
             content: currentEmailLoaded.value?.htmlContent ?? '',
+            inlineImages: currentEmailLoaded.value?.inlineImages ?? [],
             mailboxRole: presentationEmail.mailboxContain?.role,
             messageId: currentEmailLoaded.value?.emailCurrent?.messageId,
             references: currentEmailLoaded.value?.emailCurrent?.references,
@@ -1353,6 +1358,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           ComposerArguments.replyAllEmail(
             presentationEmail: presentationEmail,
             content: currentEmailLoaded.value?.htmlContent ?? '',
+            inlineImages: currentEmailLoaded.value?.inlineImages ?? [],
             mailboxRole: presentationEmail.mailboxContain?.role,
             messageId: currentEmailLoaded.value?.emailCurrent?.messageId,
             references: currentEmailLoaded.value?.emailCurrent?.references,
@@ -1365,6 +1371,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             presentationEmail: presentationEmail,
             content: currentEmailLoaded.value?.htmlContent ?? '',
             attachments: attachments,
+            inlineImages: currentEmailLoaded.value?.inlineImages ?? [],
             messageId: currentEmailLoaded.value?.emailCurrent?.messageId,
             references: currentEmailLoaded.value?.emailCurrent?.references,
           )

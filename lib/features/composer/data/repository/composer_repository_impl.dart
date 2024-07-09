@@ -51,7 +51,8 @@ class ComposerRepositoryImpl extends ComposerRepository {
     if (createEmailRequest.inlineAttachments?.isNotEmpty == true) {
       final tupleContentInlineAttachments = await _replaceImageBase64ToImageCID(
         emailContent: emailContent,
-        inlineAttachments: createEmailRequest.inlineAttachments!
+        inlineAttachments: createEmailRequest.inlineAttachments!,
+        isCaching: createEmailRequest.isCaching
       );
 
       emailContent = tupleContentInlineAttachments.value1;
@@ -77,12 +78,14 @@ class ComposerRepositoryImpl extends ComposerRepository {
 
   Future<Tuple2<String, Set<EmailBodyPart>>> _replaceImageBase64ToImageCID({
     required String emailContent,
-    required Map<String, Attachment> inlineAttachments
+    required Map<String, Attachment> inlineAttachments,
+    bool isCaching = false
   }) {
     try {
       return _htmlDataSource.replaceImageBase64ToImageCID(
         emailContent: emailContent,
-        inlineAttachments: inlineAttachments);
+        inlineAttachments: inlineAttachments,
+        isCaching: isCaching);
     } catch (e) {
       logError('ComposerRepositoryImpl::_replaceImageBase64ToImageCID: Exception: $e');
       return Future.value(
