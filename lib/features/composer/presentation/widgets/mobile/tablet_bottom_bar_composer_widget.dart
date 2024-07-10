@@ -3,24 +3,25 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile/tablet_bottom_bar_composer_widget_style.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/web/bottom_bar_composer_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class TabletBottomBarComposerWidget extends StatelessWidget {
 
+  final bool hasReadReceipt;
   final VoidCallback deleteComposerAction;
   final VoidCallback saveToDraftAction;
   final VoidCallback sendMessageAction;
-  final OnRequestReadReceiptAction? requestReadReceiptAction;
+  final VoidCallback requestReadReceiptAction;
 
   final _imagePaths = Get.find<ImagePaths>();
 
   TabletBottomBarComposerWidget({
     super.key,
+    required this.hasReadReceipt,
     required this.deleteComposerAction,
     required this.saveToDraftAction,
     required this.sendMessageAction,
-    this.requestReadReceiptAction,
+    required this.requestReadReceiptAction,
   });
 
   @override
@@ -45,8 +46,13 @@ class TabletBottomBarComposerWidget extends StatelessWidget {
             borderRadius: TabletBottomBarComposerWidgetStyle.iconRadius,
             padding: TabletBottomBarComposerWidgetStyle.iconPadding,
             iconSize: TabletBottomBarComposerWidgetStyle.iconSize,
-            tooltipMessage: AppLocalizations.of(context).requestReadReceipt,
-            onTapActionAtPositionCallback: requestReadReceiptAction,
+            iconColor: hasReadReceipt
+              ? TabletBottomBarComposerWidgetStyle.selectedIconColor
+              : TabletBottomBarComposerWidgetStyle.iconColor,
+            tooltipMessage: hasReadReceipt
+              ? AppLocalizations.of(context).turnOffRequestReadReceipt
+              : AppLocalizations.of(context).turnOnRequestReadReceipt,
+            onTapActionCallback: requestReadReceiptAction,
           ),
           const SizedBox(width: TabletBottomBarComposerWidgetStyle.space),
           TMailButtonWidget.fromIcon(

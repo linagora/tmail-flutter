@@ -381,19 +381,13 @@ class ComposerView extends GetWidget<ComposerController> {
                   ),
                 )
               ),
-              TabletBottomBarComposerWidget(
+              Obx(() => TabletBottomBarComposerWidget(
+                hasReadReceipt: controller.hasRequestReadReceipt.value,
                 deleteComposerAction: () => controller.handleClickDeleteComposer(context),
                 saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
                 sendMessageAction: () => controller.handleClickSendButton(context),
-                requestReadReceiptAction: (position) {
-                  controller.openPopupMenuAction(
-                    context,
-                    position,
-                    _createReadReceiptPopupItems(context),
-                    radius: ComposerStyle.popupMenuRadius
-                  );
-                },
-              ),
+                requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
+              )),
             ]
           )
         ),
@@ -425,26 +419,6 @@ class ComposerView extends GetWidget<ComposerController> {
             AppLocalizations.of(context).browse)
         ..onActionClick((_) => controller.openFilePickerByType(context, FileType.any)))
       .build();
-  }
-
-  List<PopupMenuEntry> _createReadReceiptPopupItems(BuildContext context) {
-    return [
-      PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          controller.imagePaths.icReadReceipt,
-          AppLocalizations.of(context).requestReadReceipt,
-          styleName: ComposerStyle.popupItemTextStyle,
-          padding: ComposerStyle.popupItemPadding,
-          selectedIcon: controller.imagePaths.icFilterSelected,
-          isSelected: controller.hasRequestReadReceipt.value,
-          onCallbackAction: () {
-            popBack();
-            controller.toggleRequestReadReceipt(context);
-          }
-        )
-      ),
-    ];
   }
 
   List<PopupMenuEntry> _createMoreOptionPopupItems(BuildContext context) {
