@@ -12600,7 +12600,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4.push(new A.Padding(D.EdgeInsetsDirectional_0_12_0_12, A.Text$(_this.title, _null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, t7, _null, _null, t6 ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), C.TextAlign_2, _null, _null, _null, _null), _null));
       t7 = _this.subTitle;
       if (t7 != null)
-        t4.push(A.Text$(t7, _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_yql4, C.TextAlign_2, _null, _null, _null, _null));
+        t4.push(A.Text$(t7, _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_yql2, C.TextAlign_2, _null, _null, _null, _null));
       if (t6) {
         A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
         t6 = A.Intl__message("Create filters", _null, "createFilters", _null, _null);
@@ -22124,5 +22124,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "oFsr/i+rxhvnTTUHmm4yZhaVByA=");
+})($__dart_deferred_initializers__, "Fk/817eUCIEr7SLiI/TJXZw3wLs=");
 ;
