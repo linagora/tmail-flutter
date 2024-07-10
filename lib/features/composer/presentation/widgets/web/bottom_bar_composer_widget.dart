@@ -5,8 +5,6 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/web/bottom_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-typedef OnRequestReadReceiptAction = Function(RelativeRect position);
-
 class BottomBarComposerWidget extends StatelessWidget {
 
   final bool isCodeViewEnabled;
