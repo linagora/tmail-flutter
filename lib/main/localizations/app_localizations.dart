@@ -4085,4 +4085,32 @@ class AppLocalizations {
       name: 'showNotifications',
     );
   }
+
+  String get turnOnRequestReadReceipt {
+    return Intl.message(
+      'Turn on request read receipt',
+      name: 'turnOnRequestReadReceipt'
+    );
+  }
+
+  String get turnOffRequestReadReceipt {
+    return Intl.message(
+      'Turn off request read receipt',
+      name: 'turnOffRequestReadReceipt'
+    );
+  }
+
+  String get requestReadReceiptHasBeenEnabled {
+    return Intl.message(
+      'Request read receipt has been enabled',
+      name: 'requestReadReceiptHasBeenEnabled'
+    );
+  }
+
+  String get requestReadReceiptHasBeenDisabled {
+    return Intl.message(
+      'Request read receipt has been disabled',
+      name: 'requestReadReceiptHasBeenDisabled'
+    );
+  }
 }
