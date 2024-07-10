@@ -13,6 +13,7 @@ class TabletBottomBarComposerWidgetStyle {
   static const Color backgroundColor = Colors.white;
   static const Color iconColor = AppColor.colorRichButtonComposer;
   static const Color sendButtonBackgroundColor = AppColor.primaryColor;
+  static const Color selectedIconColor = AppColor.primaryColor;
 
   static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.symmetric(horizontal: 32, vertical: 12);
   static const EdgeInsetsGeometry iconPadding = EdgeInsetsDirectional.all(5);
