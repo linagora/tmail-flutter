@@ -252,6 +252,11 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     subjectEmailInputFocusNode?.removeListener(_subjectEmailInputFocusListener);
     _composerCacheListener?.cancel();
     _beforeUnloadManager.removeListener(onBeforeUnload);
+    if (PlatformInfo.isWeb) {
+      richTextWebController = null;
+    } else {
+      richTextMobileTabletController = null;
+    }
     super.onClose();
   }
 
