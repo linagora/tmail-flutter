@@ -27,7 +27,7 @@ mixin UserSettingPopupMenuMixin {
             width: 300,
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-              title: Text(
+              title: SelectableText(
                 userName.value,
                 maxLines: 1,
                 style: const TextStyle(
