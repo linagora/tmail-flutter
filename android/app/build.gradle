@@ -21,6 +21,11 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def flutterMinSdkVersion = localProperties.getProperty('flutter.minSdkVersion')
+if (flutterMinSdkVersion == null) {
+    flutterMinSdkVersion = '19'
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
@@ -40,8 +45,8 @@ android {
 
     defaultConfig {
         applicationId "com.linagora.android.teammail"
-        minSdkVersion 19
-        targetSdkVersion 33
+        minSdkVersion flutterMinSdkVersion.toInteger()
+        targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         // The number of method references in a .dex file cannot exceed 64K
