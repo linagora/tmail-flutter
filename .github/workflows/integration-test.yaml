@@ -26,6 +26,15 @@ jobs:
           cache: maven
           cache-dependency-path: "tmail_selenium/pom.xml"
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build local image
+        uses: docker/build-push-action@v6
+        with:
+          load: true
+          tags: tmail-web:integration-test
+
       - uses: browser-actions/setup-chrome@v1
         with:
           chrome-version: stable
