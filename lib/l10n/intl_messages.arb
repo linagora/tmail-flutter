@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-03-19T12:10:23.549474",
+  "@@last_modified": "2024-07-10T13:53:40.940363",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3906,6 +3906,30 @@
   },
   "showNotifications": "Show Notifications",
   "@showNotifications": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOnRequestReadReceipt": "Turn on request read receipt",
+  "@turnOnRequestReadReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOffRequestReadReceipt": "Turn off request read receipt",
+  "@turnOffRequestReadReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requestReadReceiptHasBeenEnabled": "Request read receipt has been enabled",
+  "@requestReadReceiptHasBeenEnabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requestReadReceiptHasBeenDisabled": "Request read receipt has been disabled",
+  "@requestReadReceiptHasBeenDisabled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

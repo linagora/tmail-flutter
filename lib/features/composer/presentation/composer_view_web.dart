@@ -467,6 +467,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             Obx(() => BottomBarComposerWidget(
                               isCodeViewEnabled: controller.richTextWebController!.codeViewEnabled,
                               isFormattingOptionsEnabled: controller.richTextWebController!.isFormattingOptionsEnabled,
+                              hasReadReceipt: controller.hasRequestReadReceipt.value,
                               openRichToolbarAction: controller.richTextWebController!.toggleFormattingOptions,
                               attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
                               insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
@@ -474,14 +475,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               deleteComposerAction: () => controller.handleClickDeleteComposer(context),
                               saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
                               sendMessageAction: () => controller.handleClickSendButton(context),
-                              requestReadReceiptAction: (position) {
-                                controller.openPopupMenuAction(
-                                    context,
-                                    position,
-                                    _createReadReceiptPopupItems(context),
-                                    radius: ComposerStyle.popupMenuRadius
-                                );
-                              },
+                              requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
                             )),
                           ],
                         ),
@@ -776,6 +770,7 @@ class ComposerView extends GetWidget<ComposerController> {
               Obx(() => BottomBarComposerWidget(
                 isCodeViewEnabled: controller.richTextWebController!.codeViewEnabled,
                 isFormattingOptionsEnabled: controller.richTextWebController!.isFormattingOptionsEnabled,
+                hasReadReceipt: controller.hasRequestReadReceipt.value,
                 openRichToolbarAction: controller.richTextWebController!.toggleFormattingOptions,
                 attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
                 insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
@@ -783,40 +778,13 @@ class ComposerView extends GetWidget<ComposerController> {
                 deleteComposerAction: () => controller.handleClickDeleteComposer(context),
                 saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
                 sendMessageAction: () => controller.handleClickSendButton(context),
-                requestReadReceiptAction: (position) {
-                  controller.openPopupMenuAction(
-                    context,
-                    position,
-                    _createReadReceiptPopupItems(context),
-                    radius: ComposerStyle.popupMenuRadius
-                  );
-                },
+                requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
               )),
             ]),
           );
         },
       )
     );
-  }
-
-  List<PopupMenuEntry> _createReadReceiptPopupItems(BuildContext context) {
-    return [
-      PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          controller.imagePaths.icReadReceipt,
-          AppLocalizations.of(context).requestReadReceipt,
-          styleName: ComposerStyle.popupItemTextStyle,
-          padding: ComposerStyle.popupItemPadding,
-          selectedIcon: controller.imagePaths.icFilterSelected,
-          isSelected: controller.hasRequestReadReceipt.value,
-          onCallbackAction: () {
-            popBack();
-            controller.toggleRequestReadReceipt();
-          }
-        )
-      ),
-    ];
   }
 
   List<PopupMenuEntry> _createMoreOptionPopupItems(BuildContext context) {
@@ -849,7 +817,7 @@ class ComposerView extends GetWidget<ComposerController> {
           isSelected: controller.hasRequestReadReceipt.value,
           onCallbackAction: () {
             popBack();
-            controller.toggleRequestReadReceipt();
+            controller.toggleRequestReadReceipt(context);
           }
         )
       ),
