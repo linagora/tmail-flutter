@@ -11,6 +11,7 @@ class BottomBarComposerWidget extends StatelessWidget {
 
   final bool isCodeViewEnabled;
   final bool isFormattingOptionsEnabled;
+  final bool hasReadReceipt;
   final VoidCallback openRichToolbarAction;
   final VoidCallback attachFileAction;
   final VoidCallback insertImageAction;
@@ -18,7 +19,7 @@ class BottomBarComposerWidget extends StatelessWidget {
   final VoidCallback deleteComposerAction;
   final VoidCallback saveToDraftAction;
   final VoidCallback sendMessageAction;
-  final OnRequestReadReceiptAction? requestReadReceiptAction;
+  final VoidCallback requestReadReceiptAction;
 
   final _imagePaths = Get.find<ImagePaths>();
 
@@ -26,6 +27,7 @@ class BottomBarComposerWidget extends StatelessWidget {
     super.key,
     required this.isCodeViewEnabled,
     required this.isFormattingOptionsEnabled,
+    required this.hasReadReceipt,
     required this.openRichToolbarAction,
     required this.attachFileAction,
     required this.insertImageAction,
@@ -33,7 +35,7 @@ class BottomBarComposerWidget extends StatelessWidget {
     required this.deleteComposerAction,
     required this.saveToDraftAction,
     required this.sendMessageAction,
-    this.requestReadReceiptAction,
+    required this.requestReadReceiptAction,
   });
 
   @override
@@ -113,8 +115,13 @@ class BottomBarComposerWidget extends StatelessWidget {
             borderRadius: BottomBarComposerWidgetStyle.iconRadius,
             padding: BottomBarComposerWidgetStyle.iconPadding,
             iconSize: BottomBarComposerWidgetStyle.iconSize,
-            tooltipMessage: AppLocalizations.of(context).requestReadReceipt,
-            onTapActionAtPositionCallback: requestReadReceiptAction,
+            iconColor: hasReadReceipt
+              ? BottomBarComposerWidgetStyle.selectedIconColor
+              : BottomBarComposerWidgetStyle.iconColor,
+            tooltipMessage: hasReadReceipt
+              ? AppLocalizations.of(context).turnOffRequestReadReceipt
+              : AppLocalizations.of(context).turnOnRequestReadReceipt,
+            onTapActionCallback: requestReadReceiptAction,
           ),
           const SizedBox(width: BottomBarComposerWidgetStyle.space),
           TMailButtonWidget.fromIcon(
