@@ -440,7 +440,7 @@ class ComposerView extends GetWidget<ComposerController> {
           isSelected: controller.hasRequestReadReceipt.value,
           onCallbackAction: () {
             popBack();
-            controller.toggleRequestReadReceipt();
+            controller.toggleRequestReadReceipt(context);
           }
         )
       ),
@@ -461,7 +461,7 @@ class ComposerView extends GetWidget<ComposerController> {
           isSelected: controller.hasRequestReadReceipt.value,
           onCallbackAction: () {
             popBack();
-            controller.toggleRequestReadReceipt();
+            controller.toggleRequestReadReceipt(context);
           }
         )
       ),

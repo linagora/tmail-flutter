@@ -1785,8 +1785,14 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     }
   }
 
-  void toggleRequestReadReceipt() {
+  void toggleRequestReadReceipt(BuildContext context) {
     hasRequestReadReceipt.toggle();
+
+    appToast.showToastSuccessMessage(
+      context,
+      hasRequestReadReceipt.isTrue
+        ? AppLocalizations.of(context).requestReadReceiptHasBeenEnabled
+        : AppLocalizations.of(context).requestReadReceiptHasBeenDisabled);
   }
 
   Future<void> _autoFocusFieldWhenLauncher() async {
