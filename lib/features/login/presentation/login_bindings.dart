@@ -10,7 +10,6 @@ import 'package:tmail_ui_user/features/login/data/network/dns_service.dart';
 import 'package:tmail_ui_user/features/login/data/repository/login_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/login_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
@@ -18,10 +17,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_avail
 import 'package:tmail_ui_user/features/login/domain/usecases/dns_lookup_to_get_jmap_url_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_username_on_mobile_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_is_available_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_auth_response_url_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
@@ -36,12 +32,9 @@ class LoginBindings extends BaseBindings {
     Get.create(() => LoginController(
       Get.find<AuthenticationInteractor>(),
       Get.find<CheckOIDCIsAvailableInteractor>(),
-      Get.find<GetOIDCIsAvailableInteractor>(),
-      Get.find<GetOIDCConfigurationInteractor>(),
       Get.find<GetTokenOIDCInteractor>(),
       Get.find<AuthenticateOidcOnBrowserInteractor>(),
-      Get.find<GetAuthenticationInfoInteractor>(),
-      Get.find<GetStoredOidcConfigurationInteractor>(),
+      Get.find<GetAuthResponseUrlBrowserInteractor>(),
       Get.find<SaveLoginUrlOnMobileInteractor>(),
       Get.find<GetAllRecentLoginUrlOnMobileInteractor>(),
       Get.find<SaveLoginUsernameOnMobileInteractor>(),
@@ -73,24 +66,14 @@ class LoginBindings extends BaseBindings {
     Get.lazyPut(() => CheckOIDCIsAvailableInteractor(
         Get.find<AuthenticationOIDCRepository>(),
     ));
-    Get.lazyPut(() => GetOIDCIsAvailableInteractor(
-        Get.find<AuthenticationOIDCRepository>(),
-    ));
-    Get.lazyPut(() => GetOIDCConfigurationInteractor(
-        Get.find<AuthenticationOIDCRepository>(),
-    ));
     Get.lazyPut(() => GetTokenOIDCInteractor(
-        Get.find<CredentialRepository>(),
         Get.find<AuthenticationOIDCRepository>(),
         Get.find<AccountRepository>()
     ));
+    Get.lazyPut(() => GetAuthResponseUrlBrowserInteractor(
+      Get.find<AuthenticationOIDCRepository>(),
+    ));
     Get.lazyPut(() => AuthenticateOidcOnBrowserInteractor(
-      Get.find<AuthenticationOIDCRepository>(),
-    ));
-    Get.lazyPut(() => GetAuthenticationInfoInteractor(
-      Get.find<AuthenticationOIDCRepository>(),
-    ));
-    Get.lazyPut(() => GetStoredOidcConfigurationInteractor(
       Get.find<AuthenticationOIDCRepository>(),
     ));
     Get.lazyPut(() => SaveLoginUrlOnMobileInteractor(Get.find<LoginRepository>(),));

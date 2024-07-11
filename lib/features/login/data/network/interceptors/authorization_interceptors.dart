@@ -11,10 +11,10 @@ import 'package:model/account/password.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
+import 'package:tmail_ui_user/features/login/data/extensions/personal_account_extension.dart';
+import 'package:tmail_ui_user/features/login/data/extensions/token_oidc_extension.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
-import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
@@ -22,7 +22,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   final Dio _dio;
   final AuthenticationClientBase _authenticationClient;
-  final TokenOidcCacheManager _tokenOidcCacheManager;
   final AccountCacheManager _accountCacheManager;
   final IOSSharingManager _iosSharingManager;
 
@@ -34,7 +33,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   AuthorizationInterceptors(
     this._dio,
     this._authenticationClient,
-    this._tokenOidcCacheManager,
     this._accountCacheManager,
     this._iosSharingManager,
   );
@@ -211,22 +209,12 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   Future<PersonalAccount> _updateCurrentAccount({required TokenOIDC tokenOIDC}) async {
     final currentAccount = await _accountCacheManager.getCurrentAccount();
+    final newAccount = currentAccount.updateToken(tokenOIDC);
 
     await _accountCacheManager.deleteCurrentAccount(currentAccount.id);
+    await _accountCacheManager.setCurrentAccount(newAccount);
 
-    await _tokenOidcCacheManager.persistOneTokenOidc(tokenOIDC);
-
-    final personalAccount = PersonalAccount(
-      tokenOIDC.tokenIdHash,
-      AuthenticationType.oidc,
-      isSelected: true,
-      accountId: currentAccount.accountId,
-      apiUrl: currentAccount.apiUrl,
-      userName: currentAccount.userName
-    );
-    await _accountCacheManager.setCurrentAccount(personalAccount);
-
-    return personalAccount;
+    return newAccount;
   }
 
   Future<TokenOIDC?> _getTokenInKeychain(TokenOIDC currentTokenOidc) async {
@@ -251,13 +239,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   }
 
   Future<TokenOIDC> _invokeRefreshTokenFromServer() async {
-    final newToken = await _authenticationClient.refreshingTokensOIDC(
-      _configOIDC!.clientId,
-      _configOIDC!.redirectUrl,
-      _configOIDC!.discoveryUrl,
-      _configOIDC!.scopes,
-      _token!.refreshToken
-    );
+    final newToken = await _authenticationClient.refreshingTokensOIDC(_configOIDC!, _token!.refreshToken);
     log('AuthorizationInterceptors::_invokeRefreshTokenFromServer:newToken: $newToken');
     return newToken;
   }

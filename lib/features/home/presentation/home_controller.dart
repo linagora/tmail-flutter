@@ -90,7 +90,7 @@ class HomeController extends ReloadableController {
 
   static void downloadCallback(String id, DownloadTaskStatus status, int progress) {}
 
-  void _cleanupCache() async {
+  Future<void> _cleanupCache() async {
     await HiveCacheConfig.instance.onUpgradeDatabase(cachingManager);
 
     await Future.wait([
@@ -98,7 +98,7 @@ class HomeController extends ReloadableController {
       _cleanupRecentSearchCacheInteractor.execute(RecentSearchCleanupRule()),
       _cleanupRecentLoginUrlCacheInteractor.execute(RecentLoginUrlCleanupRule()),
       _cleanupRecentLoginUsernameCacheInteractor.execute(RecentLoginUsernameCleanupRule()),
-    ]).then((value) => getAuthenticatedAccountAction());
+    ]).then((_) => getCurrentAccountCache());
   }
 
   void _registerReceivingSharingIntent() {

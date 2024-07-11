@@ -15,7 +15,7 @@ import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/home/data/model/session_hive_obj.dart';
 import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/model/account_cache.dart';
-import 'package:tmail_ui_user/features/login/data/model/authentication_info_cache.dart';
+import 'package:tmail_ui_user/features/login/data/model/basic_auth_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/encryption_key_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/recent_login_url_cache.dart';
 import 'package:tmail_ui_user/features/login/data/model/recent_login_username_cache.dart';
@@ -147,9 +147,9 @@ class HiveCacheConfig {
       EncryptionKeyCacheAdapter(),
       CachingConstants.ENCRYPTION_KEY_HIVE_CACHE_IDENTIFY
     );
-    registerCacheAdapter<AuthenticationInfoCache>(
-      AuthenticationInfoCacheAdapter(),
-      CachingConstants.AUTHENTICATION_INFO_HIVE_CACHE_IDENTIFY
+    registerCacheAdapter<BasicAuthCache>(
+      BasicAuthCacheAdapter(),
+      CachingConstants.BASIC_AUTH_HIVE_CACHE_IDENTIFY
     );
     registerCacheAdapter<RecentLoginUrlCache>(
       RecentLoginUrlCacheAdapter(),

@@ -25,8 +25,6 @@ class BadGateway extends AuthenticationException {
 
 class NotFoundAuthenticatedAccountException implements Exception {}
 
-class NotFoundStoredTokenException implements Exception {}
-
 class InvalidBaseUrl extends AuthenticationException {
   InvalidBaseUrl() : super(AuthenticationException.invalidBaseUrl);
 
@@ -51,6 +49,6 @@ class CanNotFoundUserName implements Exception {}
 
 class CanNotFoundPassword implements Exception {}
 
-class CanNotAuthenticationInfoOnWeb implements Exception {}
+class NotFoundAuthResponseUrlBrowser implements Exception {}
 
-class NotFoundAuthenticationInfoCache implements Exception {}
+class AuthenticationTypeNotSupportedException implements Exception {}

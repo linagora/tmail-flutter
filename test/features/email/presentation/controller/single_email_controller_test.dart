@@ -39,12 +39,10 @@ import 'package:tmail_ui_user/features/email/presentation/controller/email_super
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/logout_current_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:uuid/uuid.dart';
 
@@ -75,9 +73,7 @@ const fallbackGenerators = {
   MockSpec<LanguageCacheManager>(fallbackGenerators: fallbackGenerators),
   MockSpec<AuthorizationInterceptors>(),
   MockSpec<DynamicUrlInterceptors>(),
-  MockSpec<DeleteCredentialInteractor>(),
-  MockSpec<LogoutOidcInteractor>(),
-  MockSpec<DeleteAuthorityOidcInteractor>(),
+  MockSpec<LogoutCurrentAccountInteractor>(),
   MockSpec<AppToast>(),
   MockSpec<ImagePaths>(),
   MockSpec<ResponsiveUtils>(),
@@ -111,9 +107,8 @@ void main() {
   final languageCacheManager = MockLanguageCacheManager();
   final authorizationInterceptors = MockAuthorizationInterceptors();
   final dynamicUrlInterceptors = MockDynamicUrlInterceptors();
-  final deleteCredentialInteractor = MockDeleteCredentialInteractor();
-  final logoutOidcInteractor = MockLogoutOidcInteractor();
-  final deleteAuthorityOidcInteractor = MockDeleteAuthorityOidcInteractor();
+  final logoutCurrentAccountInteractor = MockLogoutCurrentAccountInteractor();
+
   final appToast = MockAppToast();
   final imagePaths = MockImagePaths();
   final responsiveUtils = MockResponsiveUtils();
@@ -147,9 +142,7 @@ void main() {
       tag: BindingTag.isolateTag,
     );
     Get.put<DynamicUrlInterceptors>(dynamicUrlInterceptors);
-    Get.put<DeleteCredentialInteractor>(deleteCredentialInteractor);
-    Get.put<LogoutOidcInteractor>(logoutOidcInteractor);
-    Get.put<DeleteAuthorityOidcInteractor>(deleteAuthorityOidcInteractor);
+    Get.put<LogoutCurrentAccountInteractor>(logoutCurrentAccountInteractor);
     Get.put<AppToast>(appToast);
     Get.put<ImagePaths>(imagePaths);
     Get.put<ResponsiveUtils>(responsiveUtils);

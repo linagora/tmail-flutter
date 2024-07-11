@@ -13,7 +13,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:model/account/account_request.dart';
+import 'package:model/account/personal_account.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_content.dart';
@@ -46,14 +46,14 @@ abstract class EmailRepository {
     List<Attachment> attachments,
     AccountId accountId,
     String baseDownloadUrl,
-    AccountRequest accountRequest
+    PersonalAccount personalAccount,
   );
 
   Future<DownloadedResponse> exportAttachment(
     Attachment attachment,
     AccountId accountId,
     String baseDownloadUrl,
-    AccountRequest accountRequest,
+    PersonalAccount personalAccount,
     CancelToken cancelToken
   );
 
@@ -62,7 +62,7 @@ abstract class EmailRepository {
     Attachment attachment,
     AccountId accountId,
     String baseDownloadUrl,
-    AccountRequest accountRequest,
+    PersonalAccount personalAccount,
     StreamController<Either<Failure, Success>> onReceiveController,
     {CancelToken? cancelToken}
   );

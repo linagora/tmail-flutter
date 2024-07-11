@@ -148,7 +148,13 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                 controller.sessionCurrent?.username,
                 onLogoutAction: () {
                   popBack();
-                  controller.logout(controller.sessionCurrent, controller.accountId.value);
+                  if (controller.sessionCurrent != null &&
+                      controller.accountId.value != null) {
+                    controller.logout(
+                      session: controller.sessionCurrent!,
+                      accountId: controller.accountId.value!
+                    );
+                  }
                 }
               )
             );

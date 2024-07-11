@@ -24,12 +24,13 @@ void main() {
       'THEN cache will have only new account', () async {
       // arrange
       final personalAccount3 = PersonalAccount(
-        '834191067',
-        AuthenticationType.oidc,
+        id: '834191067',
+        authenticationType: AuthenticationType.oidc,
         isSelected: true,
         accountId: AccountId(Id(
             'ae08b34da40b48f30ec0b94db05675894262fbc5c2e278644f9517aaf25e8246')),
         apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        baseUrl: 'https://jmap.domain.com/',
         userName: UserName('username@domain.com'),
       );
 
@@ -48,22 +49,24 @@ void main() {
          'THEN cache will have only new account', () async {
       // arrange
       final account1 = AccountCache(
-        '253956617',
-        'oidc',
+        id: '253956617',
+        authenticationType: 'oidc',
         isSelected: true,
         accountId:
             'ae08b34da40b48f30ec0b94db05675894262fbc5c2e278644f9517aaf25e8246',
         apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        baseUrl: 'https://jmap.domain.com/',
         userName: 'username@domain.com',
       );
 
       final personalAccount3 = PersonalAccount(
-        '834191067',
-        AuthenticationType.oidc,
+        id: '834191067',
+        authenticationType: AuthenticationType.oidc,
         isSelected: true,
         accountId: AccountId(Id(
             'ae08b34da40b48f30ec0b94db05675894262fbc5c2e278644f9517aaf25e8246')),
         apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        baseUrl: 'https://jmap.domain.com/',
         userName: UserName('username@domain.com'),
       );
 
@@ -86,30 +89,33 @@ void main() {
       'THEN cache will have only new account', () async {
       // arrange
       final account1 = AccountCache(
-        '253956617',
-        'oidc',
+        id: '253956617',
+        authenticationType: 'oidc',
         isSelected: true,
         accountId:
             'ae08b34da40b48f30ec0b94db05675894262fbc5c2e278644f9517aaf25e8246',
         apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        baseUrl: 'https://jmap.domain.com/',
         userName: 'username@domain.com',
       );
       final account2 = AccountCache(
-        '60734964',
-        'oidc',
+        id: '60734964',
+        authenticationType: 'oidc',
         isSelected: true,
         accountId:
             'ae08b34da40b48f30ec0b94db05675894262fbc5c2e278644f9517aaf25e8246',
         apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        baseUrl: 'https://jmap.domain.com/',
         userName: 'username@domain.com',
       );
       final personalAccount3 = PersonalAccount(
-        '834191067',
-        AuthenticationType.oidc,
+        id: '834191067',
+        authenticationType: AuthenticationType.oidc,
         isSelected: true,
         accountId: AccountId(Id(
             'ae08b34da40b48f30ec0b94db05675894262fbc5c2e278644f9517aaf25e8246')),
         apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        baseUrl: 'https://jmap.domain.com/',
         userName: UserName('username@domain.com'),
       );
 
@@ -140,22 +146,24 @@ void main() {
          'THEN cache will update with new selection', () async {
       // arrange
       final account1 = AccountCache(
-        '253956617',
-        'oidc',
+        id: '253956617',
+        authenticationType: 'oidc',
         isSelected: true,
         accountId:
             '5c2e278644f9517aaf25e8246ae08b34da40b48f30ec0b94db05675894262fbc',
         apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        baseUrl: 'https://jmap.domain.com/',
         userName: 'name@domain.com',
       );
 
       final personalAccount3 = PersonalAccount(
-        '834191067',
-        AuthenticationType.oidc,
+        id: '834191067',
+        authenticationType: AuthenticationType.oidc,
         isSelected: true,
         accountId: AccountId(Id(
             'ae08b34da40b48f30ec0b94db05675894262fbc5c2e278644f9517aaf25e8246')),
         apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        baseUrl: 'https://jmap.domain.com/',
         userName: UserName('username@domain.com'),
       );
 
@@ -181,30 +189,33 @@ void main() {
       'THEN cache will update with new selected account', () async {
       // arrange
       final account1 = AccountCache(
-        '253956617',
-        'oidc',
+        id: '253956617',
+        authenticationType: 'oidc',
         isSelected: true,
         accountId:
             'f30ec0b94db05675894262fbc5c2e27ae08b34da40b488644f9517aaf25e8246',
         apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        baseUrl: 'https://jmap.domain.com/',
         userName: 'usernameA@domain.com',
       );
       final account2 = AccountCache(
-        '60734964',
-        'oidc',
+        id: '60734964',
+        authenticationType: 'oidc',
         isSelected: true,
         accountId:
             '4db05675894262fbc5c2e27ae08b34da40b48f30ec0b98644f9517aaf25e8246',
         apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        baseUrl: 'https://jmap.domain.com/',
         userName: 'usernameB@domain.com',
       );
       final personalAccount3 = PersonalAccount(
-        '834191067',
-        AuthenticationType.oidc,
+        id: '834191067',
+        authenticationType: AuthenticationType.oidc,
         isSelected: true,
         accountId: AccountId(Id(
             '5675894262fbc5c2e278644f9517aaf25e8246ae08b34da40b48f30ec0b94db0')),
         apiUrl: 'https://jmap.domain.com/oidc/jmap',
+        baseUrl: 'https://jmap.domain.com/',
         userName: UserName('usernameC@domain.com'),
       );
 
