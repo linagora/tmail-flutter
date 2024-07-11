@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:core/presentation/views/text/slogan_builder.dart';
+import 'package:core/utils/log_tracking.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -24,6 +25,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/trace_log/trace_log_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -197,6 +199,12 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
           return VacationView();
         case AccountMenuItem.mailboxVisibility:
           return MailboxVisibilityView();
+        case AccountMenuItem.traceLog:
+          if (LogTracking().enableTraceLog) {
+            return const TraceLogView();
+          } else {
+            return const SizedBox.shrink();
+          }
         default:
           return const SizedBox.shrink();
       }
