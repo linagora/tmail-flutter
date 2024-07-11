@@ -270,7 +270,7 @@ class FcmMessageController extends FcmBaseController {
         _dynamicUrlInterceptors?.changeBaseUrl(apiUrl);
 
         _pushActionFromRemoteMessageBackground(
-          accountId: success.session.personalAccount.accountId,
+          accountId: success.session.accountId,
           userName: success.session.username,
           stateChange: stateChange,
           session: success.session);

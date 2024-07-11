@@ -106,7 +106,7 @@ abstract class BaseController extends GetxController
       (failure) {
         if (failure is FeatureFailure) {
           final exception = _performFilterExceptionInError(failure.exception);
-          logError('BaseController::onData:exception: $exception');
+          logError('$runtimeType::onData:exception: $exception');
           if (exception != null) {
             handleExceptionAction(failure: failure, exception: exception);
           } else {
@@ -120,7 +120,7 @@ abstract class BaseController extends GetxController
   }
 
   void onError(Object error, StackTrace stackTrace) {
-    logError('BaseController::onError():error: $error | stackTrace: $stackTrace');
+    logError('$runtimeType::onError():error: $error | stackTrace: $stackTrace');
     final exception = _performFilterExceptionInError(error);
     if (exception != null) {
       handleExceptionAction(exception: exception);
@@ -132,7 +132,7 @@ abstract class BaseController extends GetxController
   void onDone() {}
 
   Exception? _performFilterExceptionInError(dynamic error) {
-    logError('BaseController::_performFilterExceptionInError(): $error');
+    logError('$runtimeType::_performFilterExceptionInError(): $error');
     if (error is NoNetworkError || error is ConnectionTimeout || error is InternalServerError) {
       if (PlatformInfo.isWeb && currentOverlayContext != null && currentContext != null) {
         appToast.showToastMessage(
@@ -157,7 +157,7 @@ abstract class BaseController extends GetxController
   void handleErrorViewState(Object error, StackTrace stackTrace) {}
 
   void handleExceptionAction({Failure? failure, Exception? exception}) {
-    logError('BaseController::handleExceptionAction():failure: $failure | exception: $exception');
+    logError('$runtimeType::handleExceptionAction():failure: $failure | exception: $exception');
     if (exception is ConnectionError) {
       if (currentOverlayContext != null && currentContext != null) {
         appToast.showToastErrorMessage(
@@ -183,7 +183,7 @@ abstract class BaseController extends GetxController
   }
 
   void handleFailureViewState(Failure failure) async {
-    logError('BaseController::handleFailureViewState(): ${failure.runtimeType}');
+    logError('$runtimeType::handleFailureViewState():Failure = $failure');
     if (failure is LogoutOidcFailure) {
       if (_isFcmEnabled) {
         _getStoredFirebaseRegistrationFromCache();
@@ -197,7 +197,7 @@ abstract class BaseController extends GetxController
   }
 
   void handleSuccessViewState(Success success) async {
-    log('BaseController::handleSuccessViewState(): ${success.runtimeType}');
+    log('$runtimeType::handleSuccessViewState():Success = ${success.runtimeType}');
     if (success is LogoutOidcSuccess) {
       if (_isFcmEnabled) {
         _getStoredFirebaseRegistrationFromCache();
@@ -214,7 +214,7 @@ abstract class BaseController extends GetxController
   void startFpsMeter() {
     FpsManager().start();
     fpsCallback = (fpsInfo) {
-      log('BaseController::startFpsMeter(): $fpsInfo');
+      log('$runtimeType::startFpsMeter(): $fpsInfo');
     };
     if (fpsCallback != null) {
       FpsManager().addFpsCallback(fpsCallback!);
@@ -234,7 +234,7 @@ abstract class BaseController extends GetxController
       requireCapability(session!, accountId!, [tmailContactCapabilityIdentifier]);
       TMailAutoCompleteBindings().dependencies();
     } catch (e) {
-      logError('BaseController::injectAutoCompleteBindings(): exception: $e');
+      logError('$runtimeType::injectAutoCompleteBindings(): exception: $e');
     }
   }
 
@@ -243,7 +243,7 @@ abstract class BaseController extends GetxController
       requireCapability(session!, accountId!, [CapabilityIdentifier.jmapMdn]);
       MdnInteractorBindings().dependencies();
     } catch(e) {
-      logError('BaseController::injectMdnBindings(): exception: $e');
+      logError('$runtimeType::injectMdnBindings(): exception: $e');
     }
   }
 
@@ -252,7 +252,7 @@ abstract class BaseController extends GetxController
       requireCapability(session!, accountId!, [capabilityForward]);
       ForwardingInteractorsBindings().dependencies();
     } catch(e) {
-      logError('BaseController::injectForwardBindings(): exception: $e');
+      logError('$runtimeType::injectForwardBindings(): exception: $e');
     }
   }
 
@@ -261,14 +261,14 @@ abstract class BaseController extends GetxController
       requireCapability(session!, accountId!, [capabilityRuleFilter]);
       EmailRulesInteractorBindings().dependencies();
     } catch(e) {
-      logError('BaseController::injectRuleFilterBindings(): exception: $e');
+      logError('$runtimeType::injectRuleFilterBindings(): exception: $e');
     }
   }
 
   Future<void> injectFCMBindings(Session? session, AccountId? accountId) async {
     try {
       requireCapability(session!, accountId!, [FirebaseCapability.fcmIdentifier]);
-      log('BaseController::injectFCMBindings: fcmAvailable = ${AppConfig.fcmAvailable}');
+      log('$runtimeType::injectFCMBindings: fcmAvailable = ${AppConfig.fcmAvailable}');
       if (AppConfig.fcmAvailable) {
         final mapEnvData = Map<String, String>.from(dotenv.env);
         await AppUtils.loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
@@ -285,7 +285,7 @@ abstract class BaseController extends GetxController
         throw NotSupportFCMException();
       }
     } catch(e) {
-      logError('BaseController::injectFCMBindings(): exception: $e');
+      logError('$runtimeType::injectFCMBindings(): exception: $e');
     }
   }
 
@@ -348,7 +348,7 @@ abstract class BaseController extends GetxController
   }
 
   Future<void> clearDataAndGoToLoginPage() async {
-    log('BaseController::clearDataAndGoToLoginPage:');
+    log('$runtimeType::clearDataAndGoToLoginPage:');
     await clearAllData();
     goToLogin();
   }
