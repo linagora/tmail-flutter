@@ -15,7 +15,7 @@ class KeychainController: KeychainControllerDelegate {
     init(service: KeychainControllerService,
          accessGroup: String) {
         keychain = Keychain(service: service.identifier,
-                            accessGroup: accessGroup)
+                            accessGroup: accessGroup).accessibility(.afterFirstUnlock)
     }
     
     func retrieveSharingSessionFromKeychain(accountId: String) -> KeychainSharingSession? {
