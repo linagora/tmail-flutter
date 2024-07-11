@@ -2,9 +2,9 @@
 import 'dart:convert';
 
 import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/account/authentication_type.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
@@ -50,20 +50,22 @@ class IOSSharingManager {
     }
   }
 
-  Future saveKeyChainSharingSession(PersonalAccount personalAccount) async {
+  Future<void> saveKeyChainSharingSession(PersonalAccount personalAccount) async {
+    log('IOSSharingManager::saveKeyChainSharingSession: START');
     try {
       if (!_validateToSaveKeychain(personalAccount)) {
-        logError('IOSSharingManager::saveKeyChainSharingSession: account is null');
+        logError('IOSSharingManager::saveKeyChainSharingSession: AccountId | Username | ApiUrl is NULL');
         return Future.value(null);
       }
 
-      Tuple2<TokenOIDC?, String?> authenticationInfo = await Future.wait(
-        [
-          _getTokenOidc(tokeHashId: personalAccount.id),
-          _getCredentialAuthentication()
-        ],
-        eagerError: true
-      ).then((listValue) => Tuple2(listValue[0] as TokenOIDC?, listValue[1] as String?));
+      TokenOIDC? tokenOIDC;
+      String? credentialInfo;
+
+      if (personalAccount.authenticationType == AuthenticationType.oidc) {
+        tokenOIDC = await _getTokenOidc(tokeHashId: personalAccount.id);
+      } else {
+        credentialInfo = await _getCredentialAuthentication();
+      }
 
       final emailDeliveryState = await _getEmailDeliveryState(
         accountId: personalAccount.accountId!,
@@ -84,13 +86,15 @@ class IOSSharingManager {
         apiUrl: personalAccount.apiUrl!,
         emailState: emailState,
         emailDeliveryState: emailDeliveryState,
-        tokenOIDC: authenticationInfo.value1,
-        basicAuth: authenticationInfo.value2,
+        tokenOIDC: tokenOIDC,
+        basicAuth: credentialInfo,
         tokenEndpoint: tokenRecords?.tokenEndpoint,
         oidcScopes: tokenRecords?.scopes,
       );
-      log('IOSSharingManager::_saveKeyChainSharingSession: $keychainSharingSession');
+
       await _keychainSharingManager.save(keychainSharingSession);
+
+      log('IOSSharingManager::_saveKeyChainSharingSession: COMPLETED');
     } catch (e) {
       logError('IOSSharingManager::_saveKeyChainSharingSession: Exception: $e');
     }
@@ -111,9 +115,7 @@ class IOSSharingManager {
 
   Future<TokenOIDC?> _getTokenOidc({required String tokeHashId}) async {
     try {
-      final tokenOidc = await _tokenOidcCacheManager.getTokenOidc(tokeHashId);
-      log('IOSSharingManager::_getTokenOidc:tokenOidc: $tokenOidc');
-      return tokenOidc;
+      return await _tokenOidcCacheManager.getTokenOidc(tokeHashId);
     } catch (e) {
       logError('IOSSharingManager::_getTokenOidc:Exception: $e');
       return null;
@@ -123,7 +125,6 @@ class IOSSharingManager {
   Future<String?> _getCredentialAuthentication() async {
     try {
       final credentialInfo = await _authenticationInfoCacheManager.getAuthenticationInfoStored();
-      log('IOSSharingManager::_getCredentialAuthentication:credentialInfo: $credentialInfo');
       return base64Encode(utf8.encode('${credentialInfo.username}:${credentialInfo.password}'));
     } catch (e) {
       logError('IOSSharingManager::_getCredentialAuthentication:Exception: $e');
@@ -136,9 +137,7 @@ class IOSSharingManager {
     required UserName userName
   }) async {
     try {
-      final emailDeliveryState = await getEmailDeliveryStateFromKeychain(accountId);
-      log('IOSSharingManager::_getEmailState:emailDeliveryState: $emailDeliveryState');
-      return emailDeliveryState;
+      return await getEmailDeliveryStateFromKeychain(accountId);
     } catch (e) {
       logError('IOSSharingManager::_getEmailDeliveryState:Exception: $e');
       return null;
@@ -167,7 +166,6 @@ class IOSSharingManager {
     try {
       final oidcConfig = await _oidcConfigurationCacheManager.getOidcConfiguration();
       final oidcDiscoveryResponse = await _oidcHttpClient.discoverOIDC(oidcConfig);
-      log('IOSSharingManager::_getTokenEndpointAndScopes:oidcDiscoveryResponse = $oidcDiscoveryResponse | oidcConfig = $oidcConfig');
       return (
         tokenEndpoint: oidcDiscoveryResponse.tokenEndpoint,
         scopes: oidcConfig.scopes
@@ -180,7 +178,6 @@ class IOSSharingManager {
 
   Future updateEmailStateInKeyChain(AccountId accountId, String newEmailState) async {
     final keychainSharingStored = await getKeychainSharingSession(accountId);
-    log('IOSSharingManager::updateEmailStateInKeyChain:keychainSharingStored: $keychainSharingStored | newEmailState: $newEmailState');
     if (keychainSharingStored == null) {
       return;
     }

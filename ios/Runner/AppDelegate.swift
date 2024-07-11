@@ -8,7 +8,7 @@ import flutter_local_notifications
 @objc class AppDelegate: FlutterAppDelegate {
 
     var notificationInteractionChannel: FlutterMethodChannel?
-    var initialNotificationInfo: Any?
+    var currentEmailId: String?
     
     override func application(
         _ application: UIApplication,
@@ -17,7 +17,12 @@ import flutter_local_notifications
         GeneratedPluginRegistrant.register(with: self)
         
         createNotificationInteractionChannel()
-        initialNotificationInfo = launchOptions?[.remoteNotification]
+        
+        if let payload = launchOptions?[.remoteNotification] as? [AnyHashable : Any],
+           let emailId = payload[JmapConstants.EMAIL_ID] as? String,
+           !emailId.isEmpty {
+            currentEmailId = emailId
+        }
         
         if #available(iOS 10.0, *) {
             UNUserNotificationCenter.current().delegate = self as UNUserNotificationCenterDelegate
@@ -90,9 +95,7 @@ import flutter_local_notifications
             TwakeLogger.shared.log(message: "AppDelegate::userNotificationCenter::willPresent:newBadgeCount: \(newBadgeCount)")
             updateAppBadger(newBadgeCount: newBadgeCount)
         }
-        if let emailId = notification.request.content.userInfo[JmapConstants.EMAIL_ID] as? String,
-           !emailId.isEmpty,
-           !isAppForegroundActive() {
+        if validateDisplayPushNotification(userInfo: notification.request.content.userInfo) {
             completionHandler([.alert, .badge, .sound])
         } else {
             completionHandler([])
@@ -105,11 +108,23 @@ import flutter_local_notifications
         let newBadgeCount = currentBadgeCount > 0 ? currentBadgeCount - 1 : 0
         updateAppBadger(newBadgeCount: newBadgeCount)
         
-        if let emailId = response.notification.request.content.userInfo[JmapConstants.EMAIL_ID] as? String {
-            self.notificationInteractionChannel?.invokeMethod("openEmail", arguments: emailId)
+        
+        let userInfo = response.notification.request.content.userInfo
+        
+        if let emailId = userInfo[JmapConstants.EMAIL_ID] as? String, !emailId.isEmpty {
+            self.notificationInteractionChannel?.invokeMethod(
+                CoreUtils.CURRENT_EMAIL_ID_IN_NOTIFICATION_CLICK_WHEN_APP_FOREGROUND_OR_BACKGROUND,
+                arguments: emailId)
         }
         
         completionHandler()
+    }
+    
+    private func validateDisplayPushNotification(userInfo: [AnyHashable : Any]) -> Bool {
+        if let emailId = userInfo[JmapConstants.EMAIL_ID] as? String, !emailId.isEmpty, UIApplication.shared.applicationState != .active {
+            return true
+        }
+        return false
     }
 }
 
@@ -134,25 +149,21 @@ extension AppDelegate {
         }
     }
     
-    private func isAppForegroundActive() -> Bool {
-        return UIApplication.shared.applicationState == .active
-    }
-    
     private func createNotificationInteractionChannel() {
         let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
         
         self.notificationInteractionChannel = FlutterMethodChannel(
-            name: "notification_interaction_channel",
+            name: CoreUtils.NOTIFICATION_INTERACTION_CHANNEL_NAME,
             binaryMessenger: controller.binaryMessenger
         )
         
         self.notificationInteractionChannel?.setMethodCallHandler { (call, result) in
             switch call.method {
-                case "getInitialNotificationInfo":
-                    result(self.initialNotificationInfo)
-                    self.initialNotificationInfo = nil
-                default:
-                    break
+            case CoreUtils.CURRENT_EMAIL_ID_IN_NOTIFICATION_CLICK_WHEN_APP_TERMINATED:
+                result(self.currentEmailId)
+                self.currentEmailId = nil
+            default:
+                break
             }
         }
     }
