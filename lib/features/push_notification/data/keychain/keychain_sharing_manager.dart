@@ -11,7 +11,7 @@ class KeychainSharingManager {
 
   KeychainSharingManager(this._secureStorage);
 
-  Future save(KeychainSharingSession keychainSharingSession) => _secureStorage.write(
+  Future<void> save(KeychainSharingSession keychainSharingSession) => _secureStorage.write(
     key: keychainSharingSession.accountId.asString,
     value: jsonEncode(keychainSharingSession.toJson()),
   );
@@ -28,7 +28,7 @@ class KeychainSharingManager {
     }
   }
 
-  Future delete({String? accountId}) {
+  Future<void> delete({String? accountId}) {
     if (accountId != null) {
       return _secureStorage.delete(key: accountId);
     } else {
