@@ -161,7 +161,7 @@ class SendingEmailWorker extends Worker {
 
   void _handleGetSessionSuccess(GetSessionSuccess success) async {
     _currentSession = success.session;
-    _currentAccountId = success.session.personalAccount.accountId;
+    _currentAccountId = success.session.accountId;
     final apiUrl = success.session.getQualifiedApiUrl(baseUrl: _dynamicUrlInterceptors?.jmapUrl);
     if (apiUrl.isNotEmpty && _currentSession != null && _currentAccountId != null) {
       _dynamicUrlInterceptors?.changeBaseUrl(apiUrl);

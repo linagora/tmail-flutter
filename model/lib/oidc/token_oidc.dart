@@ -1,5 +1,4 @@
 
-import 'package:core/utils/app_logger.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:model/oidc/converter/token_id_converter.dart';
@@ -40,8 +39,6 @@ extension TokenOIDCExtension on TokenOIDC {
   bool get isExpired {
     if (expiredTime != null) {
       final now = DateTime.now();
-      log('TokenOIDC::isExpired(): TIME_NOW: $now');
-      log('TokenOIDC::isExpired(): EXPIRED_DATE: $expiredTime');
       return expiredTime!.isBefore(now);
     }
     return false;
