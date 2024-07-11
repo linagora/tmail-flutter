@@ -48,11 +48,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     _token = newToken;
     _configOIDC = newConfig;
     _authenticationType = AuthenticationType.oidc;
-    log('AuthorizationInterceptors::setTokenAndAuthorityOidc: INITIAL_TOKEN = ${newToken?.token} | EXPIRED_TIME = ${newToken?.expiredTime}');
+    log('AuthorizationInterceptors::setTokenAndAuthorityOidc: TokenId = ${newToken?.tokenIdHash}');
   }
 
   void _updateNewToken(TokenOIDC newToken) {
-    log('AuthorizationInterceptors::_updateNewToken: NEW_TOKEN = ${newToken.token} | EXPIRED_TIME = ${newToken.expiredTime}');
+    log('AuthorizationInterceptors::_updateNewToken: TokenId = ${newToken.tokenIdHash}');
     _token = newToken;
   }
 
@@ -76,13 +76,13 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
       case AuthenticationType.none:
         break;
     }
-    log('AuthorizationInterceptors::onRequest(): URL = ${options.uri} | HEADER = ${options.headers} | DATA = ${options.data} | METHOD = ${options.method}');
+    log('AuthorizationInterceptors::onRequest(): URL = ${options.uri} | DATA = ${options.data}');
     super.onRequest(options, handler);
   }
 
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
-    logError('AuthorizationInterceptors::onError(): TOKEN = ${_token?.expiredTime} | DIO_ERROR = $err | METHOD = ${err.requestOptions.method}');
+    logError('AuthorizationInterceptors::onError(): DIO_ERROR = $err');
     try {
       final requestOptions = err.requestOptions;
       final extraInRequest = requestOptions.extra;
@@ -92,24 +92,29 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
         responseStatusCode: err.response?.statusCode,
         tokenOIDC: _token
       )) {
-        log('AuthorizationInterceptors::onError:_validateToRefreshToken');
+        log('AuthorizationInterceptors::onError: Perform get New Token');
         final newTokenOidc = PlatformInfo.isIOS
-          ? await _handleRefreshTokenOnIOSPlatform()
-          : await _handleRefreshTokenOnOtherPlatform();
+          ? await _getNewTokenForIOSPlatform()
+          : await _getNewTokenForOtherPlatform();
 
         if (newTokenOidc.token == _token?.token) {
-          log('AuthorizationInterceptors::onError: TokenOIDC duplicated');
+          log('AuthorizationInterceptors::onError: Token duplicated');
           return super.onError(err, handler);
         }
-
         _updateNewToken(newTokenOidc);
+
+        final personalAccount = await _updateCurrentAccount(tokenOIDC: newTokenOidc);
+
+        if (PlatformInfo.isIOS) {
+          await _iosSharingManager.saveKeyChainSharingSession(personalAccount);
+        }
 
         isRetryRequest = true;
       } else if (validateToRetryTheRequestWithNewToken(
         authHeader: requestOptions.headers[HttpHeaders.authorizationHeader],
         tokenOIDC: _token
       )) {
-        log('AuthorizationInterceptors::onError:validateToRetryTheRequestWithNewToken');
+        log('AuthorizationInterceptors::onError: Request using old token');
         isRetryRequest = true;
       } else {
         return super.onError(err, handler);
@@ -117,7 +122,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
       if (isRetryRequest) {
         if (extraInRequest.containsKey(FileUploader.uploadAttachmentExtraKey)) {
-          log('AuthorizationInterceptors::onError: Perform upload attachment request');
+          log('AuthorizationInterceptors::onError: Retry upload request with TokenId = ${_token?.tokenIdHash}');
           final uploadExtra = extraInRequest[FileUploader.uploadAttachmentExtraKey];
 
           requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
@@ -136,7 +141,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
           return handler.resolve(response);
         } else {
-          log('AuthorizationInterceptors::onError: Perform normal request');
+          log('AuthorizationInterceptors::onError: Retry request with TokenId = ${_token?.tokenIdHash}');
           requestOptions.headers[HttpHeaders.authorizationHeader] = _getTokenAsBearerHeader(_token!.token);
 
           final response = await _dio.fetch(requestOptions);
@@ -231,13 +236,11 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   Future<TokenOIDC?> _getTokenInKeychain(TokenOIDC currentTokenOidc) async {
     final currentAccount = await _accountCacheManager.getCurrentAccount();
-    log('AuthorizationInterceptors::_getTokenInKeychain:currentAccount: $currentAccount');
     if (currentAccount.accountId == null) {
       return null;
     }
 
     final keychainSharingSession = await _iosSharingManager.getKeychainSharingSession(currentAccount.accountId!);
-    log('AuthorizationInterceptors::_getTokenInKeychain:keychainSharingSession: $keychainSharingSession');
     if (keychainSharingSession == null) {
       return null;
     }
@@ -250,36 +253,29 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
     return null;
   }
 
-  Future<TokenOIDC> _invokeRefreshTokenFromServer() async {
-    final newToken = await _authenticationClient.refreshingTokensOIDC(
+  Future<TokenOIDC> _invokeRefreshTokenFromServer() {
+    log('AuthorizationInterceptors::_invokeRefreshTokenFromServer:');
+    return _authenticationClient.refreshingTokensOIDC(
       _configOIDC!.clientId,
       _configOIDC!.redirectUrl,
       _configOIDC!.discoveryUrl,
       _configOIDC!.scopes,
       _token!.refreshToken
     );
-    log('AuthorizationInterceptors::_invokeRefreshTokenFromServer:newToken: $newToken');
-    return newToken;
   }
 
-  Future<TokenOIDC> _handleRefreshTokenOnIOSPlatform() async {
-    final keychainToken = await _getTokenInKeychain(_token!);
-
-    if (keychainToken == null) {
-      final newToken = await _invokeRefreshTokenFromServer();
-      final newAccount = await _updateCurrentAccount(tokenOIDC: newToken);
-      await _iosSharingManager.saveKeyChainSharingSession(newAccount);
-      return newToken;
+  Future<TokenOIDC> _getNewTokenForIOSPlatform() async {
+    final tokenInKeychain = await _getTokenInKeychain(_token!);
+    log('AuthorizationInterceptors::_handleRefreshTokenOnIOSPlatform: KeychainTokenId = ${tokenInKeychain?.tokenIdHash} | isTokenExpired = ${_isTokenExpired(tokenInKeychain)}');
+    if (tokenInKeychain == null || _isTokenExpired(tokenInKeychain)) {
+      return _invokeRefreshTokenFromServer();
     } else {
-      await _updateCurrentAccount(tokenOIDC: keychainToken);
-      return keychainToken;
+      return tokenInKeychain;
     }
   }
 
-  Future<TokenOIDC> _handleRefreshTokenOnOtherPlatform() async {
-    final newToken = await _invokeRefreshTokenFromServer();
-    await _updateCurrentAccount(tokenOIDC: newToken);
-    return newToken;
+  Future<TokenOIDC> _getNewTokenForOtherPlatform() {
+    return _invokeRefreshTokenFromServer();
   }
 
   void clear() {

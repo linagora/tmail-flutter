@@ -41,9 +41,12 @@ class AuthenticationInterceptor: RequestInterceptor {
             }
 
             let newRefreshToken = tokenResponse.refreshToken ?? authenticationSSO.refreshToken
-            let expireTime = tokenResponse.expiresTime != nil
-                ? tokenResponse.expiresTime!.convertMillisecondsToISO8601String()
-                : nil
+            
+            var expireTime: String? = nil
+            
+            if (tokenResponse.expiresTime != nil) {
+                expireTime = CoreUtils.shared.getCurrentDate().adding(seconds: tokenResponse.expiresTime!).convertDateToISO8601String()
+            }
             
             self.authentication = AuthenticationSSO(
                 type: AuthenticationType.oidc,

@@ -33,7 +33,7 @@ Brief the logic flows when clicking notifications:
 We use `FlutterMethodChannel` to pass `UserInfo` from iOS native code to Flutter dart code
 
 ```swift
-  self.notificationInteractionChannel?.invokeMethod("current_email_id_in_notification_click_on_foreground", arguments: response.notification.request.content.userInfo)
+  self.notificationInteractionChannel?.invokeMethod("current_email_id_in_notification_click_when_app_foreground_or_background", arguments: response.notification.request.content.userInfo)
 ```
 
 2. Terminated state
@@ -52,7 +52,7 @@ Save it in a `remoteNotificationPayload` variable in memory and use `FlutterMeth
 ```swift
 self.notificationInteractionChannel?.setMethodCallHandler { (call, result) in
     switch call.method {
-        case "current_email_id_in_notification_click":
+        case "current_email_id_in_notification_click_when_app_terminated":
             result(self.remoteNotificationPayload)
             self.remoteNotificationPayload = nil
         default:

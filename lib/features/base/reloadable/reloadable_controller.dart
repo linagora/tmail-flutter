@@ -6,16 +6,18 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:model/extensions/session_extension.dart';
+import 'package:model/account/password.dart';
+import 'package:model/oidc/oidc_configuration.dart';
+import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/update_authentication_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_interactors_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
@@ -26,16 +28,18 @@ import 'package:tmail_ui_user/main/utils/message_toast_utils.dart';
 abstract class ReloadableController extends BaseController {
   final GetSessionInteractor _getSessionInteractor = Get.find<GetSessionInteractor>();
   final GetAuthenticatedAccountInteractor _getAuthenticatedAccountInteractor = Get.find<GetAuthenticatedAccountInteractor>();
-  final UpdateAuthenticationAccountInteractor _updateAuthenticationAccountInteractor = Get.find<UpdateAuthenticationAccountInteractor>();
+  final UpdateAccountCacheInteractor _updateAccountCacheInteractor = Get.find<UpdateAccountCacheInteractor>();
 
   @override
   void handleFailureViewState(Failure failure) {
     if (failure is GetCredentialFailure ||
         failure is GetStoredTokenOidcFailure ||
-        failure is GetAuthenticatedAccountFailure) {
-      log('ReloadableController::handleFailureViewState(): failure: $failure');
+        failure is GetAuthenticatedAccountFailure ||
+        failure is UpdateAccountCacheFailure) {
+      logError('$runtimeType::handleFailureViewState():Failure = $failure');
       goToLogin();
     } else if (failure is GetSessionFailure) {
+      logError('$runtimeType::handleFailureViewState():Failure = $failure');
       _handleGetSessionFailure(failure.exception);
     } else {
       super.handleFailureViewState(failure);
@@ -45,11 +49,26 @@ abstract class ReloadableController extends BaseController {
   @override
   void handleSuccessViewState(Success success) {
     if (success is GetCredentialViewState) {
-      _handleGetCredentialSuccess(success);
-    } else if (success is GetSessionSuccess) {
-      _handleGetSessionSuccess(success);
+      log('$runtimeType::handleSuccessViewState:Success = ${success.runtimeType}');
+      _setDataToInterceptors(
+        baseUrl: success.baseUrl.origin,
+        userName: success.userName,
+        password: success.password);
+      getSessionAction();
     } else if (success is GetStoredTokenOidcSuccess) {
-      _handleGetStoredTokenOIDCSuccess(success);
+      log('$runtimeType::handleSuccessViewState:Success = ${success.runtimeType}');
+      _setDataToInterceptors(
+        baseUrl: success.baseUrl.toString(),
+        tokenOIDC: success.tokenOidc,
+        oidcConfiguration: success.oidcConfiguration);
+      getSessionAction();
+    } else if (success is GetSessionSuccess) {
+      log('$runtimeType::handleSuccessViewState:Success = ${success.runtimeType}');
+      updateAccountCache(success.session);
+    } else if (success is UpdateAccountCacheSuccess) {
+      log('$runtimeType::handleSuccessViewState:Success = ${success.runtimeType}');
+      dynamicUrlInterceptors.changeBaseUrl(success.apiUrl);
+      handleReloaded(success.session);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -66,22 +85,25 @@ abstract class ReloadableController extends BaseController {
     consumeState(_getAuthenticatedAccountInteractor.execute());
   }
 
-  void _setUpInterceptors(GetCredentialViewState credentialViewState) {
-    dynamicUrlInterceptors.setJmapUrl(credentialViewState.baseUrl.origin);
-    dynamicUrlInterceptors.changeBaseUrl(credentialViewState.baseUrl.origin);
-    authorizationInterceptors.setBasicAuthorization(
-      credentialViewState.userName,
-      credentialViewState.password,
-    );
-    authorizationIsolateInterceptors.setBasicAuthorization(
-      credentialViewState.userName,
-      credentialViewState.password,
-    );
-  }
+  void _setDataToInterceptors({
+    required String baseUrl,
+    UserName? userName,
+    Password? password,
+    TokenOIDC? tokenOIDC,
+    OIDCConfiguration? oidcConfiguration
+ }) {
+    dynamicUrlInterceptors.setJmapUrl(baseUrl);
+    dynamicUrlInterceptors.changeBaseUrl(baseUrl);
 
-  void _handleGetCredentialSuccess(GetCredentialViewState credentialViewState) {
-    _setUpInterceptors(credentialViewState);
-    getSessionAction();
+    if (userName != null && password != null) {
+      authorizationInterceptors.setBasicAuthorization(userName, password);
+      authorizationIsolateInterceptors.setBasicAuthorization(userName, password);
+    }
+
+    if (tokenOIDC != null && oidcConfiguration != null) {
+      authorizationInterceptors.setTokenAndAuthorityOidc(newToken: tokenOIDC, newConfig: oidcConfiguration);
+      authorizationIsolateInterceptors.setTokenAndAuthorityOidc(newToken: tokenOIDC, newConfig: oidcConfiguration);
+    }
   }
 
   void getSessionAction() {
@@ -98,50 +120,18 @@ abstract class ReloadableController extends BaseController {
     clearDataAndGoToLoginPage();
   }
 
-  void _handleGetSessionSuccess(GetSessionSuccess success) {
-    final session = success.session;
-    final personalAccount = session.personalAccount;
-    final apiUrl = session.getQualifiedApiUrl(baseUrl: dynamicUrlInterceptors.jmapUrl);
-    if (apiUrl.isNotEmpty) {
-      dynamicUrlInterceptors.changeBaseUrl(apiUrl);
-      updateAuthenticationAccount(session, personalAccount.accountId, session.username);
-      handleReloaded(session);
-    } else {
-      clearDataAndGoToLoginPage();
-    }
-  }
-
   void handleReloaded(Session session) {}
-
-  void _handleGetStoredTokenOIDCSuccess(GetStoredTokenOidcSuccess tokenOidcSuccess) {
-    _setUpInterceptorsOidc(tokenOidcSuccess);
-    getSessionAction();
-  }
-
-  void _setUpInterceptorsOidc(GetStoredTokenOidcSuccess tokenOidcSuccess) {
-    dynamicUrlInterceptors.setJmapUrl(tokenOidcSuccess.baseUrl.toString());
-    dynamicUrlInterceptors.changeBaseUrl(tokenOidcSuccess.baseUrl.toString());
-    authorizationInterceptors.setTokenAndAuthorityOidc(
-        newToken: tokenOidcSuccess.tokenOidc,
-        newConfig: tokenOidcSuccess.oidcConfiguration);
-    authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
-        newToken: tokenOidcSuccess.tokenOidc,
-        newConfig: tokenOidcSuccess.oidcConfiguration);
-  }
 
   void injectVacationBindings(Session? session, AccountId? accountId) {
     try {
       requireCapability(session!, accountId!, [CapabilityIdentifier.jmapVacationResponse]);
       VacationInteractorsBindings().dependencies();
     } catch(e) {
-      logError('ReloadableController::injectVacationBindings(): exception: $e');
+      logError('$runtimeType::injectVacationBindings(): exception: $e');
     }
   }
 
-  void updateAuthenticationAccount(Session session, AccountId accountId, UserName userName) {
-    final apiUrl = session.getQualifiedApiUrl(baseUrl: dynamicUrlInterceptors.jmapUrl);
-    if (apiUrl.isNotEmpty) {
-      consumeState(_updateAuthenticationAccountInteractor.execute(accountId, apiUrl, userName));
-    }
+  void updateAccountCache(Session session) {
+    consumeState(_updateAccountCacheInteractor.execute(session));
   }
 }
