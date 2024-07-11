@@ -79,6 +79,7 @@ class CoreBindings extends Bindings {
       iOptions: IOSOptions(
         groupId: AppConfig.iOSKeychainSharingGroupId,
         accountName: AppConfig.iOSKeychainSharingService,
+        accessibility: KeychainAccessibility.first_unlock_this_device
       )
     ));
   }
