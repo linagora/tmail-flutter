@@ -15,24 +15,19 @@ import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.d
 import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/dns_lookup_to_get_jmap_url_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_username_on_mobile_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_is_available_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_auth_response_url_browser_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_current_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/logout_current_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/update_current_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:uuid/uuid.dart';
 
@@ -41,29 +36,24 @@ import 'login_controller_test.mocks.dart';
 @GenerateNiceMocks([
   MockSpec<AuthorizationInterceptors>(),
   MockSpec<DynamicUrlInterceptors>(),
-  MockSpec<DeleteCredentialInteractor>(),
-  MockSpec<LogoutOidcInteractor>(),
-  MockSpec<DeleteAuthorityOidcInteractor>(),
   MockSpec<AppToast>(),
   MockSpec<ImagePaths>(),
   MockSpec<ResponsiveUtils>(),
   MockSpec<Uuid>(),
   MockSpec<AuthenticationInteractor>(),
   MockSpec<CheckOIDCIsAvailableInteractor>(),
-  MockSpec<GetOIDCIsAvailableInteractor>(),
-  MockSpec<GetOIDCConfigurationInteractor>(),
   MockSpec<GetTokenOIDCInteractor>(),
   MockSpec<AuthenticateOidcOnBrowserInteractor>(),
-  MockSpec<GetAuthenticationInfoInteractor>(),
-  MockSpec<GetStoredOidcConfigurationInteractor>(),
+  MockSpec<GetAuthResponseUrlBrowserInteractor>(),
   MockSpec<SaveLoginUrlOnMobileInteractor>(),
   MockSpec<GetAllRecentLoginUrlOnMobileInteractor>(),
   MockSpec<SaveLoginUsernameOnMobileInteractor>(),
   MockSpec<GetAllRecentLoginUsernameOnMobileInteractor>(),
   MockSpec<DNSLookupToGetJmapUrlInteractor>(),
   MockSpec<GetSessionInteractor>(),
-  MockSpec<GetAuthenticatedAccountInteractor>(),
-  MockSpec<UpdateAuthenticationAccountInteractor>(),
+  MockSpec<GetCurrentAccountCacheInteractor>(),
+  MockSpec<UpdateCurrentAccountCacheInteractor>(),
+  MockSpec<LogoutCurrentAccountInteractor>(),
   MockSpec<CachingManager>(),
   MockSpec<LanguageCacheManager>(),
   MockSpec<ApplicationManager>(),
@@ -71,27 +61,22 @@ import 'login_controller_test.mocks.dart';
 void main() {
   late MockAuthenticationInteractor mockAuthenticationInteractor;
   late MockCheckOIDCIsAvailableInteractor mockCheckOIDCIsAvailableInteractor;
-  late MockGetOIDCIsAvailableInteractor mockGetOIDCIsAvailableInteractor;
-  late MockGetOIDCConfigurationInteractor mockGetOIDCConfigurationInteractor;
   late MockGetTokenOIDCInteractor mockGetTokenOIDCInteractor;
   late MockAuthenticateOidcOnBrowserInteractor mockAuthenticateOidcOnBrowserInteractor;
-  late MockGetAuthenticationInfoInteractor mockGetAuthenticationInfoInteractor;
-  late MockGetStoredOidcConfigurationInteractor mockGetStoredOidcConfigurationInteractor;
+  late MockGetAuthResponseUrlBrowserInteractor mockGetAuthResponseUrlBrowserInteractor;
   late MockSaveLoginUrlOnMobileInteractor mockSaveLoginUrlOnMobileInteractor;
   late MockGetAllRecentLoginUrlOnMobileInteractor mockGetAllRecentLoginUrlOnMobileInteractor;
   late MockSaveLoginUsernameOnMobileInteractor mockSaveLoginUsernameOnMobileInteractor;
   late MockGetAllRecentLoginUsernameOnMobileInteractor mockGetAllRecentLoginUsernameOnMobileInteractor;
   late MockDNSLookupToGetJmapUrlInteractor mockDNSLookupToGetJmapUrlInteractor;
   late MockGetSessionInteractor mockGetSessionInteractor;
-  late MockGetAuthenticatedAccountInteractor mockGetAuthenticatedAccountInteractor;
-  late MockUpdateAuthenticationAccountInteractor mockUpdateAuthenticationAccountInteractor;
+  late MockGetCurrentAccountCacheInteractor mockGetCurrentAccountCacheInteractor;
+  late MockUpdateCurrentAccountCacheInteractor mockUpdateCurrentAccountCacheInteractor;
+  late LogoutCurrentAccountInteractor mockLogoutCurrentAccountInteractor;
   late CachingManager mockCachingManager;
   late LanguageCacheManager mockLanguageCacheManager;
   late MockAuthorizationInterceptors mockAuthorizationInterceptors;
   late MockDynamicUrlInterceptors mockDynamicUrlInterceptors;
-  late MockDeleteCredentialInteractor mockDeleteCredentialInteractor;
-  late MockLogoutOidcInteractor mockLogoutOidcInteractor;
-  late MockDeleteAuthorityOidcInteractor mockDeleteAuthorityOidcInteractor;
   late MockAppToast mockAppToast;
   late MockImagePaths mockImagePaths;
   late MockResponsiveUtils mockResponsiveUtils;
@@ -104,12 +89,9 @@ void main() {
     setUp(() {
       mockAuthenticationInteractor = MockAuthenticationInteractor();
       mockCheckOIDCIsAvailableInteractor = MockCheckOIDCIsAvailableInteractor();
-      mockGetOIDCIsAvailableInteractor = MockGetOIDCIsAvailableInteractor();
-      mockGetOIDCConfigurationInteractor = MockGetOIDCConfigurationInteractor();
+      mockGetAuthResponseUrlBrowserInteractor = MockGetAuthResponseUrlBrowserInteractor();
       mockGetTokenOIDCInteractor = MockGetTokenOIDCInteractor();
       mockAuthenticateOidcOnBrowserInteractor = MockAuthenticateOidcOnBrowserInteractor();
-      mockGetAuthenticationInfoInteractor = MockGetAuthenticationInfoInteractor();
-      mockGetStoredOidcConfigurationInteractor = MockGetStoredOidcConfigurationInteractor();
       mockSaveLoginUrlOnMobileInteractor = MockSaveLoginUrlOnMobileInteractor();
       mockGetAllRecentLoginUrlOnMobileInteractor = MockGetAllRecentLoginUrlOnMobileInteractor();
       mockSaveLoginUsernameOnMobileInteractor = MockSaveLoginUsernameOnMobileInteractor();
@@ -118,17 +100,15 @@ void main() {
 
       // mock reloadable controller
       mockGetSessionInteractor = MockGetSessionInteractor();
-      mockGetAuthenticatedAccountInteractor = MockGetAuthenticatedAccountInteractor();
-      mockUpdateAuthenticationAccountInteractor = MockUpdateAuthenticationAccountInteractor();
+      mockGetCurrentAccountCacheInteractor = MockGetCurrentAccountCacheInteractor();
+      mockUpdateCurrentAccountCacheInteractor = MockUpdateCurrentAccountCacheInteractor();
+      mockLogoutCurrentAccountInteractor = MockLogoutCurrentAccountInteractor();
 
       //mock base controller
       mockCachingManager = MockCachingManager();
       mockLanguageCacheManager = MockLanguageCacheManager();
       mockAuthorizationInterceptors = MockAuthorizationInterceptors();
       mockDynamicUrlInterceptors = MockDynamicUrlInterceptors();
-      mockDeleteCredentialInteractor = MockDeleteCredentialInteractor();
-      mockLogoutOidcInteractor = MockLogoutOidcInteractor();
-      mockDeleteAuthorityOidcInteractor = MockDeleteAuthorityOidcInteractor();
       mockAppToast = MockAppToast();
       mockImagePaths = MockImagePaths();
       mockResponsiveUtils = MockResponsiveUtils();
@@ -136,8 +116,9 @@ void main() {
       mockApplicationManager = MockApplicationManager();
 
       Get.put<GetSessionInteractor>(mockGetSessionInteractor);
-      Get.put<GetAuthenticatedAccountInteractor>(mockGetAuthenticatedAccountInteractor);
-      Get.put<UpdateAuthenticationAccountInteractor>(mockUpdateAuthenticationAccountInteractor);
+      Get.put<GetCurrentAccountCacheInteractor>(mockGetCurrentAccountCacheInteractor);
+      Get.put<UpdateCurrentAccountCacheInteractor>(mockUpdateCurrentAccountCacheInteractor);
+      Get.put<LogoutCurrentAccountInteractor>(mockLogoutCurrentAccountInteractor);
       Get.put<CachingManager>(mockCachingManager);
       Get.put<LanguageCacheManager>(mockLanguageCacheManager);
       Get.put<AuthorizationInterceptors>(mockAuthorizationInterceptors);
@@ -146,9 +127,7 @@ void main() {
         tag: BindingTag.isolateTag,
       );
       Get.put<DynamicUrlInterceptors>(mockDynamicUrlInterceptors);
-      Get.put<DeleteCredentialInteractor>(mockDeleteCredentialInteractor);
-      Get.put<LogoutOidcInteractor>(mockLogoutOidcInteractor);
-      Get.put<DeleteAuthorityOidcInteractor>(mockDeleteAuthorityOidcInteractor);
+
       Get.put<AppToast>(mockAppToast);
       Get.put<ImagePaths>(mockImagePaths);
       Get.put<ResponsiveUtils>(mockResponsiveUtils);
@@ -159,20 +138,15 @@ void main() {
       loginController = LoginController(
         mockAuthenticationInteractor,
         mockCheckOIDCIsAvailableInteractor,
-        mockGetOIDCIsAvailableInteractor,
-        mockGetOIDCConfigurationInteractor,
         mockGetTokenOIDCInteractor,
         mockAuthenticateOidcOnBrowserInteractor,
-        mockGetAuthenticationInfoInteractor,
-        mockGetStoredOidcConfigurationInteractor,
+        mockGetAuthResponseUrlBrowserInteractor,
         mockSaveLoginUrlOnMobileInteractor,
         mockGetAllRecentLoginUrlOnMobileInteractor,
         mockSaveLoginUsernameOnMobileInteractor,
         mockGetAllRecentLoginUsernameOnMobileInteractor,
         mockDNSLookupToGetJmapUrlInteractor,
       );
-
-
     });
 
     test('WHEN handleFailureViewState is called with GetTokenOIDCFailure \n'

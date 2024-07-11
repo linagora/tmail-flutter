@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
@@ -41,7 +40,6 @@ class NetworkIsolateBindings extends Bindings {
     Get.put(AuthorizationInterceptors(
       dio,
       Get.find<AuthenticationClientBase>(tag: BindingTag.isolateTag),
-      Get.find<TokenOidcCacheManager>(tag: BindingTag.isolateTag),
       Get.find<AccountCacheManager>(tag: BindingTag.isolateTag),
       Get.find<IOSSharingManager>(),
     ), tag: BindingTag.isolateTag);

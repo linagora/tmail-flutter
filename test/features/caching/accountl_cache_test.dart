@@ -7,33 +7,37 @@ void main() {
   group('AccountCache test', () {
     test('removeDuplicated should remove duplicate accountId', () async {
       final account1 = AccountCache(
-        '1',
-        'oidc',
+        id: '1',
+        authenticationType: 'oidc',
         isSelected: true,
+        baseUrl: 'https://example.com',
         accountId: '1',
         userName: '1',
         apiUrl: 'https://example.com/jmap'
       );
       final account2 = AccountCache(
-        '2',
-        'oidc',
+        id: '2',
+        authenticationType: 'oidc',
         isSelected: true,
+        baseUrl: 'https://example.com',
         accountId: '1',
         userName: '1',
         apiUrl: 'https://example.com/jmap'
       );
       final account3 = AccountCache(
-        '3',
-        'basic',
+        id: '3',
+        authenticationType: 'basic',
         isSelected: true,
+        baseUrl: 'https://example.com',
         accountId: '2',
         userName: '2',
         apiUrl: 'https://example.com/jmap'
       );
       final account4 = AccountCache(
-        '4',
-        'basic',
+        id: '4',
+        authenticationType: 'basic',
         isSelected: true,
+        baseUrl: 'https://example.com',
         accountId: '2',
         userName: '2',
         apiUrl: 'https://example.com/jmap'

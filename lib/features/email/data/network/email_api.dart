@@ -39,8 +39,8 @@ import 'package:jmap_dart_client/jmap/mail/email/submission/set/set_email_submis
 import 'package:jmap_dart_client/jmap/mail/email/submission/set/set_email_submission_response.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
-import 'package:model/account/account_request.dart';
 import 'package:model/account/authentication_type.dart';
+import 'package:model/account/personal_account.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
@@ -54,7 +54,6 @@ import 'package:model/extensions/list_email_extension.dart';
 import 'package:model/extensions/list_email_id_extension.dart';
 import 'package:model/extensions/mailbox_id_extension.dart';
 import 'package:model/extensions/session_extension.dart';
-import 'package:model/oidc/token_oidc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
@@ -66,6 +65,8 @@ import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
+import 'package:tmail_ui_user/features/login/data/extensions/personal_account_extension.dart';
+import 'package:tmail_ui_user/features/login/data/extensions/token_oidc_extension.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
@@ -273,12 +274,12 @@ class EmailAPI with HandleSetErrorMixin {
       List<Attachment> attachments,
       AccountId accountId,
       String baseDownloadUrl,
-      AccountRequest accountRequest
+      PersonalAccount personalAccount
   ) async {
-    if (accountRequest.authenticationType == AuthenticationType.oidc &&
-        accountRequest.token?.isExpired == true &&
-        accountRequest.token?.refreshToken.isNotEmpty == true) {
-      throw DownloadAttachmentHasTokenExpiredException(accountRequest.token!.refreshToken);
+    if (personalAccount.authenticationType == AuthenticationType.oidc
+        && personalAccount.tokenOidc?.isExpired == true
+        && personalAccount.tokenOidc?.refreshToken.isNotEmpty == true) {
+      throw DownloadAttachmentHasTokenExpiredException(personalAccount.tokenOidc!.refreshToken);
     }
 
     String externalStorageDirPath;
@@ -290,16 +291,12 @@ class EmailAPI with HandleSetErrorMixin {
       throw DeviceNotSupportedException();
     }
 
-    final authentication = accountRequest.authenticationType == AuthenticationType.oidc
-        ? accountRequest.bearerToken
-        : accountRequest.basicAuth;
-
     final taskIds = await Future.wait(
       attachments.map((attachment) async => await FlutterDownloader.enqueue(
         url: attachment.getDownloadUrl(baseDownloadUrl, accountId),
         savedDir: externalStorageDirPath,
         headers: {
-          HttpHeaders.authorizationHeader: authentication,
+          HttpHeaders.authorizationHeader: personalAccount.authenticationHeader ?? '',
           HttpHeaders.acceptHeader: DioClient.jmapHeader
         },
         fileName: attachment.name,
@@ -316,18 +313,14 @@ class EmailAPI with HandleSetErrorMixin {
       Attachment attachment,
       AccountId accountId,
       String baseDownloadUrl,
-      AccountRequest accountRequest,
+      PersonalAccount personalAccount,
       CancelToken cancelToken
   ) async {
-    final authentication = accountRequest.authenticationType == AuthenticationType.oidc
-      ? accountRequest.bearerToken
-      : accountRequest.basicAuth;
-
     return _downloadManager.downloadFile(
       attachment.getDownloadUrl(baseDownloadUrl, accountId),
       getTemporaryDirectory(),
       attachment.name ?? '',
-      authentication,
+      personalAccount.authenticationHeader ?? '',
       cancelToken: cancelToken);
   }
 
@@ -336,18 +329,15 @@ class EmailAPI with HandleSetErrorMixin {
       Attachment attachment,
       AccountId accountId,
       String baseDownloadUrl,
-      AccountRequest accountRequest,
+      PersonalAccount personalAccount,
       StreamController<Either<Failure, Success>> onReceiveController,
       {CancelToken? cancelToken}
   ) async {
-    final authentication = accountRequest.authenticationType == AuthenticationType.oidc
-        ? accountRequest.bearerToken
-        : accountRequest.basicAuth;
     final downloadUrl = attachment.getDownloadUrl(baseDownloadUrl, accountId);
     log('EmailAPI::downloadAttachmentForWeb(): downloadUrl: $downloadUrl');
 
     final headerParam = _dioClient.getHeaders();
-    headerParam[HttpHeaders.authorizationHeader] = authentication;
+    headerParam[HttpHeaders.authorizationHeader] = personalAccount.authenticationHeader;
     headerParam[HttpHeaders.acceptHeader] = DioClient.jmapHeader;
 
     final bytesDownloaded = await _dioClient.get(

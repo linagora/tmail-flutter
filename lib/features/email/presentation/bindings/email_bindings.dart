@@ -28,7 +28,6 @@ import 'package:tmail_ui_user/features/email/presentation/controller/single_emai
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
-import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -127,16 +126,13 @@ class EmailBindings extends BaseBindings {
         Get.find<MailboxRepository>()));
     Get.lazyPut(() => DownloadAttachmentsInteractor(
         Get.find<EmailRepository>(),
-        Get.find<CredentialRepository>(),
         Get.find<AccountRepository>(),
         Get.find<AuthenticationOIDCRepository>(),
         Get.find<AuthorizationInterceptors>(),
     ));
     Get.lazyPut(() => ExportAttachmentInteractor(
         Get.find<EmailRepository>(),
-        Get.find<CredentialRepository>(),
         Get.find<AccountRepository>(),
-        Get.find<AuthenticationOIDCRepository>(),
     ));
     Get.lazyPut(() => MoveToMailboxInteractor(
         Get.find<EmailRepository>(),
@@ -144,9 +140,7 @@ class EmailBindings extends BaseBindings {
     Get.lazyPut(() => MarkAsStarEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => DownloadAttachmentForWebInteractor(
       Get.find<EmailRepository>(),
-      Get.find<CredentialRepository>(),
-      Get.find<AccountRepository>(),
-      Get.find<AuthenticationOIDCRepository>()));
+      Get.find<AccountRepository>()));
     Get.lazyPut(() => GetStoredEmailStateInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => StoreOpenedEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => PrintEmailInteractor(Get.find<EmailRepository>()));

@@ -23,14 +23,14 @@ class DownloadManager {
       String downloadUrl,
       Future<Directory> directoryToSave,
       String filename,
-      String basicAuth,
+      String authenticationHeader,
       {CancelToken? cancelToken}
   ) async {
     final streamController = StreamController<DownloadedResponse>();
 
     try {
       await Future.wait([
-        _downloadClient.downloadFile(downloadUrl, basicAuth, cancelToken),
+        _downloadClient.downloadFile(downloadUrl, authenticationHeader, cancelToken),
         directoryToSave
       ]).then((values) {
         final response = (values[0] as ResponseBody);

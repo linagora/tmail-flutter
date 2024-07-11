@@ -1,5 +1,4 @@
 
-import 'package:core/utils/app_logger.dart';
 import 'package:flutter_appauth_platform_interface/flutter_appauth_platform_interface.dart';
 import 'package:get/get.dart';
 import 'package:model/oidc/oidc_configuration.dart';
@@ -7,6 +6,7 @@ import 'package:model/oidc/response/oidc_discovery_response.dart';
 import 'package:model/oidc/token_id.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/authentication_token_extension.dart';
+import 'package:tmail_ui_user/features/login/data/extensions/token_oidc_extension.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/token_response_extension.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
@@ -22,19 +22,19 @@ class AuthenticationClientWeb implements AuthenticationClientBase {
   AuthenticationClientWeb(this._appAuthWeb);
 
   @override
-  Future<TokenOIDC> getTokenOIDC(String clientId, String redirectUrl,
-      String discoveryUrl, List<String> scopes) async {
-    final authorizationTokenResponse = await _appAuthWeb.authorizeAndExchangeCode(AuthorizationTokenRequest(
-        clientId,
-        redirectUrl,
-        discoveryUrl: discoveryUrl,
-        scopes: scopes,
-        preferEphemeralSession: true));
-
-    log('AuthClientMobile::getTokenOIDC(): token: ${authorizationTokenResponse?.accessToken}');
+  Future<TokenOIDC> getTokenOIDC(OIDCConfiguration oidcConfiguration) async {
+    final authorizationTokenResponse = await _appAuthWeb.authorizeAndExchangeCode(
+      AuthorizationTokenRequest(
+        oidcConfiguration.clientId,
+        oidcConfiguration.redirectUrl,
+        discoveryUrl: oidcConfiguration.discoveryUrl,
+        scopes: oidcConfiguration.scopes,
+        preferEphemeralSession: true
+      )
+    );
 
     if (authorizationTokenResponse != null) {
-      final tokenOIDC = authorizationTokenResponse.toTokenOIDC();
+      final tokenOIDC = authorizationTokenResponse.toTokenOIDC(authority: oidcConfiguration.authority);
       if (tokenOIDC.isTokenValid()) {
         return tokenOIDC;
       } else {
@@ -63,18 +63,23 @@ class AuthenticationClientWeb implements AuthenticationClientBase {
   }
 
   @override
-  Future<TokenOIDC> refreshingTokensOIDC(String clientId, String redirectUrl,
-      String discoveryUrl, List<String> scopes, String refreshToken) async {
-    final tokenResponse = await _appAuthWeb.token(TokenRequest(
-        clientId,
-        redirectUrl,
-        discoveryUrl: discoveryUrl,
+  Future<TokenOIDC> refreshingTokensOIDC(OIDCConfiguration oidcConfiguration, String refreshToken) async {
+    final tokenResponse = await _appAuthWeb.token(
+      TokenRequest(
+        oidcConfiguration.clientId,
+        oidcConfiguration.redirectUrl,
+        discoveryUrl: oidcConfiguration.discoveryUrl,
         refreshToken: refreshToken,
-        grantType: 'refresh_token',
-        scopes: scopes));
+        grantType: OIDCConstant.refreshTokenGrantType,
+        scopes: oidcConfiguration.scopes
+      )
+    );
 
     if (tokenResponse != null) {
-      final tokenOIDC = tokenResponse.toTokenOIDC(maybeAvailableRefreshToken: refreshToken);
+      final tokenOIDC = tokenResponse.toTokenOIDC(
+        authority: oidcConfiguration.authority,
+        maybeAvailableRefreshToken: refreshToken
+      );
       if (tokenOIDC.isTokenValid()) {
         return tokenOIDC;
       } else {
@@ -86,24 +91,24 @@ class AuthenticationClientWeb implements AuthenticationClientBase {
   }
 
   @override
-  Future<void> authenticateOidcOnBrowser(String clientId, String redirectUrl,
-      String discoveryUrl, List<String> scopes) async {
+  Future<void> authenticateOidcOnBrowser(OIDCConfiguration oidcConfiguration) async {
     await _appAuthWeb.authorizeAndExchangeCode(
-        AuthorizationTokenRequest(
-            clientId,
-            redirectUrl,
-            discoveryUrl: discoveryUrl,
-            scopes: scopes));
+      AuthorizationTokenRequest(
+        oidcConfiguration.clientId,
+        oidcConfiguration.redirectUrl,
+        discoveryUrl: oidcConfiguration.discoveryUrl,
+        scopes: oidcConfiguration.scopes
+      )
+    );
   }
 
   @override
-  Future<String> getAuthenticationInfo() async {
+  Future<String> getAuthResponseUrlBrowser() async {
     final authUrl = html.window.sessionStorage[OIDCConstant.authResponseKey];
-    log('AuthenticationClientWeb::getAuthenticationInfo(): authUrl: $authUrl');
-    if (authUrl != null && authUrl.isNotEmpty) {
-      return authUrl;
+    if (authUrl?.isNotEmpty == true) {
+      return authUrl!;
     } else {
-      throw CanNotAuthenticationInfoOnWeb();
+      throw NotFoundAuthResponseUrlBrowser();
     }
   }
 }

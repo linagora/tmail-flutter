@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:core/domain/exceptions/download_file_exception.dart';
+import 'package:core/domain/exceptions/file_exception.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/services.dart';
@@ -68,6 +69,18 @@ class FileUtils {
     }
   }
 
+  Future<void> deleteFileByFolderName({required String nameFile, String? folderPath}) async {
+    final internalStorageDirPath = await _getInternalStorageDirPath(
+      nameFile: nameFile,
+      folderPath: folderPath);
+
+    final file = File(internalStorageDirPath);
+
+    if (await file.exists()) {
+      await file.delete();
+    }
+  }
+
   Future<String> getContentFromFile({
     required String nameFile,
     String? folderPath,
@@ -115,10 +128,56 @@ class FileUtils {
     }
   }
 
+  static Future<void> removeFolderPath(String path) async {
+    final dir = Directory(path);
+    if (await dir.exists()) {
+      await dir.delete(recursive: true);
+    }
+  }
+
   Future<String> convertImageAssetToBase64(String assetImage) async {
     ByteData bytes = await rootBundle.load(assetImage);
     final buffer = bytes.buffer;
     final base64Data = base64Encode(Uint8List.view(buffer));
     return base64Data;
+  }
+
+  static Future<String> getExternalDocumentPath({String? folderPath}) async {
+    Directory directory = Directory('');
+    if (Platform.isAndroid) {
+      if (folderPath?.isNotEmpty == true) {
+        directory = Directory('/storage/emulated/0/Download/$folderPath');
+      } else {
+        directory = Directory('/storage/emulated/0/Download');
+      }
+    } else {
+      directory = await getApplicationDocumentsDirectory();
+      if (folderPath?.isNotEmpty == true) {
+        directory = Directory('${directory.absolute.path}/$folderPath');
+      }
+    }
+
+    final exPath = directory.path;
+    await Directory(exPath).create(recursive: true);
+    return exPath;
+  }
+
+  static Future<String> copyInternalFilesToDownloadExternal(List<String> listFilePaths) async {
+    final externalPath = await getExternalDocumentPath();
+
+    List<String> externalListPaths = [];
+    for (var filePath in listFilePaths) {
+      final file = File(filePath);
+      final fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
+      final externalFile = File('$externalPath/$fileName');
+      await externalFile.writeAsBytes(file.readAsBytesSync());
+      externalListPaths.add(externalFile.path);
+    }
+
+    if (externalListPaths.isNotEmpty) {
+      return externalPath;
+    } else {
+      throw NotFoundFileInFolderException();
+    }
   }
 }

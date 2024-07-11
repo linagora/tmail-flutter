@@ -15,7 +15,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:model/account/account_request.dart';
+import 'package:model/account/personal_account.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/mark_star_action.dart';
@@ -91,7 +91,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     Attachment attachment,
     AccountId accountId,
     String baseDownloadUrl,
-    AccountRequest accountRequest,
+    PersonalAccount personalAccount,
     StreamController<Either<Failure, Success>> onReceiveController,
     {CancelToken? cancelToken}
   ) {
@@ -99,12 +99,12 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<List<DownloadTaskId>> downloadAttachments(List<Attachment> attachments, AccountId accountId, String baseDownloadUrl, AccountRequest accountRequest) {
+  Future<List<DownloadTaskId>> downloadAttachments(List<Attachment> attachments, AccountId accountId, String baseDownloadUrl, PersonalAccount personalAccount) {
     throw UnimplementedError();
   }
 
   @override
-  Future<DownloadedResponse> exportAttachment(Attachment attachment, AccountId accountId, String baseDownloadUrl, AccountRequest accountRequest, CancelToken cancelToken) {
+  Future<DownloadedResponse> exportAttachment(Attachment attachment, AccountId accountId, String baseDownloadUrl, PersonalAccount personalAccount, CancelToken cancelToken) {
     throw UnimplementedError();
   }
 

@@ -19,13 +19,11 @@ import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_se
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
-import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_current_account_cache_state.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_current_account_cache_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/logout_current_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/update_current_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -35,9 +33,6 @@ import 'home_controller_test.mocks.dart';
 @GenerateNiceMocks([
   MockSpec<AuthorizationInterceptors>(),
   MockSpec<DynamicUrlInterceptors>(),
-  MockSpec<DeleteCredentialInteractor>(),
-  MockSpec<LogoutOidcInteractor>(),
-  MockSpec<DeleteAuthorityOidcInteractor>(),
   MockSpec<AppToast>(),
   MockSpec<ImagePaths>(),
   MockSpec<ResponsiveUtils>(),
@@ -48,8 +43,9 @@ import 'home_controller_test.mocks.dart';
   MockSpec<CleanupRecentLoginUsernameCacheInteractor>(),
   MockSpec<EmailReceiveManager>(),
   MockSpec<GetSessionInteractor>(),
-  MockSpec<GetAuthenticatedAccountInteractor>(),
-  MockSpec<UpdateAuthenticationAccountInteractor>(),
+  MockSpec<GetCurrentAccountCacheInteractor>(),
+  MockSpec<UpdateCurrentAccountCacheInteractor>(),
+  MockSpec<LogoutCurrentAccountInteractor>(),
   MockSpec<CachingManager>(),
   MockSpec<LanguageCacheManager>(),
   MockSpec<ApplicationManager>(),
@@ -65,16 +61,14 @@ void main() {
   late MockCleanupRecentLoginUsernameCacheInteractor cleanupRecentLoginUsernameCacheInteractor;
 
   late MockGetSessionInteractor mockGetSessionInteractor;
-  late MockGetAuthenticatedAccountInteractor mockGetAuthenticatedAccountInteractor;
-  late MockUpdateAuthenticationAccountInteractor mockUpdateAuthenticationAccountInteractor;
+  late MockGetCurrentAccountCacheInteractor mockGetCurrentAccountCacheInteractor;
+  late MockUpdateCurrentAccountCacheInteractor mockUpdateCurrentAccountCacheInteractor;
+  late MockLogoutCurrentAccountInteractor mockLogoutCurrentAccountInteractor;
 
   late MockCachingManager mockCachingManager;
   late MockLanguageCacheManager mockLanguageCacheManager;
   late MockAuthorizationInterceptors mockAuthorizationInterceptors;
   late MockDynamicUrlInterceptors mockDynamicUrlInterceptors;
-  late MockDeleteCredentialInteractor mockDeleteCredentialInteractor;
-  late MockLogoutOidcInteractor mockLogoutOidcInteractor;
-  late MockDeleteAuthorityOidcInteractor mockDeleteAuthorityOidcInteractor;
   late MockAppToast mockAppToast;
   late MockImagePaths mockImagePaths;
   late MockResponsiveUtils mockResponsiveUtils;
@@ -90,17 +84,15 @@ void main() {
 
     // mock reloadable controller
     mockGetSessionInteractor = MockGetSessionInteractor();
-    mockGetAuthenticatedAccountInteractor = MockGetAuthenticatedAccountInteractor();
-    mockUpdateAuthenticationAccountInteractor = MockUpdateAuthenticationAccountInteractor();
+    mockGetCurrentAccountCacheInteractor = MockGetCurrentAccountCacheInteractor();
+    mockUpdateCurrentAccountCacheInteractor = MockUpdateCurrentAccountCacheInteractor();
+    mockLogoutCurrentAccountInteractor = MockLogoutCurrentAccountInteractor();
 
     //mock base controller
     mockCachingManager = MockCachingManager();
     mockLanguageCacheManager = MockLanguageCacheManager();
     mockAuthorizationInterceptors = MockAuthorizationInterceptors();
     mockDynamicUrlInterceptors = MockDynamicUrlInterceptors();
-    mockDeleteCredentialInteractor = MockDeleteCredentialInteractor();
-    mockLogoutOidcInteractor = MockLogoutOidcInteractor();
-    mockDeleteAuthorityOidcInteractor = MockDeleteAuthorityOidcInteractor();
     mockAppToast = MockAppToast();
     mockImagePaths = MockImagePaths();
     mockResponsiveUtils = MockResponsiveUtils();
@@ -108,8 +100,9 @@ void main() {
     mockApplicationManager = MockApplicationManager();
 
     Get.put<GetSessionInteractor>(mockGetSessionInteractor);
-    Get.put<GetAuthenticatedAccountInteractor>(mockGetAuthenticatedAccountInteractor);
-    Get.put<UpdateAuthenticationAccountInteractor>(mockUpdateAuthenticationAccountInteractor);
+    Get.put<GetCurrentAccountCacheInteractor>(mockGetCurrentAccountCacheInteractor);
+    Get.put<UpdateCurrentAccountCacheInteractor>(mockUpdateCurrentAccountCacheInteractor);
+    Get.put<LogoutCurrentAccountInteractor>(mockLogoutCurrentAccountInteractor);
 
     Get.put<CachingManager>(mockCachingManager);
     Get.put<LanguageCacheManager>(mockLanguageCacheManager);
@@ -119,9 +112,6 @@ void main() {
       tag: BindingTag.isolateTag,
     );
     Get.put<DynamicUrlInterceptors>(mockDynamicUrlInterceptors);
-    Get.put<DeleteCredentialInteractor>(mockDeleteCredentialInteractor);
-    Get.put<LogoutOidcInteractor>(mockLogoutOidcInteractor);
-    Get.put<DeleteAuthorityOidcInteractor>(mockDeleteAuthorityOidcInteractor);
     Get.put<AppToast>(mockAppToast);
     Get.put<ImagePaths>(mockImagePaths);
     Get.put<ResponsiveUtils>(mockResponsiveUtils);
@@ -139,10 +129,10 @@ void main() {
   });
 
   group("HomeController::onData test", () {
-    test("WHEN onData receive `GetStoredTokenOidcFailure` "
+    test("WHEN onData receive `GetCurrentAccountCacheFailure` "
       "THEN handleFailureViewState should be called", () {
       // Arrange
-      final failure = Left<Failure, Success>(GetStoredTokenOidcFailure(Exception()));
+      final failure = Left<Failure, Success>(GetCurrentAccountCacheFailure(Exception()));
       when(mockAuthorizationInterceptors.authenticationType).thenReturn(AuthenticationType.oidc);
 
       // Act

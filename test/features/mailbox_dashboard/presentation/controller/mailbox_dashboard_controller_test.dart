@@ -31,10 +31,9 @@ import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_i
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/update_authentication_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_current_account_cache_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/logout_current_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/update_current_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_default_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
@@ -67,7 +66,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sending_email_interactor.dart';
@@ -137,8 +135,9 @@ const fallbackGenerators = {
   MockSpec<SaveRecentSearchInteractor>(),
   MockSpec<GetAllRecentSearchLatestInteractor>(),
   MockSpec<GetSessionInteractor>(),
-  MockSpec<GetAuthenticatedAccountInteractor>(),
-  MockSpec<UpdateAuthenticationAccountInteractor>(),
+  MockSpec<GetCurrentAccountCacheInteractor>(),
+  MockSpec<UpdateCurrentAccountCacheInteractor>(),
+  MockSpec<LogoutCurrentAccountInteractor>(),
   MockSpec<CreateNewMailboxInteractor>(),
   MockSpec<DeleteMultipleMailboxInteractor>(),
   MockSpec<RenameMailboxInteractor>(),
@@ -157,9 +156,6 @@ const fallbackGenerators = {
   MockSpec<SearchMoreEmailInteractor>(),
   MockSpec<AuthorizationInterceptors>(),
   MockSpec<DynamicUrlInterceptors>(),
-  MockSpec<DeleteCredentialInteractor>(),
-  MockSpec<LogoutOidcInteractor>(),
-  MockSpec<DeleteAuthorityOidcInteractor>(),
   MockSpec<AppToast>(),
   MockSpec<ImagePaths>(),
   MockSpec<ResponsiveUtils>(),
@@ -222,9 +218,6 @@ void main() {
   final languageCacheManager = MockLanguageCacheManager();
   final authorizationInterceptors = MockAuthorizationInterceptors();
   final dynamicUrlInterceptors = MockDynamicUrlInterceptors();
-  final deleteCredentialInteractor = MockDeleteCredentialInteractor();
-  final logoutOidcInteractor = MockLogoutOidcInteractor();
-  final deleteAuthorityOidcInteractor = MockDeleteAuthorityOidcInteractor();
   final appToast = MockAppToast();
   final imagePaths = MockImagePaths();
   final responsiveUtils = MockResponsiveUtils();
@@ -233,8 +226,9 @@ void main() {
 
   // mock reloadable controller Get dependencies
   final getSessionInteractor = MockGetSessionInteractor();
-  final getAuthenticatedAccountInteractor = MockGetAuthenticatedAccountInteractor();
-  final updateAuthenticationAccountInteractor = MockUpdateAuthenticationAccountInteractor();
+  final getCurrentAccountCacheInteractor = MockGetCurrentAccountCacheInteractor();
+  final updateCurrentAccountCacheInteractor = MockUpdateCurrentAccountCacheInteractor();
+  final logoutCurrentAccountInteractor = MockLogoutCurrentAccountInteractor();
 
   // mock mailbox controller direct dependencies
   final createNewMailboxInteractor = MockCreateNewMailboxInteractor();
@@ -289,17 +283,15 @@ void main() {
         tag: BindingTag.isolateTag,
       );
       Get.put<DynamicUrlInterceptors>(dynamicUrlInterceptors);
-      Get.put<DeleteCredentialInteractor>(deleteCredentialInteractor);
-      Get.put<LogoutOidcInteractor>(logoutOidcInteractor);
-      Get.put<DeleteAuthorityOidcInteractor>(deleteAuthorityOidcInteractor);
       Get.put<AppToast>(appToast);
       Get.put<ImagePaths>(imagePaths);
       Get.put<ResponsiveUtils>(responsiveUtils);
       Get.put<Uuid>(uuid);
       Get.put<ApplicationManager>(applicationManager);
       Get.put<GetSessionInteractor>(getSessionInteractor);
-      Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
-      Get.put<UpdateAuthenticationAccountInteractor>(updateAuthenticationAccountInteractor);
+      Get.put<GetCurrentAccountCacheInteractor>(getCurrentAccountCacheInteractor);
+      Get.put<UpdateCurrentAccountCacheInteractor>(updateCurrentAccountCacheInteractor);
+      Get.put<LogoutCurrentAccountInteractor>(logoutCurrentAccountInteractor);
       Get.put<GetAllIdentitiesInteractor>(getAllIdentitiesInteractor);
       Get.put<RemoveComposerCacheOnWebInteractor>(removeComposerCacheOnWebInteractor);
 

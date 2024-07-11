@@ -5,27 +5,31 @@ import 'package:model/oidc/token_oidc.dart';
 
 class OIDCFixtures {
   static final tokenOidcExpiredTime = TokenOIDC(
-    'dab123',
-    TokenId('dab123'),
-    'dab456',
+    token: 'dab123',
+    tokenId: TokenId('dab123'),
+    refreshToken: 'dab456',
+    authority: '',
     expiredTime: DateTime.now().subtract(const Duration(days: 1)));
 
   static final tokenOidcExpiredTimeAndRefreshTokenEmpty = TokenOIDC(
-    'dab123',
-    TokenId('dab123'),
-    '',
+    token: 'dab123',
+    tokenId: TokenId('dab123'),
+    refreshToken: '',
+    authority: '',
     expiredTime: DateTime.now().subtract(const Duration(days: 1)));
 
   static final tokenOidcExpiredTimeAndTokenEmpty = TokenOIDC(
-    '',
-    TokenId('dab123'),
-    'dab456',
+    token: '',
+    tokenId: TokenId('dab123'),
+    refreshToken: 'dab456',
+    authority: '',
     expiredTime: DateTime.now().subtract(const Duration(days: 1)));
 
   static final newTokenOidc = TokenOIDC(
-    'test123',
-    TokenId('test123'),
-    'test456',
+    token: 'test123',
+    tokenId: TokenId('test123'),
+    refreshToken: 'test456',
+    authority: '',
     expiredTime: DateTime.now().add(const Duration(days: 1)));
 
   static final oidcConfiguration = OIDCConfiguration(

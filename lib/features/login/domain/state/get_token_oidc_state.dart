@@ -1,19 +1,17 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:model/oidc/oidc_configuration.dart';
-import 'package:model/oidc/token_oidc.dart';
+import 'package:model/account/personal_account.dart';
 
 class GetTokenOIDCLoading extends LoadingState {}
 
 class GetTokenOIDCSuccess extends UIState {
 
-  final TokenOIDC tokenOIDC;
-  final OIDCConfiguration configuration;
+  final PersonalAccount personalAccount;
 
-  GetTokenOIDCSuccess(this.tokenOIDC, this.configuration);
+  GetTokenOIDCSuccess(this.personalAccount);
 
   @override
-  List<Object> get props => [tokenOIDC, configuration];
+  List<Object> get props => [personalAccount];
 }
 
 class GetTokenOIDCFailure extends FeatureFailure {

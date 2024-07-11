@@ -10,7 +10,6 @@ class CachingConstants {
   static const int TOKEN_OIDC_HIVE_CACHE_IDENTIFY = 8;
   static const int ACCOUNT_HIVE_CACHE_IDENTIFY = 9;
   static const int ENCRYPTION_KEY_HIVE_CACHE_IDENTIFY = 10;
-  static const int AUTHENTICATION_INFO_HIVE_CACHE_IDENTIFY = 11;
   static const int RECENT_LOGIN_URL_HIVE_CACHE_IDENTITY = 12;
   static const int RECENT_LOGIN_USERNAME_HIVE_CACHE_IDENTITY = 13;
   static const int FIREBASE_REGISTRATION_HIVE_CACHE_IDENTITY = 14;
@@ -19,6 +18,7 @@ class CachingConstants {
   static const int DETAILED_EMAIL_HIVE_CACHE_ID = 17;
   static const int SENDING_EMAIL_HIVE_CACHE_ID = 18;
   static const int SESSION_HIVE_CACHE_ID = 19;
+  static const int BASIC_AUTH_HIVE_CACHE_IDENTIFY = 20;
 
   static const String fcmCacheBoxName = 'fcm_cache_box';
   static const String newEmailCacheBoxName = 'new_email_cache_box';
