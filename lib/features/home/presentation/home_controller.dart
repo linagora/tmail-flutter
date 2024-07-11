@@ -2,11 +2,8 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:model/account/personal_account.dart';
 import 'package:model/email/email_content.dart';
 import 'package:model/email/email_content_type.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
@@ -21,12 +18,11 @@ import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cac
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_url_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/preview_email_arguments.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_receiver.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
+import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
 
 class HomeController extends ReloadableController {
   final CleanupEmailCacheInteractor _cleanupEmailCacheInteractor;
@@ -34,6 +30,8 @@ class HomeController extends ReloadableController {
   final CleanupRecentSearchCacheInteractor _cleanupRecentSearchCacheInteractor;
   final CleanupRecentLoginUrlCacheInteractor _cleanupRecentLoginUrlCacheInteractor;
   final CleanupRecentLoginUsernameCacheInteractor _cleanupRecentLoginUsernameCacheInteractor;
+
+  IOSNotificationManager? _iosNotificationManager;
 
   HomeController(
     this._cleanupEmailCacheInteractor,
@@ -43,9 +41,6 @@ class HomeController extends ReloadableController {
     this._cleanupRecentLoginUsernameCacheInteractor,
   );
 
-  PersonalAccount? currentAccount;
-  EmailId? _emailIdPreview;
-
   @override
   void onInit() {
     if (PlatformInfo.isMobile) {
@@ -53,7 +48,7 @@ class HomeController extends ReloadableController {
       _registerReceivingSharingIntent();
     }
     if (PlatformInfo.isIOS) {
-      _handleIOSDataMessage();
+      _registerNotificationClickOnIOS();
     }
     super.onInit();
   }
@@ -66,20 +61,9 @@ class HomeController extends ReloadableController {
 
   @override
   void handleReloaded(Session session) {
-    if (_emailIdPreview != null) {
-      popAndPush(
-        RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
-        arguments: PreviewEmailArguments(
-          session: session,
-          emailId: _emailIdPreview!
-        )
-      );
-    } else {
-      popAndPush(
-        RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
-        arguments: session
-      );
-    }
+    pushAndPopAll(
+      RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
+      arguments: session);
   }
 
   void _initFlutterDownloader() {
@@ -90,7 +74,7 @@ class HomeController extends ReloadableController {
 
   static void downloadCallback(String id, DownloadTaskStatus status, int progress) {}
 
-  void _cleanupCache() async {
+  Future<void> _cleanupCache() async {
     await HiveCacheConfig.instance.onUpgradeDatabase(cachingManager);
 
     await Future.wait([
@@ -98,7 +82,7 @@ class HomeController extends ReloadableController {
       _cleanupRecentSearchCacheInteractor.execute(RecentSearchCleanupRule()),
       _cleanupRecentLoginUrlCacheInteractor.execute(RecentLoginUrlCleanupRule()),
       _cleanupRecentLoginUsernameCacheInteractor.execute(RecentLoginUsernameCleanupRule()),
-    ]).then((value) => getAuthenticatedAccountAction());
+    ], eagerError: true).then((_) => getAuthenticatedAccountAction());
   }
 
   void _registerReceivingSharingIntent() {
@@ -117,17 +101,8 @@ class HomeController extends ReloadableController {
     _emailReceiveManager.receivingFileSharingStream.listen(_emailReceiveManager.setPendingFileInfo);
   }
 
-  Future _handleIOSDataMessage() async {
-    if (Get.arguments is EmailId) {
-      _emailIdPreview = Get.arguments;
-    } else {
-      final notificationInfo = await FcmReceiver.instance.getIOSInitialNotificationInfo();
-      if (notificationInfo != null && notificationInfo.containsKey('email_id')) {
-        final emailId = notificationInfo['email_id'] as String?;
-        if (emailId?.isNotEmpty == true) {
-          _emailIdPreview = EmailId(Id(emailId!));
-        }
-      }
-    }
+  void _registerNotificationClickOnIOS() {
+    _iosNotificationManager = getBinding<IOSNotificationManager>();
+    _iosNotificationManager?.listenClickNotification();
   }
 }
