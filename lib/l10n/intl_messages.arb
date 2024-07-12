@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-07-10T13:53:40.940363",
+  "@@last_modified": "2024-07-12T12:54:25.065342",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3930,6 +3930,24 @@
   },
   "requestReadReceiptHasBeenDisabled": "Request read receipt has been disabled",
   "@requestReadReceiptHasBeenDisabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reconnect": "Reconnect",
+  "@reconnect": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sessionExpired": "Session expired",
+  "@sessionExpired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dialogMessageSessionHasExpired": "The current session has expired. Please reconnect to the server",
+  "@dialogMessageSessionHasExpired": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
