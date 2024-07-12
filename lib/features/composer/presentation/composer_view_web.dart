@@ -653,133 +653,139 @@ class ComposerView extends GetWidget<ComposerController> {
               ),
               Expanded(
                 child: LayoutBuilder(
-                  builder: (context, constraintsEditor) {
-                    return Container(
-                      decoration: const BoxDecoration(
-                        border: Border(
-                          bottom: BorderSide(
-                            color: ComposerStyle.borderColor,
-                            width: 1
-                          )
-                        ),
-                        color: ComposerStyle.backgroundEditorColor
-                      ),
-                      child: Stack(
-                        children: [
-                          Column(
-                            children: [
-                              Expanded(
-                                child: Padding(
-                                  padding: ComposerStyle.tabletEditorPadding,
-                                  child: Obx(() => WebEditorView(
-                                    editorController: controller.richTextWebController!.editorController,
-                                    arguments: controller.composerArguments.value,
-                                    contentViewState: controller.emailContentsViewState.value,
-                                    currentWebContent: controller.textEditorWeb,
-                                    onInitial: controller.handleInitHtmlEditorWeb,
-                                    onChangeContent: controller.onChangeTextEditorWeb,
-                                    onFocus: controller.handleOnFocusHtmlEditorWeb,
-                                    onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
-                                    onEditorSettings: controller.richTextWebController!.onEditorSettingsChange,
-                                    onEditorTextSizeChanged: controller.richTextWebController!.onEditorTextSizeChanged,
-                                    width: constraints.maxWidth,
-                                    height: constraints.maxHeight,
-                                    onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
-                                  )),
+                  builder: (context, constraintsBody) {
+                    return Stack(
+                      children: [
+                        Column(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: ComposerStyle.borderColor,
+                                      width: 1
+                                    )
+                                  ),
+                                  color: ComposerStyle.backgroundEditorColor
+                                ),
+                                child: Column(
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: ComposerStyle.tabletEditorPadding,
+                                        child: Obx(() => WebEditorView(
+                                          editorController: controller.richTextWebController!.editorController,
+                                          arguments: controller.composerArguments.value,
+                                          contentViewState: controller.emailContentsViewState.value,
+                                          currentWebContent: controller.textEditorWeb,
+                                          onInitial: controller.handleInitHtmlEditorWeb,
+                                          onChangeContent: controller.onChangeTextEditorWeb,
+                                          onFocus: controller.handleOnFocusHtmlEditorWeb,
+                                          onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
+                                          onEditorSettings: controller.richTextWebController!.onEditorSettingsChange,
+                                          onEditorTextSizeChanged: controller.richTextWebController!.onEditorTextSizeChanged,
+                                          width: constraints.maxWidth,
+                                          height: constraints.maxHeight,
+                                          onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
+                                        )),
+                                      ),
+                                    ),
+                                    Obx(() {
+                                      if (controller.uploadController.listUploadAttachments.isNotEmpty) {
+                                        return AttachmentComposerWidget(
+                                          listFileUploaded: controller.uploadController.listUploadAttachments,
+                                          isCollapsed: controller.isAttachmentCollapsed,
+                                          onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
+                                          onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
+                                        );
+                                      } else {
+                                        return const SizedBox.shrink();
+                                      }
+                                    }),
+                                    Obx(() {
+                                      if (controller.richTextWebController!.isFormattingOptionsEnabled) {
+                                        return ToolbarRichTextWebBuilder(
+                                          richTextWebController: controller.richTextWebController!,
+                                          padding: ComposerStyle.richToolbarPadding,
+                                          decoration: const BoxDecoration(
+                                            color: ComposerStyle.richToolbarColor,
+                                            boxShadow: ComposerStyle.richToolbarShadow
+                                          ),
+                                        );
+                                      } else {
+                                        return const SizedBox.shrink();
+                                      }
+                                    })
+                                  ],
                                 ),
                               ),
-                              Obx(() {
-                                if (controller.uploadController.listUploadAttachments.isNotEmpty) {
-                                  return AttachmentComposerWidget(
-                                    listFileUploaded: controller.uploadController.listUploadAttachments,
-                                    isCollapsed: controller.isAttachmentCollapsed,
-                                    onDeleteAttachmentAction: controller.deleteAttachmentUploaded,
-                                    onToggleExpandAttachmentAction: (isCollapsed) => controller.isAttachmentCollapsed = isCollapsed,
-                                  );
-                                } else {
-                                  return const SizedBox.shrink();
-                                }
-                              }),
-                              Obx(() {
-                                if (controller.richTextWebController!.isFormattingOptionsEnabled) {
-                                  return ToolbarRichTextWebBuilder(
-                                    richTextWebController: controller.richTextWebController!,
-                                    padding: ComposerStyle.richToolbarPadding,
-                                    decoration: const BoxDecoration(
-                                      color: ComposerStyle.richToolbarColor,
-                                      boxShadow: ComposerStyle.richToolbarShadow
-                                    ),
-                                  );
-                                } else {
-                                  return const SizedBox.shrink();
-                                }
-                              })
-                            ],
-                          ),
-                          Align(
-                            alignment: AlignmentDirectional.topCenter,
-                            child: Obx(() => InsertImageLoadingBarWidget(
-                              uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
-                              viewState: controller.viewState.value,
-                              padding: ComposerStyle.insertImageLoadingBarPadding,
+                            ),
+                            Obx(() => BottomBarComposerWidget(
+                              isCodeViewEnabled: controller.richTextWebController!.codeViewEnabled,
+                              isFormattingOptionsEnabled: controller.richTextWebController!.isFormattingOptionsEnabled,
+                              hasReadReceipt: controller.hasRequestReadReceipt.value,
+                              openRichToolbarAction: controller.richTextWebController!.toggleFormattingOptions,
+                              attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
+                              insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
+                              showCodeViewAction: controller.richTextWebController!.toggleCodeView,
+                              deleteComposerAction: () => controller.handleClickDeleteComposer(context),
+                              saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
+                              sendMessageAction: () => controller.handleClickSendButton(context),
+                              requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
                             )),
-                          ),
-                          Obx(() {
-                            if (controller.mailboxDashBoardController.isAttachmentDraggableAppActive) {
-                              return Positioned.fill(
-                                child: PointerInterceptor(
-                                  child: AttachmentDropZoneWidget(
-                                    imagePaths: controller.imagePaths,
-                                    width: constraintsEditor.maxWidth,
-                                    height: constraintsEditor.maxHeight,
-                                    onAttachmentDropZoneListener: controller.onAttachmentDropZoneListener,
-                                  )
-                                ),
-                              );
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          }),
-                          Obx(() {
-                            if (controller.mailboxDashBoardController.isLocalFileDraggableAppActive) {
-                              return Positioned.fill(
-                                child: PointerInterceptor(
-                                  child: LocalFileDropZoneWidget(
-                                    imagePaths: controller.imagePaths,
-                                    width: constraintsEditor.maxWidth,
-                                    height: constraintsEditor.maxHeight,
-                                    onLocalFileDropZoneListener: (details) =>
-                                      controller.onLocalFileDropZoneListener(
-                                        context: context,
-                                        details: details,
-                                        maxWidth: constraintsEditor.maxWidth,
-                                      ),
-                                  )
-                                ),
-                              );
-                            } else {
-                              return const SizedBox.shrink();
-                            }
-                          }),
-                        ],
-                      ),
+                          ],
+                        ),
+                        Align(
+                          alignment: AlignmentDirectional.topCenter,
+                          child: Obx(() => InsertImageLoadingBarWidget(
+                            uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
+                            viewState: controller.viewState.value,
+                            padding: ComposerStyle.insertImageLoadingBarPadding,
+                          )),
+                        ),
+                        Obx(() {
+                          if (controller.mailboxDashBoardController.isAttachmentDraggableAppActive) {
+                            return Positioned.fill(
+                              child: PointerInterceptor(
+                                child: AttachmentDropZoneWidget(
+                                  imagePaths: controller.imagePaths,
+                                  width: constraintsBody.maxWidth,
+                                  height: constraintsBody.maxHeight,
+                                  onAttachmentDropZoneListener: controller.onAttachmentDropZoneListener,
+                                )
+                              ),
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        }),
+                        Obx(() {
+                          if (controller.mailboxDashBoardController.isLocalFileDraggableAppActive) {
+                            return Positioned.fill(
+                              child: PointerInterceptor(
+                                child: LocalFileDropZoneWidget(
+                                  imagePaths: controller.imagePaths,
+                                  width: constraintsBody.maxWidth,
+                                  height: constraintsBody.maxHeight,
+                                  onLocalFileDropZoneListener: (details) =>
+                                    controller.onLocalFileDropZoneListener(
+                                      context: context,
+                                      details: details,
+                                      maxWidth: constraintsBody.maxWidth,
+                                    ),
+                                )
+                              ),
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        }),
+                      ],
                     );
-                  }
+                  },
                 ),
-              ),
-              Obx(() => BottomBarComposerWidget(
-                isCodeViewEnabled: controller.richTextWebController!.codeViewEnabled,
-                isFormattingOptionsEnabled: controller.richTextWebController!.isFormattingOptionsEnabled,
-                hasReadReceipt: controller.hasRequestReadReceipt.value,
-                openRichToolbarAction: controller.richTextWebController!.toggleFormattingOptions,
-                attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
-                insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
-                showCodeViewAction: controller.richTextWebController!.toggleCodeView,
-                deleteComposerAction: () => controller.handleClickDeleteComposer(context),
-                saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
-                sendMessageAction: () => controller.handleClickSendButton(context),
-                requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
-              )),
+              )
             ]),
           );
         },

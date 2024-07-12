@@ -385,20 +385,40 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     });
 
     _subscriptionOnDragEnter = html.window.onDragEnter.listen((event) {
-      mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.active;
+      event.preventDefault();
+
+      if (_validateFilesTransfer(event.dataTransfer.types)) {
+        mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.active;
+      }
     });
 
     _subscriptionOnDragOver = html.window.onDragOver.listen((event) {
-      mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.active;
+      event.preventDefault();
+
+      if (_validateFilesTransfer(event.dataTransfer.types)) {
+        mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.active;
+      }
     });
 
     _subscriptionOnDragLeave = html.window.onDragLeave.listen((event) {
-      mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.inActive;
+      event.preventDefault();
+
+      if (_validateFilesTransfer(event.dataTransfer.types)) {
+        mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.inActive;
+      }
     });
 
     _subscriptionOnDrop = html.window.onDrop.listen((event) {
-      mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.inActive;
+      event.preventDefault();
+
+      if (_validateFilesTransfer(event.dataTransfer.types)) {
+        mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.inActive;
+      }
     });
+  }
+
+  bool _validateFilesTransfer(List<dynamic>? types) {
+    return types?.any((type) => type == 'Files') ?? false;
   }
 
   Future<void> _saveComposerCacheOnWebAction() async {
@@ -2091,8 +2111,10 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     }
   }
 
-  void handleOnDragEnterHtmlEditorWeb() {
-    mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.active;
+  void handleOnDragEnterHtmlEditorWeb(List<dynamic>? types) {
+    if (_validateFilesTransfer(types)) {
+      mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.active;
+    }
   }
 
   void onLocalFileDropZoneListener({
