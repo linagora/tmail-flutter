@@ -188,11 +188,7 @@ abstract class BaseController extends GetxController
   void handleUrgentExceptionOnMobile({Failure? failure, Exception? exception}) {
     logError('$runtimeType::handleUrgentExceptionOnMobile():Failure: $failure | Exception: $exception');
     if (exception is ConnectionError) {
-      if (currentOverlayContext != null && currentContext != null) {
-        appToast.showToastErrorMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).connectionError);
-      }
+      _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
       _executeBeforeUnloadAndLogOut();
     }
@@ -213,11 +209,7 @@ abstract class BaseController extends GetxController
           infinityToast: true,);
       }
     } else if (exception is ConnectionError) {
-      if (currentOverlayContext != null && currentContext != null) {
-        appToast.showToastErrorMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).connectionError);
-      }
+      _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
       _executeBeforeUnloadAndLogOut();
     }
@@ -226,6 +218,14 @@ abstract class BaseController extends GetxController
   Future<void> _executeBeforeUnloadAndLogOut() async {
     await executeBeforeUnload();
     clearDataAndGoToLoginPage();
+  }
+
+  void _handleConnectionErrorException() {
+    if (currentOverlayContext != null && currentContext != null) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).connectionError);
+    }
   }
 
   void handleFailureViewState(Failure failure) async {
