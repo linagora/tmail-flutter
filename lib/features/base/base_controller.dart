@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:contact/contact/model/capability_contact.dart';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
+import 'package:core/domain/exceptions/platform_exception.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -60,6 +63,7 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
+import 'package:universal_html/html.dart' as html;
 import 'package:uuid/uuid.dart';
 
 abstract class BaseController extends GetxController
@@ -85,8 +89,41 @@ abstract class BaseController extends GetxController
   GetStoredFirebaseRegistrationInteractor? _getStoredFirebaseRegistrationInteractor;
   DestroyFirebaseRegistrationInteractor? _destroyFirebaseRegistrationInteractor;
 
+  StreamSubscription<html.Event>? _subscriptionBrowserOnBeforeUnload;
+  StreamSubscription<html.Event>? _subscriptionBrowserOnUnload;
+
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   FpsCallback? fpsCallback;
+
+  @override
+  void onInit() {
+    super.onInit();
+    if (PlatformInfo.isWeb) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _triggerBrowserReloadListener();
+      });
+    }
+  }
+
+  void _triggerBrowserReloadListener() {
+    _subscriptionBrowserOnBeforeUnload =
+        html.window.onBeforeUnload.listen(handleBrowserBeforeReloadAction);
+    _subscriptionBrowserOnUnload =
+        html.window.onUnload.listen(handleBrowserReloadAction);
+  }
+
+  Future<void> handleBrowserBeforeReloadAction(html.Event event) async {}
+
+  Future<void> handleBrowserReloadAction(html.Event event) async {}
+
+  @override
+  void onClose() {
+    if (PlatformInfo.isWeb) {
+      _subscriptionBrowserOnBeforeUnload?.cancel();
+      _subscriptionBrowserOnUnload?.cancel();
+    }
+    super.onClose();
+  }
 
   void consumeState(Stream<Either<Failure, Success>> newStateStream) async {
     newStateStream.listen(onData, onError: onError, onDone: onDone);
@@ -105,10 +142,9 @@ abstract class BaseController extends GetxController
     viewState.value.fold(
       (failure) {
         if (failure is FeatureFailure) {
-          final exception = _performFilterExceptionInError(failure.exception);
-          logError('$runtimeType::onData:exception: $exception');
-          if (exception != null) {
-            handleExceptionAction(failure: failure, exception: exception);
+          final isUrgentException = _validateUrgentException(failure.exception);
+          if (isUrgentException) {
+            handleUrgentException(failure: failure, exception: failure.exception);
           } else {
             handleFailureViewState(failure);
           }
@@ -119,11 +155,11 @@ abstract class BaseController extends GetxController
       handleSuccessViewState);
   }
 
-  void onError(Object error, StackTrace stackTrace) {
-    logError('$runtimeType::onError():error: $error | stackTrace: $stackTrace');
-    final exception = _performFilterExceptionInError(error);
-    if (exception != null) {
-      handleExceptionAction(exception: exception);
+  void onError(dynamic error, StackTrace stackTrace) {
+    logError('$runtimeType::onError():Error: $error | StackTrace: $stackTrace');
+    final isUrgentException = _validateUrgentException(error);
+    if (isUrgentException) {
+      handleUrgentException(exception: error);
     } else {
       handleErrorViewState(error, stackTrace);
     }
@@ -131,10 +167,41 @@ abstract class BaseController extends GetxController
 
   void onDone() {}
 
-  Exception? _performFilterExceptionInError(dynamic error) {
-    logError('$runtimeType::_performFilterExceptionInError(): $error');
-    if (error is NoNetworkError || error is ConnectionTimeout || error is InternalServerError) {
-      if (PlatformInfo.isWeb && currentOverlayContext != null && currentContext != null) {
+  bool _validateUrgentException(dynamic exception) {
+    return exception is NoNetworkError
+      || exception is BadCredentialsException
+      || exception is ConnectionError;
+  }
+
+  void handleErrorViewState(Object error, StackTrace stackTrace) {}
+
+  void handleUrgentException({Failure? failure, Exception? exception}) {
+    if (PlatformInfo.isWeb) {
+      handleUrgentExceptionOnWeb(failure: failure, exception: exception);
+    } else if (PlatformInfo.isMobile) {
+      handleUrgentExceptionOnMobile(failure: failure, exception: exception);
+    } else {
+      throw NoSupportPlatformException();
+    }
+  }
+
+  void handleUrgentExceptionOnMobile({Failure? failure, Exception? exception}) {
+    logError('$runtimeType::handleUrgentExceptionOnMobile():Failure: $failure | Exception: $exception');
+    if (exception is ConnectionError) {
+      if (currentOverlayContext != null && currentContext != null) {
+        appToast.showToastErrorMessage(
+          currentOverlayContext!,
+          AppLocalizations.of(currentContext!).connectionError);
+      }
+    } else if (exception is BadCredentialsException) {
+      _executeBeforeUnloadAndLogOut();
+    }
+  }
+
+  void handleUrgentExceptionOnWeb({Failure? failure, Exception? exception}) {
+    logError('$runtimeType::handleUrgentExceptionOnWeb():Failure: $failure | Exception: $exception');
+    if (exception is NoNetworkError) {
+      if (currentOverlayContext != null && currentContext != null) {
         appToast.showToastMessage(
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).no_internet_connection,
@@ -143,43 +210,22 @@ abstract class BaseController extends GetxController
           leadingSVGIcon: imagePaths.icNotConnection,
           backgroundColor: AppColor.textFieldErrorBorderColor,
           textColor: Colors.white,
-          infinityToast: true,
-        );
+          infinityToast: true,);
       }
-      return error;
-    } else if (error is BadCredentialsException || error is ConnectionError) {
-      return error;
-    }
-
-    return null;
-  }
-
-  void handleErrorViewState(Object error, StackTrace stackTrace) {}
-
-  void handleExceptionAction({Failure? failure, Exception? exception}) {
-    logError('$runtimeType::handleExceptionAction():failure: $failure | exception: $exception');
-    if (exception is ConnectionError) {
+    } else if (exception is ConnectionError) {
       if (currentOverlayContext != null && currentContext != null) {
         appToast.showToastErrorMessage(
           currentOverlayContext!,
-          AppLocalizations.of(currentContext!).connectionError
-        );
+          AppLocalizations.of(currentContext!).connectionError);
       }
+    } else if (exception is BadCredentialsException) {
+      _executeBeforeUnloadAndLogOut();
     }
-
-    if (!authorizationInterceptors.isAppRunning) {
-      return;
-    }
-    _executeBeforeUnloadAndLogOut(exception);
   }
 
-  Future<void> _executeBeforeUnloadAndLogOut(Exception? exception) async {
-    if (exception is BadCredentialsException || exception is ConnectionError) {
-      if (PlatformInfo.isWeb) {
-        await executeBeforeUnload();
-      }
-      clearDataAndGoToLoginPage();
-    }
+  Future<void> _executeBeforeUnloadAndLogOut() async {
+    await executeBeforeUnload();
+    clearDataAndGoToLoginPage();
   }
 
   void handleFailureViewState(Failure failure) async {

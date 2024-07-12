@@ -24,18 +24,19 @@ class ConfirmDialogBuilder {
   double? _radiusButton;
   EdgeInsetsGeometry? _paddingTitle;
   EdgeInsets? _paddingContent;
-  EdgeInsets? _paddingButton;
+  EdgeInsetsGeometry? _paddingButton;
+  EdgeInsets? _marginButton;
   EdgeInsets? _outsideDialogPadding;
   EdgeInsetsGeometry? _marginIcon;
   EdgeInsets? _margin;
   double? _widthDialog;
-  double maxWith;
+  final double maxWith;
   Alignment? _alignment;
   Color? _backgroundColor;
-  bool showAsBottomSheet;
-  List<TextSpan>? listTextSpan;
-  int? titleActionButtonMaxLines;
-  bool isArrangeActionButtonsVertical;
+  final bool showAsBottomSheet;
+  final List<TextSpan>? listTextSpan;
+  final int? titleActionButtonMaxLines;
+  final bool isArrangeActionButtonsVertical;
 
   OnConfirmButtonAction? _onConfirmButtonAction;
   OnCancelButtonAction? _onCancelButtonAction;
@@ -104,8 +105,12 @@ class ConfirmDialogBuilder {
     _paddingContent = value;
   }
 
-  void paddingButton(EdgeInsets? value) {
+  void paddingButton(EdgeInsetsGeometry? value) {
     _paddingButton = value;
+  }
+
+  void marginButton(EdgeInsets? value) {
+    _marginButton = value;
   }
 
   void marginIcon(EdgeInsetsGeometry? value) {
@@ -253,7 +258,7 @@ class ConfirmDialogBuilder {
               ]
             else
               Padding(
-                padding: _paddingButton ?? const EdgeInsetsDirectional.only(bottom: 16, start: 16, end: 16),
+                padding: _marginButton ?? const EdgeInsetsDirectional.only(bottom: 16, start: 16, end: 16),
                 child: Row(
                     children: [
                       if (_cancelText.isNotEmpty)
@@ -297,7 +302,7 @@ class ConfirmDialogBuilder {
             borderRadius: BorderRadius.circular(radius ?? 8),
             side: BorderSide(width: 0, color: bgColor ?? AppColor.colorTextButton),
           ),
-          padding: const EdgeInsets.all(8),
+          padding: _paddingButton ?? const EdgeInsets.all(8),
           elevation: 0
         ),
         child: Text(

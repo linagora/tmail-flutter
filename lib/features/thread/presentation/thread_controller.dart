@@ -220,11 +220,10 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   @override
-  void handleExceptionAction({Failure? failure, Exception? exception}) {
-    super.handleExceptionAction(failure: failure, exception: exception);
-    logError('ThreadController::handleExceptionAction(): failure: $failure | exception: $exception');
+  void handleUrgentException({Failure? failure, Exception? exception}) {
     _resetLoadingMore();
     clearState();
+    super.handleUrgentException(failure: failure, exception: exception);
   }
 
   void _resetLoadingMore() {
