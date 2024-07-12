@@ -212,9 +212,6 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   void onInit() {
     super.onInit();
     if (PlatformInfo.isWeb) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _triggerBrowserEventListener();
-      });
       richTextWebController = getBinding<RichTextWebController>();
     } else {
       richTextMobileTabletController = getBinding<RichTextMobileTabletController>();
@@ -228,6 +225,9 @@ class ComposerController extends BaseController with DragDropFileMixin implement
 
   @override
   void onReady() {
+    if (PlatformInfo.isWeb) {
+      _triggerBrowserEventListener();
+    }
     _initEmail();
     if (PlatformInfo.isMobile) {
       Future.delayed(const Duration(milliseconds: 500), _checkContactPermission);
