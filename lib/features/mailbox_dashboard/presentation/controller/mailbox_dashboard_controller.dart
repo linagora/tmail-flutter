@@ -153,6 +153,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
+import 'package:universal_html/html.dart' as html;
 import 'package:uuid/uuid.dart';
 
 class MailboxDashBoardController extends ReloadableController {
@@ -407,14 +408,19 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   @override
-  void handleExceptionAction({Failure? failure, Exception? exception}) {
-    super.handleExceptionAction(failure: failure, exception: exception);
-    if (failure is SendEmailFailure &&
-        exception is NoNetworkError &&
-        PlatformInfo.isMobile
-    ) {
-      log('MailboxDashBoardController::handleExceptionAction(): $failure');
+  void handleUrgentExceptionOnMobile({Failure? failure, Exception? exception}) {
+    if (failure is SendEmailFailure && exception is NoNetworkError) {
       _storeSendingEmailInCaseOfSendingFailureInMobile(failure);
+    } else {
+      super.handleUrgentExceptionOnMobile(failure: failure, exception: exception);
+    }
+  }
+
+  @override
+  Future<void> handleBrowserBeforeReloadAction(html.Event event) async {
+    if (event is html.BeforeUnloadEvent
+        && composerOverlayState.value == ComposerOverlayState.active) {
+      event.preventDefault();
     }
   }
 

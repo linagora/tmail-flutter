@@ -4113,4 +4113,25 @@ class AppLocalizations {
       name: 'requestReadReceiptHasBeenDisabled'
     );
   }
+
+  String get reconnect {
+    return Intl.message(
+      'Reconnect',
+      name: 'reconnect',
+    );
+  }
+
+  String get sessionExpired {
+    return Intl.message(
+      'Session expired',
+      name: 'sessionExpired',
+    );
+  }
+
+  String get dialogMessageSessionHasExpired {
+    return Intl.message(
+      'The current session has expired. Please reconnect to the server',
+      name: 'dialogMessageSessionHasExpired',
+    );
+  }
 }
