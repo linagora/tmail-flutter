@@ -14,6 +14,8 @@ import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_c
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
+typedef OnDragEnterListener = Function(List<dynamic>? types);
+
 class WebEditorView extends StatelessWidget with EditorViewMixin {
 
   final HtmlEditorController editorController;
@@ -29,7 +31,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
   final OnEditorTextSizeChanged? onEditorTextSizeChanged;
   final double? width;
   final double? height;
-  final VoidCallback? onDragEnter;
+  final OnDragEnterListener? onDragEnter;
 
   const WebEditorView({
     super.key,
