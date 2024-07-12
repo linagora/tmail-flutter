@@ -70,7 +70,7 @@ class DeleteIdentityDialogBuilder extends StatelessWidget {
             fontSize: 17,
             fontWeight: FontWeight.w500,
             color: Colors.white))
-        ..paddingButton(const EdgeInsets.only(bottom: 24, left: 24, right: 24))
+        ..marginButton(const EdgeInsets.only(bottom: 24, left: 24, right: 24))
         ..backgroundColor(Colors.black26)
         ..onConfirmButtonAction(AppLocalizations.of(context).delete, () =>
             onDeleteIdentityAction.call())

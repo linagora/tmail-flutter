@@ -203,17 +203,6 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   String _getTokenAsBearerHeader(String token) => 'Bearer $token';
 
-  bool get isAppRunning {
-    switch(_authenticationType) {
-      case AuthenticationType.basic:
-        return _authorization != null;
-      case AuthenticationType.oidc:
-        return _configOIDC != null && _token != null;
-      case AuthenticationType.none:
-        return false;
-    }
-  }
-
   Future<PersonalAccount> _updateCurrentAccount({required TokenOIDC tokenOIDC}) async {
     final currentAccount = await _accountCacheManager.getCurrentAccount();
 

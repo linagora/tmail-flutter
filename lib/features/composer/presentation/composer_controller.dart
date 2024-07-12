@@ -92,6 +92,7 @@ import 'package:tmail_ui_user/features/upload/domain/state/local_image_picker_st
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_image_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:universal_html/html.dart' as html;
@@ -164,7 +165,6 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   FocusNode? ccAddressFocusNodeKeyboard;
   FocusNode? bccAddressFocusNodeKeyboard;
 
-  StreamSubscription<html.Event>? _subscriptionOnBeforeUnload;
   StreamSubscription<html.Event>? _subscriptionOnDragEnter;
   StreamSubscription<html.Event>? _subscriptionOnDragOver;
   StreamSubscription<html.Event>? _subscriptionOnDragLeave;
@@ -213,7 +213,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     super.onInit();
     if (PlatformInfo.isWeb) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        _listenBrowserTabRefresh();
+        _triggerBrowserEventListener();
       });
       richTextWebController = getBinding<RichTextWebController>();
     } else {
@@ -244,7 +244,6 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     emailContentsViewState.value = Right(UIClosedState());
     identitySelected.value = null;
     listFromIdentities.clear();
-    _subscriptionOnBeforeUnload?.cancel();
     _subscriptionOnDragEnter?.cancel();
     _subscriptionOnDragOver?.cancel();
     _subscriptionOnDragLeave?.cancel();
@@ -353,11 +352,17 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   }
 
   @override
-  void handleExceptionAction({Failure? failure, Exception? exception}) {
-    super.handleExceptionAction(failure: failure, exception: exception);
-    if (failure is GetAllIdentitiesFailure) {
-      _handleGetAllIdentitiesFailure(failure);
+  void handleUrgentExceptionOnMobile({Failure? failure, Exception? exception}) {
+    if (failure is GetAllIdentitiesFailure && exception is! BadCredentialsException) {
+      _handleGetAllIdentitiesFailure();
     }
+    super.handleUrgentExceptionOnMobile(failure: failure, exception: exception);
+  }
+
+  @override
+  Future<void> handleBrowserReloadAction(html.Event event) async {
+    await _removeComposerCacheOnWebInteractor.execute();
+    await _saveComposerCacheOnWebAction();
   }
 
   void _listenStreamEvent() {
@@ -377,13 +382,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     }
   }
 
-  void _listenBrowserTabRefresh() {
-    _subscriptionOnBeforeUnload = html.window.onBeforeUnload.listen((event) async {
-      await _removeComposerCacheOnWebInteractor.execute();
-
-      await _saveComposerCacheOnWebAction();
-    });
-
+  void _triggerBrowserEventListener() {
     _subscriptionOnDragEnter = html.window.onDragEnter.listen((event) {
       event.preventDefault();
 
@@ -1966,9 +1965,8 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     );
   }
 
-  void _handleGetAllIdentitiesFailure(GetAllIdentitiesFailure failure) async {
-    log('ComposerController::_handleGetAllIdentitiesFailure:failure: $failure');
-    if (composerArguments.value?.emailActionType == EmailActionType.editSendingEmail && PlatformInfo.isMobile) {
+  Future<void> _handleGetAllIdentitiesFailure() async {
+    if (composerArguments.value?.emailActionType == EmailActionType.editSendingEmail) {
       final signatureContent = await htmlEditorApi?.getSignatureContent();
       log('ComposerController::_handleGetAllIdentitiesFailure:signatureContent: $signatureContent');
       if (signatureContent?.isNotEmpty == true) {
