@@ -19,6 +19,7 @@ import 'package:fcm/model/firebase_capability.dart';
 import 'package:fcm/model/firebase_registration_id.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -96,12 +97,10 @@ abstract class BaseController extends GetxController
   FpsCallback? fpsCallback;
 
   @override
-  void onInit() {
-    super.onInit();
+  void onReady() {
+    super.onReady();
     if (PlatformInfo.isWeb) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _triggerBrowserReloadListener();
-      });
+      _triggerBrowserReloadListener();
     }
   }
 
@@ -190,7 +189,7 @@ abstract class BaseController extends GetxController
     if (exception is ConnectionError) {
       _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
-      _executeBeforeUnloadAndLogOut();
+      _handleBadCredentialsException();
     }
   }
 
@@ -201,7 +200,7 @@ abstract class BaseController extends GetxController
     } else if (exception is ConnectionError) {
       _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
-      _executeBeforeUnloadAndLogOut();
+      _handleBadCredentialsException();
     }
   }
 
@@ -229,6 +228,28 @@ abstract class BaseController extends GetxController
         backgroundColor: AppColor.textFieldErrorBorderColor,
         textColor: Colors.white,
         infinityToast: true);
+    }
+  }
+
+  void _handleBadCredentialsException() {
+    if (PlatformInfo.isWeb) {
+      if (currentContext == null) {
+        _executeBeforeUnloadAndLogOut();
+        return;
+      }
+
+      showConfirmDialogAction(
+        currentContext!,
+        AppLocalizations.of(currentContext!).dialogMessageSessionHasExpired,
+        AppLocalizations.of(currentContext!).reconnect,
+        title: AppLocalizations.of(currentContext!).sessionExpired,
+        alignCenter: true,
+        outsideDismissible: false,
+        icon: SvgPicture.asset(imagePaths.icTMailLogo, width: 64, height: 64),
+        paddingButton: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+        onConfirmAction: _executeBeforeUnloadAndLogOut);
+    } else if (PlatformInfo.isMobile) {
+      clearDataAndGoToLoginPage();
     }
   }
 
