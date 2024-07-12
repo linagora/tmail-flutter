@@ -197,17 +197,7 @@ abstract class BaseController extends GetxController
   void handleUrgentExceptionOnWeb({Failure? failure, Exception? exception}) {
     logError('$runtimeType::handleUrgentExceptionOnWeb():Failure: $failure | Exception: $exception');
     if (exception is NoNetworkError) {
-      if (currentOverlayContext != null && currentContext != null) {
-        appToast.showToastMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).no_internet_connection,
-          actionName: AppLocalizations.of(currentContext!).skip,
-          onActionClick: ToastView.dismiss,
-          leadingSVGIcon: imagePaths.icNotConnection,
-          backgroundColor: AppColor.textFieldErrorBorderColor,
-          textColor: Colors.white,
-          infinityToast: true,);
-      }
+      _handleNotNetworkErrorException();
     } else if (exception is ConnectionError) {
       _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
@@ -225,6 +215,20 @@ abstract class BaseController extends GetxController
       appToast.showToastErrorMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).connectionError);
+    }
+  }
+
+  void _handleNotNetworkErrorException() {
+    if (currentOverlayContext != null && currentContext != null) {
+      appToast.showToastMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).no_internet_connection,
+        actionName: AppLocalizations.of(currentContext!).skip,
+        onActionClick: ToastView.dismiss,
+        leadingSVGIcon: imagePaths.icNotConnection,
+        backgroundColor: AppColor.textFieldErrorBorderColor,
+        textColor: Colors.white,
+        infinityToast: true);
     }
   }
 
