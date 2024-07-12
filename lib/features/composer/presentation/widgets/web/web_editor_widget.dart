@@ -5,6 +5,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/view/web/web_editor_view.dart';
 import 'package:universal_html/html.dart' hide VoidCallback;
 
 typedef OnChangeContentEditorAction = Function(String? text);
@@ -27,7 +28,7 @@ class WebEditorWidget extends StatefulWidget {
   final OnEditorTextSizeChanged? onEditorTextSizeChanged;
   final double? width;
   final double? height;
-  final VoidCallback? onDragEnter;
+  final OnDragEnterListener? onDragEnter;
 
   const WebEditorWidget({
     super.key,
@@ -62,8 +63,6 @@ class _WebEditorState extends State<WebEditorWidget> {
   final ValueNotifier<double> _htmlEditorHeight = ValueNotifier(_defaultHtmlEditorHeight);
   bool _dropListenerRegistered = false;
   Function(Event)? _dropListener;
-
- 
 
   @override
   void initState() {
@@ -175,7 +174,7 @@ class _WebEditorState extends State<WebEditorWidget> {
               HtmlUtils.lineHeight100Percent.name
             ),
             onDragEnter: widget.onDragEnter,
-            onDragLeave: () {},
+            onDragLeave: (_) {},
           ),
         );
       }
