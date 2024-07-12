@@ -172,8 +172,8 @@ class LoginController extends ReloadableController {
   }
 
   @override
-  void handleExceptionAction({Failure? failure, Exception? exception}) {
-    logError('LoginController::handleExceptionAction:exception: $exception | failure: ${failure.runtimeType}');
+  void handleUrgentException({Failure? failure, Exception? exception}) {
+    logError('LoginController::handleUrgentException:Exception: $exception | Failure: $failure');
     if (failure is CheckOIDCIsAvailableFailure ||
         failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCConfigurationFailure ||
@@ -185,7 +185,7 @@ class LoginController extends ReloadableController {
     } else if (failure is GetSessionFailure) {
       clearAllData();
     } else {
-      super.handleExceptionAction(failure: failure, exception: exception);
+      super.handleUrgentException(failure: failure, exception: exception);
     }
   }
 

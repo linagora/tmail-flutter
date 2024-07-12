@@ -33,6 +33,7 @@ mixin MessageDialogActionMixin {
         Color? actionButtonColor,
         Color? cancelButtonColor,
         EdgeInsetsGeometry? marginIcon,
+        EdgeInsetsGeometry? paddingButton,
         PopInvokedCallback? onPopInvoked,
         bool isArrangeActionButtonsVertical = false,
         int? titleActionButtonMaxLines,
@@ -61,8 +62,9 @@ mixin MessageDialogActionMixin {
               : const EdgeInsetsDirectional.symmetric(horizontal: 24)
           )
           ..radiusButton(12)
+          ..paddingButton(paddingButton)
           ..paddingContent(const EdgeInsets.only(left: 24, right: 24, bottom: 24, top: 12))
-          ..paddingButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 24, left: 24, right: 24))
+          ..marginButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 24, left: 24, right: 24))
           ..styleTitle(titleStyle ?? const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
           ..styleContent(messageStyle ?? const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
           ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
@@ -107,6 +109,7 @@ mixin MessageDialogActionMixin {
             ..title(title ?? '')
             ..content(message)
             ..addIcon(icon)
+            ..paddingButton(paddingButton)
             ..margin(const EdgeInsets.only(bottom: 42))
             ..widthDialog(responsiveUtils.getSizeScreenWidth(context))
             ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
@@ -117,7 +120,7 @@ mixin MessageDialogActionMixin {
             )
             ..marginIcon(EdgeInsets.zero)
             ..paddingContent(const EdgeInsets.only(left: 44, right: 44, bottom: 24, top: 12))
-            ..paddingButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 16, left: 44, right: 44))
+            ..marginButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 16, left: 44, right: 44))
             ..styleTitle(titleStyle ?? const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
             ..styleContent(messageStyle ?? const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
             ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
@@ -187,6 +190,7 @@ mixin MessageDialogActionMixin {
             ..title(title ?? '')
             ..content(message)
             ..addIcon(icon)
+            ..paddingButton(paddingButton)
             ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
             ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
             ..marginIcon(icon != null ? const EdgeInsets.only(top: 24) : null)
@@ -195,7 +199,7 @@ mixin MessageDialogActionMixin {
                 : const EdgeInsetsDirectional.symmetric(horizontal: 24))
             ..marginIcon(EdgeInsets.zero)
             ..paddingContent(const EdgeInsets.only(left: 44, right: 44, bottom: 24, top: 12))
-            ..paddingButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 16, left: 44, right: 44))
+            ..marginButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 16, left: 44, right: 44))
             ..styleTitle(titleStyle ?? const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
             ..styleContent(messageStyle ?? const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
             ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
