@@ -1107,7 +1107,7 @@ packages:
     description:
       path: "."
       ref: sprint_25_flutter_3_22_2
-      resolved-ref: "76079012ae7c4b1193e6646aef8de5aa88f246b9"
+      resolved-ref: "0020802d02f69fc02bc56cf18d6962d10babe097"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "2.5.1"
