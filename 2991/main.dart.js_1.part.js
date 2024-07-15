@@ -456,25 +456,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1754
+    $signature: 1755
   };
   C.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1755
+    $signature: 1756
   };
   C.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1756
+    $signature: 1757
   };
   C.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1757
+    $signature: 1758
   };
   C.BaseLoginView_buildUserNameInput_closure.prototype = {
     call$2(_, loginUsername) {
@@ -600,7 +600,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 80
+    $signature: 91
   };
   C.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -635,7 +635,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 1758
+    $signature: 1759
   };
   C.LoginMessageWidget_build_closure0.prototype = {
     call$1(success) {
@@ -656,19 +656,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return "";
     },
-    $signature: 1759
+    $signature: 1760
   };
   C.LoginMessageWidget_build_closure1.prototype = {
     call$1(failure) {
       return B.Color_4293281350;
     },
-    $signature: 1760
+    $signature: 1761
   };
   C.LoginMessageWidget_build_closure2.prototype = {
     call$1(success) {
       return B.Color_4278190080;
     },
-    $signature: 1761
+    $signature: 1762
   };
   C._LoginTextInputBuilderState_build_closure.prototype = {
     call$0() {
@@ -771,5 +771,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "LDHP12rV4SPPJqhE1DaNQsKrihg=");
+})($__dart_deferred_initializers__, "JfzIO35wIGGJ59O6mYJd/RO8SuE=");
 ;
