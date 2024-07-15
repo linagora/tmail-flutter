@@ -18,20 +18,24 @@ import 'package:worker_manager/worker_manager.dart';
 Future<void> main() async {
   initLogger(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    ThemeUtils.setSystemLightUIStyle();
-
-    await Future.wait([
-       MainBindings().dependencies(),
-       HiveCacheConfig.instance.setUp(),
-       Executor().warmUp(log: BuildUtils.isDebugMode),
-       AppUtils.loadEnvFile()
-    ]);
-    await HiveCacheConfig.instance.initializeEncryptionKey();
-
-    setPathUrlStrategy();
-
-    runApp(const TMailApp());
+    await runTmail();
   });
+}
+
+Future<void> runTmail() async {
+  ThemeUtils.setSystemLightUIStyle();
+  
+  await Future.wait([
+     MainBindings().dependencies(),
+     HiveCacheConfig.instance.setUp(),
+     Executor().warmUp(log: BuildUtils.isDebugMode),
+     AppUtils.loadEnvFile()
+  ]);
+  await HiveCacheConfig.instance.initializeEncryptionKey();
+  
+  setPathUrlStrategy();
+  
+  runApp(const TMailApp());
 }
 
 class TMailApp extends StatelessWidget {

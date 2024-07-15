@@ -1,4 +1,3 @@
-import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
@@ -10,7 +9,12 @@ void main() {
   patrolTest('login and show thread view',
       config: const PatrolTesterConfig(settlePolicy: SettlePolicy.trySettle),
       ($) async {
-    app.main();
+    app.runTmail();
+    // https://github.com/leancodepl/patrol/issues/1602#issuecomment-1665317814
+    final originalOnError = FlutterError.onError!;
+    FlutterError.onError = (FlutterErrorDetails details) {
+      originalOnError(details);
+    };
 
     await $.waitUntilVisible($(LoginView),
         timeout: const Duration(seconds: 10));
