@@ -61,6 +61,7 @@ dependencies:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
       ref: sprint_25_flutter_3_22_2
+  # TODO: Move back to master after sprint 25 released
 
   # TODO: We will change it when the PR in upstream repository will be merged
   # https://github.com/linagora/jmap-dart-client/pull/87
@@ -88,6 +89,7 @@ dependencies:
     git:
       url: https://github.com/linagora/flutter-date-range-picker.git
       ref: sprint_25_flutter_3_22_2
+  # TODO: Move back to master after sprint 25 released
 
   super_tag_editor: 0.3.0
 
