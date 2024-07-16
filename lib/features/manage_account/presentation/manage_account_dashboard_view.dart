@@ -4,7 +4,6 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:core/presentation/views/text/slogan_builder.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
@@ -78,31 +77,26 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                       Obx(() {
                         if (controller.vacationResponse.value?.vacationResponderIsValid == true) {
                           return VacationNotificationMessageWidget(
-                              margin: const EdgeInsets.only(
-                                  top: 16,
-                                  left: PlatformInfo.isWeb ? 24 : 16,
-                                  right: PlatformInfo.isWeb ? 24 : 16),
-                              fromAccountDashBoard: true,
-                              vacationResponse: controller.vacationResponse.value!,
-                              actionGotoVacationSetting: !controller.inVacationSettings()
-                                  ? () => controller.selectAccountMenuItem(AccountMenuItem.vacation)
-                                  : null,
-                              actionEndNow: () => controller.disableVacationResponder());
+                            margin: const EdgeInsetsDirectional.only(top: 16, start: 16, end: 16),
+                            fromAccountDashBoard: true,
+                            vacationResponse: controller.vacationResponse.value!,
+                            actionGotoVacationSetting: !controller.inVacationSettings()
+                              ? () => controller.selectAccountMenuItem(AccountMenuItem.vacation)
+                              : null,
+                            actionEndNow: controller.disableVacationResponder);
                         } else if ((controller.vacationResponse.value?.vacationResponderIsWaiting == true
                             || controller.vacationResponse.value?.vacationResponderIsStopped == true)
                             && controller.accountMenuItemSelected.value == AccountMenuItem.vacation) {
                           return VacationNotificationMessageWidget(
-                              margin: const EdgeInsets.only(
-                                  top: 16,
-                                  left: PlatformInfo.isWeb ? 24 : 16,
-                                  right: PlatformInfo.isWeb ? 24 : 16),
-                              fromAccountDashBoard: true,
-                              vacationResponse: controller.vacationResponse.value!,
-                              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                              leadingIcon: const Padding(
-                                padding: EdgeInsets.only(right: 16),
-                                child: Icon(Icons.timer, size: 20),
-                              ));
+                            margin: const EdgeInsetsDirectional.only(top: 16, start: 16, end: 16),
+                            fromAccountDashBoard: true,
+                            vacationResponse: controller.vacationResponse.value!,
+                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                            leadingIcon: const Padding(
+                              padding: EdgeInsetsDirectional.only(end: 12),
+                              child: Icon(Icons.timer, size: 20),
+                            )
+                          );
                         } else {
                           return const SizedBox.shrink();
                         }
