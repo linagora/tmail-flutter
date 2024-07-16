@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/username_extension.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
@@ -293,87 +293,101 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           }
         );
       }),
-      const SizedBox(width: 16),
-      Tooltip(
-        message: AppLocalizations.of(context).selectAllMessagesOfThisPage,
-        child: ElevatedButton.icon(
-          onPressed: controller.selectAllEmailAction,
-          icon: SvgPicture.asset(
-            controller.imagePaths.icSelectAll,
-            width: 16,
-            height: 16,
-            fit: BoxFit.fill,
-          ),
-          label: Text(
-            AppLocalizations.of(context).selectAllMessagesOfThisPage,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis
-          ),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColor.colorButtonHeaderThread,
-            shadowColor: Colors.transparent,
-            padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
-            shape: const RoundedRectangleBorder(
-              borderRadius: BorderRadius.all(Radius.circular(10)),
+      Obx(() {
+        if (controller.validateNoEmailsInTrashAndSpamFolder()) {
+          return const SizedBox.shrink();
+        } else {
+          return Padding(
+            padding: const EdgeInsetsDirectional.only(start: 16),
+            child: Tooltip(
+              message: AppLocalizations.of(context).selectAllMessagesOfThisPage,
+              child: ElevatedButton.icon(
+                onPressed: controller.selectAllEmailAction,
+                icon: SvgPicture.asset(
+                  controller.imagePaths.icSelectAll,
+                  width: 16,
+                  height: 16,
+                  fit: BoxFit.fill,
+                ),
+                label: Text(
+                  AppLocalizations.of(context).selectAllMessagesOfThisPage,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis
+                ),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.colorButtonHeaderThread,
+                  shadowColor: Colors.transparent,
+                  padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
+                  ),
+                  elevation: 0.0,
+                  foregroundColor: AppColor.colorTextButtonHeaderThread,
+                  maximumSize: const Size.fromWidth(250),
+                  textStyle: const TextStyle(fontSize: 12),
+                ),
+              ),
             ),
-            elevation: 0.0,
-            foregroundColor: AppColor.colorTextButtonHeaderThread,
-            maximumSize: const Size.fromWidth(250),
-            textStyle: const TextStyle(fontSize: 12),
-          ),
-        ),
-      ),
-      if (controller.isAbleMarkAllAsRead())
-        Padding(
-          padding: const EdgeInsetsDirectional.only(start: 16),
-          child: TMailButtonWidget(
+          );
+        }
+      }),
+      Obx(() {
+        if (controller.isAbleMarkAllAsRead()) {
+          return TMailButtonWidget(
             key: const Key('mark_as_read_emails_button'),
             text: AppLocalizations.of(context).mark_all_as_read,
             icon: controller.imagePaths.icSelectAll,
             borderRadius: 10,
+            margin: const EdgeInsetsDirectional.only(start: 16),
             iconSize: 16,
             padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
             onTapActionCallback: () => controller.markAsReadMailboxAction(context),
-          ),
-        ),
-      const SizedBox(width: 16),
-      Obx(() => TMailButtonWidget(
-        key: const Key('filter_emails_button'),
-        text: controller.filterMessageOption.value == FilterMessageOption.all
-          ? AppLocalizations.of(context).filter_messages
-          : controller.filterMessageOption.value.getTitle(context),
-        icon: controller.filterMessageOption.value.getIconSelected(controller.imagePaths),
-        borderRadius: 10,
-        iconSize: 16,
-        padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
-        backgroundColor: controller.filterMessageOption.value.getBackgroundColor(),
-        textStyle: controller.filterMessageOption.value.getTextStyle(),
-        trailingIcon: controller.imagePaths.icArrowDown,
-        onTapActionAtPositionCallback: (position) {
-          return controller.openPopupMenuAction(
-            context,
-            position,
-            popupMenuFilterEmailActionTile(
-              context,
-              controller.filterMessageOption.value,
-              (option) => controller.dispatchAction(FilterMessageAction(context, option)),
-              isSearchEmailRunning: controller.searchController.isSearchEmailRunning
-            )
           );
-        },
-      )),
+        } else {
+          return const SizedBox.shrink();
+        }
+      }),
       Obx(() {
-        final mailboxSelected = controller.selectedMailbox.value;
-        if (mailboxSelected != null && mailboxSelected.role == PresentationMailbox.roleTrash) {
-          return Padding(
-            padding: const EdgeInsetsDirectional.only(start: 16),
-            child: TMailButtonWidget.fromIcon(
-              key: const Key('recover_deleted_messages_button'),
-              icon: controller.imagePaths.icRecoverDeletedMessages,
-              borderRadius: 10,
-              iconSize: 16,
-              onTapActionCallback: () => controller.gotoEmailRecovery(),
-            ),
+        if (controller.validateNoEmailsInTrashAndSpamFolder()) {
+          return const SizedBox.shrink();
+        } else {
+          return TMailButtonWidget(
+            key: const Key('filter_emails_button'),
+            text: controller.filterMessageOption.value == FilterMessageOption.all
+              ? AppLocalizations.of(context).filter_messages
+              : controller.filterMessageOption.value.getTitle(context),
+            icon: controller.filterMessageOption.value.getIconSelected(controller.imagePaths),
+            borderRadius: 10,
+            iconSize: 16,
+            margin: const EdgeInsetsDirectional.only(start: 16),
+            padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
+            backgroundColor: controller.filterMessageOption.value.getBackgroundColor(),
+            textStyle: controller.filterMessageOption.value.getTextStyle(),
+            trailingIcon: controller.imagePaths.icArrowDown,
+            onTapActionAtPositionCallback: (position) {
+              return controller.openPopupMenuAction(
+                context,
+                position,
+                popupMenuFilterEmailActionTile(
+                  context,
+                  controller.filterMessageOption.value,
+                  (option) => controller.dispatchAction(FilterMessageAction(context, option)),
+                  isSearchEmailRunning: controller.searchController.isSearchEmailRunning
+                )
+              );
+            },
+          );
+        }
+      }),
+      Obx(() {
+        if (controller.selectedMailbox.value?.isTrash == true) {
+          return TMailButtonWidget.fromIcon(
+            key: const Key('recover_deleted_messages_button'),
+            icon: controller.imagePaths.icRecoverDeletedMessages,
+            borderRadius: 10,
+            iconSize: 16,
+            margin: const EdgeInsetsDirectional.only(start: 16),
+            onTapActionCallback: () => controller.gotoEmailRecovery(),
           );
         } else {
           return const SizedBox.shrink();
