@@ -151,9 +151,9 @@ import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
+import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
-import 'package:universal_html/html.dart' as html;
 import 'package:uuid/uuid.dart';
 
 class MailboxDashBoardController extends ReloadableController {
@@ -417,7 +417,7 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   @override
-  Future<void> handleBrowserBeforeReloadAction(html.Event event) async {
+  Future<void> onBeforeUnloadBrowserListener(html.Event event) async {
     if (event is html.BeforeUnloadEvent
         && composerOverlayState.value == ComposerOverlayState.active) {
       event.preventDefault();

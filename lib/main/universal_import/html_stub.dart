@@ -1,0 +1,1 @@
+export 'html_io.dart' if (dart.library.html) 'html_web.dart';

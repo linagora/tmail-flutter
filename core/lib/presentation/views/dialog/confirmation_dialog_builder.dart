@@ -1,5 +1,6 @@
 
 import 'package:core/core.dart';
+import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:flutter/material.dart';
 
 typedef OnConfirmButtonAction = void Function();
@@ -237,22 +238,26 @@ class ConfirmDialogBuilder {
                 if (_cancelText.isNotEmpty)
                   Padding(
                     padding: const EdgeInsetsDirectional.only(top: 8, start: 16, end: 16),
-                    child: _buildButton(
-                      name: _cancelText,
-                      bgColor: _colorCancelButton,
-                      radius: _radiusButton,
+                    child: ConfirmDialogButton(
+                      label: _cancelText,
+                      backgroundColor: _colorCancelButton,
+                      borderRadius: _radiusButton,
                       textStyle: _styleTextCancelButton,
-                      action: _onCancelButtonAction),
+                      padding: _paddingButton,
+                      maxLines: titleActionButtonMaxLines,
+                      onTapAction: _onCancelButtonAction),
                   ),
                 if (_confirmText.isNotEmpty)
                   Padding(
                     padding: const EdgeInsetsDirectional.only(top: 8, start: 16, end: 16),
-                    child: _buildButton(
-                      name: _confirmText,
-                      bgColor: _colorConfirmButton,
-                      radius: _radiusButton,
+                    child: ConfirmDialogButton(
+                      label: _confirmText,
+                      backgroundColor: _colorConfirmButton,
+                      borderRadius: _radiusButton,
                       textStyle: _styleTextConfirmButton,
-                      action: _onConfirmButtonAction),
+                      padding: _paddingButton,
+                      maxLines: titleActionButtonMaxLines,
+                      onTapAction: _onConfirmButtonAction),
                   ),
                 const SizedBox(height: 16),
               ]
@@ -262,59 +267,28 @@ class ConfirmDialogBuilder {
                 child: Row(
                     children: [
                       if (_cancelText.isNotEmpty)
-                        Expanded(child: _buildButton(
-                            name: _cancelText,
-                            bgColor: _colorCancelButton,
-                            radius: _radiusButton,
-                            textStyle: _styleTextCancelButton,
-                            action: _onCancelButtonAction)),
+                        Expanded(child: ConfirmDialogButton(
+                          label: _cancelText,
+                          backgroundColor: _colorCancelButton,
+                          borderRadius: _radiusButton,
+                          textStyle: _styleTextCancelButton,
+                          padding: _paddingButton,
+                          maxLines: titleActionButtonMaxLines,
+                          onTapAction: _onCancelButtonAction)),
                       if (_confirmText.isNotEmpty && _cancelText.isNotEmpty) const SizedBox(width: 8),
                       if (_confirmText.isNotEmpty)
-                        Expanded(child: _buildButton(
-                            name: _confirmText,
-                            bgColor: _colorConfirmButton,
-                            radius: _radiusButton,
-                            textStyle: _styleTextConfirmButton,
-                            action: _onConfirmButtonAction))
+                        Expanded(child: ConfirmDialogButton(
+                          label: _confirmText,
+                          backgroundColor: _colorConfirmButton,
+                          borderRadius: _radiusButton,
+                          textStyle: _styleTextConfirmButton,
+                          padding: _paddingButton,
+                          maxLines: titleActionButtonMaxLines,
+                          onTapAction: _onConfirmButtonAction,))
                     ]
                 ))
           ]
         )
-    );
-  }
-
-  Widget _buildButton({
-    String? name,
-    TextStyle? textStyle,
-    Color? bgColor,
-    double? radius,
-    Function()? action
-  }) {
-    return SizedBox(
-      width: double.infinity,
-      height: titleActionButtonMaxLines == 1 ? 45 : null,
-      child: ElevatedButton(
-        onPressed: action,
-        style: ElevatedButton.styleFrom(
-          foregroundColor: bgColor ?? AppColor.colorTextButton,
-          backgroundColor: bgColor ?? AppColor.colorTextButton,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(radius ?? 8),
-            side: BorderSide(width: 0, color: bgColor ?? AppColor.colorTextButton),
-          ),
-          padding: _paddingButton ?? const EdgeInsets.all(8),
-          elevation: 0
-        ),
-        child: Text(
-          name ?? '',
-          textAlign: TextAlign.center,
-          maxLines: titleActionButtonMaxLines,
-          style: textStyle ?? const TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w500,
-            color: Colors.white
-          )),
-      ),
     );
   }
 }
