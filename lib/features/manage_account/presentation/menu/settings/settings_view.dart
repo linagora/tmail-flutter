@@ -2,7 +2,6 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/utils/direction_utils.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -61,16 +60,14 @@ class SettingsView extends GetWidget<SettingsController> {
                   top: false,
                   bottom: false,
                   child: VacationNotificationMessageWidget(
-                      margin: const EdgeInsetsDirectional.only(
-                          start: PlatformInfo.isWeb ? 24 : 16,
-                          end: PlatformInfo.isWeb ? 24 : 16,
-                          top: 16),
-                      fromAccountDashBoard: true,
-                      vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
-                      actionGotoVacationSetting: !controller.manageAccountDashboardController.inVacationSettings()
-                        ? () => controller.manageAccountDashboardController.selectAccountMenuItem(AccountMenuItem.vacation)
-                        : null,
-                      actionEndNow: () => controller.manageAccountDashboardController.disableVacationResponder()),
+                    margin: const EdgeInsetsDirectional.only(start: 12, end: 12, top: 8),
+                    fromAccountDashBoard: true,
+                    vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
+                    actionGotoVacationSetting: !controller.manageAccountDashboardController.inVacationSettings()
+                      ? () => controller.manageAccountDashboardController.selectAccountMenuItem(AccountMenuItem.vacation)
+                      : null,
+                    actionEndNow: controller.manageAccountDashboardController.disableVacationResponder
+                  ),
                 );
               } else if ((controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsWaiting == true
                   || controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsStopped == true)
@@ -79,15 +76,12 @@ class SettingsView extends GetWidget<SettingsController> {
                   top: false,
                   bottom: false,
                   child: VacationNotificationMessageWidget(
-                    margin: const EdgeInsetsDirectional.only(
-                      start: PlatformInfo.isWeb ? 24 : 16,
-                      end: PlatformInfo.isWeb ? 24 : 16,
-                      top: 16),
+                    margin: const EdgeInsetsDirectional.only(start: 12, end: 12, top: 8),
                     fromAccountDashBoard: true,
                     vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
                     padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
                     leadingIcon: const Padding(
-                      padding: EdgeInsetsDirectional.only(end: 16),
+                      padding: EdgeInsetsDirectional.only(end: 12),
                       child: Icon(Icons.timer, size: 20),
                     )
                   ),
