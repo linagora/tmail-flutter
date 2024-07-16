@@ -84,6 +84,7 @@ import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
+import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class MailboxController extends BaseMailboxController with MailboxActionHandlerMixin {
 
@@ -96,6 +97,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   final SubscribeMailboxInteractor _subscribeMailboxInteractor;
   final SubscribeMultipleMailboxInteractor _subscribeMultipleMailboxInteractor;
   final CreateDefaultMailboxInteractor _createDefaultMailboxInteractor;
+
+  IOSSharingManager? _iosSharingManager;
 
   final currentSelectMode = SelectMode.INACTIVE.obs;
   final _activeScrollTop = RxBool(false);
@@ -206,6 +209,9 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         _handleCreateDefaultFolderIfMissing(mailboxDashBoardController.mapDefaultMailboxIdByRole);
         _handleDataFromNavigationRouter();
         mailboxDashBoardController.getSpamReportBanner();
+        if (PlatformInfo.isIOS) {
+          _updateMailboxIdsBlockNotificationToKeychain(success.mailboxList);
+        }
       } else if (success is RefreshChangesAllMailboxSuccess) {
         _selectSelectedMailboxDefault();
         mailboxDashBoardController.refreshSpamReportBanner();
@@ -1115,7 +1121,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       curve: Curves.fastOutSlowIn);
   }
 
-  void _handleGetAllMailboxSuccess(GetAllMailboxSuccess success) async {
+  Future<void> _handleGetAllMailboxSuccess(GetAllMailboxSuccess success) async {
     currentMailboxState = success.currentMailboxState;
     log('MailboxController::_handleGetAllMailboxSuccess:currentMailboxState: $currentMailboxState');
     final listMailboxDisplayed = success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes;
@@ -1125,6 +1131,28 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     }
     _setMapMailbox();
     _setOutboxMailbox();
+  }
+
+  Future<void> _updateMailboxIdsBlockNotificationToKeychain(List<PresentationMailbox> mailboxes) async {
+    _iosSharingManager = getBinding<IOSSharingManager>();
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (accountId == null || _iosSharingManager == null || mailboxes.isEmpty) {
+      logError('MailboxController::_updateMailboxIdsBlockNotificationToKeychain: AccountId = $accountId | IosSharingManager = $_iosSharingManager | Mailboxes = ${mailboxes.length}');
+      return;
+    }
+
+    if (await _iosSharingManager!.isExistMailboxIdsBlockNotificationInKeyChain(accountId)) {
+      return;
+    }
+
+    final mailboxIdsBlockNotification = mailboxes
+      .where((presentationMailbox) => presentationMailbox.pushNotificationDeactivated && presentationMailbox.mailboxId != null)
+      .map((presentationMailbox) => presentationMailbox.mailboxId!)
+      .toList();
+    log('MailboxController::_updateMailboxIdsBlockNotificationToKeychain:MailboxIdsBlockNotification = $mailboxIdsBlockNotification');
+    _iosSharingManager!.updateMailboxIdsBlockNotificationInKeyChain(
+      accountId: accountId,
+      mailboxIds: mailboxIdsBlockNotification);
   }
 
   void _handleRefreshChangesAllMailboxSuccess(RefreshChangesAllMailboxSuccess success) async {

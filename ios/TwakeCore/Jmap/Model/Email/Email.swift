@@ -6,6 +6,7 @@ struct Email: Codable {
     let preview: String?
     let from: [EmailAddress]?
     let receivedAt: String?
+    let mailboxIds: [String: Bool]?
     
     func getSenderName() -> String? {
         if (from == nil || from?.isEmpty == true) {
