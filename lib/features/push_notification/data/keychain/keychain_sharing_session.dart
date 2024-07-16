@@ -1,14 +1,17 @@
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/http/converter/account_id_converter.dart';
+import 'package:jmap_dart_client/http/converter/mailbox_id_converter.dart';
 import 'package:jmap_dart_client/http/converter/user_name_converter.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/oidc/token_oidc.dart';
 
 part 'keychain_sharing_session.g.dart';
 
+@MailboxIdConverter()
 @UserNameConverter()
 @AccountIdConverter()
 @JsonSerializable(includeIfNull: false, explicitToJson: true)
@@ -23,6 +26,7 @@ class KeychainSharingSession with EquatableMixin {
   String? basicAuth;
   String? tokenEndpoint;
   List<String>? oidcScopes;
+  List<MailboxId>? mailboxIdsBlockNotification;
 
   KeychainSharingSession({
     required this.accountId,
@@ -35,6 +39,7 @@ class KeychainSharingSession with EquatableMixin {
     this.basicAuth,
     this.tokenEndpoint,
     this.oidcScopes,
+    this.mailboxIdsBlockNotification,
   });
 
   factory KeychainSharingSession.fromJson(Map<String, dynamic> json) => _$KeychainSharingSessionFromJson(json);
@@ -53,5 +58,6 @@ class KeychainSharingSession with EquatableMixin {
     basicAuth,
     tokenEndpoint,
     oidcScopes,
+    mailboxIdsBlockNotification,
   ];
 }

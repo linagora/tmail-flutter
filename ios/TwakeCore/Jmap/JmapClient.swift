@@ -68,6 +68,11 @@ class JmapClient {
                                        accountId: String,
                                        onComplete: @escaping ([Email], [Error]) -> Void) {
         guard hasMoreChanges, let sinceState = currentSinceState else {
+            if !self.totalListEmails.isEmpty {
+                let sortedListEmails = self.sortListEmails(currentListEmails: self.totalListEmails)
+                self.totalListEmails = sortedListEmails
+            }
+            
             return onComplete(self.totalListEmails, self.listErrors)
         }
         
@@ -85,8 +90,7 @@ class JmapClient {
                 if let response = data.parsing(methodName: JmapConstants.EMAIL_GET_METHOD_NAME, methodCallId: "c1") {
                     if let listEmail = response.list, 
                        !listEmail.isEmpty {
-                        let sortedListEmails = self.sortListEmails(currentListEmails: listEmail)
-                        self.totalListEmails.append(contentsOf: sortedListEmails)
+                        self.totalListEmails.append(contentsOf: listEmail)
                     }
                     self.hasMoreChanges = response.hasMoreChanges ?? false
                     self.currentSinceState = response.newState
@@ -97,6 +101,11 @@ class JmapClient {
                     self.hasMoreChanges = false
                     self.currentSinceState = nil
                     
+                    if !self.totalListEmails.isEmpty {
+                        let sortedListEmails = self.sortListEmails(currentListEmails: self.totalListEmails)
+                        self.totalListEmails = sortedListEmails
+                    }
+                    
                     onComplete(self.totalListEmails, self.listErrors)
                 }
             },
@@ -104,6 +113,11 @@ class JmapClient {
                 self.listErrors.append(error)
                 self.hasMoreChanges = false
                 self.currentSinceState = nil
+                
+                if !self.totalListEmails.isEmpty {
+                    let sortedListEmails = self.sortListEmails(currentListEmails: self.totalListEmails)
+                    self.totalListEmails = sortedListEmails
+                }
                 
                 onComplete(self.totalListEmails, self.listErrors)
             }
