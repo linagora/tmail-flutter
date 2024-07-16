@@ -5092,7 +5092,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null,
         signatureWidth = A.clampDouble(1 / 0, constraints.minWidth, constraints.maxWidth);
       A.clampDouble(1 / 0, constraints.minHeight, constraints.maxHeight);
-      return A.Container$(_null, this.$this._buildSignature$3(context, signatureWidth, 256), B.Clip_0, B.Color_4294967295, _null, _null, _null, _null, _null, _null, B.EdgeInsets_8_16_8_16, _null, _null, signatureWidth);
+      return A.Container$(_null, this.$this._buildSignature$3(context, signatureWidth, 256), B.Clip_0, B.Color_4294967295, _null, _null, _null, _null, _null, _null, D.EdgeInsets_8_16_8_16, _null, _null, signatureWidth);
     },
     $signature: 181
   };
@@ -5735,6 +5735,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_48_16_10_10 = new A.EdgeInsets(48, 16, 10, 10);
     D.EdgeInsets_50_0_50_0 = new A.EdgeInsets(50, 0, 50, 0);
     D.EdgeInsets_6_8_6_8 = new A.EdgeInsets(6, 8, 6, 8);
+    D.EdgeInsets_8_16_8_16 = new A.EdgeInsets(8, 16, 8, 16);
     D.Expanded_3Rt = new A.Expanded(1, B.FlexFit_0, B.SizedBox_0_0_null_null, null);
     D.LanguageAndRegionHeaderWidget_null = new C.LanguageAndRegionHeaderWidget(null);
     D.LanguageAndRegionView_null = new C.LanguageAndRegionView(null);
@@ -5803,5 +5804,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "lIDgo4aDxWCPiP69ujq7M16OVM0=");
+})($__dart_deferred_initializers__, "dQrpm8nrPKd+0aGrCujEz/XEmkY=");
 ;

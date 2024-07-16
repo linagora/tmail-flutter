@@ -24,11 +24,11 @@ const RESOURCES = {"i18n/translater.js": "f53aedbd356b679a27a6b0e8e952fb81",
 "canvaskit/skwasm.worker.js": "bfb704a6c714a75da9ef320991e88b03",
 "flutter.js": "383e55f7f3cce5be08fcf1f3881f585c",
 "main.dart.js_3.part.js": "108c1e623d7899a9fb06d339ab9e83b7",
-"flutter_bootstrap.js": "e387905e03ee814c4d647c2118269c93",
+"flutter_bootstrap.js": "7bb88e05a61dac9a9b529336808ada8e",
 "login-callback.html": "e17f83d4982ea3cce6e692b31c4b4beb",
 "version.json": "bed3c8892e778e19cc5bd69f9daef122",
 "main.dart.js_7.part.js": "35078d29d418b8801595bcb89dffb5e9",
-"main.dart.js_6.part.js": "461d58867147ca2fe0ef04a923293aa1",
+"main.dart.js_6.part.js": "4deaebd6fc67f93ad82701d03c7649b8",
 "assets/packages/html_editor_enhanced/assets/summernote-lite-dark.css": "5d950c9d8d53ff7a2fce2a385ef93505",
 "assets/packages/html_editor_enhanced/assets/summernote.html": "281056ce90def8e11028299911bb004b",
 "assets/packages/html_editor_enhanced/assets/summernote-no-plugins.html": "dd5fbc0836a19eb1ffd292b8add75014",
@@ -336,7 +336,7 @@ const RESOURCES = {"i18n/translater.js": "f53aedbd356b679a27a6b0e8e952fb81",
 "worker_service/img/tmail-2x.png": "55f91555db37edb9ed0608f7ee3f37ee",
 "worker_service/worker_service.js": "28f72523e30987c4715c6b0729f953b7",
 "main.dart.js_4.part.js": "c76085a17361ea47701d07e0552cc0d0",
-"main.dart.js": "c7673ef6c26b5cb8b4277bee0e6f827c"};
+"main.dart.js": "10979be70665a7725166ad474691b1c4"};
 // The application shell files that are downloaded before a service worker can
 // start.
 const CORE = ["main.dart.js",
