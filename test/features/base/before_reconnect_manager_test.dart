@@ -1,9 +1,9 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:tmail_ui_user/features/base/before_unload_manager.dart';
+import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 
 void main() {
   
-  group('before unload manager test:', () {
+  group('before reconnect manager test:', () {
     test(
       'should finish all futures '
       'when no future fails',
@@ -13,13 +13,13 @@ void main() {
       future1Second() => Future<void>.delayed(const Duration(seconds: 1), () => result.add(1));
       future2Second() => Future<void>.delayed(const Duration(seconds: 2), () => result.add(2));
       future3Second() => Future<void>.delayed(const Duration(seconds: 3), () => result.add(3));
-      final beforeUnloadManager = BeforeUnloadManager();
-      beforeUnloadManager.addListener(future1Second);
-      beforeUnloadManager.addListener(future2Second);
-      beforeUnloadManager.addListener(future3Second);
+      final beforeReconnectManager = BeforeReconnectManager();
+      beforeReconnectManager.addListener(future1Second);
+      beforeReconnectManager.addListener(future2Second);
+      beforeReconnectManager.addListener(future3Second);
 
       // act
-      await beforeUnloadManager.executeBeforeUnloadListeners();
+      await beforeReconnectManager.executeBeforeReconnectListeners();
 
       // assert
       expect(result.length, 3);
@@ -35,13 +35,13 @@ void main() {
       future1Second() => Future<void>.delayed(const Duration(seconds: 1), () => result.add(1));
       future2Second() => Future<void>.delayed(const Duration(seconds: 2), () => throw exception);
       future3Second() => Future<void>.delayed(const Duration(seconds: 3), () => result.add(3));
-      final beforeUnloadManager = BeforeUnloadManager();
-      beforeUnloadManager.addListener(future1Second);
-      beforeUnloadManager.addListener(future2Second);
-      beforeUnloadManager.addListener(future3Second);
+      final beforeReconnectManager = BeforeReconnectManager();
+      beforeReconnectManager.addListener(future1Second);
+      beforeReconnectManager.addListener(future2Second);
+      beforeReconnectManager.addListener(future3Second);
 
       // act
-      await beforeUnloadManager.executeBeforeUnloadListeners();
+      await beforeReconnectManager.executeBeforeReconnectListeners();
 
       // assert
       expect(result.length, 2);
@@ -58,13 +58,13 @@ void main() {
       future1Second() => Future<void>.delayed(const Duration(seconds: 1), () => throw exception1);
       future2Second() => Future<void>.delayed(const Duration(seconds: 2), () => throw exception2);
       future3Second() => Future<void>.delayed(const Duration(seconds: 3), () => result.add(3));
-      final beforeUnloadManager = BeforeUnloadManager();
-      beforeUnloadManager.addListener(future1Second);
-      beforeUnloadManager.addListener(future2Second);
-      beforeUnloadManager.addListener(future3Second);
+      final beforeReconnectManager = BeforeReconnectManager();
+      beforeReconnectManager.addListener(future1Second);
+      beforeReconnectManager.addListener(future2Second);
+      beforeReconnectManager.addListener(future3Second);
 
       // act
-      await beforeUnloadManager.executeBeforeUnloadListeners();
+      await beforeReconnectManager.executeBeforeReconnectListeners();
 
       // assert
       expect(result.length, 1);
@@ -81,13 +81,13 @@ void main() {
       future1Second() => Future<void>.delayed(const Duration(seconds: 1), () => result.add(1));
       future2Second() => Future<void>.delayed(const Duration(seconds: 2), () => throw exception2);
       future3Second() => Future<void>.delayed(const Duration(seconds: 3), () => throw exception3);
-      final beforeUnloadManager = BeforeUnloadManager();
-      beforeUnloadManager.addListener(future1Second);
-      beforeUnloadManager.addListener(future2Second);
-      beforeUnloadManager.addListener(future3Second);
+      final beforeReconnectManager = BeforeReconnectManager();
+      beforeReconnectManager.addListener(future1Second);
+      beforeReconnectManager.addListener(future2Second);
+      beforeReconnectManager.addListener(future3Second);
 
       // act
-      await beforeUnloadManager.executeBeforeUnloadListeners();
+      await beforeReconnectManager.executeBeforeReconnectListeners();
 
       // assert
       expect(result.length, 1);
