@@ -27,7 +27,7 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
-import 'package:tmail_ui_user/features/base/before_unload_manager.dart';
+import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -64,7 +64,7 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
-import 'package:universal_html/html.dart' as html;
+import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:uuid/uuid.dart';
 
 abstract class BaseController extends GetxController
@@ -90,8 +90,8 @@ abstract class BaseController extends GetxController
   GetStoredFirebaseRegistrationInteractor? _getStoredFirebaseRegistrationInteractor;
   DestroyFirebaseRegistrationInteractor? _destroyFirebaseRegistrationInteractor;
 
-  StreamSubscription<html.Event>? _subscriptionBrowserOnBeforeUnload;
-  StreamSubscription<html.Event>? _subscriptionBrowserOnUnload;
+  StreamSubscription<html.Event>? _onBeforeUnloadBrowserSubscription;
+  StreamSubscription<html.Event>? _onUnloadBrowserSubscription;
 
   final viewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   FpsCallback? fpsCallback;
@@ -105,21 +105,21 @@ abstract class BaseController extends GetxController
   }
 
   void _triggerBrowserReloadListener() {
-    _subscriptionBrowserOnBeforeUnload =
-        html.window.onBeforeUnload.listen(handleBrowserBeforeReloadAction);
-    _subscriptionBrowserOnUnload =
-        html.window.onUnload.listen(handleBrowserReloadAction);
+    _onBeforeUnloadBrowserSubscription =
+        html.window.onBeforeUnload.listen(onBeforeUnloadBrowserListener);
+    _onUnloadBrowserSubscription =
+        html.window.onUnload.listen(onUnloadBrowserListener);
   }
 
-   Future<void> handleBrowserBeforeReloadAction(html.Event event) async {}
+  Future<void> onBeforeUnloadBrowserListener(html.Event event) async {}
 
-  Future<void> handleBrowserReloadAction(html.Event event) async {}
+  Future<void> onUnloadBrowserListener(html.Event event) async {}
 
   @override
   void onClose() {
     if (PlatformInfo.isWeb) {
-      _subscriptionBrowserOnBeforeUnload?.cancel();
-      _subscriptionBrowserOnUnload?.cancel();
+      _onBeforeUnloadBrowserSubscription?.cancel();
+      _onUnloadBrowserSubscription?.cancel();
     }
     super.onClose();
   }
@@ -204,8 +204,8 @@ abstract class BaseController extends GetxController
     }
   }
 
-  Future<void> _executeBeforeUnloadAndLogOut() async {
-    await executeBeforeUnload();
+  Future<void> _executeBeforeReconnectAndLogOut() async {
+    await executeBeforeReconnect();
     clearDataAndGoToLoginPage();
   }
 
@@ -234,7 +234,7 @@ abstract class BaseController extends GetxController
   void _handleBadCredentialsException() {
     if (PlatformInfo.isWeb) {
       if (currentContext == null) {
-        _executeBeforeUnloadAndLogOut();
+        _executeBeforeReconnectAndLogOut();
         return;
       }
 
@@ -245,11 +245,25 @@ abstract class BaseController extends GetxController
         title: AppLocalizations.of(currentContext!).sessionExpired,
         alignCenter: true,
         outsideDismissible: false,
+        titleActionButtonMaxLines: 1,
         icon: SvgPicture.asset(imagePaths.icTMailLogo, width: 64, height: 64),
-        paddingButton: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-        onConfirmAction: _executeBeforeUnloadAndLogOut);
+        onConfirmAction: _executeBeforeReconnectAndLogOut);
     } else if (PlatformInfo.isMobile) {
-      clearDataAndGoToLoginPage();
+      if (currentContext == null) {
+        clearDataAndGoToLoginPage();
+        return;
+      }
+
+      showConfirmDialogAction(
+        currentContext!,
+        AppLocalizations.of(currentContext!).dialogMessageSessionHasExpired,
+        AppLocalizations.of(currentContext!).reconnect,
+        title: AppLocalizations.of(currentContext!).sessionExpired,
+        alignCenter: true,
+        outsideDismissible: false,
+        titleActionButtonMaxLines: 1,
+        icon: SvgPicture.asset(imagePaths.icTMailLogo, width: 64, height: 64),
+        onConfirmAction: clearDataAndGoToLoginPage);
     }
   }
 
@@ -413,9 +427,9 @@ abstract class BaseController extends GetxController
     }
   }
 
-  Future<void> executeBeforeUnload() async {
-    final beforeUnloadManager = getBinding<BeforeUnloadManager>();
-    await beforeUnloadManager?.executeBeforeUnloadListeners();
+  Future<void> executeBeforeReconnect() async {
+    final beforeReconnectManager = getBinding<BeforeReconnectManager>();
+    await beforeReconnectManager?.executeBeforeReconnectListeners();
   }
 
   Future<void> clearDataAndGoToLoginPage() async {
