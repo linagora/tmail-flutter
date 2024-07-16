@@ -3,6 +3,8 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_editor_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
@@ -28,10 +30,17 @@ class ComposerRobot extends CoreRobot {
   }
 
   Future<void> addContent(String content) async {
-    await $(MobileEditorView).$(HtmlEditor).$(InAppWebView).tap();
-    
-    $.tester.testTextInput.register();
-    await $.native.enterTextByIndex(content, index: 2);
+    ComposerController? composerController;
+    await $(ComposerView)
+      .which<ComposerView>((widget) {
+        composerController = widget.controller;
+        return true;
+      })
+      .$(MobileEditorView).$(HtmlEditor).$(InAppWebView).tap();
+
+    await composerController?.htmlEditorApi?.requestFocusLastChild();
+
+    await composerController!.htmlEditorApi!.insertHtml('$content <br><br>'); 
   }
 
   Future<void> sendEmail() async {

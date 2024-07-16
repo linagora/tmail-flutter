@@ -19,7 +19,7 @@ class LoginRobot extends CoreRobot {
     final finder = $(LoginView).$(TextField);
     await finder.enterText(url);
     await $('Next').tap();
-    await $.pumpAndTrySettle(duration: const Duration(seconds: 10));
+    await $.pumpAndTrySettle(duration: const Duration(seconds: 5));
   }
 
   Future<void> enterOidcUsername(String username) async {
