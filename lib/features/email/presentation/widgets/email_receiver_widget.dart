@@ -147,32 +147,29 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Expanded(
-                child: Container(
-                  constraints: BoxConstraints(maxHeight: _maxHeight),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (widget.emailSelected.to.numberEmailAddress() > 0)
-                        _buildRecipientsWidgetToDisplayFull(
-                          context: context,
-                          prefixEmailAddress: PrefixEmailAddress.to,
-                          listEmailAddress: PrefixEmailAddress.to.listEmailAddress(widget.emailSelected)
-                        ),
-                      if (widget.emailSelected.cc.numberEmailAddress() > 0)
-                        _buildRecipientsWidgetToDisplayFull(
-                          context: context,
-                          prefixEmailAddress: PrefixEmailAddress.cc,
-                          listEmailAddress: PrefixEmailAddress.cc.listEmailAddress(widget.emailSelected)
-                        ),
-                      if (widget.emailSelected.bcc.numberEmailAddress() > 0)
-                        _buildRecipientsWidgetToDisplayFull(
-                          context: context,
-                          prefixEmailAddress: PrefixEmailAddress.bcc,
-                          listEmailAddress: PrefixEmailAddress.bcc.listEmailAddress(widget.emailSelected)
-                        ),
-                    ],
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (widget.emailSelected.to.numberEmailAddress() > 0)
+                      _buildRecipientsWidgetToDisplayFull(
+                        context: context,
+                        prefixEmailAddress: PrefixEmailAddress.to,
+                        listEmailAddress: PrefixEmailAddress.to.listEmailAddress(widget.emailSelected)
+                      ),
+                    if (widget.emailSelected.cc.numberEmailAddress() > 0)
+                      _buildRecipientsWidgetToDisplayFull(
+                        context: context,
+                        prefixEmailAddress: PrefixEmailAddress.cc,
+                        listEmailAddress: PrefixEmailAddress.cc.listEmailAddress(widget.emailSelected)
+                      ),
+                    if (widget.emailSelected.bcc.numberEmailAddress() > 0)
+                      _buildRecipientsWidgetToDisplayFull(
+                        context: context,
+                        prefixEmailAddress: PrefixEmailAddress.bcc,
+                        listEmailAddress: PrefixEmailAddress.bcc.listEmailAddress(widget.emailSelected)
+                      ),
+                  ],
                 )
               ),
               TMailButtonWidget.fromText(
