@@ -2569,6 +2569,18 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     );
   }
 
+  bool validateNoEmailsInTrashAndSpamFolder() {
+    return selectedMailbox.value != null
+      && (selectedMailbox.value!.isTrash || selectedMailbox.value!.isSpam)
+      && selectedMailbox.value!.countTotalEmails <= 0;
+  }
+
+  bool validateNoEmailsInTrashFolder() {
+    return selectedMailbox.value != null
+      && selectedMailbox.value!.isTrash
+      && selectedMailbox.value!.countTotalEmails <= 0;
+  }
+
   @override
   void onClose() {
     _emailReceiveManager.closeEmailReceiveManagerStream();
