@@ -517,8 +517,6 @@ class MailboxDashBoardController extends ReloadableController {
 
   void _handleSessionFromArguments(Session session) {
     log('MailboxDashBoardController::_handleSession:');
-    updateAccountCache(session);
-
     _setUpComponentsFromSession(session);
 
     if (PlatformInfo.isWeb) {

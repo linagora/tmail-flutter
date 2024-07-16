@@ -17,6 +17,15 @@ class UpdateAccountCacheSuccess extends UIState {
 }
 
 class UpdateAccountCacheFailure extends FeatureFailure {
+  final Session session;
+  final String apiUrl;
 
-  UpdateAccountCacheFailure(dynamic exception) : super(exception: exception);
+  UpdateAccountCacheFailure({
+    required this.session,
+    required this.apiUrl,
+    dynamic exception,
+  }) : super(exception: exception);
+
+  @override
+  List<Object?> get props => [session, apiUrl, ...super.props];
 }

@@ -34,13 +34,17 @@ abstract class ReloadableController extends BaseController {
   void handleFailureViewState(Failure failure) {
     if (failure is GetCredentialFailure ||
         failure is GetStoredTokenOidcFailure ||
-        failure is GetAuthenticatedAccountFailure ||
-        failure is UpdateAccountCacheFailure) {
+        failure is GetAuthenticatedAccountFailure) {
       logError('$runtimeType::handleFailureViewState():Failure = $failure');
       goToLogin();
     } else if (failure is GetSessionFailure) {
       logError('$runtimeType::handleFailureViewState():Failure = $failure');
       _handleGetSessionFailure(failure.exception);
+    }  else if (failure is UpdateAccountCacheFailure) {
+      logError('$runtimeType::handleFailureViewState():Failure = $failure');
+      _handleUpdateAccountCacheCompleted(
+        session: failure.session,
+        apiUrl: failure.apiUrl);
     } else {
       super.handleFailureViewState(failure);
     }
@@ -50,25 +54,20 @@ abstract class ReloadableController extends BaseController {
   void handleSuccessViewState(Success success) {
     if (success is GetCredentialViewState) {
       log('$runtimeType::handleSuccessViewState:Success = ${success.runtimeType}');
-      _setDataToInterceptors(
-        baseUrl: success.baseUrl.origin,
-        userName: success.userName,
-        password: success.password);
-      getSessionAction();
+      _handleGetCredentialSuccess(success);
     } else if (success is GetStoredTokenOidcSuccess) {
       log('$runtimeType::handleSuccessViewState:Success = ${success.runtimeType}');
-      _setDataToInterceptors(
-        baseUrl: success.baseUrl.toString(),
-        tokenOIDC: success.tokenOidc,
-        oidcConfiguration: success.oidcConfiguration);
-      getSessionAction();
+      _handleGetStoredTokenOidcSuccess(success);
     } else if (success is GetSessionSuccess) {
       log('$runtimeType::handleSuccessViewState:Success = ${success.runtimeType}');
-      updateAccountCache(success.session);
+      updateAccountCache(
+        session: success.session,
+        baseUrl: dynamicUrlInterceptors.baseUrl);
     } else if (success is UpdateAccountCacheSuccess) {
       log('$runtimeType::handleSuccessViewState:Success = ${success.runtimeType}');
-      dynamicUrlInterceptors.changeBaseUrl(success.apiUrl);
-      handleReloaded(success.session);
+      _handleUpdateAccountCacheCompleted(
+        session: success.session,
+        apiUrl: success.apiUrl);
     } else {
       super.handleSuccessViewState(success);
     }
@@ -83,6 +82,27 @@ abstract class ReloadableController extends BaseController {
 
   void getAuthenticatedAccountAction() {
     consumeState(_getAuthenticatedAccountInteractor.execute());
+  }
+
+  void _handleGetCredentialSuccess(GetCredentialViewState success) {
+    _setDataToInterceptors(
+      baseUrl: success.baseUrl.origin,
+      userName: success.userName,
+      password: success.password);
+    getSessionAction();
+  }
+
+  void _handleGetStoredTokenOidcSuccess(GetStoredTokenOidcSuccess success) {
+    _setDataToInterceptors(
+      baseUrl: success.baseUrl.toString(),
+      tokenOIDC: success.tokenOidc,
+      oidcConfiguration: success.oidcConfiguration);
+    getSessionAction();
+  }
+
+  void _handleUpdateAccountCacheCompleted({required Session session, String? apiUrl}) {
+    dynamicUrlInterceptors.changeBaseUrl(apiUrl);
+    handleReloaded(session);
   }
 
   void _setDataToInterceptors({
@@ -131,7 +151,13 @@ abstract class ReloadableController extends BaseController {
     }
   }
 
-  void updateAccountCache(Session session) {
-    consumeState(_updateAccountCacheInteractor.execute(session));
+  void updateAccountCache({
+    required Session session,
+    String? baseUrl
+  }) {
+    consumeState(_updateAccountCacheInteractor.execute(
+      session: session,
+      baseUrl: baseUrl
+    ));
   }
 }
