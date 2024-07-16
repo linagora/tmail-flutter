@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/login/data/network/dns_service.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
+import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/network/spam_report_api.dart';
@@ -80,6 +81,7 @@ class NetworkBindings extends Bindings {
       Get.find<AuthenticationInfoCacheManager>(),
       Get.find<OidcConfigurationCacheManager>(),
       Get.find<OIDCHttpClient>(),
+      Get.find<MailboxCacheManager>(),
     ));
   }
 

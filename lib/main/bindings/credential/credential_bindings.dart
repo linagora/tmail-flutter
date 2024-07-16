@@ -61,9 +61,7 @@ class CredentialBindings extends InteractorsBindings {
       Get.find<CredentialRepository>(),
       Get.find<AccountRepository>()
     ));
-    Get.put(UpdateAccountCacheInteractor(
-      Get.find<AccountRepository>(),
-      Get.find<CredentialRepository>()));
+    Get.put(UpdateAccountCacheInteractor(Get.find<AccountRepository>()));
   }
 
   @override
