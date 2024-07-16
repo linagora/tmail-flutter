@@ -9,7 +9,7 @@ import 'package:patrol/src/native/contracts/contracts.dart';
 import 'package:test_api/src/backend/invoker.dart';
 
 // START: GENERATED TEST IMPORTS
-import 'features/thread/poc_test.dart' as features__thread__poc_test;
+import 'tests/compose/send_email_test.dart' as tests__compose__send_email_test;
 // END: GENERATED TEST IMPORTS
 
 Future<void> main() async {
@@ -66,7 +66,7 @@ Future<void> main() async {
   });
 
   // START: GENERATED TEST GROUPS
-  group('features.thread.poc_test', features__thread__poc_test.main);
+  group('tests.compose.send_email_test', tests__compose__send_email_test.main);
   // END: GENERATED TEST GROUPS
 
   final dartTestGroup = await testExplorationCompleter.future;
