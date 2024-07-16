@@ -113,7 +113,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                         )
                     ) {
                       return VacationNotificationMessageWidget(
-                        margin: const EdgeInsets.only(left: 12, right: 12, bottom: 5),
+                        margin: const EdgeInsetsDirectional.only(start: 12, end: 12, top: 8),
                         vacationResponse: vacation!,
                         actionGotoVacationSetting: controller.mailboxDashBoardController.goToVacationSetting,
                         actionEndNow: controller.mailboxDashBoardController.disableVacationResponder
