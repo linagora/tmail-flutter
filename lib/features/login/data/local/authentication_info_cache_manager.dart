@@ -25,4 +25,6 @@ class AuthenticationInfoCacheManager {
   Future<void> removeAuthenticationInfo() {
     return _authenticationInfoCacheClient.deleteItem(AuthenticationInfoCache.keyCacheValue);
   }
+
+  Future<void> closeAuthenticationInfoHiveCacheBox() => _authenticationInfoCacheClient.closeBox();
 }
