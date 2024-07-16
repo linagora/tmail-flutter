@@ -85,31 +85,15 @@ class NotificationService: UNNotificationServiceExtension {
                                 newEmailDeliveryState: newEmailDeliveryState
                             )
 
-                            if (emails.count > 1) {
-                                for email in emails {
-                                    if (email.id == emails.last?.id) {
-                                        self.showModifiedNotification(title: email.getSenderName(),
-                                                                      subtitle: email.subject,
-                                                                      body: email.preview,
-                                                                      badgeCount: emails.count,
-                                                                      userInfo: [JmapConstants.EMAIL_ID : email.id])
-                                        return self.notify()
-                                    } else {
-                                        self.showNewNotification(title: email.getSenderName(),
-                                                                 subtitle: email.subject,
-                                                                 body: email.preview,
-                                                                 badgeCount: emails.count,
-                                                                 notificationId: email.id,
-                                                                 userInfo: [JmapConstants.EMAIL_ID : email.id])
-                                    }
-                                }
+                            let mailboxIdsBlockNotification = keychainSharingSession.mailboxIdsBlockNotification ?? []
+
+                            if (mailboxIdsBlockNotification.isEmpty) {
+                                return self.showListNotification(emails: emails)
                             } else {
-                                self.showModifiedNotification(title: emails.first!.getSenderName(),
-                                                              subtitle: emails.first!.subject,
-                                                              body: emails.first!.preview,
-                                                              badgeCount: 1,
-                                                              userInfo: [JmapConstants.EMAIL_ID : emails.first!.id])
-                                return self.notify()
+                                let emailFiltered = self.filterEmailsToPushNotification(
+                                    emails: emails,
+                                    mailboxIdsBlockNotification: mailboxIdsBlockNotification)
+                                return self.showListNotification(emails: emailFiltered)
                             }
                         }
                     } catch {
@@ -121,7 +105,39 @@ class NotificationService: UNNotificationServiceExtension {
             )
         }
     }
-
+    
+    private func filterEmailsToPushNotification(emails: [Email], mailboxIdsBlockNotification: [String]) -> [Email] {
+        return emails.filter { email in
+            guard let mailboxIds = email.mailboxIds else { return true }
+            for id in mailboxIds.keys {
+                if mailboxIdsBlockNotification.contains(id) {
+                    return false
+                }
+            }
+            return true
+        }
+    }
+    
+    private func showListNotification(emails: [Email]) {
+        for email in emails {
+            if (email.id == emails.last?.id) {
+                self.showModifiedNotification(title: email.getSenderName(),
+                                              subtitle: email.subject,
+                                              body: email.preview,
+                                              badgeCount: emails.count,
+                                              userInfo: [JmapConstants.EMAIL_ID : email.id])
+                return self.notify()
+            } else {
+                self.showNewNotification(title: email.getSenderName(),
+                                         subtitle: email.subject,
+                                         body: email.preview,
+                                         badgeCount: emails.count,
+                                         notificationId: email.id,
+                                         userInfo: [JmapConstants.EMAIL_ID : email.id])
+            }
+        }
+    }
+    
     private func showDefaultNotification(message: String) {
         self.modifiedContent?.title = InfoPlistReader(bundle: .app).bundleDisplayName
         self.modifiedContent?.body = message
