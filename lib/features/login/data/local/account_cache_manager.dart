@@ -28,7 +28,7 @@ class AccountCacheManager {
     log('AccountCacheManager::setCurrentAccount(): $newAccount');
     final newAccountCache = newAccount.toCache();
     final allAccounts = await _accountCacheClient.getAll();
-    log('AccountCacheManager::setCurrentAccount::allAccounts(): $allAccounts');
+    log('AccountCacheManager::setCurrentAccount::allAccounts(): length: ${allAccounts.length}, $allAccounts');
     if (allAccounts.isNotEmpty) {
       final newAllAccounts = allAccounts
         .unselected()
@@ -47,4 +47,6 @@ class AccountCacheManager {
     log('AccountCacheManager::deleteCurrentAccount(): $hashId');
     return _accountCacheClient.deleteItem(hashId);
   }
+
+  Future<void> closeAccountHiveCacheBox() => _accountCacheClient.closeBox();
 }
