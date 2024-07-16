@@ -11,6 +11,7 @@ class TokenOidcCacheManager {
   TokenOidcCacheManager(this._tokenOidcCacheClient);
 
   Future<TokenOIDC> getTokenOidc(String tokenIdHash) async {
+    log('TokenOidcCacheManager::getTokenOidc(): tokenIdHash: $tokenIdHash');
     final tokenCache = await _tokenOidcCacheClient.getItem(tokenIdHash);
     log('TokenOidcCacheManager::getTokenOidc(): tokenCache: $tokenCache');
     if (tokenCache == null) {
@@ -27,9 +28,12 @@ class TokenOidcCacheManager {
     log('TokenOidcCacheManager::persistOneTokenOidc(): key\'s hash: ${tokenOIDC.tokenIdHash}');
     log('TokenOidcCacheManager::persistOneTokenOidc(): token: ${tokenOIDC.token}');
     await _tokenOidcCacheClient.insertItem(tokenOIDC.tokenIdHash, tokenOIDC.toTokenOidcCache());
+    log('TokenOidcCacheManager::persistOneTokenOidc(): done');
   }
 
   Future<void> deleteTokenOidc() async {
     await _tokenOidcCacheClient.clearAllData();
   }
+
+  Future<void> closeTokenOIDCHiveCacheBox() => _tokenOidcCacheClient.closeBox();
 }
