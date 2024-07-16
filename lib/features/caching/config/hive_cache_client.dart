@@ -1,4 +1,3 @@
-
 import 'dart:typed_data';
 
 import 'package:core/presentation/extensions/map_extensions.dart';
@@ -28,19 +27,16 @@ abstract class HiveCacheClient<T> {
     if (Hive.isBoxOpen(tableName)) {
       return Hive.box<T>(tableName);
     } else {
-      return Hive.openBox<T>(
-          tableName,
-          encryptionCipher: encryptionKey != null
-              ? HiveAesCipher(encryptionKey)
-              : null);
+      return Hive.openBox<T>(tableName,
+          encryptionCipher:
+              encryptionKey != null ? HiveAesCipher(encryptionKey) : null);
     }
   }
 
   Future<void> insertItem(String key, T newObject) {
+    log('$runtimeType::insertItem:encryption: $encryption - key = $key');
     return Future.sync(() async {
-      final boxItem = encryption
-          ? await openBoxEncryption()
-          : await openBox();
+      final boxItem = encryption ? await openBoxEncryption() : await openBox();
       return boxItem.put(key, newObject);
     }).catchError((error) {
       throw error;
@@ -49,9 +45,7 @@ abstract class HiveCacheClient<T> {
 
   Future<void> insertMultipleItem(Map<String, T> mapObject) {
     return Future.sync(() async {
-      final boxItem = encryption
-          ? await openBoxEncryption()
-          : await openBox();
+      final boxItem = encryption ? await openBoxEncryption() : await openBox();
       return boxItem.putAll(mapObject);
     }).catchError((error) {
       throw error;
@@ -59,6 +53,7 @@ abstract class HiveCacheClient<T> {
   }
 
   Future<T?> getItem(String key, {bool needToReopen = false}) {
+    log('$runtimeType::getItem() key: $encryption - needToReopen: $needToReopen');
     return Future.sync(() async {
       if (needToReopen) {
         await closeBox();
@@ -88,7 +83,7 @@ abstract class HiveCacheClient<T> {
         .where((key, value) => _matchedNestedKey(key, nestedKey))
         .values
         .toList();
-      log('HiveCacheClient::getListByNestedKey:listItem: ${listItem.length}');
+      log('$runtimeType::getListByNestedKey:listItem: ${listItem.length}');
       return listItem;
     }).catchError((error) {
       throw error;
@@ -180,8 +175,10 @@ abstract class HiveCacheClient<T> {
   Future<void> clearAllDataContainKey(String nestedKey) {
     return Future.sync(() async {
       final boxItem = encryption ? await openBoxEncryption() : await openBox();
-      final listKeys = boxItem.toMap().where((key, value) => _matchedNestedKey(key, nestedKey)).keys;
-      log('HiveCacheClient::clearAllDataContainKey:listKeys: ${listKeys.length}');
+      final listKeys = boxItem.toMap()
+        .where((key, value) => _matchedNestedKey(key, nestedKey))
+        .keys;
+      log('$runtimeType::clearAllDataContainKey:listKeys: ${listKeys.length}');
       return boxItem.deleteAll(listKeys);
     }).catchError((error) {
       throw error;
