@@ -9732,16 +9732,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     get$canDeletePermanently() {
       var t1 = this.mailboxContain,
         t2 = t1 == null;
-      if ((t2 ? null : J.$eq$(t1.role, $.$get$PresentationMailbox_roleTrash())) !== true) {
-        if (t2)
-          t1 = null;
-        else {
-          t1 = t1.role;
-          t2 = J.getInterceptor$(t1);
-          t1 = t2.$eq(t1, $.$get$PresentationMailbox_roleSpam()) || t2.$eq(t1, $.$get$PresentationMailbox_roleJunk());
-        }
-        t1 = t1 === true;
-      } else
+      if ((t2 ? null : J.$eq$(t1.role, $.$get$PresentationMailbox_roleTrash())) !== true)
+        t1 = (t2 ? null : J.$eq$(t1.role, $.$get$PresentationMailbox_roleSpam())) === true;
+      else
         t1 = true;
       return t1;
     }
@@ -11186,18 +11179,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return new A.Obx(new B.SearchEmailView__buildLoadingView_closure(this), null);
     },
     _markAsEmailSpamOrUnSpamAction$2(context, email) {
-      var t2, t3, t4, t5, t6, _this = this, _null = null,
+      var t5, t6, _this = this, _null = null,
         mailboxContain = email.mailboxContain,
-        t1 = mailboxContain == null;
-      if (t1)
-        t2 = _null;
-      else {
-        t2 = mailboxContain.role;
-        t3 = J.getInterceptor$(t2);
-        t2 = t3.$eq(t2, $.$get$PresentationMailbox_roleSpam()) || t3.$eq(t2, $.$get$PresentationMailbox_roleJunk());
-      }
-      t3 = A._instanceType(_this);
-      t4 = t3._eval$1("GetWidget.S");
+        t1 = mailboxContain == null,
+        t2 = t1 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleSpam()),
+        t3 = A._instanceType(_this),
+        t4 = t3._eval$1("GetWidget.S");
       if (t2 === true) {
         t2 = $.$get$GetWidget__cache();
         A.Expando__checkType(_this);
@@ -11212,13 +11199,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = "assets/images/ic_spam.svg";
       }
       t2 = A.SvgPicture$asset(t2, C.Alignment_0_0, A.ColorNullableExtension_asFilter(C.Color_4278221567), C.BoxFit_0, 28, _null, _null, 28);
-      if (t1)
-        t1 = _null;
-      else {
-        t1 = mailboxContain.role;
-        t5 = J.getInterceptor$(t1);
-        t1 = t5.$eq(t1, $.$get$PresentationMailbox_roleSpam()) || t5.$eq(t1, $.$get$PresentationMailbox_roleJunk());
-      }
+      t1 = t1 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleSpam());
       t5 = type$.AppLocalizations;
       if (t1 === true) {
         A.Localizations_of(context, C.Type_AppLocalizations_CTL, t5).toString;
@@ -12016,17 +11997,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
     },
     _markAsEmailSpamOrUnSpamContextMenuItemAction$3(context, email, mailboxContain) {
-      var t2, t3, t4, t5, t6, _this = this, _null = null,
-        t1 = mailboxContain == null;
-      if (t1)
-        t2 = _null;
-      else {
-        t2 = mailboxContain.role;
-        t3 = J.getInterceptor$(t2);
-        t2 = t3.$eq(t2, $.$get$PresentationMailbox_roleSpam()) || t3.$eq(t2, $.$get$PresentationMailbox_roleJunk());
-      }
-      t3 = A._instanceType(_this);
-      t4 = t3._eval$1("GetWidget.S");
+      var t5, t6, _this = this, _null = null,
+        t1 = mailboxContain == null,
+        t2 = t1 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleSpam()),
+        t3 = A._instanceType(_this),
+        t4 = t3._eval$1("GetWidget.S");
       if (t2 === true) {
         t2 = $.$get$GetWidget__cache();
         A.Expando__checkType(_this);
@@ -12041,13 +12016,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = "assets/images/ic_spam.svg";
       }
       t2 = A.SvgPicture$asset(t2, C.Alignment_0_0, A.ColorNullableExtension_asFilter(C.Color_4278221567), C.BoxFit_0, 24, _null, _null, 24);
-      if (t1)
-        t1 = _null;
-      else {
-        t1 = mailboxContain.role;
-        t5 = J.getInterceptor$(t1);
-        t1 = t5.$eq(t1, $.$get$PresentationMailbox_roleSpam()) || t5.$eq(t1, $.$get$PresentationMailbox_roleJunk());
-      }
+      t1 = t1 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleSpam());
       t5 = type$.AppLocalizations;
       if (t1 === true) {
         A.Localizations_of(context, C.Type_AppLocalizations_CTL, t5).toString;
@@ -12112,16 +12081,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return t1.build$0();
     },
     _buildMarkAsSpamPopupMenuItem$3(context, email, mailboxContain) {
-      var t2, t3, _this = this, _null = null,
-        t1 = mailboxContain == null;
-      if (t1)
-        t2 = _null;
-      else {
-        t2 = mailboxContain.role;
-        t3 = J.getInterceptor$(t2);
-        t2 = t3.$eq(t2, $.$get$PresentationMailbox_roleSpam()) || t3.$eq(t2, $.$get$PresentationMailbox_roleJunk());
-      }
-      t3 = A._instanceType(_this)._eval$1("GetWidget.S");
+      var _this = this, _null = null,
+        t1 = mailboxContain == null,
+        t2 = t1 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleSpam()),
+        t3 = A._instanceType(_this)._eval$1("GetWidget.S");
       if (t2 === true) {
         t2 = $.$get$GetWidget__cache();
         A.Expando__checkType(_this);
@@ -12133,13 +12096,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3._as(t2._jsWeakMap.get(_this)).toString;
         t2 = "assets/images/ic_spam.svg";
       }
-      if (t1)
-        t1 = _null;
-      else {
-        t1 = mailboxContain.role;
-        t3 = J.getInterceptor$(t1);
-        t1 = t3.$eq(t1, $.$get$PresentationMailbox_roleSpam()) || t3.$eq(t1, $.$get$PresentationMailbox_roleJunk());
-      }
+      t1 = t1 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleSpam());
       t3 = type$.AppLocalizations;
       if (t1 === true) {
         A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
@@ -12222,22 +12179,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t5.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, "assets/images/ic_move.svg", _null, 20, D.ValueKey_move_email_selection_button, _null, 1 / 0, _null, new B.SelectionWebAppBarThreadWidget_build_closure1(_this), _null, A.Intl__message("Move message", _null, "move_message", _null, _null)));
       }
       if ((t6 ? _null : J.$eq$(t3.role, $.$get$PresentationMailbox_roleDrafts())) === false) {
-        if (t6)
-          t4 = _null;
-        else {
-          t4 = t3.role;
-          t7 = J.getInterceptor$(t4);
-          t4 = t7.$eq(t4, $.$get$PresentationMailbox_roleSpam()) || t7.$eq(t4, $.$get$PresentationMailbox_roleJunk());
-        }
-        t4 = t4 === true ? "assets/images/ic_unspam.svg" : "assets/images/ic_spam.svg";
-        if (t6)
-          t3 = _null;
-        else {
-          t3 = t3.role;
-          t6 = J.getInterceptor$(t3);
-          t3 = t6.$eq(t3, $.$get$PresentationMailbox_roleSpam()) || t6.$eq(t3, $.$get$PresentationMailbox_roleJunk());
-        }
-        if (t3 === true) {
+        t4 = (t6 ? _null : J.$eq$(t3.role, $.$get$PresentationMailbox_roleSpam())) === true ? "assets/images/ic_unspam.svg" : "assets/images/ic_spam.svg";
+        if ((t6 ? _null : J.$eq$(t3.role, $.$get$PresentationMailbox_roleSpam())) === true) {
           A.Localizations_of(context, C.Type_AppLocalizations_CTL, t2).toString;
           t3 = A.Intl__message("Unspam", _null, "un_spam", _null, _null);
         } else {
@@ -12262,16 +12205,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.mailboxSelected,
         t2 = t1 == null;
       if ((t2 ? null : J.$eq$(t1.role, $.$get$PresentationMailbox_roleTrash())) !== true)
-        if ((t2 ? null : J.$eq$(t1.role, $.$get$PresentationMailbox_roleDrafts())) !== true) {
-          if (t2)
-            t1 = null;
-          else {
-            t1 = t1.role;
-            t2 = J.getInterceptor$(t1);
-            t1 = t2.$eq(t1, $.$get$PresentationMailbox_roleSpam()) || t2.$eq(t1, $.$get$PresentationMailbox_roleJunk());
-          }
-          t1 = t1 === true;
-        } else
+        if ((t2 ? null : J.$eq$(t1.role, $.$get$PresentationMailbox_roleDrafts())) !== true)
+          t1 = (t2 ? null : J.$eq$(t1.role, $.$get$PresentationMailbox_roleSpam())) === true;
+        else
           t1 = true;
       else
         t1 = true;
@@ -12371,28 +12307,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.push(A.Expanded$(A.TMailButtonWidget$(C.Color_0, _null, 0, _null, true, "assets/images/ic_move.svg", C.TextDirection_1, _null, 20, 8, D.ValueKey_qR4, C.MainAxisSize_1, _null, 1 / 0, _null, 1 / 0, 0, _null, _null, new B.BottomBarThreadSelectionWidget_build_closure1(_this), E.EdgeInsets_8_12_8_12, A.Intl__message("Move", _null, "move", _null, _null), C.TextAlign_2, D.TextStyle_OkG1, _null, _null, _null, _null, _this._bottom_bar_thread_selection_widget$_verticalDirection$1(context), _null), 1));
       }
       if ((t3 ? _null : J.$eq$(t2.role, $.$get$PresentationMailbox_roleDrafts())) === false) {
-        if (t3)
-          t4 = _null;
-        else {
-          t4 = t2.role;
-          t6 = J.getInterceptor$(t4);
-          t4 = t6.$eq(t4, $.$get$PresentationMailbox_roleSpam()) || t6.$eq(t4, $.$get$PresentationMailbox_roleJunk());
-        }
-        if (t4 === true) {
+        if ((t3 ? _null : J.$eq$(t2.role, $.$get$PresentationMailbox_roleSpam())) === true) {
           A.Localizations_of(context, C.Type_AppLocalizations_CTL, t5).toString;
           t4 = A.Intl__message("Unspam", _null, "un_spam", _null, _null);
         } else {
           A.Localizations_of(context, C.Type_AppLocalizations_CTL, t5).toString;
           t4 = A.Intl__message("Spam", _null, "spam", _null, _null);
         }
-        if (t3)
-          t2 = _null;
-        else {
-          t2 = t2.role;
-          t3 = J.getInterceptor$(t2);
-          t2 = t3.$eq(t2, $.$get$PresentationMailbox_roleSpam()) || t3.$eq(t2, $.$get$PresentationMailbox_roleJunk());
-        }
-        t2 = t2 === true ? "assets/images/ic_unspam.svg" : "assets/images/ic_spam.svg";
+        t2 = (t3 ? _null : J.$eq$(t2.role, $.$get$PresentationMailbox_roleSpam())) === true ? "assets/images/ic_unspam.svg" : "assets/images/ic_spam.svg";
         t1.push(A.Expanded$(A.TMailButtonWidget$(C.Color_0, _null, 0, _null, true, t2, C.TextDirection_1, _null, 20, 8, D.ValueKey_cEn, C.MainAxisSize_1, _null, 1 / 0, _null, 1 / 0, 0, _null, _null, new B.BottomBarThreadSelectionWidget_build_closure2(_this), E.EdgeInsets_8_12_8_12, t4, C.TextAlign_2, D.TextStyle_OkG1, _null, _null, _null, _null, _this._bottom_bar_thread_selection_widget$_verticalDirection$1(context), _null), 1));
       }
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, t5).toString;
@@ -12406,16 +12328,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this._currentMailbox,
         t2 = t1 == null;
       if ((t2 ? null : J.$eq$(t1.role, $.$get$PresentationMailbox_roleTrash())) !== true)
-        if ((t2 ? null : J.$eq$(t1.role, $.$get$PresentationMailbox_roleDrafts())) !== true) {
-          if (t2)
-            t1 = null;
-          else {
-            t1 = t1.role;
-            t2 = J.getInterceptor$(t1);
-            t1 = t2.$eq(t1, $.$get$PresentationMailbox_roleSpam()) || t2.$eq(t1, $.$get$PresentationMailbox_roleJunk());
-          }
-          t1 = t1 === true;
-        } else
+        if ((t2 ? null : J.$eq$(t1.role, $.$get$PresentationMailbox_roleDrafts())) !== true)
+          t1 = (t2 ? null : J.$eq$(t1.role, $.$get$PresentationMailbox_roleSpam())) === true;
+        else
           t1 = true;
       else
         t1 = true;
@@ -12609,20 +12524,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.Row$(t3, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     },
     get$canDeletePermanently() {
-      var t2,
-        t1 = this._widget.mailboxContain;
+      var t1 = this._widget.mailboxContain;
       if ((t1 == null ? null : J.$eq$(t1.role, $.$get$PresentationMailbox_roleTrash())) !== true) {
         t1 = this._widget.mailboxContain;
         if ((t1 == null ? null : J.$eq$(t1.role, $.$get$PresentationMailbox_roleDrafts())) !== true) {
           t1 = this._widget.mailboxContain;
-          if (t1 == null)
-            t1 = null;
-          else {
-            t1 = t1.role;
-            t2 = J.getInterceptor$(t1);
-            t1 = t2.$eq(t1, $.$get$PresentationMailbox_roleSpam()) || t2.$eq(t1, $.$get$PresentationMailbox_roleJunk());
-          }
-          t1 = t1 === true;
+          t1 = (t1 == null ? null : J.$eq$(t1.role, $.$get$PresentationMailbox_roleSpam())) === true;
         } else
           t1 = true;
       } else
@@ -13922,9 +13829,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure2.prototype = {
     call$1(mailbox) {
-      var t1 = mailbox.role,
-        t2 = J.getInterceptor$(t1);
-      return t2.$eq(t1, $.$get$PresentationMailbox_roleSpam()) || t2.$eq(t1, $.$get$PresentationMailbox_roleJunk());
+      return J.$eq$(mailbox.role, $.$get$PresentationMailbox_roleSpam());
     },
     $signature: 98
   };
@@ -13948,9 +13853,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ListPresentationEmailExtension_isAllSpam_closure0.prototype = {
     call$1(mailbox) {
-      var t1 = mailbox.role,
-        t2 = J.getInterceptor$(t1);
-      return t2.$eq(t1, $.$get$PresentationMailbox_roleSpam()) || t2.$eq(t1, $.$get$PresentationMailbox_roleJunk());
+      return J.$eq$(mailbox.role, $.$get$PresentationMailbox_roleSpam());
     },
     $signature: 98
   };
@@ -13964,16 +13867,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ListPresentationEmailExtension_listEmailCanSpam_closure.prototype = {
     call$1(email) {
-      var t1, t2,
-        mailboxContain = A.PresentationEmailExtension_findMailboxContain(email, this.mapMailbox);
-      if (mailboxContain == null)
-        t1 = null;
-      else {
-        t1 = mailboxContain.role;
-        t2 = J.getInterceptor$(t1);
-        t1 = t2.$eq(t1, $.$get$PresentationMailbox_roleSpam()) || t2.$eq(t1, $.$get$PresentationMailbox_roleJunk());
-      }
-      if (t1 === false)
+      var mailboxContain = A.PresentationEmailExtension_findMailboxContain(email, this.mapMailbox);
+      if ((mailboxContain == null ? null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleSpam())) === false)
         return email;
       else
         return null;
@@ -16068,7 +15963,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.EmailView_build___closure2.prototype = {
     call$2(presentationEmail, position) {
-      var t4, mailboxContain, t5, t6, t7, t8, _null = null,
+      var t4, mailboxContain, t5, t6, t7, _null = null,
         t1 = this.$this,
         t2 = this.context,
         t3 = $.$get$GetWidget__cache();
@@ -16084,19 +15979,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t7 = mailboxContain.namespace;
         t7 = !(t7 == null || t7.$eq(0, new A.Namespace("Personal"))) && A.PresentationMailboxExtension_hasParentId(mailboxContain);
       }
-      if (t7 === false) {
-        if (t6)
-          t7 = _null;
-        else {
-          t7 = mailboxContain.role;
-          t8 = J.getInterceptor$(t7);
-          t7 = t8.$eq(t7, $.$get$PresentationMailbox_roleSpam()) || t8.$eq(t7, $.$get$PresentationMailbox_roleJunk());
-        }
-        if (t7 === true)
+      if (t7 === false)
+        if ((t6 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleSpam())) === true)
           t5.push(C.EmailActionType_21);
         else
           t5.push(C.EmailActionType_20);
-      }
       t7 = presentationEmail.from;
       if ((t7 == null ? _null : t7._collection$_length !== 0) === true)
         t5.push(C.EmailActionType_23);
@@ -17475,7 +17362,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.MailboxDashBoardView_build_closure1.prototype = {
     call$0() {
-      var t3, t4, t5, t6,
+      var t3, t4, t5,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -17485,9 +17372,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t4.get$value(0) != null) {
         t5 = t4.get$value(0);
         t5.toString;
-        t5 = t5.role;
-        t6 = J.getInterceptor$(t5);
-        if (t6.$eq(t5, $.$get$PresentationMailbox_roleSpam()) || t6.$eq(t5, $.$get$PresentationMailbox_roleJunk())) {
+        if (J.$eq$(t5.role, $.$get$PresentationMailbox_roleSpam())) {
           t4 = t4.get$value(0);
           t4.toString;
           if (A.PresentationMailboxExtension_get_countTotalEmails(t4) > 0)
@@ -19951,20 +19836,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchEmailView__markAsEmailSpamOrUnSpamAction_closure.prototype = {
     call$1(email) {
-      var t3,
-        t1 = this.$this,
+      var t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t1 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
       t2 = this.mailboxContain;
-      if (t2 == null)
-        t2 = null;
-      else {
-        t2 = t2.role;
-        t3 = J.getInterceptor$(t2);
-        t2 = t3.$eq(t2, $.$get$PresentationMailbox_roleSpam()) || t3.$eq(t2, $.$get$PresentationMailbox_roleJunk());
-      }
-      t2 = t2 === true ? C.EmailActionType_21 : C.EmailActionType_20;
+      t2 = (t2 == null ? null : J.$eq$(t2.role, $.$get$PresentationMailbox_roleSpam())) === true ? C.EmailActionType_21 : C.EmailActionType_20;
       return t1.pressEmailAction$3(this.context, t2, email);
     },
     $signature: 158
@@ -20540,7 +20417,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ThreadView_build_closure3.prototype = {
     call$0() {
-      var t3, t4, t5, t6,
+      var t3, t4, t5,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -20550,9 +20427,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t4.get$value(0) != null) {
         t5 = t4.get$value(0);
         t5.toString;
-        t5 = t5.role;
-        t6 = J.getInterceptor$(t5);
-        if (t6.$eq(t5, $.$get$PresentationMailbox_roleSpam()) || t6.$eq(t5, $.$get$PresentationMailbox_roleJunk())) {
+        if (J.$eq$(t5.role, $.$get$PresentationMailbox_roleSpam())) {
           t4 = t4.get$value(0);
           t4.toString;
           if (A.PresentationMailboxExtension_get_countTotalEmails(t4) > 0)
@@ -21022,20 +20897,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ThreadView__markAsEmailSpamOrUnSpamContextMenuItemAction_closure.prototype = {
     call$1(email) {
-      var t3, t4,
+      var t3,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t1 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
       t2 = this.mailboxContain;
-      if (t2 == null)
-        t3 = null;
-      else {
-        t3 = t2.role;
-        t4 = J.getInterceptor$(t3);
-        t3 = t4.$eq(t3, $.$get$PresentationMailbox_roleSpam()) || t4.$eq(t3, $.$get$PresentationMailbox_roleJunk());
-      }
-      t3 = t3 === true ? C.EmailActionType_21 : C.EmailActionType_20;
+      t3 = (t2 == null ? null : J.$eq$(t2.role, $.$get$PresentationMailbox_roleSpam())) === true ? C.EmailActionType_21 : C.EmailActionType_20;
       return t1.handleEmailActionType$4$context$mailboxContain(t3, email, this.context, t2);
     },
     $signature: 158
@@ -21064,20 +20932,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ThreadView__buildMarkAsSpamPopupMenuItem_closure.prototype = {
     call$0() {
-      var t3, t4, _this = this,
+      var t3, _this = this,
         t1 = _this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t1 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
       t2 = _this.mailboxContain;
-      if (t2 == null)
-        t3 = null;
-      else {
-        t3 = t2.role;
-        t4 = J.getInterceptor$(t3);
-        t3 = t4.$eq(t3, $.$get$PresentationMailbox_roleSpam()) || t4.$eq(t3, $.$get$PresentationMailbox_roleJunk());
-      }
-      t3 = t3 === true ? C.EmailActionType_21 : C.EmailActionType_20;
+      t3 = (t2 == null ? null : J.$eq$(t2.role, $.$get$PresentationMailbox_roleSpam())) === true ? C.EmailActionType_21 : C.EmailActionType_20;
       return t1.handleEmailActionType$4$context$mailboxContain(t3, _this.email, _this.context, t2);
     },
     $signature: 0
@@ -21218,13 +21079,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t3,
         t1 = this.$this,
         t2 = t1.mailboxSelected;
-      if (t2 == null)
-        t2 = null;
-      else {
-        t2 = t2.role;
-        t3 = J.getInterceptor$(t2);
-        t2 = t3.$eq(t2, $.$get$PresentationMailbox_roleSpam()) || t3.$eq(t2, $.$get$PresentationMailbox_roleJunk());
-      }
+      t2 = t2 == null ? null : J.$eq$(t2.role, $.$get$PresentationMailbox_roleSpam());
       t3 = t1.listEmailSelected;
       t1 = t1.emailSelectionAction;
       return t2 === true ? t1.call$2(C.EmailActionType_21, t3) : t1.call$2(C.EmailActionType_20, t3);
@@ -21270,13 +21125,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t3,
         t1 = this.$this,
         t2 = t1._currentMailbox;
-      if (t2 == null)
-        t2 = null;
-      else {
-        t2 = t2.role;
-        t3 = J.getInterceptor$(t2);
-        t2 = t3.$eq(t2, $.$get$PresentationMailbox_roleSpam()) || t3.$eq(t2, $.$get$PresentationMailbox_roleJunk());
-      }
+      t2 = t2 == null ? null : J.$eq$(t2.role, $.$get$PresentationMailbox_roleSpam());
       t3 = t1.onPressEmailSelectionActionClick;
       if (t2 === true)
         t3.call$2(C.EmailActionType_21, t1._listSelectionEmail);
@@ -22266,5 +22115,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "hTgizpuwVzT9IUwYrGl9of3FER0=");
+})($__dart_deferred_initializers__, "txGU1ugsPuMLLcyXMOJ+aLFP/94=");
 ;
