@@ -15,48 +15,33 @@ abstract class RemoteException with EquatableMixin implements Exception {
   final int? code;
 
   const RemoteException({this.code, this.message});
+
+  @override
+  List<Object?> get props => [message, code];
 }
 
 class BadCredentialsException extends RemoteException {
   const BadCredentialsException() : super(message: RemoteException.badCredentials);
-
-  @override
-  List<Object?> get props => [];
 }
 
 class UnknownError extends RemoteException {
   const UnknownError({int? code, Object? message}) : super(code: code, message: message);
-
-  @override
-  List<Object?> get props => [code, message];
 }
 
 class ConnectionError extends RemoteException {
   const ConnectionError({String? message}) : super(message: message ?? RemoteException.connectionError);
-
-  @override
-  List<Object?> get props => [code, message];
 }
 
 class ConnectionTimeout extends RemoteException {
   const ConnectionTimeout({String? message}) : super(message: message ?? RemoteException.connectionTimeout);
-
-  @override
-  List<Object?> get props => [code, message];
 }
 
 class SocketError extends RemoteException {
   const SocketError() : super(message: RemoteException.socketException);
-
-  @override
-  List<Object?> get props => [code, message];
 }
 
 class InternalServerError extends RemoteException {
   const InternalServerError() : super(message: RemoteException.internalServerError);
-
-  @override
-  List<Object?> get props => [code, message];
 }
 
 class MethodLevelErrors extends RemoteException {
@@ -68,7 +53,7 @@ class MethodLevelErrors extends RemoteException {
   ) : super(message: message);
 
   @override
-  List<Object?> get props => [type, code, message];
+  List<Object?> get props => [type, ...super.props];
 }
 
 class CannotCalculateChangesMethodResponseException extends MethodLevelErrors {
@@ -77,7 +62,4 @@ class CannotCalculateChangesMethodResponseException extends MethodLevelErrors {
 
 class NoNetworkError extends RemoteException {
   const NoNetworkError() : super(message: RemoteException.noNetworkError);
-
-  @override
-  List<Object?> get props => [code, message];
 }
