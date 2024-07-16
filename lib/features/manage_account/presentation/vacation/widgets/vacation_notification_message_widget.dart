@@ -41,7 +41,7 @@ class VacationNotificationMessageWidget extends StatelessWidget {
     return Container(
       width: double.infinity,
       margin: margin ?? const EdgeInsets.symmetric(horizontal: 12),
-      padding: padding ?? const EdgeInsetsDirectional.only(start: 12),
+      padding: padding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(radius ?? 8),
         color: backgroundColor ?? AppColor.colorBackgroundNotificationVacationSetting,
@@ -66,86 +66,111 @@ class VacationNotificationMessageWidget extends StatelessWidget {
     return Row(children: [
       if (leadingIcon != null) leadingIcon!,
       Expanded(
+        child: Tooltip(
+          message: vacationResponse.getNotificationMessage(context),
           child: Text(
-              vacationResponse.getNotificationMessage(context),
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 16,
-                fontWeight: fontWeight ?? FontWeight.normal,
-              ))),
+            vacationResponse.getNotificationMessage(context),
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: fontWeight ?? FontWeight.normal,
+            ),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        )
+      ),
       if (actionEndNow != null)
-        buildTextButton(
-            AppLocalizations.of(context).endNow,
-            textStyle: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-                color: AppColor.colorTextButton),
-            backgroundColor: Colors.transparent,
-            width: 90,
-            height: 44,
-            radius: 10,
-            onTap: () => actionEndNow!.call()),
+        TMailButtonWidget.fromText(
+          text: AppLocalizations.of(context).endNow,
+          textStyle: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+            color: AppColor.colorTextButton),
+          backgroundColor: Colors.transparent,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          borderRadius: 10,
+          maxWidth: 180,
+          maxLines: 1,
+          tooltipMessage: AppLocalizations.of(context).endNow,
+          onTapActionCallback: actionEndNow),
       if (actionGotoVacationSetting != null)
-        buildTextButton(
-            AppLocalizations.of(context).vacationSetting,
-            textStyle: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 16,
-                color: AppColor.colorTextButton),
-            backgroundColor: Colors.transparent,
-            width: 150,
-            height: 44,
-            radius: 10,
-            onTap: () => actionGotoVacationSetting!.call())
+        TMailButtonWidget.fromText(
+          text: AppLocalizations.of(context).vacationSetting,
+          textStyle: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 16,
+            color: AppColor.colorTextButton),
+          backgroundColor: Colors.transparent,
+          borderRadius: 10,
+          maxWidth: 310,
+          maxLines: 1,
+          tooltipMessage: AppLocalizations.of(context).vacationSetting,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+          onTapActionCallback: actionGotoVacationSetting)
     ]);
   }
 
   Widget _buildBodyForMobile(BuildContext context) {
-    return Column(children: [
-      Row(children: [
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
         if (leadingIcon != null) leadingIcon!,
-        Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(right: 12, top: 12),
-              child: Center(
-                child: Text(
-                    vacationResponse.getNotificationMessage(context),
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: fontWeight ?? FontWeight.normal,
-                    )),
+        Tooltip(
+          message: vacationResponse.getNotificationMessage(context),
+          child: Text(
+            vacationResponse.getNotificationMessage(context),
+            style: TextStyle(
+              color: Colors.black,
+              fontSize: 16,
+              fontWeight: fontWeight ?? FontWeight.normal,
+            ),
+            maxLines: 1,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (actionEndNow != null)
+              Flexible(
+                child: TMailButtonWidget.fromText(
+                  text: AppLocalizations.of(context).endNow,
+                  textStyle: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                    color: AppColor.colorTextButton),
+                  backgroundColor: Colors.transparent,
+                  borderRadius: 10,
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                  maxWidth: 180,
+                  maxLines: 1,
+                  tooltipMessage: AppLocalizations.of(context).endNow,
+                  onTapActionCallback: actionEndNow
+                ),
               ),
-            )),
-      ]),
-      Row(children: [
-        const Spacer(),
-        if (actionEndNow != null)
-          buildTextButton(
-              AppLocalizations.of(context).endNow,
-              textStyle: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16,
-                  color: AppColor.colorTextButton),
-              backgroundColor: Colors.transparent,
-              width: 90,
-              height: 36,
-              radius: 10,
-              onTap: () => actionEndNow!.call()),
-        if (actionGotoVacationSetting != null)
-          buildTextButton(
-              AppLocalizations.of(context).vacationSetting,
-              textStyle: const TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16,
-                  color: AppColor.colorTextButton),
-              backgroundColor: Colors.transparent,
-              width: 150,
-              height: 36,
-              radius: 10,
-              onTap: () => actionGotoVacationSetting!.call()),
-        const Spacer(),
-      ])
-    ]);
+            if (actionGotoVacationSetting != null)
+              Flexible(
+                child: TMailButtonWidget.fromText(
+                  text: AppLocalizations.of(context).vacationSetting,
+                  textStyle: const TextStyle(
+                    fontWeight: FontWeight.w500,
+                    fontSize: 16,
+                    color: AppColor.colorTextButton),
+                  backgroundColor: Colors.transparent,
+                  borderRadius: 10,
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                  maxWidth: 180,
+                  maxLines: 1,
+                  tooltipMessage: AppLocalizations.of(context).vacationSetting,
+                  onTapActionCallback: actionGotoVacationSetting
+                ),
+              ),
+          ]
+        )
+      ]
+    );
   }
 }
