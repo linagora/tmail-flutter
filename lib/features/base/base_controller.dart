@@ -111,7 +111,7 @@ abstract class BaseController extends GetxController
         html.window.onUnload.listen(handleBrowserReloadAction);
   }
 
-  Future<void> handleBrowserBeforeReloadAction(html.Event event) async {}
+   Future<void> handleBrowserBeforeReloadAction(html.Event event) async {}
 
   Future<void> handleBrowserReloadAction(html.Event event) async {}
 
@@ -141,7 +141,7 @@ abstract class BaseController extends GetxController
     viewState.value.fold(
       (failure) {
         if (failure is FeatureFailure) {
-          final isUrgentException = _validateUrgentException(failure.exception);
+          final isUrgentException = validateUrgentException(failure.exception);
           if (isUrgentException) {
             handleUrgentException(failure: failure, exception: failure.exception);
           } else {
@@ -156,7 +156,7 @@ abstract class BaseController extends GetxController
 
   void onError(dynamic error, StackTrace stackTrace) {
     logError('$runtimeType::onError():Error: $error | StackTrace: $stackTrace');
-    final isUrgentException = _validateUrgentException(error);
+    final isUrgentException = validateUrgentException(error);
     if (isUrgentException) {
       handleUrgentException(exception: error);
     } else {
@@ -166,7 +166,7 @@ abstract class BaseController extends GetxController
 
   void onDone() {}
 
-  bool _validateUrgentException(dynamic exception) {
+  bool validateUrgentException(dynamic exception) {
     return exception is NoNetworkError
       || exception is BadCredentialsException
       || exception is ConnectionError;

@@ -11,16 +11,10 @@ abstract class AuthenticationException extends RemoteException {
 
 class BadCredentials extends AuthenticationException {
   BadCredentials() : super(AuthenticationException.wrongCredential);
-
-  @override
-  List<Object?> get props => [message];
 }
 
 class BadGateway extends AuthenticationException {
   BadGateway() : super(AuthenticationException.badGateway);
-
-  @override
-  List<Object?> get props => [message];
 }
 
 class NotFoundAuthenticatedAccountException implements Exception {}
@@ -29,9 +23,6 @@ class NotFoundStoredTokenException implements Exception {}
 
 class InvalidBaseUrl extends AuthenticationException {
   InvalidBaseUrl() : super(AuthenticationException.invalidBaseUrl);
-
-  @override
-  List<Object?> get props => [message];
 }
 
 class NotFoundAccessTokenException implements Exception {}
