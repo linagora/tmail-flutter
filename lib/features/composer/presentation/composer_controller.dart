@@ -27,8 +27,8 @@ import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/base/before_unload_handler.dart';
-import 'package:tmail_ui_user/features/base/before_unload_manager.dart';
+import 'package:tmail_ui_user/features/base/before_reconnect_handler.dart';
+import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/base/state/base_ui_state.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/compose_email_exception.dart';
@@ -95,14 +95,14 @@ import 'package:tmail_ui_user/features/upload/presentation/controller/upload_con
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:universal_html/html.dart' as html;
+import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 
-class ComposerController extends BaseController with DragDropFileMixin implements BeforeUnloadHandler {
+class ComposerController extends BaseController with DragDropFileMixin implements BeforeReconnectHandler {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final networkConnectionController = Get.find<NetworkConnectionController>();
   final _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
-  final _beforeUnloadManager = Get.find<BeforeUnloadManager>();
+  final _beforeReconnectManager = Get.find<BeforeReconnectManager>();
 
   final composerArguments = Rxn<ComposerArguments>();
   final isEnableEmailSendButton = false.obs;
@@ -220,7 +220,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     scrollControllerEmailAddress.addListener(_scrollControllerEmailAddressListener);
     _listenStreamEvent();
     _getAlwaysReadReceiptSetting();
-    _beforeUnloadManager.addListener(onBeforeUnload);
+    _beforeReconnectManager.addListener(onBeforeReconnect);
   }
 
   @override
@@ -250,7 +250,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     _subscriptionOnDrop?.cancel();
     subjectEmailInputFocusNode?.removeListener(_subjectEmailInputFocusListener);
     _composerCacheListener?.cancel();
-    _beforeUnloadManager.removeListener(onBeforeUnload);
+    _beforeReconnectManager.removeListener(onBeforeReconnect);
     if (PlatformInfo.isWeb) {
       richTextWebController = null;
     } else {
@@ -360,7 +360,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   }
 
   @override
-  Future<void> handleBrowserReloadAction(html.Event event) async {
+  Future<void> onUnloadBrowserListener(html.Event event) async {
     await _removeComposerCacheOnWebInteractor.execute();
     await _saveComposerCacheOnWebAction();
   }
@@ -2302,7 +2302,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   }
   
   @override
-  Future<void> onBeforeUnload() async {
+  Future<void> onBeforeReconnect() async {
     if (mailboxDashBoardController.accountId.value != null &&
         mailboxDashBoardController.sessionCurrent?.username != null
     ) {
