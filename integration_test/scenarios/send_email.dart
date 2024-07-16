@@ -29,6 +29,8 @@ class SendEmail extends BaseScenario {
     await threadRobot.openComposer();
     await threadRobot.expectComposerViewVisible();
 
+    await composerRobot.grantContactPermission();
+
     await composerRobot.addReceipient(loginWithOidcScenario.email);
     await composerRobot.addReceipient(additionalRecipient);
     await composerRobot.addSubject(subject);

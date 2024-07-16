@@ -28,8 +28,10 @@ class ComposerRobot extends CoreRobot {
   }
 
   Future<void> addContent(String content) async {
-    await $(MobileEditorView).$(HtmlEditor).tap();
-    await $(MobileEditorView).$(HtmlEditor).enterText(content);
+    await $(MobileEditorView).$(HtmlEditor).$(InAppWebView).tap();
+    
+    $.tester.testTextInput.register();
+    await $.native.enterTextByIndex(content, index: 2);
   }
 
   Future<void> sendEmail() async {
@@ -41,5 +43,11 @@ class ComposerRobot extends CoreRobot {
 
   Future<void> expectSendEmailSuccessToast() async {
     expect($('Message has been sent successfully'), findsOneWidget);
+  }
+
+  Future<void> grantContactPermission() async {
+    if (await $.native.isPermissionDialogVisible(timeout: const Duration(seconds: 5))) {
+      await $.native.grantPermissionWhenInUse();
+    }
   }
 }

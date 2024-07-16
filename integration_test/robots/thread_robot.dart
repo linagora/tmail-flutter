@@ -8,8 +8,6 @@ import '../base/core_robot.dart';
 class ThreadRobot extends CoreRobot {
   ThreadRobot(super.$);
 
-  bool checkIfThreadViewVisible() => $(ThreadView).visible;
-
   Future<void> expectThreadViewVisible() => ensureViewVisible($(ThreadView));
 
   Future<void> openComposer() async {
