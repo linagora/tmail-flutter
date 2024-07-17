@@ -7,6 +7,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/restore_email_inline_images_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/editor_view_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_editor_widget.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
@@ -102,7 +103,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
             onDragEnter: onDragEnter,
           ),
           (success) {
-            if (success is GetEmailContentLoading) {
+            if (success is GetEmailContentLoading || success is RestoringEmailInlineImages) {
               return const CupertinoLoadingWidget(padding: EdgeInsets.all(16.0));
             } else {
               var newContent = success is GetEmailContentSuccess

@@ -28,7 +28,7 @@ class ComposerArguments extends RouterArguments {
   final List<Identity>? identities;
   final Identity? selectedIdentity;
   final List<Attachment>? inlineImages;
-  final bool? readRecepientEnabled;
+  final bool? hasRequestReadReceipt;
   final ScreenDisplayMode displayMode;
 
   ComposerArguments({
@@ -48,7 +48,7 @@ class ComposerArguments extends RouterArguments {
     this.identities,
     this.selectedIdentity,
     this.inlineImages,
-    this.readRecepientEnabled,
+    this.hasRequestReadReceipt,
     this.displayMode = ScreenDisplayMode.normal
   });
 
@@ -98,7 +98,7 @@ class ComposerArguments extends RouterArguments {
       attachments: composerCache.email?.allAttachments.getListAttachmentsDisplayedOutside(composerCache.email?.htmlBodyAttachments ?? []),
       selectedIdentity: composerCache.identity,
       inlineImages: composerCache.email?.allAttachments.listAttachmentsDisplayedInContent,
-      readRecepientEnabled: composerCache.readReceipentEnabled,
+      hasRequestReadReceipt: composerCache.hasRequestReadReceipt,
       displayMode: composerCache.displayMode,
     );
 
@@ -187,7 +187,12 @@ class ComposerArguments extends RouterArguments {
     body,
     messageId,
     references,
+    previousEmailId,
     identities,
+    selectedIdentity,
+    inlineImages,
+    hasRequestReadReceipt,
+    displayMode,
   ];
 
   ComposerArguments copyWith({
@@ -207,7 +212,7 @@ class ComposerArguments extends RouterArguments {
     List<Identity>? identities,
     Identity? selectedIdentity,
     List<Attachment>? inlineImages,
-    bool? readRecepientEnabled,
+    bool? hasRequestReadReceipt,
     ScreenDisplayMode? displayMode,
   }) {
     return ComposerArguments(
@@ -227,7 +232,7 @@ class ComposerArguments extends RouterArguments {
       identities: identities ?? this.identities,
       selectedIdentity: selectedIdentity ?? this.selectedIdentity,
       inlineImages: inlineImages ?? this.inlineImages,
-      readRecepientEnabled: readRecepientEnabled ?? this.readRecepientEnabled,
+      hasRequestReadReceipt: hasRequestReadReceipt ?? this.hasRequestReadReceipt,
       displayMode: displayMode ?? this.displayMode,
     );
   }

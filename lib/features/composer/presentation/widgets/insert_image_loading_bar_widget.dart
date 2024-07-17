@@ -4,7 +4,6 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/widget/circle_loading_widget.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/restore_email_inline_images_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 
 class InsertImageLoadingBarWidget extends StatelessWidget {
@@ -38,9 +37,7 @@ class InsertImageLoadingBarWidget extends StatelessWidget {
     return viewState.fold(
       (failure) => const SizedBox.shrink(),
       (success) {
-        if (success is DownloadingImageAsBase64 ||
-            success is RestoringEmailInlineImages
-        ) {
+        if (success is DownloadingImageAsBase64) {
           return CircleLoadingWidget(padding: padding);
         } else {
           return const SizedBox.shrink();

@@ -142,7 +142,7 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
       attachments: newEmailAttachments.isNotEmpty
         ? newEmailAttachments
         : null,
-      headerMdn: isRequestReadReceipt
+      headerMdn: hasRequestReadReceipt
         ? { IndividualHeaderIdentifier.headerMdn: createMdnEmailAddress() }
         : null,
     );
