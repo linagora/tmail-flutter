@@ -13769,13 +13769,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(selectable) {
       return !this.selectableSet.contains$1(0, selectable);
     },
-    $signature: 247
+    $signature: 204
   };
   B._SelectableRegionContainerDelegate_didChangeSelectables_closure0.prototype = {
     call$1(selectable) {
       return !this.selectableSet.contains$1(0, selectable);
     },
-    $signature: 247
+    $signature: 204
   };
   B.buildTextSpanChildren_closure.prototype = {
     call$0() {
@@ -14124,7 +14124,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Column$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
     },
-    $signature: 225
+    $signature: 248
   };
   B.ComposerView_build___closure18.prototype = {
     call$0() {
@@ -14142,7 +14142,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = type$.JSArray_Widget;
       return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([A.Column$(A._setArrayType([A.Expanded$(new A.Padding(C.EdgeInsetsDirectional_12_0_12_0, new A.Obx(new B.ComposerView_build___closure7(t1, this.constraints), _null), _null), 1), new A.Obx(new B.ComposerView_build___closure8(t1), _null), new A.Obx(new B.ComposerView_build___closure9(t1), _null)], t2), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), new A.Align(C.AlignmentDirectional_0_m1, _null, _null, new A.Obx(new B.ComposerView_build___closure10(t1), _null), _null), new A.Obx(new B.ComposerView_build___closure11(t1, constraintsEditor), _null), new A.Obx(new B.ComposerView_build___closure12(t1, constraintsEditor, context), _null)], t2), _null);
     },
-    $signature: 188
+    $signature: 192
   };
   B.ComposerView_build___closure7.prototype = {
     call$0() {
@@ -14498,7 +14498,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Column$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
     },
-    $signature: 225
+    $signature: 248
   };
   B.ComposerView_build___closure21.prototype = {
     call$2(context, constraintsEditor) {
@@ -14508,7 +14508,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = type$.JSArray_Widget;
       return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([A.Column$(A._setArrayType([A.Expanded$(A.Container$(_null, A.Column$(A._setArrayType([A.Expanded$(new A.Padding(D.EdgeInsetsDirectional_20_0_20_0, new A.Obx(new B.ComposerView_build____closure9(t1, t2), _null), _null), 1), new A.Obx(new B.ComposerView_build____closure10(t1), _null), new A.Obx(new B.ComposerView_build____closure11(t1), _null)], t3), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_0, _null, _null, D.BoxDecoration_omC, _null, _null, _null, _null, _null, _null, _null, _null), 1), new A.Obx(new B.ComposerView_build____closure12(t1, context, t2), _null)], t3), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), new A.Align(C.AlignmentDirectional_0_m1, _null, _null, new A.Obx(new B.ComposerView_build____closure13(t1), _null), _null), new A.Obx(new B.ComposerView_build____closure14(t1, constraintsEditor), _null), new A.Obx(new B.ComposerView_build____closure15(t1, constraintsEditor, context), _null)], t3), _null);
     },
-    $signature: 188
+    $signature: 192
   };
   B.ComposerView_build____closure9.prototype = {
     call$0() {
@@ -14925,7 +14925,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Column$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
     },
-    $signature: 225
+    $signature: 248
   };
   B.ComposerView_build__closure1.prototype = {
     call$2(context, constraintsBody) {
@@ -14935,7 +14935,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = type$.JSArray_Widget;
       return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([A.Column$(A._setArrayType([A.Expanded$(A.Container$(_null, A.Column$(A._setArrayType([A.Expanded$(new A.Padding(D.EdgeInsetsDirectional_20_0_20_0, new A.Obx(new B.ComposerView_build___closure(t1, t2), _null), _null), 1), new A.Obx(new B.ComposerView_build___closure0(t1), _null), new A.Obx(new B.ComposerView_build___closure1(t1), _null)], t3), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_0, _null, _null, D.BoxDecoration_omC, _null, _null, _null, _null, _null, _null, _null, _null), 1), new A.Obx(new B.ComposerView_build___closure2(t1, context, t2), _null)], t3), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), new A.Align(C.AlignmentDirectional_0_m1, _null, _null, new A.Obx(new B.ComposerView_build___closure3(t1), _null), _null), new A.Obx(new B.ComposerView_build___closure4(t1, constraintsBody), _null), new A.Obx(new B.ComposerView_build___closure5(t1, constraintsBody, context), _null)], t3), _null);
     },
-    $signature: 188
+    $signature: 192
   };
   B.ComposerView_build___closure.prototype = {
     call$0() {
@@ -15342,7 +15342,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       return t1._viewStateToUI$1(t1.viewState);
     },
-    $signature: 186
+    $signature: 188
   };
   B.InsertImageLoadingBarWidget_build_closure0.prototype = {
     call$1(success) {
@@ -16565,7 +16565,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4.push(A.PointerInterceptor$(new A.SizedBox(t1, t2, _null, _null)));
       return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, t4, _null);
     },
-    $signature: 188
+    $signature: 192
   };
   B.EventLinkDetailWidget_build_closure.prototype = {
     call$1(link) {
@@ -16826,7 +16826,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.onMoreActionClick.call$2(t1.presentationEmail, position);
       return t1;
     },
-    $signature: 203
+    $signature: 206
   };
   B.EmailViewBottomBarWidget_build_closure.prototype = {
     call$0() {
@@ -17818,7 +17818,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t2.simpleSearchIsActivated.get$value(0) || t2.advancedSearchIsActivated.get$value(0);
       return t4.openPopupMenuAction$3(t5, position, t1.popupMenuFilterEmailActionTile$4$isSearchEmailRunning(t5, t6, new B.MailboxDashBoardView__buildListButtonTopBar___closure(t1, t5), t2));
     },
-    $signature: 203
+    $signature: 206
   };
   B.MailboxDashBoardView__buildListButtonTopBar___closure.prototype = {
     call$1(option) {
@@ -17932,7 +17932,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       return D.Padding_spY;
     },
-    $signature: 230
+    $signature: 231
   };
   B.MailboxDashBoardView__buildDownloadTaskStateWidget__closure.prototype = {
     call$2(context, index) {
@@ -19741,7 +19741,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       return new A.Obx(new B.SearchEmailView__buildListEmailBody__closure(this.$this, J.$index$asx(this.listPresentationEmail.get$value(0), index), context), null);
     },
-    $signature: 221
+    $signature: 224
   };
   B.SearchEmailView__buildListEmailBody__closure.prototype = {
     call$0() {
@@ -19811,7 +19811,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = false;
       return new A.Padding(t4, A.Divider$(t1 ? _null : C.Color_4294967295, _null, _null, _null), _null);
     },
-    $signature: 230
+    $signature: 231
   };
   B.SearchEmailView__buildLoadingView_closure.prototype = {
     call$0() {
@@ -20657,7 +20657,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       return new A.Obx(new B.ThreadView__buildListEmailBody__closure(this.$this, index, this.listPresentationEmail, context), null);
     },
-    $signature: 221
+    $signature: 224
   };
   B.ThreadView__buildListEmailBody__closure.prototype = {
     call$0() {
@@ -20696,7 +20696,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = false;
       return new A.Padding(t4, A.Divider$(t1 ? _null : C.Color_4294967295, _null, _null, _null), _null);
     },
-    $signature: 230
+    $signature: 231
   };
   B.ThreadView__buildEmailItemDraggable_closure2.prototype = {
     call$1(_) {
@@ -21047,7 +21047,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = t1.onPopupMenuFilterEmailAction;
       return t2 == null ? null : t2.call$2(t1.filterOption, position);
     },
-    $signature: 203
+    $signature: 206
   };
   B.SelectionWebAppBarThreadWidget_build_closure.prototype = {
     call$0() {
@@ -21203,7 +21203,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$3(context, value, child) {
       return this.$this._email_tile_web_builder$_buildAvatarIcon$2$context$isHovered(context, value);
     },
-    $signature: 196
+    $signature: 185
   };
   B._EmailTileBuilderState_build_closure4.prototype = {
     call$3(context, value, child) {
@@ -21220,7 +21220,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return A.Row$(t2, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
       }
     },
-    $signature: 196
+    $signature: 185
   };
   B._EmailTileBuilderState_build_closure5.prototype = {
     call$3(context, value, child) {
@@ -21232,7 +21232,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 196
+    $signature: 185
   };
   B._EmailTileBuilderState_build_closure13.prototype = {
     call$0() {
@@ -21276,7 +21276,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$3(context, value, child) {
       return this.$this._email_tile_web_builder$_buildAvatarIcon$4$context$iconSize$isHovered$textStyle(context, 32, value, D.TextStyle_mtF9);
     },
-    $signature: 196
+    $signature: 185
   };
   B._EmailTileBuilderState_build_closure11.prototype = {
     call$3(context, value, child) {
@@ -21293,7 +21293,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return A.Row$(t2, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
       }
     },
-    $signature: 196
+    $signature: 185
   };
   B._EmailTileBuilderState__buildListActionButtonWhenHover_closure.prototype = {
     call$0() {
@@ -22115,5 +22115,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "POmredh2o25h0khNJ4bFnarXrto=");
+})($__dart_deferred_initializers__, "1fWkDsrcL8WMLIjyBwVW2JDOhHs=");
 ;
