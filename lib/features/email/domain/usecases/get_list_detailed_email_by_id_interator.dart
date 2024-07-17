@@ -57,7 +57,7 @@ class GetListDetailedEmailByIdInteractor {
 
     final listEmailContent = email.emailContentList;
     if (listEmailContent.isNotEmpty) {
-      final mapCidImageDownloadUrl = email.attachmentsWithCid.toMapCidImageDownloadUrl(
+      final mapCidImageDownloadUrl = email.allAttachments.listAttachmentsDisplayedInContent.toMapCidImageDownloadUrl(
         accountId: accountId,
         downloadUrl: baseDownloadUrl
       );

@@ -326,9 +326,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
 
   void _updateEditorContent(RestoreEmailInlineImagesSuccess success) {
     richTextWebController?.editorController.setText(success.emailContent);
-    consumeState(Stream.value(Right(GetEmailContentSuccess(
-      htmlEmailContent: success.emailContent,
-      attachments: []))));
+    consumeState(Stream.value(Right(GetEmailContentSuccess(htmlEmailContent: success.emailContent))));
   }
 
   @override
@@ -582,6 +580,12 @@ class ComposerController extends BaseController with DragDropFileMixin implement
             presentationEmail: arguments.sendingEmail!.presentationEmail,
             actionType: EmailActionType.editSendingEmail
           );
+          final allAttachments = arguments.sendingEmail!.email.allAttachments;
+          _initAttachmentsAndInlineImages(
+            attachments: allAttachments.getListAttachmentsDisplayedOutside(
+              arguments.sendingEmail!.email.htmlBodyAttachments),
+            inlineImages: allAttachments.listAttachmentsDisplayedInContent);
+
           _getEmailContentFromSendingEmail(arguments.sendingEmail!);
           _emailIdEditing = arguments.sendingEmail!.presentationEmail.id!;
           break;
@@ -628,7 +632,9 @@ class ComposerController extends BaseController with DragDropFileMixin implement
             presentationEmail: arguments.presentationEmail!,
             actionType: arguments.emailActionType
           );
-          _initAttachments(arguments.attachments ?? []);
+          _initAttachmentsAndInlineImages(
+            attachments: arguments.attachments,
+            inlineImages: arguments.inlineImages);
           _transformHtmlEmailContent(arguments.emailContents);
           break;
         case EmailActionType.reopenComposerBrowser:
@@ -644,9 +650,9 @@ class ComposerController extends BaseController with DragDropFileMixin implement
             presentationEmail: arguments.presentationEmail!,
             actionType: EmailActionType.reopenComposerBrowser
           );
-          _initAttachments(
-            arguments.attachments ?? [],
-            inlineAttachments: arguments.inlineImages);
+          _initAttachmentsAndInlineImages(
+            attachments: arguments.attachments,
+            inlineImages: arguments.inlineImages);
 
           final accountId = mailboxDashBoardController.accountId.value;
           final downloadUrl = mailboxDashBoardController.sessionCurrent
@@ -690,13 +696,16 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     subjectEmailInputController.text = newSubject;
   }
 
-  void _initAttachments(List<Attachment> attachments, {List<Attachment>? inlineAttachments}) {
-    if (attachments.isNotEmpty) {
-      initialAttachments = attachments;
+  void _initAttachmentsAndInlineImages({
+    List<Attachment>? attachments,
+    List<Attachment>? inlineImages
+  }) {
+    if (attachments?.isNotEmpty == true) {
+      initialAttachments = attachments!;
       uploadController.initializeUploadAttachments(attachments);
     }
-    if (inlineAttachments != null) {
-      uploadController.initializeUploadInlineAttachments(inlineAttachments);
+    if (inlineImages?.isNotEmpty == true) {
+      uploadController.initializeUploadInlineAttachments(inlineImages!);
     }
   }
 
@@ -1323,7 +1332,6 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     consumeState(Stream.value(
       Right(GetEmailContentSuccess(
         htmlEmailContent: sendingEmail.presentationEmail.emailContentList.asHtmlString,
-        attachments: sendingEmail.email.allAttachments,
         emailCurrent: sendingEmail.email
       ))
     ));
@@ -1346,32 +1354,17 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   }
 
   void _getEmailContentFromContentShared(String content) {
-    consumeState(Stream.value(
-      Right(GetEmailContentSuccess(
-        htmlEmailContent: content,
-        attachments: [],
-      ))
-    ));
+    consumeState(Stream.value(Right(GetEmailContentSuccess(htmlEmailContent: content))));
   }
 
   void _getEmailContentFromMailtoUri(String content) {
     log('ComposerController::_getEmailContentFromMailtoUri:content: $content');
-    consumeState(Stream.value(
-      Right(GetEmailContentSuccess(
-        htmlEmailContent: content,
-        attachments: [],
-      ))
-    ));
+    consumeState(Stream.value(Right(GetEmailContentSuccess(htmlEmailContent: content))));
   }
 
   void _getEmailContentFromUnsubscribeMailtoLink(String content) {
     log('ComposerController::_getEmailContentFromUnsubscribeMailtoLink:content: $content');
-    consumeState(Stream.value(
-      Right(GetEmailContentSuccess(
-        htmlEmailContent: content,
-        attachments: [],
-      ))
-    ));
+    consumeState(Stream.value(Right(GetEmailContentSuccess(htmlEmailContent: content))));
   }
 
   void _getEmailContentFromEmailId({required EmailId emailId, bool isDraftEmail = false}) {
@@ -1389,12 +1382,16 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   }
 
   void _getEmailContentOffLineSuccess(GetEmailContentFromCacheSuccess success) {
-    _initAttachments(success.attachments);
+    _initAttachmentsAndInlineImages(
+      attachments: success.attachments,
+      inlineImages: success.inlineImages);
     emailContentsViewState.value = Right(success);
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
-    _initAttachments(success.attachments);
+    _initAttachmentsAndInlineImages(
+      attachments: success.attachments,
+      inlineImages: success.inlineImages);
     emailContentsViewState.value = Right(success);
   }
 

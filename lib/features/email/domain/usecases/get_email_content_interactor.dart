@@ -47,9 +47,11 @@ class GetEmailContentInteractor {
   ) async* {
     try {
       final email = await emailRepository.getEmailContent(session, accountId, emailId);
+      final listAttachments = email.allAttachments.getListAttachmentsDisplayedOutside(email.htmlBodyAttachments);
+      final listInlineImages = email.allAttachments.listAttachmentsDisplayedInContent;
 
       if (email.emailContentList.isNotEmpty) {
-        final mapCidImageDownloadUrl = email.attachmentsWithCid.toMapCidImageDownloadUrl(
+        final mapCidImageDownloadUrl = listInlineImages.toMapCidImageDownloadUrl(
           accountId: accountId,
           downloadUrl: baseDownloadUrl
         );
@@ -61,13 +63,15 @@ class GetEmailContentInteractor {
 
         yield Right<Failure, Success>(GetEmailContentSuccess(
           htmlEmailContent: newEmailContents.asHtmlString,
-          attachments: email.allAttachments.getListAttachmentsDisplayedOutside(email.htmlBodyAttachments),
+          attachments: listAttachments,
+          inlineImages: listInlineImages,
           emailCurrent: email
         ));
       } else {
         yield Right<Failure, Success>(GetEmailContentSuccess(
           htmlEmailContent: '',
-          attachments: email.allAttachments.getListAttachmentsDisplayedOutside(email.htmlBodyAttachments),
+          attachments: listAttachments,
+          inlineImages: listInlineImages,
           emailCurrent: email
         ));
       }
@@ -90,6 +94,7 @@ class GetEmailContentInteractor {
       yield Right<Failure, Success>(GetEmailContentFromCacheSuccess(
         htmlEmailContent: detailedEmail.htmlEmailContent ?? '',
         attachments: detailedEmail.attachments ?? [],
+        inlineImages: detailedEmail.inlineImages ?? [],
         emailCurrent: Email(
           id: emailId,
           headers: detailedEmail.headers,
@@ -121,6 +126,7 @@ class GetEmailContentInteractor {
       yield Right<Failure, Success>(GetEmailContentFromCacheSuccess(
         htmlEmailContent: detailedEmail.htmlEmailContent ?? '',
         attachments: detailedEmail.attachments ?? [],
+        inlineImages: detailedEmail.inlineImages ?? [],
         emailCurrent: Email(
           id: emailId,
           headers: detailedEmail.headers,

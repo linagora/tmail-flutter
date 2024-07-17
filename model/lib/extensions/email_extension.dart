@@ -151,8 +151,6 @@ extension EmailExtension on Email {
 
   List<Attachment> get allAttachments => attachments?.map((item) => item.toAttachment()).toList() ?? [];
 
-  List<Attachment> get attachmentsWithCid => allAttachments.where((attachment) => attachment.hasCid()).toList();
-
   PresentationMailbox? findMailboxContain(Map<MailboxId, PresentationMailbox> mapMailbox) {
     final newMailboxIds = mailboxIds;
     newMailboxIds?.removeWhere((key, value) => !value);
