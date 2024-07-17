@@ -176,7 +176,7 @@ class _WebEditorState extends State<WebEditorWidget> {
                 HtmlUtils.lineHeight100Percent.name
               ),
               onDragEnter: widget.onDragEnter,
-              onDragLeave: () {},
+              onDragLeave: (types) {},
             ),
           ),
         );
