@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 
 class CreateEmailRequest with EquatableMixin {
@@ -17,7 +18,7 @@ class CreateEmailRequest with EquatableMixin {
   final EmailActionType emailActionType;
   final String subject;
   final String emailContent;
-  final bool isRequestReadReceipt;
+  final bool hasRequestReadReceipt;
   final Set<EmailAddress> fromSender;
   final Set<EmailAddress> toRecipients;
   final Set<EmailAddress> ccRecipients;
@@ -34,6 +35,7 @@ class CreateEmailRequest with EquatableMixin {
   final MessageIdsHeaderValue? messageId;
   final MessageIdsHeaderValue? references;
   final SendingEmail? emailSendingQueue;
+  final ScreenDisplayMode displayMode;
 
   CreateEmailRequest({
     required this.session,
@@ -45,7 +47,7 @@ class CreateEmailRequest with EquatableMixin {
     required this.toRecipients,
     required this.ccRecipients,
     required this.bccRecipients,
-    this.isRequestReadReceipt = true,
+    this.hasRequestReadReceipt = true,
     this.identity,
     this.attachments,
     this.inlineAttachments,
@@ -57,7 +59,8 @@ class CreateEmailRequest with EquatableMixin {
     this.unsubscribeEmailId,
     this.messageId,
     this.references,
-    this.emailSendingQueue
+    this.emailSendingQueue,
+    this.displayMode = ScreenDisplayMode.normal
   });
 
   @override
@@ -72,7 +75,7 @@ class CreateEmailRequest with EquatableMixin {
     ccRecipients,
     bccRecipients,
     identity,
-    isRequestReadReceipt,
+    hasRequestReadReceipt,
     attachments,
     inlineAttachments,
     outboxMailboxId,
@@ -83,6 +86,7 @@ class CreateEmailRequest with EquatableMixin {
     unsubscribeEmailId,
     references,
     references,
-    emailSendingQueue
+    emailSendingQueue,
+    displayMode,
   ];
 }

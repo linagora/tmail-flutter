@@ -33,7 +33,7 @@ extension ListAttachmentExtension on List<Attachment> {
     required String downloadUrl
   }) {
     final mapUrlDownloadCID = {
-      for (var attachment in listAttachmentsDisplayedInContent)
+      for (var attachment in this)
         attachment.cid! : attachment.getDownloadUrl(downloadUrl, accountId)
     };
     return mapUrlDownloadCID;
