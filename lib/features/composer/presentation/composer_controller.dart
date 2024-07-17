@@ -625,6 +625,10 @@ class ComposerController extends BaseController with DragDropFileMixin implement
             presentationEmail: arguments.presentationEmail!,
             actionType: arguments.emailActionType
           );
+          _initAttachmentsAndInlineImages(
+            attachments: arguments.attachments,
+            inlineImages: arguments.inlineImages);
+
           _transformHtmlEmailContent(arguments.emailContents);
           break;
         case EmailActionType.forward:
