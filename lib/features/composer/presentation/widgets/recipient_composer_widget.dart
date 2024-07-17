@@ -151,7 +151,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
               child: FocusScope(
                 child: Focus(
                   onFocusChange: (focus) => widget.onFocusEmailAddressChangeAction?.call(widget.prefix, focus),
-                  onKey: PlatformInfo.isWeb ? _recipientInputOnKeyListener : null,
+                  onKeyEvent: PlatformInfo.isWeb ? _recipientInputOnKeyListener : null,
                   child: StatefulBuilder(
                     builder: (context, stateSetter) {
                       if (PlatformInfo.isWeb || widget.isTestingForWeb) {
@@ -235,7 +235,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                               },
                             );
                           },
-                          onAccept: (draggableEmailAddress) => _handleAcceptDraggableEmailAddressAction(draggableEmailAddress, stateSetter),
+                          onAcceptWithDetails: (draggableEmailAddress) => _handleAcceptDraggableEmailAddressAction(draggableEmailAddress.data, stateSetter),
                           onLeave: (draggableEmailAddress) {
                             if (_isDragging) {
                               stateSetter(() => _isDragging = false);
