@@ -22,7 +22,8 @@ extension DetailedEmailHiveCacheExtension on DetailedEmailHiveCache {
         : null,
       references: references != null
         ? MessageIdsHeaderValue(references!.toSet())
-        : null
+        : null,
+      inlineImages: inlineImages?.toAttachment(),
     );
  }
 }

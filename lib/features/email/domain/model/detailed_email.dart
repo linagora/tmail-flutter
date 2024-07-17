@@ -14,6 +14,7 @@ class DetailedEmail with EquatableMixin {
   final DateTime createdTime;
   final MessageIdsHeaderValue? messageId;
   final MessageIdsHeaderValue? references;
+  final List<Attachment>? inlineImages;
 
   DetailedEmail({
     required this.emailId,
@@ -25,6 +26,7 @@ class DetailedEmail with EquatableMixin {
     this.emailContentPath,
     this.messageId,
     this.references,
+    this.inlineImages,
   });
 
   @override
@@ -38,5 +40,6 @@ class DetailedEmail with EquatableMixin {
     emailContentPath,
     messageId,
     references,
+    inlineImages,
   ];
 }
