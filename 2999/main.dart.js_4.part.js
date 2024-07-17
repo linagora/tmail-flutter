@@ -242,18 +242,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.fromAccountDashBoard = t6;
       _.key = t7;
     },
-    VacationNotificationMessageWidget__buildBodyForDesktop_closure: function VacationNotificationMessageWidget__buildBodyForDesktop_closure(t0) {
-      this.$this = t0;
-    },
-    VacationNotificationMessageWidget__buildBodyForDesktop_closure0: function VacationNotificationMessageWidget__buildBodyForDesktop_closure0(t0) {
-      this.$this = t0;
-    },
-    VacationNotificationMessageWidget__buildBodyForMobile_closure: function VacationNotificationMessageWidget__buildBodyForMobile_closure(t0) {
-      this.$this = t0;
-    },
-    VacationNotificationMessageWidget__buildBodyForMobile_closure0: function VacationNotificationMessageWidget__buildBodyForMobile_closure0(t0) {
-      this.$this = t0;
-    },
     buildSVGIconButton(icon, iconColor, iconSize, onTap, onTapDown, padding, tooltip) {
       var _null = null,
         t1 = padding == null ? C.EdgeInsets_8_8_8_8 : padding,
@@ -655,7 +643,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t2, t3, t4, t5, t6, t7, t8, _this = this, _null = null,
         t1 = _this.padding;
       if (t1 == null)
-        t1 = C.EdgeInsetsDirectional_12_0_0_0;
+        t1 = D.EdgeInsets_12_5_12_5;
       t2 = A.BorderRadius$circular(8);
       $.$get$Get();
       t3 = $.GetInstance__getInstance;
@@ -671,44 +659,67 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.Container$(_null, A.ResponsiveWidget$(t7, _this._buildBodyForDesktop$1(context), t5, t4, t3, t8, t6), C.Clip_0, _null, _null, new A.BoxDecoration(D.Color_4294964674, _null, _null, t2, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _this.margin, t1, _null, _null, 1 / 0);
     },
     _buildBodyForDesktop$1(context) {
-      var _this = this, _null = null,
+      var t3, t4, _this = this, _null = null,
+        _s16_ = "Vacation setting",
+        _s15_ = "vacationSetting",
         t1 = A._setArrayType([], type$.JSArray_Widget),
         t2 = _this.leadingIcon;
       if (t2 != null)
         t1.push(t2);
-      t2 = B.VacationResponseExtension_getNotificationMessage(_this.vacationResponse, context);
-      t1.push(A.Expanded$(A.Text$(t2, _null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null, _null, _null), 1));
-      if (_this.actionEndNow != null) {
-        A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-        t1.push(A.buildTextButton(A.Intl__message("End now", _null, "endNow", _null, _null), C.Color_0, 44, new B.VacationNotificationMessageWidget__buildBodyForDesktop_closure(_this), 10, C.TextStyle_yT32, 90));
+      t2 = _this.vacationResponse;
+      t3 = B.VacationResponseExtension_getNotificationMessage(t2, context);
+      t2 = B.VacationResponseExtension_getNotificationMessage(t2, context);
+      t1.push(A.Expanded$(A.Tooltip$(A.Text$(t2, _null, _null, 1, C.TextOverflow_2, _null, _null, _null, _null, A.TextStyle$(_null, _null, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null, _null, _null), t3), 1));
+      t2 = _this.actionEndNow;
+      if (t2 != null) {
+        t3 = type$.AppLocalizations;
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+        t4 = A.Intl__message("End now", _null, "endNow", _null, _null);
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+        t1.push(A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_0, 10, _null, _null, 1, 180, _null, t2, D.EdgeInsets_8_5_8_5, t4, _null, C.TextStyle_yT32, A.Intl__message("End now", _null, "endNow", _null, _null), _null));
       }
-      if (_this.actionGotoVacationSetting != null) {
-        A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-        t1.push(A.buildTextButton(A.Intl__message("Vacation setting", _null, "vacationSetting", _null, _null), C.Color_0, 44, new B.VacationNotificationMessageWidget__buildBodyForDesktop_closure0(_this), 10, C.TextStyle_yT32, 150));
+      t2 = _this.actionGotoVacationSetting;
+      if (t2 != null) {
+        t3 = type$.AppLocalizations;
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+        t4 = A.Intl__message(_s16_, _null, _s15_, _null, _null);
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+        t1.push(A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_0, 10, _null, _null, 1, 310, _null, t2, D.EdgeInsets_8_5_8_5, t4, _null, C.TextStyle_yT32, A.Intl__message(_s16_, _null, _s15_, _null, _null), _null));
       }
       return A.Row$(t1, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     },
     _buildBodyForMobile$1(context) {
-      var _this = this, _null = null,
+      var t4, t5, _this = this, _null = null,
+        _s16_ = "Vacation setting",
+        _s15_ = "vacationSetting",
         t1 = type$.JSArray_Widget,
         t2 = A._setArrayType([], t1),
         t3 = _this.leadingIcon;
       if (t3 != null)
         t2.push(t3);
-      t3 = B.VacationResponseExtension_getNotificationMessage(_this.vacationResponse, context);
-      t2.push(A.Expanded$(new A.Padding(D.EdgeInsets_0_12_12_0, A.Center$(A.Text$(t3, _null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null, _null, _null), _null, _null), _null), 1));
-      t2 = A.Row$(t2, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
-      t3 = A._setArrayType([C.Spacer_null], t1);
-      if (_this.actionEndNow != null) {
-        A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-        t3.push(A.buildTextButton(A.Intl__message("End now", _null, "endNow", _null, _null), C.Color_0, 36, new B.VacationNotificationMessageWidget__buildBodyForMobile_closure(_this), 10, C.TextStyle_yT32, 90));
+      t3 = _this.vacationResponse;
+      t4 = B.VacationResponseExtension_getNotificationMessage(t3, context);
+      t3 = B.VacationResponseExtension_getNotificationMessage(t3, context);
+      t2.push(A.Tooltip$(A.Text$(t3, _null, _null, 1, C.TextOverflow_2, _null, _null, _null, _null, A.TextStyle$(_null, _null, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), C.TextAlign_2, _null, _null, _null, _null), t4));
+      t1 = A._setArrayType([], t1);
+      t3 = _this.actionEndNow;
+      if (t3 != null) {
+        t4 = type$.AppLocalizations;
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t4).toString;
+        t5 = A.Intl__message("End now", _null, "endNow", _null, _null);
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t4).toString;
+        t1.push(new A.Flexible(1, C.FlexFit_1, A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_0, 10, _null, _null, 1, 180, _null, t3, D.EdgeInsets_8_5_8_5, t5, _null, C.TextStyle_yT32, A.Intl__message("End now", _null, "endNow", _null, _null), _null), _null));
       }
-      if (_this.actionGotoVacationSetting != null) {
-        A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-        t3.push(A.buildTextButton(A.Intl__message("Vacation setting", _null, "vacationSetting", _null, _null), C.Color_0, 36, new B.VacationNotificationMessageWidget__buildBodyForMobile_closure0(_this), 10, C.TextStyle_yT32, 150));
+      t3 = _this.actionGotoVacationSetting;
+      if (t3 != null) {
+        t4 = type$.AppLocalizations;
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t4).toString;
+        t5 = A.Intl__message(_s16_, _null, _s15_, _null, _null);
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t4).toString;
+        t1.push(new A.Flexible(1, C.FlexFit_1, A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_0, 10, _null, _null, 1, 180, _null, t3, D.EdgeInsets_8_5_8_5, t5, _null, C.TextStyle_yT32, A.Intl__message(_s16_, _null, _s15_, _null, _null), _null), _null));
       }
-      t3.push(C.Spacer_null);
-      return A.Column$(A._setArrayType([t2, A.Row$(t3, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null)], t1), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
+      t2.push(A.Row$(t1, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_2, C.MainAxisSize_1, _null));
+      return A.Column$(t2, C.CrossAxisAlignment_2, C.MainAxisAlignment_2, C.MainAxisSize_0, C.VerticalDirection_1);
     }
   };
   var typesOffset = hunkHelpers.updateTypes(["bool(PortalLinkScope)"]);
@@ -875,30 +886,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 91
   };
-  B.VacationNotificationMessageWidget__buildBodyForDesktop_closure.prototype = {
-    call$0() {
-      return this.$this.actionEndNow.call$0();
-    },
-    $signature: 0
-  };
-  B.VacationNotificationMessageWidget__buildBodyForDesktop_closure0.prototype = {
-    call$0() {
-      return this.$this.actionGotoVacationSetting.call$0();
-    },
-    $signature: 0
-  };
-  B.VacationNotificationMessageWidget__buildBodyForMobile_closure.prototype = {
-    call$0() {
-      return this.$this.actionEndNow.call$0();
-    },
-    $signature: 0
-  };
-  B.VacationNotificationMessageWidget__buildBodyForMobile_closure0.prototype = {
-    call$0() {
-      return this.$this.actionGotoVacationSetting.call$0();
-    },
-    $signature: 0
-  };
   (function installTearOffs() {
     var _instance_1_u = hunkHelpers._instance_1u;
     _instance_1_u(B.PortalLinkScope.prototype, "get$linkEquals", "linkEquals$1", 0);
@@ -909,7 +896,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inheritMany(A.StatefulWidget, [B.HtmlContentViewerOnWeb, B.Portal, B.ApplicationVersionWidget]);
     _inheritMany(A.State0, [B._HtmlContentViewerOnWebState, B._PopupMenuDividerState, B._PortalState, B._ApplicationVersionWidgetState]);
     _inheritMany(A.Closure, [B._HtmlContentViewerOnWebState_initState_closure, B._HtmlContentViewerOnWebState__setUpWeb_closure]);
-    _inheritMany(A.Closure0Args, [B._HtmlContentViewerOnWebState_initState__closure, B._HtmlContentViewerOnWebState_initState__closure0, B._HtmlContentViewerOnWebState_initState__closure1, B._HtmlContentViewerOnWebState__setUpWeb_closure0, B.PopupMenuItemWidget_build_closure, B.UserSettingPopupMenuMixin__settingAction_closure, B.UserSettingPopupMenuMixin__logoutAction_closure, B.VacationNotificationMessageWidget__buildBodyForDesktop_closure, B.VacationNotificationMessageWidget__buildBodyForDesktop_closure0, B.VacationNotificationMessageWidget__buildBodyForMobile_closure, B.VacationNotificationMessageWidget__buildBodyForMobile_closure0]);
+    _inheritMany(A.Closure0Args, [B._HtmlContentViewerOnWebState_initState__closure, B._HtmlContentViewerOnWebState_initState__closure0, B._HtmlContentViewerOnWebState_initState__closure1, B._HtmlContentViewerOnWebState__setUpWeb_closure0, B.PopupMenuItemWidget_build_closure, B.UserSettingPopupMenuMixin__settingAction_closure, B.UserSettingPopupMenuMixin__logoutAction_closure]);
     _inheritMany(A.Closure2Args, [B._HtmlContentViewerOnWebState_build_closure, B._HtmlContentViewerOnWebState_build__closure, B._ApplicationVersionWidgetState_build_closure]);
     _inheritMany(A.StatelessWidget, [B.PopupMenuItemWidget, B._ElevatedButtonWithIconChild, B.MaterialTextButton, B.UserInformationWidget, B.VacationNotificationMessageWidget]);
     _inherit(B._ElevatedButtonWithIcon, A.ElevatedButton);
@@ -958,15 +945,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsetsDirectional_0_24_0_24 = new A.EdgeInsetsDirectional(0, 24, 0, 24);
     D.EdgeInsetsDirectional_0_8_0_8 = new A.EdgeInsetsDirectional(0, 8, 0, 8);
     D.EdgeInsetsDirectional_12_0_16_0 = new A.EdgeInsetsDirectional(12, 0, 16, 0);
+    D.EdgeInsetsDirectional_12_8_12_0 = new A.EdgeInsetsDirectional(12, 8, 12, 0);
     D.EdgeInsetsDirectional_16_0_0_0 = new A.EdgeInsetsDirectional(16, 0, 0, 0);
     D.EdgeInsetsDirectional_16_16_4_16 = new A.EdgeInsetsDirectional(16, 16, 4, 16);
     D.EdgeInsetsDirectional_4_0_6_0 = new A.EdgeInsetsDirectional(4, 0, 6, 0);
     D.EdgeInsetsDirectional_8_0_12_0 = new A.EdgeInsetsDirectional(8, 0, 12, 0);
     D.EdgeInsetsDirectional_8_0_4_0 = new A.EdgeInsetsDirectional(8, 0, 4, 0);
     D.EdgeInsets_0_0_16_0 = new A.EdgeInsets(0, 0, 16, 0);
-    D.EdgeInsets_0_12_12_0 = new A.EdgeInsets(0, 12, 12, 0);
     D.EdgeInsets_0_5_0_5 = new A.EdgeInsets(0, 5, 0, 5);
     D.EdgeInsets_0_6_0_0 = new A.EdgeInsets(0, 6, 0, 0);
+    D.EdgeInsets_12_5_12_5 = new A.EdgeInsets(12, 5, 12, 5);
     D.EdgeInsets_16_12_16_12 = new A.EdgeInsets(16, 12, 16, 12);
     D.EdgeInsets_20_16_20_16 = new A.EdgeInsets(20, 16, 20, 16);
     D.EdgeInsets_32_0_32_0 = new A.EdgeInsets(32, 0, 32, 0);
@@ -989,5 +977,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "TERtS0r3KRkktppaYxqo5CLEyxM=");
+})($__dart_deferred_initializers__, "LLxiGLbcrDA4GRYXfGIq1rhFv3E=");
 ;
