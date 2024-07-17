@@ -89,7 +89,7 @@ class EmptyMailboxDialogOverlay extends StatelessWidget {
                     text: AppLocalizations.of(context).clean,
                     backgroundColor: EmptyMailboxDialogOverlayStyles.emptyButtonColor,
                     padding: EmptyMailboxDialogOverlayStyles.buttonPadding,
-                    textStyle: EmptyMailboxDialogOverlayStyles.buttonTextStyle,
+                    textStyle: EmptyMailboxDialogOverlayStyles.cleanButtonTextStyle,
                     borderRadius: EmptyMailboxDialogOverlayStyles.buttonRadius,
                     onTapActionCallback: () => onEmptyMailboxActionCallback.call(mailboxNode),
                   )
