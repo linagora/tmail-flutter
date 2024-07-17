@@ -14,7 +14,8 @@ extension EmailExtension on Email {
       keywords: keywords,
       htmlEmailContent: htmlEmailContent,
       messageId: messageId,
-      references: references
+      references: references,
+      inlineImages: allAttachments.listAttachmentsDisplayedInContent,
     );
   }
 }

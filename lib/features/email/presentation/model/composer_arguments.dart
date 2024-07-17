@@ -95,11 +95,9 @@ class ComposerArguments extends RouterArguments {
       emailActionType: EmailActionType.reopenComposerBrowser,
       presentationEmail: composerCache.email?.toPresentationEmail(),
       emailContents: composerCache.email?.emailContentList.asHtmlString,
-      attachments: composerCache.email?.allAttachments
-        .where((attachment) => attachment.disposition != ContentDisposition.inline)
-        .toList(),
+      attachments: composerCache.email?.allAttachments.getListAttachmentsDisplayedOutside(composerCache.email?.htmlBodyAttachments ?? []),
       selectedIdentity: composerCache.identity,
-      inlineImages: composerCache.email?.attachmentsWithCid,
+      inlineImages: composerCache.email?.allAttachments.listAttachmentsDisplayedInContent,
       readRecepientEnabled: composerCache.readReceipentEnabled,
       displayMode: composerCache.displayMode,
     );
@@ -107,6 +105,7 @@ class ComposerArguments extends RouterArguments {
   factory ComposerArguments.replyEmail({
     required PresentationEmail presentationEmail,
     required String content,
+    required List<Attachment> inlineImages,
     Role? mailboxRole,
     MessageIdsHeaderValue? messageId,
     MessageIdsHeaderValue? references,
@@ -114,6 +113,7 @@ class ComposerArguments extends RouterArguments {
     emailActionType: EmailActionType.reply,
     presentationEmail: presentationEmail,
     emailContents: content,
+    inlineImages: inlineImages,
     mailboxRole: mailboxRole,
     messageId: messageId,
     references: references,
@@ -122,6 +122,7 @@ class ComposerArguments extends RouterArguments {
   factory ComposerArguments.replyAllEmail({
     required PresentationEmail presentationEmail,
     required String content,
+    required List<Attachment> inlineImages,
     Role? mailboxRole,
     MessageIdsHeaderValue? messageId,
     MessageIdsHeaderValue? references,
@@ -129,6 +130,7 @@ class ComposerArguments extends RouterArguments {
     emailActionType: EmailActionType.replyAll,
     presentationEmail: presentationEmail,
     emailContents: content,
+    inlineImages: inlineImages,
     mailboxRole: mailboxRole,
     messageId: messageId,
     references: references,
@@ -138,6 +140,7 @@ class ComposerArguments extends RouterArguments {
     required PresentationEmail presentationEmail,
     required String content,
     required List<Attachment> attachments,
+    required List<Attachment> inlineImages,
     MessageIdsHeaderValue? messageId,
     MessageIdsHeaderValue? references,
   }) => ComposerArguments(
@@ -145,6 +148,7 @@ class ComposerArguments extends RouterArguments {
     presentationEmail: presentationEmail,
     emailContents: content,
     attachments: attachments,
+    inlineImages: inlineImages,
     mailboxRole: presentationEmail.mailboxContain?.role,
     messageId: messageId,
     references: references,
