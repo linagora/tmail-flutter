@@ -197,7 +197,6 @@ extension AppColor on Color {
   static const colorCreateFiltersButton = Color(0xFFF3F3F7);
   static const colorTextBody = Color(0xFF818C99);
   static const colorClosePopupDialogButton = Color(0xFFAEB7C2);
-  static const colorEmptyPopupDialogButton = Color(0xFFFFC107);
   static const colorCancelPopupDialogButton = Color(0xFFEBEDF0);
   static const colorRemoveRuleFilterConditionButton = Color(0xFFE6E8EC);
   static const colorComposerShadowTop = Color(0x28000000);

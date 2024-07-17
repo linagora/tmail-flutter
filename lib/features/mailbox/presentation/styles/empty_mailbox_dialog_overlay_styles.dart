@@ -19,7 +19,7 @@ class EmptyMailboxDialogOverlayStyles {
   static const Color backgroundColor = Colors.white;
   static const Color closeButtonColor = AppColor.colorClosePopupDialogButton;
   static const Color cancelButtonColor = AppColor.colorCancelPopupDialogButton;
-  static const Color emptyButtonColor = AppColor.colorEmptyPopupDialogButton;
+  static const Color emptyButtonColor = AppColor.primaryColor;
   static const Color emptyButtonBackground = Colors.transparent;
   static Color get shadowColor => Colors.grey.shade500;
 
@@ -38,9 +38,9 @@ class EmptyMailboxDialogOverlayStyles {
     fontWeight: FontWeight.w400,
     color: Colors.black
   );
-  static const TextStyle emptyButtonTextStyle = TextStyle(
+  static const TextStyle cleanButtonTextStyle = TextStyle(
     fontWeight: FontWeight.w400,
-    fontSize: 15,
-    color: AppColor.colorTextBody
+    fontSize: 13,
+    color: Colors.white
   );
 }
