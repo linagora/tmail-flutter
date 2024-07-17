@@ -1,13 +1,12 @@
 import 'dart:convert';
 import 'package:collection/collection.dart';
-import 'package:core/core.dart';
+import 'package:core/domain/exceptions/web_session_exception.dart';
+import 'package:core/presentation/utils/html_transformer/html_transform.dart';
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:jmap_dart_client/jmap/identities/identity.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/session_storage_composer_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
@@ -50,30 +49,18 @@ class SessionStorageComposerDatasourceImpl
   }
 
   @override
-  Future<void> saveComposerCacheOnWeb(
-    Email email,
-    {
-      required AccountId accountId,
-      required UserName userName,
-      required ScreenDisplayMode displayMode,
-      Identity? identity,
-      bool? readReceipentEnabled
-    }
-  ) async {
+  Future<void> saveComposerCacheOnWeb({
+    required AccountId accountId,
+    required UserName userName,
+    required ComposerCache composerCache,
+  }) async {
     return Future.sync(() {
       final composerCacheKey = TupleKey(
         EmailActionType.reopenComposerBrowser.name,
         accountId.asString,
         userName.value).toString();
       Map<String, String> entries = {
-        composerCacheKey: jsonEncode(
-          ComposerCache(
-            displayMode: displayMode,
-            email: email,
-            identity: identity,
-            readReceipentEnabled: readReceipentEnabled,
-          ).toJson()
-        )
+        composerCacheKey: jsonEncode(composerCache.toJson())
       };
       html.window.sessionStorage.addAll(entries);
     }).catchError(_exceptionThrower.throwException);
