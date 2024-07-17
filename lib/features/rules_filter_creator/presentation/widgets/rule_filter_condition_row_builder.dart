@@ -107,7 +107,7 @@ class RuleFilterConditionRow extends StatelessWidget {
                 )
             ),
             Container(
-              padding: const EdgeInsets.only(left: 12),
+              padding: const EdgeInsetsDirectional.only(start: 12),
               alignment: Alignment.center,
               child: RuleFilterConditionRemoveButton(
                 tapRemoveRuleFilterConditionCallback: tapRemoveRuleFilterConditionCallback,
