@@ -219,7 +219,6 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     createFocusNodeInput();
     scrollControllerEmailAddress.addListener(_scrollControllerEmailAddressListener);
     _listenStreamEvent();
-    _getAlwaysReadReceiptSetting();
     _beforeReconnectManager.addListener(onBeforeReconnect);
   }
 
@@ -427,8 +426,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     await _saveComposerCacheOnWebInteractor.execute(
       createEmailRequest,
       mailboxDashBoardController.accountId.value!,
-      mailboxDashBoardController.sessionCurrent!.username,
-      displayMode: screenDisplayMode.value);
+      mailboxDashBoardController.sessionCurrent!.username);
   }
 
   Future<CreateEmailRequest?> _generateCreateEmailRequest() async {
@@ -452,7 +450,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
       toRecipients: listToEmailAddress.toSet(),
       ccRecipients: listCcEmailAddress.toSet(),
       bccRecipients: listBccEmailAddress.toSet(),
-      isRequestReadReceipt: hasRequestReadReceipt.value,
+      hasRequestReadReceipt: hasRequestReadReceipt.value,
       identity: identitySelected.value,
       attachments: uploadController.attachmentsUploaded,
       inlineAttachments: uploadController.mapInlineAttachments,
@@ -464,7 +462,8 @@ class ComposerController extends BaseController with DragDropFileMixin implement
       unsubscribeEmailId: composerArguments.value!.previousEmailId,
       messageId: composerArguments.value!.messageId,
       references: composerArguments.value!.references,
-      emailSendingQueue: composerArguments.value!.sendingEmail
+      emailSendingQueue: composerArguments.value!.sendingEmail,
+      displayMode: screenDisplayMode.value
     );
   }
 
@@ -668,8 +667,6 @@ class ComposerController extends BaseController with DragDropFileMixin implement
             accountId: accountId,
             downloadUrl: downloadUrl
           );
-
-          hasRequestReadReceipt.value = arguments.readRecepientEnabled ?? false;
           break;
         case EmailActionType.composeFromUnsubscribeMailtoLink:
           if (arguments.subject != null) {
@@ -686,6 +683,13 @@ class ComposerController extends BaseController with DragDropFileMixin implement
           break;
         default:
           break;
+      }
+
+      if (composerArguments.value?.emailActionType == EmailActionType.reopenComposerBrowser) {
+        log('ComposerController::_initEmail: hasRequestReadReceipt = ${arguments.hasRequestReadReceipt}');
+        hasRequestReadReceipt.value = arguments.hasRequestReadReceipt ?? false;
+      } else {
+        _getAlwaysReadReceiptSetting();
       }
     }
   }
@@ -985,7 +989,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
           toRecipients: listToEmailAddress.toSet(),
           ccRecipients: listCcEmailAddress.toSet(),
           bccRecipients: listBccEmailAddress.toSet(),
-          isRequestReadReceipt: hasRequestReadReceipt.value,
+          hasRequestReadReceipt: hasRequestReadReceipt.value,
           identity: identitySelected.value,
           attachments: uploadController.attachmentsUploaded,
           inlineAttachments: uploadController.mapInlineAttachments,
@@ -998,7 +1002,8 @@ class ComposerController extends BaseController with DragDropFileMixin implement
           unsubscribeEmailId: composerArguments.value!.previousEmailId,
           messageId: composerArguments.value!.messageId,
           references: composerArguments.value!.references,
-          emailSendingQueue: composerArguments.value!.sendingEmail
+          emailSendingQueue: composerArguments.value!.sendingEmail,
+          displayMode: screenDisplayMode.value
         ),
         createNewAndSendEmailInteractor: _createNewAndSendEmailInteractor,
         onCancelSendingEmailAction: _handleCancelSendingMessage,
@@ -2104,6 +2109,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   }
 
   void _getAlwaysReadReceiptSetting() {
+    log('ComposerController::_getAlwaysReadReceiptSetting:');
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null) {
       consumeState(_getAlwaysReadReceiptSettingInteractor.execute(accountId));
@@ -2220,7 +2226,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
           toRecipients: listToEmailAddress.toSet(),
           ccRecipients: listCcEmailAddress.toSet(),
           bccRecipients: listBccEmailAddress.toSet(),
-          isRequestReadReceipt: hasRequestReadReceipt.value,
+          hasRequestReadReceipt: hasRequestReadReceipt.value,
           identity: identitySelected.value,
           attachments: uploadController.attachmentsUploaded,
           inlineAttachments: uploadController.mapInlineAttachments,
@@ -2231,7 +2237,8 @@ class ComposerController extends BaseController with DragDropFileMixin implement
           unsubscribeEmailId: composerArguments.value!.previousEmailId,
           messageId: composerArguments.value!.messageId,
           references: composerArguments.value!.references,
-          emailSendingQueue: composerArguments.value!.sendingEmail
+          emailSendingQueue: composerArguments.value!.sendingEmail,
+          displayMode: screenDisplayMode.value
         ),
         createNewAndSaveEmailToDraftsInteractor: _createNewAndSaveEmailToDraftsInteractor,
         onCancelSavingEmailToDraftsAction: _handleCancelSavingMessageToDrafts,
