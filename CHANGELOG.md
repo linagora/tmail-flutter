@@ -1,3 +1,20 @@
+## [0.11.6] - 2024-07-18
+### Added
+- #2988 Upgrade to Flutter 3.22.2
+- Translation
+
+### Fixed
+- #2907 Disable `YES/NO/MAYBE` action for events when missing `METHOD/ORGANIZER/ATTENDEES`
+- #2945 Quick select for Request Read Receipt
+- #2989 Drag n Drop text in Email composer
+- #2946 Copy action for own email address in User information
+- #3000 Long list of recipients in reading email
+- #2871 Plain notificaiton for iOS
+- #2929 Button is truncated in French or long text in Vacation banner 
+- #2972 Change color for `Clean` button
+- #2928 Detect session expired and notice to user
+- #2930 Inline image in Draft 
+
 ## [0.11.5001] - 2024-07-05
 ### Added
 - #2877 Notification settings inside app
