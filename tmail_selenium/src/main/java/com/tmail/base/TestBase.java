@@ -1,7 +1,8 @@
-package com.linagora.tmail.base;
+package com.tmail.base;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Properties;
 
 import org.junit.After;
 import org.junit.runner.RunWith;
@@ -20,10 +21,20 @@ public abstract class TestBase {
     private BrowserContext browserContext;
     private Page page;
 
+    protected Properties properties;
+
     public TestBase(Browser browser, BrowserContext browserContext, Page page) {
         this.browser = browser;
         this.browserContext = browserContext;
         this.page = page;
+
+        properties = new Properties();
+        ClassLoader loader = getClass().getClassLoader();
+        try {
+            properties.load(loader.getResourceAsStream("config.properties"));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Parameterized.Parameters
@@ -50,7 +61,7 @@ public abstract class TestBase {
         return Arrays.asList(parameters);
     }
 
-    public void testUseCase(UseCase useCase) {
+    public void testUseCase(BaseScenario useCase) {
         useCase.execute(page);
     }
 
