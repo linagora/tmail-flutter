@@ -1,12 +1,12 @@
-package com.linagora.tmail.preprod.oidc.login;
+package com.tmail.preprod.oidc.login;
 
 import org.junit.Test;
 
-import com.linagora.tmail.base.TestBase;
-import com.linagora.tmail.usecases.LoginUseCase;
 import com.microsoft.playwright.Browser;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.Page;
+import com.tmail.base.TestBase;
+import com.tmail.scenarios.LoginScenario;
 
 public class LoginTest extends TestBase {
 
@@ -16,9 +16,9 @@ public class LoginTest extends TestBase {
 
     @Test
     public void testLogin() {
-        testUseCase(new LoginUseCase(
-                "http://localhost:2023/",
-                "firstname100.surname100",
-                "secret100"));
+        testUseCase(new LoginScenario(
+                properties.getProperty("app.hostUrl"),
+                properties.getProperty("user.name"),
+                properties.getProperty("user.password")));
     }
 }

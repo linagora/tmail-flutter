@@ -120,3 +120,6 @@ app.*.symbols
 *.g.dart
 messages_*.dart
 *.mocks.dart
+
+# end-to-end test
+config.properties

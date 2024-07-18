@@ -1,8 +1,8 @@
-package com.linagora.tmail.base;
+package com.tmail.base;
 
 import com.microsoft.playwright.Page;
 
-public abstract class UseCase {
+public abstract class BaseScenario {
     public abstract void execute(Page page);
 
     public TestUtils testUtils = new TestUtils();

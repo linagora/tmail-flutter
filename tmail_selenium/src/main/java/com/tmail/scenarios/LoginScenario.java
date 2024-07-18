@@ -1,17 +1,17 @@
-package com.linagora.tmail.usecases;
+package com.tmail.scenarios;
 
-import com.linagora.tmail.base.UseCase;
-import com.linagora.tmail.robots.HomeRobot;
-import com.linagora.tmail.robots.LoginRobot;
-import com.linagora.tmail.robots.MailboxDashboardRobot;
 import com.microsoft.playwright.Page;
+import com.tmail.base.BaseScenario;
+import com.tmail.robots.HomeRobot;
+import com.tmail.robots.LoginRobot;
+import com.tmail.robots.MailboxDashboardRobot;
 
-public class LoginUseCase extends UseCase {
+public class LoginScenario extends BaseScenario {
     String testUrl;
     String username;
     String password;
 
-    public LoginUseCase(String testUrl, String username, String password) {
+    public LoginScenario(String testUrl, String username, String password) {
         this.testUrl = testUrl;
         this.username = username;
         this.password = password;
