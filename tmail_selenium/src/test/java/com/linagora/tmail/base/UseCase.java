@@ -1,10 +1,9 @@
 package com.linagora.tmail.base;
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import com.microsoft.playwright.Page;
 
 public abstract class UseCase {
-    public abstract void execute(WebDriver webDriver, WebDriverWait wait);
+    public abstract void execute(Page page);
 
     public TestUtils testUtils = new TestUtils();
 }
