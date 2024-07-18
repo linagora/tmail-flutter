@@ -1,12 +1,12 @@
-package com.linagora.tmail.robots;
+package com.tmail.robots;
 
 import java.util.ArrayList;
 import java.util.regex.Pattern;
 
-import com.linagora.tmail.base.CoreRobot;
 import com.microsoft.playwright.FrameLocator;
 import com.microsoft.playwright.Locator;
 import com.microsoft.playwright.Page;
+import com.tmail.base.CoreRobot;
 
 public class ComposerRobot extends CoreRobot {
 
