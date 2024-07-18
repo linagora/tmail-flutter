@@ -4095,5 +4095,23 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "reconnect": "Reconnect",
+  "@reconnect": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sessionExpired": "Session expirée",
+  "@sessionExpired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dialogMessageSessionHasExpired": "La session a expiré, veuillez vous reconnecter.",
+  "@dialogMessageSessionHasExpired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
