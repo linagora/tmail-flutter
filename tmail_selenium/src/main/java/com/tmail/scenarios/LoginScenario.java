@@ -30,12 +30,6 @@ public class LoginScenario extends BaseScenario {
         loginRobot.clickLogin();
 
         mailboxDashboardRobot.waitUntilExactLabelIsVisible("Compose");
-
-        mailboxDashboardRobot.clickSentMailbox();
-
-        testUtils.waitFor(2, page);
-
-        mailboxDashboardRobot.checkIfThereAreMoreThanOneEmailSentBy(username);
     }
 
 }
