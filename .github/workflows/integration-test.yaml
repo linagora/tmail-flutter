@@ -46,8 +46,10 @@ jobs:
       - name: Configure frontend
         env:
           FRONTEND_CONFIG: ${{ secrets.FRONTEND_CONFIG }}
+          FRONTEND_CREDS: ${{ secrets.FRONTEND_CREDS }}
         run: |
           echo "$FRONTEND_CONFIG" > env.file
+          echo "$FRONTEND_CREDS" > src/main/resources/config.properties
         working-directory: tmail_selenium
 
       - name: Run integration tests
