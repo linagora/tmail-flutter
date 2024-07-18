@@ -4096,7 +4096,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reconnect": "Reconnect",
+  "reconnect": "Se reconnecter",
   "@reconnect": {
     "type": "text",
     "placeholders_order": [],

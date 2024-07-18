@@ -4101,5 +4101,23 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "reconnect": "Đăng nhập lại",
+  "@reconnect": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sessionExpired": "Đã hết phiên đăng nhập",
+  "@sessionExpired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dialogMessageSessionHasExpired": "Đã hết phiên đăng nhập. Vui lòng đăng nhập lại.",
+  "@dialogMessageSessionHasExpired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
