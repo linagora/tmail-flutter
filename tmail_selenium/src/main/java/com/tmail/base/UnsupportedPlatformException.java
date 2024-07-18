@@ -1,4 +1,4 @@
-package com.linagora.tmail.base;
+package com.tmail.base;
 
 public class UnsupportedPlatformException extends VirtualMachineError {
 

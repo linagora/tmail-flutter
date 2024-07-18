@@ -1,7 +1,7 @@
-package com.linagora.tmail.robots;
+package com.tmail.robots;
 
-import com.linagora.tmail.base.CoreRobot;
 import com.microsoft.playwright.Page;
+import com.tmail.base.CoreRobot;
 
 public class LoginRobot extends CoreRobot {
 
