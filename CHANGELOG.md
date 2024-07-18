@@ -1,3 +1,7 @@
+## [0.12.1] - 2024-07-18
+### Fixed
+- Upgrade minimumOS version to 12.0 [iOS]
+
 ## [0.12.0] - 2024-07-18
 ### Added
 - #2988 Upgrade to Flutter 3.22.2
