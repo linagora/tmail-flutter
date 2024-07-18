@@ -1,4 +1,4 @@
-## [0.11.6] - 2024-07-18
+## [0.12.0] - 2024-07-18
 ### Added
 - #2988 Upgrade to Flutter 3.22.2
 - Translation
