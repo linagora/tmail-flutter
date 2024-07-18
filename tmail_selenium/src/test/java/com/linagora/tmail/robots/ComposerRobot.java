@@ -1,53 +1,42 @@
 package com.linagora.tmail.robots;
 
 import java.util.ArrayList;
-
-import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import java.util.regex.Pattern;
 
 import com.linagora.tmail.base.CoreRobot;
+import com.microsoft.playwright.FrameLocator;
+import com.microsoft.playwright.Locator;
+import com.microsoft.playwright.Page;
 
 public class ComposerRobot extends CoreRobot {
 
-    public ComposerRobot(WebDriver webDriver, WebDriverWait wait) {
-        super(webDriver, wait);
+    public ComposerRobot(Page page) {
+        super(page);
     }
 
     public void addReceipients(ArrayList<String> recipients) {
-        By toFieldSelector = By.cssSelector("flt-semantics[aria-label*='Composer:to'] input");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(toFieldSelector));
-        webDriver.findElement(toFieldSelector).click();
+        Locator toFieldSelector = page.getByLabel("Composer:to").locator("input");
+        toFieldSelector.click();
         for (String recipient : recipients) {
-            webDriver.findElement(toFieldSelector).sendKeys(recipient);
-            By toSuggestionSelector = By
-                    .cssSelector("flt-semantics[aria-label*='Composer:suggestion:" + recipient + "']");
-            wait.until(ExpectedConditions.visibilityOfElementLocated(toSuggestionSelector));
-            webDriver.findElement(toSuggestionSelector).click();
+            toFieldSelector.fill(recipient);
+            page.getByText(Pattern.compile("Composer:suggestion:" + recipient)).click();
         }
-        webDriver.findElement(toFieldSelector).sendKeys(Keys.TAB);
+        page.keyboard().press("Tab");
+        page.waitForTimeout(1000);
     }
 
     public void addSubject(String subject) {
-        By subjectFieldSelector = By.cssSelector("input[aria-label*='Composer:subject']");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(subjectFieldSelector));
-        webDriver.findElement(subjectFieldSelector).sendKeys(subject);
-        webDriver.findElement(subjectFieldSelector).sendKeys(Keys.TAB);
+        page.getByLabel("Composer:subject").fill(subject);
+        page.keyboard().press("Tab");
     }
 
     public void addContent(String content) {
-        webDriver.switchTo().frame(0);
-        By editorSelector = By.cssSelector(".note-editable");
-        webDriver.findElement(editorSelector).sendKeys(content);
-        webDriver.switchTo().defaultContent();
+        FrameLocator frameLocator = page.frameLocator("iFrame");
+        frameLocator.locator(".note-editable").fill(content);
     }
 
     public void clickSend() {
-        By sendButtonSelector = By.cssSelector("flt-semantics[aria-label='Send']");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(sendButtonSelector));
-        webDriver.findElement(sendButtonSelector).click();
+        page.getByText("Send").click();
     }
 
 }

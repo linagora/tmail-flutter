@@ -1,12 +1,10 @@
 package com.linagora.tmail.usecases;
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
 import com.linagora.tmail.base.UseCase;
 import com.linagora.tmail.robots.HomeRobot;
 import com.linagora.tmail.robots.LoginRobot;
 import com.linagora.tmail.robots.MailboxDashboardRobot;
+import com.microsoft.playwright.Page;
 
 public class LoginUseCase extends UseCase {
     String testUrl;
@@ -20,10 +18,10 @@ public class LoginUseCase extends UseCase {
     }
 
     @Override
-    public void execute(WebDriver webDriver, WebDriverWait wait) {
-        HomeRobot homeRobot = new HomeRobot(webDriver, wait);
-        LoginRobot loginRobot = new LoginRobot(webDriver, wait);
-        MailboxDashboardRobot mailboxDashboardRobot = new MailboxDashboardRobot(webDriver, wait);
+    public void execute(Page page) {
+        HomeRobot homeRobot = new HomeRobot(page);
+        LoginRobot loginRobot = new LoginRobot(page);
+        MailboxDashboardRobot mailboxDashboardRobot = new MailboxDashboardRobot(page);
 
         homeRobot.navigateToTestSite(testUrl);
 
@@ -33,11 +31,9 @@ public class LoginUseCase extends UseCase {
 
         mailboxDashboardRobot.waitUntilExactLabelIsVisible("Compose");
 
-        testUtils.waitFor(2);
-
         mailboxDashboardRobot.clickSentMailbox();
 
-        testUtils.waitFor(2);
+        testUtils.waitFor(2, page);
 
         mailboxDashboardRobot.checkIfThereAreMoreThanOneEmailSentBy(username);
     }
