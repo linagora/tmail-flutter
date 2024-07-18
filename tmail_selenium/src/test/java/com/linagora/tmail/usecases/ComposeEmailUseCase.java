@@ -3,12 +3,10 @@ package com.linagora.tmail.usecases;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
 import com.linagora.tmail.base.UseCase;
 import com.linagora.tmail.robots.ComposerRobot;
 import com.linagora.tmail.robots.MailboxDashboardRobot;
+import com.microsoft.playwright.Page;
 
 public class ComposeEmailUseCase extends UseCase {
     String testUrl;
@@ -24,12 +22,12 @@ public class ComposeEmailUseCase extends UseCase {
     }
 
     @Override
-    public void execute(WebDriver webDriver, WebDriverWait wait) {
-        MailboxDashboardRobot mailboxDashboardRobot = new MailboxDashboardRobot(webDriver, wait);
-        ComposerRobot composerRobot = new ComposerRobot(webDriver, wait);
+    public void execute(Page page) {
+        MailboxDashboardRobot mailboxDashboardRobot = new MailboxDashboardRobot(page);
+        ComposerRobot composerRobot = new ComposerRobot(page);
 
         LoginUseCase loginUseCase = new LoginUseCase(testUrl, username, password);
-        loginUseCase.execute(webDriver, wait);
+        loginUseCase.execute(page);
 
         mailboxDashboardRobot.openComposer();
 

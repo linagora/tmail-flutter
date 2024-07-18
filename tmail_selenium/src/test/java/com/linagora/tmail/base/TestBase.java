@@ -1,33 +1,34 @@
 package com.linagora.tmail.base;
 
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 
 import org.junit.After;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.openqa.selenium.PageLoadStrategy;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.firefox.FirefoxOptions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserContext;
+import com.microsoft.playwright.BrowserType;
+import com.microsoft.playwright.Page;
+import com.microsoft.playwright.Playwright;
 
 @RunWith(Parameterized.class)
 public abstract class TestBase {
-    private WebDriver webDriver;
-    private WebDriverWait wait;
+    private static Playwright playwright = Playwright.create();
+    private Browser browser;
+    private BrowserContext browserContext;
+    private Page page;
 
-    public TestBase(WebDriver webDriver, WebDriverWait wait) {
-        this.webDriver = webDriver;
-        this.wait = wait;
+    public TestBase(Browser browser, BrowserContext browserContext, Page page) {
+        this.browser = browser;
+        this.browserContext = browserContext;
+        this.page = page;
     }
 
     @Parameterized.Parameters
     public static Collection<Object[]> data() {
-        Boolean runHeadlessTest = true;
+        Boolean runHeadlessTest = false;
         int size = SupportedPlatform.values().length;
         Object[][] parameters = new Object[size][2];
         for (int i = 0; i < size; i++) {
@@ -50,39 +51,35 @@ public abstract class TestBase {
     }
 
     public void testUseCase(UseCase useCase) {
-        useCase.execute(webDriver, wait);
+        useCase.execute(page);
     }
 
     private static Object[] configTestForChrome(Boolean headless) {
-        ChromeOptions options = new ChromeOptions();
-        options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
-        if (headless) {
-            options.addArguments("--headless=new");
-        }
-        ChromeDriver webDriver = new ChromeDriver(options);
-        WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofMillis(20000));
-        Object[] config = new Object[2];
-        config[0] = webDriver;
-        config[1] = wait;
+        Browser browser = playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(headless));
+        BrowserContext browserContext = browser.newContext();
+        Page page = browserContext.newPage();
+        Object[] config = new Object[3];
+        config[0] = browser;
+        config[1] = browserContext;
+        config[2] = page;
         return config;
     }
 
     private static Object[] configTestForFirefox(Boolean headless) {
-        FirefoxOptions options = new FirefoxOptions();
-        options.setPageLoadStrategy(PageLoadStrategy.NORMAL);
-        if (headless) {
-            options.addArguments("--headless");
-        }
-        FirefoxDriver webDriver = new FirefoxDriver(options);
-        WebDriverWait wait = new WebDriverWait(webDriver, Duration.ofMillis(20000));
-        Object[] config = new Object[2];
-        config[0] = webDriver;
-        config[1] = wait;
+        Browser browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(headless));
+        BrowserContext browserContext = browser.newContext();
+        Page page = browserContext.newPage();
+        Object[] config = new Object[3];
+        config[0] = browser;
+        config[1] = browserContext;
+        config[2] = page;
         return config;
     }
 
     private void dispose() {
-        webDriver.quit();
+        page.close();
+        browserContext.close();
+        browser.close();
     }
 
     @After

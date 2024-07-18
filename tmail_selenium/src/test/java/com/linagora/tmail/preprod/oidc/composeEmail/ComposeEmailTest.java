@@ -1,16 +1,17 @@
 package com.linagora.tmail.preprod.oidc.composeEmail;
 
 import org.junit.Test;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.linagora.tmail.base.TestBase;
 import com.linagora.tmail.usecases.ComposeEmailUseCase;
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserContext;
+import com.microsoft.playwright.Page;
 
 public class ComposeEmailTest extends TestBase {
 
-    public ComposeEmailTest(WebDriver webDriver, WebDriverWait wait) {
-        super(webDriver, wait);
+    public ComposeEmailTest(Browser browser, BrowserContext browserContext, Page page) {
+        super(browser, browserContext, page);
     }
 
     @Test
