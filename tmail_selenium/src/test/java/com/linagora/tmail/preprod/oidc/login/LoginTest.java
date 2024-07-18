@@ -1,16 +1,17 @@
 package com.linagora.tmail.preprod.oidc.login;
 
 import org.junit.Test;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.WebDriverWait;
 
 import com.linagora.tmail.base.TestBase;
 import com.linagora.tmail.usecases.LoginUseCase;
+import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.BrowserContext;
+import com.microsoft.playwright.Page;
 
 public class LoginTest extends TestBase {
 
-    public LoginTest(WebDriver webDriver, WebDriverWait wait) {
-        super(webDriver, wait);
+    public LoginTest(Browser browser, BrowserContext browserContext, Page page) {
+        super(browser, browserContext, page);
     }
 
     @Test
