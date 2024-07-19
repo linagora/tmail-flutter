@@ -553,7 +553,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     BuildContext context,
     PresentationMailbox presentationMailboxSelected
   ) {
-    log('MailboxController::_handleOpenMailbox():MailboxName: ${presentationMailboxSelected.name}');
+    log('MailboxController::_handleOpenMailbox():MAILBOX_ID = ${presentationMailboxSelected.id.asString} | MAILBOX_NAME: ${presentationMailboxSelected.name?.name}');
     KeyboardUtils.hideKeyboard(context);
     mailboxDashBoardController.clearSelectedEmail();
     if (presentationMailboxSelected.id != mailboxDashBoardController.selectedMailbox.value?.id) {
