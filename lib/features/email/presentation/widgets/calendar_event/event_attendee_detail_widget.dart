@@ -48,7 +48,7 @@ class _EventAttendeeDetailWidgetState extends State<EventAttendeeDetailWidget> {
         SizedBox(
           width: EventAttendeeDetailWidgetStyles.maxWidth,
           child: Text(
-            AppLocalizations.of(context).attendees,
+            AppLocalizations.of(context).who,
             style: const TextStyle(
               fontSize: EventAttendeeDetailWidgetStyles.textSize,
               fontWeight: FontWeight.w500,
