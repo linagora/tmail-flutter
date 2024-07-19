@@ -586,13 +586,8 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   void setSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
-    final previousMailbox = selectedMailbox.value;
-    if (previousMailbox == newPresentationMailbox) {
-      selectedMailbox.value = newPresentationMailbox;
-      selectedMailbox.refresh();
-    } else {
-      selectedMailbox.value = newPresentationMailbox;
-    }
+    log('MailboxDashBoardController::setSelectedMailbox: SELECTED_MAILBOX_ID = ${newPresentationMailbox?.id.asString} |  SELECTED_MAILBOX_NAME = ${newPresentationMailbox?.name?.name} | ');
+    selectedMailbox.value = newPresentationMailbox;
   }
 
   void setSelectedEmail(PresentationEmail? newPresentationEmail) {
