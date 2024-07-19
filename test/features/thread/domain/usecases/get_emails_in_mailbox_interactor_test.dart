@@ -87,7 +87,8 @@ void main() {
             EmailFixtures.email1.toPresentationEmail(),
             EmailFixtures.email2.toPresentationEmail()
           }.toList(),
-          currentEmailState: jmap.State('s1'))
+          currentEmailState: jmap.State('s1'),
+          currentMailboxId: MailboxFixtures.inboxMailbox.id)
         ),
         Right(GetAllEmailSuccess(
           emailList: {
@@ -97,7 +98,8 @@ void main() {
             EmailFixtures.email4.toPresentationEmail(),
             EmailFixtures.email5.toPresentationEmail(),
           }.toList(),
-          currentEmailState: jmap.State('s1'))
+          currentEmailState: jmap.State('s1'),
+          currentMailboxId: MailboxFixtures.inboxMailbox.id)
         )
       }));
     });
