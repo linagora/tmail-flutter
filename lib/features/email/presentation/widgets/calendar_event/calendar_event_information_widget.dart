@@ -5,17 +5,21 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_detail_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_information_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_date_icon_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_button_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_detail_widget.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_attendee_information_widget.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_detail_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_attendee_detail_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_link_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_information_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_time_information_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_title_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
+
+typedef OnOpenNewTabAction = void Function(String link);
+typedef OnOpenComposerAction = void Function(String emailAddress);
 
 class CalendarEventInformationWidget extends StatelessWidget {
 
@@ -115,10 +119,15 @@ class CalendarEventInformationWidget extends StatelessWidget {
                           onOpenNewTabAction: onOpenNewTabAction,
                         ),
                       ),
+                    if (calendarEvent.videoConferences.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
+                        child: EventLinkDetailWidget(listHyperLink: calendarEvent.videoConferences),
+                      ),
                     if (calendarEvent.participants?.isNotEmpty == true || calendarEvent.organizer != null)
                       Padding(
-                        padding: const EdgeInsets.only(top: CalendarEventInformationWidgetStyles.fieldTopPadding),
-                        child: EventAttendeeInformationWidget(
+                        padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
+                        child: EventAttendeeDetailWidget(
                           attendees: calendarEvent.participants ?? [],
                           organizer: calendarEvent.organizer,
                         ),
@@ -195,10 +204,15 @@ class CalendarEventInformationWidget extends StatelessWidget {
                             onOpenNewTabAction: onOpenNewTabAction,
                           ),
                         ),
+                      if (calendarEvent.videoConferences.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
+                          child: EventLinkDetailWidget(listHyperLink: calendarEvent.videoConferences),
+                        ),
                       if (calendarEvent.participants?.isNotEmpty == true || calendarEvent.organizer != null)
                         Padding(
-                          padding: const EdgeInsets.only(top: CalendarEventInformationWidgetStyles.fieldTopPadding),
-                          child: EventAttendeeInformationWidget(
+                          padding: const EdgeInsets.only(top: CalendarEventDetailWidgetStyles.fieldTopPadding),
+                          child: EventAttendeeDetailWidget(
                             attendees: calendarEvent.participants ?? [],
                             organizer: calendarEvent.organizer,
                           ),

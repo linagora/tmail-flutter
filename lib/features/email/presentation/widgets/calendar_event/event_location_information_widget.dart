@@ -3,7 +3,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_linkify/flutter_linkify.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/event_location_information_widget_styles.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_detail_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_information_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class EventLocationInformationWidget extends StatelessWidget {
