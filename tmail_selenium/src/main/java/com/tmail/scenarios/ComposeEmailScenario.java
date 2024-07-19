@@ -26,7 +26,7 @@ public class ComposeEmailScenario extends BaseScenario {
         MailboxDashboardRobot mailboxDashboardRobot = new MailboxDashboardRobot(page);
         ComposerRobot composerRobot = new ComposerRobot(page);
 
-        LoginScenario loginUseCase = new LoginScenario(testUrl, username, password);
+        OidcLoginScenario loginUseCase = new OidcLoginScenario(testUrl, username, password);
         loginUseCase.execute(page);
 
         mailboxDashboardRobot.openComposer();

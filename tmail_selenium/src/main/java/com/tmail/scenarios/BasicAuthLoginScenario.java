@@ -2,16 +2,16 @@ package com.tmail.scenarios;
 
 import com.microsoft.playwright.Page;
 import com.tmail.base.BaseScenario;
+import com.tmail.robots.BasicAuthLoginRobot;
 import com.tmail.robots.HomeRobot;
-import com.tmail.robots.LoginRobot;
 import com.tmail.robots.MailboxDashboardRobot;
 
-public class LoginScenario extends BaseScenario {
+public class BasicAuthLoginScenario extends BaseScenario {
     String testUrl;
     String username;
     String password;
 
-    public LoginScenario(String testUrl, String username, String password) {
+    public BasicAuthLoginScenario(String testUrl, String username, String password) {
         this.testUrl = testUrl;
         this.username = username;
         this.password = password;
@@ -20,7 +20,7 @@ public class LoginScenario extends BaseScenario {
     @Override
     public void execute(Page page) {
         HomeRobot homeRobot = new HomeRobot(page);
-        LoginRobot loginRobot = new LoginRobot(page);
+        BasicAuthLoginRobot loginRobot = new BasicAuthLoginRobot(page);
         MailboxDashboardRobot mailboxDashboardRobot = new MailboxDashboardRobot(page);
 
         homeRobot.navigateToTestSite(testUrl);
