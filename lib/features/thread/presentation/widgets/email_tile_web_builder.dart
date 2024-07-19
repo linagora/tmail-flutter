@@ -331,33 +331,56 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
               widget.presentationEmail
             ),
             onHover: (value) => _hoverNotifier.value = value,
+            hoverColor: AppColor.colorEmailTileHoverWeb,
             borderRadius: const BorderRadius.all(Radius.circular(14)),
             child: Container(
               padding: widget.padding ?? _getPaddingItem(context),
               decoration: _getDecorationItem(),
               alignment: Alignment.center,
               child: Row(children: [
-                Container(
-                  padding: const EdgeInsetsDirectional.symmetric(horizontal: 16),
-                  alignment: Alignment.center,
-                  child: !widget.presentationEmail.hasRead
-                    ? SvgPicture.asset(
-                        imagePaths.icUnreadStatus,
-                        width: 9,
-                        height: 9,
-                        fit: BoxFit.fill
-                      )
-                    : const SizedBox(width: 9)
+                const SizedBox(width: 10),
+                buildIconWeb(
+                  icon: ValueListenableBuilder(
+                    valueListenable: _hoverNotifier,
+                    builder: (context, isHovered, child) {
+                      return SvgPicture.asset(
+                        widget.presentationEmail.isSelected
+                          ? imagePaths.icCheckboxSelected
+                          : imagePaths.icCheckboxUnselected,
+                        colorFilter: ColorFilter.mode(
+                          isHovered || widget.presentationEmail.isSelected
+                            ? AppColor.primaryColor
+                            : AppColor.colorEmailTileCheckboxUnhover,
+                          BlendMode.srcIn),
+                        width: 20,
+                        height: 20);
+                    },
+                  ),
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  iconPadding: EdgeInsets.zero,
+                  minSize: 28,
+                  tooltip: widget.presentationEmail.isSelected
+                    ? AppLocalizations.of(context).selected
+                    : AppLocalizations.of(context).notSelected,
+                  onTap: () {
+                    widget.emailActionClick?.call(
+                      EmailActionType.selection,
+                      widget.presentationEmail
+                    );
+                  },
                 ),
                 buildIconWeb(
                   icon: SvgPicture.asset(
                     widget.presentationEmail.hasStarred
                       ? imagePaths.icStar
                       : imagePaths.icUnStar,
-                    width: 16,
-                    height: 16,
+                    width: 20,
+                    height: 20,
                     fit: BoxFit.fill
                   ),
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  iconPadding: EdgeInsets.zero,
+                  minSize: 28,
                   tooltip: widget.presentationEmail.hasStarred
                     ? AppLocalizations.of(context).starred
                     : AppLocalizations.of(context).not_starred,
@@ -371,31 +394,45 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                 buildIconWeb(
                   icon: buildIconAnsweredOrForwarded(presentationEmail: widget.presentationEmail),
                   tooltip: messageToolTipForAnsweredOrForwarded(context, widget.presentationEmail),
-                  iconPadding: const EdgeInsetsDirectional.only(end: 12),
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  iconPadding: EdgeInsets.zero,
+                  minSize: 28,
                   splashRadius: 1
                 ),
-                MouseRegion(
-                  cursor: SystemMouseCursors.click,
-                  child: GestureDetector(
-                    onTap: () => widget.emailActionClick?.call(
-                      EmailActionType.selection,
+                buildIconWeb(
+                  icon: widget.presentationEmail.hasRead
+                    ? const SizedBox(width: 20, height: 20)
+                    : Container(
+                        alignment: Alignment.center,
+                        width: 20,
+                        height: 20,
+                        child: SvgPicture.asset(
+                          imagePaths.icUnreadStatus,
+                          width: 9,
+                          height: 9,
+                          fit: BoxFit.fill
+                        ),
+                      ),
+                  margin: const EdgeInsets.symmetric(vertical: 6),
+                  iconPadding: EdgeInsets.zero,
+                  minSize: 28,
+                  tooltip: widget.presentationEmail.hasRead
+                    ? null
+                    : AppLocalizations.of(context).mark_as_read,
+                  onTap: widget.presentationEmail.hasRead ? null : () {
+                    widget.emailActionClick?.call(
+                      EmailActionType.markAsRead,
                       widget.presentationEmail
-                    ),
-                    child: ValueListenableBuilder(
-                      valueListenable: _hoverNotifier,
-                      builder: (context, value, child) {
-                        return _buildAvatarIcon(
-                          context: context,
-                          isHovered: value,
-                          iconSize: 32,
-                          textStyle: const TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white
-                          )
-                        );
-                      }
-                    ),
+                    );
+                  },
+                ),
+                buildIconAvatarText(
+                  widget.presentationEmail,
+                  iconSize: 32,
+                  textStyle: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.white
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -445,8 +482,8 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
         responsiveUtils.isDesktop(context)
     ) {
       return const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(14)),
-        color: AppColor.colorItemEmailSelectedDesktop);
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+        color: AppColor.colorEmailTileHoverWeb);
     } else if (widget.isShowingEmailContent && responsiveUtils.isTabletLarge(context)) {
       return const BoxDecoration(color: AppColor.colorItemEmailSelectedDesktop);
     } else {
@@ -459,9 +496,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
   }
 
   EdgeInsets _getPaddingIcon(BuildContext context) {
-    return responsiveUtils.isDesktop(context)
-      ? const EdgeInsets.all(8)
-      : const EdgeInsets.all(5);
+    return const EdgeInsets.all(5);
   }
 
   Widget _buildListActionButtonWhenHover(BuildContext context) {
@@ -479,7 +514,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
       ),
       if(!widget.presentationEmail.isDraft)
         buildSVGIconButton(
-          icon: widget.presentationEmail.hasRead ? imagePaths.icRead: imagePaths.icUnread,
+          icon: widget.presentationEmail.hasRead ? imagePaths.icUnread: imagePaths.icRead,
           iconColor: AppColor.colorActionButtonHover,
           iconSize: _getIconSize(context),
           padding: _getPaddingIcon(context),

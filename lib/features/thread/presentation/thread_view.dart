@@ -50,7 +50,7 @@ class ThreadView extends GetWidget<ThreadController>
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+      onTap: FocusManager.instance.primaryFocus?.unfocus,
       child: Scaffold(
         resizeToAvoidBottomInset: false,
         backgroundColor: Colors.white,
@@ -510,68 +510,62 @@ class ThreadView extends GetWidget<ThreadController>
       ),
       background: Container(
         color: AppColor.colorItemRecipientSelected,
-        child: Padding(
-          padding: const EdgeInsetsDirectional.only(start: 16),
-          child: Align(
-            alignment: AlignmentDirectional.centerStart,
-            child: Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: AppColor.colorSpamReportBannerBackground,
-                  radius: 24,
-                  child: !presentationEmail.hasRead
-                      ? SvgPicture.asset(
-                          controller.imagePaths.icMarkAsRead,
-                          fit: BoxFit.fill,
-                        )
-                      : SvgPicture.asset(
-                          controller.imagePaths.icUnreadEmail,
-                          fit: BoxFit.fill,
-                          colorFilter: AppColor.primaryColor.asFilter(),
-                        ),
-                ),
-                const SizedBox(width: 11),
-                Text(
-                  !presentationEmail.hasRead
-                    ? AppLocalizations.of(context).mark_as_read
-                    : AppLocalizations.of(context).mark_as_unread,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: AppColor.primaryColor,
-                  ),
-                ),
-              ],
+        padding: const EdgeInsetsDirectional.only(start: 16),
+        alignment: AlignmentDirectional.centerStart,
+        child: Row(
+          children: [
+            CircleAvatar(
+              backgroundColor: AppColor.colorSpamReportBannerBackground,
+              radius: 24,
+              child: !presentationEmail.hasRead
+                  ? SvgPicture.asset(
+                      controller.imagePaths.icMarkAsRead,
+                      fit: BoxFit.fill,
+                    )
+                  : SvgPicture.asset(
+                      controller.imagePaths.icUnreadEmail,
+                      fit: BoxFit.fill,
+                      colorFilter: AppColor.primaryColor.asFilter(),
+                    ),
             ),
-          ),
+            const SizedBox(width: 11),
+            Text(
+              !presentationEmail.hasRead
+                ? AppLocalizations.of(context).mark_as_read
+                : AppLocalizations.of(context).mark_as_unread,
+              style: const TextStyle(
+                fontSize: 15,
+                color: AppColor.primaryColor,
+              ),
+            ),
+          ],
         ),
       ),
       secondaryBackground: controller.isInArchiveMailbox(presentationEmail) == false
         ? Container(
             color: AppColor.colorItemRecipientSelected,
             padding: const EdgeInsetsDirectional.only(end: 16),
-            child: Align(
-              alignment: AlignmentDirectional.centerEnd,
-              child: Row(
-                children: [
-                  const Spacer(),
-                  CircleAvatar(
-                    backgroundColor: AppColor.colorSpamReportBannerBackground,
-                    radius: 24,
-                    child: SvgPicture.asset(
-                      controller.imagePaths.icMailboxArchived,
-                      fit: BoxFit.fill,
-                    )
+            alignment: AlignmentDirectional.centerEnd,
+            child: Row(
+              children: [
+                const Spacer(),
+                CircleAvatar(
+                  backgroundColor: AppColor.colorSpamReportBannerBackground,
+                  radius: 24,
+                  child: SvgPicture.asset(
+                    controller.imagePaths.icMailboxArchived,
+                    fit: BoxFit.fill,
+                  )
+                ),
+                const SizedBox(width: 11),
+                Text(
+                  AppLocalizations.of(context).archiveMessage,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: AppColor.primaryColor,
                   ),
-                  const SizedBox(width: 11),
-                  Text(
-                    AppLocalizations.of(context).archiveMessage,
-                    style: const TextStyle(
-                      fontSize: 15,
-                      color: AppColor.primaryColor,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           )
         : null,
