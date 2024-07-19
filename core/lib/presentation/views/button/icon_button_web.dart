@@ -18,19 +18,23 @@ Widget buildIconWeb({
   Color? colorSelected,
   Color? colorFocus,
   ShapeBorder? shapeBorder,
+  EdgeInsetsGeometry? margin,
 }) {
-  return Material(
-      color: colorSelected ?? Colors.transparent,
-      shape: shapeBorder ?? const CircleBorder(),
-      child: IconButton(
-          icon: icon,
-          focusColor: colorFocus,
-          iconSize: iconSize,
-          constraints: minSize != null ? BoxConstraints(minWidth: minSize, minHeight: minSize) : null,
-          padding: iconPadding ?? const EdgeInsets.all(8.0),
-          splashRadius: splashRadius ?? 15,
-          tooltip: tooltip ?? '',
-          onPressed: onTap)
+  return Container(
+    margin: margin,
+    child: Material(
+        color: colorSelected ?? Colors.transparent,
+        shape: shapeBorder ?? const CircleBorder(),
+        child: IconButton(
+            icon: icon,
+            focusColor: colorFocus,
+            iconSize: iconSize,
+            constraints: minSize != null ? BoxConstraints(minWidth: minSize, minHeight: minSize) : null,
+            padding: iconPadding ?? const EdgeInsets.all(8.0),
+            splashRadius: splashRadius ?? 15,
+            tooltip: tooltip ?? '',
+            onPressed: onTap)
+    ),
   );
 }
 
