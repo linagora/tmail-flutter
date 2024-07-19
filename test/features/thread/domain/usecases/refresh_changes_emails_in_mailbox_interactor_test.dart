@@ -80,7 +80,8 @@ void main() {
             EmailFixtures.email4.toPresentationEmail(),
             EmailFixtures.email5.toPresentationEmail(),
           }.toList(),
-          currentEmailState: jmap.State('s1'))
+          currentEmailState: jmap.State('s1'),
+          currentMailboxId: MailboxFixtures.inboxMailbox.id)
         )
       }));
     });
