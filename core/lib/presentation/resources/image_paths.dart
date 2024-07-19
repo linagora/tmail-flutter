@@ -214,6 +214,8 @@ class ImagePaths {
   String get icAlwaysReadReceipt => _getImagePath('ic_always_read_receipt.svg');
   String get icNotification => _getImagePath('ic_notification.svg');
   String get icRemoveRule => _getImagePath('ic_remove_rule.svg');
+  String get icCheckboxUnselected => _getImagePath('ic_checkbox_unselected.svg');
+  String get icCheckboxSelected => _getImagePath('ic_checkbox_selected.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
