@@ -842,6 +842,18 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "selected": "Selected",
+  "@selected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notSelected": "Not selected",
+  "@notSelected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "more": "More",
   "@more": {
     "type": "text",
