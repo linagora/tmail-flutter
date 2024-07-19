@@ -3,9 +3,9 @@ package com.tmail.robots;
 import com.microsoft.playwright.Page;
 import com.tmail.base.CoreRobot;
 
-public class LoginRobot extends CoreRobot {
+public class OidcLoginRobot extends CoreRobot {
 
-    public LoginRobot(Page page) {
+    public OidcLoginRobot(Page page) {
         super(page);
     }
 
