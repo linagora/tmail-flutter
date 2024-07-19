@@ -870,6 +870,20 @@ class AppLocalizations {
     );
   }
 
+    String get selected {
+    return Intl.message(
+      'Selected',
+      name: 'selected',
+    );
+  }
+
+  String get notSelected {
+    return Intl.message(
+      'Not selected',
+      name: 'notSelected',
+    );
+  }
+
   String get more {
     return Intl.message(
       'More',
