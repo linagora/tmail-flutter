@@ -3951,5 +3951,69 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "traceLog": "Trace Log",
+  "@traceLog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "traceLogSettingExplanation": "Trace log to easily monitor log on mobile devices",
+  "@traceLogSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "totalSize": "Total Size",
+  "@totalSize": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exportFile": "Export file",
+  "@exportFile": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youNeedToGrantFilesPermissionToExportFile": "You need to grant files permission to export files",
+  "@youNeedToGrantFilesPermissionToExportFile": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exportTraceLogSuccess": "Export successful tracking logs at \"{path}\"",
+  "@exportTraceLogSuccess": {
+    "type": "text",
+    "placeholders_order": [
+      "path"
+    ],
+    "placeholders": {
+      "path": {}
+    }
+  },
+  "exportTraceLogFailed": "Export trace log failed",
+  "@exportTraceLogFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteTraceLogSuccess": "Delete successful tracking logs",
+  "@deleteTraceLogSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteTraceLogFailed": "Delete trace log failed",
+  "@deleteTraceLogFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearLogCache": "Clear log cache",
+  "@clearLogCache": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

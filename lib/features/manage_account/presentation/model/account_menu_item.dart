@@ -1,5 +1,5 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -12,6 +12,7 @@ enum AccountMenuItem {
   vacation,
   mailboxVisibility,
   notification,
+  traceLog,
   none;
 
   String getIcon(ImagePaths imagePaths) {
@@ -34,6 +35,8 @@ enum AccountMenuItem {
         return imagePaths.icNotification;
       case AccountMenuItem.none:
         return imagePaths.icProfiles;
+      case AccountMenuItem.traceLog:
+        return imagePaths.icSetting;
     }
   }
 
@@ -57,6 +60,8 @@ enum AccountMenuItem {
         return AppLocalizations.of(context).notification;
       case AccountMenuItem.none:
         return AppLocalizations.of(context).profiles;
+      case AccountMenuItem.traceLog:
+        return AppLocalizations.of(context).traceLog;
     }
   }
 
@@ -80,6 +85,8 @@ enum AccountMenuItem {
         return 'notification';
       case AccountMenuItem.none:
         return 'profiles';
+      case AccountMenuItem.traceLog:
+        return 'trace-log';
     }
   }
 }

@@ -31,6 +31,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/notification/bindings/notification_binding.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/trace_log/trace_log_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -195,6 +196,9 @@ class ManageAccountDashBoardController extends ReloadableController {
         break;
       case AccountMenuItem.vacation:
       case AccountMenuItem.none:
+        break;
+      case AccountMenuItem.traceLog:
+        TraceLogBindings().dependencies();
         break;
     }
   }
