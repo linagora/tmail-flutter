@@ -12434,7 +12434,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(context, C.Type_AppLocalizations_CTL, t8).toString;
         t9 = A.Intl__message("Not selected", _null, "notSelected", _null, _null);
       }
-      t9 = A.buildIconWeb(_null, _null, new A.ValueListenableBuilder(t5, new B._EmailTileBuilderState_build_closure8(_this), _null, _null, t6), C.EdgeInsets_0_0_0_0, _null, _null, new B._EmailTileBuilderState_build_closure9(_this), _null, t9);
+      t9 = A.buildIconWeb(_null, _null, new A.ValueListenableBuilder(t5, new B._EmailTileBuilderState_build_closure8(_this), _null, _null, t6), C.EdgeInsets_0_0_0_0, _null, 28, new B._EmailTileBuilderState_build_closure9(_this), _null, t9);
       t10 = A.SvgPicture$asset(_this._widget.presentationEmail.get$hasStarred() ? _s25_ : "assets/images/ic_unstar.svg", C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, _null, 20);
       if (_this._widget.presentationEmail.get$hasStarred()) {
         A.Localizations_of(context, C.Type_AppLocalizations_CTL, t8).toString;
@@ -12443,8 +12443,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(context, C.Type_AppLocalizations_CTL, t8).toString;
         t11 = A.Intl__message("Not starred", _null, "not_starred", _null, _null);
       }
-      t11 = A.buildIconWeb(_null, _null, t10, C.EdgeInsets_0_0_0_0, _null, _null, new B._EmailTileBuilderState_build_closure10(_this), _null, t11);
-      t10 = A.buildIconWeb(_null, _null, _this.buildIconAnsweredOrForwarded$1$presentationEmail(_this._widget.presentationEmail), C.EdgeInsets_0_0_0_0, _null, _null, _null, 1, _this.messageToolTipForAnsweredOrForwarded$2(context, _this._widget.presentationEmail));
+      t11 = A.buildIconWeb(_null, _null, t10, C.EdgeInsets_0_0_0_0, _null, 28, new B._EmailTileBuilderState_build_closure10(_this), _null, t11);
+      t10 = A.buildIconWeb(_null, _null, _this.buildIconAnsweredOrForwarded$1$presentationEmail(_this._widget.presentationEmail), C.EdgeInsets_0_0_0_0, _null, 28, _null, 1, _this.messageToolTipForAnsweredOrForwarded$2(context, _this._widget.presentationEmail));
       t12 = _this._widget.presentationEmail.get$hasRead() ? D.SizedBox_20_20_null_null : A.Container$(C.Alignment_0_0, A.SvgPicture$asset(_s34_, C.Alignment_0_0, _null, C.BoxFit_0, 9, _null, _null, 9), C.Clip_0, _null, _null, _null, _null, 20, _null, _null, _null, _null, _null, 20);
       if (_this._widget.presentationEmail.get$hasRead())
         t8 = _null;
@@ -12452,7 +12452,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(context, C.Type_AppLocalizations_CTL, t8).toString;
         t8 = A.Intl__message("Mark as read", _null, "mark_as_read", _null, _null);
       }
-      t8 = A.buildIconWeb(_null, _null, t12, C.EdgeInsets_0_0_0_0, _null, _null, _this._widget.presentationEmail.get$hasRead() ? _null : new B._EmailTileBuilderState_build_closure11(_this), _null, t8);
+      t8 = A.buildIconWeb(_null, _null, t12, C.EdgeInsets_0_0_0_0, _null, 28, _this._widget.presentationEmail.get$hasRead() ? _null : new B._EmailTileBuilderState_build_closure11(_this), _null, t8);
       t12 = _this.buildIconAvatarText$3$iconSize$textStyle(_this._widget.presentationEmail, 32, D.TextStyle_mtF8);
       t13 = _this._widget;
       return A.ResponsiveWidget$(new A.Padding(D.EdgeInsetsDirectional_3_2_3_0, A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, C.BorderRadius_ww811, true, A.Container$(C.Alignment_0_0, A.Row$(A._setArrayType([E.SizedBox_16_null_null_null, t9, t11, t10, t8, t12, C.SizedBox_10_null_null_null, new A.SizedBox(160, _null, _this.buildInformationSender$5(context, t13.presentationEmail, t13.mailboxContain, t13.isSearchEmailRunning, t13.searchQuery), _null), E.SizedBox_24_null_null_null, A.Expanded$(_this._buildSubjectAndContent$0(), 1), E.SizedBox_16_null_null_null, new A.ValueListenableBuilder(t5, new B._EmailTileBuilderState_build_closure12(_this), _null, _null, t6)], t4), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, t7, _null, _null, _null, _null, t3, _null, _null, _null), _null, true, _null, _null, _null, C.Color_4292865791, _null, _null, _null, _null, _null, new B._EmailTileBuilderState_build_closure13(_this), _null, new B._EmailTileBuilderState_build_closure14(_this), _null, _null, _null, _null, _null, _null, _null), C.Clip_0, _null, 0, _null, _null, _null, _null, _null, C.MaterialType_4), _null), _null, _null, t1, _this.BaseEmailItemTile_responsiveUtils, t2, _null);
@@ -12490,55 +12490,50 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
     },
     _buildListActionButtonWhenHover$1(context) {
-      var t5, t6, t7, t8, _this = this, _null = null,
+      var t4, t5, t6, t7, _this = this, _null = null,
         t1 = type$.MediaQuery,
         t2 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size._dx >= 1200 ? 18 : 16,
-        t3 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size._dx >= 1200 ? C.EdgeInsets_8_8_8_8 : C.EdgeInsets_5_5_5_5,
-        t4 = type$.AppLocalizations;
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t4).toString;
-      t5 = type$.JSArray_Widget;
-      t3 = A._setArrayType([F.buildSVGIconButton("assets/images/ic_open_in_new_tab.svg", C.Color_4288850611, t2, new B._EmailTileBuilderState__buildListActionButtonWhenHover_closure(_this), _null, t3, A.Intl__message("Open in New Tab", _null, "openInNewTab", _null, _null))], t5);
+        t3 = type$.AppLocalizations;
+      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+      t4 = type$.JSArray_Widget;
+      t2 = A._setArrayType([F.buildSVGIconButton("assets/images/ic_open_in_new_tab.svg", C.Color_4288850611, t2, new B._EmailTileBuilderState__buildListActionButtonWhenHover_closure(_this), _null, C.EdgeInsets_5_5_5_5, A.Intl__message("Open in New Tab", _null, "openInNewTab", _null, _null))], t4);
       if (!_this._widget.presentationEmail.get$isDraft()) {
-        t2 = _this._widget.presentationEmail.get$hasRead() ? "assets/images/ic_unread.svg" : "assets/images/ic_read.svg";
+        t5 = _this._widget.presentationEmail.get$hasRead() ? "assets/images/ic_unread.svg" : "assets/images/ic_read.svg";
         t6 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size._dx >= 1200 ? 18 : 16;
-        t7 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size._dx >= 1200 ? C.EdgeInsets_8_8_8_8 : C.EdgeInsets_5_5_5_5;
         if (_this._widget.presentationEmail.get$hasRead()) {
-          A.Localizations_of(context, C.Type_AppLocalizations_CTL, t4).toString;
-          t8 = A.Intl__message("Mark as unread", _null, "mark_as_unread", _null, _null);
+          A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+          t7 = A.Intl__message("Mark as unread", _null, "mark_as_unread", _null, _null);
         } else {
-          A.Localizations_of(context, C.Type_AppLocalizations_CTL, t4).toString;
-          t8 = A.Intl__message("Mark as read", _null, "mark_as_read", _null, _null);
+          A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+          t7 = A.Intl__message("Mark as read", _null, "mark_as_read", _null, _null);
         }
-        t3.push(F.buildSVGIconButton(t2, C.Color_4288850611, t6, new B._EmailTileBuilderState__buildListActionButtonWhenHover_closure0(_this), _null, t7, t8));
+        t2.push(F.buildSVGIconButton(t5, C.Color_4288850611, t6, new B._EmailTileBuilderState__buildListActionButtonWhenHover_closure0(_this), _null, C.EdgeInsets_5_5_5_5, t7));
       }
-      t2 = _this._widget.mailboxContain;
-      if (t2 != null)
-        t2 = J.$eq$(t2.role, $.$get$PresentationMailbox_roleDrafts()) === false;
+      t5 = _this._widget.mailboxContain;
+      if (t5 != null)
+        t5 = J.$eq$(t5.role, $.$get$PresentationMailbox_roleDrafts()) === false;
       else
-        t2 = false;
-      if (t2) {
-        t2 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size._dx >= 1200 ? 18 : 16;
-        t6 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size._dx >= 1200 ? C.EdgeInsets_8_8_8_8 : C.EdgeInsets_5_5_5_5;
-        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t4).toString;
-        C.JSArray_methods.addAll$1(t3, A._setArrayType([F.buildSVGIconButton("assets/images/ic_move.svg", C.Color_4288850611, t2, new B._EmailTileBuilderState__buildListActionButtonWhenHover_closure1(_this), _null, t6, A.Intl__message("Move", _null, "move", _null, _null))], t5));
+        t5 = false;
+      if (t5) {
+        t5 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size._dx >= 1200 ? 18 : 16;
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+        C.JSArray_methods.addAll$1(t2, A._setArrayType([F.buildSVGIconButton("assets/images/ic_move.svg", C.Color_4288850611, t5, new B._EmailTileBuilderState__buildListActionButtonWhenHover_closure1(_this), _null, C.EdgeInsets_5_5_5_5, A.Intl__message("Move", _null, "move", _null, _null))], t4));
       }
-      t2 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size._dx >= 1200 ? 16 : 14;
-      t5 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size._dx >= 1200 ? C.EdgeInsets_8_8_8_8 : C.EdgeInsets_5_5_5_5;
+      t4 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size._dx >= 1200 ? 16 : 14;
       if (_this.get$canDeletePermanently()) {
-        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t4).toString;
-        t6 = A.Intl__message("Delete permanently", _null, "delete_permanently", _null, _null);
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+        t5 = A.Intl__message("Delete permanently", _null, "delete_permanently", _null, _null);
       } else {
-        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t4).toString;
-        t6 = A.Intl__message("Move to trash", _null, "move_to_trash", _null, _null);
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+        t5 = A.Intl__message("Move to trash", _null, "move_to_trash", _null, _null);
       }
-      t3.push(F.buildSVGIconButton("assets/images/ic_delete_composer.svg", C.Color_4288850611, t2, new B._EmailTileBuilderState__buildListActionButtonWhenHover_closure2(_this), _null, t5, t6));
-      t2 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size._dx >= 1200 ? 18 : 16;
-      t5 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size._dx >= 1200 ? C.EdgeInsets_8_8_8_8 : C.EdgeInsets_5_5_5_5;
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t4).toString;
-      t3.push(F.buildSVGIconButton("assets/images/ic_more.svg", C.Color_4288850611, t2, _null, new B._EmailTileBuilderState__buildListActionButtonWhenHover_closure3(_this, context), t5, A.Intl__message("More", _null, "more", _null, _null)));
+      t2.push(F.buildSVGIconButton("assets/images/ic_delete_composer.svg", C.Color_4288850611, t4, new B._EmailTileBuilderState__buildListActionButtonWhenHover_closure2(_this), _null, C.EdgeInsets_5_5_5_5, t5));
+      t4 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size._dx >= 1200 ? 18 : 16;
+      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+      t2.push(F.buildSVGIconButton("assets/images/ic_more.svg", C.Color_4288850611, t4, _null, new B._EmailTileBuilderState__buildListActionButtonWhenHover_closure3(_this, context), C.EdgeInsets_5_5_5_5, A.Intl__message("More", _null, "more", _null, _null)));
       if (A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size._dx >= 1200)
-        t3.push(E.SizedBox_16_null_null_null);
-      return A.Row$(t3, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
+        t2.push(E.SizedBox_16_null_null_null);
+      return A.Row$(t2, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     },
     get$canDeletePermanently() {
       var t1 = this._widget.mailboxContain;
@@ -22111,5 +22106,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "XTyoJz7EXcHWb7fCU5TmOtNgDAk=");
+})($__dart_deferred_initializers__, "7yiIkRaxR0hLj0H9/0MxP3WTd90=");
 ;
