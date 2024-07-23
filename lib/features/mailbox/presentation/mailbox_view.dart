@@ -93,7 +93,6 @@ class MailboxView extends BaseMailboxView {
                               child: SafeArea(
                                 top: false,
                                 child: ApplicationVersionWidget(
-                                  applicationManager: controller.applicationManager,
                                   padding: EdgeInsets.zero,
                                   title: '${AppLocalizations.of(context).version} ',
                                   textStyle: Theme.of(context).textTheme.labelMedium?.copyWith(

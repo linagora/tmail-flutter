@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 
 class EmailSubjectStyles {
   static const double textSize = 20;
-  static const int? maxLines = PlatformInfo.isWeb ? 2 : null;
+  static int? maxLines = PlatformInfo.isWeb ? 2 : null;
 
   static const Color textColor = AppColor.colorNameEmail;
   static const Color cursorColor = AppColor.colorTextButton;

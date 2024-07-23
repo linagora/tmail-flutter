@@ -50,7 +50,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                         topLeft: Radius.circular(16),
                         topRight: Radius.circular(16)),
                       color: Colors.white),
-                    margin: const EdgeInsets.only(top: PlatformInfo.isWeb ? 70 : 0),
+                    margin: EdgeInsets.only(top: PlatformInfo.isWeb ? 70 : 0),
                     child: ClipRRect(
                         borderRadius: const  BorderRadius.only(
                             topLeft: Radius.circular(16),
