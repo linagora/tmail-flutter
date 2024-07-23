@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
@@ -16,17 +17,17 @@ void main() {
     ),
     framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
   ($) async {
+    await TestBase().runTestApp();
+    
     final loginWithOidcScenario = LoginWithOidc($,
-      email: 'firstname100.surname100@upn.integration-open-paas.org',
-      password: 'secret100',
-      hostUrl: 'apisix.upn.integration-open-paas.org');
+      email: dotenv.get('USERNAME'),
+      password: dotenv.get('PASSWORD'),
+      hostUrl: dotenv.get('HOST_URL'));
     final sendEmailScenario = SendEmail($,
       loginWithOidcScenario: loginWithOidcScenario,
-      additionalRecipient: 'firstname21.surname21',
+      additionalRecipient: dotenv.get('ADDITIONAL_MAIL_RECIPIENT'),
       subject: 'Test subject',
       content: 'Test content');
-
-    TestBase().runTestApp();
 
     await sendEmailScenario.execute();
   });
