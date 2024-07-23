@@ -38,7 +38,7 @@ class _ApplicationVersionWidgetState extends State<ApplicationVersionWidget> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return Padding(
-            padding: widget.padding ?? const EdgeInsets.only(top: 6),
+            padding: widget.padding ?? const EdgeInsets.only(top: 8),
             child: Text(
               '${widget.title ?? 'v.'}${snapshot.data}',
               textAlign: TextAlign.center,
@@ -54,5 +54,11 @@ class _ApplicationVersionWidgetState extends State<ApplicationVersionWidget> {
         }
       }
     );
+  }
+
+  @override
+  void dispose() {
+    _versionStream = null;
+    super.dispose();
   }
 }
