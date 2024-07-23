@@ -16,7 +16,8 @@
       "appLink": "https://openpaas.linagora.com/contacts/",
       "androidPackageId": "xxx",
       "iosUrlScheme": "xxx",
-      "iosAppStoreLink": "xxx"
+      "iosAppStoreLink": "xxx",
+      "publicIconUri": "xxx"
     }
 ```
 
@@ -41,19 +42,28 @@ For example:
       "iosUrlScheme": "xxx",
       "iosAppStoreLink": "xxx"
     },
+    {
+      "appName": "App 2",
+      "appLink": "http://twake.linagora.com/",
+      "androidPackageId": "xxx",
+      "iosUrlScheme": "xxx",
+      "iosAppStoreLink": "xxx",
+      "publicIconUri": "xxx"
+    },
     ...
   ]
 }
 ```
 
 - `appName`: The name will be showed in App Grid
-- `icon`: Name of icon was added in `configurations\icons` folder
+- `icon`: Name of icon was added in `configurations\icons` folder. If not, `publicIconUri` must be provided.
 - `appLink`: Service URL
 - `androidPackageId`: ApplicationId of android app
 - `iosUrlScheme`: UrlScheme name of the ios app.
 - `iosAppStoreLink`: iTunes link of the ios app. 
 Allow navigate to store (appStore) if app is not found in the device. Example:
 `itms-apps://itunes.apple.com/us/app/linshare/id1534003175` or `https://itunes.apple.com/us/app/linshare/id1534003175`
+- `publicIconUri`: Public link for the icon, used when `icon` is null or empty.
 
 2. Enable it in [env.file](https://github.com/linagora/tmail-flutter/blob/master/env.file)
 ```
