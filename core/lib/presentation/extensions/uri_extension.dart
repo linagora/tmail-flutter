@@ -10,12 +10,27 @@ extension URIExtension on Uri {
       log('SessionUtils::toQualifiedUrl():qualifiedUrl: $qualifiedUrl');
       return Uri.parse(qualifiedUrl);
     } else {
-      final baseUrlValid = baseUrl.toString().removeLastSlashOfUrl();
-      final sourceUrlValid = toString().addFirstSlashOfUrl().removeLastSlashOfUrl();
-      log('SessionUtils::toQualifiedUrl():baseUrlValid: $baseUrlValid | sourceUrlValid: $sourceUrlValid');
-      final qualifiedUrl = baseUrlValid + sourceUrlValid;
-      log('SessionUtils::toQualifiedUrl():qualifiedUrl: $qualifiedUrl');
-      return Uri.parse(qualifiedUrl);
+      if (!hasOrigin) {
+        final baseUrlValid = baseUrl.toString().removeLastSlashOfUrl();
+        final sourceUrlValid = toString().addFirstSlashOfUrl().removeLastSlashOfUrl();
+        log('SessionUtils::toQualifiedUrl():baseUrlValid: $baseUrlValid | sourceUrlValid: $sourceUrlValid');
+        final qualifiedUrl = baseUrlValid + sourceUrlValid;
+        log('SessionUtils::toQualifiedUrl():qualifiedUrl: $qualifiedUrl');
+        return Uri.parse(qualifiedUrl);
+      } else {
+        final qualifiedUrl = toString().removeLastSlashOfUrl();
+        log('SessionUtils::toQualifiedUrl():qualifiedUrl: $qualifiedUrl');
+        return Uri.parse(qualifiedUrl);
+      }
+    }
+  }
+
+  bool get hasOrigin {
+    try {
+      return origin.isNotEmpty;
+    } catch (e) {
+      logError('URIExtension::hasOrigin:Exception = $e');
+      return false;
     }
   }
 }
