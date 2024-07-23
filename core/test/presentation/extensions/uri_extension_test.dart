@@ -55,5 +55,35 @@ void main() {
 
       expect(qualifiedUrlResult, equals(qualifiedUrlExpected));
     });
+
+    test('convertToQualifiedUrl() should return qualified url when baseUrl is `https://domain.com:2000/jmap` and sourceUrl is `https://domain.com:2001/jmap`', () async {
+      final baseUrl =  Uri.parse('https://domain.com:2000/jmap');
+      final sourceUrl =  Uri.parse('https://domain.com:2001/jmap');
+
+      final qualifiedUrlExpected = Uri.parse('https://domain.com:2001/jmap');
+      final qualifiedUrlResult = sourceUrl.toQualifiedUrl(baseUrl: baseUrl);
+
+      expect(qualifiedUrlResult, equals(qualifiedUrlExpected));
+    });
+
+    test('convertToQualifiedUrl() should return qualified url when baseUrl is `https://domain.com:2000/jmap` and sourceUrl is `https://domain.com:2001/jmap/`', () async {
+      final baseUrl =  Uri.parse('https://domain.com:2000/jmap');
+      final sourceUrl =  Uri.parse('https://domain.com:2001/jmap/');
+
+      final qualifiedUrlExpected = Uri.parse('https://domain.com:2001/jmap');
+      final qualifiedUrlResult = sourceUrl.toQualifiedUrl(baseUrl: baseUrl);
+
+      expect(qualifiedUrlResult, equals(qualifiedUrlExpected));
+    });
+
+    test('convertToQualifiedUrl() should return qualified url when baseUrl is `https://domain.com:20001/jmap` and sourceUrl is `https://domain.com:2001/jmap`', () async {
+      final baseUrl =  Uri.parse('https://domain.com:2001/jmap');
+      final sourceUrl =  Uri.parse('https://domain.com:2001/jmap');
+
+      final qualifiedUrlExpected = Uri.parse('https://domain.com:2001/jmap');
+      final qualifiedUrlResult = sourceUrl.toQualifiedUrl(baseUrl: baseUrl);
+
+      expect(qualifiedUrlResult, equals(qualifiedUrlExpected));
+    });
   });
 }
