@@ -15,7 +15,7 @@ void main() {
     nativeAutomatorConfig: const NativeAutomatorConfig(
       findTimeout: Duration(seconds: 10),
     ),
-    framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.fullyLive,
+    framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
   ($) async {
     await TestBase().runTestApp();
     
