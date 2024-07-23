@@ -3,7 +3,10 @@ import 'package:core/utils/web_renderer/canvas_kit.dart';
 import 'package:flutter/foundation.dart';
 
 abstract class PlatformInfo {
-  static const bool isWeb = kIsWeb;
+  @visibleForTesting
+  static bool isTestingForWeb = false;
+
+  static bool get isWeb => kIsWeb || isTestingForWeb;
   static bool get isLinux => !kIsWeb && defaultTargetPlatform == TargetPlatform.linux;
   static bool get isWindows => !kIsWeb && defaultTargetPlatform == TargetPlatform.windows;
   static bool get isMacOS => !kIsWeb && defaultTargetPlatform == TargetPlatform.macOS;

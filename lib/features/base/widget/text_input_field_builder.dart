@@ -58,7 +58,7 @@ class TextInputFieldBuilder extends StatelessWidget {
         minLines: minLines,
         maxLines: maxLines,
         decoration: (TextInputDecorationBuilder()
-          ..setContentPadding(const EdgeInsets.symmetric(vertical: PlatformInfo.isWeb ? 16 : 12, horizontal: 12))
+          ..setContentPadding(EdgeInsets.symmetric(vertical: PlatformInfo.isWeb ? 16 : 12, horizontal: 12))
           ..setHintText(hint)
           ..setFillColor(backgroundColor)
           ..setErrorText(error))
