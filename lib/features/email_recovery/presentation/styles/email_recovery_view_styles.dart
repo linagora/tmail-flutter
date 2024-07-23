@@ -14,7 +14,7 @@ class EmailRecoveryViewStyles {
     color: Colors.white,
   );
 
-  static const EdgeInsetsGeometry backgroundMarginMobile = EdgeInsets.only(top: PlatformInfo.isWeb ? 70 : 0);
+  static EdgeInsetsGeometry backgroundMarginMobile = EdgeInsets.only(top: PlatformInfo.isWeb ? 70 : 0);
 
   static const BorderRadiusGeometry clipRRectBorderRadiusMobile = BorderRadius.only(
     topLeft: Radius.circular(16),

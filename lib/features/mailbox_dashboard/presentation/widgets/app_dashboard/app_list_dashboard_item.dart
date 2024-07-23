@@ -26,8 +26,10 @@ class AppListDashboardItem extends StatelessWidget {
       text: app.appName,
       textAlign: TextAlign.center,
       textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorNameEmail),
-      logo: !app.iconName.endsWith('svg') ? imagePaths.getConfigurationImagePath(app.iconName) : null,
-      logoSVG: app.iconName.endsWith('svg') ? imagePaths.getConfigurationImagePath(app.iconName) : null,
+      logo: app.iconName?.isNotEmpty == true
+        ? imagePaths.getConfigurationImagePath(app.iconName!)
+        : null,
+      publicLogoUri: app.publicIconUri,
       onTapCallback: () => _openApp(context, app),
       padding: const EdgeInsetsDirectional.symmetric(vertical: 12, horizontal: 20),
       hoverColor: AppColor.colorBgMailboxSelected

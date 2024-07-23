@@ -53,7 +53,7 @@ class IdentityInputFieldBuilder extends StatelessWidget {
         textStyle: const TextStyle(color: Colors.black, fontSize: 16),
         keyboardType: inputType ?? TextInputType.text,
         decoration: (IdentityInputDecorationBuilder()
-          ..setContentPadding(const EdgeInsets.symmetric(
+          ..setContentPadding(EdgeInsets.symmetric(
               vertical: PlatformInfo.isWeb ? 16 : 12,
               horizontal: 12))
           ..setErrorText(_error))

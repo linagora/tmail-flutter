@@ -104,7 +104,7 @@ class LoginView extends BaseLoginView {
                   padding: const EdgeInsets.only(top: 24),
                   child: SloganBuilder(
                     arrangedByHorizontal: true,
-                    logoSVG: controller.imagePaths.icJMAPStandard,
+                    logo: controller.imagePaths.icJMAPStandard,
                     sizeLogo: 48.0,
                     paddingText: const EdgeInsets.only(left: 12),
                     text: AppLocalizations.of(context).jmapStandard,
@@ -115,7 +115,7 @@ class LoginView extends BaseLoginView {
                   padding: const EdgeInsets.only(top: 16),
                   child: SloganBuilder(
                     arrangedByHorizontal: true,
-                    logoSVG: controller.imagePaths.icEncrypted,
+                    logo: controller.imagePaths.icEncrypted,
                     sizeLogo: 48.0,
                     paddingText: const EdgeInsets.only(left: 12),
                     text: AppLocalizations.of(context).encryptedMailbox,
@@ -126,7 +126,7 @@ class LoginView extends BaseLoginView {
                   padding: const EdgeInsets.only(top: 16),
                   child: SloganBuilder(
                     arrangedByHorizontal: true,
-                    logoSVG: controller.imagePaths.icTeam,
+                    logo: controller.imagePaths.icTeam,
                     sizeLogo: 48.0,
                     paddingText: const EdgeInsets.only(left: 12),
                     text: AppLocalizations.of(context).manageEmailAsATeam,
@@ -137,7 +137,7 @@ class LoginView extends BaseLoginView {
                   padding: const EdgeInsets.only(top: 16),
                   child: SloganBuilder(
                     arrangedByHorizontal: true,
-                    logoSVG: controller.imagePaths.icIntegration,
+                    logo: controller.imagePaths.icIntegration,
                     sizeLogo: 48.0,
                     paddingText: const EdgeInsets.only(left: 12),
                     text: AppLocalizations.of(context).multipleIntegrations,
