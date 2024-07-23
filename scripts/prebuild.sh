@@ -5,7 +5,7 @@ set -e
 set -x
 
 cd core
-flutter pub get
+flutter pub get && dart run build_runner build --delete-conflicting-outputs
 
 ## Install necessary pods
 # cd ../ios
