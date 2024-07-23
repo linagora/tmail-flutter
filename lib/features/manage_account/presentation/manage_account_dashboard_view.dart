@@ -1,15 +1,11 @@
-
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/state/banner_state.dart';
-import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
-import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/always_read_receipt/always_read_receipt_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
@@ -20,17 +16,14 @@ import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visib
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_view.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardController>
-    with UserSettingPopupMenuMixin {
+class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardController> {
 
-  ManageAccountDashBoardView({Key? key}) : super(key: key);
+  const ManageAccountDashBoardView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -42,26 +35,18 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
         child: ResponsiveWidget(
             responsiveUtils: controller.responsiveUtils,
             desktop: Column(children: [
-              Row(children: [
-                Container(
-                  width: ResponsiveUtils.defaultSizeMenu,
-                  color: Colors.white,
-                  padding: const EdgeInsetsDirectional.only(start: 28),
-                  alignment: Alignment.center,
-                  height: 80,
-                  child: Row(children: [
-                    ApplicationLogoWidthTextWidget(
-                      onTapAction: () => controller.backToMailboxDashBoard(context: context),
-                    ),
-                    ApplicationVersionWidget(
-                      applicationManager: controller.applicationManager
-                    )
-                  ])
-                ),
-                Expanded(child: Padding(
-                    padding: SettingsUtils.getPaddingRightHeaderSetting(context),
-                    child: _buildRightHeader(context)))
-              ]),
+              Obx(() {
+                final accountId = controller.accountId.value;
+                if (accountId == null) {
+                  return const SizedBox.shrink();
+                } else {
+                  return NavigationBarWidget(
+                    avatarUserName: controller.sessionCurrent?.username.firstCharacter ?? '',
+                    onTapApplicationLogoAction: () => controller.backToMailboxDashBoard(context: context),
+                    onTapAvatarAction: (position) => controller.handleClickAvatarAction(context, position),
+                  );
+                }
+              }),
               Expanded(child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -117,41 +102,6 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
         ),
       ),
     );
-  }
-
-  Widget _buildRightHeader(BuildContext context) {
-    return Row(children: [
-      const Spacer(),
-      const SizedBox(width: 16),
-      Obx(() => (AvatarBuilder()
-          ..text(controller.accountId.value != null
-              ? controller.sessionCurrent?.username.firstCharacter ?? ''
-              : ''
-            )
-          ..backgroundColor(Colors.white)
-          ..textColor(Colors.black)
-          ..context(context)
-          ..addOnTapAvatarActionWithPositionClick((position) {
-            return controller.openPopupMenuAction(
-              context,
-              position,
-              popupMenuUserSettingActionTile(
-                context,
-                controller.sessionCurrent?.username,
-                onLogoutAction: () {
-                  popBack();
-                  controller.logout(controller.sessionCurrent, controller.accountId.value);
-                }
-              )
-            );
-          })
-          ..addBoxShadows([const BoxShadow(
-              color: AppColor.colorShadowBgContentEmail,
-              spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
-          ..size(48))
-        .build()),
-      const SizedBox(width: 16)
-    ]);
   }
 
   Widget _viewDisplayedOfAccountMenuItem() {
