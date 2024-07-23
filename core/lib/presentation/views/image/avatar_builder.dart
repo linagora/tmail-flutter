@@ -2,7 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 
 typedef OnTapAvatarActionClick = void Function();
-typedef OnTapAvatarActionWithPositionClick = void Function(RelativeRect? position);
+typedef OnTapAvatarActionWithPositionClick = void Function(RelativeRect position);
 
 class AvatarBuilder {
 
@@ -58,7 +58,7 @@ class AvatarBuilder {
     _onTapAvatarActionClick = onTapAvatarActionClick;
   }
 
-  void addOnTapAvatarActionWithPositionClick(OnTapAvatarActionWithPositionClick onTapAvatarActionWithPositionClick) {
+  void addOnTapAvatarActionWithPositionClick(OnTapAvatarActionWithPositionClick? onTapAvatarActionWithPositionClick) {
     _onTapAvatarActionWithPositionClick = onTapAvatarActionWithPositionClick;
   }
 

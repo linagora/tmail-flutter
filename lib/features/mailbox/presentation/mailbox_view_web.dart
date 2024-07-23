@@ -66,9 +66,7 @@ class MailboxView extends BaseMailboxView {
         ),
         child: Row(children: [
           ApplicationLogoWidthTextWidget(),
-          ApplicationVersionWidget(
-            applicationManager: controller.mailboxDashBoardController.applicationManager,
-          )
+          const ApplicationVersionWidget()
         ])
     );
   }
