@@ -251,6 +251,12 @@ There are many ways to help us, and amongst them:
  
 You would be pleased to know we contributes a [JMAP Dart client](https://github.com/linagora/jmap-dart-client) that you can reuse to write your own applications. Feels free to open pull requests and enrich it!
 
+## Integration tests
+
+### Mobile
+- Our integration test suites leverage Patrol to ensure comprehensive testing coverage and high-quality performance for tmail-flutter across various devices and browsers.
+- This project is tested with BrowserStack - We are grateful to BrowserStack for providing the platform that allows us to test our project with such ease and reliability.
+
 ## How to contribute
 Everyone can contribute at their own level, even if they only give a few minutes of their time. Whatever you do, your help is very valuable.
 - Translation: https://hosted.weblate.org/projects/linagora/teammail/
