@@ -43,16 +43,20 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
             responsiveUtils: controller.responsiveUtils,
             desktop: Column(children: [
               Row(children: [
-                Container(width: 256, color: Colors.white,
-                    padding: SettingsUtils.getPaddingHeaderSetting(context),
-                    child: Row(children: [
-                      ApplicationLogoWidthTextWidget(
-                        onTapAction: () => controller.backToMailboxDashBoard(context: context),
-                      ),
-                      ApplicationVersionWidget(
-                        applicationManager: controller.applicationManager
-                      )
-                    ])
+                Container(
+                  width: ResponsiveUtils.defaultSizeMenu,
+                  color: Colors.white,
+                  padding: const EdgeInsetsDirectional.only(start: 28),
+                  alignment: Alignment.center,
+                  height: 80,
+                  child: Row(children: [
+                    ApplicationLogoWidthTextWidget(
+                      onTapAction: () => controller.backToMailboxDashBoard(context: context),
+                    ),
+                    ApplicationVersionWidget(
+                      applicationManager: controller.applicationManager
+                    )
+                  ])
                 ),
                 Expanded(child: Padding(
                     padding: SettingsUtils.getPaddingRightHeaderSetting(context),
