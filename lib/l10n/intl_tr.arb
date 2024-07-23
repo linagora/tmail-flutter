@@ -4034,5 +4034,29 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "loginInputUrlMessage": "",
+  "@loginInputUrlMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "loginInputCredentialMessage": "",
+  "@loginInputCredentialMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "initializing_data": "",
+  "@initializing_data": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "login_text_slogan": "",
+  "@login_text_slogan": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
