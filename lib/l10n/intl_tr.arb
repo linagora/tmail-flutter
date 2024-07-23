@@ -1,1 +1,26 @@
-{}
+{
+  "login_text_slogan": "Twake Mail",
+  "@login_text_slogan": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "loginInputUrlMessage": "Oturum açmak ve mesajınıza erişmek için lütfen JMAP sunucunuza bağlanın",
+  "@loginInputUrlMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "loginInputCredentialMessage": "Oturum açmak için kimlik bilgilerinizi girin",
+  "@loginInputCredentialMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "initializing_data": "Veri başlatılıyor...",
+  "@initializing_data": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  }
+}
