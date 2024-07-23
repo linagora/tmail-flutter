@@ -65,7 +65,6 @@ class MailboxView extends BaseMailboxView {
           ApplicationLogoWidthTextWidget(),
           ApplicationVersionWidget(
             applicationManager: controller.mailboxDashBoardController.applicationManager,
-            padding: const EdgeInsets.only(top: 4),
           )
         ])
     );
