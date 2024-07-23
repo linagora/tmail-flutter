@@ -586,10 +586,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._allowedButtonsFilter = t3;
       _._pointerToKind = t4;
     },
-    Drawer: function Drawer(t0, t1, t2) {
-      this.elevation = t0;
-      this.child = t1;
-      this.key = t2;
+    Drawer: function Drawer(t0, t1, t2, t3) {
+      var _ = this;
+      _.elevation = t0;
+      _.shape = t1;
+      _.child = t2;
+      _.key = t3;
     },
     _DrawerDefaultsM3: function _DrawerDefaultsM3(t0, t1, t2, t3, t4, t5, t6, t7, t8) {
       var _ = this;
@@ -6672,7 +6674,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.Drawer.prototype = {
     build$1(context) {
-      var label, t1, defaults, effectiveShape, t2, t3, t4, t5, t6, _null = null,
+      var label, t1, defaults, effectiveShape, t2, t3, t4, t5, _null = null,
         drawerTheme = A.DrawerTheme_of(context);
       switch (A.Theme_of(context).platform.index) {
         case 2:
@@ -6695,17 +6697,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1 == null ? _null : t1.controller;
       t1 = t1 == null ? _null : t1.alignment;
       defaults = new B._DrawerDefaultsM3(context, _null, _null, 1, _null, _null, _null, _null, _null);
-      if (t1 !== C.DrawerAlignment_1) {
-        t1 = drawerTheme.shape;
-        if (t1 == null)
-          t1 = defaults.get$shape(0);
-        effectiveShape = t1;
-      } else {
-        t1 = drawerTheme.endShape;
-        if (t1 == null)
-          t1 = defaults.get$endShape();
-        effectiveShape = t1;
-      }
+      effectiveShape = this.shape;
+      if (effectiveShape == null)
+        if (t1 !== C.DrawerAlignment_1) {
+          t1 = drawerTheme.shape;
+          if (t1 == null)
+            t1 = defaults.get$shape(0);
+          effectiveShape = t1;
+        } else {
+          t1 = drawerTheme.endShape;
+          if (t1 == null)
+            t1 = defaults.get$endShape();
+          effectiveShape = t1;
+        }
       t1 = drawerTheme.width;
       if (t1 == null)
         t1 = 304;
@@ -6719,12 +6723,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5 = drawerTheme.surfaceTintColor;
       if (t5 == null)
         t5 = defaults.get$surfaceTintColor();
-      if (effectiveShape != null)
-        t6 = C.Clip_1;
-      else
-        t6 = C.Clip_0;
-      t5 = A.Material$(C.Duration_200000, true, _null, this.child, t6, t2, t3, _null, t4, effectiveShape, t5, _null, C.MaterialType_0);
-      return new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, label, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null), false, true, false, false, new A.ConstrainedBox(new A.BoxConstraints(t1, t1, 1 / 0, 1 / 0), t5, _null), _null);
+      t2 = A.Material$(C.Duration_200000, true, _null, this.child, C.Clip_1, t2, t3, _null, t4, effectiveShape, t5, _null, C.MaterialType_0);
+      return new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, label, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null), false, true, false, false, new A.ConstrainedBox(new A.BoxConstraints(t1, t1, 1 / 0, 1 / 0), t2, _null), _null);
     }
   };
   B._DrawerDefaultsM3.prototype = {
@@ -9839,7 +9839,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B._BaseMailboxView_GetWidget_AppLoaderMixin_MailboxWidgetMixin.prototype = {};
   B.MailboxView.prototype = {
     build$1(context) {
-      var t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, _this = this, _null = null,
+      var t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, _this = this, _null = null,
         t1 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
       t1 = t1._jsWeakMap;
@@ -9849,107 +9849,116 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx >= 1200 ? 0 : 16;
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
-      t5 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data;
-      t5 = t5.size._dx >= 1200 ? C.Color_4294375158 : C.Color_4294967295;
-      t6 = type$.JSArray_Widget;
-      t7 = A._setArrayType([], t6);
+      t5 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx >= 1200 ? C.RoundedRectangleBorder_NYu6 : _null;
+      A.Expando__checkType(_this);
+      t2._as(t1.get(_this)).toString;
+      t6 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data;
+      t6 = t6.size._dx >= 1200 ? C.Color_4294375158 : C.Color_4294967295;
+      t7 = type$.JSArray_Widget;
+      t8 = A._setArrayType([], t7);
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
       if (!(A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx >= 1200)) {
         A.Expando__checkType(_this);
         t2._as(t1.get(_this)).toString;
-        t8 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx >= 1200 ? 25 : 16;
-        A.Expando__checkType(_this);
-        t2._as(t1.get(_this)).toString;
         t9 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx >= 1200 ? 25 : 16;
         A.Expando__checkType(_this);
         t2._as(t1.get(_this)).toString;
-        t10 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx >= 1200 ? 32 : 16;
-        t11 = G.ApplicationLogoWidthTextWidget$(_null);
+        t10 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx >= 1200 ? 25 : 16;
         A.Expando__checkType(_this);
-        t7.push(A.Container$(_null, A.Row$(A._setArrayType([t11, F.ApplicationVersionWidget$(t2._as(t1.get(_this)).mailboxDashBoardController.applicationManager, C.EdgeInsets_0_4_0_0)], t6), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_4294967295, _null, _null, _null, _null, _null, _null, new A.EdgeInsetsDirectional(t10, t8, 0, t9), _null, _null, _null));
+        t2._as(t1.get(_this)).toString;
+        t11 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx >= 1200 ? 32 : 16;
+        t12 = G.ApplicationLogoWidthTextWidget$(_null);
+        A.Expando__checkType(_this);
+        t8.push(A.Container$(_null, A.Row$(A._setArrayType([t12, F.ApplicationVersionWidget$(t2._as(t1.get(_this)).mailboxDashBoardController.applicationManager)], t7), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_4294967295, _null, _null, _null, _null, _null, _null, new A.EdgeInsetsDirectional(t11, t9, 0, t10), _null, _null, _null));
       }
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
       if (!(A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx >= 1200))
-        t7.push(D.Divider_4e8);
+        t8.push(D.Divider_4e8);
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
-      t6 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx >= 1200 ? 16 : 0;
+      t7 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx >= 1200 ? 16 : 0;
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
-      t8 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx >= 1200 ? C.Color_4294375158 : C.Color_4294967295;
+      t9 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx >= 1200 ? C.Color_4294375158 : C.Color_4294967295;
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
       t1 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx >= 1200 ? C.Color_4294375158 : C.Color_4294967295;
-      t7.push(A.Expanded$(A.Container$(_null, A.Container$(_null, _this._mailbox_view_web$_buildListMailbox$1(context), C.Clip_0, t1, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), C.Clip_0, t8, _null, _null, _null, _null, _null, _null, new A.EdgeInsetsDirectional(t6, 0, 0, 0), _null, _null, _null), 1));
-      t7.push(D.QuotasView_null);
-      return new B.Drawer(t4, A.Scaffold$(_null, t5, A.Column$(t7, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null, _null, true, _null, _null, _null), _null);
+      t8.push(A.Expanded$(A.Container$(_null, A.Container$(_null, _this._mailbox_view_web$_buildListMailbox$1(context), C.Clip_0, t1, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), C.Clip_0, t9, _null, _null, _null, _null, _null, _null, new A.EdgeInsetsDirectional(t7, 0, 0, 0), _null, _null, _null), 1));
+      t8.push(D.QuotasView_null);
+      return new B.Drawer(t4, t5, A.Scaffold$(_null, t6, A.Column$(t8, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null, _null, true, _null, _null, _null), _null);
     },
     _mailbox_view_web$_buildListMailbox$1(context) {
-      var t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, _this = this, _null = null,
+      var t2, t3, t4, t5, t6, t7, t8, t9, t10, mailboxListWidget, _this = this, _null = null,
         t1 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
       t1 = t1._jsWeakMap;
       t2 = A._instanceType(_this)._eval$1("GetWidget.S");
       t3 = t2._as(t1.get(_this)).mailboxListScrollController;
-      t4 = A.ScrollConfiguration_of(context).copyWith$3$dragDevices$physics$scrollbars(A.LinkedHashSet_LinkedHashSet$_literal([C.PointerDeviceKind_0, C.PointerDeviceKind_1, C.PointerDeviceKind_4], type$.PointerDeviceKind), C.BouncingScrollPhysics_ScrollDecelerationRate_0_null, false);
-      A.Expando__checkType(_this);
-      t5 = t2._as(t1.get(_this)).get$refreshAllMailbox();
-      A.Expando__checkType(_this);
-      t6 = t2._as(t1.get(_this)).mailboxListScrollController;
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
-      t7 = type$.MediaQuery;
-      t8 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t7).data.size._dx >= 1200 ? 16 : 0;
-      t9 = type$.JSArray_Widget;
-      t10 = A._setArrayType([], t9);
+      t4 = type$.MediaQuery;
+      t5 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t4).data.size._dx >= 1200 ? 16 : 0;
+      t6 = type$.JSArray_Widget;
+      t7 = A._setArrayType([], t6);
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
-      if (!(A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t7).data.size._dx >= 1200))
-        t10.push(new A.Obx(new B.MailboxView__buildListMailbox_closure(_this, context), _null));
-      t10.push(new A.Obx(new B.MailboxView__buildListMailbox_closure0(_this), _null));
+      if (!(A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t4).data.size._dx >= 1200))
+        t7.push(new A.Obx(new B.MailboxView__buildListMailbox_closure(_this, context), _null));
+      t7.push(new A.Obx(new B.MailboxView__buildListMailbox_closure0(_this), _null));
       if (B.AppConfig_appGridDashboardAvailable()) {
         A.Expando__checkType(_this);
         t2._as(t1.get(_this)).toString;
-        t11 = !(A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t7).data.size._dx >= 1200);
+        t8 = !(A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t4).data.size._dx >= 1200);
       } else
-        t11 = false;
-      if (t11) {
+        t8 = false;
+      if (t8) {
         A.Expando__checkType(_this);
-        t11 = t2._as(t1.get(_this)).responsiveUtils;
+        t8 = t2._as(t1.get(_this)).responsiveUtils;
         A.Expando__checkType(_this);
-        t12 = t2._as(t1.get(_this)).imagePaths;
+        t9 = t2._as(t1.get(_this)).imagePaths;
         A.Expando__checkType(_this);
-        t12 = _this.buildAppGridDashboard$4(context, t11, t12, t2._as(t1.get(_this)));
-        t11 = t12;
+        t9 = _this.buildAppGridDashboard$4(context, t8, t9, t2._as(t1.get(_this)));
+        t8 = t9;
       } else
-        t11 = C.SizedBox_0_0_null_null;
-      t10.push(t11);
-      t10.push(C.SizedBox_null_8_null_null);
-      t10.push(new A.Obx(new B.MailboxView__buildListMailbox_closure1(_this, context), _null));
-      t10.push(C.SizedBox_null_8_null_null);
-      t10.push(C.Divider_SfU);
+        t8 = C.SizedBox_0_0_null_null;
+      t7.push(t8);
+      t7.push(C.SizedBox_null_8_null_null);
+      t7.push(new A.Obx(new B.MailboxView__buildListMailbox_closure1(_this, context), _null));
+      t7.push(C.SizedBox_null_8_null_null);
+      t7.push(C.Divider_SfU);
+      t8 = type$.AppLocalizations;
+      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t8).toString;
+      t9 = A.Expanded$(A.Text$(A.Intl__message("Folders", _null, "folders", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_69t1, _null, _null, _null, _null, _null), 1);
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
-      t11 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t7).data.size._dx >= 1200 ? 0 : 16;
-      t12 = type$.AppLocalizations;
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t12).toString;
-      t13 = A.Expanded$(A.Text$(A.Intl__message("Folders", _null, "folders", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_69t1, _null, _null, _null, _null, _null), 1);
+      t4 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t4).data.size._dx >= 1200 ? 0 : 12;
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
-      t7 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t7).data.size._dx >= 1200 ? 0 : 12;
+      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t8).toString;
+      t10 = A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_search_bar.svg", C.Color_4278221567, _null, _null, _null, 1 / 0, _null, new B.MailboxView__buildListMailbox_closure2(_this, context), _null, A.Intl__message("Search for folders", _null, "searchForFolders", _null, _null));
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t12).toString;
-      t14 = A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_search_bar.svg", C.Color_4278221567, _null, _null, _null, 1 / 0, _null, new B.MailboxView__buildListMailbox_closure2(_this, context), _null, A.Intl__message("Search for folders", _null, "searchForFolders", _null, _null));
-      A.Expando__checkType(_this);
-      t2._as(t1.get(_this)).toString;
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t12).toString;
-      t10.push(new A.Padding(new A.EdgeInsetsDirectional(t11, 4, 0, 4), A.Row$(A._setArrayType([t13, new A.Padding(new A.EdgeInsetsDirectional(0, 0, t7, 0), A.Row$(A._setArrayType([t14, A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_add_new_folder.svg", C.Color_4278221567, _null, _null, _null, 1 / 0, _null, new B.MailboxView__buildListMailbox_closure3(_this, context), _null, A.Intl__message("New folder", _null, "newFolder", _null, _null))], t9), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null)], t9), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_3, C.MainAxisSize_1, _null), _null));
-      t10.push(new A.Obx(new B.MailboxView__buildListMailbox_closure4(_this, context), _null));
-      t10.push(new A.Obx(new B.MailboxView__buildListMailbox_closure5(_this, context), _null));
-      return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([new A.ScrollbarListView(A.RefreshIndicator$(A.SingleChildScrollView$(A.Column$(t10, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), t6, E.PageStorageKey_mailbox_list, new A.EdgeInsetsDirectional(0, 0, t8, 0), C.AlwaysScrollableScrollPhysics_null, _null, C.Axis_1), C.Color_4278221567, t5), t3, t4, _null), new A.Obx(new B.MailboxView__buildListMailbox_closure6(_this), _null), new A.Obx(new B.MailboxView__buildListMailbox_closure7(_this), _null)], t9), _null);
+      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t8).toString;
+      t7.push(new A.Padding(D.EdgeInsetsDirectional_0_4_0_4, A.Row$(A._setArrayType([t9, new A.Padding(new A.EdgeInsetsDirectional(0, 0, t4, 0), A.Row$(A._setArrayType([t10, A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_add_new_folder.svg", C.Color_4278221567, _null, _null, _null, 1 / 0, _null, new B.MailboxView__buildListMailbox_closure3(_this, context), _null, A.Intl__message("New folder", _null, "newFolder", _null, _null))], t6), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null)], t6), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_3, C.MainAxisSize_1, _null), _null));
+      t7.push(new A.Obx(new B.MailboxView__buildListMailbox_closure4(_this, context), _null));
+      t7.push(new A.Obx(new B.MailboxView__buildListMailbox_closure5(_this, context), _null));
+      mailboxListWidget = A.SingleChildScrollView$(A.Column$(t7, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), t3, E.PageStorageKey_mailbox_list, new A.EdgeInsetsDirectional(0, 0, t5, 0), C.AlwaysScrollableScrollPhysics_null, _null, C.Axis_1);
+      t6 = A._setArrayType([], t6);
+      if ($.$get$_context().$index(0, "flutterCanvasKit") == null) {
+        A.Expando__checkType(_this);
+        t3 = t2._as(t1.get(_this)).mailboxListScrollController;
+        t4 = A.ScrollConfiguration_of(context).copyWith$3$dragDevices$physics$scrollbars(A.LinkedHashSet_LinkedHashSet$_literal([C.PointerDeviceKind_0, C.PointerDeviceKind_1, C.PointerDeviceKind_4], type$.PointerDeviceKind), C.BouncingScrollPhysics_ScrollDecelerationRate_0_null, false);
+        A.Expando__checkType(_this);
+        t6.push(new A.ScrollbarListView(A.RefreshIndicator$(mailboxListWidget, C.Color_4278221567, t2._as(t1.get(_this)).get$refreshAllMailbox()), t3, t4, _null));
+      } else {
+        A.Expando__checkType(_this);
+        t6.push(new A.ScrollbarListView(mailboxListWidget, t2._as(t1.get(_this)).mailboxListScrollController, _null, _null));
+      }
+      t6.push(new A.Obx(new B.MailboxView__buildListMailbox_closure6(_this), _null));
+      t6.push(new A.Obx(new B.MailboxView__buildListMailbox_closure7(_this), _null));
+      return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, t6, _null);
     },
     _mailbox_view_web$_buildBodyMailboxCategory$3(context, categories, mailboxNode) {
       var t2, t3, t4, _this = this, _null = null,
@@ -10066,7 +10075,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = G.ApplicationLogoWidthTextWidget$(t2._as(t1.get(_this)).get$redirectToInboxAction());
       A.Expando__checkType(_this);
       t5 = type$.JSArray_Widget;
-      t1 = A.Container$(C.Alignment_0_0, A.Row$(A._setArrayType([t4, F.ApplicationVersionWidget$(t2._as(t1.get(_this)).applicationManager, _null)], t5), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_4294967295, _null, _null, _null, 80, _null, _null, D.EdgeInsetsDirectional_28_0_0_0, _null, _null, 256);
+      t1 = A.Container$(C.Alignment_0_0, A.Row$(A._setArrayType([t4, F.ApplicationVersionWidget$(t2._as(t1.get(_this)).applicationManager)], t5), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_4294967295, _null, _null, _null, 80, _null, _null, E.EdgeInsetsDirectional_28_0_0_0, _null, _null, 256);
       t2 = type$._LocalizationsScope;
       t4 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 0 : 10;
       t2 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 10 : 0;
@@ -21841,6 +21850,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsetsDirectional_0_16_0_0 = new A.EdgeInsetsDirectional(0, 16, 0, 0);
     D.EdgeInsetsDirectional_0_28_0_0 = new A.EdgeInsetsDirectional(0, 28, 0, 0);
     D.EdgeInsetsDirectional_0_2_10_2 = new A.EdgeInsetsDirectional(0, 2, 10, 2);
+    D.EdgeInsetsDirectional_0_4_0_4 = new A.EdgeInsetsDirectional(0, 4, 0, 4);
     D.EdgeInsetsDirectional_0_4_22_16 = new A.EdgeInsetsDirectional(0, 4, 22, 16);
     D.EdgeInsetsDirectional_0_8_0_0 = new A.EdgeInsetsDirectional(0, 8, 0, 0);
     D.EdgeInsetsDirectional_0_8_12_0 = new A.EdgeInsetsDirectional(0, 8, 12, 0);
@@ -21864,7 +21874,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsetsDirectional_24_0_24_8 = new A.EdgeInsetsDirectional(24, 0, 24, 8);
     D.EdgeInsetsDirectional_24_24_24_24 = new A.EdgeInsetsDirectional(24, 24, 24, 24);
     D.EdgeInsetsDirectional_24_8_24_8 = new A.EdgeInsetsDirectional(24, 8, 24, 8);
-    D.EdgeInsetsDirectional_28_0_0_0 = new A.EdgeInsetsDirectional(28, 0, 0, 0);
     D.EdgeInsetsDirectional_32_0_32_0 = new A.EdgeInsetsDirectional(32, 0, 32, 0);
     D.EdgeInsetsDirectional_3_2_3_0 = new A.EdgeInsetsDirectional(3, 2, 3, 0);
     D.EdgeInsetsDirectional_3_3_3_3 = new A.EdgeInsetsDirectional(3, 3, 3, 3);
@@ -22081,5 +22090,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "UbFOcOv0seDKVSnnmkC+VvjlTsI=");
+})($__dart_deferred_initializers__, "tuQVaDxR6izGDeEdHZyqJr70ULY=");
 ;
