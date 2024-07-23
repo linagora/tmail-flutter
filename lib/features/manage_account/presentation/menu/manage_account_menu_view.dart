@@ -27,9 +27,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                        padding: const EdgeInsetsDirectional.only(top: 16, bottom: 16, start: 16),
                        child: Row(children: [
                          ApplicationLogoWidthTextWidget(),
-                         ApplicationVersionWidget(
-                           applicationManager:  controller.dashBoardController.applicationManager,
-                         )
+                         const ApplicationVersionWidget()
                        ])
                    ),
                  if (!controller.responsiveUtils.isWebDesktop(context))

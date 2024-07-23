@@ -8,7 +8,7 @@ class EmailViewAppBarWidgetStyles {
   static const double bottomBorderWidth = 0.5;
   static const double height = 52;
   static const double radius = 20;
-  static const double buttonIconSize = IconUtils.defaultIconSize;
+  static double buttonIconSize = IconUtils.defaultIconSize;
   static const double deleteButtonIconSize = 20;
   static const double space = 5;
   static double? heightIOS(BuildContext context, ResponsiveUtils responsiveUtils) {
