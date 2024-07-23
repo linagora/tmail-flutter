@@ -1,5 +1,6 @@
 package com.tmail.base;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.stream.Stream;
@@ -37,8 +38,8 @@ public abstract class TestBase {
         ClassLoader loader = getClass().getClassLoader();
         try {
             properties.load(loader.getResourceAsStream("config.properties"));
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
