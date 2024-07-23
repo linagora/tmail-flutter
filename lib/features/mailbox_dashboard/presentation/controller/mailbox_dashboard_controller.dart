@@ -90,6 +90,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
@@ -156,7 +157,7 @@ import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
 import 'package:uuid/uuid.dart';
 
-class MailboxDashBoardController extends ReloadableController {
+class MailboxDashBoardController extends ReloadableController with UserSettingPopupMenuMixin {
 
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
@@ -2550,6 +2551,28 @@ class MailboxDashBoardController extends ReloadableController {
   }
 
   List<Identity> get listIdentities => _identities ?? [];
+
+  void handleClickAvatarAction(BuildContext context, RelativeRect position) {
+    openPopupMenuAction(
+      context,
+      position,
+      popupMenuUserSettingActionTile(
+        context,
+        sessionCurrent?.username,
+        onLogoutAction: () {
+          popBack();
+          logout(
+            sessionCurrent,
+            accountId.value
+          );
+        },
+        onSettingAction: () {
+          popBack();
+          goToSettings();
+        }
+      )
+    );
+  }
 
   @override
   void onClose() {

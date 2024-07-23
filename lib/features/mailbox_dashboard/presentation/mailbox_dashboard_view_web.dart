@@ -5,8 +5,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/username_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
-import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
@@ -21,6 +19,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/top_bar_thread_selection.dart';
@@ -38,11 +37,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete
 import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_empty_trash_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_web_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
-
-import 'widgets/app_dashboard/app_grid_dashboard_overlay.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
@@ -62,32 +57,21 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 child: Container(
                   color: AppColor.colorBgDesktop,
                   child: Column(children: [
-                    Row(children: [
-                      Container(
-                        width: ResponsiveUtils.defaultSizeMenu,
-                        color: Colors.white,
-                        padding: const EdgeInsetsDirectional.only(start: 28),
-                        alignment: Alignment.center,
-                        height: 80,
-                        child: Row(children: [
-                          ApplicationLogoWidthTextWidget(
-                            onTapAction: controller.redirectToInboxAction,
-                          ),
-                          ApplicationVersionWidget(
-                            applicationManager: controller.applicationManager
-                          )
-                        ])
-                      ),
-                      Expanded(child: Container(
-                        color: Colors.white,
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.only(
-                          right: AppUtils.isDirectionRTL(context) ? 0 : 10,
-                          left: AppUtils.isDirectionRTL(context) ? 10 : 0,
-                        ),
-                        height: 80,
-                        child: _buildRightHeader(context)))
-                    ]),
+                    Obx(() {
+                      final accountId = controller.accountId.value;
+                      if (accountId == null) {
+                        return const SizedBox.shrink();
+                      } else {
+                        return NavigationBarWidget(
+                          avatarUserName: controller.sessionCurrent?.username.firstCharacter ?? '',
+                          searchForm: SearchInputFormWidget(),
+                          appGridController: controller.appGridDashboardController,
+                          onShowAppDashboardAction: controller.showAppDashboardAction,
+                          onTapApplicationLogoAction: controller.redirectToInboxAction,
+                          onTapAvatarAction: (position) => controller.handleClickAvatarAction(context, position),
+                        );
+                      }
+                    }),
                     Expanded(child: Row(children: [
                       Column(children: [
                         _buildComposerButton(context),
@@ -276,81 +260,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         ]),
       ),
     );
-  }
-
-  Widget _buildRightHeader(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraint) {
-      return Row(children: [
-        SizedBox(
-          width: constraint.maxWidth / 2,
-          height: 52,
-          child: SearchInputFormWidget()
-        ),
-        const Spacer(),
-        AppConfig.appGridDashboardAvailable
-          ? Obx(() => PortalTarget(
-              visible: controller.appGridDashboardController.isAppGridDashboardOverlayOpen.isTrue,
-              portalFollower: GestureDetector(
-                behavior: HitTestBehavior.opaque,
-                onTap: () => controller.appGridDashboardController.toggleAppGridDashboard()),
-              child: PortalTarget(
-                anchor: Aligned(
-                  follower: AppUtils.isDirectionRTL(context)
-                    ? Alignment.topLeft
-                    : Alignment.topRight,
-                  target: AppUtils.isDirectionRTL(context)
-                    ? Alignment.bottomLeft
-                    : Alignment.bottomRight
-                ),
-                portalFollower: Obx(() {
-                  if (controller.appGridDashboardController.linagoraApplications.value != null) {
-                    return AppDashboardOverlay(controller.appGridDashboardController.linagoraApplications.value!);
-                  }
-                  return const SizedBox.shrink();
-                }),
-                visible: controller.appGridDashboardController.isAppGridDashboardOverlayOpen.isTrue,
-                child: buildIconWeb(
-                  onTap: controller.showAppDashboardAction,
-                  splashRadius: 20,
-                  icon: SvgPicture.asset(
-                    controller.imagePaths.icAppDashboard,
-                    width: 28,
-                    height: 28,
-                    fit: BoxFit.fill
-                  ),
-                ),
-              )
-            )
-          )
-          : const SizedBox.shrink(),
-        const SizedBox(width: 24),
-        Obx(() => (AvatarBuilder()
-          ..text(controller.accountId.value != null
-              ? controller.sessionCurrent?.username.firstCharacter ?? ''
-              : ''
-            )
-          ..backgroundColor(Colors.white)
-          ..textColor(Colors.black)
-          ..context(context)
-          ..addOnTapAvatarActionWithPositionClick((position) =>
-              controller.openPopupMenuAction(context, position, popupMenuUserSettingActionTile(context,
-                  controller.sessionCurrent?.username,
-                  onLogoutAction: () {
-                    popBack();
-                    controller.logout(controller.sessionCurrent, controller.accountId.value);
-                  },
-                  onSettingAction: () {
-                    popBack();
-                    controller.goToSettings();
-                  })))
-          ..addBoxShadows([const BoxShadow(
-              color: AppColor.colorShadowBgContentEmail,
-              spreadRadius: 1, blurRadius: 1, offset: Offset(0, 0.5))])
-          ..size(48))
-            .build()),
-        const SizedBox(width: 16)
-      ]);
-    });
   }
 
   Widget _buildListButtonTopBar(BuildContext context) {
