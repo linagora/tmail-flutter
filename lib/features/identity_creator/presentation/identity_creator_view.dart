@@ -447,6 +447,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
         hint: '',
         darkMode: false,
         initialText: initContent.isEmpty ? null : initContent,
+        spellCheck: true,
         customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context)),
       ),
       htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
