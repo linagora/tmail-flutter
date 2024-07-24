@@ -12436,7 +12436,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(context, C.Type_AppLocalizations_CTL, t8).toString;
         t9 = A.Intl__message("Not selected", _null, "notSelected", _null, _null);
       }
-      t9 = A.buildIconWeb(_null, _null, new A.ValueListenableBuilder(t5, new B._EmailTileBuilderState_build_closure8(_this), _null, _null, t6), C.EdgeInsets_0_0_0_0, _null, E.EdgeInsets_0_10_0_10, 28, new B._EmailTileBuilderState_build_closure9(_this), _null, t9);
+      t9 = A.buildIconWeb(_null, _null, new A.ValueListenableBuilder(t5, new B._EmailTileBuilderState_build_closure8(_this), _null, _null, t6), C.EdgeInsets_0_0_0_0, _null, C.EdgeInsets_0_6_0_6, 28, new B._EmailTileBuilderState_build_closure9(_this), _null, t9);
       t10 = A.SvgPicture$asset(_this._widget.presentationEmail.get$hasStarred() ? _s25_ : "assets/images/ic_unstar.svg", C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, _null, 20);
       if (_this._widget.presentationEmail.get$hasStarred()) {
         A.Localizations_of(context, C.Type_AppLocalizations_CTL, t8).toString;
@@ -12445,8 +12445,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(context, C.Type_AppLocalizations_CTL, t8).toString;
         t11 = A.Intl__message("Not starred", _null, "not_starred", _null, _null);
       }
-      t11 = A.buildIconWeb(_null, _null, t10, C.EdgeInsets_0_0_0_0, _null, E.EdgeInsets_0_10_0_10, 28, new B._EmailTileBuilderState_build_closure10(_this), _null, t11);
-      t10 = A.buildIconWeb(_null, _null, _this.buildIconAnsweredOrForwarded$1$presentationEmail(_this._widget.presentationEmail), C.EdgeInsets_0_0_0_0, _null, E.EdgeInsets_0_10_0_10, 28, _null, 1, _this.messageToolTipForAnsweredOrForwarded$2(context, _this._widget.presentationEmail));
+      t11 = A.buildIconWeb(_null, _null, t10, C.EdgeInsets_0_0_0_0, _null, C.EdgeInsets_0_6_0_6, 28, new B._EmailTileBuilderState_build_closure10(_this), _null, t11);
+      t10 = A.buildIconWeb(_null, _null, _this.buildIconAnsweredOrForwarded$1$presentationEmail(_this._widget.presentationEmail), C.EdgeInsets_0_0_0_0, _null, C.EdgeInsets_0_6_0_6, 28, _null, 1, _this.messageToolTipForAnsweredOrForwarded$2(context, _this._widget.presentationEmail));
       t12 = _this._widget.presentationEmail.get$hasRead() ? D.SizedBox_20_20_null_null : A.Container$(C.Alignment_0_0, A.SvgPicture$asset(_s34_, C.Alignment_0_0, _null, C.BoxFit_0, 9, _null, _null, 9), C.Clip_0, _null, _null, _null, _null, 20, _null, _null, _null, _null, _null, 20);
       if (_this._widget.presentationEmail.get$hasRead())
         t8 = _null;
@@ -12454,7 +12454,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(context, C.Type_AppLocalizations_CTL, t8).toString;
         t8 = A.Intl__message("Mark as read", _null, "mark_as_read", _null, _null);
       }
-      t8 = A.buildIconWeb(_null, _null, t12, C.EdgeInsets_0_0_0_0, _null, E.EdgeInsets_0_10_0_10, 28, _this._widget.presentationEmail.get$hasRead() ? _null : new B._EmailTileBuilderState_build_closure11(_this), _null, t8);
+      t8 = A.buildIconWeb(_null, _null, t12, C.EdgeInsets_0_0_0_0, _null, C.EdgeInsets_0_6_0_6, 28, _this._widget.presentationEmail.get$hasRead() ? _null : new B._EmailTileBuilderState_build_closure11(_this), _null, t8);
       t12 = _this.buildIconAvatarText$3$iconSize$textStyle(_this._widget.presentationEmail, 32, D.TextStyle_mtF8);
       t13 = _this._widget;
       return A.ResponsiveWidget$(new A.Padding(D.EdgeInsetsDirectional_3_2_3_0, A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, C.BorderRadius_ww811, true, A.Container$(C.Alignment_0_0, A.Row$(A._setArrayType([C.SizedBox_10_null_null_null, t9, t11, t10, t8, t12, C.SizedBox_10_null_null_null, new A.SizedBox(160, _null, _this.buildInformationSender$5(context, t13.presentationEmail, t13.mailboxContain, t13.isSearchEmailRunning, t13.searchQuery), _null), E.SizedBox_24_null_null_null, A.Expanded$(_this._buildSubjectAndContent$0(), 1), E.SizedBox_16_null_null_null, new A.ValueListenableBuilder(t5, new B._EmailTileBuilderState_build_closure12(_this), _null, _null, t6)], t4), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, t7, _null, _null, _null, _null, t3, _null, _null, _null), _null, true, _null, _null, _null, C.Color_4292865791, _null, _null, _null, _null, _null, new B._EmailTileBuilderState_build_closure13(_this), _null, new B._EmailTileBuilderState_build_closure14(_this), _null, _null, _null, _null, _null, _null, _null), C.Clip_0, _null, 0, _null, _null, _null, _null, _null, C.MaterialType_4), _null), _null, _null, t1, _this.BaseEmailItemTile_responsiveUtils, t2, _null);
@@ -22108,5 +22108,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "NoBMpQWELa4ILRDARsQdtTpTLZs=");
+})($__dart_deferred_initializers__, "zsR8uoa56L0rzfOQQgSV9KcrycQ=");
 ;

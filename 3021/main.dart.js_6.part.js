@@ -2751,7 +2751,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4._as(t3.get(_this)).toString;
         t9 = "assets/images/ic_back.svg";
       }
-      t10 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t8).localizationsState._localizations$_locale.get$languageCode(0)) ? E.EdgeInsets_0_5_0_5 : E.EdgeInsets_0_10_0_10;
+      t10 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t8).localizationsState._localizations$_locale.get$languageCode(0)) ? E.EdgeInsets_0_5_0_5 : D.EdgeInsets_0_10_0_10;
       t8 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t8).localizationsState._localizations$_locale.get$languageCode(0)) ? _null : 16;
       t7 = A.TMailButtonWidget$(B.Color_2581915884, _null, 10, _null, false, _null, t9, B.TextDirection_1, B.Color_4278221567, t8, 8, D.ValueKey_back_to_dashboard_button, B.MainAxisSize_1, _null, 1 / 0, _null, 100, 0, _null, _null, new C.ManageAccountMenuView_build_closure(_this, context), t10, t7, _null, B.TextStyle_yT3, _null, _null, _null, _null, false, _null);
       A.Localizations_of(context, B.Type_AppLocalizations_CTL, t6).toString;
@@ -5677,6 +5677,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_0_0_0_4 = new A.EdgeInsets(0, 0, 0, 4);
     D.EdgeInsets_0_0_0_6 = new A.EdgeInsets(0, 0, 0, 6);
     D.EdgeInsets_0_10_0_0 = new A.EdgeInsets(0, 10, 0, 0);
+    D.EdgeInsets_0_10_0_10 = new A.EdgeInsets(0, 10, 0, 10);
     D.EdgeInsets_0_4_0_24 = new A.EdgeInsets(0, 4, 0, 24);
     D.EdgeInsets_10_16_48_10 = new A.EdgeInsets(10, 16, 48, 10);
     D.EdgeInsets_10_5_10_5 = new A.EdgeInsets(10, 5, 10, 5);
@@ -5762,5 +5763,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "qHWyoXDZu06xdmUnL2Xo2wzEEq0=");
+})($__dart_deferred_initializers__, "iZAdFwtI7j3yCpw/PqJfq1+vKek=");
 ;
