@@ -47,11 +47,9 @@ jobs:
         env:
           FRONTEND_CONFIG: ${{ secrets.FRONTEND_CONFIG }}
           FRONTEND_CREDS: ${{ secrets.FRONTEND_CREDS }}
-        run: |
-          echo "$FRONTEND_CONFIG" > env.file
-          echo "$FRONTEND_CREDS" > src/main/resources/config.properties
+        run: ../scripts/setup-desktop-integration-tests.sh
         working-directory: tmail_selenium
 
       - name: Run integration tests
-        run: ../scripts/integration-tests.sh
+        run: ../scripts/run-desktop-integration-tests.sh
         working-directory: tmail_selenium
