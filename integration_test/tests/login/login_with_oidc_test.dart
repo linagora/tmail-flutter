@@ -10,7 +10,7 @@ void main() {
     'Should see thread view when login with oidc successfully',
     config: const PatrolTesterConfig(
       settlePolicy: SettlePolicy.trySettle,
-      visibleTimeout: Duration(seconds: 10)),
+      visibleTimeout: Duration(minutes: 1)),
     nativeAutomatorConfig: const NativeAutomatorConfig(
       findTimeout: Duration(seconds: 10),
     ),

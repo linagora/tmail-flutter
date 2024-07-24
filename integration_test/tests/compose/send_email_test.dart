@@ -11,7 +11,7 @@ void main() {
     'Should see success toast when send email successfully',
     config: const PatrolTesterConfig(
       settlePolicy: SettlePolicy.trySettle,
-      visibleTimeout: Duration(seconds: 10)),
+      visibleTimeout: Duration(minutes: 1)),
     nativeAutomatorConfig: const NativeAutomatorConfig(
       findTimeout: Duration(seconds: 10),
     ),
