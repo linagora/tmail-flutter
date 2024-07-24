@@ -12,3 +12,6 @@ echo "$TMAIL_PATROL_CREDENTIALS" > secrets.env
 # Install helper scripts
 brew tap leancodepl/tools
 brew install mobile-tools
+
+# Run prebuild.sh
+./scripts/prebuild.sh
