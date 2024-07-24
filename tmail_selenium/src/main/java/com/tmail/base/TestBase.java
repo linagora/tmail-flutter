@@ -52,7 +52,7 @@ public abstract class TestBase {
     public void setUp(SupportedPlatform supportedPlatform) {
         browser = switch (supportedPlatform) {
             case CHROME -> playwright.chromium().launch(new BrowserType.LaunchOptions().setHeadless(runHeadlessTest));
-            case FIREFOX -> playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(runHeadlessTest));
+            case FIREFOX -> playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(false));
             default -> throw new UnsupportedPlatformException();
         };
         browserContext = browser.newContext();
