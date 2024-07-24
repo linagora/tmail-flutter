@@ -173,13 +173,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     PopupMenuWidgetMixin: function PopupMenuWidgetMixin() {
     },
-    ApplicationVersionWidget$(applicationManager, padding) {
-      return new B.ApplicationVersionWidget(applicationManager, padding, null);
+    ApplicationVersionWidget$(applicationManager) {
+      return new B.ApplicationVersionWidget(applicationManager, null);
     },
-    ApplicationVersionWidget: function ApplicationVersionWidget(t0, t1, t2) {
+    ApplicationVersionWidget: function ApplicationVersionWidget(t0, t1) {
       this.applicationManager = t0;
-      this.padding = t1;
-      this.key = t2;
+      this.key = t1;
     },
     _ApplicationVersionWidgetState: function _ApplicationVersionWidgetState(t0) {
       var _ = this;
@@ -319,9 +318,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   J = holdersList[1];
   A = holdersList[0];
   C = holdersList[2];
-  E = holdersList[10];
+  E = holdersList[11];
   B = hunkHelpers.updateHolder(holdersList[8], B);
-  D = holdersList[12];
+  D = holdersList[13];
   B.HtmlContentViewerOnWeb.prototype = {
     createState$0() {
       return new B._HtmlContentViewerOnWebState(C._StateLifecycle_0);
@@ -567,6 +566,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     build$1(context) {
       return A.FutureBuilder$(new B._ApplicationVersionWidgetState_build_closure(this), this._versionStream, type$.String);
+    },
+    dispose$0() {
+      this._versionStream = null;
+      this.super$State$dispose();
     }
   };
   B.MaterialTextButton.prototype = {
@@ -855,18 +858,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B._ApplicationVersionWidgetState_build_closure.prototype = {
     call$2(context, snapshot) {
-      var t2, t3, _null = null,
+      var t2, _null = null,
         t1 = snapshot.data;
       if (t1 != null) {
         t2 = this.$this;
-        t3 = t2._widget.padding;
-        if (t3 == null)
-          t3 = D.EdgeInsets_0_6_0_0;
+        t2._widget.toString;
         t1 = A.S(t1);
         t2._widget.toString;
         t2 = A.Theme_of(context).textTheme.labelMedium;
         t2 = t2 == null ? _null : t2.copyWith$3$color$fontSize$fontWeight(C.Color_4285364357, 13, C.FontWeight_4_500);
-        return new A.Padding(t3, A.Text$("v." + t1, _null, _null, _null, _null, _null, _null, _null, _null, t2, C.TextAlign_2, _null, _null, _null, _null), _null);
+        return new A.Padding(C.EdgeInsets_0_8_0_0, A.Text$("v." + t1, _null, _null, _null, _null, _null, _null, _null, _null, t2, C.TextAlign_2, _null, _null, _null, _null), _null);
       } else
         return C.SizedBox_0_0_null_null;
     },
@@ -948,6 +949,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsetsDirectional_12_8_12_0 = new A.EdgeInsetsDirectional(12, 8, 12, 0);
     D.EdgeInsetsDirectional_16_0_0_0 = new A.EdgeInsetsDirectional(16, 0, 0, 0);
     D.EdgeInsetsDirectional_16_16_4_16 = new A.EdgeInsetsDirectional(16, 16, 4, 16);
+    D.EdgeInsetsDirectional_28_0_0_0 = new A.EdgeInsetsDirectional(28, 0, 0, 0);
     D.EdgeInsetsDirectional_4_0_6_0 = new A.EdgeInsetsDirectional(4, 0, 6, 0);
     D.EdgeInsetsDirectional_8_0_12_0 = new A.EdgeInsetsDirectional(8, 0, 12, 0);
     D.EdgeInsetsDirectional_8_0_4_0 = new A.EdgeInsetsDirectional(8, 0, 4, 0);
@@ -977,5 +979,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "hHx8uUU7GKGjnCwVzPDj1chtLXA=");
+})($__dart_deferred_initializers__, "Eci32puSNarEnGenQIgSQTSB2pY=");
 ;
