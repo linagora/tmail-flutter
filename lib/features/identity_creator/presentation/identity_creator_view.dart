@@ -120,55 +120,83 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
           const SizedBox(height: 12),
           if (controller.isMobile(context))
             _buildActionButtonMobile(context)
-          else
-            _buildActionButtonDesktop(context)
         ]),
       ),
     );
 
     if (PlatformInfo.isWeb) {
-      return GestureDetector(
-        onTap: () => controller.clearFocusEditor(context),
-        child: ResponsiveWidget(
-          responsiveUtils: controller.responsiveUtils,
-          mobile: Scaffold(
-            backgroundColor: Colors.black38,
-            body: Card(
-              margin: EdgeInsets.zero,
-              borderOnForeground: false,
-              color: Colors.transparent,
-              child: ClipRRect(
-                borderRadius: const BorderRadius.only(
-                  topRight: Radius.circular(16),
-                  topLeft: Radius.circular(16)),
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(16),
-                      topLeft: Radius.circular(16)
+      return PointerInterceptor(
+        child: GestureDetector(
+          onTap: () => controller.clearFocusEditor(context),
+          child: ResponsiveWidget(
+            responsiveUtils: controller.responsiveUtils,
+            mobile: Scaffold(
+              backgroundColor: Colors.black38,
+              body: Card(
+                margin: EdgeInsets.zero,
+                borderOnForeground: false,
+                color: Colors.transparent,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topRight: Radius.circular(16),
+                    topLeft: Radius.circular(16)),
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(16),
+                        topLeft: Radius.circular(16)
+                      ),
                     ),
+                    child: Column(children: [
+                      _buildHeaderView(context),
+                      Expanded(child: bodyCreatorView)
+                    ]),
                   ),
-                  child: Column(children: [
-                    _buildHeaderView(context),
-                    Expanded(child: PointerInterceptor(child: bodyCreatorView))
-                  ]),
                 ),
               ),
             ),
-          ),
-          landscapeMobile: Scaffold(
-            backgroundColor: Colors.white,
-            body: Column(children: [
-              _buildHeaderView(context),
-              Expanded(child: PointerInterceptor(child: bodyCreatorView))
-            ])
-          ),
-          tablet: Scaffold(
-            backgroundColor: Colors.black38,
-            body: Center(
-              child: Padding(
-                padding: const EdgeInsetsDirectional.symmetric(horizontal: 24),
+            landscapeMobile: Scaffold(
+              backgroundColor: Colors.white,
+              body: Column(children: [
+                _buildHeaderView(context),
+                Expanded(child: bodyCreatorView)
+              ])
+            ),
+            tablet: Scaffold(
+              backgroundColor: Colors.black38,
+              body: Center(
+                child: Padding(
+                  padding: const EdgeInsetsDirectional.symmetric(horizontal: 24),
+                  child: Card(
+                    color: Colors.transparent,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(16))
+                    ),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(16))
+                      ),
+                      width: math.max(controller.responsiveUtils.getSizeScreenWidth(context) * 0.4, 700),
+                      height: controller.responsiveUtils.getSizeScreenHeight(context) * 0.8,
+                      child: ClipRRect(
+                        borderRadius: const BorderRadius.all(Radius.circular(16)),
+                        child: Column(children: [
+                          _buildHeaderView(context),
+                          Expanded(child: bodyCreatorView),
+                          const SizedBox(height: 12),
+                          _buildActionButtonDesktop(context)
+                        ])
+                      )
+                    )
+                  ),
+                )
+              ),
+            ),
+            desktop: Scaffold(
+              backgroundColor: Colors.black38,
+              body: Center(
                 child: Card(
                   color: Colors.transparent,
                   shape: const RoundedRectangleBorder(
@@ -179,46 +207,22 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
                       color: Colors.white,
                       borderRadius: BorderRadius.all(Radius.circular(16))
                     ),
-                    width: math.max(controller.responsiveUtils.getSizeScreenWidth(context) * 0.4, 700),
+                    width: math.max(controller.responsiveUtils.getSizeScreenWidth(context) * 0.4, 800),
                     height: controller.responsiveUtils.getSizeScreenHeight(context) * 0.8,
                     child: ClipRRect(
                       borderRadius: const BorderRadius.all(Radius.circular(16)),
                       child: Column(children: [
                         _buildHeaderView(context),
-                        Expanded(child: PointerInterceptor(child: bodyCreatorView))
+                        Expanded(child: bodyCreatorView),
+                        const SizedBox(height: 12),
+                        _buildActionButtonDesktop(context)
                       ])
                     )
-                  )
-                ),
-              )
-            ),
-          ),
-          desktop: Scaffold(
-            backgroundColor: Colors.black38,
-            body: Center(
-              child: Card(
-                color: Colors.transparent,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(16))
-                ),
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(16))
-                  ),
-                  width: math.max(controller.responsiveUtils.getSizeScreenWidth(context) * 0.4, 800),
-                  height: controller.responsiveUtils.getSizeScreenHeight(context) * 0.8,
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.all(Radius.circular(16)),
-                    child: Column(children: [
-                      _buildHeaderView(context),
-                      Expanded(child: PointerInterceptor(child: bodyCreatorView))
-                    ])
                   )
                 )
               )
             )
-          )
+          ),
         ),
       );
     } else {
@@ -344,7 +348,9 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
                           height: controller.responsiveUtils.getSizeScreenHeight(context) * 0.8,
                           child: Column(children: [
                             _buildHeaderView(context),
-                            Expanded(child: bodyCreatorView)
+                            Expanded(child: bodyCreatorView),
+                            const SizedBox(height: 12),
+                            _buildActionButtonDesktop(context)
                           ])
                         )
                       ),
@@ -484,14 +490,17 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
   }
 
   Widget _buildActionButtonDesktop(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(child: _buildCheckboxIdentityDefault(context)),
-        const SizedBox(width: 12),
-        _buildCancelButton(context, width: 156),
-        const SizedBox(width: 12),
-        _buildSaveButton(context, width: 156)
-      ],
+    return Padding(
+      padding: const EdgeInsetsDirectional.symmetric(vertical: 12, horizontal: 24),
+      child: Row(
+        children: [
+          Expanded(child: _buildCheckboxIdentityDefault(context)),
+          const SizedBox(width: 12),
+          _buildCancelButton(context, width: 156),
+          const SizedBox(width: 12),
+          _buildSaveButton(context, width: 156)
+        ],
+      ),
     );
   }
 
