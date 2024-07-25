@@ -4114,8 +4114,44 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "dialogMessageSessionHasExpired": "Đã hết phiên đăng nhập. Vui lòng đăng nhập lại.",
+  "dialogMessageSessionHasExpired": "Đã hết phiên đăng nhập. Vui lòng đăng nhập lại",
   "@dialogMessageSessionHasExpired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selected": "Đã chọn",
+  "@selected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOnRequestReadReceipt": "Bật yêu cầu xác nhận đọc",
+  "@turnOnRequestReadReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notSelected": "Chưa chọn",
+  "@notSelected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOffRequestReadReceipt": "Tắt yêu cầu xác nhận đọc",
+  "@turnOffRequestReadReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requestReadReceiptHasBeenDisabled": "Đã tắt yêu cầu xác nhận đọc",
+  "@requestReadReceiptHasBeenDisabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requestReadReceiptHasBeenEnabled": "Đã bật yêu cầu xác nhận đọc",
+  "@requestReadReceiptHasBeenEnabled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
