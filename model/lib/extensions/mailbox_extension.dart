@@ -6,7 +6,7 @@ extension MailboxExtension on Mailbox {
 
   bool hasRole() => role != null && role!.value.isNotEmpty;
 
-  bool get isSpam => role == PresentationMailbox.roleSpam;
+  bool get isSpam => role == PresentationMailbox.roleSpam || role == PresentationMailbox.roleJunk;
 
   bool get isTrash => role == PresentationMailbox.roleTrash;
 

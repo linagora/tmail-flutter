@@ -12,7 +12,8 @@ import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/utils/message_toast_utils.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 
 class LoginMessageWidget extends StatelessWidget {
 
@@ -22,7 +23,9 @@ class LoginMessageWidget extends StatelessWidget {
   final LoginFormType formType;
   final Either<Failure, Success> viewState;
 
-  const LoginMessageWidget({
+  final ToastManager? _toastManager = getBinding<ToastManager>();
+
+  LoginMessageWidget({
     super.key,
     required this.formType,
     required this.viewState
@@ -51,8 +54,8 @@ class LoginMessageWidget extends StatelessWidget {
               } else if (failure is GetTokenOIDCFailure && failure.exception is NoSuitableBrowserForOIDCException) {
                 return AppLocalizations.of(context).noSuitableBrowserForOIDC;
               } else if (failure is FeatureFailure) {
-                final errorMessage = MessageToastUtils.getMessageByException(context, failure.exception);
-                return errorMessage ?? AppLocalizations.of(context).unknownError;
+                return _toastManager?.getMessageByException(context, failure.exception)
+                  ?? AppLocalizations.of(context).unknownError;
               } else {
                 return AppLocalizations.of(context).unknownError;
               }

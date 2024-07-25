@@ -1016,7 +1016,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void moveToSpam(BuildContext context, PresentationEmail email) async {
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
-    final spamMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleSpam);
+    final spamMailboxId = mailboxDashBoardController.spamMailboxId;
     final currentMailbox = getMailboxContain(email);
 
     if (session != null && accountId != null && currentMailbox != null && spamMailboxId != null) {
@@ -1036,7 +1036,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void unSpam(BuildContext context, PresentationEmail email) async {
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
-    final spamMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleSpam);
+    final spamMailboxId = mailboxDashBoardController.spamMailboxId;
     final inboxMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleInbox);
 
     if (session != null && accountId != null && spamMailboxId != null && inboxMailboxId != null) {

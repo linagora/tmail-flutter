@@ -132,7 +132,7 @@ class FCMRepositoryImpl extends FCMRepository {
       .where((presentationMailbox) => presentationMailbox.pushNotificationDeactivated)
       .toList();
     log('FCMRepositoryImpl::getMailboxesNotPutNotifications():mailboxesCacheNotPutNotifications: $mailboxesCacheNotPutNotifications');
-    if (mailboxesCacheNotPutNotifications.isNotEmpty && mailboxesCacheNotPutNotifications.length == FcmConstants.mailboxRuleDoNotAllowPushNotifications.length) {
+    if (mailboxesCacheNotPutNotifications.isNotEmpty) {
       return mailboxesCacheNotPutNotifications;
     } else {
       final mailboxResponse = await _mapMailboxDataSource[DataSourceType.network]!.getAllMailbox(session, accountId);

@@ -31,7 +31,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
 
   bool get isInbox => role == PresentationMailbox.roleInbox;
 
-  bool get isSpam => role == PresentationMailbox.roleSpam;
+  bool get isSpam => role == PresentationMailbox.roleSpam || role == PresentationMailbox.roleJunk;
 
   bool get isTrash => role == PresentationMailbox.roleTrash;
 

@@ -63,6 +63,7 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
+import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 
 abstract class BaseController extends GetxController
@@ -82,6 +83,7 @@ abstract class BaseController extends GetxController
   final ResponsiveUtils responsiveUtils = Get.find<ResponsiveUtils>();
   final Uuid uuid = Get.find<Uuid>();
   final ApplicationManager applicationManager = Get.find<ApplicationManager>();
+  final ToastManager toastManager = Get.find<ToastManager>();
 
   bool _isFcmEnabled = false;
 

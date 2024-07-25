@@ -12,5 +12,3 @@ class SetMailboxMethodException implements Exception {
 class NotFoundMailboxCreatedException implements Exception {}
 
 class NotFoundMailboxUpdatedRoleException implements Exception {}
-
-class NotFoundMailboxException implements Exception {}
