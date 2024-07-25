@@ -84,7 +84,7 @@ public class TmailExtension implements BeforeAllCallback, BeforeEachCallback, Af
             .waitingFor(Wait.forHttp("/").forStatusCode(200));
 
         String tmailWebImageTag = Optional.ofNullable(System.getenv(TMAIL_WEB_LATEST_IMAGE_ENV))
-            .orElse("linagora/tmail-web:latest");
+            .orElse("tmail-web:integration-test");
         this.tmailWeb = new GenericContainer<>(tmailWebImageTag)
             .withNetworkAliases("tmail-web")
             .withNetwork(network)
