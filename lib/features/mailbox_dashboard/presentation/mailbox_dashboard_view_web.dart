@@ -29,7 +29,6 @@ import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_empty_trash_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
@@ -267,33 +266,20 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   Widget _buildListButtonTopBar(BuildContext context) {
     return Row(children: [
       Obx(() {
-        return controller.refreshingMailboxState.value.fold(
-          (failure) {
-            return TMailButtonWidget.fromIcon(
-              key: const Key('refresh_mailbox_button'),
-              icon: controller.imagePaths.icRefresh,
-              borderRadius: 10,
-              iconSize: 16,
-              onTapActionCallback: controller.refreshMailboxAction,
-            );
-          },
-          (success) {
-            if (success is RefreshAllEmailLoading) {
-              return const TMailContainerWidget(
-                borderRadius: 10,
-                padding: EdgeInsetsDirectional.symmetric(vertical: 8, horizontal: 8.5),
-                child: CupertinoLoadingWidget(size: 16));
-            } else {
-              return TMailButtonWidget.fromIcon(
-                key: const Key('refresh_mailbox_button'),
-                icon: controller.imagePaths.icRefresh,
-                borderRadius: 10,
-                iconSize: 16,
-                onTapActionCallback: controller.refreshMailboxAction,
-              );
-            }
-          }
-        );
+        if (controller.isRefreshingAllMailboxAndEmail) {
+          return const TMailContainerWidget(
+            borderRadius: 10,
+            padding: EdgeInsetsDirectional.symmetric(vertical: 8, horizontal: 8.5),
+            child: CupertinoLoadingWidget(size: 16));
+        } else {
+          return TMailButtonWidget.fromIcon(
+            key: const Key('refresh_all_mailbox_and_email_button'),
+            icon: controller.imagePaths.icRefresh,
+            borderRadius: 10,
+            iconSize: 16,
+            onTapActionCallback: controller.refreshMailboxAction,
+          );
+        }
       }),
       Obx(() {
         if (controller.validateNoEmailsInTrashAndSpamFolder()) {

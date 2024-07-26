@@ -77,6 +77,7 @@ import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_ident
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
@@ -138,11 +139,11 @@ import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/refresh_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_spam_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
@@ -225,7 +226,8 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   final _isDraggingMailbox = RxBool(false);
   final searchMailboxActivated = RxBool(false);
   final listSendingEmails = RxList<SendingEmail>();
-  final refreshingMailboxState = Rx<Either<Failure, Success>>(Right(UIState.idle));
+  final refreshingAllMailboxState = Rx<Either<Failure, Success>>(Right(UIState.idle));
+  final refreshingAllEmailState = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final attachmentDraggableAppState = Rxn<DraggableAppState>();
   final isRecoveringDeletedMessage = RxBool(false);
   final localFileDraggableAppState = Rxn<DraggableAppState>();
@@ -2266,10 +2268,33 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     }
   }
 
-  void refreshMailboxAction() async {
-    refreshingMailboxState.value = Right(RefreshAllEmailLoading());
+  Future<void> refreshMailboxAction() async {
+    updateRefreshAllMailboxState(Right(RefreshingAllMailbox()));
+    updateRefreshAllEmailState(Right(RefreshingAllEmail()));
+
     await Future.delayed(const Duration(milliseconds: 500));
-    dispatchAction(RefreshAllEmailAction());
+
+    dispatchMailboxUIAction(RefreshAllMailboxAction());
+    dispatchEmailUIAction(RefreshAllEmailAction());
+  }
+
+  void updateRefreshAllMailboxState(Either<Failure, Success> newState) {
+    refreshingAllMailboxState.value = newState;
+  }
+
+  void updateRefreshAllEmailState(Either<Failure, Success> newState) {
+    refreshingAllEmailState.value = newState;
+  }
+
+  bool get isRefreshingAllMailboxAndEmail {
+    final isRefreshingMailbox = refreshingAllMailboxState.value.fold(
+      (failure) => false,
+      (success) => success is RefreshingAllMailbox);
+    final isRefreshingEmail = refreshingAllEmailState.value.fold(
+      (failure) => false,
+      (success) => success is RefreshingAllEmail);
+    log('MailboxDashBoardController::isRefreshingAllMailboxAndEmail:isRefreshingMailbox = $isRefreshingMailbox | isRefreshingEmail = $isRefreshingEmail');
+    return isRefreshingMailbox && isRefreshingEmail;
   }
 
   void selectAllEmailAction() {

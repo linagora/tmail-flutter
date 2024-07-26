@@ -20,8 +20,6 @@ class DashBoardAction extends UIAction {
   List<Object?> get props => [];
 }
 
-class RefreshAllEmailAction extends DashBoardAction {}
-
 class SelectionAllEmailAction extends DashBoardAction {}
 
 class CancelSelectionAllEmailAction extends DashBoardAction {}
