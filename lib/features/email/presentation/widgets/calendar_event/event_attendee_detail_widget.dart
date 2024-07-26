@@ -6,6 +6,7 @@ import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organize
 import 'package:tmail_ui_user/features/email/presentation/extensions/list_attendee_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/event_attendee_detail_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/attendee_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/hide_all_attendees_button_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/organizer_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/see_all_attendees_button_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -73,6 +74,18 @@ class _EventAttendeeDetailWidgetState extends State<EventAttendeeDetailWidget> {
                     setState(() {
                       _attendeesDisplayed = widget.attendees.withoutOrganizer(widget.organizer);
                       _isShowAllAttendee = true;
+                    });
+                  }
+                ),
+              )
+            else if (widget.attendees.length > EventAttendeeDetailWidget.maxAttendeeDisplayed)
+              Padding(
+                padding: const EdgeInsets.only(top: EventAttendeeDetailWidgetStyles.fieldTopPadding),
+                child: HideAllAttendeesButtonWidget(
+                  onTap: () {
+                    setState(() {
+                      _attendeesDisplayed = _splitAttendees(widget.attendees);
+                      _isShowAllAttendee = false;
                     });
                   }
                 ),
