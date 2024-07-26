@@ -3,7 +3,7 @@
 ### Context
 - Team Mail using FCM service
 - User need config env for FCM service
-- Now only support to Android
+- Backend need have capability: `com:linagora:params:jmap:firebase:push`
 ### How to config
 1.Add environment of FCM service in [env.fcm](https://github.com/linagora/tmail-flutter/blob/master/configurations/env.fcm)
 Android config:
