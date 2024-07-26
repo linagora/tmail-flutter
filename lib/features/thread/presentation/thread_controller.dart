@@ -59,6 +59,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_stat
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/refresh_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
@@ -203,7 +204,7 @@ class ThreadController extends BaseController with EmailActionController {
   void handleFailureViewState(Failure failure) {
     super.handleFailureViewState(failure);
     if (failure is SearchEmailFailure) {
-      mailboxDashBoardController.refreshingMailboxState.value = Left(failure);
+      mailboxDashBoardController.updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
       canSearchMore = false;
       mailboxDashBoardController.emailsInCurrentMailbox.clear();
     } else if (failure is SearchMoreEmailFailure) {
@@ -216,7 +217,7 @@ class ThreadController extends BaseController with EmailActionController {
       openingEmail.value = false;
       popAndPush(AppRoutes.unknownRoutePage);
     } else if (failure is GetAllEmailFailure) {
-      mailboxDashBoardController.refreshingMailboxState.value = Left(failure);
+      mailboxDashBoardController.updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
       canLoadMore = true;
     }
   }
@@ -279,10 +280,7 @@ class ThreadController extends BaseController with EmailActionController {
     });
 
     ever(mailboxDashBoardController.dashBoardAction, (action) {
-      if (action is RefreshAllEmailAction) {
-        refreshAllEmail();
-        mailboxDashBoardController.clearDashBoardAction();
-      } else if (action is SelectionAllEmailAction) {
+      if (action is SelectionAllEmailAction) {
         setSelectAllEmailAction();
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is CancelSelectionAllEmailAction) {
@@ -342,6 +340,9 @@ class ThreadController extends BaseController with EmailActionController {
         if (action.newState != _currentEmailState) {
           _refreshEmailChanges();
         }
+        mailboxDashBoardController.clearEmailUIAction();
+      } else if (action is RefreshAllEmailAction) {
+        refreshAllEmail();
         mailboxDashBoardController.clearEmailUIAction();
       }
     });
@@ -448,12 +449,12 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _getAllEmailSuccess(GetAllEmailSuccess success) {
+    mailboxDashBoardController.updateRefreshAllEmailState(Right(RefreshAllEmailSuccess()));
+
     if (success.currentMailboxId != selectedMailboxId) {
       log('ThreadController::_getAllEmailSuccess: GetAllForMailboxId = ${success.currentMailboxId?.asString} | SELECTED_MAILBOX_ID = ${selectedMailboxId?.asString} | SELECTED_MAILBOX_NAME = ${selectedMailbox?.name?.name}');
       return;
     }
-
-    mailboxDashBoardController.refreshingMailboxState.value = Right(success);
     _currentEmailState = success.currentEmailState;
     log('ThreadController::_getAllEmailSuccess():COUNT = ${success.emailList.length} | EMAIL_STATE = $_currentEmailState');
     final newListEmail = success.emailList.syncPresentationEmail(
@@ -863,7 +864,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _searchEmailsSuccess(SearchEmailSuccess success) {
-    mailboxDashBoardController.refreshingMailboxState.value = Right(success);
+    mailboxDashBoardController.updateRefreshAllEmailState(Right(RefreshAllEmailSuccess()));
     log('ThreadController::_searchEmailsSuccess: COUNT = ${success.emailList.length}');
     final resultEmailSearchList = success.emailList
         .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailboxById))

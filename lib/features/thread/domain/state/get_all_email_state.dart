@@ -4,8 +4,6 @@ import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
 
-class RefreshAllEmailLoading extends LoadingState {}
-
 class GetAllEmailLoading extends LoadingState {}
 
 class GetAllEmailSuccess extends UIState {

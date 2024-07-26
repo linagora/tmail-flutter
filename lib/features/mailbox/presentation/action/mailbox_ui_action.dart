@@ -34,3 +34,5 @@ class OpenMailboxAction extends MailboxUIAction {
 }
 
 class SystemBackToInboxAction extends MailboxUIAction {}
+
+class RefreshAllMailboxAction extends MailboxUIAction {}
