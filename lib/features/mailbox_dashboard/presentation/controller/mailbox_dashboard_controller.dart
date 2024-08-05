@@ -588,6 +588,9 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
 
   void setSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
     log('MailboxDashBoardController::setSelectedMailbox: SELECTED_MAILBOX_ID = ${newPresentationMailbox?.id.asString} |  SELECTED_MAILBOX_NAME = ${newPresentationMailbox?.name?.name} | ');
+    if (selectedMailbox.value?.id != newPresentationMailbox?.id) {
+      dispatchEmailUIAction(GetAllEmailAction(newPresentationMailbox));
+    }
     selectedMailbox.value = newPresentationMailbox;
   }
 

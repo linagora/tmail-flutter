@@ -31,6 +31,7 @@ import 'package:tmail_ui_user/features/email/domain/state/store_event_attendance
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
+import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
@@ -234,14 +235,6 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _registerObxStreamListener() {
-    ever(mailboxDashBoardController.selectedMailbox, (mailbox) {
-      log('ThreadController::_registerObxStreamListener:ever: SELECTED_MAILBOX_ID = ${mailbox?.id.asString} | SELECTED_MAILBOX_NAME = ${mailbox?.name?.name}');
-      _resetToOriginalValue();
-      if (mailbox != null) {
-        _getAllEmailAction();
-      }
-    });
-
     ever(searchController.searchState, (searchState) {
       if (searchState.searchStatus == SearchStatus.ACTIVE) {
         cancelSelectEmail();
@@ -314,7 +307,13 @@ class ThreadController extends BaseController with EmailActionController {
     });
 
     ever(mailboxDashBoardController.emailUIAction, (action) {
-      if (action is RefreshChangeEmailAction) {
+      if (action is GetAllEmailAction) {
+        _resetToOriginalValue();
+        if (action.selectedMailbox != null) {
+          _getAllEmailAction(selectedMailboxId: action.selectedMailbox?.mailboxId);
+        }
+        mailboxDashBoardController.clearEmailUIAction();
+      } else if (action is RefreshChangeEmailAction) {
         if (action.newState != _currentEmailState) {
           _refreshEmailChanges();
         }
@@ -408,7 +407,7 @@ class ThreadController extends BaseController with EmailActionController {
       } else {
         await cachingManager.clearEmailCacheAndAllStateCache();
       }
-      _getAllEmailAction();
+      _getAllEmailAction(selectedMailboxId: _currentMailboxId);
     } else if (error is MethodLevelErrors) {
       if (currentOverlayContext != null && error.message != null) {
         appToast.showToastErrorMessage(
@@ -490,22 +489,25 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  void _getAllEmailAction() {
-    if (_session != null &&_accountId != null) {
-      consumeState(_getEmailsInMailboxInteractor.execute(
-        _session!,
-        _accountId!,
-        limit: ThreadConstants.defaultLimit,
-        sort: searchController.sortOrderFiltered.value.getSortOrder().toNullable(),
-        emailFilter: EmailFilter(
-          filter: _getFilterCondition(mailboxIdSelected: _currentMailboxId),
-          filterOption: mailboxDashBoardController.filterMessageOption.value,
-          mailboxId: _currentMailboxId
-        ),
-        propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
-        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-      ));
+  void _getAllEmailAction({MailboxId? selectedMailboxId}) {
+    if (_session == null || _accountId == null) {
+      consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
+      return;
     }
+
+    consumeState(_getEmailsInMailboxInteractor.execute(
+      _session!,
+      _accountId!,
+      limit: ThreadConstants.defaultLimit,
+      sort: searchController.sortOrderFiltered.value.getSortOrder().toNullable(),
+      emailFilter: EmailFilter(
+        filter: _getFilterCondition(mailboxIdSelected: selectedMailboxId),
+        filterOption: mailboxDashBoardController.filterMessageOption.value,
+        mailboxId: selectedMailboxId
+      ),
+      propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
+      propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+    ));
   }
 
   EmailFilterCondition _getFilterCondition({PresentationEmail? oldestEmail, MailboxId? mailboxIdSelected}) {
@@ -545,7 +547,7 @@ class ThreadController extends BaseController with EmailActionController {
     if (searchController.isSearchEmailRunning) {
       _searchEmail(limit: limitEmailFetched);
     } else {
-      _getAllEmailAction();
+      _getAllEmailAction(selectedMailboxId: _currentMailboxId);
     }
   }
 
