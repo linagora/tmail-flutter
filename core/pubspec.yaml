@@ -26,6 +26,14 @@ dependencies:
   flutter:
     sdk: flutter
 
+  ### Dependencies from git ###
+  # TODO: We will change it when the PR in upstream repository will be merged
+  # https://github.com/solid-software/languagetool_textfield/pull/83
+  languagetool_textfield:
+    git:
+      url: https://github.com/dab246/languagetool_textfield.git
+      ref: twake-supported
+
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.6
 

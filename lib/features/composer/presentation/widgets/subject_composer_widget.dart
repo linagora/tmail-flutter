@@ -1,13 +1,14 @@
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:languagetool_textfield/languagetool_textfield.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/subject_composer_widget_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SubjectComposerWidget extends StatelessWidget {
 
   final FocusNode? focusNode;
-  final TextEditingController textController;
+  final LanguageToolController textController;
   final ValueChanged<String>? onTextChange;
   final EdgeInsetsGeometry? margin;
   final EdgeInsetsGeometry? padding;
@@ -47,9 +48,11 @@ class SubjectComposerWidget extends StatelessWidget {
               focusNode: focusNode,
               onTextChange: onTextChange,
               maxLines: 1,
+              spellCheck: true,
+              decoration: const InputDecoration(border: InputBorder.none),
               textDirection: DirectionUtils.getDirectionByLanguage(context),
               textStyle: SubjectComposerWidgetStyle.inputTextStyle,
-              controller: textController,
+              languageToolController: textController,
             )
           )
         ]

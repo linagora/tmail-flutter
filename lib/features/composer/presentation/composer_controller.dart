@@ -20,6 +20,7 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:languagetool_textfield/languagetool_textfield.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -143,7 +144,9 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   List<EmailAddress> listBccEmailAddress = <EmailAddress>[];
   ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.tMailContact;
 
-  final subjectEmailInputController = TextEditingController();
+  final subjectEmailInputController = LanguageToolController(
+    delay: const Duration(milliseconds: 200),
+  );
   final toEmailAddressController = TextEditingController();
   final ccEmailAddressController = TextEditingController();
   final bccEmailAddressController = TextEditingController();
@@ -1887,6 +1890,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
 
   void handleOnFocusHtmlEditorWeb() {
     FocusManager.instance.primaryFocus?.unfocus();
+    subjectEmailInputController.popupWidget?.popupRenderer.dismiss();
     richTextWebController?.editorController.setFocus();
     richTextWebController?.closeAllMenuPopup();
   }

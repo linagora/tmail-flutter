@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:languagetool_textfield/languagetool_textfield.dart';
 
 class TextFieldBuilder extends StatefulWidget {
 
@@ -10,7 +11,7 @@ class TextFieldBuilder extends StatefulWidget {
   final TapRegionCallback? onTapOutside;
   final TextStyle? textStyle;
   final TextInputAction? textInputAction;
-  final InputDecoration? decoration;
+  final InputDecoration decoration;
   final bool obscureText;
   final int? maxLines;
   final int? minLines;
@@ -24,7 +25,9 @@ class TextFieldBuilder extends StatefulWidget {
   final bool autocorrect;
   final TextDirection textDirection;
   final bool readOnly;
+  final bool spellCheck;
   final MouseCursor? mouseCursor;
+  final LanguageToolController? languageToolController;
 
   const TextFieldBuilder({
     super.key,
@@ -33,13 +36,15 @@ class TextFieldBuilder extends StatefulWidget {
     this.obscureText = false,
     this.autoFocus = false,
     this.readOnly = false,
+    this.spellCheck = false,
     this.textStyle = const TextStyle(color: AppColor.textFieldTextColor),
     this.textDirection = TextDirection.ltr,
     this.textInputAction,
-    this.decoration,
+    this.decoration = const InputDecoration(),
     this.maxLines,
     this.minLines,
     this.controller,
+    this.languageToolController,
     this.keyboardType,
     this.focusNode,
     this.fromValue,
@@ -49,7 +54,7 @@ class TextFieldBuilder extends StatefulWidget {
     this.onTapOutside,
     this.onTextChange,
     this.onTextSubmitted,
-  });
+  }) : assert(spellCheck == true), assert(languageToolController != null);
 
   @override
   State<TextFieldBuilder> createState() => _TextFieldBuilderState();
@@ -57,22 +62,70 @@ class TextFieldBuilder extends StatefulWidget {
 
 class _TextFieldBuilderState extends State<TextFieldBuilder> {
 
-  late TextEditingController _controller;
+  TextEditingController? _controller;
+  LanguageToolController? _languageToolController;
+
   late TextDirection _textDirection;
 
   @override
   void initState() {
     super.initState();
-    if (widget.fromValue != null) {
-      _controller = TextEditingController.fromValue(TextEditingValue(text: widget.fromValue!));
+    if (widget.spellCheck) {
+      _languageToolController = widget.languageToolController ?? LanguageToolController(
+        delay: const Duration(milliseconds: 200)
+      );
+      if (widget.fromValue != null) {
+        _languageToolController?.value = TextEditingValue(text: widget.fromValue!);
+      }
     } else {
-      _controller = widget.controller ?? TextEditingController();
+      if (widget.fromValue != null) {
+        _controller = TextEditingController.fromValue(TextEditingValue(text: widget.fromValue!));
+      } else {
+        _controller = widget.controller ?? TextEditingController();
+      }
     }
     _textDirection = widget.textDirection;
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.spellCheck) {
+      return LanguageToolTextField(
+        key: widget.key,
+        controller: _languageToolController ?? LanguageToolController(),
+        cursorColor: widget.cursorColor,
+        autocorrect: widget.autocorrect,
+        textInputAction: widget.textInputAction,
+        decoration: widget.decoration,
+        maxLines: widget.maxLines,
+        minLines: widget.minLines,
+        keyboardAppearance: widget.keyboardAppearance,
+        style: widget.textStyle,
+        keyboardType: widget.keyboardType,
+        autoFocus: widget.autoFocus,
+        focusNode: widget.focusNode,
+        alignCenter: false,
+        padding: null,
+        textDirection: _textDirection,
+        readOnly: widget.readOnly,
+        mouseCursor: widget.mouseCursor,
+        onTextChange: (value) {
+          widget.onTextChange?.call(value);
+          if (value.isNotEmpty) {
+            final directionByText = DirectionUtils.getDirectionByEndsText(value);
+            if (directionByText != _textDirection) {
+              setState(() {
+                _textDirection = directionByText;
+              });
+            }
+          }
+        },
+        onTextSubmitted: widget.onTextSubmitted,
+        onTap: widget.onTap,
+        onTapOutside: widget.onTapOutside,
+      );
+    }
+
     return TextField(
       key: widget.key,
       controller: _controller,
@@ -111,7 +164,11 @@ class _TextFieldBuilderState extends State<TextFieldBuilder> {
   @override
   void dispose() {
     if (widget.fromValue == null && widget.controller == null) {
-      _controller.dispose();
+      if (widget.spellCheck) {
+        _languageToolController?.dispose();
+      } else {
+        _controller?.dispose();
+      }
     }
     super.dispose();
   }
