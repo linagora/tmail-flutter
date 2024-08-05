@@ -1,8 +1,8 @@
 
 import 'dart:async';
 import 'dart:isolate';
+import 'dart:ui';
 
-import 'package:core/presentation/utils/shims/dart_ui_real.dart';
 import 'package:core/utils/app_logger.dart';
 
 abstract class IsolateManager {
