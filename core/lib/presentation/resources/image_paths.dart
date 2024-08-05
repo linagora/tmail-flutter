@@ -216,6 +216,8 @@ class ImagePaths {
   String get icRemoveRule => _getImagePath('ic_remove_rule.svg');
   String get icCheckboxUnselected => _getImagePath('ic_checkbox_unselected.svg');
   String get icCheckboxSelected => _getImagePath('ic_checkbox_selected.svg');
+  String get icGoodSignature => _getImagePath('ic_good_signature.svg');
+  String get icBadSignature => _getImagePath('ic_bad_signature.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

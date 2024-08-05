@@ -4148,4 +4148,18 @@ class AppLocalizations {
       name: 'dialogMessageSessionHasExpired',
     );
   }
+
+  String get sMimeGoodSignatureMessage {
+    return Intl.message(
+      'The authenticity of this message had been verified with SMime signature.',
+      name: 'sMimeGoodSignatureMessage',
+    );
+  }
+
+  String get sMimeBadSignatureMessage {
+    return Intl.message(
+      'This message failed SMime signature verification.',
+      name: 'sMimeBadSignatureMessage',
+    );
+  }
 }
