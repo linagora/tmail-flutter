@@ -698,41 +698,13 @@ class ThreadView extends GetWidget<ThreadController>
         } else {
           return EmptyEmailsWidget(
             key: const Key('empty_thread_view'),
-            title: _getMessageEmptyEmail(context),
-            iconSVG: controller.imagePaths.icEmptyEmail,
-            subTitle: _getSubMessageEmptyEmail(context),
-            onCreateFiltersActionCallback: controller.isNewFolderCreated
-              ? controller.goToCreateEmailRuleView
-              : null,
+            isSearchActive: controller.isSearchActive,
+            isFilterMessageActive: controller.mailboxDashBoardController.filterMessageOption.value != FilterMessageOption.all,
+            onCreateFiltersActionCallback: controller.goToCreateEmailRuleView
           );
         }
-      })
-    );
-  }
-
-  String _getMessageEmptyEmail(BuildContext context) {
-    if (controller.isSearchActive) {
-      return AppLocalizations.of(context).no_emails_matching_your_search;
-    } else {
-      if (controller.mailboxDashBoardController.filterMessageOption.value == FilterMessageOption.all &&
-          controller.isNewFolderCreated) {
-        return AppLocalizations.of(context).folderCreatedTitle;
-      } else {
-        return AppLocalizations.of(context).noEmailMatchYourCurrentFilter;
       }
-    }
-  }
-
-  String? _getSubMessageEmptyEmail(BuildContext context) {
-    if (!controller.isSearchActive
-      && controller.mailboxDashBoardController.filterMessageOption.value != FilterMessageOption.all) {
-      return AppLocalizations.of(context).reduceSomeFiltersAndTryAgain;
-    } else if (controller.mailboxDashBoardController.filterMessageOption.value == FilterMessageOption.all &&
-        controller.isNewFolderCreated) {
-      return AppLocalizations.of(context).folderCreatedMessage;
-    } else {
-      return null;
-    }
+    ));
   }
 
   List<Widget> _contextMenuActionTile(BuildContext context, PresentationEmail email) {

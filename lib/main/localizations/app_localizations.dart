@@ -2673,12 +2673,6 @@ class AppLocalizations {
       name: 'noEmailMatchYourCurrentFilter');
   }
 
-  String get reduceSomeFiltersAndTryAgain {
-    return Intl.message(
-        'Let\'s reduce some filters and try again',
-        name: 'reduceSomeFiltersAndTryAgain');
-  }
-
   String get sendMessageFailure {
     return Intl.message(
       'Failure to send your message.',
@@ -3223,18 +3217,6 @@ class AppLocalizations {
       name: 'createFolderSuccessfullyMessage',
       args: [folderName]
     );
-  }
-
-  String get folderCreatedTitle {
-    return Intl.message(
-      'Your folder is just created',
-      name: 'folderCreatedTitle');
-  }
-
-  String get folderCreatedMessage {
-    return Intl.message(
-      'To begin using this folder, you should add some rules to organize all of your mail in your own way.',
-      name: 'folderCreatedMessage');
   }
 
   String get createFilters {
