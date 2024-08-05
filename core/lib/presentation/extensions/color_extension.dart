@@ -4,6 +4,7 @@ extension AppColor on Color {
   static const primaryColor = Color(0xFF007AFF);
   static const primaryDarkColor = Color(0xFF1C1C1C);
   static const primaryLightColor = Color(0xFFFFFFFF);
+  static const primarySelectedColor = Color(0xFFDFEEFF);
   static const baseTextColor = Color(0xFF7E869B);
   static const textFieldTextColor = Color(0xFF7E869B);
   static const textFieldLabelColor = Color(0xFF7E869B);
@@ -16,11 +17,8 @@ extension AppColor on Color {
   static const loginTextFieldFocusedBorder = Color(0xFF007AFF);
   static const loginTextFieldHintColor = Color(0xff818C99);
   static const loginTextFieldBackgroundColor = Color(0xFFF2F3F5);
-  static const loginTextFieldBackgroundErrorColor = Color(0xFFFAEBEB);
-  static const buttonColor = Color(0xFF837DFF);
   static const appColor = Color(0xFF3840F7);
   static const nameUserColor = Color(0xFF182952);
-  static const emailUserColor = Color(0xFF7E869B);
   static const userInformationBackgroundColor = Color(0xFFF5F5F7);
   static const searchBorderColor = Color(0xFFEAEAEA);
   static const searchHintTextColor = Color(0xFF7E869B);
@@ -29,7 +27,6 @@ extension AppColor on Color {
   static const mailboxSelectedTextColor = Color(0xFF3840F7);
   static const mailboxTextColor = Color(0xFF182952);
   static const mailboxSelectedTextNumberColor = Color(0xFF182952);
-  static const mailboxTextNumberColor = Color(0xFF837DFF);
   static const mailboxSelectedIconColor = Color(0xFF3840F7);
   static const mailboxIconColor = Color(0xFF7E869B);
   static const storageBackgroundColor = Color(0xFFF5F5F7);

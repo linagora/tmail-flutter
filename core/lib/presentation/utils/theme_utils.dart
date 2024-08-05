@@ -11,6 +11,7 @@ class ThemeUtils {
       fontFamily: ConstantsUI.fontApp,
       appBarTheme: _appBarTheme,
       textTheme: _textTheme,
+      textSelectionTheme: _textSelectionTheme,
       dividerTheme: _dividerTheme,
       visualDensity: VisualDensity.adaptivePlatformDensity,
       scrollbarTheme: ScrollbarThemeData(
@@ -24,6 +25,14 @@ class ThemeUtils {
     return const TextTheme(
       bodyMedium: TextStyle(color: AppColor.baseTextColor),
       bodySmall: TextStyle(color: AppColor.baseTextColor),
+    );
+  }
+
+  static TextSelectionThemeData get _textSelectionTheme {
+    return const TextSelectionThemeData(
+      cursorColor: AppColor.primaryColor,
+      selectionHandleColor: AppColor.primaryColor,
+      selectionColor: AppColor.primarySelectedColor,
     );
   }
 
