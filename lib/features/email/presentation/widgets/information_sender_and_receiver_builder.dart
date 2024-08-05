@@ -32,7 +32,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
     required this.emailSelected,
     required this.responsiveUtils,
     required this.imagePaths,
-    required this.emailUnsubscribe,
+    this.emailUnsubscribe,
     this.maxBodyHeight,
     this.openEmailAddressDetailAction,
     this.onEmailActionClick,
@@ -66,6 +66,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                       )),
                       if (emailSelected.sMimeStatus != SMimeSignatureStatus.notSigned)
                         Tooltip(
+                          key: const Key('smime_signature_status_icon'),
                           message: emailSelected.sMimeStatus.getTooltipMessage(context),
                           child: MouseRegion(
                             cursor: SystemMouseCursors.click,
