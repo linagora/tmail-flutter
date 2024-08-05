@@ -1,9 +1,7 @@
 
 import 'dart:convert';
 
-import 'package:collection/collection.dart';
 import 'package:core/domain/extensions/datetime_extension.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
@@ -13,8 +11,6 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 
 extension EmailExtension on Email {
-
-  static const String unsubscribeHeaderName = 'List-Unsubscribe';
 
   String asString() => jsonEncode(toJson());
 
@@ -30,11 +26,7 @@ extension EmailExtension on Email {
 
   bool get withAttachments => hasAttachment == true;
 
-  String get listUnsubscribe {
-    final listUnsubscribe = headers?.firstWhereOrNull((header) => header.name == unsubscribeHeaderName);
-    log('EmailExtension::listUnsubscribe: $listUnsubscribe');
-    return listUnsubscribe?.value ?? '';
-  }
+  String get listUnsubscribe => headers.listUnsubscribe;
 
   bool get hasListUnsubscribe => listUnsubscribe.isNotEmpty;
 

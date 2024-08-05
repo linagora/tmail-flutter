@@ -1,4 +1,5 @@
 
+import 'package:collection/collection.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_header.dart';
 import 'package:model/email/email_property.dart';
 
@@ -10,5 +11,15 @@ extension ListEmailHeaderExtension on Set<EmailHeader>? {
     } catch (e) {
       return false;
     }
+  }
+
+  String get listUnsubscribe {
+    final listUnsubscribe = this?.firstWhereOrNull((header) => header.name == EmailProperty.headerUnsubscribeKey);
+    return listUnsubscribe?.value ?? '';
+  }
+
+  String get sMimeStatus {
+    final sMimeStatus = this?.firstWhereOrNull((header) => header.name == EmailProperty.headerSMimeStatusKey);
+    return sMimeStatus?.value ?? '';
   }
 }
