@@ -22,4 +22,6 @@ class EmailProperty {
   static const String headerMdnKey = 'Disposition-Notification-To';
   static const String messageId = 'messageId';
   static const String references = 'references';
+  static const String headerUnsubscribeKey = 'List-Unsubscribe';
+  static const String headerSMimeStatusKey = 'X-SMIME-Status';
 }
