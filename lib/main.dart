@@ -14,23 +14,27 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:worker_manager/worker_manager.dart';
 
-void main() async {
+Future<void> main() async {
   initLogger(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    ThemeUtils.setSystemLightUIStyle();
-
-    await Future.wait([
-       MainBindings().dependencies(),
-       HiveCacheConfig.instance.setUp(),
-       Executor().warmUp(),
-       AppUtils.loadEnvFile()
-    ]);
-    await HiveCacheConfig.instance.initializeEncryptionKey();
-
-    setPathUrlStrategy();
-
-    runApp(const TMailApp());
+    await runTmail();
   });
+}
+
+Future<void> runTmail() async {
+  ThemeUtils.setSystemLightUIStyle();
+  
+  await Future.wait([
+     MainBindings().dependencies(),
+     HiveCacheConfig.instance.setUp(),
+     Executor().warmUp(),
+     AppUtils.loadEnvFile()
+  ]);
+  await HiveCacheConfig.instance.initializeEncryptionKey();
+  
+  setPathUrlStrategy();
+  
+  runApp(const TMailApp());
 }
 
 class TMailApp extends StatelessWidget {
