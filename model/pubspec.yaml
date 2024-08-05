@@ -35,7 +35,7 @@ dependencies:
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: main
+      ref: sprint26_5aug
 
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.6
