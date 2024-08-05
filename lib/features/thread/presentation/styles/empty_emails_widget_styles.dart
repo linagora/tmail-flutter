@@ -26,5 +26,5 @@ class EmptyEmailsWidgetStyles {
   static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.all(16);
   static const EdgeInsetsGeometry labelPadding = EdgeInsetsDirectional.symmetric(vertical: 12);
   static const EdgeInsetsGeometry createFilterButtonPadding = EdgeInsetsDirectional.symmetric(vertical: 12, horizontal: 24);
-  static const EdgeInsetsGeometry createFilterButtonMargin = EdgeInsetsDirectional.only(top: 28);
+  static const EdgeInsetsGeometry createFilterButtonMargin = EdgeInsetsDirectional.only(top: 12);
 }

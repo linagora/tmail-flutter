@@ -469,9 +469,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         (success) => success is! SearchingState
             ? EmptyEmailsWidget(
                 key: const Key('empty_search_email_view'),
-                title: AppLocalizations.of(context).no_emails_matching_your_search,
-                iconSVG: controller.imagePaths.icEmptyEmail
-              )
+                isSearchActive: true)
             : const SizedBox.shrink())
     );
   }

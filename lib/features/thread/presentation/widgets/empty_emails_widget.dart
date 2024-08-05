@@ -1,4 +1,4 @@
-
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
@@ -11,72 +11,61 @@ typedef OnCreateFiltersActionCallback = Function();
 
 class EmptyEmailsWidget extends StatelessWidget {
 
-  final String title;
-  final String? iconSVG;
-  final String? subTitle;
+  final bool isSearchActive;
+  final bool isFilterMessageActive;
   final OnCreateFiltersActionCallback? onCreateFiltersActionCallback;
-  final Color? titleColor;
 
-  const EmptyEmailsWidget({
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+  final _imagePaths = Get.find<ImagePaths>();
+
+  EmptyEmailsWidget({
     Key? key,
-    required this.title,
-    this.iconSVG,
-    this.subTitle,
+    this.isSearchActive = false,
+    this.isFilterMessageActive = false,
     this.onCreateFiltersActionCallback,
-    this.titleColor,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final responsiveUtils = Get.find<ResponsiveUtils>();
     final childWidget = Padding(
       padding: EmptyEmailsWidgetStyles.padding,
       child: Column(
-        mainAxisAlignment: responsiveUtils.isScreenWithShortestSide(context)
+        mainAxisAlignment: _responsiveUtils.isScreenWithShortestSide(context)
           ? MainAxisAlignment.start
           : MainAxisAlignment.center,
         children: [
-          if (iconSVG != null)
-            SvgPicture.asset(
-              iconSVG!,
-              width: _getIconSize(context, responsiveUtils),
-              height: _getIconSize(context, responsiveUtils),
-              fit: BoxFit.fill
-            ),
+          SvgPicture.asset(
+            _imagePaths.icEmptyEmail,
+            width: _getIconSize(context, _responsiveUtils),
+            height: _getIconSize(context, _responsiveUtils),
+            fit: BoxFit.fill
+          ),
           Padding(
             padding: EmptyEmailsWidgetStyles.labelPadding,
             child: Text(
-              title,
+              key: const Key('empty_email_message'),
+              _getMessageEmptyEmail(context),
               style: TextStyle(
                 color: EmptyEmailsWidgetStyles.labelTextColor,
-                fontSize: onCreateFiltersActionCallback != null
+                fontSize: _validateShowCreateRuleButton
                   ? EmptyEmailsWidgetStyles.createFilterLabelTextSize
                   : EmptyEmailsWidgetStyles.labelTextSize,
-                fontWeight: onCreateFiltersActionCallback != null
+                fontWeight: _validateShowCreateRuleButton
                   ? EmptyEmailsWidgetStyles.createFilterLabelFontWeight
                   : EmptyEmailsWidgetStyles.labelFontWeight
               ),
               textAlign: TextAlign.center,
             ),
           ),
-          if (subTitle != null)
-            Text(
-              subTitle!,
-              style: const TextStyle(
-                color: EmptyEmailsWidgetStyles.messageTextColor,
-                fontSize: EmptyEmailsWidgetStyles.messageTextSize,
-                fontWeight: EmptyEmailsWidgetStyles.messageFontWeight
-              ),
-              textAlign: TextAlign.center,
-            ),
-          if (onCreateFiltersActionCallback != null)
+          if (_validateShowCreateRuleButton)
             TMailButtonWidget.fromText(
+              key: const Key('create_filter_rule_button_within_empty_email'),
               text: AppLocalizations.of(context).createFilters,
               padding: EmptyEmailsWidgetStyles.createFilterButtonPadding,
               margin: EmptyEmailsWidgetStyles.createFilterButtonMargin,
               backgroundColor: EmptyEmailsWidgetStyles.createFilterButtonBackgroundColor,
               borderRadius: EmptyEmailsWidgetStyles.createFilterButtonBorderRadius,
-              width: responsiveUtils.isPortraitMobile(context) ? double.infinity : null,
+              width: _responsiveUtils.isPortraitMobile(context) ? double.infinity : null,
               textAlign: TextAlign.center,
               textStyle: const TextStyle(
                 fontSize: EmptyEmailsWidgetStyles.createFilterButtonTextSize,
@@ -91,7 +80,7 @@ class EmptyEmailsWidget extends StatelessWidget {
     return Container(
       constraints: const BoxConstraints(maxWidth: EmptyEmailsWidgetStyles.maxWidth),
       alignment: AlignmentDirectional.center,
-      child: responsiveUtils.isScreenWithShortestSide(context)
+      child: _responsiveUtils.isScreenWithShortestSide(context)
         ? SingleChildScrollView(child: childWidget)
         : CustomScrollView(
             slivers: [
@@ -108,6 +97,21 @@ class EmptyEmailsWidget extends StatelessWidget {
       return EmptyEmailsWidgetStyles.desktopIconSize;
     } else {
       return EmptyEmailsWidgetStyles.tabletIconSize;
+    }
+  }
+
+  bool get _validateShowCreateRuleButton =>
+    !isFilterMessageActive && !isSearchActive && onCreateFiltersActionCallback != null;
+
+  String _getMessageEmptyEmail(BuildContext context) {
+    if (isSearchActive) {
+      return AppLocalizations.of(context).no_emails_matching_your_search;
+    } else {
+      if (isFilterMessageActive) {
+        return AppLocalizations.of(context).noEmailMatchYourCurrentFilter;
+      } else {
+        return AppLocalizations.of(context).noEmailInYourCurrentFolder;
+      }
     }
   }
 }
