@@ -28,6 +28,8 @@ extension EmailExtension on Email {
 
   String get listUnsubscribe => headers.listUnsubscribe;
 
+  bool get hasRequestReadReceipt => headers.readReceiptHasBeenRequested;
+
   bool get hasListUnsubscribe => listUnsubscribe.isNotEmpty;
 
   bool hasReadReceipt(Map<MailboxId, PresentationMailbox> mapMailbox) {
