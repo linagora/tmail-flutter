@@ -3,11 +3,14 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/email_avatar_builder.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/smime_signature_status.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_receiver_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_sender_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_app_bar_widget.dart';
@@ -61,6 +64,17 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                             openEmailAddressDetailAction: openEmailAddressDetailAction,
                           )
                       )),
+                      if (emailSelected.sMimeStatus != SMimeSignatureStatus.notSigned)
+                        Tooltip(
+                          message: emailSelected.sMimeStatus.getTooltipMessage(context),
+                          child: MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: SvgPicture.asset(
+                              emailSelected.sMimeStatus.getIcon(imagePaths),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
                       if (!emailSelected.isSubscribed && emailUnsubscribe != null && !responsiveUtils.isPortraitMobile(context))
                         TMailButtonWidget.fromText(
                           text: AppLocalizations.of(context).unsubscribe,

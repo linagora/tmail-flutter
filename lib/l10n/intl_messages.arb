@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-07-17T01:36:03.095458",
+  "@@last_modified": "2024-08-05T16:49:32.139855",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3960,6 +3960,18 @@
   },
   "dialogMessageSessionHasExpired": "The current session has expired. Please reconnect to the server",
   "@dialogMessageSessionHasExpired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sMimeGoodSignatureMessage": "The authenticity of this message had been verified with SMime signature.",
+  "@sMimeGoodSignatureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sMimeBadSignatureMessage": "This message failed SMime signature verification.",
+  "@sMimeBadSignatureMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
