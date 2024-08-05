@@ -71,6 +71,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_i
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
+import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
@@ -335,9 +336,10 @@ class ComposerController extends BaseController with DragDropFileMixin implement
       _handlePickFileFailure(failure);
     } else if (failure is LocalImagePickerFailure) {
       _handlePickImageFailure(failure);
-    } else if (failure is GetEmailContentFailure ||
-        failure is TransformHtmlEmailContentFailure ||
-        failure is RestoreEmailInlineImagesFailure) {
+    } else if (failure is GetEmailContentFailure) {
+      _handleGetEmailContentFailure(failure);
+    } else if (failure is TransformHtmlEmailContentFailure
+        || failure is RestoreEmailInlineImagesFailure) {
       emailContentsViewState.value = Left(failure);
     } else if (failure is GetAllIdentitiesFailure) {
       if (identitySelected.value == null) {
@@ -564,9 +566,8 @@ class ComposerController extends BaseController with DragDropFileMixin implement
             presentationEmail: arguments.presentationEmail!,
             actionType: EmailActionType.editDraft
           );
-          _getEmailContentFromEmailId(
+          _getEmailContentOfEmailDrafts(
             emailId: arguments.presentationEmail!.id!,
-            isDraftEmail: arguments.presentationEmail!.isDraft
           );
           _emailIdEditing = arguments.presentationEmail!.id!;
           break;
@@ -688,7 +689,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
       if (composerArguments.value?.emailActionType == EmailActionType.reopenComposerBrowser) {
         log('ComposerController::_initEmail: hasRequestReadReceipt = ${arguments.hasRequestReadReceipt}');
         hasRequestReadReceipt.value = arguments.hasRequestReadReceipt ?? false;
-      } else {
+      } else if (composerArguments.value?.emailActionType != EmailActionType.editDraft) {
         _getAlwaysReadReceiptSetting();
       }
     }
@@ -1376,18 +1377,22 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     consumeState(Stream.value(Right(GetEmailContentSuccess(htmlEmailContent: content))));
   }
 
-  void _getEmailContentFromEmailId({required EmailId emailId, bool isDraftEmail = false}) {
+  void _getEmailContentOfEmailDrafts({required EmailId emailId}) {
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
-    if (session != null && accountId != null) {
-      consumeState(_getEmailContentInteractor.execute(
-        session,
-        accountId,
-        emailId,
-        mailboxDashBoardController.baseDownloadUrl,
-        TransformConfiguration.forDraftsEmail()
-      ));
+
+    if (session == null || accountId == null) {
+      consumeState(Stream.value(Left(GetEmailContentFailure(NotFoundSessionException()))));
+      return;
     }
+
+    consumeState(_getEmailContentInteractor.execute(
+      session,
+      accountId,
+      emailId,
+      mailboxDashBoardController.baseDownloadUrl,
+      TransformConfiguration.forDraftsEmail()
+    ));
   }
 
   void _getEmailContentOffLineSuccess(GetEmailContentFromCacheSuccess success) {
@@ -1395,6 +1400,10 @@ class ComposerController extends BaseController with DragDropFileMixin implement
       attachments: success.attachments,
       inlineImages: success.inlineImages);
     emailContentsViewState.value = Right(success);
+
+    if (composerArguments.value?.emailActionType == EmailActionType.editDraft) {
+      _setUpRequestReadReceiptForDraftEmail(success.emailCurrent);
+    }
   }
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
@@ -1402,6 +1411,10 @@ class ComposerController extends BaseController with DragDropFileMixin implement
       attachments: success.attachments,
       inlineImages: success.inlineImages);
     emailContentsViewState.value = Right(success);
+
+    if (composerArguments.value?.emailActionType == EmailActionType.editDraft) {
+      _setUpRequestReadReceiptForDraftEmail(success.emailCurrent);
+    }
   }
 
   void _transformHtmlEmailContent(String? emailContent) {
@@ -2307,6 +2320,21 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     fromRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
     ccRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
     bccRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
+  }
+
+  void _handleGetEmailContentFailure(GetEmailContentFailure failure) {
+    emailContentsViewState.value = Left(failure);
+    if (composerArguments.value?.emailActionType == EmailActionType.editDraft) {
+      _getAlwaysReadReceiptSetting();
+    }
+  }
+
+  void _setUpRequestReadReceiptForDraftEmail(Email? email) {
+    if (email?.hasRequestReadReceipt == true) {
+      hasRequestReadReceipt.value = true;
+    } else {
+      _getAlwaysReadReceiptSetting();
+    }
   }
   
   @override
