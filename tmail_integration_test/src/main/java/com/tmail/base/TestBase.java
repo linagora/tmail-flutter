@@ -55,7 +55,8 @@ public abstract class TestBase {
             case FIREFOX -> playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(runHeadlessTest));
             default -> throw new UnsupportedPlatformException();
         };
-        browserContext = browser.newContext();
+        browserContext = browser.newContext(
+            new Browser.NewContextOptions().setViewportSize(1920, 1080));
         page = browserContext.newPage();
     }
 
