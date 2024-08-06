@@ -436,11 +436,11 @@ packages:
     dependency: transitive
     description:
       path: "."
-      ref: cnb_supported
-      resolved-ref: "8301d67b4c30bb2234bbe96de4ae135b88a6af40"
+      ref: master
+      resolved-ref: "55817316c081a363a410fd0c14867be28096790d"
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
-    version: "0.0.5"
+    version: "0.1.0"
   enough_platform_widgets:
     dependency: transitive
     description:
@@ -667,11 +667,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: sprint_25_flutter_3_22_2
-      resolved-ref: "8e1e6e0e18ef6e1baae719c42b1483237ba5c56b"
+      ref: main
+      resolved-ref: "66e3713f0e7a22da911b360cef4d219fc30cee77"
       url: "https://github.com/linagora/flutter-date-range-picker.git"
     source: git
-    version: "1.0.2"
+    version: "2.0.0"
   flutter_dotenv:
     dependency: "direct main"
     description:
@@ -1106,11 +1106,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: sprint_25_flutter_3_22_2
-      resolved-ref: "0020802d02f69fc02bc56cf18d6962d10babe097"
+      ref: main
+      resolved-ref: "3cf2553565cc485d4405301a9e1f8af2d676afb2"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
-    version: "2.5.1"
+    version: "3.1.0"
   http:
     dependency: transitive
     description:
@@ -1195,11 +1195,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: sprint25_from_migrate_5jun
-      resolved-ref: "4783ba7b56eb4dda591538d9c486375162a9da79"
+      ref: main
+      resolved-ref: d111cd2feaafc0cc653eedbc7dd60deab8ead344
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
-    version: "0.0.1"
+    version: "0.1.0"
   js:
     dependency: transitive
     description:
@@ -1451,11 +1451,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: twake_supported
-      resolved-ref: f094c42517cb760a2e8457f63823b138f42b0efa
+      ref: main
+      resolved-ref: "5ee423463cbeee302400d5e7fdae1a83c7fe1720"
       url: "https://github.com/linagora/flutter_pdf_render.git"
     source: git
-    version: "1.4.8"
+    version: "2.0.0"
   pdf_widget_wrapper:
     dependency: transitive
     description:
@@ -1645,11 +1645,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: cnb_supported
-      resolved-ref: "955d70b3e57ddeed2b709ee8822c7a8a620e1aaa"
+      ref: main
+      resolved-ref: "4a4ee913fbdec0f98cc1755f31df54fb402d0957"
       url: "https://github.com/linagora/rich-text-composer.git"
     source: git
-    version: "0.0.2"
+    version: "0.1.0"
   rule_filter:
     dependency: "direct main"
     description:
