@@ -330,19 +330,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = A._instanceType(_this)._eval$1("GetWidget.S");
       t4._as(t3.get(_this)).toString;
       A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
-      t5 = A.SloganBuilder$(true, _null, _null, "assets/images/ic_jmap_standard.svg", _null, _null, B.EdgeInsets_12_0_0_0, 48, A.Intl__message("JMAP standard", _null, "jmapStandard", _null, _null), _null, D.TextStyle_69t26);
+      t5 = A.SloganBuilder$(true, _null, "assets/images/ic_jmap_standard.svg", _null, _null, B.EdgeInsets_12_0_0_0, _null, 48, A.Intl__message("JMAP standard", _null, "jmapStandard", _null, _null), _null, D.TextStyle_69t26);
       A.Expando__checkType(_this);
       t4._as(t3.get(_this)).toString;
       A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
-      t6 = A.SloganBuilder$(true, _null, _null, "assets/images/ic_encrypted.svg", _null, _null, B.EdgeInsets_12_0_0_0, 48, A.Intl__message("Encrypted mailbox", _null, "encryptedMailbox", _null, _null), _null, D.TextStyle_69t26);
+      t6 = A.SloganBuilder$(true, _null, "assets/images/ic_encrypted.svg", _null, _null, B.EdgeInsets_12_0_0_0, _null, 48, A.Intl__message("Encrypted mailbox", _null, "encryptedMailbox", _null, _null), _null, D.TextStyle_69t26);
       A.Expando__checkType(_this);
       t4._as(t3.get(_this)).toString;
       A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
-      t7 = A.SloganBuilder$(true, _null, _null, "assets/images/ic_team.svg", _null, _null, B.EdgeInsets_12_0_0_0, 48, A.Intl__message("Manage email as a team", _null, "manageEmailAsATeam", _null, _null), _null, D.TextStyle_69t26);
+      t7 = A.SloganBuilder$(true, _null, "assets/images/ic_team.svg", _null, _null, B.EdgeInsets_12_0_0_0, _null, 48, A.Intl__message("Manage email as a team", _null, "manageEmailAsATeam", _null, _null), _null, D.TextStyle_69t26);
       A.Expando__checkType(_this);
       t4._as(t3.get(_this)).toString;
       A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
-      t8 = A.SloganBuilder$(true, _null, _null, "assets/images/ic_integration.svg", _null, _null, B.EdgeInsets_12_0_0_0, 48, A.Intl__message("Multiple integrations", _null, "multipleIntegrations", _null, _null), _null, D.TextStyle_69t26);
+      t8 = A.SloganBuilder$(true, _null, "assets/images/ic_integration.svg", _null, _null, B.EdgeInsets_12_0_0_0, _null, 48, A.Intl__message("Multiple integrations", _null, "multipleIntegrations", _null, _null), _null, D.TextStyle_69t26);
       A.Expando__checkType(_this);
       t4._as(t3.get(_this)).toString;
       t9 = type$.JSArray_Widget;
@@ -448,25 +448,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1759
+    $signature: 1762
   };
   C.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1760
+    $signature: 1763
   };
   C.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1761
+    $signature: 1764
   };
   C.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1762
+    $signature: 1765
   };
   C.BaseLoginView_buildUserNameInput_closure.prototype = {
     call$2(_, loginUsername) {
@@ -483,7 +483,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return B.SizedBox_null_null_null_null;
     },
-    $signature: 470
+    $signature: 526
   };
   C.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(_) {
@@ -573,7 +573,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return B.SizedBox_0_0_null_null;
       }
     },
-    $signature: 174
+    $signature: 137
   };
   C.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -592,7 +592,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 87
+    $signature: 64
   };
   C.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -627,7 +627,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 1763
+    $signature: 1766
   };
   C.LoginMessageWidget_build_closure0.prototype = {
     call$1(success) {
@@ -648,19 +648,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return "";
     },
-    $signature: 1764
+    $signature: 1767
   };
   C.LoginMessageWidget_build_closure1.prototype = {
     call$1(failure) {
       return B.Color_4293281350;
     },
-    $signature: 1765
+    $signature: 1768
   };
   C.LoginMessageWidget_build_closure2.prototype = {
     call$1(success) {
       return B.Color_4278190080;
     },
-    $signature: 1766
+    $signature: 1769
   };
   C._LoginTextInputBuilderState_build_closure.prototype = {
     call$0() {
@@ -762,5 +762,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "KzMIlmfsCkKrXr/YwcqxmCG0BDs=");
+})($__dart_deferred_initializers__, "tWBj2SVDN07R+KOCVqaSUfnzjZ0=");
 ;
