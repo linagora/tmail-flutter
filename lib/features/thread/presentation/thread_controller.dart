@@ -718,10 +718,6 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  void enableSelectionEmail() {
-    mailboxDashBoardController.currentSelectMode.value = SelectMode.ACTIVE;
-  }
-
   void setSelectAllEmailAction() {
     final newEmailList = mailboxDashBoardController.emailsInCurrentMailbox
       .map((email) => email.toSelectedEmail(selectMode: SelectMode.ACTIVE))

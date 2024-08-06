@@ -19,16 +19,18 @@ class MobileAppBarThreadWidgetStyle {
       return const EdgeInsets.symmetric(horizontal: 32, vertical: 8);
     }
   }
+  static const EdgeInsetsGeometry mailboxMenuPadding = EdgeInsets.all(5);
+  static const EdgeInsetsGeometry titlePadding = EdgeInsets.symmetric(horizontal: 16);
 
-  static const TextStyle editButtonStyle = TextStyle(
-    fontSize: 17,
-    color: AppColor.primaryColor
-  );
   static const TextStyle emailCounterTitleStyle = TextStyle(
     fontSize: 17,
     color: AppColor.primaryColor
   );
-
+  static const TextStyle titleTextStyle = TextStyle(
+    fontSize: 21,
+    color: Colors.black,
+    fontWeight: FontWeight.bold
+  );
   static Color getFilterButtonColor(FilterMessageOption option) {
     return option == FilterMessageOption.all
       ? AppColor.colorFilterMessageDisabled

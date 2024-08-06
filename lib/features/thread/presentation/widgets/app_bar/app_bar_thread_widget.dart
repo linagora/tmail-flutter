@@ -11,7 +11,6 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/web_a
 
 typedef OnPopupMenuFilterEmailAction = void Function(FilterMessageOption, RelativeRect);
 typedef OnContextMenuFilterEmailAction = void Function(FilterMessageOption);
-typedef OnEditThreadAction = void Function();
 typedef OnOpenMailboxMenuActionClick = void Function();
 typedef OnCancelEditThreadAction = void Function();
 typedef OnEmailSelectionAction = void Function(EmailActionType, List<PresentationEmail>);
@@ -20,7 +19,6 @@ class AppBarThreadWidget extends StatelessWidget {
   final OnPopupMenuFilterEmailAction? onPopupMenuFilterEmailAction;
   final OnContextMenuFilterEmailAction? onContextMenuFilterEmailAction;
   final OnOpenMailboxMenuActionClick openMailboxAction;
-  final OnEditThreadAction editThreadAction;
   final OnCancelEditThreadAction cancelEditThreadAction;
   final OnEmailSelectionAction emailSelectionAction;
   final PresentationMailbox? mailboxSelected;
@@ -35,7 +33,6 @@ class AppBarThreadWidget extends StatelessWidget {
     required this.selectMode,
     required this.filterOption,
     required this.openMailboxAction,
-    required this.editThreadAction,
     required this.cancelEditThreadAction,
     required this.emailSelectionAction,
     this.onPopupMenuFilterEmailAction,
@@ -52,7 +49,6 @@ class AppBarThreadWidget extends StatelessWidget {
         selectMode: selectMode,
         filterOption: filterOption,
         openMailboxAction: openMailboxAction,
-        editThreadAction: editThreadAction,
         cancelEditThreadAction: cancelEditThreadAction,
         emailSelectionAction: emailSelectionAction,
         onPopupMenuFilterEmailAction: onPopupMenuFilterEmailAction,
@@ -66,7 +62,6 @@ class AppBarThreadWidget extends StatelessWidget {
         selectMode: selectMode,
         filterOption: filterOption,
         openMailboxAction: openMailboxAction,
-        editThreadAction: editThreadAction,
         cancelEditThreadAction: cancelEditThreadAction,
         onPopupMenuFilterEmailAction: onPopupMenuFilterEmailAction,
         onContextMenuFilterEmailAction: onContextMenuFilterEmailAction,
