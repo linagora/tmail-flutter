@@ -30,13 +30,13 @@ class SearchBarView extends StatelessWidget {
         onTap: onOpenSearchViewAction,
         mouseCursor: SystemMouseCursors.text,
         splashColor: Colors.transparent,
-        borderRadius: const BorderRadius.all(Radius.circular(12)),
+        borderRadius: const BorderRadius.all(Radius.circular(10)),
         child: Container(
             alignment: Alignment.center,
-            height: 40,
+            height: 44,
             width: double.infinity,
             decoration: const BoxDecoration(
-              borderRadius: BorderRadius.all(Radius.circular(12)),
+              borderRadius: BorderRadius.all(Radius.circular(10)),
               color: AppColor.colorBgSearchBar
             ),
             child: Row(
@@ -45,6 +45,7 @@ class SearchBarView extends StatelessWidget {
                 TMailButtonWidget.fromIcon(
                   icon: imagePaths.icSearchBar,
                   backgroundColor: Colors.transparent,
+                  iconColor: AppColor.colorTextBody,
                   onTapActionCallback: onOpenSearchViewAction
                 ),
                 Expanded(

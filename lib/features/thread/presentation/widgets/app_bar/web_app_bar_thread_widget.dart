@@ -15,7 +15,6 @@ class WebAppBarThreadWidget extends StatelessWidget {
   final SelectMode selectMode;
   final FilterMessageOption filterOption;
   final OnOpenMailboxMenuActionClick openMailboxAction;
-  final OnEditThreadAction editThreadAction;
   final OnCancelEditThreadAction cancelEditThreadAction;
   final OnEmailSelectionAction emailSelectionAction;
   final OnPopupMenuFilterEmailAction? onPopupMenuFilterEmailAction;
@@ -28,7 +27,6 @@ class WebAppBarThreadWidget extends StatelessWidget {
     required this.selectMode,
     required this.filterOption,
     required this.openMailboxAction,
-    required this.editThreadAction,
     required this.cancelEditThreadAction,
     required this.emailSelectionAction,
     this.onPopupMenuFilterEmailAction,
