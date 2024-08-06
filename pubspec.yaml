@@ -55,20 +55,17 @@ dependencies:
   rich_text_composer:
     git:
       url: https://github.com/linagora/rich-text-composer.git
-      ref: cnb_supported
+      ref: main
 
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: sprint_25_flutter_3_22_2
-  # TODO: Move back to master after sprint 25 released
+      ref: main
 
-  # TODO: We will change it when the PR in upstream repository will be merged
-  # https://github.com/linagora/jmap-dart-client/pull/87
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: sprint25_from_migrate_5jun
+      ref: main
 
   contacts_service:
     git:
@@ -88,10 +85,7 @@ dependencies:
   flutter_date_range_picker:
     git:
       url: https://github.com/linagora/flutter-date-range-picker.git
-      ref: sprint_25_flutter_3_22_2
-  # TODO: Move back to master after sprint 25 released
-
-  super_tag_editor: 0.3.0
+      ref: main
 
   # TODO: We will change it when the PR in upstream repository will be merged
   # https://github.com/dietfriends/dns_client/pull/9
@@ -102,11 +96,10 @@ dependencies:
 
   # TODO: We will change it when the PR in upstream repository will be merged
   # https://github.com/espresso3389/flutter_pdf_render/pull/148
-  # https://github.com/espresso3389/flutter_pdf_render/pull/151
   pdf_render:
     git:
       url: https://github.com/linagora/flutter_pdf_render.git
-      ref: twake_supported
+      ref: main
 
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.6
@@ -244,6 +237,8 @@ dependencies:
   file_picker: 5.3.1
 
   app_settings: 5.1.1
+
+  super_tag_editor: 0.3.0
 
 dev_dependencies:
   flutter_test:

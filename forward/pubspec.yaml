@@ -12,12 +12,10 @@ dependencies:
     sdk: flutter
 
   ### Dependencies from git ###
-  # TODO: We will change it when the PR in upstream repository will be merged
-  # https://github.com/linagora/jmap-dart-client/pull/87
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: sprint25_from_migrate_5jun
+      ref: main
 
   ### Dependencies from pub.dev ###
   equatable: 2.0.5
