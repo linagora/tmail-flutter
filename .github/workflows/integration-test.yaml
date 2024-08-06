@@ -24,7 +24,7 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: "temurin"
           cache: maven
-          cache-dependency-path: "tmail_selenium/pom.xml"
+          cache-dependency-path: "tmail_integration_test/pom.xml"
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -48,8 +48,8 @@ jobs:
           FRONTEND_CONFIG: ${{ secrets.FRONTEND_CONFIG }}
           FRONTEND_CREDS: ${{ secrets.FRONTEND_CREDS }}
         run: ../scripts/setup-desktop-integration-tests.sh
-        working-directory: tmail_selenium
+        working-directory: tmail_integration_test
 
       - name: Run integration tests
         run: ../scripts/run-desktop-integration-tests.sh
-        working-directory: tmail_selenium
+        working-directory: tmail_integration_test
