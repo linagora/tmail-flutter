@@ -1,6 +1,7 @@
 package com.tmail.base;
 
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Properties;
 import java.util.stream.Stream;
@@ -15,10 +16,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import com.microsoft.playwright.Browser;
+import com.microsoft.playwright.Browser.NewContextOptions;
 import com.microsoft.playwright.BrowserContext;
 import com.microsoft.playwright.BrowserType;
 import com.microsoft.playwright.Page;
 import com.microsoft.playwright.Playwright;
+import com.microsoft.playwright.Tracing;
 
 @ExtendWith(CustomParameterResolver.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -55,13 +58,21 @@ public abstract class TestBase {
             case FIREFOX -> playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(runHeadlessTest));
             default -> throw new UnsupportedPlatformException();
         };
-        browserContext = browser.newContext(
-            new Browser.NewContextOptions().setViewportSize(1920, 1080));
+
+        NewContextOptions contextOptions = new Browser.NewContextOptions()
+            .setViewportSize(1920, 1080);
+        browserContext = browser.newContext(contextOptions);
+        browserContext.tracing().start(new Tracing.StartOptions()
+            .setScreenshots(true)
+            .setSnapshots(true));
+
         page = browserContext.newPage();
     }
 
     @AfterEach
     public void tearDown() {
+        browserContext.tracing().stop(new Tracing.StopOptions()
+            .setPath(Paths.get("trace.zip")));
         page.close();
         browserContext.close();
         browser.close();
