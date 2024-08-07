@@ -30,6 +30,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_method_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/list_mailbox_id_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/role_extension.dart';
