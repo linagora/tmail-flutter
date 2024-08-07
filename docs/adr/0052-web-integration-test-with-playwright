@@ -1,0 +1,22 @@
+# 52. Web integration test with PlayWright
+
+Date: 2024-08-07
+
+## Status
+
+Accepted
+
+## Context
+
+To enhance test coverage and efficiency, we require a robust integration testing solution to mitigate regression risks and minimize manual testing efforts. 
+Flutter Drive, our current built-in framework, exhibits limitations in handling specific scenarios such as Single Sign-On (SSO) and redirects. 
+Selenium could be an option, but ... //will add more
+Beside that, we can leverage the backend team's Java expertise for a Java-based testing framework.
+
+## Decision
+
+To address these challenges, we will adopt the ROBOT pattern for Playwright and maintain integration test suites within the tmail-flutter project.
+
+## Consequences
+
+To ensure ongoing test effectiveness, we will implement integration tests for all new features to prevent regressions. Additionally, we will prioritize adding integration tests for frequently occurring use cases to bolster overall test coverage.
