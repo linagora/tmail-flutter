@@ -121,4 +121,18 @@ class FileUtils {
     final base64Data = base64Encode(Uint8List.view(buffer));
     return base64Data;
   }
+
+  Future<void> deleteCompressedFileOnMobile(String filePath, {required String pathContains}) async {
+    log('$runtimeType::deleteCompressedFileOnMobile: filePath: $filePath');
+    if (!PlatformInfo.isMobile) return;
+
+    try {
+      final File file = File(filePath);
+      if (await file.exists() && file.path.contains(pathContains)) {
+        await file.delete();
+      }
+    } catch (e) {
+      logError('$runtimeType::deleteCompressedFileOnMobile: error: $e');
+    }
+  }
 }
