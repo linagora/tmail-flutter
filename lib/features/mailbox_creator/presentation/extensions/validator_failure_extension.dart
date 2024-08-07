@@ -20,6 +20,8 @@ extension ValicatorFailureExtension on VerifyNameFailure {
       return AppLocalizations.of(context).this_folder_name_is_already_taken;
     } else if (exception is SpecialCharacterException) {
       return AppLocalizations.of(context).folderNameCannotContainSpecialCharacters;
+    } else if (exception is NameWithSpaceOnlyException) {
+      return AppLocalizations.of(context).this_field_cannot_be_blank;
     } else {
       return '';
     }
