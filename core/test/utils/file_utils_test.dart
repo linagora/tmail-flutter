@@ -1,4 +1,5 @@
 import 'package:core/utils/file_utils.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -37,6 +38,41 @@ void main() {
       expect(htmlString, equals(fileContent));
 
       file.delete();
+    });
+
+    test(
+      'Should delete file '
+      'when deleteCompressedFileOnMobile is called '
+      'and file exists '
+      'and Platform is mobile',
+    () async {
+      // arrange
+      final file = await FileUtils().saveToFile(nameFile: fileName, content: fileContent);
+
+      // act
+      await FileUtils().deleteCompressedFileOnMobile(file.path, pathContains: fileName);
+
+      // assert
+      expect(await file.exists(), equals(false));
+    });
+
+    test(
+      'Should not delete file '
+      'when deleteCompressedFileOnMobile is called '
+      'and file exists '
+      'and Platform is not mobile',
+    () async {
+      // arrange
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      final file = await FileUtils().saveToFile(nameFile: fileName, content: fileContent);
+      expect(await file.exists(), equals(true));
+
+      // act
+      await FileUtils().deleteCompressedFileOnMobile(file.path, pathContains: fileName);
+
+      // assert
+      expect(await file.exists(), equals(true));
+      debugDefaultTargetPlatformOverride = null;
     });
   });
 }

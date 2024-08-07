@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -6,6 +7,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
@@ -45,6 +47,10 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_id
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/utils/identity_utils.dart';
+import 'package:tmail_ui_user/features/public_asset/presentation/model/public_asset_arguments.dart';
+import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_bindings.dart';
+import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_controller.dart';
+import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -83,6 +89,7 @@ class IdentityCreatorController extends BaseController {
   Session? session;
   Identity? identity;
   IdentityCreatorArguments? arguments;
+  PublicAssetController? publicAssetController;
 
   final GlobalKey htmlKey = GlobalKey();
   final htmlEditorMinHeight = 150;
@@ -131,8 +138,16 @@ class IdentityCreatorController extends BaseController {
       identity = arguments!.identity;
       actionType.value = arguments!.actionType;
       _checkDefaultIdentityIsSupported();
+      _checkPublicAssetCapability();
       _setUpValueFromIdentity();
       _getAllIdentities();
+    }
+  }
+
+  void _checkPublicAssetCapability() {
+    if (CapabilityIdentifier.jmapPublicAsset.isSupported(session!, accountId!)) {
+      PublicAssetBindings(PublicAssetArguments(session!, accountId!, identity: identity)).dependencies();
+      publicAssetController = Get.find<PublicAssetController>(tag: BindingTag.publicAssetBindingsTag);
     }
   }
 
@@ -152,6 +167,8 @@ class IdentityCreatorController extends BaseController {
       richTextMobileTabletController?.onClose();
       richTextMobileTabletController = null;
     }
+    Get.delete<PublicAssetController>(tag: BindingTag.publicAssetBindingsTag);
+    publicAssetController = null;
     super.onClose();
   }
 
@@ -186,6 +203,7 @@ class IdentityCreatorController extends BaseController {
       if (PlatformInfo.isWeb) {
         richTextWebController?.editorController.setText(arguments?.identity?.signatureAsString ?? '');
       }
+      publicAssetController?.getOldPublicAssetFromHtmlContent(arguments!.identity!.signatureAsString);
     }
   }
 
@@ -567,13 +585,17 @@ class IdentityCreatorController extends BaseController {
       } else {
         logError("IdentityCreatorController::_insertInlineImage: context is unmounted");
       }
+    } else if (publicAssetController != null) {
+      publicAssetController!.uploadFileToBlob(file);
     } else {
       if (PlatformInfo.isWeb) {
         richTextWebController?.insertImageAsBase64(platformFile: file, maxWidth: maxWidth);
       } else if (PlatformInfo.isMobile) {
         richTextMobileTabletController?.insertImageData(platformFile: file, maxWidth: maxWidth);
         if (file.path != null) {
-          _deleteCompressedFileOnMobile(file.path!);
+          getBinding<FileUtils>()?.deleteCompressedFileOnMobile(
+            file.path!,
+            pathContains: IdentityCreatorConstants.prefixCompressedInlineImageTemp);
         }
       } else {
         logError("IdentityCreatorController::_insertInlineImage: Platform not supported");
@@ -641,18 +663,6 @@ class IdentityCreatorController extends BaseController {
 
     log('IdentityCreatorController::_saveCompressedFileOnMobile: compressedFilePath: $compressedFilePath');
     return compressedFilePath;
-  }
-
-  Future<void> _deleteCompressedFileOnMobile(String filePath) async {
-    log('IdentityCreatorController::_deleteCompressedFileOnMobile: filePath: $filePath');
-    try {
-      final File file = File(filePath);
-      if (await file.exists() && file.path.contains(IdentityCreatorConstants.prefixCompressedInlineImageTemp)) {
-        await file.delete();
-      }
-    } catch (e) {
-      logError('IdentityCreatorController::_deleteCompressedFileOnMobile: error: $e');
-    }
   }
 
   bool isMobile(BuildContext context) =>
