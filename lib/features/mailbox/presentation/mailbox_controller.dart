@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:core/core.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -28,6 +29,7 @@ import 'package:tmail_ui_user/features/email/domain/state/get_restored_deleted_m
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
@@ -43,6 +45,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mail
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_mailbox_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/rename_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/subscribe_mailbox_state.dart';
@@ -204,23 +207,30 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   @override
   void onDone() {
     super.onDone();
-    viewState.value.fold((failure) => null, (success) {
-      if (success is GetAllMailboxSuccess) {
-        _handleCreateDefaultFolderIfMissing(mailboxDashBoardController.mapDefaultMailboxIdByRole);
-        _handleDataFromNavigationRouter();
-        mailboxDashBoardController.getSpamReportBanner();
-        if (PlatformInfo.isIOS) {
-          _updateMailboxIdsBlockNotificationToKeychain(success.mailboxList);
+    viewState.value.fold(
+      (failure) {
+        if (failure is GetAllMailboxFailure) {
+          mailboxDashBoardController.updateRefreshAllMailboxState(Left(RefreshAllMailboxFailure()));
         }
-      } else if (success is RefreshChangesAllMailboxSuccess) {
-        _selectSelectedMailboxDefault();
-        mailboxDashBoardController.refreshSpamReportBanner();
+      },
+      (success) {
+        if (success is GetAllMailboxSuccess) {
+          mailboxDashBoardController.updateRefreshAllMailboxState(Right(RefreshAllMailboxSuccess()));
+          _handleCreateDefaultFolderIfMissing(mailboxDashBoardController.mapDefaultMailboxIdByRole);
+          _handleDataFromNavigationRouter();
+          mailboxDashBoardController.getSpamReportBanner();
+          if (PlatformInfo.isIOS) {
+            _updateMailboxIdsBlockNotificationToKeychain(success.mailboxList);
+          }
+        } else if (success is RefreshChangesAllMailboxSuccess) {
+          _selectSelectedMailboxDefault();
+          mailboxDashBoardController.refreshSpamReportBanner();
 
-        if (_newFolderId != null) {
-          _redirectToNewFolder();
+          if (_newFolderId != null) {
+            _redirectToNewFolder();
+          }
         }
-      }
-    });
+      });
   }
 
   void _registerObxStreamListener() {
@@ -304,6 +314,9 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         _disableAllSearchEmail();
         _switchBackToMailboxDefault();
         mailboxDashBoardController.clearMailboxUIAction();
+      } else if (action is RefreshAllMailboxAction) {
+        refreshAllMailbox();
+        mailboxDashBoardController.clearMailboxUIAction();
       }
     });
   }
@@ -325,6 +338,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     final accountId = mailboxDashBoardController.accountId.value;
     if (session != null && accountId != null) {
       consumeState(getAllMailboxInteractor!.execute(session, accountId));
+    } else {
+      consumeState(Stream.value(Left(GetAllMailboxFailure(NotFoundSessionException()))));
     }
   }
   

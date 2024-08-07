@@ -27,3 +27,5 @@ class CloseEmailDetailedViewAction extends EmailUIAction {}
 class HideEmailContentViewAction extends EmailUIAction {}
 
 class ShowEmailContentViewAction extends EmailUIAction {}
+
+class RefreshAllEmailAction extends EmailUIAction {}
