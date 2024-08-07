@@ -470,6 +470,7 @@ class IdentityCreatorController extends BaseController {
   void closeView(BuildContext context) {
     isCompressingInlineImage.value = false;
     clearFocusEditor(context);
+    publicAssetController?.discardChanges();
     popBack();
   }
 
