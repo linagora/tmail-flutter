@@ -36,6 +36,8 @@ extension EmailExtension on Email {
     return listUnsubscribe?.value ?? '';
   }
 
+  bool get hasRequestReadReceipt => headers.readReceiptHasBeenRequested;
+
   bool get hasListUnsubscribe => listUnsubscribe.isNotEmpty;
 
   bool hasReadReceipt(Map<MailboxId, PresentationMailbox> mapMailbox) {
