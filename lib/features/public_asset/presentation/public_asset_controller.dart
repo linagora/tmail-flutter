@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/public_asset/domain/state/create_public_a
 import 'package:tmail_ui_user/features/public_asset/domain/usecase/create_public_asset_interactor.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/utils/identity_creator_constants.dart';
+import 'package:tmail_ui_user/features/public_asset/domain/usecase/delete_public_assets_interactor.dart';
 import 'package:tmail_ui_user/features/public_asset/presentation/model/public_asset_arguments.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/platform_file_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
@@ -33,11 +34,13 @@ class PublicAssetController extends BaseController {
   PublicAssetController(
     this._uploadAttachmentInteractor,
     this._createPublicAssetInteractor,
+    this._deletePublicAssetsInteractor,
     {required this.arguments}
   );
 
   final UploadAttachmentInteractor _uploadAttachmentInteractor;
   final CreatePublicAssetInteractor _createPublicAssetInteractor;
+  final DeletePublicAssetsInteractor _deletePublicAssetsInteractor;
   final PublicAssetArguments? arguments;
 
   List<PublicAssetId> preExistingPublicAssetIds = [];

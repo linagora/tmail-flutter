@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/public_asset/data/datasource_impl/remote_
 import 'package:tmail_ui_user/features/public_asset/data/network/public_asset_api.dart';
 import 'package:tmail_ui_user/features/public_asset/data/repository/public_asset_repository_impl.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/repository/public_asset_repository.dart';
+import 'package:tmail_ui_user/features/public_asset/domain/usecase/delete_public_assets_interactor.dart';
 import 'package:tmail_ui_user/features/public_asset/presentation/model/public_asset_arguments.dart';
 import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_controller.dart';
 import 'package:tmail_ui_user/features/upload/data/datasource/attachment_upload_datasource.dart';
