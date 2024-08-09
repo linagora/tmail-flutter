@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widg
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_banner_widget.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
@@ -68,7 +69,7 @@ class ThreadView extends GetWidget<ThreadController>
                         ... [
                           Obx(() {
                             return AppBarThreadWidget(
-                              mailboxSelected: controller.currentMailbox,
+                              mailboxSelected: controller.selectedMailbox,
                               listEmailSelected: controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected,
                               selectMode: controller.mailboxDashBoardController.currentSelectMode.value,
                               filterOption: controller.mailboxDashBoardController.filterMessageOption.value,
@@ -654,17 +655,26 @@ class ThreadView extends GetWidget<ThreadController>
   Widget _buildEmptyEmail(BuildContext context) {
     return Obx(() => controller.viewState.value.fold(
       (failure) => const SizedBox.shrink(),
-      (success) => success is! LoadingState && success is! SearchingState
-        ? EmptyEmailsWidget(
-            key: const Key('empty_thread_view'),
-            title: _getMessageEmptyEmail(context),
-            iconSVG: controller.imagePaths.icEmptyEmail,
-            subTitle: _getSubMessageEmptyEmail(context),
-            onCreateFiltersActionCallback: controller.isNewFolderCreated
-              ? controller.goToCreateEmailRuleView
-              : null,
-          )
-        : const SizedBox.shrink())
+      (success) {
+        if (success is! GetAllEmailLoading && success is! SearchingState) {
+          if (success is GetAllEmailSuccess
+              && success.currentMailboxId != controller.selectedMailboxId) {
+            return const SizedBox.shrink();
+          } else {
+            return EmptyEmailsWidget(
+              key: const Key('empty_thread_view'),
+              title: _getMessageEmptyEmail(context),
+              iconSVG: controller.imagePaths.icEmptyEmail,
+              subTitle: _getSubMessageEmptyEmail(context),
+              onCreateFiltersActionCallback: controller.isNewFolderCreated
+                ? controller.goToCreateEmailRuleView
+                : null,
+            );
+          }
+        } else {
+          return const SizedBox.shrink();
+        }
+      })
     );
   }
 
