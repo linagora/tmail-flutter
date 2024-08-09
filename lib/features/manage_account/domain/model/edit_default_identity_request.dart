@@ -10,14 +10,13 @@ class EditDefaultIdentityRequest extends EditIdentityRequest {
     required super.identityId, 
     required super.identityRequest,
     required super.isDefaultIdentity,
-    this.oldDefaultIdentityIds
+    this.oldDefaultIdentityIds,
+    super.publicAssetsInIdentityArguments
   });
 
   @override
   List<Object?> get props => [
-    super.identityId, 
-    super.identityRequest, 
-    super.isDefaultIdentity,
+    ...super.props,
     oldDefaultIdentityIds
   ];
 }

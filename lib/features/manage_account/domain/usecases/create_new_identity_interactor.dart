@@ -21,7 +21,9 @@ class CreateNewIdentityInteractor {
     try {
       yield Right(CreateNewIdentityLoading());
       final newIdentity = await _identityRepository.createNewIdentity(session, accountId, identityRequest);
-      yield Right(CreateNewIdentitySuccess(newIdentity));
+      yield Right(CreateNewIdentitySuccess(
+        newIdentity,
+        publicAssetsInIdentityArguments: identityRequest.publicAssetsInIdentityArguments));
     } catch (exception) {
       yield Left(CreateNewIdentityFailure(exception));
     }
