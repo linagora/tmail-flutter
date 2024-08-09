@@ -10,12 +10,12 @@ class CreateNewDefaultIdentityRequest extends CreateNewIdentityRequest {
     super.creationId, 
     super.newIdentity, 
     {
-      this.oldDefaultIdentityIds
+      this.oldDefaultIdentityIds,
+      super.publicAssetsInIdentityArguments,
     });
 
   @override
   List<Object?> get props => [
-      super.creationId, 
-      super.newIdentity, 
+      ...super.props, 
       oldDefaultIdentityIds];
 }

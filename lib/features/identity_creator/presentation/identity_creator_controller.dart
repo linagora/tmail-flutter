@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
@@ -45,6 +46,10 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_id
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/utils/identity_utils.dart';
+import 'package:tmail_ui_user/features/public_asset/domain/model/public_assets_in_identity_arguments.dart';
+import 'package:tmail_ui_user/features/public_asset/presentation/model/public_asset_arguments.dart';
+import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_bindings.dart';
+import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_controller.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -83,6 +88,7 @@ class IdentityCreatorController extends BaseController {
   Session? session;
   Identity? identity;
   IdentityCreatorArguments? arguments;
+  PublicAssetController? publicAssetController;
 
   final GlobalKey htmlKey = GlobalKey();
   final htmlEditorMinHeight = 150;
@@ -131,8 +137,16 @@ class IdentityCreatorController extends BaseController {
       identity = arguments!.identity;
       actionType.value = arguments!.actionType;
       _checkDefaultIdentityIsSupported();
+      _checkPublicAssetCapability();
       _setUpValueFromIdentity();
       _getAllIdentities();
+    }
+  }
+
+  void _checkPublicAssetCapability() {
+    if (CapabilityIdentifier.jmapPublicAsset.isSupported(session!, accountId!)) {
+      PublicAssetBindings(PublicAssetArguments(session!, accountId!, identity: identity)).dependencies();
+      publicAssetController = Get.find<PublicAssetController>();
     }
   }
 
@@ -152,6 +166,8 @@ class IdentityCreatorController extends BaseController {
       richTextMobileTabletController?.onClose();
       richTextMobileTabletController = null;
     }
+    Get.delete<PublicAssetController>();
+    publicAssetController = null;
     super.onClose();
   }
 
@@ -186,6 +202,7 @@ class IdentityCreatorController extends BaseController {
       if (PlatformInfo.isWeb) {
         richTextWebController?.editorController.setText(arguments?.identity?.signatureAsString ?? '');
       }
+      publicAssetController?.getOldPublicAssetFromHtmlContent(arguments!.identity!.signatureAsString);
     }
   }
 
@@ -359,6 +376,13 @@ class IdentityCreatorController extends BaseController {
     final sortOrder = isDefaultIdentitySupported.isTrue
       ? UnsignedInt(isDefaultIdentity.value ? 0 : 100)
       : null;
+
+    final publicAssetsInIdentityArguments = PublicAssetsInIdentityArguments(
+      htmlSignature: signatureHtmlText ?? '',
+      identityActionType: actionType.value,
+      oldPublicAssetIds: List.from(publicAssetController?.oldPublicAssetIds ?? []),
+      newPublicAssetIds: List.from(publicAssetController?.newPublicAssetIds ?? []),
+    );
     
     final newIdentity = Identity(
       name: _nameIdentity,
@@ -374,12 +398,14 @@ class IdentityCreatorController extends BaseController {
       final identityRequest = CreateNewIdentityRequest(
         generateCreateId, 
         newIdentity,
+        publicAssetsInIdentityArguments: publicAssetsInIdentityArguments,
         isDefaultIdentity: isDefaultIdentity.value);
       popBack(result: identityRequest);
     } else {
       final identityRequest = EditIdentityRequest(
         identityId: identity!.id!,
         identityRequest: newIdentity.toIdentityRequest(),
+        publicAssetsInIdentityArguments: publicAssetsInIdentityArguments,
         isDefaultIdentity: isDefaultIdentity.value);
       popBack(result: identityRequest);
     }
@@ -452,6 +478,7 @@ class IdentityCreatorController extends BaseController {
   void closeView(BuildContext context) {
     isCompressingInlineImage.value = false;
     clearFocusEditor(context);
+    publicAssetController?.discardChanges();
     popBack();
   }
 
@@ -568,16 +595,7 @@ class IdentityCreatorController extends BaseController {
         logError("IdentityCreatorController::_insertInlineImage: context is unmounted");
       }
     } else {
-      if (PlatformInfo.isWeb) {
-        richTextWebController?.insertImageAsBase64(platformFile: file, maxWidth: maxWidth);
-      } else if (PlatformInfo.isMobile) {
-        richTextMobileTabletController?.insertImageData(platformFile: file, maxWidth: maxWidth);
-        if (file.path != null) {
-          _deleteCompressedFileOnMobile(file.path!);
-        }
-      } else {
-        logError("IdentityCreatorController::_insertInlineImage: Platform not supported");
-      }
+      publicAssetController?.uploadFileToBlob(file);
     }
   }
 
@@ -641,18 +659,6 @@ class IdentityCreatorController extends BaseController {
 
     log('IdentityCreatorController::_saveCompressedFileOnMobile: compressedFilePath: $compressedFilePath');
     return compressedFilePath;
-  }
-
-  Future<void> _deleteCompressedFileOnMobile(String filePath) async {
-    log('IdentityCreatorController::_deleteCompressedFileOnMobile: filePath: $filePath');
-    try {
-      final File file = File(filePath);
-      if (await file.exists() && file.path.contains(IdentityCreatorConstants.prefixCompressedInlineImageTemp)) {
-        await file.delete();
-      }
-    } catch (e) {
-      logError('IdentityCreatorController::_deleteCompressedFileOnMobile: error: $e');
-    }
   }
 
   bool isMobile(BuildContext context) =>
