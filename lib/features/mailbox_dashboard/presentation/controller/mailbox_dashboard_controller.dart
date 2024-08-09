@@ -202,6 +202,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   IOSNotificationManager? _iosNotificationManager;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
+  final previousSelectedMailboxId = Rxn<MailboxId>(null);
   final selectedMailbox = Rxn<PresentationMailbox>();
   final selectedEmail = Rxn<PresentationEmail>();
   final accountId = Rxn<AccountId>();
@@ -587,6 +588,8 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   }
 
   void setSelectedMailbox(PresentationMailbox? newPresentationMailbox) {
+    previousSelectedMailboxId.value = selectedMailbox.value?.id;
+    log('MailboxDashBoardController::setSelectedMailbox: CURRENT_MAILBOX_ID = ${previousSelectedMailboxId.value?.asString}');
     log('MailboxDashBoardController::setSelectedMailbox: SELECTED_MAILBOX_ID = ${newPresentationMailbox?.id.asString} |  SELECTED_MAILBOX_NAME = ${newPresentationMailbox?.name?.name} | ');
     selectedMailbox.value = newPresentationMailbox;
   }
