@@ -7,4 +7,6 @@ extension ListExtension<T> on List<T>? {
     }
     return this;
   }
+
+  bool notContains(T value) => this?.contains(value) != true;
 }

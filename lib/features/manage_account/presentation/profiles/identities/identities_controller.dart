@@ -3,11 +3,13 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -31,6 +33,11 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/id
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/delete_identity_dialog_builder.dart';
+import 'package:tmail_ui_user/features/public_asset/domain/model/public_assets_in_identity_arguments.dart';
+import 'package:tmail_ui_user/features/public_asset/domain/state/clean_up_public_assets_state.dart';
+import 'package:tmail_ui_user/features/public_asset/domain/usecase/clean_up_public_assets_interactor.dart';
+import 'package:tmail_ui_user/features/public_asset/presentation/clean_up_public_assets_interactor_bindings.dart';
+import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
@@ -51,6 +58,8 @@ class IdentitiesController extends BaseController {
   final identitySelected = Rxn<Identity>();
   final signatureSelected = Rxn<String>();
   final listAllIdentities = <Identity>[].obs;
+
+  PublicAssetsInIdentityArguments? _publicAssetsInIdentityArguments;
 
   IdentitiesController(
     this._getAllIdentitiesInteractor,
@@ -83,6 +92,8 @@ class IdentitiesController extends BaseController {
       _editIdentitySuccess(success);
     } else if (success is TransformHtmlSignatureSuccess) {
       signatureSelected.value = success.signature;
+    } else if (success is CleanUpPublicAssetsSuccessState) {
+      _publicAssetsInIdentityArguments = null;
     }
   }
 
@@ -91,6 +102,8 @@ class IdentitiesController extends BaseController {
     super.handleFailureViewState(failure);
     if (failure is DeleteIdentityFailure) {
       _deleteIdentityFailure(failure);
+    } else if (failure is CleanUpPublicAssetsFailureState) {
+      _publicAssetsInIdentityArguments = null;
     }
   }
 
@@ -163,6 +176,7 @@ class IdentitiesController extends BaseController {
     AccountId accountId, 
     CreateNewIdentityRequest identityRequest
   ) async {
+    _publicAssetsInIdentityArguments = identityRequest.publicAssetsInIdentityArguments;
     if (identityRequest.isDefaultIdentity) {
       consumeState(_createNewDefaultIdentityInteractor.execute(session, accountId, identityRequest));
     } else {
@@ -177,6 +191,8 @@ class IdentitiesController extends BaseController {
         AppLocalizations.of(currentContext!).you_have_created_a_new_identity);
     }
 
+    _cleanUpPublicAssets(success.newIdentity.id);
+
     _refreshAllIdentities();
   }
 
@@ -186,6 +202,8 @@ class IdentitiesController extends BaseController {
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).you_have_created_a_new_default_identity);
     }
+
+    _cleanUpPublicAssets(success.newIdentity.id);
 
     _refreshAllIdentities();
   }
@@ -273,6 +291,7 @@ class IdentitiesController extends BaseController {
     AccountId accountId,
     EditIdentityRequest editIdentityRequest
   ) async {
+    _publicAssetsInIdentityArguments = editIdentityRequest.publicAssetsInIdentityArguments;
     if (editIdentityRequest.isDefaultIdentity) {
       consumeState(_editDefaultIdentityInteractor.execute(session, accountId, editIdentityRequest));
     } else {
@@ -287,8 +306,45 @@ class IdentitiesController extends BaseController {
         AppLocalizations.of(currentContext!).you_are_changed_your_identity_successfully);
     }
 
+    _cleanUpPublicAssets(success.identityId);
+
     _refreshAllIdentities();
   }
 
   bool get isSignatureShow => identitySelected.value != null;
+
+  void _injectCleanUpPublicAssetsInteractorBindings(Session? session, AccountId? accountId) {
+    try {
+      requireCapability(session!, accountId!, [CapabilityIdentifier.jmapPublicAsset]);
+      CleanUpPublicAssetsInteractorBindings().dependencies();
+    } catch(e) {
+      logError('$runtimeType::injectCleanUpPublicAssetsInteractorBindings(): exception: $e');
+    }
+  }
+
+  void _cleanUpPublicAssets(IdentityId? identityId) {
+    final session = accountDashBoardController.sessionCurrent;
+    final accountId = accountDashBoardController.accountId.value;
+
+    if (session == null
+      || accountId == null
+      || identityId == null
+      || _publicAssetsInIdentityArguments == null) return;
+
+    _injectCleanUpPublicAssetsInteractorBindings(session, accountId);
+    
+    final cleanUpPublicAssetsInteractor = getBinding<CleanUpPublicAssetsInteractor>();
+    if (cleanUpPublicAssetsInteractor == null) return;
+    consumeState(cleanUpPublicAssetsInteractor.execute(
+      session,
+      accountId,
+      identityId: identityId,
+      publicAssetsInIdentityArguments: _publicAssetsInIdentityArguments!));
+  }
+
+  @override
+  void onClose() {
+    CleanUpPublicAssetsInteractorBindings().close();
+    super.onClose();
+  }
 }
