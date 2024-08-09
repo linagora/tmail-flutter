@@ -79,6 +79,18 @@ flutter build web
 ```
 or you can find our images in: https://hub.docker.com/r/linagora/tmail-web
 
+## Integration Test
+1. Config Java enviroment (Java 22) with Maven
+2. Build docker image with name: `tmail-web:integration-test`
+```
+docker build -t tmail-web:integration-test .
+```
+3. Test
+```
+cd tmail_integration_test
+mvn test
+```
+
 ## FAQ
 
 ### **Why did you choose JMAP?**
