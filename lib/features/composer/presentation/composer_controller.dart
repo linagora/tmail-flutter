@@ -190,7 +190,6 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   ButtonState _sendButtonState = ButtonState.enabled;
 
   late Worker uploadInlineImageWorker;
-  late Worker dashboardViewStateWorker;
   late bool _isEmailBodyLoaded;
 
   ComposerController(
@@ -281,7 +280,6 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     ccEmailAddressController.dispose();
     bccEmailAddressController.dispose();
     uploadInlineImageWorker.dispose();
-    dashboardViewStateWorker.dispose();
     scrollController.dispose();
     scrollControllerEmailAddress.removeListener(_scrollControllerEmailAddressListener);
     scrollControllerEmailAddress.dispose();
