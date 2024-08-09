@@ -33,7 +33,9 @@ class CreateNewDefaultIdentityInteractor {
       final defaultRequest = _createNewIdentityDefault(identityRequest, listDefaultIdentities);
       
       final newIdentity = await _identityRepository.createNewIdentity(session, accountId, defaultRequest);
-      yield Right(CreateNewDefaultIdentitySuccess(newIdentity));
+      yield Right(CreateNewDefaultIdentitySuccess(
+        newIdentity,
+        publicAssetsInIdentityArguments: identityRequest.publicAssetsInIdentityArguments));
     } catch (exception) {
       yield Left(CreateNewDefaultIdentityFailure(exception));
     }

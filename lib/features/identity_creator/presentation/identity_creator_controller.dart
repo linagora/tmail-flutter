@@ -47,6 +47,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_id
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/utils/identity_utils.dart';
+import 'package:tmail_ui_user/features/public_asset/domain/model/public_assets_in_identity_arguments.dart';
 import 'package:tmail_ui_user/features/public_asset/presentation/model/public_asset_arguments.dart';
 import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_bindings.dart';
 import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_controller.dart';
@@ -377,6 +378,12 @@ class IdentityCreatorController extends BaseController {
     final sortOrder = isDefaultIdentitySupported.isTrue
       ? UnsignedInt(isDefaultIdentity.value ? 0 : 100)
       : null;
+
+    final publicAssetsInIdentityArguments = PublicAssetsInIdentityArguments(
+      htmlSignature: signatureHtmlText ?? '',
+      preExistingPublicAssetIds: List.from(publicAssetController?.preExistingPublicAssetIds ?? []),
+      newlyPickedPublicAssetIds: List.from(publicAssetController?.newlyPickedPublicAssetIds ?? []),
+    );
     
     final newIdentity = Identity(
       name: _nameIdentity,
@@ -392,12 +399,14 @@ class IdentityCreatorController extends BaseController {
       final identityRequest = CreateNewIdentityRequest(
         generateCreateId, 
         newIdentity,
+        publicAssetsInIdentityArguments: publicAssetsInIdentityArguments,
         isDefaultIdentity: isDefaultIdentity.value);
       popBack(result: identityRequest);
     } else {
       final identityRequest = EditIdentityRequest(
         identityId: identity!.id!,
         identityRequest: newIdentity.toIdentityRequest(),
+        publicAssetsInIdentityArguments: publicAssetsInIdentityArguments,
         isDefaultIdentity: isDefaultIdentity.value);
       popBack(result: identityRequest);
     }

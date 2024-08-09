@@ -4,7 +4,11 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/edit_identity
 
 class EditDefaultIdentityLoading extends UIState {}
 
-class EditDefaultIdentitySuccess extends EditIdentitySuccess {}
+class EditDefaultIdentitySuccess extends EditIdentitySuccess {
+  EditDefaultIdentitySuccess(
+    super.identityId,
+    {super.publicAssetsInIdentityArguments});
+}
 
 class EditDefaultIdentityFailure extends FeatureFailure {
 

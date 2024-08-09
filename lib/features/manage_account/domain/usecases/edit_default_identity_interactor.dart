@@ -41,7 +41,11 @@ class EditDefaultIdentityInteractor {
             .toList());
 
       final result = await _identityRepository.editIdentity(session, accountId, editDefaultRequest);
-      yield result ? Right(EditDefaultIdentitySuccess()) : Left(EditDefaultIdentityFailure(null));
+      yield result
+        ? Right(EditDefaultIdentitySuccess(
+          editDefaultRequest.identityId,
+          publicAssetsInIdentityArguments: editDefaultRequest.publicAssetsInIdentityArguments))
+        : Left(EditDefaultIdentityFailure(null));
     } catch (exception) {
       yield Left(EditDefaultIdentityFailure(exception));
     }

@@ -128,7 +128,7 @@ class PublicAssetApi {
     final notUpdatedPublicAssetIds = response.parse<SetPublicAssetResponse>(
         invocation.methodCallId,
         SetPublicAssetResponse.deserialize
-    )?.updated;
+    )?.notUpdated;
 
     if (notUpdatedPublicAssetIds?.isNotEmpty == true) {
       throw const CannotUpdatePublicAssetException();
