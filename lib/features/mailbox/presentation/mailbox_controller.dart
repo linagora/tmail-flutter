@@ -563,10 +563,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       mailboxDashBoardController.clearFilterMessageOption();
     }
     _disableAllSearchEmail();
-    _replaceBrowserHistory();
     mailboxDashBoardController.closeMailboxMenuDrawer();
     mailboxDashBoardController.setSelectedMailbox(presentationMailboxSelected);
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
+    _replaceBrowserHistory();
   }
 
   void _disableAllSearchEmail() {
