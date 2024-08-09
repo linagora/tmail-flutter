@@ -104,6 +104,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   bool canLoadMore = false;
   bool canSearchMore = false;
+  MailboxId? _currentMailboxId;
   jmap.State? _currentEmailState;
   final ScrollController listEmailController = ScrollController();
   final FocusNode focusNodeKeyBoard = FocusNode();
@@ -114,8 +115,6 @@ class ThreadController extends BaseController with EmailActionController {
   Session? get _session => mailboxDashBoardController.sessionCurrent;
 
   PresentationMailbox? get currentMailbox => mailboxDashBoardController.selectedMailbox.value;
-
-  MailboxId? get _currentMailboxId => currentMailbox?.mailboxId;
 
   search.SearchController get searchController => mailboxDashBoardController.searchController;
 
@@ -235,10 +234,17 @@ class ThreadController extends BaseController with EmailActionController {
 
   void _registerObxStreamListener() {
     ever(mailboxDashBoardController.selectedMailbox, (mailbox) {
-      log('ThreadController::_registerObxStreamListener:ever: SELECTED_MAILBOX_ID = ${mailbox?.id.asString} | SELECTED_MAILBOX_NAME = ${mailbox?.name?.name}');
-      _resetToOriginalValue();
-      if (mailbox != null) {
-        _getAllEmailAction();
+      log('ThreadController::_registerObxStreamListener: selectedMailbox: ${mailbox?.id} - ${mailbox?.name}');
+      log('ThreadController::_registerObxStreamListener: previousSelectedMailboxId: ${mailboxDashBoardController.previousSelectedMailboxId.value}');
+      if (mailbox is PresentationMailbox) {
+        if (mailbox.mailboxId != mailboxDashBoardController.previousSelectedMailboxId.value) {
+          _currentMailboxId = mailbox.id;
+          _resetToOriginalValue();
+          _getAllEmailAction();
+        }
+      } else if (mailbox == null) { // disable current mailbox when search active
+        _currentMailboxId = null;
+        _resetToOriginalValue();
       }
     });
 
@@ -432,7 +438,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   void _getAllEmailSuccess(GetAllEmailSuccess success) {
     if (success.currentMailboxId != currentMailbox?.mailboxId) {
-      log('ThreadController::_getAllEmailSuccess: SELECTED_MAILBOX_ID = ${success.currentMailboxId?.asString} | CURRENT_MAILBOX_ID = ${currentMailbox?.mailboxId?.asString} | CURRENT_MAILBOX_NAME = ${currentMailbox?.name?.name}');
+      log('ThreadController::_getAllEmailSuccess: GetAllForMailboxEd = ${success.currentMailboxId?.asString} | CURRENT_MAILBOX_ID = ${currentMailbox?.mailboxId?.asString} | CURRENT_MAILBOX_NAME = ${currentMailbox?.name?.name}');
       return;
     }
 
@@ -464,7 +470,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   void _refreshChangesAllEmailSuccess(RefreshChangesAllEmailSuccess success) {
     if (success.currentMailboxId != currentMailbox?.mailboxId) {
-      log('ThreadController::_refreshChangesAllEmailSuccess: SELECTED_MAILBOX_ID = ${success.currentMailboxId?.asString} | CURRENT_MAILBOX_ID = ${currentMailbox?.mailboxId?.asString} | CURRENT_MAILBOX_NAME = ${currentMailbox?.name?.name}');
+      log('ThreadController::_refreshChangesAllEmailSuccess: RefreshedMailboxId = ${success.currentMailboxId?.asString} | CURRENT_MAILBOX_ID = ${currentMailbox?.mailboxId?.asString} | CURRENT_MAILBOX_NAME = ${currentMailbox?.name?.name}');
       return;
     }
 
