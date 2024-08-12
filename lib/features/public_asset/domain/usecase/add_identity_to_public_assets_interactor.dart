@@ -31,7 +31,7 @@ class AddIdentityToPublicAssetsInteractor {
         publicAssetIds: publicAssetIds
       );
       if (publicAssets.isEmpty) {
-        yield Left(NotFoundAnyPublicAssetsFailureState());
+        yield Left(NotFoundAnyPublicAssetsFailureState(identityId: identityId));
       } else {
         final publicAssetsWithCurrentIdentity = publicAssets
           .map((publicAsset) => publicAsset.withAddedIdentityId(identityId))

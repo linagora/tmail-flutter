@@ -30,7 +30,7 @@ class RemoveIdentityFromPublicAssetsInteractor {
         publicAssetIds: publicAssetIds
       );
       if (publicAssets.isEmpty) {
-        yield Left(NotFoundAnyPublicAssetsFailureState());
+        yield Left(NotFoundAnyPublicAssetsFailureState(identityId: identityId));
       } else {
         final publicAssetsWithCurrentIdentity = publicAssets
           .map((publicAsset) => publicAsset.withRemovedIdentityId(identityId))
@@ -40,10 +40,12 @@ class RemoveIdentityFromPublicAssetsInteractor {
           accountId,
           publicAssets: publicAssetsWithCurrentIdentity
         );
-        yield Right(RemoveIdentityFromPublicAssetsSuccessState());
+        yield Right(RemoveIdentityFromPublicAssetsSuccessState(identityId: identityId));
       }
     } catch (exception) {
-      yield Left(RemoveIdentityFromPublicAssetsFailureState(exception: exception));
+      yield Left(RemoveIdentityFromPublicAssetsFailureState(
+        exception: exception,
+        identityId: identityId));
     }
   }
 }
