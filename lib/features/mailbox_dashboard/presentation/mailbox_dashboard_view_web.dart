@@ -427,9 +427,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   Widget _buildDownloadTaskStateWidget() {
     return Obx(() {
-      if (controller.downloadController.notEmptyListDownloadTask) {
-        final downloadTasks = controller.downloadController.listDownloadTaskState;
-
+      final listDownloadTasks = controller.downloadController.listDownloadTaskState;
+      if (listDownloadTasks.isNotEmpty) {
         return Align(
           alignment: Alignment.bottomCenter,
           child: Container(
@@ -439,7 +438,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             child: ListView.separated(
                 scrollDirection: Axis.horizontal,
                 padding: EdgeInsets.zero,
-                itemCount: downloadTasks.length,
+                itemCount: listDownloadTasks.length,
                 separatorBuilder: (context, index) =>
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 5),
@@ -449,7 +448,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       thickness: 0.2),
                   ),
                 itemBuilder: (context, index) =>
-                    DownloadTaskItemWidget(downloadTasks[index])
+                    DownloadTaskItemWidget(listDownloadTasks[index])
             ),
           ),
         );

@@ -2,6 +2,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/spam_banner/spam_report_banner_button_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/spam_banner/spam_report_banner_label_styles.dart';
@@ -18,7 +19,8 @@ class SpamReportBannerWebWidget extends StatelessWidget {
     final spamReportController = Get.find<SpamReportController>();
     final imagePaths = Get.find<ImagePaths>();
     return Obx(() {
-      if (!spamReportController.enableSpamReport || spamReportController.notShowSpamReportBanner) {
+      if (spamReportController.spamReportState.value == SpamReportState.disabled
+          || spamReportController.presentationSpamMailbox.value == null) {
         return const SizedBox(
           height: 8,
         );

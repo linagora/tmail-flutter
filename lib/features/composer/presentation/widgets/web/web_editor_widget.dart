@@ -85,7 +85,9 @@ class _WebEditorState extends State<WebEditorWidget> {
         }
       }
     };
-    window.addEventListener("message", _dropListener);
+    if (_dropListener != null) {
+      window.addEventListener("message", _dropListener!);
+    }
   }
 
   @override
@@ -108,8 +110,10 @@ class _WebEditorState extends State<WebEditorWidget> {
     _htmlEditorHeight.dispose();
     _editorController.evaluateJavascriptWeb(
       HtmlUtils.unregisterDropListener.name);
-    window.removeEventListener("message", _dropListener);
-    _dropListener = null;
+    if (_dropListener != null) {
+      window.removeEventListener("message", _dropListener!);
+      _dropListener = null;
+    }
     super.dispose();
   }
 

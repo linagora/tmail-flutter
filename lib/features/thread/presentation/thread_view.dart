@@ -248,13 +248,21 @@ class ThreadView extends GetWidget<ThreadController>
 
   Widget _buildListButtonSelectionForMobile(BuildContext context) {
     return Obx(() {
-      if ((PlatformInfo.isMobile || (PlatformInfo.isWeb && controller.isSelectionEnabled()
-            && controller.isSearchActive && !controller.responsiveUtils.isDesktop(context)))
-          && controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected.isNotEmpty) {
+      final listEmailSelected = controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected;
+      final currentSelectMode = controller.mailboxDashBoardController.currentSelectMode.value;
+      final isSearchEmailRunning = controller.searchController.simpleSearchIsActivated.isTrue
+          || controller.searchController.advancedSearchIsActivated.isTrue;
+
+      if (_validateDisplayBottomBarSelection(
+        context: context,
+        listEmailSelected: listEmailSelected,
+        isSearchEmailRunning: isSearchEmailRunning,
+        currentSelectMode: currentSelectMode
+      )) {
         return BottomBarThreadSelectionWidget(
           controller.imagePaths,
           controller.responsiveUtils,
-          controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected,
+          listEmailSelected,
           controller.mailboxDashBoardController.selectedMailbox.value,
           onPressEmailSelectionActionClick: (actionType, selectionEmail) =>
             controller.pressEmailSelectionAction(
@@ -267,6 +275,28 @@ class ThreadView extends GetWidget<ThreadController>
         return const SizedBox.shrink();
       }
     });
+  }
+
+  bool _validateDisplayBottomBarSelection({
+    required BuildContext context,
+    required List<PresentationEmail> listEmailSelected,
+    required bool isSearchEmailRunning,
+    required SelectMode currentSelectMode,
+  }) {
+    if (PlatformInfo.isMobile && listEmailSelected.isNotEmpty) {
+      return true;
+    }
+
+    if (PlatformInfo.isWeb
+        && currentSelectMode == SelectMode.ACTIVE
+        && isSearchEmailRunning
+        && !controller.responsiveUtils.isDesktop(context)
+        && listEmailSelected.isNotEmpty
+    ) {
+      return true;
+    }
+
+    return false;
   }
 
   Widget _buildFloatingButtonCompose(BuildContext context) {
@@ -394,7 +424,7 @@ class ThreadView extends GetWidget<ThreadController>
                 if (index == listPresentationEmail.length + 1) {
                   return _buildLoadMoreProgressBar(controller.loadingMoreStatus.value);
                 }
-                return  _buildEmailItem(
+                return _buildEmailItem(
                   context,
                   listPresentationEmail[index]);
               }),
@@ -487,6 +517,7 @@ class ThreadView extends GetWidget<ThreadController>
     final selectModeAll = controller.mailboxDashBoardController.currentSelectMode.value;
 
     return EmailTileBuilder(
+      key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
       presentationEmail: presentationEmail,
       selectAllMode: selectModeAll,
       isShowingEmailContent: isShowingEmailContent,
@@ -571,6 +602,7 @@ class ThreadView extends GetWidget<ThreadController>
         : null,
       confirmDismiss: (direction) => controller.swipeEmailAction(context, presentationEmail, direction),
       child: EmailTileBuilder(
+        key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
         presentationEmail: presentationEmail,
         selectAllMode: selectModeAll,
         isShowingEmailContent: isShowingEmailContent,
@@ -656,23 +688,23 @@ class ThreadView extends GetWidget<ThreadController>
     return Obx(() => controller.viewState.value.fold(
       (failure) => const SizedBox.shrink(),
       (success) {
-        if (success is! GetAllEmailLoading && success is! SearchingState) {
-          if (success is GetAllEmailSuccess
-              && success.currentMailboxId != controller.selectedMailboxId) {
-            return const SizedBox.shrink();
-          } else {
-            return EmptyEmailsWidget(
-              key: const Key('empty_thread_view'),
-              title: _getMessageEmptyEmail(context),
-              iconSVG: controller.imagePaths.icEmptyEmail,
-              subTitle: _getSubMessageEmptyEmail(context),
-              onCreateFiltersActionCallback: controller.isNewFolderCreated
-                ? controller.goToCreateEmailRuleView
-                : null,
-            );
-          }
-        } else {
+        if (success is GetAllEmailLoading || success is SearchingState) {
           return const SizedBox.shrink();
+        }
+
+        if (success is GetAllEmailSuccess
+            && success.currentMailboxId != controller.selectedMailboxId) {
+          return const SizedBox.shrink();
+        } else {
+          return EmptyEmailsWidget(
+            key: const Key('empty_thread_view'),
+            title: _getMessageEmptyEmail(context),
+            iconSVG: controller.imagePaths.icEmptyEmail,
+            subTitle: _getSubMessageEmptyEmail(context),
+            onCreateFiltersActionCallback: controller.isNewFolderCreated
+              ? controller.goToCreateEmailRuleView
+              : null,
+          );
         }
       })
     );

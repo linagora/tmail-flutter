@@ -440,7 +440,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   void _getAllEmailSuccess(GetAllEmailSuccess success) {
     if (success.currentMailboxId != selectedMailboxId) {
-      log('ThreadController::_getAllEmailSuccess: GetAllForMailboxEd = ${success.currentMailboxId?.asString} | SELECTED_MAILBOX_ID = ${selectedMailboxId?.asString} | SELECTED_MAILBOX_NAME = ${selectedMailbox?.name?.name}');
+      log('ThreadController::_getAllEmailSuccess: GetAllForMailboxId = ${success.currentMailboxId?.asString} | SELECTED_MAILBOX_ID = ${selectedMailboxId?.asString} | SELECTED_MAILBOX_NAME = ${selectedMailbox?.name?.name}');
       return;
     }
 
@@ -932,8 +932,6 @@ class ThreadController extends BaseController with EmailActionController {
       _initialMeasureBrowserHeight();
     }
   }
-
-  bool isSelectionEnabled() => mailboxDashBoardController.isSelectionEnabled();
 
   void pressEmailSelectionAction(BuildContext context, EmailActionType actionType, List<PresentationEmail> selectionEmail) {
     switch(actionType) {
