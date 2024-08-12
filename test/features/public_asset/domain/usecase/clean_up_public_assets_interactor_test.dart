@@ -60,7 +60,7 @@ void main() {
         .thenAnswer((_) => Stream.value(Right(DeletePublicAssetsSuccessState())));
       when(removeIdentityFromPublicAssetsInteractor
         .execute(any, any, identityId: anyNamed('identityId'), publicAssetIds: anyNamed('publicAssetIds')))
-        .thenAnswer((_) => Stream.value(Right(RemoveIdentityFromPublicAssetsSuccessState())));
+        .thenAnswer((_) => Stream.value(Right(RemoveIdentityFromPublicAssetsSuccessState(identityId: identityId))));
       when(addIdentityToPublicAssetsInteractor
         .execute(any, any, identityId: anyNamed('identityId'), publicAssetIds: anyNamed('publicAssetIds')))
         .thenAnswer((_) => Stream.value(Right(AddIdentityToPublicAssetsSuccessState())));
@@ -117,7 +117,7 @@ void main() {
         .thenAnswer((_) => Stream.value(Right(DeletePublicAssetsSuccessState())));
       when(removeIdentityFromPublicAssetsInteractor
         .execute(any, any, identityId: anyNamed('identityId'), publicAssetIds: anyNamed('publicAssetIds')))
-        .thenAnswer((_) => Stream.value(Right(RemoveIdentityFromPublicAssetsSuccessState())));
+        .thenAnswer((_) => Stream.value(Right(RemoveIdentityFromPublicAssetsSuccessState(identityId: identityId))));
       when(addIdentityToPublicAssetsInteractor
         .execute(any, any, identityId: anyNamed('identityId'), publicAssetIds: anyNamed('publicAssetIds')))
         .thenAnswer((_) => Stream.value(Right(AddIdentityToPublicAssetsSuccessState())));
@@ -173,7 +173,7 @@ void main() {
         .thenAnswer((_) => Stream.value(Right(DeletePublicAssetsSuccessState())));
       when(removeIdentityFromPublicAssetsInteractor
         .execute(any, any, identityId: anyNamed('identityId'), publicAssetIds: anyNamed('publicAssetIds')))
-        .thenAnswer((_) => Stream.value(Right(RemoveIdentityFromPublicAssetsSuccessState())));
+        .thenAnswer((_) => Stream.value(Right(RemoveIdentityFromPublicAssetsSuccessState(identityId: identityId))));
       when(addIdentityToPublicAssetsInteractor
         .execute(any, any, identityId: anyNamed('identityId'), publicAssetIds: anyNamed('publicAssetIds')))
         .thenAnswer((_) => Stream.value(Right(AddIdentityToPublicAssetsSuccessState())));
@@ -229,7 +229,7 @@ void main() {
         .thenAnswer((_) => Stream.value(Right(DeletePublicAssetsSuccessState())));
       when(removeIdentityFromPublicAssetsInteractor
         .execute(any, any, identityId: anyNamed('identityId'), publicAssetIds: anyNamed('publicAssetIds')))
-        .thenAnswer((_) => Stream.value(Right(RemoveIdentityFromPublicAssetsSuccessState())));
+        .thenAnswer((_) => Stream.value(Right(RemoveIdentityFromPublicAssetsSuccessState(identityId: identityId))));
       when(addIdentityToPublicAssetsInteractor
         .execute(any, any, identityId: anyNamed('identityId'), publicAssetIds: anyNamed('publicAssetIds')))
         .thenAnswer((_) => Stream.value(Right(AddIdentityToPublicAssetsSuccessState())));
@@ -286,7 +286,7 @@ void main() {
         .thenAnswer((_) => Stream.value(Right(DeletePublicAssetsSuccessState())));
       when(removeIdentityFromPublicAssetsInteractor
         .execute(any, any, identityId: anyNamed('identityId'), publicAssetIds: anyNamed('publicAssetIds')))
-        .thenAnswer((_) => Stream.value(Right(RemoveIdentityFromPublicAssetsSuccessState())));
+        .thenAnswer((_) => Stream.value(Right(RemoveIdentityFromPublicAssetsSuccessState(identityId: identityId))));
       when(addIdentityToPublicAssetsInteractor
         .execute(any, any, identityId: anyNamed('identityId'), publicAssetIds: anyNamed('publicAssetIds')))
         .thenAnswer((_) => Stream.value(Right(AddIdentityToPublicAssetsSuccessState())));
@@ -354,7 +354,7 @@ void main() {
         .thenAnswer((_) => Stream.value(Right(DeletePublicAssetsSuccessState())));
       when(removeIdentityFromPublicAssetsInteractor
         .execute(any, any, identityId: anyNamed('identityId'), publicAssetIds: anyNamed('publicAssetIds')))
-        .thenAnswer((_) => Stream.value(Right(RemoveIdentityFromPublicAssetsSuccessState())));
+        .thenAnswer((_) => Stream.value(Right(RemoveIdentityFromPublicAssetsSuccessState(identityId: identityId))));
       when(addIdentityToPublicAssetsInteractor
         .execute(any, any, identityId: anyNamed('identityId'), publicAssetIds: anyNamed('publicAssetIds')))
         .thenAnswer((_) => Stream.value(Right(AddIdentityToPublicAssetsSuccessState())));
@@ -422,7 +422,7 @@ void main() {
         .thenAnswer((_) => Stream.value(Right(DeletePublicAssetsSuccessState())));
       when(removeIdentityFromPublicAssetsInteractor
         .execute(any, any, identityId: anyNamed('identityId'), publicAssetIds: anyNamed('publicAssetIds')))
-        .thenAnswer((_) => Stream.value(Right(RemoveIdentityFromPublicAssetsSuccessState())));
+        .thenAnswer((_) => Stream.value(Right(RemoveIdentityFromPublicAssetsSuccessState(identityId: identityId))));
       when(addIdentityToPublicAssetsInteractor
         .execute(any, any, identityId: anyNamed('identityId'), publicAssetIds: anyNamed('publicAssetIds')))
         .thenAnswer((_) => Stream.value(Right(AddIdentityToPublicAssetsSuccessState())));

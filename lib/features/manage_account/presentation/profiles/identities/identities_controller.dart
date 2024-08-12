@@ -5,6 +5,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -33,8 +34,11 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/id
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/delete_identity_dialog_builder.dart';
+import 'package:tmail_ui_user/features/public_asset/domain/extensions/string_to_public_asset_extension.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/model/public_assets_in_identity_arguments.dart';
+import 'package:tmail_ui_user/features/public_asset/domain/state/remove_identity_from_public_assets_state.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/usecase/clean_up_public_assets_interactor.dart';
+import 'package:tmail_ui_user/features/public_asset/domain/usecase/remove_identity_from_public_assets_interactor.dart';
 import 'package:tmail_ui_user/features/public_asset/presentation/clean_up_public_assets_interactor_bindings.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -90,6 +94,8 @@ class IdentitiesController extends BaseController {
       _editIdentitySuccess(success);
     } else if (success is TransformHtmlSignatureSuccess) {
       signatureSelected.value = success.signature;
+    } else if (success is RemoveIdentityFromPublicAssetsSuccessState) {
+      _deleteIdentityAction(success.identityId);
     }
   }
 
@@ -98,6 +104,10 @@ class IdentitiesController extends BaseController {
     super.handleFailureViewState(failure);
     if (failure is DeleteIdentityFailure) {
       _deleteIdentityFailure(failure);
+    } else if (failure is RemoveIdentityFromPublicAssetsFailureState) {
+      _deleteIdentityAction(failure.identityId);
+    } else if (failure is NotFoundAnyPublicAssetsFailureState) {
+      _deleteIdentityAction(failure.identityId);
     }
   }
 
@@ -213,19 +223,53 @@ class IdentitiesController extends BaseController {
       DeleteIdentityDialogBuilder(
         responsiveUtils: responsiveUtils,
         imagePaths: imagePaths,
-        onDeleteIdentityAction: () => _deleteIdentityAction(identity),
+        onDeleteIdentityAction: () => _dereferencePublicAssets(identity),
       ),
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
     );
   }
 
-  void _deleteIdentityAction(Identity identity) {
+  void _deleteIdentityAction(IdentityId identityId) {
+    final session = accountDashBoardController.sessionCurrent;
+    final accountId = accountDashBoardController.accountId.value;
+    if (accountId != null && session != null) {
+      consumeState(_deleteIdentityInteractor.execute(session, accountId, identityId));
+    } else {
+      consumeState(Stream.value(Left(DeleteIdentityFailure(null))));
+    }
+  }
+
+  Future<void> _dereferencePublicAssets(
+    Identity identity
+  ) async {
     popBack();
 
     final session = accountDashBoardController.sessionCurrent;
     final accountId = accountDashBoardController.accountId.value;
-    if (accountId != null && session != null && identity.id != null) {
-      consumeState(_deleteIdentityInteractor.execute(session, accountId, identity.id!));
+    final identityId = identity.id;
+
+    final publicAssetIds = identity
+      .signatureAsString
+      .publicAssetIdsFromHtmlContent;
+    final removeIdentityFromPublicAssetsInteractor = getBinding<RemoveIdentityFromPublicAssetsInteractor>(
+      tag: BindingTag.cleanUpPublicAssetsInteractorBindingsTag);
+
+    // if there is no identityId, even the delete action will fail
+    if (identityId == null) return;
+
+    if (session == null
+      || accountId == null
+      || removeIdentityFromPublicAssetsInteractor == null
+      || publicAssetIds.isEmpty) 
+    {
+      consumeState(Stream.value(Left(RemoveIdentityFromPublicAssetsFailureState(identityId: identityId))));
+    } else {
+      consumeState(removeIdentityFromPublicAssetsInteractor.execute(
+        session,
+        accountId,
+        identityId: identityId,
+        publicAssetIds: publicAssetIds
+      ));
     }
   }
 
