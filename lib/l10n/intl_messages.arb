@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-08-05T16:49:32.139855",
+  "@@last_modified": "2024-08-12T18:11:14.971152",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -700,6 +700,12 @@
   },
   "renameFolder": "Rename folder",
   "@renameFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "renameFolderFailure": "Rename folder failure",
+  "@renameFolderFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

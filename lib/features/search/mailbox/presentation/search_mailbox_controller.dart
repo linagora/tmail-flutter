@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_name_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
@@ -120,6 +121,8 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       _handleSearchMailboxFailure(failure);
     } else if (failure is CreateNewMailboxFailure) {
       _createNewMailboxFailure(failure);
+    } else if (failure is RenameMailboxFailure) {
+      _renameMailboxFailure(failure);
     }
   }
 
@@ -703,6 +706,19 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       var messageError = AppLocalizations.of(currentContext!).createNewFolderFailure;
       if (exception is ErrorMethodResponse) {
         messageError = exception.description ?? AppLocalizations.of(currentContext!).createNewFolderFailure;
+      }
+      appToast.showToastErrorMessage(currentOverlayContext!, messageError);
+    }
+  }
+
+  void _renameMailboxFailure(RenameMailboxFailure failure) {
+    if (currentOverlayContext != null && currentContext != null) {
+      final exception = failure.exception;
+      var messageError = AppLocalizations.of(currentContext!).renameFolderFailure;
+      if (exception is EmptyMailboxNameException) {
+        messageError = AppLocalizations.of(currentContext!).nameOfFolderIsRequired;
+      } else if (exception is ContainsInvalidCharactersMailboxNameException) {
+        messageError = AppLocalizations.of(currentContext!).folderNameCannotContainSpecialCharacters;
       }
       appToast.showToastErrorMessage(currentOverlayContext!, messageError);
     }
