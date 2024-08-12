@@ -12388,6 +12388,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.EmptyEmailsWidget.prototype = {
     build$1(context) {
       var t1, responsiveUtils, t2, t3, t4, t5, t6, t7, childWidget, _this = this, _null = null;
+      A.log("EmptyEmailsWidget::build:", C.Level_3);
       $.$get$Get();
       t1 = $.GetInstance__getInstance;
       if (t1 == null)
@@ -20501,26 +20502,38 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.ThreadView__buildEmptyEmail__closure0.prototype = {
     call$1(success) {
       var t1, t2, t3, t4, t5;
-      if (!(success instanceof A.LoadingState) && !(success instanceof A.SearchingState)) {
-        t1 = this.$this;
-        t2 = this.context;
-        t3 = t1._getMessageEmptyEmail$1(t2);
-        t4 = $.$get$GetWidget__cache();
-        A.Expando__checkType(t1);
-        t4 = t4._jsWeakMap;
-        t5 = A._instanceType(t1)._eval$1("GetWidget.S");
-        t5._as(t4.get(t1)).toString;
-        t2 = t1._getSubMessageEmptyEmail$1(t2);
-        A.Expando__checkType(t1);
-        if (t5._as(t4.get(t1)).get$isNewFolderCreated()) {
+      if (!(success instanceof A.GetAllEmailLoading) && !(success instanceof A.SearchingState)) {
+        if (success instanceof A.GetAllEmailSuccess) {
+          t1 = this.$this;
+          t2 = $.$get$GetWidget__cache();
           A.Expando__checkType(t1);
-          t1 = t5._as(t4.get(t1)).get$goToCreateEmailRuleView();
+          t1 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController.selectedMailbox.get$value(0);
+          t1 = t1 == null ? null : t1.id;
+          t1 = !J.$eq$(success.currentMailboxId, t1);
         } else
-          t1 = null;
-        t1 = new B.EmptyEmailsWidget(t3, "assets/images/ic_empty_email.svg", t2, t1, D.ValueKey_empty_thread_view);
+          t1 = false;
+        if (t1)
+          return C.SizedBox_0_0_null_null;
+        else {
+          t1 = this.$this;
+          t2 = this.context;
+          t3 = t1._getMessageEmptyEmail$1(t2);
+          t4 = $.$get$GetWidget__cache();
+          A.Expando__checkType(t1);
+          t4 = t4._jsWeakMap;
+          t5 = A._instanceType(t1)._eval$1("GetWidget.S");
+          t5._as(t4.get(t1)).toString;
+          t2 = t1._getSubMessageEmptyEmail$1(t2);
+          A.Expando__checkType(t1);
+          if (t5._as(t4.get(t1)).get$isNewFolderCreated()) {
+            A.Expando__checkType(t1);
+            t1 = t5._as(t4.get(t1)).get$goToCreateEmailRuleView();
+          } else
+            t1 = null;
+          return new B.EmptyEmailsWidget(t3, "assets/images/ic_empty_email.svg", t2, t1, D.ValueKey_empty_thread_view);
+        }
       } else
-        t1 = C.SizedBox_0_0_null_null;
-      return t1;
+        return C.SizedBox_0_0_null_null;
     },
     $signature: 67
   };
@@ -21753,5 +21766,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "LNvrSe50UIHuHZNmbUmEu2zgCxQ=");
+})($__dart_deferred_initializers__, "cyl7cPEVlLI0uzWOovZkFF+aXOE=");
 ;
