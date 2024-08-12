@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_name_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/rename_mailbox_state.dart';
@@ -24,7 +25,9 @@ class RenameMailboxInteractor {
         yield Left<Failure, Success>(RenameMailboxFailure(null));
       }
     } catch (e) {
-      yield Left<Failure, Success>(RenameMailboxFailure(e));
+      logError('RenameMailboxInteractor::execute(): error: $e');
+      final exception = SetMailboxNameException.detectMailboxNameException(e, request.mailboxId);
+      yield Left<Failure, Success>(RenameMailboxFailure(exception));
     }
   }
 }

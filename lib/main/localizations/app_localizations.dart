@@ -718,8 +718,14 @@ class AppLocalizations {
 
   String get renameFolder {
     return Intl.message(
-        'Rename folder',
-        name: 'renameFolder');
+      'Rename folder',
+      name: 'renameFolder');
+  }
+
+  String get renameFolderFailure {
+    return Intl.message(
+      'Rename folder failure',
+      name: 'renameFolderFailure');
   }
 
   String get this_field_cannot_be_blank {

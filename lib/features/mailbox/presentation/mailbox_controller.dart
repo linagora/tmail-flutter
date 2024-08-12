@@ -29,6 +29,7 @@ import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_sta
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_name_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
@@ -192,6 +193,8 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     super.handleFailureViewState(failure);
     if (failure is CreateNewMailboxFailure) {
       _createNewMailboxFailure(failure);
+    } else if (failure is RenameMailboxFailure) {
+      _renameMailboxFailure(failure);
     } else if (failure is DeleteMultipleMailboxFailure) {
       _deleteMailboxFailure(failure);
     } else if (failure is RefreshChangesAllMailboxFailure) {
@@ -627,6 +630,19 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       var messageError = AppLocalizations.of(currentContext!).createNewFolderFailure;
       if (exception is ErrorMethodResponse) {
         messageError = exception.description ?? AppLocalizations.of(currentContext!).createNewFolderFailure;
+      }
+      appToast.showToastErrorMessage(currentOverlayContext!, messageError);
+    }
+  }
+
+  void _renameMailboxFailure(RenameMailboxFailure failure) {
+    if (currentOverlayContext != null && currentContext != null) {
+      final exception = failure.exception;
+      var messageError = AppLocalizations.of(currentContext!).renameFolderFailure;
+      if (exception is EmptyMailboxNameException) {
+        messageError = AppLocalizations.of(currentContext!).nameOfFolderIsRequired;
+      } else if (exception is ContainsInvalidCharactersMailboxNameException) {
+        messageError = AppLocalizations.of(currentContext!).folderNameCannotContainSpecialCharacters;
       }
       appToast.showToastErrorMessage(currentOverlayContext!, messageError);
     }
