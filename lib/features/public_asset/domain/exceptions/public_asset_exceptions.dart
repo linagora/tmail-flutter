@@ -1,7 +1,3 @@
-class UnsupportedCapabilityException implements Exception {
-  const UnsupportedCapabilityException();
-}
-
 class CannotCreatePublicAssetException implements Exception {
   const CannotCreatePublicAssetException();
 }
