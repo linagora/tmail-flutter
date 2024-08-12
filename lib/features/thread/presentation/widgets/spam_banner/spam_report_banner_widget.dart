@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/spam_banner/spam_report_banner_button_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/spam_banner/spam_report_banner_styles.dart';
@@ -19,9 +20,9 @@ class SpamReportBannerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context){
-
     return Obx(() {
-      if (!spamReportController.enableSpamReport || spamReportController.notShowSpamReportBanner) {
+      if (spamReportController.spamReportState.value == SpamReportState.disabled
+          || spamReportController.presentationSpamMailbox.value == null) {
         return const SizedBox.shrink();
       }
       return Container(
