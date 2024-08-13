@@ -11557,6 +11557,22 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _buildListButtonSelectionForMobile$1(context) {
       return new A.Obx(new B.ThreadView__buildListButtonSelectionForMobile_closure(this, context), null);
     },
+    _validateDisplayBottomBarSelection$4$context$currentSelectMode$isSearchEmailRunning$listEmailSelected(context, currentSelectMode, isSearchEmailRunning, listEmailSelected) {
+      var t1;
+      if (currentSelectMode === C.SelectMode_0)
+        if (isSearchEmailRunning) {
+          t1 = $.$get$GetWidget__cache();
+          A.Expando__checkType(this);
+          A._instanceType(this)._eval$1("GetWidget.S")._as(t1._jsWeakMap.get(this)).toString;
+          t1 = !(A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx >= 1200) && listEmailSelected.length !== 0;
+        } else
+          t1 = false;
+      else
+        t1 = false;
+      if (t1)
+        return true;
+      return false;
+    },
     _buildFloatingButtonCompose$1(context) {
       var _this = this,
         t1 = $.$get$GetWidget__cache();
@@ -20114,7 +20130,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ThreadView__buildListButtonSelectionForMobile_closure.prototype = {
     call$0() {
-      var t3, listEmailSelected, currentSelectMode, isSearchEmailRunning, t4, t5,
+      var t3, listEmailSelected, currentSelectMode, isSearchEmailRunning, t4, t5, t6,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -20129,22 +20145,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         isSearchEmailRunning = t3._as(t2.get(t1)).EmailActionController_mailboxDashBoardController.searchController.advancedSearchIsActivated.get$value(0);
       } else
         isSearchEmailRunning = true;
-      if (currentSelectMode === C.SelectMode_0)
-        if (isSearchEmailRunning) {
-          A.Expando__checkType(t1);
-          t3._as(t2.get(t1)).toString;
-          t4 = !(A.InheritedModel_inheritFrom(this.context, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx >= 1200);
-        } else
-          t4 = false;
-      else
-        t4 = false;
-      if (t4 && listEmailSelected.length !== 0) {
+      t4 = this.context;
+      if (t1._validateDisplayBottomBarSelection$4$context$currentSelectMode$isSearchEmailRunning$listEmailSelected(t4, currentSelectMode, isSearchEmailRunning, listEmailSelected)) {
         A.Expando__checkType(t1);
-        t4 = t3._as(t2.get(t1)).EmailActionController_imagePaths;
+        t5 = t3._as(t2.get(t1)).EmailActionController_imagePaths;
         A.Expando__checkType(t1);
-        t5 = t3._as(t2.get(t1)).EmailActionController_responsiveUtils;
+        t6 = t3._as(t2.get(t1)).EmailActionController_responsiveUtils;
         A.Expando__checkType(t1);
-        return new B.BottomBarThreadSelectionWidget(t4, t5, listEmailSelected, t3._as(t2.get(t1)).EmailActionController_mailboxDashBoardController.selectedMailbox.get$value(0), new B.ThreadView__buildListButtonSelectionForMobile__closure(t1, this.context), null);
+        return new B.BottomBarThreadSelectionWidget(t5, t6, listEmailSelected, t3._as(t2.get(t1)).EmailActionController_mailboxDashBoardController.selectedMailbox.get$value(0), new B.ThreadView__buildListButtonSelectionForMobile__closure(t1, t4), null);
       } else
         return C.SizedBox_0_0_null_null;
     },
@@ -20497,38 +20505,37 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.ThreadView__buildEmptyEmail__closure0.prototype = {
     call$1(success) {
       var t1, t2, t3, t4, t5;
-      if (!(success instanceof A.GetAllEmailLoading) && !(success instanceof A.SearchingState)) {
-        if (success instanceof A.GetAllEmailSuccess) {
-          t1 = this.$this;
-          t2 = $.$get$GetWidget__cache();
-          A.Expando__checkType(t1);
-          t1 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController.selectedMailbox.get$value(0);
-          t1 = t1 == null ? null : t1.id;
-          t1 = !J.$eq$(success.currentMailboxId, t1);
-        } else
-          t1 = false;
-        if (t1)
-          return C.SizedBox_0_0_null_null;
-        else {
-          t1 = this.$this;
-          t2 = this.context;
-          t3 = t1._getMessageEmptyEmail$1(t2);
-          t4 = $.$get$GetWidget__cache();
-          A.Expando__checkType(t1);
-          t4 = t4._jsWeakMap;
-          t5 = A._instanceType(t1)._eval$1("GetWidget.S");
-          t5._as(t4.get(t1)).toString;
-          t2 = t1._getSubMessageEmptyEmail$1(t2);
-          A.Expando__checkType(t1);
-          if (t5._as(t4.get(t1)).get$isNewFolderCreated()) {
-            A.Expando__checkType(t1);
-            t1 = t5._as(t4.get(t1)).get$goToCreateEmailRuleView();
-          } else
-            t1 = null;
-          return new B.EmptyEmailsWidget(t3, "assets/images/ic_empty_email.svg", t2, t1, D.ValueKey_empty_thread_view);
-        }
-      } else
+      if (success instanceof A.GetAllEmailLoading || success instanceof A.SearchingState)
         return C.SizedBox_0_0_null_null;
+      if (success instanceof A.GetAllEmailSuccess) {
+        t1 = this.$this;
+        t2 = $.$get$GetWidget__cache();
+        A.Expando__checkType(t1);
+        t1 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController.selectedMailbox.get$value(0);
+        t1 = t1 == null ? null : t1.id;
+        t1 = !J.$eq$(success.currentMailboxId, t1);
+      } else
+        t1 = false;
+      if (t1)
+        return C.SizedBox_0_0_null_null;
+      else {
+        t1 = this.$this;
+        t2 = this.context;
+        t3 = t1._getMessageEmptyEmail$1(t2);
+        t4 = $.$get$GetWidget__cache();
+        A.Expando__checkType(t1);
+        t4 = t4._jsWeakMap;
+        t5 = A._instanceType(t1)._eval$1("GetWidget.S");
+        t5._as(t4.get(t1)).toString;
+        t2 = t1._getSubMessageEmptyEmail$1(t2);
+        A.Expando__checkType(t1);
+        if (t5._as(t4.get(t1)).get$isNewFolderCreated()) {
+          A.Expando__checkType(t1);
+          t1 = t5._as(t4.get(t1)).get$goToCreateEmailRuleView();
+        } else
+          t1 = null;
+        return new B.EmptyEmailsWidget(t3, "assets/images/ic_empty_email.svg", t2, t1, D.ValueKey_empty_thread_view);
+      }
     },
     $signature: 67
   };
@@ -21761,5 +21768,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "PusMWwcIMbP0grX6qoeVWhbvI9c=");
+})($__dart_deferred_initializers__, "5oeD+T55v8ZqUTHsoAsmwTwLvZI=");
 ;
