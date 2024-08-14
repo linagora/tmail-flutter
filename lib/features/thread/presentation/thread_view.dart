@@ -821,6 +821,7 @@ class ThreadView extends GetWidget<ThreadController>
     PresentationMailbox? mailboxContain
   ) {
     return PopupMenuItem(
+      enabled: false,
       padding: EdgeInsets.zero,
       child: popupItem(
         mailboxContain?.isSpam == true ? controller.imagePaths.icNotSpam : controller.imagePaths.icSpam,
@@ -849,6 +850,7 @@ class ThreadView extends GetWidget<ThreadController>
     PresentationMailbox? mailboxContain
   ) {
     return PopupMenuItem(
+      enabled: false,
       padding: EdgeInsets.zero,
       child: popupItem(
         controller.imagePaths.icOpenInNewTab,
@@ -872,6 +874,7 @@ class ThreadView extends GetWidget<ThreadController>
     PresentationEmail email
   ) {
     return PopupMenuItem(
+      enabled: false,
       padding: EdgeInsets.zero,
       child: popupItem(
         controller.imagePaths.icMailboxArchived,
