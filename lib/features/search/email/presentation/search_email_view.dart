@@ -386,6 +386,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   ) {
     return EmailReceiveTimeType.values
       .map((timeType) => PopupMenuItem(
+        enabled: false,
         padding: EdgeInsets.zero,
         child: EmailReceiveTimeActionTileWidget(
           receiveTimeSelected: receiveTimeSelected,
@@ -428,6 +429,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   ) {
     return EmailSortOrderType.values
       .map((sortType) => PopupMenuItem(
+        enabled: false,
         padding: EdgeInsets.zero,
         child: EmailSortByActionTitleWidget(
           sortType: sortType,
@@ -772,6 +774,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   List<PopupMenuEntry> _popupMenuActionTile(BuildContext context, PresentationEmail email) {
     return [
       PopupMenuItem(
+          enabled: false,
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: _markAsEmailSpamOrUnSpamAction(context, email)),
     ];
