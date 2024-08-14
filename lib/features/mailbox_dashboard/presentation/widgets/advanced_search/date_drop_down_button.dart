@@ -106,30 +106,33 @@ class DateDropDownButton extends StatelessWidget {
   ) {
     return DropdownMenuItem<EmailReceiveTimeType>(
       value: receiveTime,
-      child: PointerInterceptor(
-        child: Container(
-          color: Colors.transparent,
-          height: 44,
-          child: Row(children: [
-            Expanded(child: Text(
-              receiveTime.getTitle(context),
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.normal,
-                color: Colors.black
-              ),
-              maxLines: 1,
-              softWrap: CommonTextStyle.defaultSoftWrap,
-              overflow: CommonTextStyle.defaultTextOverFlow,
-            )),
-            if (receiveTime == receiveTimeSelected)
-              SvgPicture.asset(
-                imagePaths.icChecked,
-                width: 20,
-                height: 20,
-                fit: BoxFit.fill
-              )
-          ]),
+      child: Semantics(
+        excludeSemantics: true,
+        child: PointerInterceptor(
+          child: Container(
+            color: Colors.transparent,
+            height: 44,
+            child: Row(children: [
+              Expanded(child: Text(
+                receiveTime.getTitle(context),
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                  color: Colors.black
+                ),
+                maxLines: 1,
+                softWrap: CommonTextStyle.defaultSoftWrap,
+                overflow: CommonTextStyle.defaultTextOverFlow,
+              )),
+              if (receiveTime == receiveTimeSelected)
+                SvgPicture.asset(
+                  imagePaths.icChecked,
+                  width: 20,
+                  height: 20,
+                  fit: BoxFit.fill
+                )
+            ]),
+          ),
         ),
       ),
     );

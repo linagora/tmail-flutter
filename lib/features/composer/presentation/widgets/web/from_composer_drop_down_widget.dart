@@ -68,57 +68,60 @@ class FromComposerDropDownWidget extends StatelessWidget {
                   isExpanded: false,
                   items: items.map((item) => DropdownMenuItem<Identity>(
                     value: item,
-                    child: PointerInterceptor(
-                      child: Container(
-                        color: Colors.transparent,
-                        padding: FromComposerDropDownWidgetStyle.dropdownItemPadding,
-                        child: Row(
-                          children: [
-                            Container(
-                              width: FromComposerDropDownWidgetStyle.avatarSize,
-                              height: FromComposerDropDownWidgetStyle.avatarSize,
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: AppColor.avatarColor,
-                                border: Border.all(
-                                  color: AppColor.colorShadowBgContentEmail,
-                                  width: FromComposerDropDownWidgetStyle.avatarBorderWidth
-                                )
+                    child: Semantics(
+                      excludeSemantics: true,
+                      child: PointerInterceptor(
+                        child: Container(
+                          color: Colors.transparent,
+                          padding: FromComposerDropDownWidgetStyle.dropdownItemPadding,
+                          child: Row(
+                            children: [
+                              Container(
+                                width: FromComposerDropDownWidgetStyle.avatarSize,
+                                height: FromComposerDropDownWidgetStyle.avatarSize,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  color: AppColor.avatarColor,
+                                  border: Border.all(
+                                    color: AppColor.colorShadowBgContentEmail,
+                                    width: FromComposerDropDownWidgetStyle.avatarBorderWidth
+                                  )
+                                ),
+                                child: Text(
+                                  item.name!.isNotEmpty
+                                    ? item.name!.firstLetterToUpperCase
+                                    : item.email!.firstLetterToUpperCase,
+                                  style: FromComposerDropDownWidgetStyle.avatarTextStyle,
+                                ),
                               ),
-                              child: Text(
-                                item.name!.isNotEmpty
-                                  ? item.name!.firstLetterToUpperCase
-                                  : item.email!.firstLetterToUpperCase,
-                                style: FromComposerDropDownWidgetStyle.avatarTextStyle,
-                              ),
-                            ),
-                            const SizedBox(width: FromComposerDropDownWidgetStyle.dropdownItemSpace),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  if (item.name!.isNotEmpty)
-                                    Text(
-                                      item.name!,
-                                      maxLines: 1,
-                                      softWrap: CommonTextStyle.defaultSoftWrap,
-                                      overflow: CommonTextStyle.defaultTextOverFlow,
-                                      style: FromComposerDropDownWidgetStyle.dropdownItemTitleTextStyle,
-                                    ),
-                                  if (item.email!.isNotEmpty)
-                                    Text(
-                                      item.email!,
-                                      maxLines: 1,
-                                      softWrap: CommonTextStyle.defaultSoftWrap,
-                                      overflow: CommonTextStyle.defaultTextOverFlow,
-                                      style: FromComposerDropDownWidgetStyle.dropdownItemSubTitleTextStyle,
-                                    )
-                                ],
-                              ),
-                            )
-                          ],
+                              const SizedBox(width: FromComposerDropDownWidgetStyle.dropdownItemSpace),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    if (item.name!.isNotEmpty)
+                                      Text(
+                                        item.name!,
+                                        maxLines: 1,
+                                        softWrap: CommonTextStyle.defaultSoftWrap,
+                                        overflow: CommonTextStyle.defaultTextOverFlow,
+                                        style: FromComposerDropDownWidgetStyle.dropdownItemTitleTextStyle,
+                                      ),
+                                    if (item.email!.isNotEmpty)
+                                      Text(
+                                        item.email!,
+                                        maxLines: 1,
+                                        softWrap: CommonTextStyle.defaultSoftWrap,
+                                        overflow: CommonTextStyle.defaultTextOverFlow,
+                                        style: FromComposerDropDownWidgetStyle.dropdownItemSubTitleTextStyle,
+                                      )
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
                     ),

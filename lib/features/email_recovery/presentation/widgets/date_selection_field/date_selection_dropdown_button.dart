@@ -108,29 +108,32 @@ class DateSelectionDropDownButton extends StatelessWidget {
   ) {
     return DropdownMenuItem<EmailRecoveryTimeType>(
       value: recoveryTime,
-      child: PointerInterceptor(
-        child: Container(
-          color: Colors.transparent,
-          height: DateSelectionDropdownButtonStyles.height,
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  recoveryTime.getTitle(context),
-                  style: DateSelectionDropdownButtonStyles.selectedValueTexStyle,
-                  maxLines: 1,
-                  softWrap: CommonTextStyle.defaultSoftWrap,
-                  overflow: CommonTextStyle.defaultTextOverFlow,
-                )
-              ),
-              if (recoveryTime == recoveryTimeSelected)
-                SvgPicture.asset(
-                  imagePaths.icChecked,
-                  width: DateSelectionDropdownButtonStyles.checkedIconSize,
-                  height: DateSelectionDropdownButtonStyles.checkedIconSize,
-                  fit: BoxFit.fill
-                )
-            ]
+      child: Semantics(
+        excludeSemantics: true,
+        child: PointerInterceptor(
+          child: Container(
+            color: Colors.transparent,
+            height: DateSelectionDropdownButtonStyles.height,
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    recoveryTime.getTitle(context),
+                    style: DateSelectionDropdownButtonStyles.selectedValueTexStyle,
+                    maxLines: 1,
+                    softWrap: CommonTextStyle.defaultSoftWrap,
+                    overflow: CommonTextStyle.defaultTextOverFlow,
+                  )
+                ),
+                if (recoveryTime == recoveryTimeSelected)
+                  SvgPicture.asset(
+                    imagePaths.icChecked,
+                    width: DateSelectionDropdownButtonStyles.checkedIconSize,
+                    height: DateSelectionDropdownButtonStyles.checkedIconSize,
+                    fit: BoxFit.fill
+                  )
+              ]
+            ),
           ),
         ),
       ),
