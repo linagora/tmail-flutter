@@ -589,6 +589,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   ) {
     return EmailReceiveTimeType.values
       .map((receiveTime) => PopupMenuItem(
+        enabled: false,
         padding: EdgeInsets.zero,
         child: PopupItemNoIconWidget(
           receiveTime.getTitle(context),
@@ -607,6 +608,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   ) {
     return EmailSortOrderType.values
       .map((sortType) => PopupMenuItem(
+        enabled: false,
         padding: EdgeInsets.zero,
         child: PopupItemNoIconWidget(
           sortType.getTitle(context),
