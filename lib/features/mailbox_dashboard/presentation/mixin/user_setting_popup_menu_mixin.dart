@@ -42,6 +42,7 @@ mixin UserSettingPopupMenuMixin {
         ...[
           const PopupMenuDivider(height: 0.5),
           PopupMenuItem(
+            enabled: false,
             padding: EdgeInsets.zero,
             child: _settingAction(context, onSettingAction)
           ),
@@ -51,6 +52,7 @@ mixin UserSettingPopupMenuMixin {
         ...[
           const PopupMenuDivider(height: 0.5),
           PopupMenuItem(
+            enabled: false,
             padding: EdgeInsets.zero,
             child: _logoutAction(context, onLogoutAction)
           ),
