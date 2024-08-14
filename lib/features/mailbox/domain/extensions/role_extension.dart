@@ -15,7 +15,7 @@ extension RoleExtension on Role {
       return 'Drafts';
     } else if (this == PresentationMailbox.roleTrash) {
       return 'Trash';
-    } else if (this == PresentationMailbox.roleSpam) {
+    } else if (this == PresentationMailbox.roleSpam || this == PresentationMailbox.roleJunk) {
       return 'Spam';
     } else if (this == PresentationMailbox.roleTemplates) {
       return 'Templates';

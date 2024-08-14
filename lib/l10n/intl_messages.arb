@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-08-12T18:11:14.971152",
+  "@@last_modified": "2024-08-14T16:51:31.191735",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3978,6 +3978,18 @@
   },
   "sMimeBadSignatureMessage": "This message failed SMime signature verification.",
   "@sMimeBadSignatureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptySpamFolderFailed": "Empty spam folder failed",
+  "@emptySpamFolderFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAsSpamFailed": "Mark as spam failed",
+  "@markAsSpamFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

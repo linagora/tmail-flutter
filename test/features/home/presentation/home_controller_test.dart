@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
+import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import 'home_controller_test.mocks.dart';
@@ -53,6 +54,7 @@ import 'home_controller_test.mocks.dart';
   MockSpec<CachingManager>(),
   MockSpec<LanguageCacheManager>(),
   MockSpec<ApplicationManager>(),
+  MockSpec<ToastManager>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -80,6 +82,7 @@ void main() {
   late MockResponsiveUtils mockResponsiveUtils;
   late MockUuid mockUuid;
   late MockApplicationManager mockApplicationManager;
+  late MockToastManager mockToastManager;
 
   setUpAll(() {
     cleanupEmailCacheInteractor = MockCleanupEmailCacheInteractor();
@@ -106,6 +109,7 @@ void main() {
     mockResponsiveUtils = MockResponsiveUtils();
     mockUuid = MockUuid();
     mockApplicationManager = MockApplicationManager();
+    mockToastManager = MockToastManager();
 
     Get.put<GetSessionInteractor>(mockGetSessionInteractor);
     Get.put<GetAuthenticatedAccountInteractor>(mockGetAuthenticatedAccountInteractor);
@@ -127,6 +131,7 @@ void main() {
     Get.put<ResponsiveUtils>(mockResponsiveUtils);
     Get.put<Uuid>(mockUuid);
     Get.put<ApplicationManager>(mockApplicationManager);
+    Get.put<ToastManager>(mockToastManager);
     Get.testMode = true;
 
     homeController = HomeController(

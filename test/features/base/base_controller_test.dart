@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import 'base_controller_test.mocks.dart';
@@ -58,6 +59,7 @@ class SomeOtherException extends RemoteException {}
   MockSpec<ResponsiveUtils>(),
   MockSpec<Uuid>(),
   MockSpec<ApplicationManager>(),
+  MockSpec<ToastManager>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -75,6 +77,7 @@ void main() {
   late MockResponsiveUtils mockResponsiveUtils;
   late MockUuid mockUuid;
   late MockApplicationManager mockApplicationManager;
+  late MockToastManager mockToastManager;
 
   setUpAll(() {
     mockCachingManager = MockCachingManager();
@@ -89,6 +92,7 @@ void main() {
     mockResponsiveUtils = MockResponsiveUtils();
     mockUuid = MockUuid();
     mockApplicationManager = MockApplicationManager();
+    mockToastManager = MockToastManager();
 
     Get.put<CachingManager>(mockCachingManager);
     Get.put<LanguageCacheManager>(mockLanguageCacheManager);
@@ -106,6 +110,7 @@ void main() {
     Get.put<ResponsiveUtils>(mockResponsiveUtils);
     Get.put<Uuid>(mockUuid);
     Get.put<ApplicationManager>(mockApplicationManager);
+    Get.put<ToastManager>(mockToastManager);
     Get.testMode = true;
 
     mockBaseController = MockBaseController();

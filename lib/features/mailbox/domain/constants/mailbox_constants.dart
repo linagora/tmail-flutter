@@ -25,7 +25,7 @@ class MailboxConstants {
     PresentationMailbox.roleDrafts,
     PresentationMailbox.roleSent,
     PresentationMailbox.roleTrash,
-    PresentationMailbox.roleSpam,
+    PresentationMailbox.roleJunk,
     PresentationMailbox.roleTemplates,
   ];
 }

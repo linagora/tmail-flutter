@@ -4168,4 +4168,16 @@ class AppLocalizations {
       name: 'sMimeBadSignatureMessage',
     );
   }
+
+  String get emptySpamFolderFailed {
+    return Intl.message(''
+      'Empty spam folder failed',
+      name: 'emptySpamFolderFailed');
+  }
+
+  String get markAsSpamFailed {
+    return Intl.message(''
+      'Mark as spam failed',
+      name: 'markAsSpamFailed');
+  }
 }
