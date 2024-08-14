@@ -34,12 +34,15 @@ class DropDownMenuHeaderStyleWidget extends StatelessWidget {
           items: items
               .map((item) => DropdownMenuItem<HeaderStyleType>(
                     value: item,
-                    child: PointerInterceptor(
-                      child: Container(
-                        color: Colors.transparent,
-                        height: heightItem,
-                        alignment: Alignment.centerLeft,
-                        child: _buildItemDropdown(item),
+                    child: Semantics(
+                      excludeSemantics: true,
+                      child: PointerInterceptor(
+                        child: Container(
+                          color: Colors.transparent,
+                          height: heightItem,
+                          alignment: Alignment.centerLeft,
+                          child: _buildItemDropdown(item),
+                        ),
                       ),
                     ),
                   ))
