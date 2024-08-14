@@ -28,6 +28,7 @@ class AppGridDashboardIcon extends StatelessWidget {
         visible: isAppGridOpen,
         portalFollower: GestureDetector(
           behavior: HitTestBehavior.opaque,
+          excludeFromSemantics: true,
           onTap: appGridController.toggleAppGridDashboard
         ),
         child: PortalTarget(
