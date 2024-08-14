@@ -37,6 +37,7 @@ import 'package:tmail_ui_user/features/public_asset/domain/usecase/create_public
 import 'package:tmail_ui_user/features/public_asset/domain/usecase/delete_public_assets_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 import 'package:worker_manager/worker_manager.dart';
 
@@ -56,6 +57,7 @@ import 'identity_creator_controller_test.mocks.dart';
   MockSpec<ResponsiveUtils>(),
   MockSpec<Uuid>(),
   MockSpec<ApplicationManager>(),
+  MockSpec<ToastManager>(),
   // Identity creator controller mockspecs
   MockSpec<VerifyNameInteractor>(),
   MockSpec<GetAllIdentitiesInteractor>(),
@@ -95,6 +97,7 @@ void main() {
   late MockResponsiveUtils mockResponsiveUtils;
   late MockUuid mockUuid;
   late MockApplicationManager mockApplicationManager;
+  late MockToastManager mockToastManager;
 
   setUpAll(() {
     //mock base controller
@@ -110,6 +113,7 @@ void main() {
     mockResponsiveUtils = MockResponsiveUtils();
     mockUuid = MockUuid();
     mockApplicationManager = MockApplicationManager();
+    mockToastManager = MockToastManager();
 
     Get.put<CachingManager>(mockCachingManager);
     Get.put<LanguageCacheManager>(mockLanguageCacheManager);
@@ -127,6 +131,7 @@ void main() {
     Get.put<ResponsiveUtils>(mockResponsiveUtils);
     Get.put<Uuid>(mockUuid);
     Get.put<ApplicationManager>(mockApplicationManager);
+    Get.put<ToastManager>(mockToastManager);
 
     //mock identity creator controller
     mockVerifyNameInteractor = MockVerifyNameInteractor();

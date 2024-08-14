@@ -219,8 +219,10 @@ class RulesFilterCreatorController extends BaseMailboxController {
             listEmailRuleFilterActionSelected.add(newRuleFilterAction);
           }
           if (currentAction.appendIn.mailboxIds.isNotEmpty == true) {
+            final spamMailboxId = findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id
+              ?? findMailboxNodeByRole(PresentationMailbox.roleJunk)?.item.id;
             for (var mailboxId in currentAction.appendIn.mailboxIds) {
-              if (mailboxId == findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id) {
+              if (mailboxId == spamMailboxId) {
                 EmailRuleFilterAction? action = EmailRuleFilterAction.markAsSpam;
                 RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(action);
                 listEmailRuleFilterActionSelected.add(newRuleFilterAction);
@@ -266,8 +268,10 @@ class RulesFilterCreatorController extends BaseMailboxController {
   void _setUpMailboxSelected() {
     if (_currentTMailRule != null) {
       final mailboxIdsOfRule = _currentTMailRule!.action.appendIn.mailboxIds;
+      final spamMailboxId = findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id
+        ?? findMailboxNodeByRole(PresentationMailbox.roleJunk)?.item.id;
       for (var mailboxId in mailboxIdsOfRule) {
-        if (mailboxId != findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id) {
+        if (mailboxId == spamMailboxId) {
           final mailboxNode = findMailboxNodeById(mailboxId);
           if (mailboxNode != null) {
             mailboxSelected.value = mailboxNode.item;
@@ -482,7 +486,8 @@ class RulesFilterCreatorController extends BaseMailboxController {
         mailboxIds.add(ruleFilterAction.mailbox!.id);
       }
       if (ruleFilterAction.action is MarAsSpamActionArguments) {
-        MailboxId? spamMailboxId = findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id;
+        final spamMailboxId = findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id
+            ?? findMailboxNodeByRole(PresentationMailbox.roleJunk)?.item.id;
         if (spamMailboxId != null) {
           mailboxIds.add(spamMailboxId);
         }

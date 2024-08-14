@@ -26,6 +26,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
         case PresentationMailbox.trashRole:
           return AppLocalizations.of(context).trashMailboxDisplayName;
         case PresentationMailbox.spamRole:
+        case PresentationMailbox.junkRole:
           return AppLocalizations.of(context).spamMailboxDisplayName;
         case PresentationMailbox.templatesRole:
           return AppLocalizations.of(context).templatesMailboxDisplayName;
@@ -52,6 +53,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
         case PresentationMailbox.trashRole:
           return imagePaths.icMailboxTrash;
         case PresentationMailbox.spamRole:
+        case PresentationMailbox.junkRole:
           return imagePaths.icMailboxSpam;
         case PresentationMailbox.templatesRole:
           return imagePaths.icMailboxTemplate;

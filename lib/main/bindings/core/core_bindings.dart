@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
+import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 
 class CoreBindings extends Bindings {
@@ -48,6 +49,7 @@ class CoreBindings extends Bindings {
 
   void _bindingToast() {
     Get.put(AppToast());
+    Get.put(ToastManager(Get.find<AppToast>()));
   }
 
   void _bindingDeviceManager() {

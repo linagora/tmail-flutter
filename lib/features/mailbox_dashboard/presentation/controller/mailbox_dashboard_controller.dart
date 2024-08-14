@@ -70,13 +70,16 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/composer_ar
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
+import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/exceptions/spam_report_exception.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_app_dashboard_configuration_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composer_cache_state.dart';
@@ -405,6 +408,9 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
       _handleRestoreDeletedMessageFailed();
     } else if (failure is GetRestoredDeletedMessageFailure) {
       _handleRestoreDeletedMessageFailed();
+    } else if (failure is EmptySpamFolderFailure
+      || failure is MoveMultipleEmailToMailboxFailure) {
+      toastManager.showMessageFailure(failure);
     }
   }
 
@@ -571,6 +577,11 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
 
   MailboxId? getMailboxIdByRole(Role role) {
     return mapDefaultMailboxIdByRole[role];
+  }
+
+  MailboxId? get spamMailboxId {
+    return mapDefaultMailboxIdByRole[PresentationMailbox.roleJunk]
+      ?? mapDefaultMailboxIdByRole[PresentationMailbox.roleSpam];
   }
 
   void setMapDefaultMailboxIdByRole(Map<Role, MailboxId> newMapMailboxId) {
@@ -1106,34 +1117,83 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   }
 
   void moveSelectedMultipleEmailToSpam(List<PresentationEmail> listEmail, PresentationMailbox mailboxCurrent) {
-    final spamMailboxId = getMailboxIdByRole(PresentationMailbox.roleSpam);
-    if (accountId.value != null && spamMailboxId != null && sessionCurrent != null) {
-      _moveSelectedEmailMultipleToMailboxAction(
-        sessionCurrent!,
-        accountId.value!,
-        MoveToMailboxRequest(
-          {mailboxCurrent.id: listEmail.listEmailIds},
-          spamMailboxId,
+    if (accountId.value == null || sessionCurrent == null) {
+      consumeState(Stream.value(
+        Left(MoveMultipleEmailToMailboxFailure(
+          EmailActionType.moveToSpam,
           MoveAction.moving,
-          EmailActionType.moveToSpam)
-      );
+          NotFoundSessionException()
+        ))
+      ));
+      return;
     }
+
+    if (spamMailboxId == null) {
+      consumeState(Stream.value(
+        Left(MoveMultipleEmailToMailboxFailure(
+          EmailActionType.moveToSpam,
+          MoveAction.moving,
+          NotFoundSpamMailboxException()
+        ))
+      ));
+      return;
+    }
+
+    _moveSelectedEmailMultipleToMailboxAction(
+      sessionCurrent!,
+      accountId.value!,
+      MoveToMailboxRequest(
+        {mailboxCurrent.id: listEmail.listEmailIds},
+        spamMailboxId!,
+        MoveAction.moving,
+        EmailActionType.moveToSpam)
+    );
   }
 
   void unSpamSelectedMultipleEmail(List<PresentationEmail> listEmail) {
-    final spamMailboxId = getMailboxIdByRole(PresentationMailbox.roleSpam);
-    final inboxMailboxId = getMailboxIdByRole(PresentationMailbox.roleInbox);
-    if (inboxMailboxId != null && accountId.value != null && spamMailboxId != null && sessionCurrent != null) {
-      _moveSelectedEmailMultipleToMailboxAction(
-        sessionCurrent!,
-        accountId.value!,
-        MoveToMailboxRequest(
-          {spamMailboxId: listEmail.listEmailIds},
-          inboxMailboxId,
+    if (accountId.value == null || sessionCurrent == null) {
+      consumeState(Stream.value(
+        Left(MoveMultipleEmailToMailboxFailure(
+          EmailActionType.unSpam,
           MoveAction.moving,
-          EmailActionType.unSpam)
-      );
+          NotFoundSessionException()
+        ))
+      ));
+      return;
     }
+
+    if (spamMailboxId == null) {
+      consumeState(Stream.value(
+        Left(MoveMultipleEmailToMailboxFailure(
+          EmailActionType.unSpam,
+          MoveAction.moving,
+          NotFoundSpamMailboxException()
+        ))
+      ));
+      return;
+    }
+
+    final inboxMailboxId = getMailboxIdByRole(PresentationMailbox.roleInbox);
+    if (inboxMailboxId == null) {
+      consumeState(Stream.value(
+        Left(MoveMultipleEmailToMailboxFailure(
+          EmailActionType.unSpam,
+          MoveAction.moving,
+          NotFoundInboxMailboxException()
+        ))
+      ));
+      return;
+    }
+
+    _moveSelectedEmailMultipleToMailboxAction(
+      sessionCurrent!,
+      accountId.value!,
+      MoveToMailboxRequest(
+        {spamMailboxId!: listEmail.listEmailIds},
+        inboxMailboxId,
+        MoveAction.moving,
+        EmailActionType.unSpam)
+    );
   }
 
   void deleteSelectionEmailsPermanently(
@@ -2081,16 +2141,23 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   void emptySpamFolderAction({Function? onCancelSelectionEmail, MailboxId? spamFolderId}) {
     onCancelSelectionEmail?.call();
 
-    final spamMailboxId = spamFolderId ?? mapDefaultMailboxIdByRole[PresentationMailbox.roleSpam];
-    if (sessionCurrent != null && accountId.value != null && spamMailboxId != null) {
-      consumeState(
-        _emptySpamFolderInteractor.execute(
-          sessionCurrent!,
-          accountId.value!,
-          spamMailboxId
-        )
-      );
+    spamFolderId ??= spamMailboxId;
+
+    if (accountId.value == null || sessionCurrent == null) {
+      consumeState(Stream.value(Left(EmptySpamFolderFailure(NotFoundSessionException()))));
+      return;
     }
+
+    if (spamFolderId == null) {
+      consumeState(Stream.value(Left(EmptySpamFolderFailure(NotFoundSpamMailboxException()))));
+      return;
+    }
+
+    consumeState(_emptySpamFolderInteractor.execute(
+      sessionCurrent!,
+      accountId.value!,
+      spamFolderId
+    ));
   }
 
   void _emptySpamFolderSuccess(EmptySpamFolderSuccess success) {

@@ -72,7 +72,7 @@ mixin EmailActionController {
   void moveToSpam(PresentationEmail email, {PresentationMailbox? mailboxContain}) async {
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
-    final spamMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleSpam);
+    final spamMailboxId = mailboxDashBoardController.spamMailboxId;
 
     if (session != null && mailboxContain != null && accountId != null && spamMailboxId != null) {
       moveToSpamAction(
@@ -90,7 +90,7 @@ mixin EmailActionController {
   void unSpam(PresentationEmail email) async {
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
-    final spamMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleSpam);
+    final spamMailboxId = mailboxDashBoardController.spamMailboxId;
     final inboxMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleInbox);
 
     if (session != null && inboxMailboxId != null && accountId != null && spamMailboxId != null) {

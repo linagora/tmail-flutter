@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/public_asset/domain/usecase/delete_public
 import 'package:tmail_ui_user/features/public_asset/domain/usecase/remove_identity_from_public_assets_interactor.dart';
 import 'package:tmail_ui_user/features/public_asset/presentation/clean_up_public_assets_interactor_bindings.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import 'identities_controller_test.mocks.dart';
@@ -51,6 +52,7 @@ const fallbackGenerators = {
   MockSpec<ResponsiveUtils>(),
   MockSpec<Uuid>(),
   MockSpec<ApplicationManager>(),
+  MockSpec<ToastManager>(),
 
   // Identities controller mockspecs
   MockSpec<GetAllIdentitiesInteractor>(),
@@ -87,6 +89,7 @@ void main() {
   late MockResponsiveUtils mockResponsiveUtils;
   late MockUuid mockUuid;
   late MockApplicationManager mockApplicationManager;
+  late MockToastManager mockToastManager;
 
   setUpAll(() {
     //mock base controller
@@ -102,6 +105,7 @@ void main() {
     mockResponsiveUtils = MockResponsiveUtils();
     mockUuid = MockUuid();
     mockApplicationManager = MockApplicationManager();
+    mockToastManager = MockToastManager();
 
     Get.put<CachingManager>(mockCachingManager);
     Get.put<LanguageCacheManager>(mockLanguageCacheManager);
@@ -119,6 +123,7 @@ void main() {
     Get.put<ResponsiveUtils>(mockResponsiveUtils);
     Get.put<Uuid>(mockUuid);
     Get.put<ApplicationManager>(mockApplicationManager);
+    Get.put<ToastManager>(mockToastManager);
 
     // mock identities controller
     mockGetAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();

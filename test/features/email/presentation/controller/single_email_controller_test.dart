@@ -46,6 +46,7 @@ import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../fixtures/email_fixtures.dart';
@@ -89,6 +90,7 @@ const fallbackGenerators = {
   MockSpec<StoreEventAttendanceStatusInteractor>(),
   MockSpec<PrintUtils>(),
   MockSpec<ApplicationManager>(),
+  MockSpec<ToastManager>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -122,6 +124,7 @@ void main() {
   final storeEventAttendanceStatusInteractor = MockStoreEventAttendanceStatusInteractor();
   final printUtils = MockPrintUtils();
   final applicationManager = MockApplicationManager();
+  final mockToastManager = MockToastManager();
 
   late SingleEmailController singleEmailController;
 
@@ -156,6 +159,7 @@ void main() {
     Get.put<Uuid>(uuid);
     Get.put<PrintUtils>(printUtils);
     Get.put<ApplicationManager>(applicationManager);
+    Get.put<ToastManager>(mockToastManager);
 
     when(mailboxDashboardController.accountId).thenReturn(Rxn(testAccountId));
     when(uuid.v4()).thenReturn(testTaskId);

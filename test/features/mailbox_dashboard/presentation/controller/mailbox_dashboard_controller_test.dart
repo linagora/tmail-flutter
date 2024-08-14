@@ -92,6 +92,7 @@ import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
     if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
+import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import 'mailbox_dashboard_controller_test.mocks.dart';
@@ -168,6 +169,7 @@ const fallbackGenerators = {
   MockSpec<LanguageCacheManager>(),
   MockSpec<RemoveComposerCacheOnWebInteractor>(),
   MockSpec<ApplicationManager>(),
+  MockSpec<ToastManager>(),
   MockSpec<GetAllIdentitiesInteractor>(),
 ])
 void main() {
@@ -230,6 +232,7 @@ void main() {
   final responsiveUtils = MockResponsiveUtils();
   final uuid = MockUuid();
   final applicationManager = MockApplicationManager();
+  final mockToastManager = MockToastManager();
 
   // mock reloadable controller Get dependencies
   final getSessionInteractor = MockGetSessionInteractor();
@@ -271,76 +274,80 @@ void main() {
   final testMailboxId = MailboxId(Id('1'));
   final testAccountId = AccountId(Id('123'));
 
+  setUp(() {
+    Get.put<RemoveEmailDraftsInteractor>(removeEmailDraftsInteractor);
+    Get.put<EmailReceiveManager>(emailReceiveManager);
+    Get.put<DownloadController>(downloadController);
+    Get.put<AppGridDashboardController>(appGridDashboardController);
+    Get.put<SpamReportController>(spamReportController);
+    Get.put<NetworkConnectionController>(networkConnectionController);
+    Get.put<CachingManager>(cachingManager);
+    Get.put<LanguageCacheManager>(languageCacheManager);
+    Get.put<AuthorizationInterceptors>(authorizationInterceptors);
+    Get.put<AuthorizationInterceptors>(
+      authorizationInterceptors,
+      tag: BindingTag.isolateTag,
+    );
+    Get.put<DynamicUrlInterceptors>(dynamicUrlInterceptors);
+    Get.put<DeleteCredentialInteractor>(deleteCredentialInteractor);
+    Get.put<LogoutOidcInteractor>(logoutOidcInteractor);
+    Get.put<DeleteAuthorityOidcInteractor>(deleteAuthorityOidcInteractor);
+    Get.put<AppToast>(appToast);
+    Get.put<ImagePaths>(imagePaths);
+    Get.put<ResponsiveUtils>(responsiveUtils);
+    Get.put<Uuid>(uuid);
+    Get.put<ApplicationManager>(applicationManager);
+    Get.put<ToastManager>(mockToastManager);
+    Get.put<GetSessionInteractor>(getSessionInteractor);
+    Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
+    Get.put<UpdateAccountCacheInteractor>(updateAccountCacheInteractor);
+    Get.put<GetAllIdentitiesInteractor>(getAllIdentitiesInteractor);
+    Get.put<RemoveComposerCacheOnWebInteractor>(removeComposerCacheOnWebInteractor);
+
+    searchController = SearchController(
+      quickSearchEmailInteractor,
+      saveRecentSearchInteractor,
+      getAllRecentSearchLatestInteractor);
+    Get.put(searchController);
+
+    Get.testMode = true;
+
+    mailboxDashboardController = MailboxDashBoardController(
+      moveToMailboxInteractor,
+      deleteEmailPermanentlyInteractor,
+      markAsMailboxReadInteractor,
+      getEmailCacheOnWebInteractor,
+      markAsEmailReadInteractor,
+      markAsStarEmailInteractor,
+      markAsMultipleEmailReadInteractor,
+      markAsStarMultipleEmailInteractor,
+      moveMultipleEmailToMailboxInteractor,
+      emptyTrashFolderInteractor,
+      deleteMultipleEmailsPermanentlyInteractor,
+      getEmailByIdInteractor,
+      sendEmailInteractor,
+      storeSendingEmailInteractor,
+      updateSendingEmailInteractor,
+      getAllSendingEmailInteractor,
+      storeSessionInteractor,
+      emptySpamFolderInteractor,
+      deleteSendingEmailInteractor,
+      unsubscribeEmailInteractor,
+      restoreDeletedMessageInteractor,
+      getRestoredDeletedMessageInteractor,
+      removeComposerCacheOnWebInteractor,
+      getAllIdentitiesInteractor,
+    );
+  });
+
   group('search/sort/filter feature:', () {
     setUp(() {
       getEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
-
-      Get.put<RemoveEmailDraftsInteractor>(removeEmailDraftsInteractor);
-      Get.put<EmailReceiveManager>(emailReceiveManager);
-      Get.put<DownloadController>(downloadController);
-      Get.put<AppGridDashboardController>(appGridDashboardController);
-      Get.put<SpamReportController>(spamReportController);
-      Get.put<NetworkConnectionController>(networkConnectionController);
-      Get.put<CachingManager>(cachingManager);
-      Get.put<LanguageCacheManager>(languageCacheManager);
-      Get.put<AuthorizationInterceptors>(authorizationInterceptors);
-      Get.put<AuthorizationInterceptors>(
-        authorizationInterceptors,
-        tag: BindingTag.isolateTag,
-      );
-      Get.put<DynamicUrlInterceptors>(dynamicUrlInterceptors);
-      Get.put<DeleteCredentialInteractor>(deleteCredentialInteractor);
-      Get.put<LogoutOidcInteractor>(logoutOidcInteractor);
-      Get.put<DeleteAuthorityOidcInteractor>(deleteAuthorityOidcInteractor);
-      Get.put<AppToast>(appToast);
-      Get.put<ImagePaths>(imagePaths);
-      Get.put<ResponsiveUtils>(responsiveUtils);
-      Get.put<Uuid>(uuid);
-      Get.put<ApplicationManager>(applicationManager);
-      Get.put<GetSessionInteractor>(getSessionInteractor);
-      Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
-      Get.put<UpdateAccountCacheInteractor>(updateAccountCacheInteractor);
-      Get.put<GetAllIdentitiesInteractor>(getAllIdentitiesInteractor);
-      Get.put<RemoveComposerCacheOnWebInteractor>(removeComposerCacheOnWebInteractor);
-
-      Get.testMode = true;
 
       when(emailReceiveManager.pendingEmailAddressInfo).thenAnswer((_) => BehaviorSubject.seeded(null));
       when(emailReceiveManager.pendingEmailContentInfo).thenAnswer((_) => BehaviorSubject.seeded(null));
       when(emailReceiveManager.pendingFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
 
-      searchController = SearchController(
-        quickSearchEmailInteractor,
-        saveRecentSearchInteractor,
-        getAllRecentSearchLatestInteractor);
-      Get.put(searchController);
-
-      mailboxDashboardController = MailboxDashBoardController(
-        moveToMailboxInteractor,
-        deleteEmailPermanentlyInteractor,
-        markAsMailboxReadInteractor,
-        getEmailCacheOnWebInteractor,
-        markAsEmailReadInteractor,
-        markAsStarEmailInteractor,
-        markAsMultipleEmailReadInteractor,
-        markAsStarMultipleEmailInteractor,
-        moveMultipleEmailToMailboxInteractor,
-        emptyTrashFolderInteractor,
-        deleteMultipleEmailsPermanentlyInteractor,
-        getEmailByIdInteractor,
-        sendEmailInteractor,
-        storeSendingEmailInteractor,
-        updateSendingEmailInteractor,
-        getAllSendingEmailInteractor,
-        storeSessionInteractor,
-        emptySpamFolderInteractor,
-        deleteSendingEmailInteractor,
-        unsubscribeEmailInteractor,
-        restoreDeletedMessageInteractor,
-        getRestoredDeletedMessageInteractor,
-        removeComposerCacheOnWebInteractor,
-        getAllIdentitiesInteractor,
-      );
       Get.put(mailboxDashboardController);
       mailboxDashboardController.onReady();
 
@@ -482,5 +489,48 @@ void main() {
     });
 
     tearDown(Get.deleteAll);
+  });
+
+  group('spamMailboxId:test', () {
+    test('should returns Junk mailbox ID if it exists', () {
+      // Arrange
+      final spamMailboxId = MailboxId(Id('spam-id'));
+      final junkMailboxId = MailboxId(Id('junk-id'));
+      final mapDefaultMailboxIdByRole = {
+        PresentationMailbox.roleSpam: spamMailboxId,
+        PresentationMailbox.roleJunk: junkMailboxId,
+      };
+      mailboxDashboardController.setMapDefaultMailboxIdByRole(mapDefaultMailboxIdByRole);
+      // Act
+      final spamId = mailboxDashboardController.spamMailboxId;
+
+      // Assert
+      expect(spamId, equals(junkMailboxId));
+    });
+
+    test('should returns junk mailbox ID if spam ID does not exist', () {
+      // Arrange
+      final junkMailboxId = MailboxId(Id('junk-id'));
+      final mapDefaultMailboxIdByRole = {
+        PresentationMailbox.roleJunk: junkMailboxId,
+      };
+      mailboxDashboardController.setMapDefaultMailboxIdByRole(mapDefaultMailboxIdByRole);
+      // Act
+      final spamId = mailboxDashboardController.spamMailboxId;
+
+      // Assert
+      expect(spamId, equals(junkMailboxId));
+    });
+
+    test('should returns null if neither spam nor junk mailbox ID exists', () {
+      // Arrange
+      final mapDefaultMailboxIdByRole = <Role, MailboxId>{};
+      mailboxDashboardController.setMapDefaultMailboxIdByRole(mapDefaultMailboxIdByRole);
+      // Act
+      final spamId = mailboxDashboardController.spamMailboxId;
+
+      // Assert
+      expect(spamId, isNull);
+    });
   });
 }
