@@ -40,6 +40,7 @@ class _AppGridDashboardIconState extends State<AppGridDashboardIcon> {
           visible: isExpanded,
           portalFollower: GestureDetector(
             behavior: HitTestBehavior.opaque,
+            excludeFromSemantics: true,
             onTap: _toggleAppGridDashboard,
           ),
           child: PortalTarget(
