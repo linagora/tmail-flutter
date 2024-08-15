@@ -26,7 +26,11 @@ class GetAllIdentitiesInteractor {
       if (sortOrderIsSupported && identitiesResponse.identities != null) {
         _identityUtils.sortListIdentities(identitiesResponse.identities!);
       }
-      yield Right(GetAllIdentitiesSuccess(identitiesResponse.identities, identitiesResponse.state));
+      yield Right(GetAllIdentitiesSuccess(
+        identitiesResponse.identities
+          ?.where((identity) => identity.name?.trim().isNotEmpty == true)
+          .toList(),
+        identitiesResponse.state));
     } catch (exception) {
       yield Left(GetAllIdentitiesFailure(exception));
     }
