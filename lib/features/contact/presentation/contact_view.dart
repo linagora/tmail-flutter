@@ -22,7 +22,9 @@ class ContactView extends GetWidget<ContactController> {
         backgroundColor: Colors.black38,
         body: PointerInterceptor(
           child: GestureDetector(
-            onTap: () => FocusScope.of(context).unfocus(),
+            onTap: PlatformInfo.isWeb
+              ? null
+              : FocusScope.of(context).unfocus,
             child: SafeArea(
               bottom: false,
               left: false,
