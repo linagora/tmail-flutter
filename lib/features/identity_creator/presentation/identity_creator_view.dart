@@ -17,14 +17,16 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rich_text_composer/views/widgets/rich_text_keyboard_toolbar.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_button_mixin.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/local_file_drop_zone_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/toolbar_rich_text_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/identity_creator_controller.dart';
-import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/compress_image_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_drop_list_field_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_field_no_editable_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_input_field_builder.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/identity_input_with_drop_list_field_builder.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/insert_image_loading_indicator.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/widgets/set_default_identity_checkbox_builder.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -40,87 +42,126 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
 
   @override
   Widget build(BuildContext context) {
-    Widget bodyCreatorView = SingleChildScrollView(
-      controller: controller.scrollController,
-      physics: const ClampingScrollPhysics(),
-      child: Padding(
-        padding: const EdgeInsetsDirectional.symmetric(vertical: 12, horizontal: 24),
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          Obx(() => IdentityInputFieldBuilder(
-            AppLocalizations.of(context).name,
-            controller.errorNameIdentity.value,
-            AppLocalizations.of(context).required,
-            editingController: controller.inputNameIdentityController,
-            focusNode: controller.inputNameIdentityFocusNode,
-            isMandatory: true,
-            onChangeInputNameAction: (value) => controller.updateNameIdentity(context, value)
-          )),
-          const SizedBox(height: 24),
-          Obx(() {
-            if (controller.actionType.value == IdentityActionType.create) {
-              return IdentityDropListFieldBuilder(
-                controller.imagePaths,
-                AppLocalizations.of(context).email.inCaps,
-                controller.emailOfIdentity.value,
-                controller.listEmailAddressDefault,
-                onSelectItemDropList: (emailAddress) => controller.updateEmailOfIdentity(context, emailAddress)
-              );
-            } else {
-              return IdentityFieldNoEditableBuilder(
-                AppLocalizations.of(context).email.inCaps,
-                controller.emailOfIdentity.value
-              );
-            }
-          }),
-          const SizedBox(height: 24),
-          Obx(() => IdentityDropListFieldBuilder(
-            controller.imagePaths,
-            AppLocalizations.of(context).reply_to,
-            controller.replyToOfIdentity.value,
-            controller.listEmailAddressOfReplyTo,
-            onSelectItemDropList: (emailAddress) => controller.updaterReplyToOfIdentity(context, emailAddress)
-          )),
-          const SizedBox(height: 24),
-          Obx(() => IdentityInputWithDropListFieldBuilder(
-            AppLocalizations.of(context).bcc_to,
-            controller.errorBccIdentity.value,
-            controller.inputBccIdentityController,
-            focusNode: controller.inputBccIdentityFocusNode,
-            onSelectedSuggestionAction: (newEmailAddress) {
-              controller.inputBccIdentityController.text = newEmailAddress?.email ?? '';
-              controller.updateBccOfIdentity(newEmailAddress);
-            },
-            onChangeInputSuggestionAction: (pattern) {
-              controller.validateInputBccAddress(context, pattern);
-              if (pattern == null || pattern.trim().isEmpty) {
-                controller.updateBccOfIdentity(null);
+    Widget bodyCreatorView = NotificationListener<ScrollNotification>(
+      onNotification: (scrollInfo) {
+        if (scrollInfo is ScrollEndNotification &&
+            scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+          controller.clearFocusEditor(context);
+        }
+        return false;
+      },
+      child: SingleChildScrollView(
+        controller: controller.scrollController,
+        physics: const ClampingScrollPhysics(),
+        child: Padding(
+          padding: const EdgeInsetsDirectional.symmetric(vertical: 12, horizontal: 24),
+          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Obx(() => IdentityInputFieldBuilder(
+              AppLocalizations.of(context).name,
+              controller.errorNameIdentity.value,
+              AppLocalizations.of(context).required,
+              editingController: controller.inputNameIdentityController,
+              focusNode: controller.inputNameIdentityFocusNode,
+              isMandatory: true,
+              onChangeInputNameAction: (value) => controller.updateNameIdentity(context, value)
+            )),
+            const SizedBox(height: 24),
+            Obx(() {
+              if (controller.actionType.value == IdentityActionType.create) {
+                return IdentityDropListFieldBuilder(
+                  controller.imagePaths,
+                  AppLocalizations.of(context).email.inCaps,
+                  controller.emailOfIdentity.value,
+                  controller.listEmailAddressDefault,
+                  onSelectItemDropList: (emailAddress) => controller.updateEmailOfIdentity(context, emailAddress)
+                );
               } else {
-                controller.updateBccOfIdentity(EmailAddress(null, pattern));
+                return IdentityFieldNoEditableBuilder(
+                  AppLocalizations.of(context).email.inCaps,
+                  controller.emailOfIdentity.value
+                );
               }
-            },
-            onSuggestionCallbackAction: controller.getSuggestionEmailAddress
-          )),
-          const SizedBox(height: 32),
-          Text(AppLocalizations.of(context).signature,
-            style: const TextStyle(
-              fontWeight: FontWeight.normal,
-              fontSize: 14,
-              color: AppColor.colorContentEmail,
+            }),
+            const SizedBox(height: 24),
+            Obx(() => IdentityDropListFieldBuilder(
+              controller.imagePaths,
+              AppLocalizations.of(context).reply_to,
+              controller.replyToOfIdentity.value,
+              controller.listEmailAddressOfReplyTo,
+              onSelectItemDropList: (emailAddress) => controller.updaterReplyToOfIdentity(context, emailAddress)
+            )),
+            const SizedBox(height: 24),
+            Obx(() => IdentityInputWithDropListFieldBuilder(
+              AppLocalizations.of(context).bcc_to,
+              controller.errorBccIdentity.value,
+              controller.inputBccIdentityController,
+              focusNode: controller.inputBccIdentityFocusNode,
+              onSelectedSuggestionAction: (newEmailAddress) {
+                controller.inputBccIdentityController.text = newEmailAddress?.email ?? '';
+                controller.updateBccOfIdentity(newEmailAddress);
+              },
+              onChangeInputSuggestionAction: (pattern) {
+                controller.validateInputBccAddress(context, pattern);
+                if (pattern == null || pattern.trim().isEmpty) {
+                  controller.updateBccOfIdentity(null);
+                } else {
+                  controller.updateBccOfIdentity(EmailAddress(null, pattern));
+                }
+              },
+              onSuggestionCallbackAction: controller.getSuggestionEmailAddress
+            )),
+            const SizedBox(height: 32),
+            Text(AppLocalizations.of(context).signature,
+              style: const TextStyle(
+                fontWeight: FontWeight.normal,
+                fontSize: 14,
+                color: AppColor.colorContentEmail,
+              ),
             ),
-          ),
-          const SizedBox(height: 8),
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColor.colorInputBorderCreateMailbox),
+            const SizedBox(height: 8),
+            LayoutBuilder(
+              builder: (context, constraintsEditor) {
+                return Stack(
+                  children: [
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppColor.colorInputBorderCreateMailbox),
+                      ),
+                      padding: const EdgeInsetsDirectional.all(16),
+                      child: _buildSignatureHtmlTemplate(context),
+                    ),
+                    Obx(() {
+                      if (controller.draggableAppState.value == DraggableAppState.inActive) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return Positioned.fill(
+                        child: PointerInterceptor(
+                          child: LocalFileDropZoneWidget(
+                            imagePaths: controller.imagePaths,
+                            width: constraintsEditor.maxWidth,
+                            height: constraintsEditor.maxHeight,
+                            margin: EdgeInsets.zero,
+                            onLocalFileDropZoneListener: (details) =>
+                              controller.onLocalFileDropZoneListener(
+                                context: context,
+                                details: details,
+                                maxWidth: constraintsEditor.maxWidth,
+                              ),
+                          )
+                        ),
+                      );
+                    })
+                  ],
+                );
+              }
             ),
-            padding: const EdgeInsetsDirectional.all(16),
-            child: _buildSignatureHtmlTemplate(context),
-          ),
-          const SizedBox(height: 12),
-          if (controller.isMobile(context))
-            _buildActionButtonMobile(context)
-        ]),
+            const SizedBox(height: 12),
+            if (controller.isMobile(context))
+              _buildActionButtonMobile(context)
+          ]),
+        ),
       ),
     );
 
@@ -400,13 +441,9 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
   }
 
   Widget _buildSignatureHtmlTemplate(BuildContext context) {
-    final htmlEditor = PlatformInfo.isWeb 
-      ? _buildHtmlEditorWeb(context, controller.contentHtmlEditor ?? '')
-      : _buildHtmlEditor(context, initialContent: controller.contentHtmlEditor ?? '');
-
-    return Column(
-      children: [
-        if (PlatformInfo.isWeb)
+    if (PlatformInfo.isWeb) {
+      return Column(
+        children: [
           ToolbarRichTextWebBuilder(
             richTextWebController: controller.richTextWebController!,
             padding: const EdgeInsets.only(bottom: 12),
@@ -424,18 +461,34 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
               ),
             ]
           ),
-        Stack(
-          children: [
-            htmlEditor,
-            Obx(() => Center(
-              child: CompressImageLoadingBarWidget(
-                isCompressing: controller.isCompressingInlineImage.value,
-              ),
-            ))
-          ]
-        ),
-      ],
-    );
+          Stack(
+            children: [
+              _buildHtmlEditorWeb(
+                context,
+                controller.contentHtmlEditor),
+              Obx(() {
+                bool isInserting = controller.publicAssetController?.isUploading.isTrue == true
+                  || controller.isCompressingInlineImage.isTrue;
+                return InsertImageLoadingIndicator(isInserting: isInserting);
+              })
+            ]
+          ),
+        ],
+      );
+    } else {
+      return Stack(
+        children: [
+          _buildHtmlEditor(
+            context,
+            initialContent: controller.contentHtmlEditor),
+          Obx(() {
+            bool isInserting = controller.publicAssetController?.isUploading.isTrue == true
+              || controller.isCompressingInlineImage.isTrue;
+            return InsertImageLoadingIndicator(isInserting: isInserting);
+          })
+        ]
+      );
+    }
   }
 
   Widget _buildHtmlEditorWeb(BuildContext context, String initContent) {
@@ -447,6 +500,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
         hint: '',
         darkMode: false,
         initialText: initContent.isEmpty ? null : initContent,
+        disableDragAndDrop: true,
         customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context)),
       ),
       htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
@@ -463,9 +517,11 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
           }
         },
         onInit: () {
+          controller.richTextWebController?.editorController.setOnDragDropEvent();
           controller.richTextWebController?.editorController.setFullScreen();
           controller.updateContentHtmlEditor(initContent);
-        }, onFocus: () {
+        },
+        onFocus: () {
           FocusManager.instance.primaryFocus?.unfocus();
           Future.delayed(const Duration(milliseconds: 500), () {
             controller.richTextWebController?.editorController.setFocus();
@@ -473,7 +529,9 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
           controller.richTextWebController?.closeAllMenuPopup();
         },
         onChangeSelection: controller.richTextWebController?.onEditorSettingsChange,
-        onChangeCodeview: controller.updateContentHtmlEditor
+        onChangeCodeview: controller.updateContentHtmlEditor,
+        onDragEnter: controller.handleOnDragEnterSignatureEditorWeb,
+        onDragLeave: (_) {}
       ),
     );
   }

@@ -4180,4 +4180,11 @@ class AppLocalizations {
       'Mark as spam failed',
       name: 'markAsSpamFailed');
   }
+
+  String get canNotUploadFileToSignature {
+    return Intl.message(
+      'Can not upload this file to signature',
+      name: 'canNotUploadFileToSignature'
+    );
+  }
 }

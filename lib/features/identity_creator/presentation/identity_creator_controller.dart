@@ -3,12 +3,15 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'dart:typed_data';
 
+import 'package:collection/collection.dart';
+import 'package:core/presentation/extensions/list_nullable_extensions.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
@@ -32,7 +35,7 @@ import 'package:rich_text_composer/views/commons/constants.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
-import 'package:tmail_ui_user/features/identity_creator/presentation/extesions/size_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/utils/identity_creator_constants.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/email_address_validator.dart';
@@ -40,6 +43,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
@@ -51,12 +55,16 @@ import 'package:tmail_ui_user/features/public_asset/domain/model/public_assets_i
 import 'package:tmail_ui_user/features/public_asset/presentation/model/public_asset_arguments.dart';
 import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_bindings.dart';
 import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_controller.dart';
+import 'package:tmail_ui_user/features/upload/domain/extensions/file_info_extension.dart';
+import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
+import 'package:tmail_ui_user/features/upload/domain/extensions/list_platform_file_extensions.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html hide File;
 
-class IdentityCreatorController extends BaseController {
+class IdentityCreatorController extends BaseController with DragDropFileMixin {
 
   final VerifyNameInteractor _verifyNameInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
@@ -74,6 +82,7 @@ class IdentityCreatorController extends BaseController {
   final isDefaultIdentity = RxBool(false);
   final isDefaultIdentitySupported = RxBool(false);
   final isCompressingInlineImage = RxBool(false);
+  final draggableAppState = DraggableAppState.inActive.obs;
 
   final TextEditingController inputNameIdentityController = TextEditingController();
   final TextEditingController inputBccIdentityController = TextEditingController();
@@ -83,6 +92,10 @@ class IdentityCreatorController extends BaseController {
 
   RichTextMobileTabletController? richTextMobileTabletController;
   RichTextWebController? richTextWebController;
+  StreamSubscription<html.Event>? _subscriptionOnDragEnter;
+  StreamSubscription<html.Event>? _subscriptionOnDragOver;
+  StreamSubscription<html.Event>? _subscriptionOnDragLeave;
+  StreamSubscription<html.Event>? _subscriptionOnDrop;
 
   String? _nameIdentity;
   String? _contentHtmlEditor;
@@ -103,12 +116,21 @@ class IdentityCreatorController extends BaseController {
 
   void updateContentHtmlEditor(String? text) => _contentHtmlEditor = text;
 
-  String? get contentHtmlEditor {
+  String get contentHtmlEditor {
     if (_contentHtmlEditor != null) {
-      return _contentHtmlEditor;
+      return _contentHtmlEditor ?? '';
     } else {
-      return arguments?.identity?.signatureAsString;
+      return arguments?.identity?.signatureAsString ?? '';
     }
+  }
+
+  int get maxSizeUploadByBytes {
+    if (session == null || accountId == null) return 0;
+
+    return session!.getCapabilityProperties<CoreCapability>(
+      accountId!,
+      CapabilityIdentifier.jmapCore
+    )?.maxSizeUpload?.value.toInt() ?? 0;
   }
 
   IdentityCreatorController(
@@ -138,10 +160,14 @@ class IdentityCreatorController extends BaseController {
       session = arguments!.session;
       identity = arguments!.identity;
       actionType.value = arguments!.actionType;
+      if (actionType.value == IdentityActionType.create) {
+        isLoadSignatureCompleted = true;
+      }
       _checkDefaultIdentityIsSupported();
       _checkPublicAssetCapability();
       _setUpValueFromIdentity();
       _getAllIdentities();
+      _triggerBrowserEventListener();
     }
   }
 
@@ -149,6 +175,46 @@ class IdentityCreatorController extends BaseController {
     if (CapabilityIdentifier.jmapPublicAsset.isSupported(session!, accountId!)) {
       PublicAssetBindings(PublicAssetArguments(session!, accountId!, identity: identity)).dependencies();
       publicAssetController = Get.find<PublicAssetController>(tag: BindingTag.publicAssetBindingsTag);
+    }
+  }
+
+  void _triggerBrowserEventListener() {
+    _subscriptionOnDragEnter = html.window.onDragEnter.listen((event) {
+      event.preventDefault();
+
+      if (event.dataTransfer.types.validateFilesTransfer) {
+        draggableAppState.value = DraggableAppState.active;
+      }
+    });
+
+    _subscriptionOnDragOver = html.window.onDragOver.listen((event) {
+      event.preventDefault();
+
+      if (event.dataTransfer.types.validateFilesTransfer) {
+        draggableAppState.value = DraggableAppState.active;
+      }
+    });
+
+    _subscriptionOnDragLeave = html.window.onDragLeave.listen((event) {
+      event.preventDefault();
+
+      if (event.dataTransfer.types.validateFilesTransfer) {
+        draggableAppState.value = DraggableAppState.inActive;
+      }
+    });
+
+    _subscriptionOnDrop = html.window.onDrop.listen((event) {
+      event.preventDefault();
+
+      if (event.dataTransfer.types.validateFilesTransfer) {
+        draggableAppState.value = DraggableAppState.inActive;
+      }
+    });
+  }
+
+  void handleOnDragEnterSignatureEditorWeb(List<dynamic>? types) {
+    if (types.validateFilesTransfer) {
+      draggableAppState.value = DraggableAppState.active;
     }
   }
 
@@ -170,6 +236,10 @@ class IdentityCreatorController extends BaseController {
     }
     Get.delete<PublicAssetController>(tag: BindingTag.publicAssetBindingsTag);
     publicAssetController = null;
+    _subscriptionOnDragEnter?.cancel();
+    _subscriptionOnDragOver?.cancel();
+    _subscriptionOnDragLeave?.cancel();
+    _subscriptionOnDrop?.cancel();
     super.onClose();
   }
 
@@ -177,7 +247,7 @@ class IdentityCreatorController extends BaseController {
   void handleSuccessViewState(Success success) {
     super.handleSuccessViewState(success);
     if (success is GetAllIdentitiesSuccess) {
-      _getALlIdentitiesSuccess(success);
+      _getAllIdentitiesSuccess(success);
     }
   }
 
@@ -185,7 +255,7 @@ class IdentityCreatorController extends BaseController {
   void handleFailureViewState(Failure failure) {
     super.handleFailureViewState(failure);
     if (failure is GetAllIdentitiesFailure) {
-      _getALlIdentitiesFailure(failure);
+      _getAllIdentitiesFailure(failure);
     }
   }
 
@@ -218,7 +288,7 @@ class IdentityCreatorController extends BaseController {
     }
   }
 
-  void _getALlIdentitiesSuccess(GetAllIdentitiesSuccess success) {
+  void _getAllIdentitiesSuccess(GetAllIdentitiesSuccess success) {
     if (success.identities?.isNotEmpty == true) {
       listEmailAddressDefault.value = success.identities!
           .map((identity) => identity.toEmailAddressNoName())
@@ -236,7 +306,7 @@ class IdentityCreatorController extends BaseController {
     }
   }
 
-  void _getALlIdentitiesFailure(GetAllIdentitiesFailure failure) {
+  void _getAllIdentitiesFailure(GetAllIdentitiesFailure failure) {
     _setDefaultEmailAddressList();
   }
 
@@ -339,11 +409,11 @@ class IdentityCreatorController extends BaseController {
     bccOfIdentity.value = newEmailAddress;
   }
 
-  Future<String?> _getSignatureHtmlText() async {
+  Future<String> _getSignatureHtmlText() async {
     if (PlatformInfo.isWeb) {
-      return richTextWebController?.editorController.getText();
+      return (await richTextWebController?.editorController.getText()) ?? '';
     } else {
-      return richTextMobileTabletController?.richTextController.htmlEditorApi?.getText();
+      return (await richTextMobileTabletController?.richTextController.htmlEditorApi?.getText()) ?? '';
     }
   }
 
@@ -380,7 +450,7 @@ class IdentityCreatorController extends BaseController {
       : null;
 
     final publicAssetsInIdentityArguments = PublicAssetsInIdentityArguments(
-      htmlSignature: signatureHtmlText ?? '',
+      htmlSignature: signatureHtmlText,
       preExistingPublicAssetIds: List.from(publicAssetController?.preExistingPublicAssetIds ?? []),
       newlyPickedPublicAssetIds: List.from(publicAssetController?.newlyPickedPublicAssetIds ?? []),
     );
@@ -390,7 +460,7 @@ class IdentityCreatorController extends BaseController {
       email: emailOfIdentity.value?.email,
       replyTo: replyToAddress,
       bcc: bccAddress,
-      htmlSignature: Signature(signatureHtmlText ?? ''),
+      htmlSignature: Signature(signatureHtmlText),
       sortOrder: sortOrder);
 
     final generateCreateId = Id(uuid.v1());
@@ -470,6 +540,8 @@ class IdentityCreatorController extends BaseController {
   }
 
   void clearFocusEditor(BuildContext context) {
+    inputNameIdentityFocusNode.unfocus();
+    inputBccIdentityFocusNode.unfocus();
     if (PlatformInfo.isMobile) {
       richTextMobileTabletController?.richTextController.htmlEditorApi?.unfocus();
     }
@@ -549,47 +621,31 @@ class IdentityCreatorController extends BaseController {
       logError("IdentityCreatorController::pickImage: context is unmounted");
     }
   }
-
-  bool _isExceedMaxSizeInlineImage(int fileSize) =>
-    fileSize > IdentityCreatorConstants.maxKBSizeIdentityInlineImage.toBytes;
   
   bool _isExceedMaxUploadSize(int fileSize) {
-    final coreCapability = session?.getCapabilityProperties<CoreCapability>(
-      accountId!,
-      CapabilityIdentifier.jmapCore
-    );
-
-    int maxUploadSize = coreCapability?.maxSizeUpload?.value.toInt() ?? 0;
-
-    return fileSize > maxUploadSize;
+    return fileSize > maxSizeUploadByBytes;
   }
 
-  void _insertInlineImage(
+  Future<void> _insertInlineImage(
     BuildContext context,
     PlatformFile platformFile,
-    int maxWidth
+    int maxWidth,
+    {PlatformFile? compressedFile}
   ) async {
-    final PlatformFile file;
-    try {
-      isCompressingInlineImage.value = true;
-      file = await _compressImage(platformFile, maxWidth);
-      isCompressingInlineImage.value = false;
-    } catch (e) {
-      logError("IdentityCreatorController::_insertInlineImage: compress image error: $e");
-      isCompressingInlineImage.value = false;
-      if (context.mounted) {
-        appToast.showToastErrorMessage(
-          context,
-          AppLocalizations.of(context).cannotCompressInlineImage);
-      }
-      return;
+    final PlatformFile? file;
+    if (compressedFile != null) {
+      file = compressedFile;
+    } else {
+      file = await _compressFileAction(context, originalFile: platformFile, maxWidth: maxWidth);
     }
-    if (_isExceedMaxSizeInlineImage(file.size) || _isExceedMaxUploadSize(file.size)) {
+    if (file == null) return;
+
+    if (_isExceedMaxUploadSize(file.size)) {
       if (context.mounted) {
         appToast.showToastErrorMessage(
           context,
           AppLocalizations.of(context).pleaseChooseAnImageSizeCorrectly(
-            IdentityCreatorConstants.maxKBSizeIdentityInlineImage
+            maxSizeUploadByBytes
           )
         );
       } else {
@@ -613,8 +669,32 @@ class IdentityCreatorController extends BaseController {
     }
   }
 
+  Future<PlatformFile?> _compressFileAction(
+    BuildContext context,
+    {
+      required PlatformFile originalFile,
+      required int maxWidth
+    }
+  ) async {
+    try {
+      isCompressingInlineImage.value = true;
+      final compressedFile = await _compressImage(originalFile, maxWidth);
+      isCompressingInlineImage.value = false;
+      return compressedFile;
+    } catch (e) {
+      logError("$runtimeType::_compressFileAction: compress image error: $e");
+      isCompressingInlineImage.value = false;
+      if (context.mounted) {
+        appToast.showToastErrorMessage(
+          context,
+          AppLocalizations.of(context).cannotCompressInlineImage);
+      }
+      return null;
+    }
+  }
+
   Future<PlatformFile> _compressImage(PlatformFile originalFile, int maxWidthCompressedImage) async {
-    if (originalFile.size <= IdentityCreatorConstants.maxKBSizeIdentityInlineImage.toBytes) {
+    if (originalFile.size <= maxSizeUploadByBytes) {
       return originalFile;
     }
     
@@ -700,5 +780,59 @@ class IdentityCreatorController extends BaseController {
         );
       }
     });
+  }
+
+  void onLocalFileDropZoneListener({
+    required BuildContext context,
+    required DropDoneDetails details,
+    required double maxWidth
+  }) async {
+    try {
+      clearFocusEditor(context);
+
+      final listFileInfo = await onDragDone(context: context, details: details);
+      final listImages = listFileInfo.listInlineFiles;
+
+      if (listImages.isEmpty && listFileInfo.isNotEmpty && context.mounted) {
+        appToast.showToastErrorMessage(
+          context,
+          AppLocalizations.of(context).canNotUploadFileToSignature
+        );
+        return;
+      }
+
+      final listCompressedImages = await Future.wait(
+        listImages.map((fileInfo) => _compressFileAction(
+          context,
+          originalFile: fileInfo.toPlatformFile(),
+          maxWidth: maxWidth.toInt()))
+      ).then((listPlatformFiles) => listPlatformFiles.whereNotNull().toList());
+
+      if (_isExceedMaxUploadSize(listCompressedImages.totalFilesSize)) {
+        if (context.mounted) {
+          appToast.showToastErrorMessage(
+            context,
+            AppLocalizations.of(context).pleaseChooseAnImageSizeCorrectly(
+              maxSizeUploadByBytes
+            )
+          );
+        } else {
+          logError("IdentityCreatorController::onLocalFileDropZoneListener: context is unmounted");
+        }
+        return;
+      }
+
+      await Future.forEach(
+        listCompressedImages,
+        (platformFile) => _insertInlineImage(
+          context,
+          platformFile,
+          maxWidth.toInt(),
+          compressedFile: platformFile
+        )
+      );
+    } catch (e) {
+      logError("IdentityCreatorController::onLocalFileDropZoneListener: error: $e");
+    }
   }
 }

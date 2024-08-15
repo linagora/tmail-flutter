@@ -47,9 +47,8 @@ class PublicAssetController extends BaseController {
   List<PublicAssetId> newlyPickedPublicAssetIds = [];
   final _publicAssetStreamGroup = StreamGroup<Either<Failure, Success>>();
   StreamSubscription<Either<Failure, Success>>? _publicAssetStreamSubscription;
+  final isUploading = false.obs;
 
-  StreamSubscription<Either<Failure, Success>>? get publicAssetStreamSubscription
-    => _publicAssetStreamSubscription;
   Session? get session => arguments?.session;
   AccountId? get accountId => arguments?.accountId;
   Identity? get identity => arguments?.identity;
@@ -57,7 +56,7 @@ class PublicAssetController extends BaseController {
   void _handleUploadState(Either<Failure, Success> uploadState) {
     log('PublicAssetController::handleUploadState::${uploadState.runtimeType}');
     uploadState.fold(
-      (failure) {},
+      (failure) => consumeState(Stream.value(Left(CreatePublicAssetFailureState()))),
       (success) {
         log('PublicAssetController::handleUploadState::success::$success');
         if (success is SuccessAttachmentUploadState) {
@@ -71,7 +70,10 @@ class PublicAssetController extends BaseController {
           final blobId = success.attachment.blobId;
           if (session == null
             || accountId == null
-            || blobId == null) return;
+            || blobId == null) {
+              consumeState(Stream.value(Left(CreatePublicAssetFailureState())));
+              return;
+            }
 
           consumeState(_createPublicAssetInteractor.execute(
             session!,
@@ -108,17 +110,27 @@ class PublicAssetController extends BaseController {
     }
   }
 
+  @override
+  void handleFailureViewState(Failure failure) {
+    super.handleFailureViewState(failure);
+    if (failure is CreatePublicAssetFailureState) {
+      isUploading.value = false;
+    }
+  }
+
   Future<void> _handleUploadAttachmentSuccess(UploadAttachmentSuccess success) async {
     await _publicAssetStreamGroup.add(success.uploadAttachment.progressState);
   }
 
   void _handleCreatePublicAssetSuccessState(CreatePublicAssetSuccessState success) {
+    isUploading.value = false;
     final publicAsset = success.publicAsset;
     if (publicAsset.id == null || publicAsset.publicURI == null) return;
 
     newlyPickedPublicAssetIds.add(publicAsset.id!);
     final imageTag = '<img '
       'src="${publicAsset.publicURI!}" '
+      'style="max-width: 100%" '
       'public-asset-id="${publicAsset.id!.value}">';
     if (PlatformInfo.isWeb) {
       Get
@@ -140,6 +152,7 @@ class PublicAssetController extends BaseController {
   }
 
   void uploadFileToBlob(PlatformFile platformFile) {
+    isUploading.value = true;
     _uploadFileToBlobAction(platformFile);
   }
 
