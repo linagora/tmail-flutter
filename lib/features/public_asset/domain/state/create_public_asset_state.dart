@@ -8,6 +8,9 @@ class CreatePublicAssetSuccessState extends UIState {
   CreatePublicAssetSuccessState(this.publicAsset);
 
   final PublicAsset publicAsset;
+
+  @override
+  List<Object?> get props => [publicAsset];
 }
 
 class CreatePublicAssetFailureState extends FeatureFailure {

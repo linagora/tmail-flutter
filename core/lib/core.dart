@@ -6,6 +6,7 @@ export 'presentation/extensions/url_extension.dart';
 export 'presentation/extensions/uri_extension.dart';
 export 'presentation/extensions/capitalize_extension.dart';
 export 'presentation/extensions/list_extensions.dart';
+export 'presentation/extensions/list_nullable_extensions.dart';
 export 'domain/extensions/datetime_extension.dart';
 export 'presentation/extensions/html_extension.dart';
 export 'presentation/extensions/compare_string_extension.dart';

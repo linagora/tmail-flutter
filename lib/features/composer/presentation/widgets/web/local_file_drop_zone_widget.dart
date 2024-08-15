@@ -14,6 +14,7 @@ class LocalFileDropZoneWidget extends StatelessWidget {
   final ImagePaths imagePaths;
   final double? width;
   final double? height;
+  final EdgeInsetsGeometry margin;
   final OnLocalFileDropZoneListener? onLocalFileDropZoneListener;
 
   const LocalFileDropZoneWidget({
@@ -21,6 +22,7 @@ class LocalFileDropZoneWidget extends StatelessWidget {
     required this.imagePaths,
     this.width,
     this.height,
+    this.margin = DropZoneWidgetStyle.margin,
     this.onLocalFileDropZoneListener
   });
 
@@ -32,7 +34,7 @@ class LocalFileDropZoneWidget extends StatelessWidget {
         width: width,
         height: height,
         child: Padding(
-          padding: DropZoneWidgetStyle.margin,
+          padding: margin,
           child: DottedBorder(
             borderType: BorderType.RRect,
             radius: const Radius.circular(DropZoneWidgetStyle.radius),
@@ -52,7 +54,7 @@ class LocalFileDropZoneWidget extends StatelessWidget {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  SvgPicture.asset(imagePaths.icDropZoneIcon),
+                  Flexible(child: SvgPicture.asset(imagePaths.icDropZoneIcon)),
                   const SizedBox(height: DropZoneWidgetStyle.space),
                   Text(
                     AppLocalizations.of(context).dropFileHereToAttachThem,
