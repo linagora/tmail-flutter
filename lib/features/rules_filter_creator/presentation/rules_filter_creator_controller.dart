@@ -37,11 +37,11 @@ import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/c
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_filter_action_arguments.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_input_field_arguments.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_input_field_arguments.dart';
 
 
 class RulesFilterCreatorController extends BaseMailboxController {
@@ -219,8 +219,8 @@ class RulesFilterCreatorController extends BaseMailboxController {
             listEmailRuleFilterActionSelected.add(newRuleFilterAction);
           }
           if (currentAction.appendIn.mailboxIds.isNotEmpty == true) {
-            final spamMailboxId = findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id
-              ?? findMailboxNodeByRole(PresentationMailbox.roleJunk)?.item.id;
+            final spamMailboxId = findMailboxNodeByRole(PresentationMailbox.roleJunk)?.item.id
+              ?? findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id;
             for (var mailboxId in currentAction.appendIn.mailboxIds) {
               if (mailboxId == spamMailboxId) {
                 EmailRuleFilterAction? action = EmailRuleFilterAction.markAsSpam;
@@ -268,8 +268,8 @@ class RulesFilterCreatorController extends BaseMailboxController {
   void _setUpMailboxSelected() {
     if (_currentTMailRule != null) {
       final mailboxIdsOfRule = _currentTMailRule!.action.appendIn.mailboxIds;
-      final spamMailboxId = findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id
-        ?? findMailboxNodeByRole(PresentationMailbox.roleJunk)?.item.id;
+      final spamMailboxId = findMailboxNodeByRole(PresentationMailbox.roleJunk)?.item.id
+        ?? findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id;
       for (var mailboxId in mailboxIdsOfRule) {
         if (mailboxId == spamMailboxId) {
           final mailboxNode = findMailboxNodeById(mailboxId);
@@ -486,8 +486,8 @@ class RulesFilterCreatorController extends BaseMailboxController {
         mailboxIds.add(ruleFilterAction.mailbox!.id);
       }
       if (ruleFilterAction.action is MarAsSpamActionArguments) {
-        final spamMailboxId = findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id
-            ?? findMailboxNodeByRole(PresentationMailbox.roleJunk)?.item.id;
+        final spamMailboxId = findMailboxNodeByRole(PresentationMailbox.roleJunk)?.item.id
+          ?? findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id;
         if (spamMailboxId != null) {
           mailboxIds.add(spamMailboxId);
         }
