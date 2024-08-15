@@ -1027,7 +1027,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 1774
+    $signature: 1776
   };
   C._ApplicationVersionWidgetState_build_closure.prototype = {
     call$2(context, snapshot) {
@@ -1044,13 +1044,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 1775
+    $signature: 1777
   };
   C.LinkBrowserWidget_build_closure.prototype = {
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1776
+    $signature: 1778
   };
   C.AppGridDashboardIcon_build_closure.prototype = {
     call$0() {
@@ -1236,5 +1236,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "zAIhIRYaFMoXdM9sufc6tUGJ7NQ=");
+})($__dart_deferred_initializers__, "gjBl3JJ76CbQy0BFbQa5+y78HIw=");
 ;
