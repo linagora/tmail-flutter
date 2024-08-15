@@ -85,5 +85,15 @@ void main() {
 
       expect(qualifiedUrlResult, equals(qualifiedUrlExpected));
     });
+
+    test('convertToQualifiedUrl() should return qualified url when baseUrl is localhost and sourceUrl is `https://domain.com:2001/basiauth/jmap`', () async {
+      final baseUrl =  Uri.parse('https://localhost:9080/basicauth');
+      final sourceUrl =  Uri.parse('https://domain.com:2001/basicauth/jmap');
+
+      final qualifiedUrlExpected = Uri.parse('https://domain.com:2001/basicauth/jmap');
+      final qualifiedUrlResult = sourceUrl.toQualifiedUrl(baseUrl: baseUrl);
+
+      expect(qualifiedUrlResult, equals(qualifiedUrlExpected));
+    });
   });
 }
