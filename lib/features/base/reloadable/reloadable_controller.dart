@@ -83,7 +83,7 @@ abstract class ReloadableController extends BaseController {
 
   void _handleGetCredentialSuccess(GetCredentialViewState success) {
     _setDataToInterceptors(
-      baseUrl: success.baseUrl.origin,
+      baseUrl: success.baseUrl.toString(),
       userName: success.userName,
       password: success.password);
     getSessionAction();
