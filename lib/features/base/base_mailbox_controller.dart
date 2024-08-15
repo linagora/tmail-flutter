@@ -369,6 +369,7 @@ abstract class BaseMailboxController extends BaseController {
               (value) => onRenameMailboxAction(presentationMailbox, MailboxName(value))
           )
         ).build()),
+        barrierDismissible: false,
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }
