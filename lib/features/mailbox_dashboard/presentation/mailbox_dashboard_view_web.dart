@@ -500,70 +500,73 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           right: AppUtils.isDirectionRTL(context) ? 0 : 8,
           left: AppUtils.isDirectionRTL(context) ? 8 : 0,
         ),
-        child: InkWell(
-          onTap: () {
-            if (!filter.isTapOpenPopupMenu()) {
-              controller.selectQuickSearchFilterAction(filter);
-            }
-          },
-          onTapDown: (detail) {
-            final screenSize = MediaQuery.of(context).size;
-            final offset = detail.globalPosition;
-            final position = RelativeRect.fromLTRB(
-              offset.dx,
-              offset.dy,
-              screenSize.width - offset.dx,
-              screenSize.height - offset.dy,
-            );
+        child: Semantics(
+          button: true,
+          child: InkWell(
+            onTap: filter.isTapOpenPopupMenu()
+              ? null
+              : () => controller.selectQuickSearchFilterAction(filter),
+            onTapDown: !filter.isTapOpenPopupMenu()
+              ? null
+              : (detail) {
+                  final screenSize = MediaQuery.of(context).size;
+                  final offset = detail.globalPosition;
+                  final position = RelativeRect.fromLTRB(
+                    offset.dx,
+                    offset.dy,
+                    screenSize.width - offset.dx,
+                    screenSize.height - offset.dy,
+                  );
 
-            switch(filter) {
-              case QuickSearchFilter.last7Days:
-                _openPopupMenuDateFilter(context, position);
-                break;
-              case QuickSearchFilter.sortBy:
-                _openPopupMenuSortFilter(context, position);
-                break;
-              default:
-                break;
-            }
-          },
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: filter.getBackgroundColor(isFilterSelected: isFilterSelected)),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                SvgPicture.asset(
-                    filter.getIcon(controller.imagePaths, isFilterSelected: isFilterSelected),
-                    width: 16,
-                    height: 16,
-                    fit: BoxFit.fill),
-                const SizedBox(width: 4),
-                Text(
-                  filter == QuickSearchFilter.fromMe
-                    ? _getQuickSearchFilterFromTitle(context)
-                    :  filter.getTitle(
-                        context,
-                        receiveTimeType: controller.searchController.receiveTimeFiltered,
-                        startDate: controller.searchController.startDateFiltered,
-                        endDate: controller.searchController.endDateFiltered,
-                        sortOrderType: controller.searchController.sortOrderFiltered.value,
-                      ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: filter.getTextStyle(isFilterSelected: isFilterSelected),
-                ),
-                if (filter == QuickSearchFilter.last7Days || filter == QuickSearchFilter.fromMe)
-                  ... [
-                    const SizedBox(width: 4),
-                    SvgPicture.asset(
-                        controller.imagePaths.icChevronDown,
-                        width: 16,
-                        height: 16,
-                        fit: BoxFit.fill),
-                  ]
-              ])),
+                  switch(filter) {
+                    case QuickSearchFilter.last7Days:
+                      _openPopupMenuDateFilter(context, position);
+                      break;
+                    case QuickSearchFilter.sortBy:
+                      _openPopupMenuSortFilter(context, position);
+                      break;
+                    default:
+                      break;
+                  }
+                },
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: filter.getBackgroundColor(isFilterSelected: isFilterSelected)),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  SvgPicture.asset(
+                      filter.getIcon(controller.imagePaths, isFilterSelected: isFilterSelected),
+                      width: 16,
+                      height: 16,
+                      fit: BoxFit.fill),
+                  const SizedBox(width: 4),
+                  Text(
+                    filter == QuickSearchFilter.fromMe
+                      ? _getQuickSearchFilterFromTitle(context)
+                      :  filter.getTitle(
+                          context,
+                          receiveTimeType: controller.searchController.receiveTimeFiltered,
+                          startDate: controller.searchController.startDateFiltered,
+                          endDate: controller.searchController.endDateFiltered,
+                          sortOrderType: controller.searchController.sortOrderFiltered.value,
+                        ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: filter.getTextStyle(isFilterSelected: isFilterSelected),
+                  ),
+                  if (filter == QuickSearchFilter.last7Days || filter == QuickSearchFilter.fromMe)
+                    ... [
+                      const SizedBox(width: 4),
+                      SvgPicture.asset(
+                          controller.imagePaths.icChevronDown,
+                          width: 16,
+                          height: 16,
+                          fit: BoxFit.fill),
+                    ]
+                ])),
+          ),
         ),
       );
     });
