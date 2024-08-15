@@ -5,6 +5,7 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/extensions/public_asset/public_asset.dart';
 import 'package:tmail_ui_user/features/public_asset/data/datasource/public_asset_datasource.dart';
 import 'package:tmail_ui_user/features/public_asset/data/network/public_asset_api.dart';
+import 'package:tmail_ui_user/features/public_asset/domain/repository/public_asset_repository.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class RemotePublicAssetDatasourceImpl implements PublicAssetDatasource {
@@ -65,6 +66,19 @@ class RemotePublicAssetDatasourceImpl implements PublicAssetDatasource {
       session,
       accountId,
       publicAssets: publicAssets
+    );
+  }).catchError(_exceptionThrower.throwException);
+
+  @override
+  Future<void> partialUpdatePublicAssets(
+    Session session,
+    AccountId accountId,
+    {required Map<Id, UpdatingIdentityIds> mapPublicAssetIdToUpdatingIdentityIds}
+  ) => Future.sync(() async {
+    return await _publicAssetApi.partialUpdatePublicAssets(
+      session,
+      accountId,
+      mapPublicAssetIdToUpdatingIdentityIds: mapPublicAssetIdToUpdatingIdentityIds
     );
   }).catchError(_exceptionThrower.throwException);
 }

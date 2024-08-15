@@ -4,6 +4,8 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/extensions/public_asset/public_asset.dart';
 
+typedef UpdatingIdentityIds = Map<IdentityId, bool?>;
+
 abstract class PublicAssetRepository {
   Future<List<PublicAsset>> getPublicAssetsFromIds(
     Session session,
@@ -30,5 +32,11 @@ abstract class PublicAssetRepository {
     Session session,
     AccountId accountId,
     {required List<PublicAsset> publicAssets}
+  );
+
+  Future<void> partialUpdatePublicAssets(
+    Session session,
+    AccountId accountId,
+    {required Map<Id, UpdatingIdentityIds> mapPublicAssetIdToUpdatingIdentityIds}
   );
 }

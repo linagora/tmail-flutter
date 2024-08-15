@@ -54,4 +54,14 @@ class PublicAssetRepositoryImpl implements PublicAssetRepository {
     session,
     accountId,
     publicAssets: publicAssets);
+    
+  @override
+  Future<void> partialUpdatePublicAssets(
+    Session session,
+    AccountId accountId,
+    {required Map<Id, UpdatingIdentityIds> mapPublicAssetIdToUpdatingIdentityIds}
+  ) => _publicAssetDatasource.partialUpdatePublicAssets(
+    session,
+    accountId,
+    mapPublicAssetIdToUpdatingIdentityIds: mapPublicAssetIdToUpdatingIdentityIds);
 }
