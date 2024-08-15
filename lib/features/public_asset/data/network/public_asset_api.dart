@@ -12,6 +12,8 @@ import 'package:jmap_dart_client/jmap/mail/extensions/public_asset/public_asset.
 import 'package:jmap_dart_client/jmap/mail/extensions/public_asset/set/set_public_asset_method.dart';
 import 'package:jmap_dart_client/jmap/mail/extensions/public_asset/set/set_public_asset_response.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/exceptions/public_asset_exceptions.dart';
+import 'package:tmail_ui_user/features/public_asset/domain/repository/public_asset_repository.dart';
+import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_controller.dart';
 import 'package:uuid/uuid.dart';
 
 class PublicAssetApi {
@@ -27,6 +29,20 @@ class PublicAssetApi {
     });
 
     return MapEntry(publicAsset.id!, patchObject);
+  }
+
+  MapEntry<PublicAssetId, PatchObject> _toPartialPatchObjectMapEntry(
+    PublicAssetId publicAssetId,
+    UpdatingIdentityIds updatingIdentityIds,
+  ) {
+    assert(
+      updatingIdentityIds.values.every((value) => value != false),
+      'All updating identity id values must be true or null'
+    );
+    final patchObject = PatchObject(updatingIdentityIds.map(
+      (key, value) => MapEntry('${PatchObject.identityIdsProperty}/${key.id.value}', value)));
+
+    return MapEntry(publicAssetId, patchObject);
   }
 
   Future<List<PublicAsset>> getPublicAssets(
@@ -119,6 +135,31 @@ class PublicAssetApi {
           .where((publicAsset) => publicAsset.id != null && publicAsset.identityIds != null)
           .map(_toPatchObjectMapEntry)
       )
+    );
+    final invocation = requestBuilder.invocation(method);
+    final response = await (requestBuilder..usings(method.requiredCapabilities))
+      .build()
+      .execute();
+
+    final notUpdatedPublicAssetIds = response.parse<SetPublicAssetResponse>(
+        invocation.methodCallId,
+        SetPublicAssetResponse.deserialize
+    )?.notUpdated;
+
+    if (notUpdatedPublicAssetIds?.isNotEmpty == true) {
+      throw const CannotUpdatePublicAssetException();
+    }
+  }
+
+  Future<void> partialUpdatePublicAssets(
+    Session session,
+    AccountId accountId,
+    {required Map<PublicAssetId, UpdatingIdentityIds> mapPublicAssetIdToUpdatingIdentityIds}
+  ) async {
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    final method = SetPublicAssetMethod(accountId);
+    method.addUpdates(
+      mapPublicAssetIdToUpdatingIdentityIds.map(_toPartialPatchObjectMapEntry)
     );
     final invocation = requestBuilder.invocation(method);
     final response = await (requestBuilder..usings(method.requiredCapabilities))
