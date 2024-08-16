@@ -62,6 +62,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_da
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
+ if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/quotas/domain/use_case/get_quotas_interactor.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/delete_sending_email_interactor.dart';
@@ -87,8 +89,7 @@ import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
-import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
- if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
+import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
@@ -169,6 +170,7 @@ const fallbackGenerators = {
   MockSpec<ApplicationManager>(),
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<GetQuotasInteractor>(),
+  MockSpec<ToastManager>()
 ])
 void main() {
   final moveToMailboxInteractor = MockMoveToMailboxInteractor();
@@ -213,6 +215,7 @@ void main() {
   final logoutOidcInteractor = MockLogoutOidcInteractor();
   final deleteAuthorityOidcInteractor = MockDeleteAuthorityOidcInteractor();
   final appToast = MockAppToast();
+  final toastManager = MockToastManager();
   final imagePaths = ImagePaths();
   final responsiveUtils = MockResponsiveUtils();
   final uuid = MockUuid();
@@ -286,6 +289,7 @@ void main() {
       Get.put<LogoutOidcInteractor>(logoutOidcInteractor);
       Get.put<DeleteAuthorityOidcInteractor>(deleteAuthorityOidcInteractor);
       Get.put<AppToast>(appToast);
+      Get.put<ToastManager>(toastManager);
       Get.put<ImagePaths>(imagePaths);
       Get.put<ResponsiveUtils>(responsiveUtils);
       Get.put<Uuid>(uuid);
