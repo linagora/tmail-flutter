@@ -1,3 +1,10 @@
+## [0.11.4004] - 2024-08-16
+### Fixed
+- Use full baseUrl instead of baseUrl's origin -> make it easier in deployment
+- Handle case if serverUrl and apiUrl are different
+- [iOS] switch runners github action
+
+
 ## [0.11.4002] - 2024-06-04
 ### Added
 - #2764 Add PDFViewer to view preview PDF in email
