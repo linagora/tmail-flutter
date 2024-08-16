@@ -35,8 +35,12 @@ import 'package:path_provider/path_provider.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rich_text_composer/views/commons/constants.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/before_reconnect_handler.dart';
+import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
+import 'package:tmail_ui_user/features/identity_creator/domain/model/identity_cache.dart';
+import 'package:tmail_ui_user/features/identity_creator/domain/usecase/save_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/utils/identity_creator_constants.dart';
@@ -67,10 +71,11 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html hide File;
 
-class IdentityCreatorController extends BaseController with DragDropFileMixin {
+class IdentityCreatorController extends BaseController with DragDropFileMixin implements BeforeReconnectHandler {
 
   final VerifyNameInteractor _verifyNameInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
+  final SaveIdentityCacheOnWebInteractor _saveIdentityCacheOnWebInteractor;
   final IdentityUtils _identityUtils;
 
   final noneEmailAddress = EmailAddress(null, 'None');
@@ -99,6 +104,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin {
   StreamSubscription<html.Event>? _subscriptionOnDragOver;
   StreamSubscription<html.Event>? _subscriptionOnDragLeave;
   StreamSubscription<html.Event>? _subscriptionOnDrop;
+  final _beforeReconnectManager = Get.find<BeforeReconnectManager>();
 
   String? _nameIdentity;
   String? _contentHtmlEditor;
@@ -139,6 +145,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin {
   IdentityCreatorController(
       this._verifyNameInteractor,
       this._getAllIdentitiesInteractor,
+      this._saveIdentityCacheOnWebInteractor,
       this._identityUtils
   );
 
@@ -152,6 +159,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin {
     }
     log('IdentityCreatorController::onInit():arguments: ${Get.arguments}');
     arguments = Get.arguments;
+    _beforeReconnectManager.addListener(onBeforeReconnect);
   }
 
   @override
@@ -243,6 +251,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin {
     _subscriptionOnDragOver?.cancel();
     _subscriptionOnDragLeave?.cancel();
     _subscriptionOnDrop?.cancel();
+    _beforeReconnectManager.removeListener(onBeforeReconnect);
     super.onClose();
   }
 
@@ -277,7 +286,21 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin {
       if (PlatformInfo.isWeb) {
         richTextWebController?.editorController.setText(arguments?.identity?.signatureAsString ?? '');
       }
-      publicAssetController?.getOldPublicAssetFromHtmlContent(arguments!.identity!.signatureAsString);
+    }
+    _initPublicAssetController();
+  }
+
+  void _initPublicAssetController() {
+    final publicAssetsInIdentityArguments = arguments?.publicAssetsInIdentityArguments;
+    final htmlSignature = arguments?.identity?.signatureAsString;
+
+    if (publicAssetsInIdentityArguments != null) {
+      publicAssetController?.restorePreExistingPublicAssetsFromCache(
+        publicAssetsInIdentityArguments.preExistingPublicAssetIds);
+      publicAssetController?.restoreNewlyPickedPublicAssetsFromCache(
+        publicAssetsInIdentityArguments.newlyPickedPublicAssetIds);
+    } else if (htmlSignature != null && htmlSignature.isNotEmpty) {
+      publicAssetController?.getOldPublicAssetFromHtmlContent(htmlSignature);
     }
   }
 
@@ -378,6 +401,8 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin {
       listDefaultIdentityIds?.contains(identity?.id) == true
     ) {
       isDefaultIdentity.value = true;
+    } else if (arguments?.isDefault == true) {
+      isDefaultIdentity.value = true;
     } else {
       isDefaultIdentity.value = false;
     }
@@ -438,6 +463,30 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin {
       return;
     }
 
+    final identityAndPublicAssetArguments = await _generateIdentityAndPublicAssetArguments();
+
+    if (actionType.value == IdentityActionType.create) {
+      final generateCreateId = Id(uuid.v1());
+      final identityRequest = CreateNewIdentityRequest(
+        generateCreateId, 
+        identityAndPublicAssetArguments.identity,
+        publicAssetsInIdentityArguments: identityAndPublicAssetArguments.publicAssetsInIdentityArguments,
+        isDefaultIdentity: isDefaultIdentity.value);
+      popBack(result: identityRequest);
+    } else {
+      final identityRequest = EditIdentityRequest(
+        identityId: identity!.id!,
+        identityRequest: identityAndPublicAssetArguments.identity.toIdentityRequest(),
+        publicAssetsInIdentityArguments: identityAndPublicAssetArguments.publicAssetsInIdentityArguments,
+        isDefaultIdentity: isDefaultIdentity.value);
+      popBack(result: identityRequest);
+    }
+  }
+
+  Future<({
+    Identity identity,
+    PublicAssetsInIdentityArguments publicAssetsInIdentityArguments
+  })> _generateIdentityAndPublicAssetArguments() async {
     final signatureHtmlText = PlatformInfo.isWeb
         ? contentHtmlEditor
         : await _getSignatureHtmlText();
@@ -466,23 +515,10 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin {
       htmlSignature: Signature(signatureHtmlText),
       sortOrder: sortOrder);
 
-    final generateCreateId = Id(uuid.v1());
-
-    if (actionType.value == IdentityActionType.create) {
-      final identityRequest = CreateNewIdentityRequest(
-        generateCreateId, 
-        newIdentity,
-        publicAssetsInIdentityArguments: publicAssetsInIdentityArguments,
-        isDefaultIdentity: isDefaultIdentity.value);
-      popBack(result: identityRequest);
-    } else {
-      final identityRequest = EditIdentityRequest(
-        identityId: identity!.id!,
-        identityRequest: newIdentity.toIdentityRequest(),
-        publicAssetsInIdentityArguments: publicAssetsInIdentityArguments,
-        isDefaultIdentity: isDefaultIdentity.value);
-      popBack(result: identityRequest);
-    }
+    return (
+      identity: newIdentity,
+      publicAssetsInIdentityArguments: publicAssetsInIdentityArguments
+    );
   }
 
   void onCheckboxChanged() {
@@ -870,6 +906,36 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin {
       );
     } catch (e) {
       logError("IdentityCreatorController::_uploadMultipleFilesToPublicAsset: error: $e");
+    }
+  }
+
+  @override
+  Future<void> onBeforeUnloadBrowserListener(html.Event event) async {
+    if (event is html.BeforeUnloadEvent) {
+      event.preventDefault();
+    }
+  }
+
+  @override
+  Future<void> onUnloadBrowserListener(html.Event event) => _saveIdentityCacheOnWebAction();
+  
+  @override
+  Future<void> onBeforeReconnect() => _saveIdentityCacheOnWebAction();
+
+  Future<void> _saveIdentityCacheOnWebAction() async {
+    if (accountId != null && session?.username != null) {
+      final cacheArguments = await _generateIdentityAndPublicAssetArguments();
+      final identityCache = IdentityCache(
+        identity: cacheArguments.identity,
+        identityActionType: actionType.value,
+        isDefault: isDefaultIdentity.value,
+        publicAssetsInIdentityArguments: cacheArguments.publicAssetsInIdentityArguments);
+    
+      consumeState(_saveIdentityCacheOnWebInteractor.execute(
+        accountId!,
+        session!.username,
+        identityCache: identityCache
+      ));
     }
   }
 }

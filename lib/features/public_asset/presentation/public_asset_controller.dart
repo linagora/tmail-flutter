@@ -173,6 +173,14 @@ class PublicAssetController extends BaseController {
     preExistingPublicAssetIds = htmlContent.publicAssetIdsFromHtmlContent;
   }
 
+  void restorePreExistingPublicAssetsFromCache(List<PublicAssetId> publicAssetIds) {
+    preExistingPublicAssetIds = publicAssetIds;
+  }
+
+  void restoreNewlyPickedPublicAssetsFromCache(List<PublicAssetId> publicAssetIds) {
+    newlyPickedPublicAssetIds = publicAssetIds;
+  }
+
   void uploadFileToBlob(PlatformFile platformFile) {
     isUploading.value = true;
     _uploadFileToBlobAction(platformFile);
