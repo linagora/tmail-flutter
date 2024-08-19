@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-08-14T16:51:31.191735",
+  "@@last_modified": "2024-08-19T14:44:31.528161",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3990,6 +3990,12 @@
   },
   "markAsSpamFailed": "Mark as spam failed",
   "@markAsSpamFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "canNotUploadFileToSignature": "Can not upload this file to signature",
+  "@canNotUploadFileToSignature": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
