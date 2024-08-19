@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -86,6 +87,7 @@ import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_alway
 import 'package:tmail_ui_user/features/upload/domain/exceptions/pick_file_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/file_info_extension.dart';
+import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_upload_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/local_file_picker_state.dart';
@@ -2136,11 +2138,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     required DropDoneDetails details,
     required double maxWidth
   }) async {
-    if (responsiveUtils.isMobile(context)) {
-      maxWithEditor = maxWidth - 40;
-    } else {
-      maxWithEditor = maxWidth - 70;
-    }
+    _setUpMaxWidthInlineImage(context: context, maxWidth: maxWidth);
 
     final listFileInfo = await onDragDone(context: context, details: details);
 
@@ -2152,13 +2150,9 @@ class ComposerController extends BaseController with DragDropFileMixin implement
       return;
     }
 
-    final listAttachments = listFileInfo
-      .where((fileInfo) => fileInfo.isInline != true)
-      .toList();
-
     uploadController.validateTotalSizeAttachmentsBeforeUpload(
       totalSizePreparedFiles: listFileInfo.totalSize,
-      totalSizePreparedFilesWithDispositionAttachment: listAttachments.totalSize,
+      totalSizePreparedFilesWithDispositionAttachment: listFileInfo.listAttachmentFiles.totalSize,
       onValidationSuccess: () => _uploadAttachmentsAction(pickedFiles: listFileInfo)
     );
   }
@@ -2340,5 +2334,44 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     ) {
       await _saveComposerCacheOnWebAction();
     }
+  }
+
+  void _setUpMaxWidthInlineImage({
+    required BuildContext context,
+    required double maxWidth
+  }) {
+    if (responsiveUtils.isMobile(context)) {
+      maxWithEditor = maxWidth - 40;
+    } else {
+      maxWithEditor = maxWidth - 70;
+    }
+  }
+
+  void handleOnPasteImageSuccessAction({
+    required BuildContext context,
+    required double maxWidth,
+    required List<FileUpload> listFileUpload
+  }) {
+    log('ComposerController::handleOnPasteImageSuccessAction: listFileUpload = ${listFileUpload.length}');
+    _setUpMaxWidthInlineImage(context: context, maxWidth: maxWidth);
+
+    final listFileInfo = listFileUpload.toListFileInfo();
+
+    uploadController.validateTotalSizeAttachmentsBeforeUpload(
+      totalSizePreparedFiles: listFileInfo.totalSize,
+      onValidationSuccess: () => _uploadAttachmentsAction(pickedFiles: listFileInfo)
+    );
+  }
+
+  void handleOnPasteImageFailureAction({
+    required BuildContext context,
+    List<FileUpload>? listFileUpload,
+    String? base64,
+    required UploadError uploadError
+  }) {
+    logError('ComposerController::handleOnPasteImageFailureAction: $uploadError');
+    appToast.showToastErrorMessage(
+      context,
+      AppLocalizations.of(context).thisImageCannotBePastedIntoTheEditor);
   }
 }

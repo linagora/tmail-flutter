@@ -190,6 +190,18 @@ class ComposerView extends GetWidget<ComposerController> {
                                     width: constraints.maxWidth,
                                     height: constraints.maxHeight,
                                     onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
+                                    onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
+                                      context: context,
+                                      maxWidth: constraintsEditor.maxWidth,
+                                      listFileUpload: listFileUpload
+                                    ),
+                                    onPasteImageFailureAction: (listFileUpload, base64, uploadError) =>
+                                      controller.handleOnPasteImageFailureAction(
+                                        context: context,
+                                        listFileUpload: listFileUpload,
+                                        base64: base64,
+                                        uploadError: uploadError
+                                      ),
                                   )),
                                 ),
                               ),
@@ -430,6 +442,18 @@ class ComposerView extends GetWidget<ComposerController> {
                                             width: constraints.maxWidth,
                                             height: constraints.maxHeight,
                                             onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
+                                            onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
+                                              context: context,
+                                              maxWidth: constraintsEditor.maxWidth,
+                                              listFileUpload: listFileUpload
+                                            ),
+                                            onPasteImageFailureAction: (listFileUpload, base64, uploadError) =>
+                                              controller.handleOnPasteImageFailureAction(
+                                                context: context,
+                                                listFileUpload: listFileUpload,
+                                                base64: base64,
+                                                uploadError: uploadError
+                                              ),
                                           );
                                         }),
                                       ),
@@ -688,6 +712,18 @@ class ComposerView extends GetWidget<ComposerController> {
                                           width: constraints.maxWidth,
                                           height: constraints.maxHeight,
                                           onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
+                                          onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
+                                            context: context,
+                                            maxWidth: constraintsBody.maxWidth,
+                                            listFileUpload: listFileUpload
+                                          ),
+                                          onPasteImageFailureAction: (listFileUpload, base64, uploadError) =>
+                                            controller.handleOnPasteImageFailureAction(
+                                              context: context,
+                                              listFileUpload: listFileUpload,
+                                              base64: base64,
+                                              uploadError: uploadError
+                                            ),
                                         )),
                                       ),
                                     ),

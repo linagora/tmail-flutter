@@ -4159,13 +4159,13 @@ class AppLocalizations {
   }
 
   String get emptySpamFolderFailed {
-    return Intl.message(''
+    return Intl.message(
       'Empty spam folder failed',
       name: 'emptySpamFolderFailed');
   }
 
   String get markAsSpamFailed {
-    return Intl.message(''
+    return Intl.message(
       'Mark as spam failed',
       name: 'markAsSpamFailed');
   }
@@ -4175,5 +4175,11 @@ class AppLocalizations {
       'Can not upload this file to signature',
       name: 'canNotUploadFileToSignature'
     );
+  }
+
+  String get thisImageCannotBePastedIntoTheEditor {
+    return Intl.message(
+      'This image cannot be pasted into the editor.',
+      name: 'thisImageCannotBePastedIntoTheEditor');
   }
 }

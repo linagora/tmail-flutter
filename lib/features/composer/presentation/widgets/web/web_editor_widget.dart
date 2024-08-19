@@ -5,7 +5,6 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
-import 'package:tmail_ui_user/features/composer/presentation/view/web/web_editor_view.dart';
 import 'package:universal_html/html.dart' hide VoidCallback;
 
 typedef OnChangeContentEditorAction = Function(String? text);
@@ -13,6 +12,12 @@ typedef OnInitialContentEditorAction = Function(String text);
 typedef OnMouseDownEditorAction = Function(BuildContext context);
 typedef OnEditorSettingsChange = Function(EditorSettings settings);
 typedef OnEditorTextSizeChanged = Function(int? size);
+typedef OnDragEnterListener = Function(List<dynamic>? types);
+typedef OnPasteImageSuccessAction = Function(List<FileUpload> listFileUpload);
+typedef OnPasteImageFailureAction = Function(
+    List<FileUpload>? listFileUpload,
+    String? base64,
+    UploadError uploadError);
 
 class WebEditorWidget extends StatefulWidget {
 
@@ -29,6 +34,8 @@ class WebEditorWidget extends StatefulWidget {
   final double? width;
   final double? height;
   final OnDragEnterListener? onDragEnter;
+  final OnPasteImageSuccessAction? onPasteImageSuccessAction;
+  final OnPasteImageFailureAction? onPasteImageFailureAction;
 
   const WebEditorWidget({
     super.key,
@@ -45,6 +52,8 @@ class WebEditorWidget extends StatefulWidget {
     this.width,
     this.height,
     this.onDragEnter,
+    this.onPasteImageSuccessAction,
+    this.onPasteImageFailureAction,
   });
 
   @override
@@ -179,6 +188,8 @@ class _WebEditorState extends State<WebEditorWidget> {
             ),
             onDragEnter: widget.onDragEnter,
             onDragLeave: (_) {},
+            onImageUpload: widget.onPasteImageSuccessAction,
+            onImageUploadError: widget.onPasteImageFailureAction,
           ),
         );
       }
