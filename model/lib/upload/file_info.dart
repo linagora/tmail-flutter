@@ -28,12 +28,14 @@ class FileInfo with EquatableMixin {
     String? name,
     int? size,
     String? type,
+    bool? isInline,
   }) {
     return FileInfo(
       fileName: name ?? '',
       fileSize: size ?? 0,
       bytes: bytes,
-      type: type
+      type: type,
+      isInline: isInline,
     );
   }
 
