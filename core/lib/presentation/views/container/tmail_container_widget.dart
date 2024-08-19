@@ -49,6 +49,7 @@ class TMailContainerWidget extends StatelessWidget {
       type: MaterialType.transparency,
       child: InkWell(
         onTap: onTapActionCallback,
+        excludeFromSemantics: true,
         onTapDown: onTapActionAtPositionCallback != null
           ? (detail) {
               if (onTapActionAtPositionCallback != null) {
