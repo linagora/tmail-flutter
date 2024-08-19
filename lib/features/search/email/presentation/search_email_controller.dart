@@ -50,6 +50,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
+import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
+  if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/search/email/domain/state/refresh_changes_search_email_state.dart';
 import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/search_more_state.dart';
@@ -78,6 +80,8 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 class SearchEmailController extends BaseController
     with EmailActionController,
         DateRangePickerMixin {
+
+  final networkConnectionController = Get.find<NetworkConnectionController>();
 
   final QuickSearchEmailInteractor _quickSearchEmailInteractor;
   final SaveRecentSearchInteractor _saveRecentSearchInteractor;

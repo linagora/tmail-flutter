@@ -998,6 +998,13 @@ class AppLocalizations {
     );
   }
 
+  String get no_internet_connection_try_again_later {
+    return Intl.message(
+      'No internet connection, try again later.',
+      name: 'no_internet_connection_try_again_later'
+    );
+  }
+
   String get page_name {
     return Intl.message(
         'Twake Mail',

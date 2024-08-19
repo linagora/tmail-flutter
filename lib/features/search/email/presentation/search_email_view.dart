@@ -469,6 +469,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         (success) => success is! SearchingState
             ? EmptyEmailsWidget(
                 key: const Key('empty_search_email_view'),
+                isNetworkConnectionAvailable: controller.networkConnectionController.isNetworkConnectionAvailable(),
                 isSearchActive: true)
             : const SizedBox.shrink())
     );

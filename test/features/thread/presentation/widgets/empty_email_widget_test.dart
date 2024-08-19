@@ -111,5 +111,104 @@ void main() {
         emptyEmailMessageWidget.data,
         'No emails are matching your search');
     });
+
+    testWidgets(
+      'should have message correctly and do not have CreateRuleFilter button\n'
+      'when no network', (tester) async {
+      final widget = makeTestableWidget(
+        child: EmptyEmailsWidget(
+          isNetworkConnectionAvailable: false,
+        ),
+      );
+
+      await tester.pumpWidget(widget);
+
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const Key('create_filter_rule_button_within_empty_email')),
+        findsNothing);
+
+      final emptyEmailMessageWidgetFinder = find.byKey(const Key('empty_email_message'));
+      final emptyEmailMessageWidget = tester.widget<Text>(emptyEmailMessageWidgetFinder);
+      expect(
+        emptyEmailMessageWidget.data,
+        'No internet connection, try again later.');
+    });
+
+    testWidgets(
+      'should have message correctly and do not have CreateRuleFilter button\n'
+      'when no network, but search are still active', (tester) async {
+      final widget = makeTestableWidget(
+        child: EmptyEmailsWidget(
+          isNetworkConnectionAvailable: false,
+          isSearchActive: true,
+        ),
+      );
+
+      await tester.pumpWidget(widget);
+
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const Key('create_filter_rule_button_within_empty_email')),
+        findsNothing);
+
+      final emptyEmailMessageWidgetFinder = find.byKey(const Key('empty_email_message'));
+      final emptyEmailMessageWidget = tester.widget<Text>(emptyEmailMessageWidgetFinder);
+      expect(
+        emptyEmailMessageWidget.data,
+        'No internet connection, try again later.');
+    });
+
+    testWidgets(
+      'should have message correctly and do not have CreateRuleFilter button\n'
+      'when no network, but filter are still active', (tester) async {
+      final widget = makeTestableWidget(
+        child: EmptyEmailsWidget(
+          isNetworkConnectionAvailable: false,
+          isFilterMessageActive: true,
+        ),
+      );
+
+      await tester.pumpWidget(widget);
+
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const Key('create_filter_rule_button_within_empty_email')),
+        findsNothing);
+
+      final emptyEmailMessageWidgetFinder = find.byKey(const Key('empty_email_message'));
+      final emptyEmailMessageWidget = tester.widget<Text>(emptyEmailMessageWidgetFinder);
+      expect(
+        emptyEmailMessageWidget.data,
+        'No internet connection, try again later.');
+    });
+
+    testWidgets(
+      'should have message correctly and do not have CreateRuleFilter button\n'
+      'when no network, but filter and search are still active', (tester) async {
+      final widget = makeTestableWidget(
+        child: EmptyEmailsWidget(
+          isNetworkConnectionAvailable: false,
+          isFilterMessageActive: true,
+        ),
+      );
+
+      await tester.pumpWidget(widget);
+
+      await tester.pumpAndSettle();
+
+      expect(
+        find.byKey(const Key('create_filter_rule_button_within_empty_email')),
+        findsNothing);
+
+      final emptyEmailMessageWidgetFinder = find.byKey(const Key('empty_email_message'));
+      final emptyEmailMessageWidget = tester.widget<Text>(emptyEmailMessageWidgetFinder);
+      expect(
+        emptyEmailMessageWidget.data,
+        'No internet connection, try again later.');
+    });
   });
 }
