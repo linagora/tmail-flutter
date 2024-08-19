@@ -698,6 +698,7 @@ class ThreadView extends GetWidget<ThreadController>
         } else {
           return EmptyEmailsWidget(
             key: const Key('empty_thread_view'),
+            isNetworkConnectionAvailable: controller.networkConnectionController.isNetworkConnectionAvailable(),
             isSearchActive: controller.isSearchActive,
             isFilterMessageActive: controller.mailboxDashBoardController.filterMessageOption.value != FilterMessageOption.all,
             onCreateFiltersActionCallback: controller.goToCreateEmailRuleView

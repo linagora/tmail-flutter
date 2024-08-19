@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-08-19T14:44:31.528161",
+  "@@last_modified": "2024-08-20T10:36:35.487743",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -958,6 +958,12 @@
   },
   "no_internet_connection": "No internet connection",
   "@no_internet_connection": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no_internet_connection_try_again_later": "No internet connection, try again later.",
+  "@no_internet_connection_try_again_later": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2604,12 +2610,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reduceSomeFiltersAndTryAgain": "Let's reduce some filters and try again",
-  "@reduceSomeFiltersAndTryAgain": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "sendMessageFailure": "Failure to send your message.",
   "@sendMessageFailure": {
     "type": "text",
@@ -3125,18 +3125,6 @@
     "placeholders": {
       "folderName": {}
     }
-  },
-  "folderCreatedTitle": "Your folder is just created",
-  "@folderCreatedTitle": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "folderCreatedMessage": "To begin using this folder, you should add some rules to organize all of your mail in your own way.",
-  "@folderCreatedMessage": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
   },
   "createFilters": "Create filters",
   "@createFilters": {

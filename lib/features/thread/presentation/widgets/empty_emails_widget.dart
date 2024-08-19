@@ -13,6 +13,7 @@ class EmptyEmailsWidget extends StatelessWidget {
 
   final bool isSearchActive;
   final bool isFilterMessageActive;
+  final bool isNetworkConnectionAvailable;
   final OnCreateFiltersActionCallback? onCreateFiltersActionCallback;
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
@@ -22,6 +23,7 @@ class EmptyEmailsWidget extends StatelessWidget {
     Key? key,
     this.isSearchActive = false,
     this.isFilterMessageActive = false,
+    this.isNetworkConnectionAvailable = true,
     this.onCreateFiltersActionCallback,
   }) : super(key: key);
 
@@ -45,14 +47,10 @@ class EmptyEmailsWidget extends StatelessWidget {
             child: Text(
               key: const Key('empty_email_message'),
               _getMessageEmptyEmail(context),
-              style: TextStyle(
+              style: const TextStyle(
                 color: EmptyEmailsWidgetStyles.labelTextColor,
-                fontSize: _validateShowCreateRuleButton
-                  ? EmptyEmailsWidgetStyles.createFilterLabelTextSize
-                  : EmptyEmailsWidgetStyles.labelTextSize,
-                fontWeight: _validateShowCreateRuleButton
-                  ? EmptyEmailsWidgetStyles.createFilterLabelFontWeight
-                  : EmptyEmailsWidgetStyles.labelFontWeight
+                fontSize: EmptyEmailsWidgetStyles.createFilterLabelTextSize,
+                fontWeight: EmptyEmailsWidgetStyles.createFilterLabelFontWeight
               ),
               textAlign: TextAlign.center,
             ),
@@ -100,10 +98,14 @@ class EmptyEmailsWidget extends StatelessWidget {
     }
   }
 
-  bool get _validateShowCreateRuleButton =>
-    !isFilterMessageActive && !isSearchActive && onCreateFiltersActionCallback != null;
+  bool get _validateShowCreateRuleButton => isNetworkConnectionAvailable
+    && !isFilterMessageActive && !isSearchActive && onCreateFiltersActionCallback != null;
 
   String _getMessageEmptyEmail(BuildContext context) {
+    if (!isNetworkConnectionAvailable) {
+      return AppLocalizations.of(context).no_internet_connection_try_again_later;
+    }
+    
     if (isSearchActive) {
       return AppLocalizations.of(context).no_emails_matching_your_search;
     } else {
