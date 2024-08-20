@@ -1231,6 +1231,7 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
                 bottom: kIsWeb ? 8 : 0
               ),
               child: InkWell(
+                excludeFromSemantics: true,
                 borderRadius: const BorderRadius.all(Radius.circular(10)),
                 onTap: () {
                   if (widget.buttonActionCallback != null) {
