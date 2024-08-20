@@ -3026,7 +3026,7 @@ class AppLocalizations {
 
   String pleaseChooseAnImageSizeCorrectly(int maxSize) {
     return Intl.message(
-      'Please choose an image size <= ${maxSize}KB',
+      'Please choose an image with size less than ${maxSize}KB',
       name: 'pleaseChooseAnImageSizeCorrectly',
       args: [maxSize]);
   }
@@ -4175,6 +4175,12 @@ class AppLocalizations {
       'Can not upload this file to signature',
       name: 'canNotUploadFileToSignature'
     );
+  }
+
+  String get generalSignatureImageUploadError {
+    return Intl.message(
+      'There was an error while uploading the image. Please try again.',
+      name: 'generalSignatureImageUploadError');
   }
 
   String get thisImageCannotBePastedIntoTheEditor {

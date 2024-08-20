@@ -2920,7 +2920,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "pleaseChooseAnImageSizeCorrectly": "Please choose an image size <= {maxSize}KB",
+  "pleaseChooseAnImageSizeCorrectly": "Please choose an image with size less than {maxSize}KB",
   "@pleaseChooseAnImageSizeCorrectly": {
     "type": "text",
     "placeholders_order": [
@@ -3984,6 +3984,12 @@
   },
   "canNotUploadFileToSignature": "Can not upload this file to signature",
   "@canNotUploadFileToSignature": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "generalSignatureImageUploadError": "There was an error while uploading the image. Please try again.",
+  "@generalSignatureImageUploadError": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
