@@ -17,6 +17,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_image_compress/flutter_image_compress.dart';
 import 'package:get/get.dart';
+import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
@@ -29,6 +30,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/identity_extension.dart';
 import 'package:model/extensions/session_extension.dart';
+import 'package:model/upload/file_info.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rich_text_composer/views/commons/constants.dart';
@@ -57,6 +59,7 @@ import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_bi
 import 'package:tmail_ui_user/features/public_asset/presentation/public_asset_controller.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
+import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_upload_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/list_platform_file_extensions.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -782,15 +785,50 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin {
     });
   }
 
+  Future<void> onPasteImageSuccess(
+    BuildContext context,
+    List<FileUpload> listFileUpload,
+    {required double maxWidth}
+  ) async {
+    await _uploadMultipleFilesToPublicAsset(
+      context,
+      listFileUpload.toListFileInfo(),
+      maxWidth: maxWidth);
+  }
+
+  void onPasteImageFailure(
+    BuildContext context,
+    List<FileUpload>? listFileUpload,
+    {String? base64,
+    required UploadError uploadError}
+  ) {
+    logError('$runtimeType::onPasteImageFailure: $uploadError');
+    appToast.showToastErrorMessage(
+      context,
+      AppLocalizations.of(context).thisImageCannotBePastedIntoTheEditor);
+  }
+
   void onLocalFileDropZoneListener({
     required BuildContext context,
     required DropDoneDetails details,
     required double maxWidth
   }) async {
-    try {
-      clearFocusEditor(context);
+    clearFocusEditor(context);
 
-      final listFileInfo = await onDragDone(context: context, details: details);
+    final listFileInfo = await onDragDone(context: context, details: details);
+    if (!context.mounted) return;
+    await _uploadMultipleFilesToPublicAsset(
+      context,
+      listFileInfo,
+      maxWidth: maxWidth);
+  }
+
+  Future<void> _uploadMultipleFilesToPublicAsset(
+    BuildContext context,
+    List<FileInfo> listFileInfo,
+    {required double maxWidth}
+  ) async {
+    try {
       final listImages = listFileInfo.listInlineFiles;
 
       if (listImages.isEmpty && listFileInfo.isNotEmpty && context.mounted) {
@@ -817,7 +855,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin {
             )
           );
         } else {
-          logError("IdentityCreatorController::onLocalFileDropZoneListener: context is unmounted");
+          logError("IdentityCreatorController::_uploadMultipleFilesToPublicAsset: context is unmounted");
         }
         return;
       }
@@ -832,7 +870,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin {
         )
       );
     } catch (e) {
-      logError("IdentityCreatorController::onLocalFileDropZoneListener: error: $e");
+      logError("IdentityCreatorController::_uploadMultipleFilesToPublicAsset: error: $e");
     }
   }
 }

@@ -129,7 +129,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
                         border: Border.all(color: AppColor.colorInputBorderCreateMailbox),
                       ),
                       padding: const EdgeInsetsDirectional.all(16),
-                      child: _buildSignatureHtmlTemplate(context),
+                      child: _buildSignatureHtmlTemplate(context, constraintsEditor.maxWidth),
                     ),
                     Obx(() {
                       if (controller.draggableAppState.value == DraggableAppState.inActive) {
@@ -440,7 +440,10 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
     );
   }
 
-  Widget _buildSignatureHtmlTemplate(BuildContext context) {
+  Widget _buildSignatureHtmlTemplate(
+    BuildContext context,
+    double maxWidth
+  ) {
     if (PlatformInfo.isWeb) {
       return Column(
         children: [
@@ -465,7 +468,8 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
             children: [
               _buildHtmlEditorWeb(
                 context,
-                controller.contentHtmlEditor),
+                controller.contentHtmlEditor,
+                maxWidth),
               Obx(() {
                 bool isInserting = controller.publicAssetController?.isUploading.isTrue == true
                   || controller.isCompressingInlineImage.isTrue;
@@ -491,7 +495,11 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
     }
   }
 
-  Widget _buildHtmlEditorWeb(BuildContext context, String initContent) {
+  Widget _buildHtmlEditorWeb(
+    BuildContext context,
+    String initContent,
+    double maxWidth
+  ) {
     return html_editor_browser.HtmlEditor(
       key: const Key('identity_create_editor_web'),
       controller: controller.richTextWebController!.editorController,
@@ -531,7 +539,18 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
         onChangeSelection: controller.richTextWebController?.onEditorSettingsChange,
         onChangeCodeview: controller.updateContentHtmlEditor,
         onDragEnter: controller.handleOnDragEnterSignatureEditorWeb,
-        onDragLeave: (_) {}
+        onDragLeave: (_) {},
+        onImageUpload: (listFileUpload) => controller.onPasteImageSuccess(
+          context,
+          listFileUpload,
+          maxWidth: maxWidth),
+        onImageUploadError: (listFileUpload, base64, uploadError) =>
+          controller.onPasteImageFailure(
+            context,
+            listFileUpload,
+            base64: base64,
+            uploadError: uploadError
+          ),
       ),
     );
   }
