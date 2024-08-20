@@ -202,7 +202,8 @@ class ComposerController extends BaseController
   SignatureStatus _identityContentOnOpenPolicy = SignatureStatus.editedAvailable;
   int? _savedEmailDraftHash;
   bool _restoringSignatureButton = false;
-  
+  bool _isEditorClicked = false;
+
   @visibleForTesting
   bool get restoringSignatureButton => _restoringSignatureButton;
 
@@ -270,6 +271,7 @@ class ComposerController extends BaseController
     subjectEmailInputFocusNode?.removeListener(_subjectEmailInputFocusListener);
     _composerCacheListener?.cancel();
     _beforeReconnectManager.removeListener(onBeforeReconnect);
+    _isEditorClicked = false;
     if (PlatformInfo.isWeb) {
       richTextWebController = null;
     } else {
@@ -1426,7 +1428,7 @@ class ComposerController extends BaseController
       final existedSignatureButton = emailDocument.querySelector(
         'button.tmail-signature-button');
       if (existedSignatureButton != null) return;
-      
+
       final signature = emailDocument.querySelector('div.tmail-signature');
       if (signature == null) return;
       _restoringSignatureButton = true;
@@ -1934,7 +1936,15 @@ class ComposerController extends BaseController
     richTextWebController?.closeAllMenuPopup();
   }
 
+  void handleOnUnFocusEditorWeb() {
+    if (_isEditorClicked) {
+      _isEditorClicked = false;
+      richTextWebController?.editorController.setFocus();
+    }
+  }
+
   void handleOnMouseDownHtmlEditorWeb(BuildContext context) {
+    _isEditorClicked = true;
     Navigator.maybePop(context);
     FocusScope.of(context).unfocus();
     _collapseAllRecipient();
