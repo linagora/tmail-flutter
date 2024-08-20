@@ -1,6 +1,7 @@
 import 'package:jmap_dart_client/http/converter/identities/public_asset_identities_converter.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -88,15 +89,22 @@ class PublicAssetApi {
       .build()
       .execute();
     final publicAsset = response.parse<SetPublicAssetResponse>(
-        invocation.methodCallId,
-        SetPublicAssetResponse.deserialize
+      invocation.methodCallId,
+      SetPublicAssetResponse.deserialize
     )?.created?[generateCreateId];
 
-    if (publicAsset == null) {
-      throw const CannotCreatePublicAssetException();
+    final notCreatedError = response.parse<SetPublicAssetResponse>(
+      invocation.methodCallId,
+      SetPublicAssetResponse.deserialize
+    )?.notCreated?[generateCreateId];
+    
+    if (notCreatedError == null && publicAsset != null) return publicAsset;
+
+    if (notCreatedError?.type == ErrorMethodResponse.overQuota) {
+      throw PublicAssetQuotaExceededException(message: notCreatedError?.description);
     }
 
-    return publicAsset;
+    throw const CannotCreatePublicAssetException();
   }
 
   Future<void> destroyPublicAssets(
