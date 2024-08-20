@@ -6,6 +6,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
+import 'package:tmail_ui_user/features/public_asset/domain/exceptions/public_asset_exceptions.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/state/create_public_asset_state.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/repository/public_asset_repository.dart';
 
@@ -32,7 +33,13 @@ class CreatePublicAssetInteractor {
       yield Right<Failure, Success>(CreatePublicAssetSuccessState(publicAsset));
     } catch (exception) {
       logError('CreatePublicAssetInteractor::execute():error: $exception');
-      yield Left<Failure, Success>(CreatePublicAssetFailureState(exception: exception));
+
+      if (exception is PublicAssetQuotaExceededException) {
+        yield Left<Failure, Success>(PublicAssetOverQuotaFailureState(
+          publicAssetQuotaExceededException: exception));
+      } else {
+        yield Left<Failure, Success>(CreatePublicAssetFailureState(exception: exception));
+      } 
     }
   }
 }

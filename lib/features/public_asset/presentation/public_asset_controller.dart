@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/public_asset/domain/usecase/delete_public
 import 'package:tmail_ui_user/features/public_asset/presentation/model/public_asset_arguments.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/platform_file_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 typedef PublicAssetId = Id;
@@ -114,7 +115,28 @@ class PublicAssetController extends BaseController {
   void handleFailureViewState(Failure failure) {
     super.handleFailureViewState(failure);
     if (failure is CreatePublicAssetFailureState) {
-      isUploading.value = false;
+      _handleCreatePublicAssetFailureState();
+    } else if (failure is PublicAssetOverQuotaFailureState) {
+      _handlePublicAssetOverQuotaFailureState(failure);
+    }
+  }
+
+  void _handlePublicAssetOverQuotaFailureState(PublicAssetOverQuotaFailureState failure) {
+    isUploading.value = false;
+    if (currentOverlayContext != null && currentContext != null) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        failure.publicAssetQuotaExceededException.message
+          ?? AppLocalizations.of(currentContext!).generalSignatureImageUploadError);
+    }
+  }
+
+  void _handleCreatePublicAssetFailureState() {
+    isUploading.value = false;
+    if (currentOverlayContext != null && currentContext != null) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).generalSignatureImageUploadError);
     }
   }
 
