@@ -1417,10 +1417,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     TabletResponsiveContainerView_build_closure: function TabletResponsiveContainerView_build_closure(t0) {
       this.$this = t0;
     },
-    WebEditorView$($arguments, contentViewState, currentWebContent, editorController, height, onChangeContent, onDragEnter, onEditorSettings, onEditorTextSizeChanged, onFocus, onInitial, onMouseDown, width) {
-      return new B.WebEditorView(editorController, $arguments, contentViewState, currentWebContent, onInitial, onChangeContent, onFocus, onMouseDown, onEditorSettings, onEditorTextSizeChanged, width, height, onDragEnter, null);
+    WebEditorView$($arguments, contentViewState, currentWebContent, editorController, height, onChangeContent, onDragEnter, onEditorSettings, onEditorTextSizeChanged, onFocus, onInitial, onMouseDown, onUnFocus, width) {
+      return new B.WebEditorView(editorController, $arguments, contentViewState, currentWebContent, onInitial, onChangeContent, onFocus, onUnFocus, onMouseDown, onEditorSettings, onEditorTextSizeChanged, width, height, onDragEnter, null);
     },
-    WebEditorView: function WebEditorView(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) {
+    WebEditorView: function WebEditorView(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14) {
       var _ = this;
       _.editorController = t0;
       _.$arguments = t1;
@@ -1429,13 +1429,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.onInitial = t4;
       _.onChangeContent = t5;
       _.onFocus = t6;
-      _.onMouseDown = t7;
-      _.onEditorSettings = t8;
-      _.onEditorTextSizeChanged = t9;
-      _.width = t10;
-      _.height = t11;
-      _.onDragEnter = t12;
-      _.key = t13;
+      _.onUnFocus = t7;
+      _.onMouseDown = t8;
+      _.onEditorSettings = t9;
+      _.onEditorTextSizeChanged = t10;
+      _.width = t11;
+      _.height = t12;
+      _.onDragEnter = t13;
+      _.key = t14;
     },
     WebEditorView_build_closure: function WebEditorView_build_closure(t0, t1) {
       this.$this = t0;
@@ -8182,7 +8183,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t2 = A.Directionality_maybeOf(context);
           if (t2 == null)
             t2 = C.TextDirection_1;
-          return B.WebEditorWidget$(t1, t2, _this.editorController, _this.height, _this.onChangeContent, _this.onDragEnter, _this.onEditorSettings, _this.onEditorTextSizeChanged, _this.onFocus, _this.onInitial, _this.onMouseDown, null, _this.width);
+          return B.WebEditorWidget$(t1, t2, _this.editorController, _this.height, _this.onChangeContent, _this.onDragEnter, _this.onEditorSettings, _this.onEditorTextSizeChanged, _this.onFocus, _this.onInitial, _this.onMouseDown, _this.onUnFocus, _this.width);
         case 9:
         case 10:
         case 11:
@@ -8207,7 +8208,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t2 = A.Directionality_maybeOf(context);
           if (t2 == null)
             t2 = C.TextDirection_1;
-          return B.WebEditorWidget$(t1, t2, _this.editorController, _this.height, _this.onChangeContent, _this.onDragEnter, _this.onEditorSettings, _this.onEditorTextSizeChanged, _this.onFocus, _this.onInitial, _this.onMouseDown, null, _this.width);
+          return B.WebEditorWidget$(t1, t2, _this.editorController, _this.height, _this.onChangeContent, _this.onDragEnter, _this.onEditorSettings, _this.onEditorTextSizeChanged, _this.onFocus, _this.onInitial, _this.onMouseDown, _this.onUnFocus, _this.width);
       }
     }
   };
@@ -13828,7 +13829,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ComposerView_build___closure7.prototype = {
     call$0() {
-      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14,
+      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -13848,14 +13849,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t10 = t3._as(t2.get(t1)).get$handleOnFocusHtmlEditorWeb();
       A.Expando__checkType(t1);
-      t11 = t3._as(t2.get(t1)).get$handleOnMouseDownHtmlEditorWeb();
+      t11 = t3._as(t2.get(t1)).get$handleOnUnFocusEditorWeb();
       A.Expando__checkType(t1);
-      t12 = t3._as(t2.get(t1)).richTextWebController.get$onEditorSettingsChange();
+      t12 = t3._as(t2.get(t1)).get$handleOnMouseDownHtmlEditorWeb();
       A.Expando__checkType(t1);
-      t13 = t3._as(t2.get(t1)).richTextWebController.get$onEditorTextSizeChanged();
-      t14 = this.constraints;
+      t13 = t3._as(t2.get(t1)).richTextWebController.get$onEditorSettingsChange();
       A.Expando__checkType(t1);
-      return B.WebEditorView$(t5, t6, t7, t4, t14.maxHeight, t9, t3._as(t2.get(t1)).get$handleOnDragEnterHtmlEditorWeb(), t12, t13, t10, t8, t11, t14.maxWidth);
+      t14 = t3._as(t2.get(t1)).richTextWebController.get$onEditorTextSizeChanged();
+      t15 = this.constraints;
+      A.Expando__checkType(t1);
+      return B.WebEditorView$(t5, t6, t7, t4, t15.maxHeight, t9, t3._as(t2.get(t1)).get$handleOnDragEnterHtmlEditorWeb(), t13, t14, t10, t8, t12, t11, t15.maxWidth);
     },
     $signature: typesOffset + 2
   };
@@ -14194,7 +14197,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ComposerView_build____closure9.prototype = {
     call$0() {
-      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14,
+      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -14214,16 +14217,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t10 = t3._as(t2.get(t1)).get$handleOnFocusHtmlEditorWeb();
       A.Expando__checkType(t1);
-      t11 = t3._as(t2.get(t1)).get$handleOnMouseDownHtmlEditorWeb();
+      t11 = t3._as(t2.get(t1)).get$handleOnUnFocusEditorWeb();
       A.Expando__checkType(t1);
-      t12 = t3._as(t2.get(t1)).richTextWebController;
-      t12 = t12 == null ? null : t12.get$onEditorSettingsChange();
+      t12 = t3._as(t2.get(t1)).get$handleOnMouseDownHtmlEditorWeb();
       A.Expando__checkType(t1);
       t13 = t3._as(t2.get(t1)).richTextWebController;
-      t13 = t13 == null ? null : t13.get$onEditorTextSizeChanged();
-      t14 = this.constraints;
+      t13 = t13 == null ? null : t13.get$onEditorSettingsChange();
       A.Expando__checkType(t1);
-      return B.WebEditorView$(t5, t6, t7, t4, t14.maxHeight, t9, t3._as(t2.get(t1)).get$handleOnDragEnterHtmlEditorWeb(), t12, t13, t10, t8, t11, t14.maxWidth);
+      t14 = t3._as(t2.get(t1)).richTextWebController;
+      t14 = t14 == null ? null : t14.get$onEditorTextSizeChanged();
+      t15 = this.constraints;
+      A.Expando__checkType(t1);
+      return B.WebEditorView$(t5, t6, t7, t4, t15.maxHeight, t9, t3._as(t2.get(t1)).get$handleOnDragEnterHtmlEditorWeb(), t13, t14, t10, t8, t12, t11, t15.maxWidth);
     },
     $signature: typesOffset + 2
   };
@@ -14621,7 +14626,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ComposerView_build___closure.prototype = {
     call$0() {
-      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14,
+      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -14641,14 +14646,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t10 = t3._as(t2.get(t1)).get$handleOnFocusHtmlEditorWeb();
       A.Expando__checkType(t1);
-      t11 = t3._as(t2.get(t1)).get$handleOnMouseDownHtmlEditorWeb();
+      t11 = t3._as(t2.get(t1)).get$handleOnUnFocusEditorWeb();
       A.Expando__checkType(t1);
-      t12 = t3._as(t2.get(t1)).richTextWebController.get$onEditorSettingsChange();
+      t12 = t3._as(t2.get(t1)).get$handleOnMouseDownHtmlEditorWeb();
       A.Expando__checkType(t1);
-      t13 = t3._as(t2.get(t1)).richTextWebController.get$onEditorTextSizeChanged();
-      t14 = this.constraints;
+      t13 = t3._as(t2.get(t1)).richTextWebController.get$onEditorSettingsChange();
       A.Expando__checkType(t1);
-      return B.WebEditorView$(t5, t6, t7, t4, t14.maxHeight, t9, t3._as(t2.get(t1)).get$handleOnDragEnterHtmlEditorWeb(), t12, t13, t10, t8, t11, t14.maxWidth);
+      t14 = t3._as(t2.get(t1)).richTextWebController.get$onEditorTextSizeChanged();
+      t15 = this.constraints;
+      A.Expando__checkType(t1);
+      return B.WebEditorView$(t5, t6, t7, t4, t15.maxHeight, t9, t3._as(t2.get(t1)).get$handleOnDragEnterHtmlEditorWeb(), t13, t14, t10, t8, t12, t11, t15.maxWidth);
     },
     $signature: typesOffset + 2
   };
@@ -14927,7 +14934,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A.Directionality_maybeOf(this.context);
       if (t3 == null)
         t3 = C.TextDirection_1;
-      return B.WebEditorWidget$(t2, t3, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onMouseDown, null, t1.width);
+      return B.WebEditorWidget$(t2, t3, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onMouseDown, t1.onUnFocus, t1.width);
     },
     $signature: typesOffset + 9
   };
@@ -14948,7 +14955,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = A.Directionality_maybeOf(this.context);
         if (t3 == null)
           t3 = C.TextDirection_1;
-        return B.WebEditorWidget$(t2, t3, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onMouseDown, null, t1.width);
+        return B.WebEditorWidget$(t2, t3, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onMouseDown, t1.onUnFocus, t1.width);
       }
     },
     $signature: 64
@@ -14969,7 +14976,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = A.Directionality_maybeOf(t2);
       if (t2 == null)
         t2 = C.TextDirection_1;
-      return B.WebEditorWidget$(t3, t2, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onMouseDown, null, t1.width);
+      return B.WebEditorWidget$(t3, t2, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onMouseDown, t1.onUnFocus, t1.width);
     },
     $signature: typesOffset + 9
   };
@@ -14992,7 +14999,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = A.Directionality_maybeOf(t2);
         if (t2 == null)
           t2 = C.TextDirection_1;
-        return B.WebEditorWidget$(t3, t2, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onMouseDown, null, t1.width);
+        return B.WebEditorWidget$(t3, t2, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onMouseDown, t1.onUnFocus, t1.width);
       }
     },
     $signature: 64
@@ -21705,5 +21712,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "DqnV4P6GEcV0l01+UQmHFTFLQRU=");
+})($__dart_deferred_initializers__, "PWoAtmTJb8vCB4120HyZAMKB89Y=");
 ;
