@@ -188,6 +188,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   ButtonState _closeComposerButtonState = ButtonState.enabled;
   ButtonState _saveToDraftButtonState = ButtonState.enabled;
   ButtonState _sendButtonState = ButtonState.enabled;
+  bool _isEditorClicked = false;
 
   late Worker uploadInlineImageWorker;
   late Worker dashboardViewStateWorker;
@@ -250,6 +251,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     subjectEmailInputFocusNode?.removeListener(_subjectEmailInputFocusListener);
     _composerCacheListener?.cancel();
     _beforeReconnectManager.removeListener(onBeforeReconnect);
+    _isEditorClicked = false;
     if (PlatformInfo.isWeb) {
       richTextWebController = null;
     } else {
@@ -1891,7 +1893,15 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     richTextWebController?.closeAllMenuPopup();
   }
 
+  void handleOnUnFocusEditorWeb() {
+    if (_isEditorClicked) {
+      _isEditorClicked = false;
+      richTextWebController?.editorController.setFocus();
+    }
+  }
+
   void handleOnMouseDownHtmlEditorWeb(BuildContext context) {
+    _isEditorClicked = true;
     Navigator.maybePop(context);
     FocusScope.of(context).unfocus();
     _collapseAllRecipient();
