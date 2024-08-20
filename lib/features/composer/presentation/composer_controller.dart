@@ -218,7 +218,7 @@ class ComposerController extends BaseController
   int? _savedEmailDraftHash;
   bool _restoringSignatureButton = false;
   GlobalKey? responsiveContainerKey;
-  
+
   @visibleForTesting
   bool get restoringSignatureButton => _restoringSignatureButton;
 
