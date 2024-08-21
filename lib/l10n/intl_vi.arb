@@ -2900,7 +2900,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "pleaseChooseAnImageSizeCorrectly": "Vui lòng chọn kích thước hình ảnh <= {maxSize}KB",
+  "pleaseChooseAnImageSizeCorrectly": "Vui lòng chọn kích thước hình ảnh nhỏ hơn {maxSize}KB",
   "@pleaseChooseAnImageSizeCorrectly": {
     "type": "text",
     "placeholders_order": [
@@ -4116,6 +4116,96 @@
   },
   "dialogMessageSessionHasExpired": "Đã hết phiên đăng nhập. Vui lòng đăng nhập lại.",
   "@dialogMessageSessionHasExpired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selected": "Đã chọn",
+  "@selected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOnRequestReadReceipt": "Bật yêu cầu xác nhận đọc",
+  "@turnOnRequestReadReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notSelected": "Chưa chọn",
+  "@notSelected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requestReadReceiptHasBeenDisabled": "Đã tắt yêu cầu xác nhận đọc",
+  "@requestReadReceiptHasBeenDisabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOffRequestReadReceipt": "Tắt yêu cầu xác nhận đọc",
+  "@turnOffRequestReadReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requestReadReceiptHasBeenEnabled": "Đã bật yêu cầu xác nhận đọc",
+  "@requestReadReceiptHasBeenEnabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sMimeGoodSignatureMessage": "Tin nhắn đã được xác thực với chữ kí SMime.",
+  "@sMimeGoodSignatureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "generalSignatureImageUploadError": "Tải lên hình ảnh không thành công. Hãy thử lại.",
+  "@generalSignatureImageUploadError": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no_internet_connection_try_again_later": "Không có kết nối mạng, thử lại sau.",
+  "@no_internet_connection_try_again_later": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sMimeBadSignatureMessage": "Xác thực SMime không thành công.",
+  "@sMimeBadSignatureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "canNotUploadFileToSignature": "Tải lên hình ảnh không thành công",
+  "@canNotUploadFileToSignature": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "renameFolderFailure": "Lỗi sửa tên thư mục",
+  "@renameFolderFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "thisImageCannotBePastedIntoTheEditor": "Dán hình ảnh không thành công.",
+  "@thisImageCannotBePastedIntoTheEditor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAsSpamFailed": "Đánh dấu spam không thành công",
+  "@markAsSpamFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptySpamFolderFailed": "Dọn dẹp thư mục Spam không thành công",
+  "@emptySpamFolderFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
