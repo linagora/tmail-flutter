@@ -29,10 +29,10 @@ class LanguageRegionOverlay extends StatelessWidget {
       width: maxWidth,
       margin: const EdgeInsets.only(top: 4, bottom: 24),
       padding: const EdgeInsets.all(8),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: const [
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+        boxShadow: [
           BoxShadow(
             color: AppColor.colorShadowBgContentEmail,
             blurRadius: 24,
