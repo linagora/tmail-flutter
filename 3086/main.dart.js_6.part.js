@@ -2511,7 +2511,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     build$1(context) {
       var t5, t6, t7, t8, _this = this, _null = null,
         t1 = _this._language_menu_popup_dialog_widget$_visible,
-        t2 = A.GestureDetector$(B.HitTestBehavior_1, _null, B.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C._LanguageMenuPopupDialogWidgetState_build_closure(_this), _null, _null, _null, _null, _null, _null, _null, false, B.Offset_7BT),
+        t2 = A.GestureDetector$(B.HitTestBehavior_1, _null, B.DragStartBehavior_1, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C._LanguageMenuPopupDialogWidgetState_build_closure(_this), _null, _null, _null, _null, _null, _null, _null, false, B.Offset_7BT),
         t3 = _this._widget,
         t4 = t3.languageSelected;
       t3 = t3.maxWidth;
@@ -2523,8 +2523,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t6 = _this._language_menu_popup_dialog_widget$_visible;
       t7 = C.LocaleExtension_getLanguageNameByCurrentLocale(_this._widget.languageSelected, context);
       t8 = _this._widget.maxWidth;
-      t1 = A.PortalTarget$(B.C_Filled, A.PortalTarget$(E.Aligned_wEo, A.TMailButtonWidget$(B.Color_4294112245, A.Border_Border$all(B.Color_520093696, 0.5), 10, _null, true, false, _null, "assets/images/ic_dropdown.svg", B.TextDirection_0, _null, _null, 8, _null, B.MainAxisSize_1, _null, 1 / 0, _null, t8, 0, _null, _null, new C._LanguageMenuPopupDialogWidgetState_build_closure0(_this), D.EdgeInsetsDirectional_10_10_10_10, t7, _null, B.TextStyle_69t3, _null, _null, _null, _null, false, _null), new C.LanguageRegionOverlay(B.List_j7o, t4, t3, new C._LanguageMenuPopupDialogWidgetState_build_closure1(_this), t5, _null), t6), t2, t1);
-      return new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), false, false, true, false, t1, _null);
+      return A.PortalTarget$(B.C_Filled, A.PortalTarget$(E.Aligned_wEo, A.TMailButtonWidget$(B.Color_4294112245, A.Border_Border$all(B.Color_520093696, 0.5), 10, _null, true, false, _null, "assets/images/ic_dropdown.svg", B.TextDirection_0, _null, _null, 8, _null, B.MainAxisSize_1, _null, 1 / 0, _null, t8, 0, _null, _null, new C._LanguageMenuPopupDialogWidgetState_build_closure0(_this), D.EdgeInsetsDirectional_10_10_10_10, t7, _null, B.TextStyle_69t3, _null, _null, _null, _null, false, _null), new C.LanguageRegionOverlay(B.List_j7o, t4, t3, new C._LanguageMenuPopupDialogWidgetState_build_closure1(_this), t5, _null), t6), t2, t1);
     }
   };
   C.LanguageTitleWidget.prototype = {
@@ -4082,8 +4081,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   C._LanguageMenuPopupDialogWidgetState_build_closure1.prototype = {
     call$1(locale) {
       var t1 = this.$this;
-      t1._widget.onSelectLanguageAction$1(locale);
       t1.setState$1(new C._LanguageMenuPopupDialogWidgetState_build__closure(t1));
+      t1._widget.onSelectLanguageAction$1(locale);
     },
     $signature: 1756
   };
@@ -5822,5 +5821,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "L7vLwfORvZiZrskf/F3982puOZw=");
+})($__dart_deferred_initializers__, "yWDlFs86tmxTg9htF/IQo9FSFvw=");
 ;
