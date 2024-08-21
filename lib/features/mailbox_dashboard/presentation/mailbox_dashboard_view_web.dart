@@ -52,99 +52,96 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         ResponsiveWidget(
             responsiveUtils: controller.responsiveUtils,
             desktop: Scaffold(
-              body: GestureDetector(
-                onTap: () => FocusScope.of(context).unfocus(),
-                child: Container(
-                  color: AppColor.colorBgDesktop,
-                  child: Column(children: [
-                    Obx(() {
-                      final accountId = controller.accountId.value;
-                      if (accountId == null) {
-                        return const SizedBox.shrink();
-                      } else {
-                        return NavigationBarWidget(
-                          avatarUserName: controller.sessionCurrent?.username.firstCharacter ?? '',
-                          searchForm: SearchInputFormWidget(),
-                          appGridController: controller.appGridDashboardController,
-                          onShowAppDashboardAction: controller.showAppDashboardAction,
-                          onTapApplicationLogoAction: controller.redirectToInboxAction,
-                          onTapAvatarAction: (position) => controller.handleClickAvatarAction(context, position),
-                        );
-                      }
-                    }),
-                    Expanded(child: Row(children: [
-                      Column(children: [
-                        _buildComposerButton(context),
-                        Expanded(child: SizedBox(
-                          width: ResponsiveUtils.defaultSizeMenu,
-                          child: Obx(() {
-                            if (controller.searchMailboxActivated.isTrue) {
-                              return const SearchMailboxView(
-                                backgroundColor: AppColor.colorBgDesktop
-                              );
-                            } else {
-                              return MailboxView();
-                            }
-                          })
-                        ))
-                      ]),
-                      Expanded(child: Column(children: [
-                        const SpamReportBannerWebWidget(),
-                        QuotasBannerWidget(
-                          margin: const EdgeInsetsDirectional.only(end: 16, top: 8),
-                        ),
-                        _buildVacationNotificationMessage(context),
-                        Obx(() {
-                          if (controller.isEmptyTrashBannerEnabledOnWeb(context)) {
-                            return Padding(
-                              padding: const EdgeInsetsDirectional.only(
-                                top: BannerEmptyTrashStyles.webTopMargin,
-                                end: BannerEmptyTrashStyles.webEndMargin
-                              ),
-                              child: BannerEmptyTrashWidget(
-                                onTapAction: () => controller.emptyTrashAction(context)
-                              ),
+              body: Container(
+                color: AppColor.colorBgDesktop,
+                child: Column(children: [
+                  Obx(() {
+                    final accountId = controller.accountId.value;
+                    if (accountId == null) {
+                      return const SizedBox.shrink();
+                    } else {
+                      return NavigationBarWidget(
+                        avatarUserName: controller.sessionCurrent?.username.firstCharacter ?? '',
+                        searchForm: SearchInputFormWidget(),
+                        appGridController: controller.appGridDashboardController,
+                        onShowAppDashboardAction: controller.showAppDashboardAction,
+                        onTapApplicationLogoAction: controller.redirectToInboxAction,
+                        onTapAvatarAction: (position) => controller.handleClickAvatarAction(context, position),
+                      );
+                    }
+                  }),
+                  Expanded(child: Row(children: [
+                    Column(children: [
+                      _buildComposerButton(context),
+                      Expanded(child: SizedBox(
+                        width: ResponsiveUtils.defaultSizeMenu,
+                        child: Obx(() {
+                          if (controller.searchMailboxActivated.isTrue) {
+                            return const SearchMailboxView(
+                              backgroundColor: AppColor.colorBgDesktop
                             );
                           } else {
+                            return MailboxView();
+                          }
+                        })
+                      ))
+                    ]),
+                    Expanded(child: Column(children: [
+                      const SpamReportBannerWebWidget(),
+                      QuotasBannerWidget(
+                        margin: const EdgeInsetsDirectional.only(end: 16, top: 8),
+                      ),
+                      _buildVacationNotificationMessage(context),
+                      Obx(() {
+                        if (controller.isEmptyTrashBannerEnabledOnWeb(context)) {
+                          return Padding(
+                            padding: const EdgeInsetsDirectional.only(
+                              top: BannerEmptyTrashStyles.webTopMargin,
+                              end: BannerEmptyTrashStyles.webEndMargin
+                            ),
+                            child: BannerEmptyTrashWidget(
+                              onTapAction: () => controller.emptyTrashAction(context)
+                            ),
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      }),
+                      Obx(() {
+                        if (controller.isEmptySpamBannerEnabledOnWeb(context)) {
+                          return Padding(
+                            padding: const EdgeInsetsDirectional.only(
+                              top: BannerDeleteAllSpamEmailsStyles.webTopMargin,
+                              end: BannerDeleteAllSpamEmailsStyles.webEndMargin
+                            ),
+                            child: BannerDeleteAllSpamEmailsWidget(
+                              onTapAction: () => controller.openDialogEmptySpamFolder(context)
+                            ),
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      }),
+                      Obx(() => RecoverDeletedMessageLoadingBannerWidget(
+                          isLoading: controller.isRecoveringDeletedMessage.value,
+                          horizontalLoadingWidget: horizontalLoadingWidget,
+                          responsiveUtils: controller.responsiveUtils,
+                      )),
+                      _buildListButtonQuickSearchFilter(context),
+                      _buildMarkAsMailboxReadLoading(context),
+                      Expanded(child: Obx(() {
+                        switch(controller.dashboardRoute.value) {
+                          case DashboardRoutes.thread:
+                            return _buildThreadViewForWebDesktop(context);
+                          case DashboardRoutes.emailDetailed:
+                            return const EmailView();
+                          default:
                             return const SizedBox.shrink();
-                          }
-                        }),
-                        Obx(() {
-                          if (controller.isEmptySpamBannerEnabledOnWeb(context)) {
-                            return Padding(
-                              padding: const EdgeInsetsDirectional.only(
-                                top: BannerDeleteAllSpamEmailsStyles.webTopMargin,
-                                end: BannerDeleteAllSpamEmailsStyles.webEndMargin
-                              ),
-                              child: BannerDeleteAllSpamEmailsWidget(
-                                onTapAction: () => controller.openDialogEmptySpamFolder(context)
-                              ),
-                            );
-                          } else {
-                            return const SizedBox.shrink();
-                          }
-                        }),
-                        Obx(() => RecoverDeletedMessageLoadingBannerWidget(
-                            isLoading: controller.isRecoveringDeletedMessage.value,
-                            horizontalLoadingWidget: horizontalLoadingWidget,
-                            responsiveUtils: controller.responsiveUtils,
-                        )),
-                        _buildListButtonQuickSearchFilter(context),
-                        _buildMarkAsMailboxReadLoading(context),
-                        Expanded(child: Obx(() {
-                          switch(controller.dashboardRoute.value) {
-                            case DashboardRoutes.thread:
-                              return _buildThreadViewForWebDesktop(context);
-                            case DashboardRoutes.emailDetailed:
-                              return const EmailView();
-                            default:
-                              return const SizedBox.shrink();
-                          }
-                        }))
-                      ]))
+                        }
+                      }))
                     ]))
-                  ]),
-                ),
+                  ]))
+                ]),
               ),
             ),
             tabletLarge: Obx(() {
