@@ -34,12 +34,11 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: PlatformInfo.isWeb
-          ? PointerInterceptor(child: _buildSearchBody(context))
-          : SafeArea(child: _buildSearchBody(context)),
-      ),
+      body: PlatformInfo.isWeb
+        ? PointerInterceptor(child: _buildSearchBody(context))
+        : GestureDetector(
+            onTap: FocusScope.of(context).unfocus,
+            child: SafeArea(child: _buildSearchBody(context))),
     );
   }
 
