@@ -2978,7 +2978,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "pleaseChooseAnImageSizeCorrectly": "Пожалуйста, выберите размер изображения <= {maxSize} КБ",
+  "pleaseChooseAnImageSizeCorrectly": "Выберите изображение с размером менее {maxSize} КБ",
   "@pleaseChooseAnImageSizeCorrectly": {
     "type": "text",
     "placeholders_order": [
@@ -4110,6 +4110,114 @@
   },
   "creatingMessage": "Создание сообщения",
   "@creatingMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sessionExpired": "Сеанс истек",
+  "@sessionExpired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOnRequestReadReceipt": "Включить запрос отчета о прочтении",
+  "@turnOnRequestReadReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requestReadReceiptHasBeenDisabled": "Запрос отчета о прочтении деактивирован",
+  "@requestReadReceiptHasBeenDisabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dialogMessageSessionHasExpired": "Текущий сеанс истек. Переподключитесь к серверу",
+  "@dialogMessageSessionHasExpired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOffRequestReadReceipt": "Отключить запрос отчета о прочтении",
+  "@turnOffRequestReadReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reconnect": "Переподключиться",
+  "@reconnect": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notSelected": "Не выбраны",
+  "@notSelected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selected": "Выбраны",
+  "@selected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requestReadReceiptHasBeenEnabled": "Запрос отчета о прочтении активирован",
+  "@requestReadReceiptHasBeenEnabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAsSpamFailed": "Не удалось пометить как спам",
+  "@markAsSpamFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "renameFolderFailure": "Не удалось переименовать папку",
+  "@renameFolderFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sMimeGoodSignatureMessage": "Подлинность данного сообщения подтверждена подписью SMime.",
+  "@sMimeGoodSignatureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptySpamFolderFailed": "Не удалось очистить папку \"Спам\"",
+  "@emptySpamFolderFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "canNotUploadFileToSignature": "Не удалось загрузить этот файл в подпись",
+  "@canNotUploadFileToSignature": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sMimeBadSignatureMessage": "Это сообщение не прошло проверку подписи SMime.",
+  "@sMimeBadSignatureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "thisImageCannotBePastedIntoTheEditor": "Это изображение невозможно вставить в редактор.",
+  "@thisImageCannotBePastedIntoTheEditor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no_internet_connection_try_again_later": "Отсутствует подключение к интернету, попробуйте позже.",
+  "@no_internet_connection_try_again_later": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "generalSignatureImageUploadError": "Произошла ошибка при загрузке изображения. Попробуйте еще раз.",
+  "@generalSignatureImageUploadError": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
