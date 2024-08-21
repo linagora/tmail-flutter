@@ -13,9 +13,7 @@ class LanguageAndRegionController extends BaseController {
 
   final SaveLanguageInteractor _saveLanguageInteractor;
 
-  final listSupportedLanguages = <Locale>[].obs;
   final languageSelected = LocalizationService.defaultLocale.obs;
-  final isLanguageMenuOverlayOpen = RxBool(false);
 
   LanguageAndRegionController(this._saveLanguageInteractor);
 
@@ -34,8 +32,6 @@ class LanguageAndRegionController extends BaseController {
   }
 
   void _setUpSupportedLanguages() {
-    listSupportedLanguages.value = LocalizationService.supportedLocales;
-
     final currentLocale = Get.locale;
     log('LanguageAndRegionController::_setUpSupportedLanguages():currentLocale: $currentLocale');
     if (currentLocale != null) {
@@ -46,16 +42,11 @@ class LanguageAndRegionController extends BaseController {
   }
 
   void selectLanguage(Locale? selectedLocale) {
-    isLanguageMenuOverlayOpen.value = false;
     languageSelected.value = selectedLocale ?? LocalizationService.defaultLocale;
     _saveLanguage(languageSelected.value);
   }
 
   void _saveLanguage(Locale localeCurrent) {
     consumeState(_saveLanguageInteractor.execute(localeCurrent));
-  }
-
-  void toggleLanguageMenuOverlay() {
-    isLanguageMenuOverlayOpen.toggle();
   }
 }
