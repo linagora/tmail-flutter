@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
@@ -31,7 +32,9 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
       backgroundColor: Colors.white,
       drawerEnableOpenDragGesture: false,
       body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
+        onTap: PlatformInfo.isMobile
+          ? FocusScope.of(context).unfocus
+          : null,
         child: ResponsiveWidget(
             responsiveUtils: controller.responsiveUtils,
             desktop: Column(children: [
