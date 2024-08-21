@@ -65,13 +65,9 @@ class WebEditorWidget extends StatefulWidget {
 
 class _WebEditorState extends State<WebEditorWidget> {
 
-  static const double _offsetHeight = 50;
-  static const double _offsetWidth = 90;
   static const double _defaultHtmlEditorHeight = 550;
 
   late HtmlEditorController _editorController;
-  double? dropZoneWidth;
-  double? dropZoneHeight;
   final ValueNotifier<double> _htmlEditorHeight = ValueNotifier(_defaultHtmlEditorHeight);
   bool _dropListenerRegistered = false;
   Function(Event)? _dropListener;
@@ -82,14 +78,8 @@ class _WebEditorState extends State<WebEditorWidget> {
     _editorController = widget.editorController;
     log('_WebEditorState::initState:height: ${widget.height} | width: ${widget.width}');
     if (widget.height != null) {
-      dropZoneHeight = widget.height! - _offsetHeight;
       _htmlEditorHeight.value = widget.height ?? _defaultHtmlEditorHeight;
     }
-    if (widget.width != null) {
-      dropZoneWidth = widget.width! - _offsetWidth;
-    }
-    log('_WebEditorState::initState:dropZoneWidth: $dropZoneWidth | dropZoneHeight: $dropZoneHeight');
-
     _dropListener = (event) {
       if (event is MessageEvent) {
         if (jsonDecode(event.data)['name'] == HtmlUtils.registerDropListener.name) {
