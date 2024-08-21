@@ -56,7 +56,9 @@ class SearchEmailView extends GetWidget<SearchEmailController>
 
     return Scaffold(
       body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
+        onTap: PlatformInfo.isWeb
+          ? null
+          : FocusScope.of(context).unfocus,
         child: Container(
           color: Colors.white,
           child: Column(children: [
