@@ -816,7 +816,6 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin {
     clearFocusEditor(context);
 
     final listFileInfo = await onDragDone(context: context, details: details);
-    if (!context.mounted) return;
     await _uploadMultipleFilesToPublicAsset(
       context,
       listFileInfo,
