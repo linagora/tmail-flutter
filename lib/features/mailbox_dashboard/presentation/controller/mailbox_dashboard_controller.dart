@@ -28,6 +28,7 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
+import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/extensions/email_request_extension.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
@@ -240,6 +241,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   PresentationMailbox? outboxMailbox;
   ComposerArguments? composerArguments;
   List<Identity>? _identities;
+  ButtonState _fromMeSearchFilterButtonState = ButtonState.disabled;
 
   late StreamSubscription _emailAddressStreamSubscription;
   late StreamSubscription _emailContentStreamSubscription;
@@ -1673,6 +1675,10 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
       if (accountId.value == null || sessionCurrent == null) {
         logError('MailboxDashBoardController::selectQuickSearchFilterAction(): accountId or sessionCurrent is null');
       }
+      if (_fromMeSearchFilterButtonState == ButtonState.enabled) {
+        return;
+      }
+      _fromMeSearchFilterButtonState = ButtonState.enabled;
       final listContactSelected = searchController.searchEmailFilter.value.from;
       final arguments = ContactArguments(accountId.value!, sessionCurrent!, listContactSelected);
 
@@ -1682,6 +1688,8 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
         selectQuickSearchFilterFrom(newContact);
         dispatchAction(StartSearchEmailAction(filter: filter));
       }
+
+      _fromMeSearchFilterButtonState = ButtonState.disabled;
     } else {
       selectQuickSearchFilter(filter);
       dispatchAction(StartSearchEmailAction(filter: filter));
@@ -2723,6 +2731,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     sessionCurrent = null;
     mapMailboxById = {};
     mapDefaultMailboxIdByRole = {};
+    _fromMeSearchFilterButtonState = ButtonState.disabled;
     super.onClose();
   }
 }
