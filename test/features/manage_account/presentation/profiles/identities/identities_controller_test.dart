@@ -3,14 +3,20 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/application_manager.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_default_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_identity_interactor.dart';
@@ -30,6 +36,7 @@ import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../../fixtures/session_fixtures.dart';
 import 'identities_controller_test.mocks.dart';
 
 mockControllerCallback() => InternalFinalCallback<void>(callback: () {});
@@ -194,6 +201,30 @@ void main() {
         Get.isRegistered<AddIdentityToPublicAssetsInteractor>(
           tag: BindingTag.cleanUpPublicAssetsInteractorBindingsTag),
         false);
+    });
+
+    test(
+      'should only show identities with name not empty',
+    () async {
+      // arrange
+      final identity1 = Identity(name: '', mayDelete: true);
+      final identity2 = Identity(mayDelete: true);
+      final identity3 = Identity(name: 'valid name', mayDelete: true);
+      final identity4 = Identity(name: '    ', mayDelete: true);
+      when(mockGetAllIdentitiesInteractor.execute(any, any, properties: anyNamed('properties')))
+        .thenAnswer((_) => Stream.value(Right(GetAllIdentitiesSuccess(
+          [identity1, identity2, identity3, identity4],
+          null))));
+      when(mockManageAccountDashBoardController.accountId).thenReturn(Rxn());
+      when(mockManageAccountDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
+        
+      // act
+      identitiesController.onInit();
+      mockManageAccountDashBoardController.accountId.value = AccountId(Id('value'));
+      await untilCalled(mockGetAllIdentitiesInteractor.execute(any, any, properties: anyNamed('properties')));
+      
+      // assert
+      await expectLater(identitiesController.listAllIdentities, [identity3]);
     });
   });
 }

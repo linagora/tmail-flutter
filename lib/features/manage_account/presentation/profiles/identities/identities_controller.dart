@@ -139,7 +139,7 @@ class IdentitiesController extends BaseController {
   void _handleGetAllIdentitiesSuccess(GetAllIdentitiesSuccess success) {
     if (success.identities?.isNotEmpty == true) {
       final newListIdentities = success.identities!
-        .where((identity) => identity.mayDelete == true)
+        .where((identity) => identity.mayDelete == true && identity.name?.trim().isNotEmpty == true)
         .toList();
       listAllIdentities.addAll(newListIdentities);
     }
