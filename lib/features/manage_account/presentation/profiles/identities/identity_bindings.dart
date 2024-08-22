@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/identity_creator/domain/usecase/save_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_default_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_identity_interactor.dart';
@@ -22,7 +23,8 @@ class IdentityBindings extends Bindings {
       Get.find<EditIdentityInteractor>(),
       Get.find<CreateNewDefaultIdentityInteractor>(),
       Get.find<EditDefaultIdentityInteractor>(),
-      Get.find<TransformHtmlSignatureInteractor>()
+      Get.find<TransformHtmlSignatureInteractor>(),
+      Get.find<SaveIdentityCacheOnWebInteractor>(),
     ));
   }
 }

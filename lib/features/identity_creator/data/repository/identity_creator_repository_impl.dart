@@ -18,4 +18,16 @@ class IdentityCreatorRepositoryImpl implements IdentityCreatorRepository {
     accountId,
     userName,
     identityCache: identityCache);
+
+  @override
+  Future<IdentityCache> getIdentityCacheOnWeb(
+    AccountId accountId,
+    UserName userName
+  ) => _identityCreatorDataSource.getIdentityCacheOnWeb(
+    accountId,
+    userName);
+
+  @override
+  Future<void> removeIdentityCacheOnWeb() 
+    => _identityCreatorDataSource.removeIdentityCacheOnWeb();
 }

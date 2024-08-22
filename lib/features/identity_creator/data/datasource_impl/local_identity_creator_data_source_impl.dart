@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:collection/collection.dart';
+import 'package:core/domain/exceptions/web_session_exception.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/account_id_extensions.dart';
@@ -29,6 +31,31 @@ class LocalIdentityCreatorDataSourceImpl implements IdentityCreatorDataSource {
         cacheKey: jsonEncode(IdentityCacheModel.fromDomain(identityCache).toJson())
       };
       window.sessionStorage.addAll(entries);
+    }).catchError(_exceptionThrower.throwException);
+  }
+    
+  @override
+  Future<IdentityCache> getIdentityCacheOnWeb(
+    AccountId accountId,
+    UserName userName
+  ) async {
+    return Future.sync(() {
+      final cacheKey = _generateTupleKey(accountId, userName);
+      final result = window.sessionStorage.entries.firstWhereOrNull(
+        (entry) => entry.key == cacheKey);
+      if (result != null) {
+        return IdentityCacheModel.fromJson(jsonDecode(result.value));
+      } else {
+        throw NotFoundInWebSessionException();
+      }
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<void> removeIdentityCacheOnWeb() async {
+    return Future.sync(() {
+      window.sessionStorage.removeWhere(
+        (key, value) => key.startsWith(LocalIdentityCreatorDataSourceImpl.sessionStorageKeyword));
     }).catchError(_exceptionThrower.throwException);
   }
 

@@ -13,8 +13,17 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
-import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:model/extensions/identity_request_dto_extension.dart';
+import 'package:tmail_ui_user/features/base/before_reconnect_handler.dart';
+import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
+import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
+import 'package:tmail_ui_user/features/identity_creator/domain/model/identity_cache.dart';
+import 'package:tmail_ui_user/features/identity_creator/domain/state/get_identity_cache_on_web_state.dart';
+import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/identity_creator/domain/usecase/remove_identity_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/identity_creator/domain/usecase/save_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/identity_creator/presentation/model/identity_creator_arguments.dart';
+import 'package:tmail_ui_user/features/identity_creator/presentation/restore_identity_cache_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_default_identity_state.dart';
@@ -47,7 +56,7 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class IdentitiesController extends BaseController {
+class IdentitiesController extends ReloadableController implements BeforeReconnectHandler {
 
   final accountDashBoardController = Get.find<ManageAccountDashBoardController>();
 
@@ -58,10 +67,15 @@ class IdentitiesController extends BaseController {
   final EditIdentityInteractor _editIdentityInteractor;
   final EditDefaultIdentityInteractor _editDefaultIdentityInteractor;
   final TransformHtmlSignatureInteractor _transformHtmlSignatureInteractor;
+  final SaveIdentityCacheOnWebInteractor _saveIdentityCacheOnWebInteractor;
 
   final identitySelected = Rxn<Identity>();
   final signatureSelected = Rxn<String>();
   final listAllIdentities = <Identity>[].obs;
+
+  dynamic newIdentityArguments;
+  
+  final _beforeReconnectManager = Get.find<BeforeReconnectManager>();
 
   IdentitiesController(
     this._getAllIdentitiesInteractor,
@@ -70,12 +84,15 @@ class IdentitiesController extends BaseController {
     this._editIdentityInteractor,
     this._createNewDefaultIdentityInteractor,
     this._editDefaultIdentityInteractor,
-    this._transformHtmlSignatureInteractor
+    this._transformHtmlSignatureInteractor,
+    this._saveIdentityCacheOnWebInteractor
   );
 
   @override
   void onInit() {
     _registerObxStreamListener();
+    RestoreIdentityCacheInteractorBindings().dependencies();
+    _beforeReconnectManager.addListener(onBeforeReconnect);
     super.onInit();
   }
 
@@ -96,6 +113,8 @@ class IdentitiesController extends BaseController {
       signatureSelected.value = success.signature;
     } else if (success is RemoveIdentityFromPublicAssetsSuccessState) {
       _deleteIdentityAction(success.identityId);
+    } else if (success is GetIdentityCacheOnWebSuccess) {
+      _openIdentityEditorFromCache(success);
     }
   }
 
@@ -108,6 +127,8 @@ class IdentitiesController extends BaseController {
       _deleteIdentityAction(failure.identityId);
     } else if (failure is NotFoundAnyPublicAssetsFailureState) {
       _deleteIdentityAction(failure.identityId);
+    } else if (failure is GetIdentityCacheOnWebFailure) {
+      _removeIdentityCache();
     }
   }
 
@@ -117,6 +138,7 @@ class IdentitiesController extends BaseController {
       if (accountId != null && session != null) {
         _getAllIdentities(session, accountId);
         _injectCleanUpPublicAssetsInteractorBindings(session, accountId);
+        _handleIdentityCache();
       }
     });
   }
@@ -164,7 +186,7 @@ class IdentitiesController extends BaseController {
     if (accountId != null && session != null) {
       final arguments = IdentityCreatorArguments(accountId, session);
 
-      final newIdentityArguments = PlatformInfo.isWeb
+      newIdentityArguments = PlatformInfo.isWeb
         ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.identityCreator, arguments: arguments)
         : await push(AppRoutes.identityCreator, arguments: arguments);
 
@@ -189,6 +211,8 @@ class IdentitiesController extends BaseController {
   }
 
   void _createNewIdentitySuccess(CreateNewIdentitySuccess success) {
+    _removeIdentityCache();
+
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
@@ -204,6 +228,8 @@ class IdentitiesController extends BaseController {
   }
 
   void _createNewDefaultIdentitySuccess(CreateNewDefaultIdentitySuccess success) {
+    _removeIdentityCache();
+
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
@@ -318,7 +344,7 @@ class IdentitiesController extends BaseController {
         identity: identity,
         actionType: IdentityActionType.edit);
 
-      final newIdentityArguments = PlatformInfo.isWeb
+      newIdentityArguments = PlatformInfo.isWeb
         ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.identityCreator, arguments: arguments)
         : await push(AppRoutes.identityCreator, arguments: arguments);
 
@@ -343,6 +369,8 @@ class IdentitiesController extends BaseController {
   }
 
   void _editIdentitySuccess(EditIdentitySuccess success) {
+    _removeIdentityCache();
+
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
@@ -393,8 +421,107 @@ class IdentitiesController extends BaseController {
   }
 
   @override
+  void handleReloaded(Session session) {
+    log('IdentitiesController::handleReloaded:');
+    _handleIdentityCache();
+  }
+
+  Future<void> _openIdentityEditorFromCache(GetIdentityCacheOnWebSuccess success) async {
+    final identityCache = success.identityCache;
+    final accountId = accountDashBoardController.accountId.value;
+    final session = accountDashBoardController.sessionCurrent;
+    if (identityCache == null || accountId == null || session == null) return;
+
+    final arguments = IdentityCreatorArguments(
+      accountId,
+      session,
+      identity: identityCache.identity,
+      isDefault: identityCache.isDefault,
+      publicAssetsInIdentityArguments: identityCache.publicAssetsInIdentityArguments,
+      actionType: identityCache.identityActionType);
+
+    newIdentityArguments = PlatformInfo.isWeb
+      ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.identityCreator, arguments: arguments)
+      : await push(AppRoutes.identityCreator, arguments: arguments);
+
+    if (newIdentityArguments == null) {
+      _removeIdentityCache();
+    }
+
+    if (newIdentityArguments is CreateNewIdentityRequest) {
+      _createNewIdentityAction(session, accountId, newIdentityArguments);
+    } else if (newIdentityArguments is EditIdentityRequest) {
+      _editIdentityAction(session, accountId, newIdentityArguments);
+    }
+  }
+
+  void _handleIdentityCache() {
+    final session = accountDashBoardController.sessionCurrent;
+    final accountId = accountDashBoardController.accountId;
+    if (session == null
+      || accountId.value == null
+      || !PlatformInfo.isWeb) return;
+    
+    final getIdentityCacheOnWebInteractor = getBinding<GetIdentityCacheOnWebInteractor>(
+      tag: BindingTag.restoreIdentityCacheInteractorBindingsTag);
+    if (getIdentityCacheOnWebInteractor == null) return;
+
+    consumeState(getIdentityCacheOnWebInteractor.execute(
+      accountId.value!,
+      session.username));
+  }
+
+  void _removeIdentityCache() {
+    final removeIdentityCacheOnWebInteractor = getBinding<RemoveIdentityCacheOnWebInteractor>(
+      tag: BindingTag.restoreIdentityCacheInteractorBindingsTag);
+    if (removeIdentityCacheOnWebInteractor == null) return;
+    consumeState(removeIdentityCacheOnWebInteractor.execute());
+  }
+
+  Future<void> _saveIdentityCacheOnWebAction(dynamic requestArgument) async {
+    final session = accountDashBoardController.sessionCurrent;
+    final accountId = accountDashBoardController.accountId;
+    if (accountId.value == null || session?.username == null) return;
+
+    IdentityCache? identityCache;
+
+    switch (requestArgument) {
+      case (CreateNewIdentityRequest createNewIdentityRequest):
+        identityCache = IdentityCache(
+          identity: createNewIdentityRequest.newIdentity,
+          identityActionType: IdentityActionType.create,
+          isDefault: createNewIdentityRequest.isDefaultIdentity,
+          publicAssetsInIdentityArguments: createNewIdentityRequest.publicAssetsInIdentityArguments);
+        break;
+      case (EditIdentityRequest editIdentityRequest):
+        identityCache = IdentityCache(
+          identity: editIdentityRequest.identityRequest.toIdentityWithId(editIdentityRequest.identityId),
+          identityActionType: IdentityActionType.edit,
+          isDefault: editIdentityRequest.isDefaultIdentity,
+          publicAssetsInIdentityArguments: editIdentityRequest.publicAssetsInIdentityArguments);
+        break;
+      default:
+        break;
+    }
+
+    if (identityCache == null) return;
+  
+    consumeState(_saveIdentityCacheOnWebInteractor.execute(
+      accountId.value!,
+      session!.username,
+      identityCache: identityCache
+    ));
+  }
+
+  @override
+  Future<void> onBeforeReconnect() => _saveIdentityCacheOnWebAction(newIdentityArguments);
+
+  @override
   void onClose() {
     CleanUpPublicAssetsInteractorBindings().close();
+    RestoreIdentityCacheInteractorBindings().close();
+    newIdentityArguments = null;
+    _beforeReconnectManager.removeListener(onBeforeReconnect);
     super.onClose();
   }
 }

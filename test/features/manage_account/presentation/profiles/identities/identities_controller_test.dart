@@ -11,10 +11,15 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
+import 'package:tmail_ui_user/features/identity_creator/domain/usecase/save_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_default_identity_interactor.dart';
@@ -61,6 +66,11 @@ const fallbackGenerators = {
   MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
 
+  // Reloadable controller mockspecs
+  MockSpec<GetSessionInteractor>(),
+  MockSpec<GetAuthenticatedAccountInteractor>(),
+  MockSpec<UpdateAccountCacheInteractor>(),
+
   // Identities controller mockspecs
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<DeleteIdentityInteractor>(),
@@ -70,6 +80,8 @@ const fallbackGenerators = {
   MockSpec<EditDefaultIdentityInteractor>(),
   MockSpec<TransformHtmlSignatureInteractor>(),
   MockSpec<ManageAccountDashBoardController>(fallbackGenerators: fallbackGenerators),
+  MockSpec<SaveIdentityCacheOnWebInteractor>(),
+  MockSpec<BeforeReconnectManager>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -98,6 +110,8 @@ void main() {
   late MockApplicationManager mockApplicationManager;
   late MockToastManager mockToastManager;
 
+  late MockSaveIdentityCacheOnWebInteractor mockSaveIdentityCacheOnWebInteractor;
+
   setUpAll(() {
     //mock base controller
     mockCachingManager = MockCachingManager();
@@ -113,6 +127,8 @@ void main() {
     mockUuid = MockUuid();
     mockApplicationManager = MockApplicationManager();
     mockToastManager = MockToastManager();
+
+    mockSaveIdentityCacheOnWebInteractor = MockSaveIdentityCacheOnWebInteractor();
 
     Get.put<CachingManager>(mockCachingManager);
     Get.put<LanguageCacheManager>(mockLanguageCacheManager);
@@ -132,6 +148,11 @@ void main() {
     Get.put<ApplicationManager>(mockApplicationManager);
     Get.put<ToastManager>(mockToastManager);
 
+    // mock reloadable controller
+    Get.put<GetSessionInteractor>(MockGetSessionInteractor());
+    Get.put<GetAuthenticatedAccountInteractor>(MockGetAuthenticatedAccountInteractor());
+    Get.put<UpdateAccountCacheInteractor>(MockUpdateAccountCacheInteractor());
+
     // mock identities controller
     mockGetAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
     mockDeleteIdentityInteractor = MockDeleteIdentityInteractor();
@@ -142,6 +163,7 @@ void main() {
     mockTransformHtmlSignatureInteractor = MockTransformHtmlSignatureInteractor();
 
     mockManageAccountDashBoardController = MockManageAccountDashBoardController();
+    Get.put<BeforeReconnectManager>(MockBeforeReconnectManager());
 
     Get.put<ManageAccountDashBoardController>(mockManageAccountDashBoardController);
 
@@ -154,7 +176,8 @@ void main() {
       mockEditIdentityInteractor,
       mockCreateNewDefaultIdentityInteractor,
       mockEditDefaultIdentityInteractor,
-      mockTransformHtmlSignatureInteractor);
+      mockTransformHtmlSignatureInteractor,
+      mockSaveIdentityCacheOnWebInteractor);
   });
 
   group('identities controller test:', () {

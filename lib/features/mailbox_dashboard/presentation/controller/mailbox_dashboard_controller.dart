@@ -72,6 +72,8 @@ import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
+import 'package:tmail_ui_user/features/identity_creator/domain/state/get_identity_cache_on_web_state.dart';
+import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
@@ -174,6 +176,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
   final MarkAsMailboxReadInteractor _markAsMailboxReadInteractor;
   final GetComposerCacheOnWebInteractor _getEmailCacheOnWebInteractor;
+  final GetIdentityCacheOnWebInteractor _getIdentityCacheOnWebInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
   final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
   final MarkAsMultipleEmailReadInteractor _markAsMultipleEmailReadInteractor;
@@ -257,6 +260,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     this._deleteEmailPermanentlyInteractor,
     this._markAsMailboxReadInteractor,
     this._getEmailCacheOnWebInteractor,
+    this._getIdentityCacheOnWebInteractor,
     this._markAsEmailReadInteractor,
     this._markAsStarEmailInteractor,
     this._markAsMultipleEmailReadInteractor,
@@ -306,6 +310,15 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
 
     consumeState(
       _getEmailCacheOnWebInteractor.execute(
+        accountId.value!,
+        sessionCurrent!.username));
+  }
+
+  void _handleIdentityCache() async {
+    if (accountId.value == null || sessionCurrent == null) return;
+
+    consumeState(
+      _getIdentityCacheOnWebInteractor.execute(
         accountId.value!,
         sessionCurrent!.username));
   }
@@ -384,6 +397,8 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
       _handleGetAllIdentitiesSuccess(success);
     } else if (success is GetComposerCacheSuccess) {
       goToComposer(ComposerArguments.fromSessionStorageBrowser(success.composerCache));
+    } else if (success is GetIdentityCacheOnWebSuccess) {
+      goToSettings();
     }
   }
 
@@ -411,6 +426,8 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     } else if (failure is EmptySpamFolderFailure
       || failure is MoveMultipleEmailToMailboxFailure) {
       toastManager.showMessageFailure(failure);
+    } else if (failure is GetComposerCacheFailure) {
+      _handleIdentityCache();
     }
   }
 

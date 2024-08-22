@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/restore_deleted_mes
 import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
+import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -170,13 +171,15 @@ const fallbackGenerators = {
   MockSpec<ApplicationManager>(),
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<GetQuotasInteractor>(),
-  MockSpec<ToastManager>()
+  MockSpec<ToastManager>(),
+  MockSpec<GetIdentityCacheOnWebInteractor>(),
 ])
 void main() {
   final moveToMailboxInteractor = MockMoveToMailboxInteractor();
   final deleteEmailPermanentlyInteractor = MockDeleteEmailPermanentlyInteractor();
   final markAsMailboxReadInteractor = MockMarkAsMailboxReadInteractor();
   final getEmailCacheOnWebInteractor = MockGetComposerCacheOnWebInteractor();
+  final getIdentityCacheOnWebInteractor = MockGetIdentityCacheOnWebInteractor();
   final markAsEmailReadInteractor = MockMarkAsEmailReadInteractor();
   final markAsStarEmailInteractor = MockMarkAsStarEmailInteractor();
   final markAsMultipleEmailReadInteractor = MockMarkAsMultipleEmailReadInteractor();
@@ -316,6 +319,7 @@ void main() {
         deleteEmailPermanentlyInteractor,
         markAsMailboxReadInteractor,
         getEmailCacheOnWebInteractor,
+        getIdentityCacheOnWebInteractor,
         markAsEmailReadInteractor,
         markAsStarEmailInteractor,
         markAsMultipleEmailReadInteractor,
