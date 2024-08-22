@@ -15,7 +15,7 @@ class InsertImageLoadingIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isInserting) {
      return const Align(
-       alignment: Alignment.topCenter,
+       alignment: Alignment.center,
        child: CircularProgressIndicator(
          color: AppColor.primaryColor
        )

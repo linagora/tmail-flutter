@@ -42,130 +42,138 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
 
   @override
   Widget build(BuildContext context) {
-    Widget bodyCreatorView = NotificationListener<ScrollNotification>(
-      onNotification: (scrollInfo) {
-        if (scrollInfo is ScrollEndNotification &&
-            scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
-          controller.clearFocusEditor(context);
-        }
-        return false;
-      },
-      child: SingleChildScrollView(
-        controller: controller.scrollController,
-        physics: const ClampingScrollPhysics(),
-        child: Padding(
-          padding: const EdgeInsetsDirectional.symmetric(vertical: 12, horizontal: 24),
-          child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Obx(() => IdentityInputFieldBuilder(
-              AppLocalizations.of(context).name,
-              controller.errorNameIdentity.value,
-              AppLocalizations.of(context).required,
-              editingController: controller.inputNameIdentityController,
-              focusNode: controller.inputNameIdentityFocusNode,
-              isMandatory: true,
-              onChangeInputNameAction: (value) => controller.updateNameIdentity(context, value)
-            )),
-            const SizedBox(height: 24),
-            Obx(() {
-              if (controller.actionType.value == IdentityActionType.create) {
-                return IdentityDropListFieldBuilder(
-                  controller.imagePaths,
-                  AppLocalizations.of(context).email.inCaps,
-                  controller.emailOfIdentity.value,
-                  controller.listEmailAddressDefault,
-                  onSelectItemDropList: (emailAddress) => controller.updateEmailOfIdentity(context, emailAddress)
-                );
+    Widget bodyCreatorView = SingleChildScrollView(
+      controller: controller.scrollController,
+      physics: const ClampingScrollPhysics(),
+      child: Padding(
+        padding: const EdgeInsetsDirectional.symmetric(vertical: 12, horizontal: 24),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Obx(() => IdentityInputFieldBuilder(
+            AppLocalizations.of(context).name,
+            controller.errorNameIdentity.value,
+            AppLocalizations.of(context).required,
+            editingController: controller.inputNameIdentityController,
+            focusNode: controller.inputNameIdentityFocusNode,
+            isMandatory: true,
+            onChangeInputNameAction: (value) => controller.updateNameIdentity(context, value)
+          )),
+          const SizedBox(height: 24),
+          Obx(() {
+            if (controller.actionType.value == IdentityActionType.create) {
+              return IdentityDropListFieldBuilder(
+                controller.imagePaths,
+                AppLocalizations.of(context).email.inCaps,
+                controller.emailOfIdentity.value,
+                controller.listEmailAddressDefault,
+                onSelectItemDropList: (emailAddress) => controller.updateEmailOfIdentity(context, emailAddress)
+              );
+            } else {
+              return IdentityFieldNoEditableBuilder(
+                AppLocalizations.of(context).email.inCaps,
+                controller.emailOfIdentity.value
+              );
+            }
+          }),
+          const SizedBox(height: 24),
+          Obx(() => IdentityDropListFieldBuilder(
+            controller.imagePaths,
+            AppLocalizations.of(context).reply_to,
+            controller.replyToOfIdentity.value,
+            controller.listEmailAddressOfReplyTo,
+            onSelectItemDropList: (emailAddress) => controller.updaterReplyToOfIdentity(context, emailAddress)
+          )),
+          const SizedBox(height: 24),
+          Obx(() => IdentityInputWithDropListFieldBuilder(
+            AppLocalizations.of(context).bcc_to,
+            controller.errorBccIdentity.value,
+            controller.inputBccIdentityController,
+            focusNode: controller.inputBccIdentityFocusNode,
+            onSelectedSuggestionAction: (newEmailAddress) {
+              controller.inputBccIdentityController.text = newEmailAddress?.email ?? '';
+              controller.updateBccOfIdentity(newEmailAddress);
+            },
+            onChangeInputSuggestionAction: (pattern) {
+              controller.validateInputBccAddress(context, pattern);
+              if (pattern == null || pattern.trim().isEmpty) {
+                controller.updateBccOfIdentity(null);
               } else {
-                return IdentityFieldNoEditableBuilder(
-                  AppLocalizations.of(context).email.inCaps,
-                  controller.emailOfIdentity.value
-                );
+                controller.updateBccOfIdentity(EmailAddress(null, pattern));
               }
-            }),
-            const SizedBox(height: 24),
-            Obx(() => IdentityDropListFieldBuilder(
-              controller.imagePaths,
-              AppLocalizations.of(context).reply_to,
-              controller.replyToOfIdentity.value,
-              controller.listEmailAddressOfReplyTo,
-              onSelectItemDropList: (emailAddress) => controller.updaterReplyToOfIdentity(context, emailAddress)
-            )),
-            const SizedBox(height: 24),
-            Obx(() => IdentityInputWithDropListFieldBuilder(
-              AppLocalizations.of(context).bcc_to,
-              controller.errorBccIdentity.value,
-              controller.inputBccIdentityController,
-              focusNode: controller.inputBccIdentityFocusNode,
-              onSelectedSuggestionAction: (newEmailAddress) {
-                controller.inputBccIdentityController.text = newEmailAddress?.email ?? '';
-                controller.updateBccOfIdentity(newEmailAddress);
-              },
-              onChangeInputSuggestionAction: (pattern) {
-                controller.validateInputBccAddress(context, pattern);
-                if (pattern == null || pattern.trim().isEmpty) {
-                  controller.updateBccOfIdentity(null);
-                } else {
-                  controller.updateBccOfIdentity(EmailAddress(null, pattern));
-                }
-              },
-              onSuggestionCallbackAction: controller.getSuggestionEmailAddress
-            )),
-            const SizedBox(height: 32),
-            Text(AppLocalizations.of(context).signature,
-              style: const TextStyle(
-                fontWeight: FontWeight.normal,
-                fontSize: 14,
-                color: AppColor.colorContentEmail,
-              ),
+            },
+            onSuggestionCallbackAction: controller.getSuggestionEmailAddress
+          )),
+          const SizedBox(height: 32),
+          Text(AppLocalizations.of(context).signature,
+            style: const TextStyle(
+              fontWeight: FontWeight.normal,
+              fontSize: 14,
+              color: AppColor.colorContentEmail,
             ),
-            const SizedBox(height: 8),
-            LayoutBuilder(
-              builder: (context, constraintsEditor) {
-                return Stack(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColor.colorInputBorderCreateMailbox),
-                      ),
-                      padding: const EdgeInsetsDirectional.all(16),
-                      child: _buildSignatureHtmlTemplate(context, constraintsEditor.maxWidth),
+          ),
+          const SizedBox(height: 8),
+          LayoutBuilder(
+            builder: (context, constraintsEditor) {
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: AppColor.colorInputBorderCreateMailbox),
                     ),
-                    Obx(() {
-                      if (controller.draggableAppState.value == DraggableAppState.inActive) {
-                        return const SizedBox.shrink();
-                      }
+                    padding: const EdgeInsetsDirectional.all(16),
+                    child: _buildSignatureHtmlTemplate(context, constraintsEditor.maxWidth),
+                  ),
+                  Obx(() {
+                    if (controller.draggableAppState.value == DraggableAppState.inActive) {
+                      return const SizedBox.shrink();
+                    }
 
-                      return Positioned.fill(
-                        child: PointerInterceptor(
-                          child: LocalFileDropZoneWidget(
-                            imagePaths: controller.imagePaths,
-                            width: constraintsEditor.maxWidth,
-                            height: constraintsEditor.maxHeight,
-                            margin: EdgeInsets.zero,
-                            onLocalFileDropZoneListener: (details) =>
-                              controller.onLocalFileDropZoneListener(
-                                context: context,
-                                details: details,
-                                maxWidth: constraintsEditor.maxWidth,
-                              ),
-                          )
-                        ),
-                      );
-                    })
-                  ],
-                );
-              }
-            ),
-            const SizedBox(height: 12),
-            if (controller.isMobile(context))
-              _buildActionButtonMobile(context)
-          ]),
-        ),
+                    return Positioned.fill(
+                      child: PointerInterceptor(
+                        child: LocalFileDropZoneWidget(
+                          imagePaths: controller.imagePaths,
+                          width: constraintsEditor.maxWidth,
+                          height: constraintsEditor.maxHeight,
+                          margin: EdgeInsets.zero,
+                          onLocalFileDropZoneListener: (details) =>
+                            controller.onLocalFileDropZoneListener(
+                              context: context,
+                              details: details,
+                              maxWidth: constraintsEditor.maxWidth,
+                            ),
+                        )
+                      ),
+                    );
+                  }),
+                  Obx(() {
+                    bool isInserting = controller.publicAssetController?.isUploading.isTrue == true
+                      || controller.isCompressingInlineImage.isTrue;
+                    return InsertImageLoadingIndicator(isInserting: isInserting);
+                  })
+                ],
+              );
+            }
+          ),
+          const SizedBox(height: 12),
+          if (controller.isMobile(context))
+            _buildActionButtonMobile(context)
+        ]),
       ),
     );
 
     if (PlatformInfo.isWeb) {
+      bodyCreatorView = NotificationListener<ScrollNotification>(
+        onNotification: (scrollInfo) {
+          if (scrollInfo is ScrollEndNotification &&
+              scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent) {
+            controller.clearFocusEditor(context);
+          }
+          return false;
+        },
+        child: bodyCreatorView,
+      );
+
       return PointerInterceptor(
         child: GestureDetector(
           onTap: () => controller.clearFocusEditor(context),
@@ -464,34 +472,16 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
               ),
             ]
           ),
-          Stack(
-            children: [
-              _buildHtmlEditorWeb(
-                context,
-                controller.contentHtmlEditor,
-                maxWidth),
-              Obx(() {
-                bool isInserting = controller.publicAssetController?.isUploading.isTrue == true
-                  || controller.isCompressingInlineImage.isTrue;
-                return InsertImageLoadingIndicator(isInserting: isInserting);
-              })
-            ]
-          ),
+          _buildHtmlEditorWeb(
+            context,
+            controller.contentHtmlEditor,
+            maxWidth),
         ],
       );
     } else {
-      return Stack(
-        children: [
-          _buildHtmlEditor(
-            context,
-            initialContent: controller.contentHtmlEditor),
-          Obx(() {
-            bool isInserting = controller.publicAssetController?.isUploading.isTrue == true
-              || controller.isCompressingInlineImage.isTrue;
-            return InsertImageLoadingIndicator(isInserting: isInserting);
-          })
-        ]
-      );
+      return _buildHtmlEditor(
+        context,
+        initialContent: controller.contentHtmlEditor);
     }
   }
 
