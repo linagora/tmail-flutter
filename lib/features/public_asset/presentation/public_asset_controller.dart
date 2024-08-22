@@ -187,7 +187,7 @@ class PublicAssetController extends BaseController {
   }
 
   void discardChanges() {
-    if (session == null || accountId == null) return;
+    if (session == null || accountId == null || newlyPickedPublicAssetIds.isEmpty) return;
     consumeState(_deletePublicAssetsInteractor.execute(
       session!,
       accountId!,
