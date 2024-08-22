@@ -352,43 +352,31 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     listEmailAddressOfReplyTo.value = listEmailAddressOfReplyTo.toSet().toList();
     listEmailAddressDefault.value = listEmailAddressDefault.toSet().toList();
 
-    if (actionType.value == IdentityActionType.edit && identity != null) {
-      if (identity?.replyTo?.isNotEmpty == true) {
-        try {
-          replyToOfIdentity.value = listEmailAddressOfReplyTo
-              .firstWhere((emailAddress) => emailAddress ==  identity?.replyTo!.first);
-        } catch(e) {
-          replyToOfIdentity.value = noneEmailAddress;
-        }
-      } else {
+    if (identity?.replyTo?.isNotEmpty == true) {
+      replyToOfIdentity.value = listEmailAddressOfReplyTo
+        .firstWhereOrNull((emailAddress) => emailAddress ==  identity!.replyTo!.first);
+
+      if (replyToOfIdentity.value == null && identity!.replyTo!.first == noneEmailAddress) {
         replyToOfIdentity.value = noneEmailAddress;
       }
-
-      if (identity?.bcc?.isNotEmpty == true) {
-        bccOfIdentity.value = identity?.bcc!.first;
-        inputBccIdentityController.text = identity?.bcc!.first.emailAddress ?? '';
-      } else {
-        bccOfIdentity.value = null;
-      }
-
-      if (identity?.email?.isNotEmpty == true) {
-        try {
-          emailOfIdentity.value = listEmailAddressDefault
-              .firstWhere((emailAddress) => emailAddress.email ==  identity?.email);
-        } catch(e) {
-          emailOfIdentity.value = null;
-        }
-      } else {
-        emailOfIdentity.value = listEmailAddressDefault.isNotEmpty
-            ? listEmailAddressDefault.first
-            : null;
-      }
+    } else if (actionType.value == IdentityActionType.edit) {
+      replyToOfIdentity.value = noneEmailAddress;
     } else {
       replyToOfIdentity.value = null;
+    }
+
+    if (identity?.bcc?.isNotEmpty == true) {
+      bccOfIdentity.value = identity!.bcc!.first;
+      inputBccIdentityController.text = identity!.bcc!.first.emailAddress;
+    } else {
       bccOfIdentity.value = null;
-      emailOfIdentity.value = listEmailAddressDefault.isNotEmpty
-          ? listEmailAddressDefault.first
-          : null;
+    }
+    
+    if (identity?.email?.isNotEmpty == true) {
+      emailOfIdentity.value = listEmailAddressDefault
+        .firstWhereOrNull((emailAddress) => emailAddress.email ==  identity!.email);
+    } else {
+      emailOfIdentity.value = listEmailAddressDefault.firstOrNull;
     }
   }
 
@@ -486,16 +474,19 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
   Future<({
     Identity identity,
     PublicAssetsInIdentityArguments publicAssetsInIdentityArguments
-  })> _generateIdentityAndPublicAssetArguments() async {
+  })> _generateIdentityAndPublicAssetArguments({bool forCache = false}) async {
     final signatureHtmlText = PlatformInfo.isWeb
         ? contentHtmlEditor
         : await _getSignatureHtmlText();
     final bccAddress = bccOfIdentity.value != null && bccOfIdentity.value != noneEmailAddress
         ? {bccOfIdentity.value!}
         : <EmailAddress>{};
-    final replyToAddress = replyToOfIdentity.value != null && replyToOfIdentity.value != noneEmailAddress
-        ? {replyToOfIdentity.value!}
-        : <EmailAddress>{};
+    Set<EmailAddress> replyToAddress;
+    if (replyToOfIdentity.value != null && (replyToOfIdentity.value != noneEmailAddress || forCache)) {
+      replyToAddress = {replyToOfIdentity.value!};
+    } else {
+      replyToAddress = {};
+    }
 
     final sortOrder = isDefaultIdentitySupported.isTrue
       ? UnsignedInt(isDefaultIdentity.value ? 0 : 100)
@@ -924,7 +915,8 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
 
   Future<void> _saveIdentityCacheOnWebAction() async {
     if (accountId != null && session?.username != null) {
-      final cacheArguments = await _generateIdentityAndPublicAssetArguments();
+      final cacheArguments = await _generateIdentityAndPublicAssetArguments(
+        forCache: true);
       final identityCache = IdentityCache(
         identity: cacheArguments.identity,
         identityActionType: actionType.value,

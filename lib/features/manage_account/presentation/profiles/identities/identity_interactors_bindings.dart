@@ -1,6 +1,11 @@
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/interactors_bindings.dart';
+import 'package:tmail_ui_user/features/identity_creator/data/datasource/identity_creator_data_source.dart';
+import 'package:tmail_ui_user/features/identity_creator/data/datasource_impl/local_identity_creator_data_source_impl.dart';
+import 'package:tmail_ui_user/features/identity_creator/data/repository/identity_creator_repository_impl.dart';
+import 'package:tmail_ui_user/features/identity_creator/domain/repository/identity_creator_repository.dart';
+import 'package:tmail_ui_user/features/identity_creator/domain/usecase/save_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource/identity_data_source.dart';
 import 'package:tmail_ui_user/features/manage_account/data/datasource_impl/identity_data_source_impl.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/identity_api.dart';
@@ -14,6 +19,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_ident
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/transform_html_signature_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/utils/identity_utils.dart';
+import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
 class IdentityInteractorsBindings extends InteractorsBindings {
@@ -27,6 +33,7 @@ class IdentityInteractorsBindings extends InteractorsBindings {
   @override
   void bindingsDataSource() {
     Get.lazyPut<IdentityDataSource>(() => Get.find<IdentityDataSourceImpl>());
+    Get.lazyPut<IdentityCreatorDataSource>(() => Get.find<LocalIdentityCreatorDataSourceImpl>());
   }
 
   void _bindingsUtils() {
@@ -39,6 +46,9 @@ class IdentityInteractorsBindings extends InteractorsBindings {
       Get.find<HtmlTransform>(),
       Get.find<IdentityAPI>(),
       Get.find<RemoteExceptionThrower>()));
+    Get.lazyPut(() => LocalIdentityCreatorDataSourceImpl(
+      Get.find<CacheExceptionThrower>()
+    ));
   }
 
   @override
@@ -56,15 +66,20 @@ class IdentityInteractorsBindings extends InteractorsBindings {
       Get.find<IdentityRepository>(), 
       Get.find<IdentityUtils>()));
     Get.lazyPut(() => TransformHtmlSignatureInteractor(Get.find<IdentityRepository>()));
+    Get.lazyPut(() => SaveIdentityCacheOnWebInteractor(Get.find<IdentityCreatorRepository>()));
   }
 
   @override
   void bindingsRepository() {
     Get.lazyPut<IdentityRepository>(() => Get.find<IdentityRepositoryImpl>());
+    Get.lazyPut<IdentityCreatorRepository>(() => Get.find<IdentityCreatorRepositoryImpl>());
   }
 
   @override
   void bindingsRepositoryImpl() {
     Get.lazyPut(() => IdentityRepositoryImpl(Get.find<IdentityDataSource>()));
+    Get.lazyPut(() => IdentityCreatorRepositoryImpl(
+      Get.find<IdentityCreatorDataSource>()
+    ));
   }
 }

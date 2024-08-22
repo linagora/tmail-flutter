@@ -32,6 +32,11 @@ import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_i
 import 'package:tmail_ui_user/features/email/presentation/bindings/email_bindings.dart';
 import 'package:tmail_ui_user/features/home/domain/repository/session_repository.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
+import 'package:tmail_ui_user/features/identity_creator/data/datasource/identity_creator_data_source.dart';
+import 'package:tmail_ui_user/features/identity_creator/data/datasource_impl/local_identity_creator_data_source_impl.dart';
+import 'package:tmail_ui_user/features/identity_creator/data/repository/identity_creator_repository_impl.dart';
+import 'package:tmail_ui_user/features/identity_creator/domain/repository/identity_creator_repository.dart';
+import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -158,6 +163,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<DeleteEmailPermanentlyInteractor>(),
       Get.find<MarkAsMailboxReadInteractor>(),
       Get.find<GetComposerCacheOnWebInteractor>(),
+      Get.find<GetIdentityCacheOnWebInteractor>(),
       Get.find<MarkAsEmailReadInteractor>(),
       Get.find<MarkAsStarEmailInteractor>(),
       Get.find<MarkAsMultipleEmailReadInteractor>(),
@@ -197,6 +203,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<MailboxCacheDataSourceImpl>(() => Get.find<MailboxCacheDataSourceImpl>());
     Get.lazyPut<ServerSettingsDataSource>(
       () => Get.find<RemoteServerSettingsDataSourceImpl>());
+    Get.lazyPut<IdentityCreatorDataSource>(() => Get.find<LocalIdentityCreatorDataSourceImpl>());
   }
 
   @override
@@ -259,6 +266,9 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => RemoteServerSettingsDataSourceImpl(
       Get.find<ServerSettingsAPI>(),
       Get.find<RemoteExceptionThrower>()
+    ));
+    Get.lazyPut(() => LocalIdentityCreatorDataSourceImpl(
+      Get.find<CacheExceptionThrower>()
     ));
   }
 
@@ -346,6 +356,9 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<IdentityRepository>(),
       Get.find<IdentityUtils>()
     ));
+    Get.lazyPut(() => GetIdentityCacheOnWebInteractor(
+      Get.find<IdentityCreatorRepository>()
+    ));
   }
 
   @override
@@ -359,6 +372,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<SpamReportRepository>(() => Get.find<SpamReportRepositoryImpl>());
     Get.lazyPut<MailboxRepository>(() => Get.find<MailboxRepositoryImpl>());
     Get.lazyPut<ServerSettingsRepository>(() => Get.find<ServerSettingsRepositoryImpl>());
+    Get.lazyPut<IdentityCreatorRepository>(() => Get.find<IdentityCreatorRepositoryImpl>());
   }
 
   @override
@@ -403,5 +417,8 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<StateDataSource>(),
     ));
     Get.lazyPut(() => ServerSettingsRepositoryImpl(Get.find<ServerSettingsDataSource>()));
+    Get.lazyPut(() => IdentityCreatorRepositoryImpl(
+      Get.find<IdentityCreatorDataSource>()
+    ));
   }
 }

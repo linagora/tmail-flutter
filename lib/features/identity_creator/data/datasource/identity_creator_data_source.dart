@@ -7,4 +7,10 @@ abstract class IdentityCreatorDataSource {
     AccountId accountId,
     UserName userName,
     {required IdentityCache identityCache});
+
+  Future<IdentityCache> getIdentityCacheOnWeb(
+    AccountId accountId,
+    UserName userName);
+
+  Future<void> removeIdentityCacheOnWeb();
 }
