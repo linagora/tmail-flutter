@@ -2972,7 +2972,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "pleaseChooseAnImageSizeCorrectly": "Merci de choisir une taille d'image <= {maxSize}KB",
+  "pleaseChooseAnImageSizeCorrectly": "Merci de choisir une taille d'image inférieure à {maxSize}Ko",
   "@pleaseChooseAnImageSizeCorrectly": {
     "type": "text",
     "placeholders_order": [
@@ -4110,6 +4110,96 @@
   },
   "dialogMessageSessionHasExpired": "La session a expiré, veuillez vous reconnecter.",
   "@dialogMessageSessionHasExpired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selected": "Sélectionné",
+  "@selected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOffRequestReadReceipt": "Désactiver l'avis de lecture",
+  "@turnOffRequestReadReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOnRequestReadReceipt": "Activer l'avis de lecture",
+  "@turnOnRequestReadReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requestReadReceiptHasBeenEnabled": "L'avis de lecture a été activé",
+  "@requestReadReceiptHasBeenEnabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notSelected": "Non sélectionné",
+  "@notSelected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "canNotUploadFileToSignature": "",
+  "@canNotUploadFileToSignature": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptySpamFolderFailed": "Le nettoyage du dossier spam a échoué",
+  "@emptySpamFolderFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "renameFolderFailure": "Échec du renommage du dossier",
+  "@renameFolderFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAsSpamFailed": "Marquer comme échoué au spam",
+  "@markAsSpamFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no_internet_connection_try_again_later": "Connexion Internet indisponible, réessayez plus tard.",
+  "@no_internet_connection_try_again_later": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "requestReadReceiptHasBeenDisabled": "L'avis de lecture a été désactivé",
+  "@requestReadReceiptHasBeenDisabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "thisImageCannotBePastedIntoTheEditor": "Cette image ne peut être copiée dans l'éditeur.",
+  "@thisImageCannotBePastedIntoTheEditor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sMimeGoodSignatureMessage": "L'authenticité de ce message a été vérifiée pas la signature SMIME",
+  "@sMimeGoodSignatureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sMimeBadSignatureMessage": "La vérification de la signature SMIME de ce message a échoué.",
+  "@sMimeBadSignatureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "generalSignatureImageUploadError": "Une erreur est survenue pendant le téléversement de l'image. Réessayez plus tard.",
+  "@generalSignatureImageUploadError": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
