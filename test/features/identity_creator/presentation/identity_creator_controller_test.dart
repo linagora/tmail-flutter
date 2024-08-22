@@ -161,7 +161,47 @@ void main() {
   group("IdentityCreatorController test:", () {
     test(
       'should call deletePublicAssetsInteractor.execute() '
-      'when closeView() is called',
+      'when closeView() is called '
+      'and user has picked at lease one image',
+    () {
+      // arrange
+      final accountId = AccountId(Id('value'));
+      final account = Account(
+        AccountName('value'),
+        true,
+        true,
+        {CapabilityIdentifier.jmapPublicAsset: DefaultCapability({})});
+      final session = Session(
+        {}, 
+        {accountId: account},
+        {}, UserName('value'), Uri(), Uri(), Uri(), Uri(), State('value'));
+      identityCreatorController.arguments = IdentityCreatorArguments(accountId, session);
+
+      // act
+      identityCreatorController.onReady();
+      expect(identityCreatorController.publicAssetController, isNotNull);
+      identityCreatorController.publicAssetController?.newlyPickedPublicAssetIds.add(Id('value'));
+      
+      final context = MockBuildContext();
+      final buildOwner = MockBuildOwner();
+      final focusManager = MockFocusManager();
+      when(context.owner).thenReturn(buildOwner);
+      when(buildOwner.focusManager).thenReturn(focusManager);
+      when(focusManager.rootScope).thenReturn(FocusScopeNode());
+      identityCreatorController.closeView(context);
+      
+      // assert
+      verify(deletePublicAssetsInteractor.execute(
+        session,
+        accountId,
+        publicAssetIds: anyNamed('publicAssetIds'),
+      )).called(1);
+    });
+
+    test(
+      'should not call deletePublicAssetsInteractor.execute() '
+      'when closeView() is called '
+      'and user has not picked any image',
     () {
       // arrange
       final accountId = AccountId(Id('value'));
@@ -189,11 +229,11 @@ void main() {
       identityCreatorController.closeView(context);
       
       // assert
-      verify(deletePublicAssetsInteractor.execute(
+      verifyNever(deletePublicAssetsInteractor.execute(
         session,
         accountId,
         publicAssetIds: anyNamed('publicAssetIds'),
-      )).called(1);
+      ));
     });
   });
 }
