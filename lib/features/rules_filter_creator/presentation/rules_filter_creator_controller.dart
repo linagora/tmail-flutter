@@ -271,7 +271,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
       final spamMailboxId = findMailboxNodeByRole(PresentationMailbox.roleJunk)?.item.id
         ?? findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id;
       for (var mailboxId in mailboxIdsOfRule) {
-        if (mailboxId == spamMailboxId) {
+        if (mailboxId != spamMailboxId) {
           final mailboxNode = findMailboxNodeById(mailboxId);
           if (mailboxNode != null) {
             mailboxSelected.value = mailboxNode.item;
