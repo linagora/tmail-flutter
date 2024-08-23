@@ -40,5 +40,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "login_text_slogan": "Twake Mail",
+  "@login_text_slogan": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
