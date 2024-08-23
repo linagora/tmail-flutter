@@ -1,3 +1,27 @@
+## [0.13.0] - 2024-08-23
+### Added
+- #2857 New icon for Twake Mail
+- #3023 Display SMime signature status in headers email
+- #2975 Change the layout main screen in mobile app
+- #3042 Support PublicAsset in Signature
+
+### Changed
+- Upgrade jmap_dart_client v0.2.0
+
+### Fixed
+- #2973 Adjust remove button in rule creator
+- #2806 Disable reload button of mailbox list in desktop layout
+- #2925 Handle of loading email list when switch mailbox
+- #2976 New design for email list in desktop layout
+- URL concat for APIs endpoint 
+- #2893 Standardize Appbar and App grid
+- #2676 Handling create identity with empty name
+- #2724 Fix automatically scroll down when user edit Identity
+- #2721 Fix show list email when user changed filter or sort order on iOS
+- #2951 Remove `Clean` button, `Empty Trash/Spam now` banner and `Filters` when there is no email in `Spam/Trash` folder
+- #2949 remove duplicated information in email of calendar event
+- #2931 Filter empty name identity 
+
 ## [0.12.1] - 2024-07-18
 ### Fixed
 - Upgrade minimumOS version to 12.0 [iOS]
