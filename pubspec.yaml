@@ -148,7 +148,7 @@ dependencies:
 
   path_provider: 2.1.1
 
-  device_info_plus: 8.1.0
+  device_info_plus: 9.1.0
 
   permission_handler: 10.2.0
 
@@ -251,6 +251,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  appium_flutter_server: 0.0.26
 
   build_runner: 2.3.3
 

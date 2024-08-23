@@ -51,7 +51,7 @@ dependencies:
 
   get: 4.6.6
 
-  device_info_plus: 8.1.0
+  device_info_plus: 9.1.0
 
   flutter_inappwebview: 6.0.0
 
