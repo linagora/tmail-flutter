@@ -4144,7 +4144,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "canNotUploadFileToSignature": "",
+  "canNotUploadFileToSignature": "Impossible de téléverser ce fichier dans la signature",
   "@canNotUploadFileToSignature": {
     "type": "text",
     "placeholders_order": [],
@@ -4162,7 +4162,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "markAsSpamFailed": "Marquer comme échoué au spam",
+  "markAsSpamFailed": "Échec lors du marquage en tant que spam",
   "@markAsSpamFailed": {
     "type": "text",
     "placeholders_order": [],
@@ -4186,7 +4186,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sMimeGoodSignatureMessage": "L'authenticité de ce message a été vérifiée pas la signature SMIME",
+  "sMimeGoodSignatureMessage": "L'authenticité de ce message a été vérifiée via la signature SMIME",
   "@sMimeGoodSignatureMessage": {
     "type": "text",
     "placeholders_order": [],
