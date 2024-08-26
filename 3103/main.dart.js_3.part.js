@@ -15768,7 +15768,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleEmailAction$3(this.context, presentationEmail, this.action);
     },
-    $signature: 142
+    $signature: 163
   };
   B.EmailView__popupMenuEmailActionTile_closure.prototype = {
     call$1(action) {
@@ -16220,7 +16220,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.onMoreActionClick.call$2(t1.presentationEmail, position);
       return t1;
     },
-    $signature: 148
+    $signature: 160
   };
   B.EmailViewBottomBarWidget_build_closure.prototype = {
     call$0() {
@@ -16746,7 +16746,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleClickAvatarAction$2(this.context, position);
     },
-    $signature: 148
+    $signature: 160
   };
   B.MailboxDashBoardView_build_closure0.prototype = {
     call$0() {
@@ -17185,7 +17185,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t2.simpleSearchIsActivated.get$value(0) || t2.advancedSearchIsActivated.get$value(0);
       return t4.openPopupMenuAction$3(t5, position, t1.popupMenuFilterEmailActionTile$4$isSearchEmailRunning(t5, t6, new B.MailboxDashBoardView__buildListButtonTopBar___closure(t1, t5), t2));
     },
-    $signature: 148
+    $signature: 160
   };
   B.MailboxDashBoardView__buildListButtonTopBar___closure.prototype = {
     call$1(option) {
@@ -18306,7 +18306,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.$this._search_input_form_widget$_dashBoardController.dashBoardAction.set$value(0, t1);
       return null;
     },
-    $signature: 142
+    $signature: 163
   };
   B.SearchInputFormWidget_build__closure2.prototype = {
     call$2(context, emailAddress) {
@@ -19171,7 +19171,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t2 === true ? C.EmailActionType_21 : C.EmailActionType_20;
       return t1.pressEmailAction$3(this.context, t2, email);
     },
-    $signature: 142
+    $signature: 163
   };
   B.SearchEmailView__buildLoadingViewLoadMore_closure.prototype = {
     call$0() {
@@ -20227,7 +20227,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = t3 === true ? C.EmailActionType_21 : C.EmailActionType_20;
       return t1.handleEmailActionType$4$context$mailboxContain(t3, email, this.context, t2);
     },
-    $signature: 142
+    $signature: 163
   };
   B.ThreadView__openInNewTabContextMenuItemAction_closure.prototype = {
     call$1(email) {
@@ -20239,7 +20239,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
       A.AppUtils_launchLink(J.toString$0$(email.routeWeb));
     },
-    $signature: 142
+    $signature: 163
   };
   B.ThreadView__archiveMessageContextMenuItemAction_closure.prototype = {
     call$1(email) {
@@ -20249,7 +20249,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController.archiveMessage$2(this.context, email);
       return null;
     },
-    $signature: 142
+    $signature: 163
   };
   B.ThreadView__buildMarkAsSpamPopupMenuItem_closure.prototype = {
     call$0() {
@@ -20375,7 +20375,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = t1.onPopupMenuFilterEmailAction;
       return t2 == null ? null : t2.call$2(t1.filterOption, position);
     },
-    $signature: 148
+    $signature: 160
   };
   B.SelectionWebAppBarThreadWidget_build_closure.prototype = {
     call$0() {
@@ -21437,5 +21437,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "A+eTSRjOAi6WZqAAgcfSgHJzye8=");
+})($__dart_deferred_initializers__, "gANMa/69Cyz7IFVpn5iVAExVTmg=");
 ;
