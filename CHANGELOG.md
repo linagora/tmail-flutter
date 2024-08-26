@@ -29,7 +29,7 @@
 ## [0.12.0] - 2024-07-18
 ### Added
 - #2988 Upgrade to Flutter 3.22.2
-- Translation
+- Translation vi, ru, fr, mfe
 
 ### Fixed
 - #2907 Disable `YES/NO/MAYBE` action for events when missing `METHOD/ORGANIZER/ATTENDEES`
@@ -42,6 +42,7 @@
 - #2972 Change color for `Clean` button
 - #2928 Detect session expired and notice to user
 - #2930 Inline image in Draft 
+- MarkAsSpam not displayed when editing rule filter
 
 ## [0.11.5001] - 2024-07-05
 ### Added
