@@ -14,7 +14,7 @@ abstract class RuleFilterActionArguments with EquatableMixin {
       case EmailRuleFilterAction.maskAsSeen:
         return MarkAsSeenActionArguments();
       case EmailRuleFilterAction.markAsSpam:
-        return MarAsSpamActionArguments();
+        return MarkAsSpamActionArguments();
       case EmailRuleFilterAction.forwardTo:
         return ForwardActionArguments();
       case EmailRuleFilterAction.moveMessage:
@@ -27,6 +27,8 @@ abstract class RuleFilterActionArguments with EquatableMixin {
         return EmptyRuleFilterActionArguments();
     }
   }
+
+  factory RuleFilterActionArguments.emptyAction() => EmptyRuleFilterActionArguments();
 
   @override
   List<Object?> get props => [
@@ -55,8 +57,8 @@ class MarkAsSeenActionArguments extends RuleFilterActionArguments {
   );
 }
 
-class MarAsSpamActionArguments extends RuleFilterActionArguments {
-  MarAsSpamActionArguments() : super(
+class MarkAsSpamActionArguments extends RuleFilterActionArguments {
+  MarkAsSpamActionArguments() : super(
     action: EmailRuleFilterAction.markAsSpam,
   );
 }
