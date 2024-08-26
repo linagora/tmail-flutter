@@ -27,6 +27,7 @@ import 'package:model/model.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
+import 'package:tmail_ui_user/features/base/key_values/composer_key_values.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
@@ -1508,7 +1509,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
         }
 
         result = await Get.to(
-          () => const ComposerView(),
+          () => const ComposerView(key: ValueKey(ComposerKeyValues.composerView)),
           binding: ComposerBindings(),
           opaque: false,
           arguments: argumentsWithIdentity);
