@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/key_values/login_key_values.dart';
 import 'package:tmail_ui_user/features/base/widget/recent_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
 import 'package:tmail_ui_user/features/login/presentation/base_login_view.dart';
@@ -89,6 +90,7 @@ class LoginView extends BaseLoginView {
               switch (controller.loginFormType.value) {
                 case LoginFormType.dnsLookupForm:
                   return DNSLookupInputForm(
+                    key: const ValueKey(LoginKeyValues.loginEmailField),
                     textEditingController: controller.usernameInputController,
                     onTextChange: controller.onUsernameChange,
                     onTextSubmitted: (_) => controller.invokeDNSLookupToGetJmapUrl(),
@@ -126,6 +128,7 @@ class LoginView extends BaseLoginView {
     return Padding(
       padding: const EdgeInsets.only(right: 24, left: 24, bottom: 24),
       child: TypeAheadFormFieldBuilder<RecentLoginUrl>(
+        key: const ValueKey(LoginKeyValues.loginHostUrlField),
         controller: controller.urlInputController,
         textInputAction: TextInputAction.next,
         keyboardType: TextInputType.url,
@@ -161,7 +164,7 @@ class LoginView extends BaseLoginView {
       margin:  const EdgeInsets.only(bottom: 16, left: 24, right: 24),
       width: controller.responsiveUtils.getDeviceWidth(context),height: 48,
       child: ElevatedButton(
-        key: const Key('nextToCredentialForm'),
+        key: const ValueKey(LoginKeyValues.loginNextButton),
         style: ElevatedButton.styleFrom(
           foregroundColor: Colors.white,
           backgroundColor: AppColor.primaryColor,
