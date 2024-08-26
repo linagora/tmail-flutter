@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-08-19T19:20:23.876948",
+  "@@last_modified": "2024-08-23T16:45:33.629548",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3996,6 +3996,12 @@
   },
   "thisImageCannotBePastedIntoTheEditor": "This image cannot be pasted into the editor.",
   "@thisImageCannotBePastedIntoTheEditor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "spamFolderNotFound": "Spam folder not found",
+  "@spamFolderNotFound": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

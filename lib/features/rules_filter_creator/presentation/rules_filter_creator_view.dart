@@ -183,7 +183,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                       responsiveUtils: controller.responsiveUtils,
                       actionList: controller.listEmailRuleFilterActionSelected,
                       onActionChanged: (newAction, index) {
-                        controller.selectEmailRuleFilterAction(newAction, index);
+                        controller.selectEmailRuleFilterAction(context, newAction, index);
                       },
                       forwardEmailEditingController: controller.forwardEmailController,
                       forwardEmailFocusNode: controller.forwardEmailFocusNode,
@@ -344,7 +344,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                           responsiveUtils: controller.responsiveUtils,
                           actionList: controller.listEmailRuleFilterActionSelected,
                           onActionChanged: (newAction, index) {
-                            controller.selectEmailRuleFilterAction(newAction, index);
+                            controller.selectEmailRuleFilterAction(context, newAction, index);
                           },
                           forwardEmailEditingController: controller.forwardEmailController,
                           forwardEmailFocusNode: controller.forwardEmailFocusNode,
@@ -807,7 +807,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
             fit: BoxFit.fill))
       ..onActionClick((ruleAction) {
         if (ruleAction != controller.listEmailRuleFilterActionSelected[ruleActionIndex].action) {
-          controller.selectEmailRuleFilterAction(ruleAction, ruleActionIndex);
+          controller.selectEmailRuleFilterAction(context, ruleAction, ruleActionIndex);
         }
         popBack();
       }))

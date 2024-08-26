@@ -4188,4 +4188,11 @@ class AppLocalizations {
       'This image cannot be pasted into the editor.',
       name: 'thisImageCannotBePastedIntoTheEditor');
   }
+
+  String get spamFolderNotFound {
+    return Intl.message(
+      'Spam folder not found',
+      name: 'spamFolderNotFound',
+    );
+  }
 }

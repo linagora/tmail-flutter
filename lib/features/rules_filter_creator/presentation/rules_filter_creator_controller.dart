@@ -9,7 +9,6 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/rule_action.dart';
 import 'package:rule_filter/rule_filter/rule_append_in.dart';
@@ -42,7 +41,6 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-
 
 class RulesFilterCreatorController extends BaseMailboxController {
 
@@ -88,14 +86,12 @@ class RulesFilterCreatorController extends BaseMailboxController {
   @override
   void onInit() {
     super.onInit();
-    log('RulesFilterCreatorController::onInit():arguments: ${Get.arguments}');
     arguments = Get.arguments;
   }
 
   @override
   void onReady() {
     super.onReady();
-    log('RulesFilterCreatorController::onReady():');
     if (arguments != null) {
       _accountId = arguments!.accountId;
       _session = arguments!.session;
@@ -104,19 +100,14 @@ class RulesFilterCreatorController extends BaseMailboxController {
       _mailboxDestination = arguments!.mailboxDestination;
       actionType.value = arguments!.actionType;
       injectRuleFilterBindings(_session, _accountId);
-      try {
-        _getAllRulesInteractor = Get.find<GetAllRulesInteractor>();
-      } catch (e) {
-        logError('RulesFilterCreatorController::onInit(): ${e.toString()}');
-      }
       _setUpDefaultValueRuleFilter();
       _getAllRules();
+      _getAllMailboxAction();
     }
   }
 
   @override
   void onClose() {
-    log('RulesFilterCreatorController::onClose():');
     inputRuleNameFocusNode.dispose();
     inputRuleNameController.dispose();
     for (var ruleConditionValueArguments in listRuleConditionValueArguments) {
@@ -133,7 +124,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
     super.handleSuccessViewState(success);
     if (success is GetAllMailboxSuccess) {
       await buildTree(success.mailboxList);
-      _setUpMailboxSelected();
       if (currentContext != null) {
         await syncAllMailboxWithDisplayName(currentContext!);
       }
@@ -145,7 +135,18 @@ class RulesFilterCreatorController extends BaseMailboxController {
     }
   }
 
+  @override
+  void onDone() {
+    viewState.value.fold((failure) => null, (success) {
+      if (success is GetAllMailboxSuccess) {
+        _setUpRuleFilterActions();
+      }
+    });
+  }
+
   void _getAllRules() {
+    _getAllRulesInteractor = getBinding<GetAllRulesInteractor>();
+
     if (_accountId != null && _getAllRulesInteractor != null) {
       consumeState(_getAllRulesInteractor!.execute(_accountId!));
     }
@@ -168,8 +169,6 @@ class RulesFilterCreatorController extends BaseMailboxController {
         );
         listRuleConditionValueArguments.add(newRuleConditionValueArguments);
         isShowAddAction.value = true;
-        RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(null);
-        listEmailRuleFilterActionSelected.add(newRuleFilterAction);
         if (_emailAddress != null) {
           RuleCondition firstRuleCondition = RuleCondition(
             field: rule_condition.Field.from,
@@ -184,16 +183,25 @@ class RulesFilterCreatorController extends BaseMailboxController {
           );
         }
         if (_mailboxDestination != null) {
-          mailboxSelected.value = _mailboxDestination;
+          if (_mailboxDestination!.isSpam) {
+            listEmailRuleFilterActionSelected.add(MarkAsSpamActionArguments());
+          } else {
+            mailboxSelected.value = _mailboxDestination;
+            listEmailRuleFilterActionSelected.add(
+              MoveMessageActionArguments(mailbox: _mailboxDestination)
+            );
+          }
+        } else {
+          listEmailRuleFilterActionSelected.add(RuleFilterActionArguments.emptyAction());
         }
         break;
       case CreatorActionType.edit:
-        if (_currentTMailRule != null) {
-          RuleConditionGroup currentRule = RuleConditionGroup(
-            conditionCombiner: _currentTMailRule!.conditionGroup!.conditionCombiner,
-            conditions: _currentTMailRule!.conditionGroup!.conditions,
-          );
-          for (var condition in currentRule.conditions) {
+        if (_currentTMailRule == null) {
+          return;
+        }
+
+        if (_currentTMailRule!.conditionGroup?.conditions.isNotEmpty == true) {
+          for (var condition in _currentTMailRule!.conditionGroup!.conditions) {
             listRuleCondition.add(condition);
             RulesFilterInputFieldArguments newRuleConditionValueArguments = RulesFilterInputFieldArguments(
               focusNode: FocusNode(),
@@ -206,57 +214,41 @@ class RulesFilterCreatorController extends BaseMailboxController {
               condition.value
             );
           }
-          conditionCombinerType.value = currentRule.conditionCombiner;
-          RuleAction currentAction = RuleAction(
-            appendIn: _currentTMailRule!.action.appendIn,
-            markAsImportant: _currentTMailRule!.action.markAsImportant,
-            markAsSeen: _currentTMailRule!.action.markAsSeen,
-            reject: _currentTMailRule!.action.reject,
-          );
-          if (currentAction.reject == true) {
-            EmailRuleFilterAction? action = EmailRuleFilterAction.rejectIt;
-            RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(action);
-            listEmailRuleFilterActionSelected.add(newRuleFilterAction);
-          }
-          if (currentAction.appendIn.mailboxIds.isNotEmpty == true) {
-            final spamMailboxId = findMailboxNodeByRole(PresentationMailbox.roleJunk)?.item.id
-              ?? findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id;
-            for (var mailboxId in currentAction.appendIn.mailboxIds) {
-              if (mailboxId == spamMailboxId) {
-                EmailRuleFilterAction? action = EmailRuleFilterAction.markAsSpam;
-                RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(action);
-                listEmailRuleFilterActionSelected.add(newRuleFilterAction);
-              } else {
-                EmailRuleFilterAction? action = EmailRuleFilterAction.moveMessage;
-                RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(action);
-                listEmailRuleFilterActionSelected.add(newRuleFilterAction);
-              }
-            }
-          }
-          if (currentAction.markAsImportant == true) {
-            EmailRuleFilterAction? action = EmailRuleFilterAction.starIt;
-            RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(action);
-            listEmailRuleFilterActionSelected.add(newRuleFilterAction);
-          }
-          if (currentAction.markAsSeen == true) {
-            EmailRuleFilterAction? action = EmailRuleFilterAction.maskAsSeen;
-            RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(action);
-            listEmailRuleFilterActionSelected.add(newRuleFilterAction);
-          }
-
-          if (listEmailRuleFilterActionSelected.length >= maxCountAction) {
-            isShowAddAction.value = false;
-          } else {
-            isShowAddAction.value = true;
-          }
-          
-          _newRuleName = _currentTMailRule!.name;
-          _setValueInputField(inputRuleNameController, _newRuleName ?? '');
-          _getAllMailboxAction();
         }
+
+        conditionCombinerType.value = _currentTMailRule!.conditionGroup?.conditionCombiner;
+
+        if (_currentTMailRule!.action.reject == true) {
+          EmailRuleFilterAction? action = EmailRuleFilterAction.rejectIt;
+          listEmailRuleFilterActionSelected.add(RuleFilterActionArguments.newAction(action));
+        }
+
+        if (_currentTMailRule!.action.markAsImportant == true) {
+          EmailRuleFilterAction? action = EmailRuleFilterAction.starIt;
+          listEmailRuleFilterActionSelected.add(RuleFilterActionArguments.newAction(action));
+        }
+
+        if (_currentTMailRule!.action.markAsSeen == true) {
+          EmailRuleFilterAction? action = EmailRuleFilterAction.maskAsSeen;
+          listEmailRuleFilterActionSelected.add(RuleFilterActionArguments.newAction(action));
+        }
+
+        if (listEmailRuleFilterActionSelected.length >= maxCountAction) {
+          isShowAddAction.value = false;
+        } else {
+          isShowAddAction.value = true;
+        }
+
+        _newRuleName = _currentTMailRule!.name;
+        _setValueInputField(inputRuleNameController, _newRuleName ?? '');
         break;
     }
     inputRuleNameFocusNode.requestFocus();
+  }
+
+  MailboxId? getSpamMailboxId() {
+    return findMailboxNodeByRole(PresentationMailbox.roleJunk)?.item.id
+      ?? findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id;
   }
 
   void _setValueInputField(TextEditingController? controller, String value) {
@@ -265,31 +257,27 @@ class RulesFilterCreatorController extends BaseMailboxController {
         selection: TextSelection.collapsed(offset: value.length));
   }
 
-  void _setUpMailboxSelected() {
-    if (_currentTMailRule != null) {
-      final mailboxIdsOfRule = _currentTMailRule!.action.appendIn.mailboxIds;
-      final spamMailboxId = findMailboxNodeByRole(PresentationMailbox.roleJunk)?.item.id
-        ?? findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id;
-      for (var mailboxId in mailboxIdsOfRule) {
-        if (mailboxId != spamMailboxId) {
-          final mailboxNode = findMailboxNodeById(mailboxId);
-          if (mailboxNode != null) {
-            mailboxSelected.value = mailboxNode.item;
-          }
-        }
-      }
-      RuleFilterActionArguments newRuleFilterAction = MoveMessageActionArguments(mailbox: mailboxSelected.value);
-      for (var filterAction in listEmailRuleFilterActionSelected) {
-        if (filterAction is MoveMessageActionArguments) {
-          listEmailRuleFilterActionSelected[listEmailRuleFilterActionSelected.indexOf(filterAction)] = newRuleFilterAction;
-        }
-      }
-      listEmailRuleFilterActionSelected.refresh();
+  void _setUpRuleFilterActions() {
+    if (_currentTMailRule!.action.appendIn.mailboxIds.isNotEmpty != true) return;
+
+    final mailboxNode = findMailboxNodeById(
+      _currentTMailRule!.action.appendIn.mailboxIds.first);
+
+    if (mailboxNode == null) {
+      mailboxSelected.value = PresentationMailbox.unifiedMailbox;
+      listEmailRuleFilterActionSelected.add(
+        MoveMessageActionArguments(mailbox: PresentationMailbox.unifiedMailbox));
+    } else if (mailboxNode.item.isSpam) {
+      listEmailRuleFilterActionSelected.add(MarkAsSpamActionArguments());
+    } else {
+      mailboxSelected.value = mailboxNode.item;
+      listEmailRuleFilterActionSelected.add(
+        MoveMessageActionArguments(mailbox: mailboxNode.item));
     }
   }
 
   void _getAllMailboxAction() {
-    if (_accountId != null) {
+    if (_accountId != null && _session != null) {
       consumeState(_getAllMailboxInteractor.execute(_session!, _accountId!));
     }
   }
@@ -358,7 +346,11 @@ class RulesFilterCreatorController extends BaseMailboxController {
     }
   }
 
-  void selectEmailRuleFilterAction(EmailRuleFilterAction? newAction, int ruleFilterActionIndex) {
+  void selectEmailRuleFilterAction(
+    BuildContext context,
+    EmailRuleFilterAction? newAction,
+    int ruleFilterActionIndex
+  ) {
     RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(newAction);
     if (newRuleFilterAction is RejectItActionArguments) {
       listEmailRuleFilterActionSelected.clear();
@@ -378,11 +370,43 @@ class RulesFilterCreatorController extends BaseMailboxController {
           currentOverlayContext!,
           AppLocalizations.of(currentContext!).duplicatedActionError,
         );
-      } else {
-        listEmailRuleFilterActionSelected[ruleFilterActionIndex] = newRuleFilterAction;
+        return;
       }
+
+      if (newAction == EmailRuleFilterAction.markAsSpam) {
+        final moveMessageActionIndex = listEmailRuleFilterActionSelected
+          .indexWhere((filter) => filter.action == EmailRuleFilterAction.moveMessage);
+        log('RulesFilterCreatorController::selectEmailRuleFilterAction: moveMessageActionIndex = $moveMessageActionIndex');
+        if (moveMessageActionIndex != -1) {
+          mailboxSelected.value = null;
+          listEmailRuleFilterActionSelected[ruleFilterActionIndex] = newRuleFilterAction;
+          if (listEmailRuleFilterActionSelected.length > 1) {
+            listEmailRuleFilterActionSelected.removeAt(moveMessageActionIndex);
+          }
+          isShowAddAction.value = listEmailRuleFilterActionSelected.length < maxCountAction;
+          listEmailRuleFilterActionSelected.refresh();
+          return;
+        }
+      }
+
+      if (newAction == EmailRuleFilterAction.moveMessage) {
+        final markAsSpamActionIndex = listEmailRuleFilterActionSelected
+          .indexWhere((filter) => filter.action == EmailRuleFilterAction.markAsSpam);
+        log('RulesFilterCreatorController::selectEmailRuleFilterAction: markAsSpamActionIndex = $markAsSpamActionIndex');
+        if (markAsSpamActionIndex != -1) {
+          listEmailRuleFilterActionSelected[ruleFilterActionIndex] = newRuleFilterAction;
+          if (listEmailRuleFilterActionSelected.length > 1) {
+            listEmailRuleFilterActionSelected.removeAt(markAsSpamActionIndex);
+          }
+          isShowAddAction.value = listEmailRuleFilterActionSelected.length < maxCountAction;
+          listEmailRuleFilterActionSelected.refresh();
+          return;
+        }
+      }
+
+      listEmailRuleFilterActionSelected[ruleFilterActionIndex] = newRuleFilterAction;
+      listEmailRuleFilterActionSelected.refresh();
     }
-    listEmailRuleFilterActionSelected.refresh();
   }
 
   void selectMailbox(BuildContext context, int ruleFilterActionIndex) async {
@@ -454,11 +478,19 @@ class RulesFilterCreatorController extends BaseMailboxController {
           final errorAction = _getErrorStringByInputValue(context, mailboxSelected.value?.getDisplayName(context));
           log('RulesFilterCreatorController::createNewRuleFilter:errorAction: $errorAction');
           if (errorAction?.isNotEmpty == true) {
-            if (currentOverlayContext != null && currentContext != null) {
-              appToast.showToastErrorMessage(
-                currentOverlayContext!,
-                AppLocalizations.of(currentContext!).notSelectedMailboxToMoveMessage);
-            }
+            appToast.showToastErrorMessage(
+              context,
+              AppLocalizations.of(context).notSelectedMailboxToMoveMessage);
+            return;
+          }
+        }
+        if (ruleFilterAction is MarkAsSpamActionArguments) {
+          final spamMailboxId = getSpamMailboxId();
+          log('RulesFilterCreatorController::createNewRuleFilter:spamMailboxId: ${spamMailboxId?.asString}');
+          if (spamMailboxId == null) {
+            appToast.showToastErrorMessage(
+              context,
+              AppLocalizations.of(context).spamFolderNotFound);
             return;
           }
         }
@@ -485,9 +517,8 @@ class RulesFilterCreatorController extends BaseMailboxController {
       if (ruleFilterAction is MoveMessageActionArguments) {
         mailboxIds.add(ruleFilterAction.mailbox!.id);
       }
-      if (ruleFilterAction.action is MarAsSpamActionArguments) {
-        final spamMailboxId = findMailboxNodeByRole(PresentationMailbox.roleJunk)?.item.id
-          ?? findMailboxNodeByRole(PresentationMailbox.roleSpam)?.item.id;
+      if (ruleFilterAction is MarkAsSpamActionArguments) {
+        final spamMailboxId = getSpamMailboxId();
         if (spamMailboxId != null) {
           mailboxIds.add(spamMailboxId);
         }
@@ -573,9 +604,9 @@ class RulesFilterCreatorController extends BaseMailboxController {
       conditionCombinerType.value = combinerType;
     }
   }
+
   void tapAddAction() {
-    RuleFilterActionArguments newRuleFilterAction = RuleFilterActionArguments.newAction(null);
-    listEmailRuleFilterActionSelected.add(newRuleFilterAction);
+    listEmailRuleFilterActionSelected.add(RuleFilterActionArguments.emptyAction());
     if (listEmailRuleFilterActionSelected.length >= maxCountAction) {
       isShowAddAction.value = false;
     }

@@ -4,27 +4,30 @@ import 'package:rule_filter/rule_filter/rule_append_in.dart';
 
 part 'rule_action.g.dart';
 
-@JsonSerializable(explicitToJson: true)
+@JsonSerializable(explicitToJson: true, includeIfNull: false)
 class RuleAction with EquatableMixin {
   final RuleAppendIn appendIn;
-  @JsonKey(includeIfNull: false)
   final bool? markAsSeen;
-  @JsonKey(includeIfNull: false)
   final bool? markAsImportant;
-  @JsonKey(includeIfNull: false)
   final bool? reject;
+  final List<String>? withKeywords;
 
   RuleAction({
     required this.appendIn,
     this.markAsSeen,
     this.markAsImportant,
     this.reject,
+    this.withKeywords,
   });
 
   @override
   List<Object?> get props => [
-        appendIn,
-      ];
+    appendIn,
+    markAsSeen,
+    markAsImportant,
+    reject,
+    withKeywords,
+  ];
 
   factory RuleAction.fromJson(Map<String, dynamic> json) =>
       _$RuleActionFromJson(json);
