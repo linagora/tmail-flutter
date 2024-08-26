@@ -1,6 +1,5 @@
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/semantics.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -19,9 +18,7 @@ import 'package:worker_manager/worker_manager.dart';
 void main() async {
   initLogger(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    if (PlatformInfo.isWeb) {
-      SemanticsBinding.instance.ensureSemantics();
-    }
+    SemanticsBinding.instance.ensureSemantics();
     ThemeUtils.setSystemLightUIStyle();
 
     await Future.wait([

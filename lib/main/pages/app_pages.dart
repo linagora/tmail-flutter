@@ -1,8 +1,11 @@
 import 'dart:io';
 
 import 'package:core/core.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_navigation/src/routes/get_route.dart';
+import 'package:tmail_ui_user/features/base/key_values/composer_key_values.dart';
+import 'package:tmail_ui_user/features/base/key_values/login_key_values.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart' deferred as composer;
 import 'package:tmail_ui_user/features/contact/presentation/contact_bindings.dart';
@@ -43,7 +46,9 @@ class AppPages {
         binding: HomeBindings()),
     GetPage(
         name: AppRoutes.login,
-        page: () => DeferredWidget(login.loadLibrary, () => login.LoginView()),
+        page: () => DeferredWidget(login.loadLibrary, () => login.LoginView(
+          key: const ValueKey(LoginKeyValues.loginView),
+        )),
         binding: LoginBindings()),
     GetPage(
       name: AppRoutes.dashboard,
@@ -87,7 +92,7 @@ class AppPages {
             name: AppRoutes.composer,
             page: () => DeferredWidget(
                 composer.loadLibrary,
-                () => composer.ComposerView()),
+                () => composer.ComposerView(key: const ValueKey(ComposerKeyValues.composerView))),
             binding: ComposerBindings()),
         GetPage(
             name: AppRoutes.destinationPicker,
