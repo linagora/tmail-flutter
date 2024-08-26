@@ -3998,5 +3998,11 @@
       "startDate": {},
       "endDate": {}
     }
+  },
+  "spamFolderNotFound": "",
+  "@spamFolderNotFound": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
