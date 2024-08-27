@@ -437,10 +437,10 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "55817316c081a363a410fd0c14867be28096790d"
+      resolved-ref: "590b825e406edd50556074eee32ab896afb99933"
       url: "https://github.com/linagora/enough_html_editor.git"
     source: git
-    version: "0.1.0"
+    version: "0.1.1"
   enough_platform_widgets:
     dependency: transitive
     description:
