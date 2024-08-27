@@ -2,6 +2,7 @@
 import 'package:collection/collection.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_header.dart';
 import 'package:model/email/email_property.dart';
+import 'package:core/utils/app_logger.dart' as logger;
 
 extension ListEmailHeaderExtension on Set<EmailHeader>? {
   bool get readReceiptHasBeenRequested {
@@ -20,6 +21,7 @@ extension ListEmailHeaderExtension on Set<EmailHeader>? {
 
   String get sMimeStatus {
     final sMimeStatus = this?.firstWhereOrNull((header) => header.name == EmailProperty.headerSMimeStatusKey);
-    return sMimeStatus?.value ?? '';
+    logger.log('ListEmailHeaderExtension::sMimeStatus: $sMimeStatus');
+    return sMimeStatus?.value.trim() ?? '';
   }
 }

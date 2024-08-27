@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_header.dart';
+import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/attachment.dart';
 
@@ -15,6 +16,7 @@ class DetailedEmail with EquatableMixin {
   final MessageIdsHeaderValue? messageId;
   final MessageIdsHeaderValue? references;
   final List<Attachment>? inlineImages;
+  final Map<IndividualHeaderIdentifier, String?>? sMimeStatusHeader;
 
   DetailedEmail({
     required this.emailId,
@@ -27,6 +29,7 @@ class DetailedEmail with EquatableMixin {
     this.messageId,
     this.references,
     this.inlineImages,
+    this.sMimeStatusHeader,
   });
 
   @override
@@ -41,5 +44,6 @@ class DetailedEmail with EquatableMixin {
     messageId,
     references,
     inlineImages,
+    sMimeStatusHeader,
   ];
 }

@@ -580,6 +580,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           htmlEmailContent: success.htmlEmailContent,
           messageId: success.emailCurrent?.messageId,
           references: success.emailCurrent?.references,
+          sMimeStatusHeader: success.emailCurrent?.sMimeStatusHeader,
         );
 
         _storeOpenedEmailAction(

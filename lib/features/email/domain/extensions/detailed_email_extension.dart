@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_
 import 'package:tmail_ui_user/features/email/domain/extensions/list_email_header_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/detailed_email_hive_cache.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/map_header_identifier_id_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/map_keywords_extension.dart';
 
 extension DetailedEmailExtension on DetailedEmail {
@@ -19,6 +20,7 @@ extension DetailedEmailExtension on DetailedEmail {
       messageId: messageId?.ids.toList(),
       references: references?.ids.toList(),
       inlineImages: inlineImages?.toHiveCache(),
+      sMimeStatusHeader: sMimeStatusHeader?.toMapString(),
     );
   }
 
@@ -38,6 +40,7 @@ extension DetailedEmailExtension on DetailedEmail {
       messageId: messageId,
       references: references,
       inlineImages: inlineImages,
+      sMimeStatusHeader: sMimeStatusHeader
     );
   }
 }
