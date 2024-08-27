@@ -32,6 +32,8 @@ extension EmailExtension on Email {
 
   bool get hasListUnsubscribe => listUnsubscribe.isNotEmpty;
 
+  String get sMimeStatusHeaderParsed => sMimeStatusHeader?[IndividualHeaderIdentifier.sMimeStatusHeader]?.trim() ?? '';
+
   bool hasReadReceipt(Map<MailboxId, PresentationMailbox> mapMailbox) {
     final mailboxCurrent = findMailboxContain(mapMailbox);
     return !hasMdnSent &&

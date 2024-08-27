@@ -8,7 +8,6 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/email_avatar_builder.dart';
-import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/smime_signature_status.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_receiver_widget.dart';
@@ -26,12 +25,14 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
   final OnOpenEmailAddressDetailAction? openEmailAddressDetailAction;
   final OnEmailActionClick? onEmailActionClick;
   final double? maxBodyHeight;
+  final SMimeSignatureStatus? sMimeStatus;
 
   const InformationSenderAndReceiverBuilder({
     Key? key,
     required this.emailSelected,
     required this.responsiveUtils,
     required this.imagePaths,
+    this.sMimeStatus,
     this.emailUnsubscribe,
     this.maxBodyHeight,
     this.openEmailAddressDetailAction,
@@ -64,14 +65,14 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                             openEmailAddressDetailAction: openEmailAddressDetailAction,
                           )
                       )),
-                      if (emailSelected.sMimeStatus != SMimeSignatureStatus.notSigned)
+                      if (sMimeStatus != null && sMimeStatus != SMimeSignatureStatus.notSigned)
                         Tooltip(
                           key: const Key('smime_signature_status_icon'),
-                          message: emailSelected.sMimeStatus.getTooltipMessage(context),
+                          message: sMimeStatus!.getTooltipMessage(context),
                           child: MouseRegion(
                             cursor: SystemMouseCursors.click,
                             child: SvgPicture.asset(
-                              emailSelected.sMimeStatus.getIcon(imagePaths),
+                              sMimeStatus!.getIcon(imagePaths),
                               fit: BoxFit.fill,
                             ),
                           ),

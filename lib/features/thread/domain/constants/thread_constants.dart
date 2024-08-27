@@ -51,6 +51,7 @@ class ThreadConstants {
     EmailProperty.mailboxIds,
     EmailProperty.messageId,
     EmailProperty.references,
+    IndividualHeaderIdentifier.sMimeStatusHeader.value,
   });
 
   static final propertiesGetDetailedEmail = Properties({
@@ -72,7 +73,8 @@ class ThreadConstants {
     EmailProperty.bodyValues,
     EmailProperty.htmlBody,
     EmailProperty.attachments,
-    EmailProperty.headers
+    EmailProperty.headers,
+    IndividualHeaderIdentifier.sMimeStatusHeader.value,
   });
 
   static final propertiesCalendarEvent = Properties({

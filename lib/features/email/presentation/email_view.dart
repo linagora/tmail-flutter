@@ -317,6 +317,7 @@ class EmailView extends GetWidget<SingleEmailController> {
           emailSelected: presentationEmail,
           imagePaths: controller.imagePaths,
           responsiveUtils: controller.responsiveUtils,
+          sMimeStatus: controller.currentEmailLoaded.value?.sMimeStatus,
           emailUnsubscribe: controller.emailUnsubscribe.value,
           maxBodyHeight: maxBodyHeight,
           openEmailAddressDetailAction: controller.openEmailAddressDialog,

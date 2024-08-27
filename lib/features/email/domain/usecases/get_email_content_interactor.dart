@@ -98,7 +98,8 @@ class GetEmailContentInteractor {
         emailCurrent: Email(
           id: emailId,
           headers: detailedEmail.headers,
-          keywords: detailedEmail.keywords
+          keywords: detailedEmail.keywords,
+          sMimeStatusHeader: detailedEmail.sMimeStatusHeader,
         )
       ));
     } catch (e) {
@@ -130,7 +131,8 @@ class GetEmailContentInteractor {
         emailCurrent: Email(
           id: emailId,
           headers: detailedEmail.headers,
-          keywords: detailedEmail.keywords
+          keywords: detailedEmail.keywords,
+          sMimeStatusHeader: detailedEmail.sMimeStatusHeader,
         )
       ));
     } catch (e) {
