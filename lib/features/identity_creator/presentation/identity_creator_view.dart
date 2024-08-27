@@ -575,11 +575,13 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
     return Column(children: [
       _buildCheckboxIdentityDefault(context),
       const SizedBox(height: 24),
-      Row(children: [
-        Expanded(child: _buildCancelButton(context)),
-        const SizedBox(width: 12),
-        Expanded(child: _buildSaveButton(context))
-      ])
+      SafeArea(
+        child: Row(children: [
+          Expanded(child: _buildCancelButton(context)),
+          const SizedBox(width: 12),
+          Expanded(child: _buildSaveButton(context))
+        ]),
+      )
     ]);
   }
 
