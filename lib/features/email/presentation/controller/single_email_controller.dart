@@ -1859,6 +1859,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           )
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+        barrierDismissible: false
       );
     }
   }
