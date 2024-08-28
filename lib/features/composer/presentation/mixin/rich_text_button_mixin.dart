@@ -113,6 +113,7 @@ mixin RichTextButtonMixin {
     Color? color,
     String? tooltip,
     double opacity = 1.0,
+    bool excludeFromSemantics = false,
   }){
     final newColor = color == Colors.white
         ? AppColor.colorDefaultRichTextButton
@@ -123,6 +124,7 @@ mixin RichTextButtonMixin {
           message: tooltip,
           child: SvgPicture.asset(
             path,
+            excludeFromSemantics: excludeFromSemantics,
             colorFilter: newColor?.withOpacity(opacity).asFilter(),
             fit: BoxFit.fill))
       : SvgPicture.asset(
