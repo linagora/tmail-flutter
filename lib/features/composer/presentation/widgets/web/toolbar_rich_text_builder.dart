@@ -119,7 +119,8 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
                     path: RichTextStyleType.textColor.getIcon(_imagePaths),
                     color: richTextWebController.selectedTextColor.value,
                     tooltip: RichTextStyleType.textColor.getTooltipButton(context),
-                    opacity: opacity
+                    opacity: opacity,
+                    excludeFromSemantics: true
                   ),
                   onTap: () => richTextWebController.applyRichTextStyle(
                     context,
