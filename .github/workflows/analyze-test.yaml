@@ -32,8 +32,8 @@ jobs:
       - name: Setup flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: "3.25.0-1.0.pre.160"
-          channel: "stable"
+          flutter-version: "3.25.0-0.1.pre"
+          channel: "master"
           cache: true
           cache-key: "deps-${{ hashFiles('**/pubspec.lock') }}"
           cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
