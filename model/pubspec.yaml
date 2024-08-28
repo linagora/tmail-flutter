@@ -54,7 +54,7 @@ dependencies:
 
   mime: 1.0.4
 
-  collection: 1.18.0
+  collection: 1.19.0
 
   dartz: 0.10.1
 
@@ -107,7 +107,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
-
 
   # This section identifies your Flutter project as a module meant for
   # embedding in a native host app.  These identifiers should _not_ ordinarily
