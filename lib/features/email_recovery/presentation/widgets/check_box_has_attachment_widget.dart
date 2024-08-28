@@ -1,5 +1,4 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/views/checkbox/labeled_checkbox.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/isolate/background_isolate_binary_messenger/background_isolate_binary_messenger_mobile.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -29,13 +28,21 @@ class CheckBoxHasAttachmentWidget extends StatelessWidget {
           nextFocusNode?.requestFocus();
         }
       },
-      child: LabeledCheckbox(
-        label: AppLocalizations.of(context).hasAttachment,
-        focusNode: currentFocusNode,
-        contentPadding: EdgeInsets.zero,
+      child: CheckboxListTile(
         value: hasAttachmentValue,
+        contentPadding: const EdgeInsetsDirectional.only(start: 4),
         activeColor: AppColor.primaryColor,
-        onChanged: onChanged, 
+        focusNode: currentFocusNode,
+        controlAffinity: ListTileControlAffinity.leading,
+        onChanged: onChanged,
+        title: Text(
+          AppLocalizations.of(context).hasAttachment,
+          style: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.normal,
+            color: Colors.black
+          ),
+        ),
       )
     );
   }
