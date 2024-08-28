@@ -111,6 +111,7 @@ class LoginView extends BaseLoginView {
                   return const SizedBox.shrink();
               }
             }),
+            TextButton(onPressed: controller.onClickCreateTwakeId, child: const Text('Registration')),
             _buildLoadingProgress(context),
             const Padding(
               padding: EdgeInsets.only(top: 16),
