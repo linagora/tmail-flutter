@@ -1,3 +1,7 @@
+## [0.13.1] - 2024-08-28
+### Fixed
+- Get SMime signature status in headers parsed value
+
 ## [0.13.0] - 2024-08-23
 ### Added
 - #2857 New icon for Twake Mail
