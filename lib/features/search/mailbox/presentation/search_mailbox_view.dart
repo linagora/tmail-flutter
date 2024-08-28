@@ -43,22 +43,25 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
   }
 
   Widget _buildSearchBody(BuildContext context) {
-    return Container(
-      color: backgroundColor ?? Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Column(children: [
-        Container(
-          color: Colors.transparent,
-          padding: SearchMailboxUtils.getPaddingAppBar(context, controller.responsiveUtils),
-          child: _buildSearchInputForm(context)
-        ),
-        if (!controller.responsiveUtils.isWebDesktop(context))
-          const Divider(color: AppColor.colorDividerComposer, height: 1),
-        _buildLoadingView(),
-        Expanded(
-          child: _buildMailboxListView(context)
-        )
-      ]),
+    return Semantics(
+      container: true,
+      child: Container(
+        color: backgroundColor ?? Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: Column(children: [
+          Container(
+            color: Colors.transparent,
+            padding: SearchMailboxUtils.getPaddingAppBar(context, controller.responsiveUtils),
+            child: _buildSearchInputForm(context)
+          ),
+          if (!controller.responsiveUtils.isWebDesktop(context))
+            const Divider(color: AppColor.colorDividerComposer, height: 1),
+          _buildLoadingView(),
+          Expanded(
+            child: _buildMailboxListView(context)
+          )
+        ]),
+      ),
     );
   }
 
