@@ -1,4 +1,4 @@
-# Authenticating in Team-Mail
+# Authenticating in Team-Mail {#auth}
 
 Team-mail supports both being integrated with an identity provider and basic authentication/
 

@@ -1,4 +1,4 @@
-# Install Team mail application
+# Install Team mail application {#install}
 
 This small guides explains how to install Team-Mail applications on your devices.
 

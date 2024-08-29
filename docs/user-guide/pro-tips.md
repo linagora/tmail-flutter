@@ -1,4 +1,4 @@
-# Team-Mail productivity tips
+# Team-Mail productivity tips {#tips}
 
 This page makes a list of all features that TeamMail advanced users would love.
 

@@ -1,4 +1,4 @@
-# Extra features
+# Extra features {#2}
 
 This small page will present features specific to Team-Mail.
 

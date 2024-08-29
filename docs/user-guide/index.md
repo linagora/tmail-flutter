@@ -8,36 +8,36 @@ This guide provides information both for mobile and weg
 
 ## Features covered
 
- - [Installing the application](install.md)
- - [Authentication](auth.md)
- - [Reading and acting on emails](read.md)
- - [Writing emails](composer.md)
- - [Using folders to sort emails](manage-folders.md)
- - [Quota](quota.md)
- - [Searching your emails](search.md)
- - [Managing your account](profile.md)
- - [Anti-spam](antispam.md)
- - [Extra features](extra-features.md)
- - [Security](security.md)
+ - [Installing the application](#install)
+ - [Authentication](#auth)
+ - [Reading and acting on emails](#read.)
+ - [Writing emails](#composer)
+ - [Using folders to sort emails](#folder)
+ - [Quota](#quota)
+ - [Searching your emails](#search)
+ - [Managing your account](#profile)
+ - [Anti-spam](#1)
+ - [Extra features](#2)
+ - [Security](#security)
 
-We also have a page for advanced users looking for [productivity tips](pro-tips.md).
+We also have a page for advanced users looking for [productivity tips](#tips).
 
 ## Main 
 
 ![Main page](images/main.png)
 
-Once [logged in](auth.md) into Team-mail, Team-Mail redirects you to your INBOX (1). This is where you can [read your newly arrived emails](read.md).
+Once [logged in](#auth) into Team-mail, Team-Mail redirects you to your INBOX (1). This is where you can [read your newly arrived emails](#read).
 
-The left panel (2) allows you to switch of folder (view emails within another folder), and [manage your folders](manage-folders.md). 
-The left pannel also displays [quota](quota.md) information might you need to.
+The left panel (2) allows you to switch of folder (view emails within another folder), and [manage your folders](#folder). 
+The left pannel also displays [quota](#quota) information might you need to.
 
-The search bar (3) at the top allows to [easily and quickly search your mails](search.md). Many criteria are also supported within the advanced search might you need to.
+The search bar (3) at the top allows to [easily and quickly search your mails](#search). Many criteria are also supported within the advanced search might you need to.
 
-This button opens the [composer](composer.md) (4), which allows to write new emails to your friends and colleagues.
+This button opens the [composer](#composer) (4), which allows to write new emails to your friends and colleagues.
 
 This button opens the list of applications integrated with Team-Mail for your current setup (5).
 
-This button allows you to open your [profile page](profile.md) (6). From there you can:
+This button allows you to open your [profile page](#profile) (6). From there you can:
  - Manage your senders identities and signatures
  - Set up email rules to automatically sort your mails
  - Set up forwards to a third party email service

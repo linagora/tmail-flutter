@@ -1,4 +1,4 @@
-# Reading emails
+# Reading emails {#read}
 
 This page explains how to read your emails and explains which actions can be performed on your emails.
 

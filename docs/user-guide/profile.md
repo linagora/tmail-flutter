@@ -1,4 +1,4 @@
-# Profile
+# Profile {#profile}
 
 After logged in your Tmail account, click on avatar on top right then select option "Manage account"
 

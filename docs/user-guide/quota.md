@@ -1,4 +1,5 @@
-## Quota information 
+## Quota information {#quota}
+
 After logged in your Tmail account, you can see a quota banner at the bottom ofthe left folder tree:
 
 ![image](https://github.com/linagora/tmail-flutter/assets/68209176/6b26f858-18f6-4d18-84da-d3d19b2e384e)

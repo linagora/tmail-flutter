@@ -1,4 +1,4 @@
-# Manage folders - Web 
+# Manage folders - Web {#folder}
 
 The left panel of the main view displays folders of this account.
 
