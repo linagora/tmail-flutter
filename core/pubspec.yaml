@@ -98,6 +98,7 @@ dev_dependencies:
 dependency_overrides:
   build_runner: 2.4.12
   build_runner_core: 7.2.9
+  win32: 5.5.4
 
 flutter:
   # The following line ensures that the Material Icons font is

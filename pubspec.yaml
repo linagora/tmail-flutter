@@ -278,13 +278,11 @@ dependency_overrides:
   build_runner: 2.4.12
   build_runner_core: 7.2.9
   json_annotation: 4.8.1
+  win32: 5.5.4
 
   # TODO: replace when upstream PR is merged:
   # https://github.com/miguelpruivo/flutter_file_picker/pull/1482
-  file_picker:
-    git:
-      url: https://github.com/linagora/flutter_file_picker
-      ref: email_supported_5.3.1
+  file_picker: 8.0.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

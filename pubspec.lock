@@ -547,12 +547,11 @@ packages:
   file_picker:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "email_supported_5.3.1"
-      resolved-ref: "6abb5a30d33ed04413bbc0273bfa946c379b28f0"
-      url: "https://github.com/linagora/flutter_file_picker"
-    source: git
-    version: "5.3.1"
+      name: file_picker
+      sha256: "825aec673606875c33cd8d3c4083f1a3c3999015a84178b317b7ef396b7384f3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "8.0.7"
   file_selector_linux:
     dependency: transitive
     description:
@@ -2294,13 +2293,13 @@ packages:
     source: hosted
     version: "3.0.3"
   win32:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
       name: win32
-      sha256: "5a751eddf9db89b3e5f9d50c20ab8612296e4e8db69009788d6c8b060a84191c"
+      sha256: "68d1e89a91ed61ad9c370f9f8b6effed9ae5e0ede22a270bdfa6daf79fc2290a"
       url: "https://pub.dev"
     source: hosted
-    version: "4.1.4"
+    version: "5.5.4"
   win32_registry:
     dependency: transitive
     description:
