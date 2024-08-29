@@ -5,6 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/username_extension.dart';
+import 'package:tmail_ui_user/features/base/key_values/composer_key_values.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
@@ -192,8 +193,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             }),
         ),
         Obx(() => controller.composerOverlayState.value == ComposerOverlayState.active
-            ? const ComposerView()
-            : const SizedBox.shrink()
+          ? Semantics(
+              identifier: ComposerKeyValues.composerView,
+              child: const ComposerView(),
+            )
+          : const SizedBox.shrink()
         ),
         Obx(() => controller.searchMailboxActivated.value == true && !controller.responsiveUtils.isWebDesktop(context)
           ? const SearchMailboxView()
@@ -657,27 +661,30 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       ),
       width: ResponsiveUtils.defaultSizeMenu,
       alignment: Alignment.centerLeft,
-      child: TMailButtonWidget(
-        key: const Key('compose_email_button'),
-        text: AppLocalizations.of(context).compose,
-        icon: controller.imagePaths.icComposeWeb,
-        borderRadius: 10,
-        iconSize: 24,
-        iconColor: Colors.white,
-        padding: const EdgeInsetsDirectional.symmetric(vertical: 8),
-        backgroundColor: AppColor.colorTextButton,
-        boxShadow: const [
-          BoxShadow(
-            blurRadius: 12.0,
-            color: AppColor.colorShadowComposerButton
-          )
-        ],
-        textStyle: const TextStyle(
-          fontSize: 15,
-          color: Colors.white,
-          fontWeight: FontWeight.w500
+      child: Semantics(
+        identifier: ComposerKeyValues.openComposerButton,
+        child: TMailButtonWidget(
+          key: const Key('compose_email_button'),
+          text: AppLocalizations.of(context).compose,
+          icon: controller.imagePaths.icComposeWeb,
+          borderRadius: 10,
+          iconSize: 24,
+          iconColor: Colors.white,
+          padding: const EdgeInsetsDirectional.symmetric(vertical: 8),
+          backgroundColor: AppColor.colorTextButton,
+          boxShadow: const [
+            BoxShadow(
+              blurRadius: 12.0,
+              color: AppColor.colorShadowComposerButton
+            )
+          ],
+          textStyle: const TextStyle(
+            fontSize: 15,
+            color: Colors.white,
+            fontWeight: FontWeight.w500
+          ),
+          onTapActionCallback: () => controller.goToComposer(ComposerArguments()),
         ),
-        onTapActionCallback: () => controller.goToComposer(ComposerArguments()),
       ),
     );
   }

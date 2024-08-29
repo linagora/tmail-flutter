@@ -1,6 +1,7 @@
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/base/key_values/composer_key_values.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/subject_composer_widget_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -24,7 +25,7 @@ class SubjectComposerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      label: 'Composer:subject',
+      identifier: ComposerKeyValues.composerSubjectField,
       child: Container(
         decoration: const BoxDecoration(
           border: Border(
