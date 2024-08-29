@@ -2,6 +2,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/key_values/composer_key_values.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/web/bottom_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -131,17 +132,20 @@ class BottomBarComposerWidget extends StatelessWidget {
             onTapActionCallback: saveToDraftAction,
           ),
           const SizedBox(width: BottomBarComposerWidgetStyle.sendButtonSpace),
-          TMailButtonWidget(
-            text: AppLocalizations.of(context).send,
-            icon: _imagePaths.icSend,
-            iconAlignment: TextDirection.rtl,
-            padding: BottomBarComposerWidgetStyle.sendButtonPadding,
-            iconSize: BottomBarComposerWidgetStyle.iconSize,
-            iconSpace: BottomBarComposerWidgetStyle.sendButtonIconSpace,
-            textStyle: BottomBarComposerWidgetStyle.sendButtonTextStyle,
-            backgroundColor: BottomBarComposerWidgetStyle.sendButtonBackgroundColor,
-            borderRadius: BottomBarComposerWidgetStyle.sendButtonRadius,
-            onTapActionCallback: sendMessageAction,
+          Semantics(
+            identifier: ComposerKeyValues.composerSendButton,
+            child: TMailButtonWidget(
+              text: AppLocalizations.of(context).send,
+              icon: _imagePaths.icSend,
+              iconAlignment: TextDirection.rtl,
+              padding: BottomBarComposerWidgetStyle.sendButtonPadding,
+              iconSize: BottomBarComposerWidgetStyle.iconSize,
+              iconSpace: BottomBarComposerWidgetStyle.sendButtonIconSpace,
+              textStyle: BottomBarComposerWidgetStyle.sendButtonTextStyle,
+              backgroundColor: BottomBarComposerWidgetStyle.sendButtonBackgroundColor,
+              borderRadius: BottomBarComposerWidgetStyle.sendButtonRadius,
+              onTapActionCallback: sendMessageAction,
+            ),
           )
         ]
       ),

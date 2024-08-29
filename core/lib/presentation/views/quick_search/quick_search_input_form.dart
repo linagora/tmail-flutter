@@ -3,6 +3,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:core/presentation/constants/search_key_values.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/direction_utils.dart';
@@ -850,47 +851,50 @@ class _TypeAheadFieldQuickSearchState<T, P, R> extends State<TypeAheadFieldQuick
             if (widget.textFieldConfiguration.leftButton != null)
               widget.textFieldConfiguration.leftButton!,
             Expanded(
-              child: TextField(
-                focusNode: _effectiveFocusNode,
-                controller: _effectiveController,
-                decoration: widget.textFieldConfiguration.decoration,
-                style: widget.textFieldConfiguration.style,
-                textAlign: widget.textFieldConfiguration.textAlign,
-                enabled: widget.textFieldConfiguration.enabled,
-                keyboardType: widget.textFieldConfiguration.keyboardType,
-                autofocus: widget.textFieldConfiguration.autofocus,
-                inputFormatters: widget.textFieldConfiguration.inputFormatters,
-                autocorrect: widget.textFieldConfiguration.autocorrect,
-                maxLines: widget.textFieldConfiguration.maxLines,
-                textAlignVertical: widget.textFieldConfiguration.textAlignVertical,
-                minLines: widget.textFieldConfiguration.minLines,
-                maxLength: widget.textFieldConfiguration.maxLength,
-                maxLengthEnforcement: widget.textFieldConfiguration.maxLengthEnforcement,
-                obscureText: widget.textFieldConfiguration.obscureText,
-                onChanged: (input) {
-                  widget.textFieldConfiguration.onChanged?.call(input);
-                  if (input.isNotEmpty) {
-                    final directionByText = DirectionUtils.getDirectionByEndsText(input);
-                    if (directionByText != _textDirection) {
-                      setState(() {
-                        _textDirection = directionByText;
-                      });
+              child: Semantics(
+                identifier: SearchKeyValues.searchInputField,
+                child: TextField(
+                  focusNode: _effectiveFocusNode,
+                  controller: _effectiveController,
+                  decoration: widget.textFieldConfiguration.decoration,
+                  style: widget.textFieldConfiguration.style,
+                  textAlign: widget.textFieldConfiguration.textAlign,
+                  enabled: widget.textFieldConfiguration.enabled,
+                  keyboardType: widget.textFieldConfiguration.keyboardType,
+                  autofocus: widget.textFieldConfiguration.autofocus,
+                  inputFormatters: widget.textFieldConfiguration.inputFormatters,
+                  autocorrect: widget.textFieldConfiguration.autocorrect,
+                  maxLines: widget.textFieldConfiguration.maxLines,
+                  textAlignVertical: widget.textFieldConfiguration.textAlignVertical,
+                  minLines: widget.textFieldConfiguration.minLines,
+                  maxLength: widget.textFieldConfiguration.maxLength,
+                  maxLengthEnforcement: widget.textFieldConfiguration.maxLengthEnforcement,
+                  obscureText: widget.textFieldConfiguration.obscureText,
+                  onChanged: (input) {
+                    widget.textFieldConfiguration.onChanged?.call(input);
+                    if (input.isNotEmpty) {
+                      final directionByText = DirectionUtils.getDirectionByEndsText(input);
+                      if (directionByText != _textDirection) {
+                        setState(() {
+                          _textDirection = directionByText;
+                        });
+                      }
                     }
-                  }
-                },
-                onSubmitted: widget.textFieldConfiguration.onSubmitted,
-                onEditingComplete: widget.textFieldConfiguration.onEditingComplete,
-                onTap: widget.textFieldConfiguration.onTap,
-                scrollPadding: widget.textFieldConfiguration.scrollPadding,
-                textInputAction: widget.textFieldConfiguration.textInputAction,
-                textCapitalization: widget.textFieldConfiguration.textCapitalization,
-                keyboardAppearance: widget.textFieldConfiguration.keyboardAppearance,
-                cursorWidth: widget.textFieldConfiguration.cursorWidth,
-                cursorRadius: widget.textFieldConfiguration.cursorRadius,
-                cursorColor: widget.textFieldConfiguration.cursorColor,
-                textDirection: _textDirection,
-                enableInteractiveSelection: widget.textFieldConfiguration.enableInteractiveSelection,
-                readOnly: widget.hideKeyboard,
+                  },
+                  onSubmitted: widget.textFieldConfiguration.onSubmitted,
+                  onEditingComplete: widget.textFieldConfiguration.onEditingComplete,
+                  onTap: widget.textFieldConfiguration.onTap,
+                  scrollPadding: widget.textFieldConfiguration.scrollPadding,
+                  textInputAction: widget.textFieldConfiguration.textInputAction,
+                  textCapitalization: widget.textFieldConfiguration.textCapitalization,
+                  keyboardAppearance: widget.textFieldConfiguration.keyboardAppearance,
+                  cursorWidth: widget.textFieldConfiguration.cursorWidth,
+                  cursorRadius: widget.textFieldConfiguration.cursorRadius,
+                  cursorColor: widget.textFieldConfiguration.cursorColor,
+                  textDirection: _textDirection,
+                  enableInteractiveSelection: widget.textFieldConfiguration.enableInteractiveSelection,
+                  readOnly: widget.hideKeyboard,
+                ),
               ),
             ),
             if (widget.textFieldConfiguration.clearTextButton != null
@@ -1202,9 +1206,12 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
   Widget createSuggestionsWidget() {
     final listItemSuggestionWidget = _suggestions?.map((T suggestion) {
       if (widget.itemBuilder != null) {
-        return InkWell(
-          child: widget.itemBuilder!(context, suggestion),
-          onTap: () => widget.onSuggestionSelected?.call(suggestion),
+        return Semantics(
+          identifier: SearchKeyValues.searchEmailResult,
+          child: InkWell(
+            child: widget.itemBuilder!(context, suggestion),
+            onTap: () => widget.onSuggestionSelected?.call(suggestion),
+          ),
         );
       } else {
         return const SizedBox.shrink();
@@ -1251,9 +1258,12 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
       if (widget.contactSuggestionBuilder != null) {
         return Material(
           type: MaterialType.transparency,
-          child: InkWell(
-            child: widget.contactSuggestionBuilder!(context, contact),
-            onTap: () => widget.onContactSuggestionSelected?.call(contact),
+          child: Semantics(
+            identifier: SearchKeyValues.searchUserResult,
+            child: InkWell(
+              child: widget.contactSuggestionBuilder!(context, contact),
+              onTap: () => widget.onContactSuggestionSelected?.call(contact),
+            ),
           ),
         );
       } else {

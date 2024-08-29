@@ -16,6 +16,7 @@ import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:super_tag_editor/tag_editor.dart';
+import 'package:tmail_ui_user/features/base/key_values/composer_key_values.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
@@ -123,7 +124,9 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      value: 'Composer:${widget.prefix.name}',
+      identifier: widget.prefix == PrefixEmailAddress.to
+        ? ComposerKeyValues.composerToField
+        : null,
       child: Container(
         decoration: const BoxDecoration(
           border: Border(

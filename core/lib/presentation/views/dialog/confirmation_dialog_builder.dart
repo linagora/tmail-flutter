@@ -1,5 +1,6 @@
 
 import 'package:core/core.dart';
+import 'package:core/presentation/constants/confirmation_dialog_key_values.dart';
 import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:flutter/material.dart';
 
@@ -184,13 +185,16 @@ class ConfirmDialogBuilder {
             if (_onCloseButtonAction != null)
               Align(
                 alignment: AlignmentDirectional.centerEnd,
-                child: TMailButtonWidget.fromIcon(
-                  icon: _imagePath.icCircleClose,
-                  iconSize: 30,
-                  padding: const EdgeInsets.all(3),
-                  backgroundColor: Colors.transparent,
-                  margin: const EdgeInsetsDirectional.only(top: 16, end: 16),
-                  onTapActionCallback: _onCloseButtonAction
+                child: Semantics(
+                  label: ConfirmationDialogKeyValues.closeButton,
+                  child: TMailButtonWidget.fromIcon(
+                    icon: _imagePath.icCircleClose,
+                    iconSize: 30,
+                    padding: const EdgeInsets.all(3),
+                    backgroundColor: Colors.transparent,
+                    margin: const EdgeInsetsDirectional.only(top: 16, end: 16),
+                    onTapActionCallback: _onCloseButtonAction
+                  ),
                 )
               ),
             if (_iconWidget != null)
@@ -203,10 +207,13 @@ class ConfirmDialogBuilder {
               Padding(
                   padding: _paddingTitle ?? const EdgeInsetsDirectional.only(top: 12, start: 24, end: 24),
                   child: Center(
-                      child: Text(
-                          _title,
-                          textAlign: TextAlign.center,
-                          style: _styleTitle ?? const TextStyle(fontSize: 20.0, color: AppColor.colorActionDeleteConfirmDialog, fontWeight: FontWeight.w500)
+                      child: Semantics(
+                        identifier: ConfirmationDialogKeyValues.title,
+                        child: Text(
+                            _title,
+                            textAlign: TextAlign.center,
+                            style: _styleTitle ?? const TextStyle(fontSize: 20.0, color: AppColor.colorActionDeleteConfirmDialog, fontWeight: FontWeight.w500)
+                        ),
                       )
                   )
               ),
@@ -214,9 +221,12 @@ class ConfirmDialogBuilder {
               Padding(
                 padding: _paddingContent ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                 child: Center(
-                  child: Text(_content,
-                      textAlign: TextAlign.center,
-                      style: _styleContent ?? const TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog)
+                  child: Semantics(
+                    identifier: ConfirmationDialogKeyValues.content,
+                    child: Text(_content,
+                        textAlign: TextAlign.center,
+                        style: _styleContent ?? const TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog)
+                    ),
                   ),
                 ),
               )
@@ -224,11 +234,14 @@ class ConfirmDialogBuilder {
               Padding(
                 padding: _paddingContent ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                 child: Center(
-                  child: RichText(
-                    textAlign: TextAlign.center,
-                    text: TextSpan(
-                      style: _styleContent ?? const TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog),
-                      children: listTextSpan
+                  child: Semantics(
+                    identifier: ConfirmationDialogKeyValues.content,
+                    child: RichText(
+                      textAlign: TextAlign.center,
+                      text: TextSpan(
+                        style: _styleContent ?? const TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog),
+                        children: listTextSpan
+                      ),
                     ),
                   ),
                 ),
@@ -238,26 +251,32 @@ class ConfirmDialogBuilder {
                 if (_cancelText.isNotEmpty)
                   Padding(
                     padding: const EdgeInsetsDirectional.only(top: 8, start: 16, end: 16),
-                    child: ConfirmDialogButton(
-                      label: _cancelText,
-                      backgroundColor: _colorCancelButton,
-                      borderRadius: _radiusButton,
-                      textStyle: _styleTextCancelButton,
-                      padding: _paddingButton,
-                      maxLines: titleActionButtonMaxLines,
-                      onTapAction: _onCancelButtonAction),
+                    child: Semantics(
+                      identifier: ConfirmationDialogKeyValues.cancelButton,
+                      child: ConfirmDialogButton(
+                        label: _cancelText,
+                        backgroundColor: _colorCancelButton,
+                        borderRadius: _radiusButton,
+                        textStyle: _styleTextCancelButton,
+                        padding: _paddingButton,
+                        maxLines: titleActionButtonMaxLines,
+                        onTapAction: _onCancelButtonAction),
+                    ),
                   ),
                 if (_confirmText.isNotEmpty)
                   Padding(
                     padding: const EdgeInsetsDirectional.only(top: 8, start: 16, end: 16),
-                    child: ConfirmDialogButton(
-                      label: _confirmText,
-                      backgroundColor: _colorConfirmButton,
-                      borderRadius: _radiusButton,
-                      textStyle: _styleTextConfirmButton,
-                      padding: _paddingButton,
-                      maxLines: titleActionButtonMaxLines,
-                      onTapAction: _onConfirmButtonAction),
+                    child: Semantics(
+                      identifier: ConfirmationDialogKeyValues.confirmButton,
+                      child: ConfirmDialogButton(
+                        label: _confirmText,
+                        backgroundColor: _colorConfirmButton,
+                        borderRadius: _radiusButton,
+                        textStyle: _styleTextConfirmButton,
+                        padding: _paddingButton,
+                        maxLines: titleActionButtonMaxLines,
+                        onTapAction: _onConfirmButtonAction),
+                    ),
                   ),
                 const SizedBox(height: 16),
               ]
@@ -267,24 +286,30 @@ class ConfirmDialogBuilder {
                 child: Row(
                     children: [
                       if (_cancelText.isNotEmpty)
-                        Expanded(child: ConfirmDialogButton(
-                          label: _cancelText,
-                          backgroundColor: _colorCancelButton,
-                          borderRadius: _radiusButton,
-                          textStyle: _styleTextCancelButton,
-                          padding: _paddingButton,
-                          maxLines: titleActionButtonMaxLines,
-                          onTapAction: _onCancelButtonAction)),
+                        Expanded(child: Semantics(
+                          identifier: ConfirmationDialogKeyValues.cancelButton,
+                          child: ConfirmDialogButton(
+                            label: _cancelText,
+                            backgroundColor: _colorCancelButton,
+                            borderRadius: _radiusButton,
+                            textStyle: _styleTextCancelButton,
+                            padding: _paddingButton,
+                            maxLines: titleActionButtonMaxLines,
+                            onTapAction: _onCancelButtonAction),
+                        )),
                       if (_confirmText.isNotEmpty && _cancelText.isNotEmpty) const SizedBox(width: 8),
                       if (_confirmText.isNotEmpty)
-                        Expanded(child: ConfirmDialogButton(
-                          label: _confirmText,
-                          backgroundColor: _colorConfirmButton,
-                          borderRadius: _radiusButton,
-                          textStyle: _styleTextConfirmButton,
-                          padding: _paddingButton,
-                          maxLines: titleActionButtonMaxLines,
-                          onTapAction: _onConfirmButtonAction,))
+                        Expanded(child: Semantics(
+                          identifier: ConfirmationDialogKeyValues.confirmButton,
+                          child: ConfirmDialogButton(
+                            label: _confirmText,
+                            backgroundColor: _colorConfirmButton,
+                            borderRadius: _radiusButton,
+                            textStyle: _styleTextConfirmButton,
+                            padding: _paddingButton,
+                            maxLines: titleActionButtonMaxLines,
+                            onTapAction: _onConfirmButtonAction,),
+                        ))
                     ]
                 ))
           ]

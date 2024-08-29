@@ -7,6 +7,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:tmail_ui_user/features/base/key_values/composer_key_values.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/restore_email_inline_images_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/editor_view_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_editor_widget.dart';
@@ -62,32 +63,9 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
       case EmailActionType.compose:
       case EmailActionType.composeFromEmailAddress:
       case EmailActionType.composeFromFileShared:
-        return WebEditorWidget(
-          editorController: editorController,
-          content: currentWebContent ?? HtmlExtension.editorStartTags,
-          direction: AppUtils.getCurrentDirection(context),
-          onInitial: onInitial,
-          onChangeContent: onChangeContent,
-          onFocus: onFocus,
-          onUnFocus: onUnFocus,
-          onMouseDown: onMouseDown,
-          onEditorSettings: onEditorSettings,
-          onEditorTextSizeChanged: onEditorTextSizeChanged,
-          width: width,
-          height: height,
-          onDragEnter: onDragEnter,
-        );
-      case EmailActionType.editDraft:
-      case EmailActionType.editSendingEmail:
-      case EmailActionType.composeFromContentShared:
-      case EmailActionType.reopenComposerBrowser:
-      case EmailActionType.composeFromUnsubscribeMailtoLink:
-      case EmailActionType.composeFromMailtoUri:
-        if (contentViewState == null) {
-          return const SizedBox.shrink();
-        }
-        return contentViewState!.fold(
-          (failure) => WebEditorWidget(
+        return Semantics(
+          identifier: ComposerKeyValues.composerContentField,
+          child: WebEditorWidget(
             editorController: editorController,
             content: currentWebContent ?? HtmlExtension.editorStartTags,
             direction: AppUtils.getCurrentDirection(context),
@@ -102,6 +80,35 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
             height: height,
             onDragEnter: onDragEnter,
           ),
+        );
+      case EmailActionType.editDraft:
+      case EmailActionType.editSendingEmail:
+      case EmailActionType.composeFromContentShared:
+      case EmailActionType.reopenComposerBrowser:
+      case EmailActionType.composeFromUnsubscribeMailtoLink:
+      case EmailActionType.composeFromMailtoUri:
+        if (contentViewState == null) {
+          return const SizedBox.shrink();
+        }
+        return contentViewState!.fold(
+          (failure) => Semantics(
+            identifier: ComposerKeyValues.composerContentField,
+            child: WebEditorWidget(
+              editorController: editorController,
+              content: currentWebContent ?? HtmlExtension.editorStartTags,
+              direction: AppUtils.getCurrentDirection(context),
+              onInitial: onInitial,
+              onChangeContent: onChangeContent,
+              onFocus: onFocus,
+              onUnFocus: onUnFocus,
+              onMouseDown: onMouseDown,
+              onEditorSettings: onEditorSettings,
+              onEditorTextSizeChanged: onEditorTextSizeChanged,
+              width: width,
+              height: height,
+              onDragEnter: onDragEnter,
+            ),
+          ),
           (success) {
             if (success is GetEmailContentLoading || success is RestoringEmailInlineImages) {
               return const CupertinoLoadingWidget(padding: EdgeInsets.all(16.0));
@@ -112,20 +119,23 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
               if (newContent.isEmpty) {
                 newContent = HtmlExtension.editorStartTags;
               }
-              return WebEditorWidget(
-                editorController: editorController,
-                content: currentWebContent ?? newContent,
-                direction: AppUtils.getCurrentDirection(context),
-                onInitial: onInitial,
-                onChangeContent: onChangeContent,
-                onFocus: onFocus,
-                onUnFocus: onUnFocus,
-                onMouseDown: onMouseDown,
-                onEditorSettings: onEditorSettings,
-                onEditorTextSizeChanged: onEditorTextSizeChanged,
-                width: width,
-                height: height,
-                onDragEnter: onDragEnter,
+              return Semantics(
+                identifier: ComposerKeyValues.composerContentField,
+                child: WebEditorWidget(
+                  editorController: editorController,
+                  content: currentWebContent ?? newContent,
+                  direction: AppUtils.getCurrentDirection(context),
+                  onInitial: onInitial,
+                  onChangeContent: onChangeContent,
+                  onFocus: onFocus,
+                  onUnFocus: onUnFocus,
+                  onMouseDown: onMouseDown,
+                  onEditorSettings: onEditorSettings,
+                  onEditorTextSizeChanged: onEditorTextSizeChanged,
+                  width: width,
+                  height: height,
+                  onDragEnter: onDragEnter,
+                ),
               );
             }
           }
@@ -144,20 +154,23 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
               emailActionType: arguments!.emailActionType,
               presentationEmail: arguments!.presentationEmail!
             );
-            return WebEditorWidget(
-              editorController: editorController,
-              content: currentWebContent ?? emailContentQuoted,
-              direction: AppUtils.getCurrentDirection(context),
-              onInitial: onInitial,
-              onChangeContent: onChangeContent,
-              onFocus: onFocus,
-              onUnFocus: onUnFocus,
-              onMouseDown: onMouseDown,
-              onEditorSettings: onEditorSettings,
-              onEditorTextSizeChanged: onEditorTextSizeChanged,
-              width: width,
-              height: height,
-              onDragEnter: onDragEnter,
+            return Semantics(
+              identifier: ComposerKeyValues.composerContentField,
+              child: WebEditorWidget(
+                editorController: editorController,
+                content: currentWebContent ?? emailContentQuoted,
+                direction: AppUtils.getCurrentDirection(context),
+                onInitial: onInitial,
+                onChangeContent: onChangeContent,
+                onFocus: onFocus,
+                onUnFocus: onUnFocus,
+                onMouseDown: onMouseDown,
+                onEditorSettings: onEditorSettings,
+                onEditorTextSizeChanged: onEditorTextSizeChanged,
+                width: width,
+                height: height,
+                onDragEnter: onDragEnter,
+              ),
             );
           },
           (success) {
@@ -172,39 +185,45 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 emailActionType: arguments!.emailActionType,
                 presentationEmail: arguments!.presentationEmail!
               );
-              return WebEditorWidget(
-                editorController: editorController,
-                content: currentWebContent ?? emailContentQuoted,
-                direction: AppUtils.getCurrentDirection(context),
-                onInitial: onInitial,
-                onChangeContent: onChangeContent,
-                onFocus: onFocus,
-                onUnFocus: onUnFocus,
-                onMouseDown: onMouseDown,
-                onEditorSettings: onEditorSettings,
-                onEditorTextSizeChanged: onEditorTextSizeChanged,
-                width: width,
-                height: height,
-                onDragEnter: onDragEnter,
+              return Semantics(
+                identifier: ComposerKeyValues.composerContentField,
+                child: WebEditorWidget(
+                  editorController: editorController,
+                  content: currentWebContent ?? emailContentQuoted,
+                  direction: AppUtils.getCurrentDirection(context),
+                  onInitial: onInitial,
+                  onChangeContent: onChangeContent,
+                  onFocus: onFocus,
+                  onUnFocus: onUnFocus,
+                  onMouseDown: onMouseDown,
+                  onEditorSettings: onEditorSettings,
+                  onEditorTextSizeChanged: onEditorTextSizeChanged,
+                  width: width,
+                  height: height,
+                  onDragEnter: onDragEnter,
+                ),
               );
             }
           }
         );
       default:
-        return WebEditorWidget(
-          editorController: editorController,
-          content: currentWebContent ?? HtmlExtension.editorStartTags,
-          direction: AppUtils.getCurrentDirection(context),
-          onInitial: onInitial,
-          onChangeContent: onChangeContent,
-          onFocus: onFocus,
-          onUnFocus: onUnFocus,
-          onMouseDown: onMouseDown,
-          onEditorSettings: onEditorSettings,
-          onEditorTextSizeChanged: onEditorTextSizeChanged,
-          width: width,
-          height: height,
-          onDragEnter: onDragEnter,
+        return Semantics(
+          identifier: ComposerKeyValues.composerContentField,
+          child: WebEditorWidget(
+            editorController: editorController,
+            content: currentWebContent ?? HtmlExtension.editorStartTags,
+            direction: AppUtils.getCurrentDirection(context),
+            onInitial: onInitial,
+            onChangeContent: onChangeContent,
+            onFocus: onFocus,
+            onUnFocus: onUnFocus,
+            onMouseDown: onMouseDown,
+            onEditorSettings: onEditorSettings,
+            onEditorTextSizeChanged: onEditorTextSizeChanged,
+            width: width,
+            height: height,
+            onDragEnter: onDragEnter,
+          ),
         );
     }
   }

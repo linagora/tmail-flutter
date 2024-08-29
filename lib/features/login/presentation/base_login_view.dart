@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/key_values/login_basic_auth_key_values.dart';
 import 'package:tmail_ui_user/features/base/widget/recent_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
@@ -42,9 +43,15 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
         padding: const EdgeInsetsDirectional.symmetric(horizontal: 24),
         child: Column(
           children: [
-            buildUserNameInput(context),
+            Semantics(
+              identifier: LoginBasicAuthKeyValues.loginEmailField,
+              child: buildUserNameInput(context),
+            ),
             const SizedBox(height: 24),
-            buildPasswordInput(context),
+            Semantics(
+              identifier: LoginBasicAuthKeyValues.loginPasswordField,
+              child: buildPasswordInput(context),
+            ),
             const SizedBox(height: 40),
           ],
         ),
