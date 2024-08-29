@@ -95,6 +95,10 @@ dev_dependencies:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
+dependency_overrides:
+  build_runner: 2.4.12
+  build_runner_core: 7.2.9
+
 flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

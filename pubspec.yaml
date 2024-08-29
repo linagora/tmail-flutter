@@ -275,6 +275,10 @@ dev_dependencies:
 dependency_overrides:
   firebase_core_platform_interface: 4.6.0
 
+  build_runner: 2.4.12
+  build_runner_core: 7.2.9
+  json_annotation: 4.8.1
+
   # TODO: replace when upstream PR is merged:
   # https://github.com/miguelpruivo/flutter_file_picker/pull/1482
   file_picker:
