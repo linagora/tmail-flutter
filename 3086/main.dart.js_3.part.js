@@ -17852,48 +17852,56 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.IconOpenAdvancedSearchWidget_build__closure.prototype = {
     call$0() {
-      var t2, t3, t4, t5, t6, _null = null,
-        t1 = this.context;
-      A.FocusScope_of(t1).unfocus$0();
-      t2 = this.$this;
-      t3 = t2.advancedFilterController;
-      t4 = t3.searchController.searchEmailFilter;
-      t5 = t4.get$value(0).subject;
-      if (t5 == null)
-        t5 = "";
-      t3.subjectFilterInputController.set$text(0, t5);
-      t5 = t4.get$value(0).text;
-      t5 = t5 == null ? _null : t5.value;
-      if (t5 == null)
-        t5 = "";
-      t3.hasKeyWordFilterInputController.set$text(0, t5);
-      t5 = A.IterableExtension_get_firstOrNull(t4.get$value(0).notKeyword);
-      if (t5 == null)
-        t5 = "";
-      t3.notKeyWordFilterInputController.set$text(0, t5);
-      t3.dateFilterSelectedFormAdvancedSearch.set$value(0, t4.get$value(0).emailReceiveTimeType);
-      t3._destinationMailboxSelected = t4.get$value(0).mailbox;
-      t5 = t3.mailBoxFilterInputController;
-      if (t4.get$value(0).mailbox == null) {
-        A.Localizations_of(t1, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-        t5.set$text(0, A.Intl__message("All folders", _null, "allFolders", _null, _null));
-      } else {
-        t6 = t4.get$value(0).mailbox;
-        t1 = t6 == null ? _null : A.PresentationMailboxExtension_getDisplayName(t6, t1);
-        t5.set$text(0, t1 == null ? "" : t1);
+      var t4, t5, t6, _null = null,
+        t1 = this.$this,
+        t2 = t1.searchController,
+        t3 = t2.isAdvancedSearchViewOpen;
+      A.log("IconOpenAdvancedSearchWidget::build:onTap: isAdvancedSearchViewOpen = " + t3.toString$0(0), C.Level_3);
+      A.log("IconOpenAdvancedSearchWidget::build:onTap: advancedSearchIsActivated = " + t2.advancedSearchIsActivated.toString$0(0), C.Level_3);
+      t2 = this.context;
+      A.FocusScope_of(t2).unfocus$0();
+      if (t3.get$value(0))
+        t3.set$value(0, false);
+      else {
+        t1 = t1.advancedFilterController;
+        t4 = t1.searchController.searchEmailFilter;
+        t5 = t4.get$value(0).subject;
+        if (t5 == null)
+          t5 = "";
+        t1.subjectFilterInputController.set$text(0, t5);
+        t5 = t4.get$value(0).text;
+        t5 = t5 == null ? _null : t5.value;
+        if (t5 == null)
+          t5 = "";
+        t1.hasKeyWordFilterInputController.set$text(0, t5);
+        t5 = A.IterableExtension_get_firstOrNull(t4.get$value(0).notKeyword);
+        if (t5 == null)
+          t5 = "";
+        t1.notKeyWordFilterInputController.set$text(0, t5);
+        t1.dateFilterSelectedFormAdvancedSearch.set$value(0, t4.get$value(0).emailReceiveTimeType);
+        t1._destinationMailboxSelected = t4.get$value(0).mailbox;
+        t5 = t1.mailBoxFilterInputController;
+        if (t4.get$value(0).mailbox == null) {
+          A.Localizations_of(t2, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+          t5.set$text(0, A.Intl__message("All folders", _null, "allFolders", _null, _null));
+        } else {
+          t6 = t4.get$value(0).mailbox;
+          t2 = t6 == null ? _null : A.PresentationMailboxExtension_getDisplayName(t6, t2);
+          t5.set$text(0, t2 == null ? "" : t2);
+        }
+        t1.hasAttachment.set$value(0, t4.get$value(0).hasAttachment);
+        t2 = t4.get$value(0).from;
+        if (t2.get$isEmpty(t2))
+          C.JSArray_methods.clear$0(t1.listFromEmailAddress);
+        else
+          t1.fromAddressExpandMode.set$value(0, C.ExpandMode_0);
+        t2 = t4.get$value(0).to;
+        if (t2.get$isEmpty(t2))
+          C.JSArray_methods.clear$0(t1.listToEmailAddress);
+        else
+          t1.toAddressExpandMode.set$value(0, C.ExpandMode_0);
+        t3.set$value(0, true);
       }
-      t3.hasAttachment.set$value(0, t4.get$value(0).hasAttachment);
-      t1 = t4.get$value(0).from;
-      if (t1.get$isEmpty(t1))
-        C.JSArray_methods.clear$0(t3.listFromEmailAddress);
-      else
-        t3.fromAddressExpandMode.set$value(0, C.ExpandMode_0);
-      t1 = t4.get$value(0).to;
-      if (t1.get$isEmpty(t1))
-        C.JSArray_methods.clear$0(t3.listToEmailAddress);
-      else
-        t3.toAddressExpandMode.set$value(0, C.ExpandMode_0);
-      t2.searchController.isAdvancedSearchViewOpen.set$value(0, true);
     },
     $signature: 0
   };
@@ -21340,5 +21348,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "e1WsUlytWUv8ZkKq2Un5t+71KeA=");
+})($__dart_deferred_initializers__, "JY+X+M77fzsb/54/8YvqaoWdBzY=");
 ;
