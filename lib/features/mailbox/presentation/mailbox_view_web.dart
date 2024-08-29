@@ -296,37 +296,12 @@ class MailboxView extends BaseMailboxView {
           key: const Key('children_tree_mailbox_child'),
           isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
           paddingChild: const EdgeInsetsDirectional.only(start: 14),
-          parent: Obx(() => Semantics(
-            excludeSemantics: true,
-            child: MailboxItemWidget(
-              mailboxNode: mailboxNode,
-              mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value,
-              onOpenMailboxFolderClick: (mailboxNode) => controller.openMailbox(context, mailboxNode.item),
-              onExpandFolderActionClick: (mailboxNode) => controller.toggleMailboxFolder(mailboxNode, controller.mailboxListScrollController),
-              onSelectMailboxFolderClick: controller.selectMailboxNode,
-              onDragItemAccepted: _handleDragItemAccepted,
-              onMenuActionClick: (position, mailboxNode) {
-                openMailboxMenuActionOnWeb(
-                  context,
-                  controller.imagePaths,
-                  controller.responsiveUtils,
-                  position,
-                  mailboxNode.item,
-                  controller
-                );
-              },
-              onEmptyMailboxActionCallback: (mailboxNode) => controller.emptyMailboxAction(context, mailboxNode.item),
-            ),
-          )),
-          children: _buildListChildTileWidget(context, mailboxNode)
-        ).build();
-      } else {
-        return Obx(() => Semantics(
-          excludeSemantics: true,
-          child: MailboxItemWidget(
+          parent: Obx(() => MailboxItemWidget(
             mailboxNode: mailboxNode,
             mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value,
+            itemExcludeFromSemantics: true,
             onOpenMailboxFolderClick: (mailboxNode) => controller.openMailbox(context, mailboxNode.item),
+            onExpandFolderActionClick: (mailboxNode) => controller.toggleMailboxFolder(mailboxNode, controller.mailboxListScrollController),
             onSelectMailboxFolderClick: controller.selectMailboxNode,
             onDragItemAccepted: _handleDragItemAccepted,
             onMenuActionClick: (position, mailboxNode) {
@@ -340,7 +315,28 @@ class MailboxView extends BaseMailboxView {
               );
             },
             onEmptyMailboxActionCallback: (mailboxNode) => controller.emptyMailboxAction(context, mailboxNode.item),
-          ),
+          )),
+          children: _buildListChildTileWidget(context, mailboxNode)
+        ).build();
+      } else {
+        return Obx(() => MailboxItemWidget(
+          mailboxNode: mailboxNode,
+          mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value,
+          itemExcludeFromSemantics: true,
+          onOpenMailboxFolderClick: (mailboxNode) => controller.openMailbox(context, mailboxNode.item),
+          onSelectMailboxFolderClick: controller.selectMailboxNode,
+          onDragItemAccepted: _handleDragItemAccepted,
+          onMenuActionClick: (position, mailboxNode) {
+            openMailboxMenuActionOnWeb(
+              context,
+              controller.imagePaths,
+              controller.responsiveUtils,
+              position,
+              mailboxNode.item,
+              controller
+            );
+          },
+          onEmptyMailboxActionCallback: (mailboxNode) => controller.emptyMailboxAction(context, mailboxNode.item),
         ));
       }
     }).toList() ?? <Widget>[];
