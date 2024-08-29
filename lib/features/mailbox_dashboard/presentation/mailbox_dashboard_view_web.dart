@@ -193,10 +193,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             }),
         ),
         Obx(() => controller.composerOverlayState.value == ComposerOverlayState.active
-          ? Semantics(
-              identifier: ComposerKeyValues.composerView,
-              child: const ComposerView(),
-            )
+          ? const ComposerView()
           : const SizedBox.shrink()
         ),
         Obx(() => controller.searchMailboxActivated.value == true && !controller.responsiveUtils.isWebDesktop(context)
