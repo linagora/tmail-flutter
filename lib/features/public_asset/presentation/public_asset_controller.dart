@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:async/async.dart';
+import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -54,6 +55,8 @@ class PublicAssetController extends BaseController {
   AccountId? get accountId => arguments?.accountId;
   Identity? get identity => arguments?.identity;
 
+  static const String _backButtonInterceptorName = 'PublicAssetControllerBackButtonInterceptor';
+
   void _handleUploadState(Either<Failure, Success> uploadState) {
     log('PublicAssetController::handleUploadState::${uploadState.runtimeType}');
     uploadState.fold(
@@ -90,6 +93,10 @@ class PublicAssetController extends BaseController {
   void onInit() {
     super.onInit();
     _publicAssetStreamSubscription = _publicAssetStreamGroup.stream.listen(_handleUploadState);
+    BackButtonInterceptor.add((_, __) {
+      discardChanges();
+      return false;
+    }, name: _backButtonInterceptorName);
   }
 
   @override
@@ -98,6 +105,7 @@ class PublicAssetController extends BaseController {
     newlyPickedPublicAssetIds.clear();
     _publicAssetStreamSubscription?.cancel();
     _publicAssetStreamGroup.close();
+    BackButtonInterceptor.removeByName(_backButtonInterceptorName);
     super.onClose();
   }
 
