@@ -52,9 +52,9 @@ Here is how Twake Mail looks like on a tablet:
 
 ## Build app
 1. Go to root folder of project
-2. Run `prebuild.sh` script
+2. Run `scripts/prebuild.sh` script
 ```
-/bin/bash prebuild.sh 
+/bin/bash scripts/prebuild.sh
 ```
 3. Build
 + iOS:
