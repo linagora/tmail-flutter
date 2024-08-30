@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/utils/app_toast.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_date_range_picker/material_date_range_picker_dialog.dart';
 import 'package:get/get.dart';
@@ -64,8 +65,20 @@ mixin DateRangePickerMixin {
         AppLocalizations.of(context).toastMessageErrorWhenSelectDateIsInValid);
       return;
     }
-
+    log('DateRangePickerMixin::_handleSelectDateRangeResult:BEFORE:: StartDate = $startDate | EndDate = $endDate');
+    final tupleDate = validateDateRange(startDate: startDate, endDate: endDate);
+    log('DateRangePickerMixin::_handleSelectDateRangeResult:AFTER:: StartDate = ${tupleDate.startDate} | EndDate = ${tupleDate.endDate}');
     popBack();
-    onCallbackAction?.call(startDate, endDate);
+    onCallbackAction?.call(tupleDate.startDate, tupleDate.endDate);
+  }
+
+  ({DateTime? startDate, DateTime? endDate}) validateDateRange({
+    required DateTime? startDate,
+    required DateTime? endDate
+  }) {
+    final newStartDate = startDate?.copyWith(hour: 0, minute: 0);
+    final newEndDate = endDate?.copyWith(hour: 23, minute: 59);
+    log('DateRangePickerMixin::validateDateRange: newStartDate = $newStartDate | newEndDate = $newEndDate');
+    return (startDate: newStartDate, endDate: newEndDate);
   }
 }
