@@ -171,7 +171,9 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
       session = arguments!.session;
       identity = arguments!.identity;
       actionType.value = arguments!.actionType;
-      if (actionType.value == IdentityActionType.create) {
+      if (actionType.value == IdentityActionType.create 
+        && arguments!.publicAssetsInIdentityArguments == null
+      ) {
         isLoadSignatureCompleted = true;
       }
       _checkDefaultIdentityIsSupported();
