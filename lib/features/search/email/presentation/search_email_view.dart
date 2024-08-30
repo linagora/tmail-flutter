@@ -8,6 +8,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
@@ -15,6 +16,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_sea
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/contact_quick_search_item.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/search_more_state.dart';
@@ -80,6 +82,12 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   child: Column(children: [
                     if (controller.currentSearchText.value.isNotEmpty)
                       _buildShowAllResultSearchButton(context, controller.currentSearchText.value),
+                    if (controller.listContactSuggestionSearch.isNotEmpty
+                        && controller.currentSearchText.isNotEmpty)
+                      _buildListContactSuggestionSearch(context, controller.listContactSuggestionSearch),
+                    if (controller.listContactSuggestionSearch.isNotEmpty
+                        && controller.listSuggestionSearch.isNotEmpty)
+                      const Divider(),
                     if (controller.listSuggestionSearch.isNotEmpty && controller.currentSearchText.isNotEmpty)
                       _buildListSuggestionSearch(context, controller.listSuggestionSearch)
                     else if (controller.listRecentSearch.isNotEmpty && controller.listSuggestionSearch.isEmpty)
@@ -461,6 +469,30 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             ),
           );
         });
+  }
+
+  Widget _buildListContactSuggestionSearch(
+    BuildContext context,
+    List<EmailAddress> listContactSuggestionSearch
+  ) {
+    return ListView.builder(
+      shrinkWrap: true,
+      primary: false,
+      itemCount: listContactSuggestionSearch.length,
+      itemBuilder: (context, index) {
+        final emailAddress = listContactSuggestionSearch[index];
+        return Material(
+          type: MaterialType.transparency,
+          child: InkWell(
+            child: ContactQuickSearchItem(emailAddress: emailAddress),
+            onTap: () => controller.searchEmailByEmailAddressAction(
+              context,
+              emailAddress
+            ),
+          ),
+        );
+      }
+    );
   }
 
   Widget _buildEmptyEmail(BuildContext context) {

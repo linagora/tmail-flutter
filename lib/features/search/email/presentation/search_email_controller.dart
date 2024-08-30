@@ -19,6 +19,7 @@ import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
+import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/list_presentation_email_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
@@ -97,6 +98,7 @@ class SearchEmailController extends BaseController
   final currentSearchText = RxString('');
   final listRecentSearch = RxList<RecentSearch>();
   final listSuggestionSearch = RxList<PresentationEmail>();
+  final listContactSuggestionSearch = RxList<EmailAddress>();
   final simpleSearchFilter = Rx<SimpleSearchFilter>(SimpleSearchFilter());
   final searchIsRunning = RxBool(false);
   final emailReceiveTimeType = EmailReceiveTimeType.allTime.obs;
@@ -182,9 +184,16 @@ class SearchEmailController extends BaseController
         positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
       );
       if (value.isNotEmpty && session != null && accountId != null) {
-        listSuggestionSearch.value = await quickSearchEmails(session: session!, accountId: accountId!);
+        final tupleListSuggestion = await Future.wait([
+          quickSearchEmails(session: session!, accountId: accountId!),
+          mailboxDashBoardController.getContactSuggestion(value)
+        ]);
+
+        listSuggestionSearch.value = tupleListSuggestion[0] as List<PresentationEmail>;
+        listContactSuggestionSearch.value = tupleListSuggestion[1] as List<EmailAddress>;
       } else {
         listSuggestionSearch.clear();
+        listContactSuggestionSearch.clear();
       }
       if (listSuggestionSearch.isEmpty && currentSearchText.isEmpty) {
         listRecentSearch.value = await getAllRecentSearchAction(pattern: value);
@@ -448,6 +457,18 @@ class SearchEmailController extends BaseController
     setTextInputSearchForm(recentSearch.value);
     _updateSimpleSearchFilter(
       textOption: Some(SearchQuery(recentSearch.value)),
+      beforeOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
+    );
+    _searchEmailAction(context);
+  }
+
+  void searchEmailByEmailAddressAction(
+    BuildContext context,
+    EmailAddress emailAddress
+  ) {
+    _updateSimpleSearchFilter(
+      fromOption: Some({emailAddress.emailAddress}),
       beforeOption: const None(),
       positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
     );
@@ -723,6 +744,7 @@ class SearchEmailController extends BaseController
     textInputSearchController.clear();
     currentSearchText.value = '';
     listSuggestionSearch.clear();
+    listContactSuggestionSearch.clear();
   }
 
   void clearAllResultSearch() {
@@ -730,6 +752,7 @@ class SearchEmailController extends BaseController
     currentSearchText.value = '';
     listRecentSearch.clear();
     listSuggestionSearch.clear();
+    listContactSuggestionSearch.clear();
     listResultSearch.clear();
     simpleSearchFilter.value = SimpleSearchFilter();
   }
