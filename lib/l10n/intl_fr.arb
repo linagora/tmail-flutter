@@ -3936,7 +3936,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "warningMessageWhenExceedGenerallySizeInComposer": "Votre message dépasse la taille généralement acceptée pour un email. \nSi vous confirmez l'envoi il y a un risque que le mail soit rejeté par le système de votre interlocuteur.",
+  "warningMessageWhenExceedGenerallySizeInComposer": "Votre message dépasse la taille généralement acceptée pour un email. Si vous confirmez l'envoi il y a un risque que le mail soit rejeté par le système de votre interlocuteur.",
   "@warningMessageWhenExceedGenerallySizeInComposer": {
     "type": "text",
     "placeholders_order": [],
@@ -4108,7 +4108,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "dialogMessageSessionHasExpired": "La session a expiré, veuillez vous reconnecter.",
+  "dialogMessageSessionHasExpired": "La session a expiré, veuillez vous reconnecter",
   "@dialogMessageSessionHasExpired": {
     "type": "text",
     "placeholders_order": [],
@@ -4186,7 +4186,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sMimeGoodSignatureMessage": "L'authenticité de ce message a été vérifiée via la signature SMIME",
+  "sMimeGoodSignatureMessage": "L'authenticité de ce message a été vérifiée via la signature SMIME.",
   "@sMimeGoodSignatureMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -4204,7 +4204,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "spamFolderNotFound": "",
+  "spamFolderNotFound": "Dossier Spam non trouvé",
   "@spamFolderNotFound": {
     "type": "text",
     "placeholders_order": [],
