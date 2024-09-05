@@ -103,7 +103,9 @@ class CreateNewAndSaveEmailToDraftsInteractor {
 
   Future<Email?> _createEmailObject(CreateEmailRequest createEmailRequest) async {
     try {
-      final emailCreated = await _composerRepository.generateEmail(createEmailRequest);
+      final emailCreated = await _composerRepository.generateEmail(
+        createEmailRequest,
+        withIdentityHeader: true);
       return emailCreated;
     } catch (e) {
       logError('CreateNewAndSaveEmailToDraftsInteractor::_createEmailObject: Exception: $e');

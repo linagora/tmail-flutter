@@ -2,7 +2,9 @@
 import 'dart:convert';
 
 import 'package:core/domain/extensions/datetime_extension.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
@@ -33,6 +35,13 @@ extension EmailExtension on Email {
   bool get hasListUnsubscribe => listUnsubscribe.isNotEmpty;
 
   String get sMimeStatusHeaderParsed => sMimeStatusHeader?[IndividualHeaderIdentifier.sMimeStatusHeader]?.trim() ?? '';
+
+  IdentityId? get identityIdFromHeader {
+    final rawIdentityId = identityHeader?[IndividualHeaderIdentifier.identityHeader];
+    if (rawIdentityId == null) return null;
+
+    return IdentityId(Id(rawIdentityId));
+  }
 
   bool hasReadReceipt(Map<MailboxId, PresentationMailbox> mapMailbox) {
     final mailboxCurrent = findMailboxContain(mapMailbox);

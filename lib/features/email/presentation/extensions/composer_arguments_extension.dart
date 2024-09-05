@@ -3,10 +3,10 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 
 extension ComposerArgumentsExtension on ComposerArguments {
 
-  ComposerArguments withIdentity({List<Identity>? identities, Identity? selectedIdentity}) {
+  ComposerArguments withIdentity({List<Identity>? identities, IdentityId? selectedIdentityId}) {
     return copyWith(
       identities: identities,
-      selectedIdentity: selectedIdentity,
+      selectedIdentityId: selectedIdentityId,
     );
   }
 }

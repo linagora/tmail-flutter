@@ -105,6 +105,7 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
     required Set<EmailBodyPart> newEmailAttachments,
     required String userAgent,
     required PartId partId,
+    bool withIdentityHeader = false,
   }) {
     return Email(
       mailboxIds: createMailboxIds(),
@@ -145,6 +146,9 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
       headerMdn: hasRequestReadReceipt
         ? { IndividualHeaderIdentifier.headerMdn: createMdnEmailAddress() }
         : null,
+      identityHeader: withIdentityHeader
+        ? {IndividualHeaderIdentifier.identityHeader: identity?.id?.id.value}
+        : null
     );
   }
 

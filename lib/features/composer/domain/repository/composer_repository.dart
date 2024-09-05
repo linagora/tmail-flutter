@@ -5,7 +5,9 @@ import 'package:tmail_ui_user/features/composer/presentation/model/create_email_
 import 'package:tmail_ui_user/features/upload/domain/model/upload_attachment.dart';
 
 abstract class ComposerRepository {
-  Future<Email> generateEmail(CreateEmailRequest createEmailRequest);
+  Future<Email> generateEmail(
+    CreateEmailRequest createEmailRequest,
+    {bool withIdentityHeader = false});
 
   Future<UploadAttachment> uploadAttachment(FileInfo fileInfo, Uri uploadUri, {CancelToken? cancelToken});
 

@@ -26,7 +26,7 @@ class ComposerArguments extends RouterArguments {
   final MessageIdsHeaderValue? references;
   final EmailId? previousEmailId;
   final List<Identity>? identities;
-  final Identity? selectedIdentity;
+  final IdentityId? selectedIdentityId;
   final List<Attachment>? inlineImages;
   final bool? hasRequestReadReceipt;
   final ScreenDisplayMode displayMode;
@@ -46,7 +46,7 @@ class ComposerArguments extends RouterArguments {
     this.references,
     this.previousEmailId,
     this.identities,
-    this.selectedIdentity,
+    this.selectedIdentityId,
     this.inlineImages,
     this.hasRequestReadReceipt,
     this.displayMode = ScreenDisplayMode.normal
@@ -87,7 +87,7 @@ class ComposerArguments extends RouterArguments {
   factory ComposerArguments.editDraftEmail(PresentationEmail presentationEmail) =>
     ComposerArguments(
       emailActionType: EmailActionType.editDraft,
-      presentationEmail: presentationEmail
+      presentationEmail: presentationEmail,
     );
 
   factory ComposerArguments.fromSessionStorageBrowser(ComposerCache composerCache) =>
@@ -96,7 +96,7 @@ class ComposerArguments extends RouterArguments {
       presentationEmail: composerCache.email?.toPresentationEmail(),
       emailContents: composerCache.email?.emailContentList.asHtmlString,
       attachments: composerCache.email?.allAttachments.getListAttachmentsDisplayedOutside(composerCache.email?.htmlBodyAttachments ?? []),
-      selectedIdentity: composerCache.identity,
+      selectedIdentityId: composerCache.email?.identityIdFromHeader,
       inlineImages: composerCache.email?.allAttachments.listAttachmentsDisplayedInContent,
       hasRequestReadReceipt: composerCache.hasRequestReadReceipt,
       displayMode: composerCache.displayMode,
@@ -189,7 +189,7 @@ class ComposerArguments extends RouterArguments {
     references,
     previousEmailId,
     identities,
-    selectedIdentity,
+    selectedIdentityId,
     inlineImages,
     hasRequestReadReceipt,
     displayMode,
@@ -210,7 +210,7 @@ class ComposerArguments extends RouterArguments {
     MessageIdsHeaderValue? references,
     EmailId? previousEmailId,
     List<Identity>? identities,
-    Identity? selectedIdentity,
+    IdentityId? selectedIdentityId,
     List<Attachment>? inlineImages,
     bool? hasRequestReadReceipt,
     ScreenDisplayMode? displayMode,
@@ -230,7 +230,7 @@ class ComposerArguments extends RouterArguments {
       references: references ?? this.references,
       previousEmailId: previousEmailId ?? this.previousEmailId,
       identities: identities ?? this.identities,
-      selectedIdentity: selectedIdentity ?? this.selectedIdentity,
+      selectedIdentityId: selectedIdentityId ?? this.selectedIdentityId,
       inlineImages: inlineImages ?? this.inlineImages,
       hasRequestReadReceipt: hasRequestReadReceipt ?? this.hasRequestReadReceipt,
       displayMode: displayMode ?? this.displayMode,

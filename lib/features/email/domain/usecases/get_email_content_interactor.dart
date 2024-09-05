@@ -6,6 +6,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
@@ -23,14 +24,27 @@ class GetEmailContentInteractor {
     EmailId emailId,
     String baseDownloadUrl,
     TransformConfiguration transformConfiguration,
+    {Properties? additionalProperties}
   ) async* {
     try {
       yield Right<Failure, Success>(GetEmailContentLoading());
 
       if (PlatformInfo.isMobile) {
-        yield* _getStoredOpenedEmail(session, accountId, emailId, baseDownloadUrl, transformConfiguration);
+        yield* _getStoredOpenedEmail(
+          session,
+          accountId,
+          emailId,
+          baseDownloadUrl,
+          transformConfiguration,
+          additionalProperties: additionalProperties);
       } else {
-        yield* _getContentEmailFromServer(session, accountId, emailId, baseDownloadUrl, transformConfiguration);
+        yield* _getContentEmailFromServer(
+          session,
+          accountId,
+          emailId,
+          baseDownloadUrl,
+          transformConfiguration,
+          additionalProperties: additionalProperties);
       }
     } catch (e) {
       log('GetEmailContentInteractor::execute(): exception = $e');
@@ -44,9 +58,14 @@ class GetEmailContentInteractor {
     EmailId emailId,
     String baseDownloadUrl,
     TransformConfiguration transformConfiguration,
+    {Properties? additionalProperties}
   ) async* {
     try {
-      final email = await emailRepository.getEmailContent(session, accountId, emailId);
+      final email = await emailRepository.getEmailContent(
+        session,
+        accountId,
+        emailId,
+        additionalProperties: additionalProperties);
       final listAttachments = email.allAttachments.getListAttachmentsDisplayedOutside(email.htmlBodyAttachments);
       final listInlineImages = email.allAttachments.listAttachmentsDisplayedInContent;
 
@@ -87,6 +106,7 @@ class GetEmailContentInteractor {
     EmailId emailId,
     String baseDownloadUrl,
     TransformConfiguration transformConfiguration,
+    {Properties? additionalProperties}
   ) async* {
     try {
       log('GetEmailContentInteractor::_getStoredOpenedEmail(): CALLED');
@@ -109,7 +129,8 @@ class GetEmailContentInteractor {
         accountId,
         emailId,
         baseDownloadUrl,
-        transformConfiguration
+        transformConfiguration,
+        additionalProperties: additionalProperties
       );
     }
   }
@@ -120,6 +141,7 @@ class GetEmailContentInteractor {
     EmailId emailId,
     String baseDownloadUrl,
     TransformConfiguration transformConfiguration,
+    {Properties? additionalProperties}
   ) async* {
     try {
       log('GetEmailContentInteractor::_getStoredNewEmail():CALLED');
@@ -142,7 +164,8 @@ class GetEmailContentInteractor {
         accountId,
         emailId,
         baseDownloadUrl,
-        transformConfiguration
+        transformConfiguration,
+        additionalProperties: additionalProperties
       );
     }
   }
