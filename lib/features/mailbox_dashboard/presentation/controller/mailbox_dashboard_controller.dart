@@ -1485,7 +1485,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   void goToComposer(ComposerArguments arguments) async {
     final argumentsWithIdentity = arguments.withIdentity(
       identities: List.from(_identities ?? []),
-      selectedIdentity: arguments.selectedIdentity);
+      selectedIdentityId: arguments.selectedIdentityId);
 
     if (PlatformInfo.isWeb) {
       if (composerOverlayState.value == ComposerOverlayState.inActive) {

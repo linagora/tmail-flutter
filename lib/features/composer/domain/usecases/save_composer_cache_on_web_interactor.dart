@@ -24,13 +24,14 @@ class SaveComposerCacheOnWebInteractor {
     UserName userName,
   ) async {
     try {
-      final emailCreated = await _composerRepository.generateEmail(createEmailRequest);
+      final emailCreated = await _composerRepository.generateEmail(
+        createEmailRequest,
+        withIdentityHeader: true);
       await _composerCacheRepository.saveComposerCacheOnWeb(
         accountId: accountId,
         userName: userName,
         composerCache: ComposerCache(
           email: emailCreated,
-          identity: createEmailRequest.identity,
           hasRequestReadReceipt: createEmailRequest.hasRequestReadReceipt,
           displayMode: createEmailRequest.displayMode
         ));

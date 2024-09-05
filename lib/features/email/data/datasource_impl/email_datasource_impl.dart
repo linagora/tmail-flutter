@@ -10,6 +10,7 @@ import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -35,9 +36,18 @@ class EmailDataSourceImpl extends EmailDataSource {
   EmailDataSourceImpl(this.emailAPI, this._exceptionThrower);
 
   @override
-  Future<Email> getEmailContent(Session session, AccountId accountId, EmailId emailId) {
+  Future<Email> getEmailContent(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    {Properties? additionalProperties}
+  ) {
     return Future.sync(() async {
-      return await emailAPI.getEmailContent(session, accountId, emailId);
+      return await emailAPI.getEmailContent(
+        session,
+        accountId,
+        emailId,
+        additionalProperties: additionalProperties);
     }).catchError(_exceptionThrower.throwException);
   }
 

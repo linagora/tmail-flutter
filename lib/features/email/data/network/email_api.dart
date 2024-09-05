@@ -81,7 +81,12 @@ class EmailAPI with HandleSetErrorMixin {
 
   EmailAPI(this._httpClient, this._downloadManager, this._dioClient, this._uuid);
 
-  Future<Email> getEmailContent(Session session, AccountId accountId, EmailId emailId) async {
+  Future<Email> getEmailContent(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    {Properties? additionalProperties}
+  ) async {
     final processingInvocation = ProcessingInvocation();
 
     final jmapRequestBuilder = JmapRequestBuilder(_httpClient, processingInvocation);
@@ -90,6 +95,9 @@ class EmailAPI with HandleSetErrorMixin {
       ..addIds({emailId.id})
       ..addProperties(ThreadConstants.propertiesGetEmailContent)
       ..addFetchHTMLBodyValues(true);
+    if (additionalProperties != null) {
+      getEmailMethod.addProperties(additionalProperties);
+    }
 
     final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
 

@@ -11,6 +11,7 @@ import 'package:dio/dio.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -49,8 +50,17 @@ class EmailRepositoryImpl extends EmailRepository {
   );
 
   @override
-  Future<Email> getEmailContent(Session session, AccountId accountId, EmailId emailId) {
-    return emailDataSource[DataSourceType.network]!.getEmailContent(session ,accountId, emailId);
+  Future<Email> getEmailContent(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    {Properties? additionalProperties}
+  ) {
+    return emailDataSource[DataSourceType.network]!.getEmailContent(
+      session,
+      accountId,
+      emailId,
+      additionalProperties: additionalProperties);
   }
 
   @override
