@@ -23,6 +23,7 @@ class TwakeWelcomeView extends GetWidget<TwakeWelcomeController> {
       createTwakeIdTitle: AppLocalizations.of(context).createTwakeId,
       useCompanyServerTitle: AppLocalizations.of(context).useCompanyServer,
       description: AppLocalizations.of(context).descriptionWelcomeTo,
+      onUseCompanyServerOnTap: controller.handleUseCompanyServer,
     );
   }
 }
