@@ -117,6 +117,13 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
   final GlobalKey htmlKey = GlobalKey();
   final htmlEditorMinHeight = 150;
   bool isLoadSignatureCompleted = false;
+  bool _userScrolled = false;
+
+  void _scrollListener() {
+    if (!_userScrolled) {
+      _userScrolled = true;
+    }
+  }
 
   void updateNameIdentity(BuildContext context, String? value) {
     _nameIdentity = value?.trim();
@@ -166,6 +173,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
   void onReady() {
     super.onReady();
     log('IdentityCreatorController::onReady():');
+    scrollController.addListener(_scrollListener);
     if (arguments != null) {
       accountId = arguments!.accountId;
       session = arguments!.session;
@@ -239,6 +247,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     inputBccIdentityFocusNode.dispose();
     inputNameIdentityController.dispose();
     inputBccIdentityController.dispose();
+    scrollController.removeListener(_scrollListener);
     scrollController.dispose();
     if (PlatformInfo.isWeb) {
       richTextWebController?.onClose();
@@ -803,6 +812,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
 
   void onLoadSignatureCompleted(String? content) {
     isLoadSignatureCompleted = true;
+    if (_userScrolled) return;
     SchedulerBinding.instance.addPostFrameCallback((_) {
       if (scrollController.hasClients) {
         scrollController.animateTo(
