@@ -42,9 +42,10 @@ class LoginView extends BaseLoginView {
                       )
                     ),
                     Obx(() {
-                      if (controller.loginFormType.value == LoginFormType.passwordForm ||
-                          controller.loginFormType.value == LoginFormType.credentialForm) {
-                        return LoginBackButton(onBackAction: controller.handleBackButtonAction);
+                      if (controller.isBackButtonActivated) {
+                        return LoginBackButton(
+                          onBackAction: () => controller.handleBackButtonAction(context)
+                        );
                       }
                       return const SizedBox.shrink();
                     })
@@ -52,9 +53,10 @@ class LoginView extends BaseLoginView {
                 : Stack(children: [
                     _buildCenterForm(context),
                     Obx(() {
-                      if (controller.loginFormType.value == LoginFormType.passwordForm ||
-                          controller.loginFormType.value == LoginFormType.credentialForm) {
-                        return LoginBackButton(onBackAction: controller.handleBackButtonAction);
+                      if (controller.isBackButtonActivated) {
+                        return LoginBackButton(
+                          onBackAction: () => controller.handleBackButtonAction(context)
+                        );
                       }
                       return const SizedBox.shrink();
                     })
@@ -103,7 +105,7 @@ class LoginView extends BaseLoginView {
                     textEditingController: controller.passwordInputController,
                     focusNode: controller.passFocusNode,
                     onTextChange: controller.onPasswordChange,
-                    onTextSubmitted: (_) => controller.handleLoginPressed(),
+                    onTextSubmitted: (_) => controller.handleLoginPressed(context),
                   );
                 case LoginFormType.baseUrlForm:
                   return _buildUrlInput(context);
