@@ -27,7 +27,7 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
             side: const BorderSide(width: 0, color: AppColor.primaryColor)
           )
         ),
-        onPressed: controller.handleLoginPressed,
+        onPressed: () => controller.handleLoginPressed(context),
         child: Text(
           AppLocalizations.of(context).signIn,
           style: const TextStyle(fontSize: 16, color: Colors.white)
@@ -89,7 +89,7 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
       hintText: AppLocalizations.of(context).password,
       focusNode: controller.passFocusNode,
       onTextChange: controller.onPasswordChange,
-      onSubmitted: (_) => controller.handleLoginPressed(),
+      onSubmitted: (_) => controller.handleLoginPressed(context),
     );
   }
 
