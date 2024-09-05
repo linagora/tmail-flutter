@@ -9,7 +9,6 @@ import 'package:tmail_ui_user/features/base/widget/recent_item_tile_widget.dart'
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
 import 'package:tmail_ui_user/features/login/presentation/base_login_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
-import 'package:tmail_ui_user/features/login/presentation/privacy_link_widget.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/dns_lookup_input_form.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/horizontal_progress_loading_button.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/login_back_button.dart';
