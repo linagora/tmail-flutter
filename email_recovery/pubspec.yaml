@@ -1,6 +1,6 @@
 name: email_recovery
 description: TMail email_recovery extension
-publish_to: 'none'
+publish_to: "none"
 
 version: 1.0.0+1
 
@@ -43,7 +43,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter.
 flutter:
-
   uses-material-design: true
   # To add assets to your package, add an assets section, like this:
   # assets:
