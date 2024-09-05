@@ -3290,18 +3290,6 @@
       "folderName": {}
     }
   },
-  "toastMessageMarkAsReadFolderFailureWithReason": "Folder \"{folderName}\" could not be marked as read. Due \"{reason}\"",
-  "@toastMessageMarkAsReadFolderFailureWithReason": {
-    "type": "text",
-    "placeholders_order": [
-      "folderName",
-      "reason"
-    ],
-    "placeholders": {
-      "folderName": {},
-      "reason": {}
-    }
-  },
   "sending": "Sending",
   "@sending": {
     "type": "text",

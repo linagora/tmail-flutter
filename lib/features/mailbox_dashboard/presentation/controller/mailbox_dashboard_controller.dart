@@ -1448,9 +1448,8 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageMarkAsReadFolderFailureWithReason(
+        AppLocalizations.of(currentContext!).toastMessageMarkAsReadFolderAllFailure(
           failure.mailboxDisplayName,
-          failure.exception.toString()
         )
       );
     }
