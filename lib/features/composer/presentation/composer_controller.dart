@@ -15,6 +15,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:html/parser.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -1435,6 +1436,18 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     final selectedIdentityFromHeader = _selectIdentityFromId(identityIdFromHeader);
     if (selectedIdentityFromHeader == null) return;
     identitySelected.value = selectedIdentityFromHeader;
+  }
+
+  Future<void> restoreCollapsibleButton(String? emailContent) async {
+    try {
+      if (emailContent == null) return;
+      final emailDocument = parse(emailContent);
+      final signature = emailDocument.querySelector('div.tmail-signature');
+      if (signature == null) return;
+      await _applySignature(signature.innerHtml);
+    } catch (e) {
+      logError('ComposerController::_restoreCollapsibleButton: $e');
+    }
   }
 
   void _transformHtmlEmailContent(String? emailContent) {
