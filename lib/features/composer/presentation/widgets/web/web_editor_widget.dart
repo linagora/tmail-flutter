@@ -18,6 +18,7 @@ typedef OnPasteImageFailureAction = Function(
     List<FileUpload>? listFileUpload,
     String? base64,
     UploadError uploadError);
+typedef OnInitialContentLoadComplete = Function(String text);
 
 class WebEditorWidget extends StatefulWidget {
 
@@ -36,6 +37,7 @@ class WebEditorWidget extends StatefulWidget {
   final OnDragEnterListener? onDragEnter;
   final OnPasteImageSuccessAction? onPasteImageSuccessAction;
   final OnPasteImageFailureAction? onPasteImageFailureAction;
+  final OnInitialContentLoadComplete? onInitialContentLoadComplete;
 
   const WebEditorWidget({
     super.key,
@@ -54,6 +56,7 @@ class WebEditorWidget extends StatefulWidget {
     this.onDragEnter,
     this.onPasteImageSuccessAction,
     this.onPasteImageFailureAction,
+    this.onInitialContentLoadComplete,
   });
 
   @override
@@ -190,6 +193,7 @@ class _WebEditorState extends State<WebEditorWidget> {
             onDragLeave: (_) {},
             onImageUpload: widget.onPasteImageSuccessAction,
             onImageUploadError: widget.onPasteImageFailureAction,
+            onInitialTextLoadComplete: widget.onInitialContentLoadComplete,
           ),
         );
       }

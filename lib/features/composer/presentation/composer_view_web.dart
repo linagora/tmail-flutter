@@ -202,6 +202,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                         base64: base64,
                                         uploadError: uploadError
                                       ),
+                                    onInitialContentLoadComplete: controller.restoreCollapsibleButton,
                                   )),
                                 ),
                               ),
@@ -454,6 +455,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                                 base64: base64,
                                                 uploadError: uploadError
                                               ),
+                                            onInitialContentLoadComplete: controller.restoreCollapsibleButton,
                                           );
                                         }),
                                       ),
@@ -724,6 +726,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                               base64: base64,
                                               uploadError: uploadError
                                             ),
+                                          onInitialContentLoadComplete: controller.restoreCollapsibleButton,
                                         )),
                                       ),
                                     ),
