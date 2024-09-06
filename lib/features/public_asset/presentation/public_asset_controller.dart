@@ -129,6 +129,14 @@ class PublicAssetController extends BaseController {
     }
   }
 
+  @override
+  void handleUrgentExceptionOnWeb({Failure? failure, Exception? exception}) {
+    super.handleUrgentExceptionOnWeb(failure: failure, exception: exception);
+    if (failure is UploadAttachmentFailure) {
+      isUploading.value = false;
+    }
+  }
+
   void _handlePublicAssetOverQuotaFailureState(PublicAssetOverQuotaFailureState failure) {
     isUploading.value = false;
     if (currentOverlayContext != null && currentContext != null) {
