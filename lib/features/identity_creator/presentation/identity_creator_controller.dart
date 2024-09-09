@@ -167,6 +167,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     log('IdentityCreatorController::onInit():arguments: ${Get.arguments}');
     arguments = Get.arguments;
     _beforeReconnectManager.addListener(onBeforeReconnect);
+    _initFocusListener();
   }
 
   @override
@@ -179,7 +180,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
       session = arguments!.session;
       identity = arguments!.identity;
       actionType.value = arguments!.actionType;
-      if (actionType.value == IdentityActionType.create 
+      if (actionType.value == IdentityActionType.create
         && arguments!.publicAssetsInIdentityArguments == null
       ) {
         isLoadSignatureCompleted = true;
@@ -189,6 +190,28 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
       _setUpValueFromIdentity();
       _getAllIdentities();
       _triggerBrowserEventListener();
+    }
+  }
+
+  void _initFocusListener() {
+    inputNameIdentityFocusNode.addListener(_onInputNameIdentityListener);
+    inputBccIdentityFocusNode.addListener(_onInputBccIdentityListener);
+  }
+
+  void _removeFocusListener() {
+    inputNameIdentityFocusNode.removeListener(_onInputNameIdentityListener);
+    inputBccIdentityFocusNode.removeListener(_onInputBccIdentityListener);
+  }
+
+  void _onInputNameIdentityListener() {
+    if (inputNameIdentityFocusNode.hasFocus && PlatformInfo.isMobile) {
+      richTextMobileTabletController?.richTextController.hideRichTextView();
+    }
+  }
+
+  void _onInputBccIdentityListener() {
+    if (inputBccIdentityFocusNode.hasFocus && PlatformInfo.isMobile) {
+      richTextMobileTabletController?.richTextController.hideRichTextView();
     }
   }
 
@@ -243,6 +266,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
   void onClose() {
     log('IdentityCreatorController::onClose():');
     isLoadSignatureCompleted = false;
+    _removeFocusListener();
     inputNameIdentityFocusNode.dispose();
     inputBccIdentityFocusNode.dispose();
     inputNameIdentityController.dispose();
@@ -382,7 +406,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     } else {
       bccOfIdentity.value = null;
     }
-    
+
     if (identity?.email?.isNotEmpty == true) {
       emailOfIdentity.value = listEmailAddressDefault
         .firstWhereOrNull((emailAddress) => emailAddress.email ==  identity!.email);
@@ -467,7 +491,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     if (actionType.value == IdentityActionType.create) {
       final generateCreateId = Id(uuid.v1());
       final identityRequest = CreateNewIdentityRequest(
-        generateCreateId, 
+        generateCreateId,
         identityAndPublicAssetArguments.identity,
         publicAssetsInIdentityArguments: identityAndPublicAssetArguments.publicAssetsInIdentityArguments,
         isDefaultIdentity: isDefaultIdentity.value);
@@ -921,7 +945,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
 
   @override
   Future<void> onUnloadBrowserListener(html.Event event) => _saveIdentityCacheOnWebAction();
-  
+
   @override
   Future<void> onBeforeReconnect() => _saveIdentityCacheOnWebAction();
 
@@ -934,7 +958,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
         identityActionType: actionType.value,
         isDefault: isDefaultIdentity.value,
         publicAssetsInIdentityArguments: cacheArguments.publicAssetsInIdentityArguments);
-    
+
       consumeState(_saveIdentityCacheOnWebInteractor.execute(
         accountId!,
         session!.username,
