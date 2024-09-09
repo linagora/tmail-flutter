@@ -581,7 +581,17 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
           const SizedBox(width: 12),
           Expanded(child: _buildSaveButton(context))
         ]),
-      )
+      ),
+      if (controller.richTextMobileTabletController != null)
+        ValueListenableBuilder(
+          valueListenable: controller.richTextMobileTabletController!.richTextController.richTextToolbarNotifier,
+          builder: (_, isShowing, __) {
+            if (isShowing) {
+              return const SizedBox(height: 48);
+            } else {
+              return const SizedBox.shrink();
+            }
+          })
     ]);
   }
 
