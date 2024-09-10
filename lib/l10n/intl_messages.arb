@@ -4017,5 +4017,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "warningRuleCannotAppliedWhenTargetFolderNoExist": "The rule cannot be applied as the target folder do no longer exist.",
+  "@warningRuleCannotAppliedWhenTargetFolderNoExist": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
