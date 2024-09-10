@@ -66,12 +66,13 @@ class ThreadIsolateWorker {
     EmptyMailboxFolderArguments args,
     TypeSendPort sendPort
   ) async {
-    final rootIsolateToken = args.isolateToken;
-    BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
-    await HiveCacheConfig.instance.setUp();
-
-    List<EmailId> emailListCompleted = List.empty(growable: true);
     try {
+      final rootIsolateToken = args.isolateToken;
+      BackgroundIsolateBinaryMessenger.ensureInitialized(rootIsolateToken);
+      await HiveCacheConfig.instance.setUp();
+
+      List<EmailId> emailListCompleted = List.empty(growable: true);
+
       var hasEmails = true;
       Email? lastEmail;
 
@@ -104,11 +105,12 @@ class ThreadIsolateWorker {
           hasEmails = false;
         }
       }
+      log('ThreadIsolateWorker::_emptyMailboxFolderAction(): TOTAL_REMOVE: ${emailListCompleted.length}');
+      return emailListCompleted;
     } catch (e) {
-      log('ThreadIsolateWorker::_emptyMailboxFolderAction(): ERROR: $e');
+      logError('ThreadIsolateWorker::_emptyMailboxFolderAction(): ERROR: $e');
+      rethrow;
     }
-    log('ThreadIsolateWorker::_emptyMailboxFolderAction(): TOTAL_REMOVE: ${emailListCompleted.length}');
-    return emailListCompleted;
   }
 
   Future<List<EmailId>> _emptyMailboxFolderOnWeb(
