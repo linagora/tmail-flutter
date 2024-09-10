@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_em
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_rules_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_rules_interactor.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/list_rule_filter_action_argument_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/creator_action_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_filter_action_arguments.dart';
@@ -442,66 +443,80 @@ class RulesFilterCreatorController extends BaseMailboxController {
       return;
     }
 
-    if (listRuleCondition.isNotEmpty) {
-      String? errorConditionString;
-      for (var ruleCondition in listRuleCondition) {
-        errorConditionString = _getErrorStringByInputValue(context, ruleCondition.value);
-        log('RulesFilterCreatorController::createNewRuleFilter:errorConditionString: $errorConditionString');
-        if (errorConditionString != null) {
-          int ruleConditionIndex = listRuleCondition.indexOf(ruleCondition);
-          RulesFilterInputFieldArguments newRuleConditionValueArguments = RulesFilterInputFieldArguments(
-            focusNode: listRuleConditionValueArguments[ruleConditionIndex].focusNode,
-            errorText: errorConditionString,
-            controller: listRuleConditionValueArguments[ruleConditionIndex].controller,
-          );
-          listRuleConditionValueArguments[ruleConditionIndex] = newRuleConditionValueArguments;
-          listRuleConditionValueArguments[listRuleCondition.indexOf(ruleCondition)].focusNode.requestFocus();
-        }
-      }
-      if (errorConditionString?.isNotEmpty == true) {
+    if (listRuleCondition.isEmpty
+        && currentOverlayContext != null
+        && currentContext != null
+    ) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).youHaveNotAddedConditionToRule);
+      return;
+    }
+
+    for (var ruleCondition in listRuleCondition) {
+      final errorConditionString = _getErrorStringByInputValue(context, ruleCondition.value);
+      log('RulesFilterCreatorController::createNewRuleFilter:errorConditionString: $errorConditionString');
+      if (errorConditionString != null) {
+        int ruleConditionIndex = listRuleCondition.indexOf(ruleCondition);
+        RulesFilterInputFieldArguments newRuleConditionValueArguments = RulesFilterInputFieldArguments(
+          focusNode: listRuleConditionValueArguments[ruleConditionIndex].focusNode,
+          errorText: errorConditionString,
+          controller: listRuleConditionValueArguments[ruleConditionIndex].controller,
+        );
+        listRuleConditionValueArguments[ruleConditionIndex] = newRuleConditionValueArguments;
+        listRuleConditionValueArguments[listRuleCondition.indexOf(ruleCondition)].focusNode.requestFocus();
         return;
       }
     }
 
-    if (listRuleCondition.isEmpty == true || listEmailRuleFilterActionSelected.isEmpty == true) {
-      if (currentOverlayContext != null && currentContext != null) {
-        appToast.showToastErrorMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).toastErrorMessageWhenCreateNewRule);
-      }
+    if (listEmailRuleFilterActionSelected.isEmpty
+        && currentOverlayContext != null
+        && currentContext != null
+    ) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).youHaveNotAddedActionToRule);
       return;
     }
 
-    if (listEmailRuleFilterActionSelected.isNotEmpty == true) {
-      for (var ruleFilterAction in listEmailRuleFilterActionSelected) {
-        if (ruleFilterAction is MoveMessageActionArguments) {
-          final errorAction = _getErrorStringByInputValue(context, mailboxSelected.value?.getDisplayName(context));
-          log('RulesFilterCreatorController::createNewRuleFilter:errorAction: $errorAction');
-          if (errorAction?.isNotEmpty == true) {
-            appToast.showToastErrorMessage(
-              context,
-              AppLocalizations.of(context).notSelectedMailboxToMoveMessage);
-            return;
-          }
+    if (listEmailRuleFilterActionSelected.isEmptySelectedRuleAction()
+        && currentOverlayContext != null
+        && currentContext != null
+    ) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).youHaveNotSelectedAnyActionForRule);
+      return;
+    }
+
+    for (var ruleFilterAction in listEmailRuleFilterActionSelected) {
+      if (ruleFilterAction is MoveMessageActionArguments) {
+        final errorAction = _getErrorStringByInputValue(context, mailboxSelected.value?.getDisplayName(context));
+        log('RulesFilterCreatorController::createNewRuleFilter:errorAction: $errorAction');
+        if (errorAction?.isNotEmpty == true) {
+          appToast.showToastErrorMessage(
+            context,
+            AppLocalizations.of(context).notSelectedMailboxToMoveMessage);
+          return;
         }
-        if (ruleFilterAction is MarkAsSpamActionArguments) {
-          final spamMailboxId = getSpamMailboxId();
-          log('RulesFilterCreatorController::createNewRuleFilter:spamMailboxId: ${spamMailboxId?.asString}');
-          if (spamMailboxId == null) {
-            appToast.showToastErrorMessage(
-              context,
-              AppLocalizations.of(context).spamFolderNotFound);
-            return;
-          }
+      }
+      if (ruleFilterAction is MarkAsSpamActionArguments) {
+        final spamMailboxId = getSpamMailboxId();
+        log('RulesFilterCreatorController::createNewRuleFilter:spamMailboxId: ${spamMailboxId?.asString}');
+        if (spamMailboxId == null) {
+          appToast.showToastErrorMessage(
+            context,
+            AppLocalizations.of(context).spamFolderNotFound);
+          return;
         }
-        if (ruleFilterAction is ForwardActionArguments) {
-          final errorAction = _getErrorStringByInputValue(context, ruleFilterAction.forwardEmail);
-          log('RulesFilterCreatorController::createNewRuleFilter:errorAction: $errorAction');
-          if (errorAction?.isNotEmpty == true) {
-            errorForwardEmailValue.value = errorAction;
-            forwardEmailFocusNode.requestFocus();
-            return;
-          }
+      }
+      if (ruleFilterAction is ForwardActionArguments) {
+        final errorAction = _getErrorStringByInputValue(context, ruleFilterAction.forwardEmail);
+        log('RulesFilterCreatorController::createNewRuleFilter:errorAction: $errorAction');
+        if (errorAction?.isNotEmpty == true) {
+          errorForwardEmailValue.value = errorAction;
+          forwardEmailFocusNode.requestFocus();
+          return;
         }
       }
     }
