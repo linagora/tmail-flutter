@@ -4,14 +4,19 @@ import 'package:core/presentation/state/success.dart';
 
 class ExportAttachmentSuccess extends UIState {
   final DownloadedResponse downloadedResponse;
+  final bool isPreview;
 
-  ExportAttachmentSuccess(this.downloadedResponse);
+  ExportAttachmentSuccess(this.downloadedResponse, this.isPreview);
 
   @override
-  List<Object> get props => [downloadedResponse];
+  List<Object> get props => [downloadedResponse, isPreview];
 }
 
 class ExportAttachmentFailure extends FeatureFailure {
+  final bool isPreview;
 
-  ExportAttachmentFailure(dynamic exception) : super(exception: exception);
+  ExportAttachmentFailure(dynamic exception, this.isPreview) : super(exception: exception);
+
+  @override
+  List<Object?> get props => [...super.props, isPreview];
 }

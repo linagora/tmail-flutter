@@ -9,6 +9,8 @@ extension MediaTypeExtension on MediaType {
 
   bool isImageFile() => SupportedPreviewFileTypes.imageMimeTypes.contains(mimeType);
 
+  bool isVideoFile() => SupportedPreviewFileTypes.videoMimeTypes.contains(mimeType);
+
   bool isDocFile() => SupportedPreviewFileTypes.docMimeTypes.contains(mimeType);
 
   bool isPowerPointFile() => SupportedPreviewFileTypes.pptMimeTypes.contains(mimeType);
@@ -20,4 +22,6 @@ extension MediaTypeExtension on MediaType {
   bool isPdfFile() => SupportedPreviewFileTypes.pdfMimeTypes.contains(mimeType);
 
   DocumentUti getDocumentUti() => DocumentUti(SupportedPreviewFileTypes.iOSSupportedTypes[mimeType]);
+
+  bool isSaveToGallerySupported() => isVideoFile() || isImageFile();
 }

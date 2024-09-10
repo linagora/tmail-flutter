@@ -3,7 +3,20 @@ class SupportedPreviewFileTypes {
     'image/bmp',
     'image/jpeg',
     'image/gif',
-    'image/png',];
+    'image/png',
+    'image/vnd.microsoft.icon',];
+
+  static const videoMimeTypes = [
+    'video/x-m4v',
+    'video/x-ms-asf',
+    'video/x-msvideo',
+    'audio/x-mpeg',
+    'audio/mp4a-latm',
+    'video/vnd.mpegurl',
+    'video/quicktime',
+    'video/mp4',
+    'video/3gpp',
+    'video/mpeg',];
 
   static const docMimeTypes = [
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',

@@ -29,7 +29,8 @@ class ExportAttachmentInteractor {
       Attachment attachment,
       AccountId accountId,
       String baseDownloadUrl,
-      CancelToken cancelToken
+      CancelToken cancelToken,
+      bool isPreview
   ) async* {
     try {
       final currentAccount = await _accountRepository.getCurrentAccount();
@@ -55,10 +56,10 @@ class ExportAttachmentInteractor {
         cancelToken
       );
 
-      yield Right<Failure, Success>(ExportAttachmentSuccess(downloadedResponse));
+      yield Right<Failure, Success>(ExportAttachmentSuccess(downloadedResponse, isPreview));
     } catch (exception) {
-      log('ExportAttachmentInteractor::execute(): exception: $exception');
-      yield Left<Failure, Success>(ExportAttachmentFailure(exception));
+      logError('ExportAttachmentInteractor::execute(): exception: $exception');
+      yield Left<Failure, Success>(ExportAttachmentFailure(exception, isPreview));
     }
   }
 }
