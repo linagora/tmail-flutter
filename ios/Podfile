@@ -65,7 +65,7 @@ post_install do |installer|
           'PERMISSION_SPEECH_RECOGNIZER=0',
 
           ## dart: PermissionGroup.photos
-          # 'PERMISSION_PHOTOS=0',
+          'PERMISSION_PHOTOS=1',
 
           ## dart: [PermissionGroup.location, PermissionGroup.locationAlways, PermissionGroup.locationWhenInUse]
           'PERMISSION_LOCATION=0',

@@ -4017,5 +4017,49 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "allow": "Allow",
+  "@allow": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deny": "Deny",
+  "@deny": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "fileSavedToGallery": "File saved to Gallery",
+  "@fileSavedToGallery": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveFileToDownloadsError": "Failed to save file to Downloads",
+  "@saveFileToDownloadsError": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "explainPermissionToDownloadFiles": "To continue, please allow {appName} to access storage permission. This permission is essential for saving file to Downloads folder.",
+  "@explainPermissionToDownloadFiles": {
+    "type": "text",
+    "placeholders_order": [
+      "appName"
+    ],
+    "placeholders": {
+      "appName": {}
+    }
+  },
+  "explainPermissionToGallery": "To continue, please allow {appName} to access photo permission. This permission is essential for saving file to gallery.",
+  "@explainPermissionToGallery": {
+    "type": "text",
+    "placeholders_order": [
+      "appName"
+    ],
+    "placeholders": {
+      "appName": {}
+    }
   }
 }

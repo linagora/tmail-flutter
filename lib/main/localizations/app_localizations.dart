@@ -4213,4 +4213,48 @@ class AppLocalizations {
       name: 'youAreOffline',
     );
   }
+
+  String get allow {
+    return Intl.message(
+      'Allow',
+      name: 'allow'
+    );
+  }
+
+  String get deny {
+    return Intl.message(
+      'Deny',
+      name: 'deny'
+    );
+  }
+
+  String get fileSavedToGallery {
+    return Intl.message(
+      'File saved to Gallery',
+      name: 'fileSavedToGallery'
+    );
+  }
+
+  String get saveFileToDownloadsError {
+    return Intl.message(
+      'Failed to save file to Downloads',
+      name: 'saveFileToDownloadsError'
+    );
+  }
+
+  String explainPermissionToDownloadFiles(String appName) {
+    return Intl.message(
+      'To continue, please allow $appName to access storage permission. This permission is essential for saving file to Downloads folder.',
+      name: 'explainPermissionToDownloadFiles',
+      args: [appName]
+    );
+  }
+
+  String explainPermissionToGallery(String appName) {
+    return Intl.message(
+      'To continue, please allow $appName to access photo permission. This permission is essential for saving file to gallery.',
+      name: 'explainPermissionToGallery',
+      args: [appName]
+    );
+  }
 }
