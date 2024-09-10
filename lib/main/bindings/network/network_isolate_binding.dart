@@ -42,8 +42,8 @@ class NetworkIsolateBindings extends Bindings {
       tag: BindingTag.isolateTag);
     Get.put(const FlutterAppAuth(), tag: BindingTag.isolateTag);
     Get.put(AppAuthWebPlugin(), tag: BindingTag.isolateTag);
-    Get.put(AuthenticationClientBase(
-      tag: BindingTag.isolateTag),
+    Get.put(
+      AuthenticationClientBase(tag: BindingTag.isolateTag),
       tag: BindingTag.isolateTag);
   }
 
