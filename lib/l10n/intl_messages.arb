@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-08-23T16:45:33.629548",
+  "@@last_modified": "2024-09-10T15:59:25.469570",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2134,12 +2134,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastErrorMessageWhenCreateNewRule": "You have not filled in the information completely.",
-  "@toastErrorMessageWhenCreateNewRule": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "vacationSettingExplanation": "Sends an automated reply to incoming messages.",
   "@vacationSettingExplanation": {
     "type": "text",
@@ -3990,6 +3984,24 @@
   },
   "spamFolderNotFound": "Spam folder not found",
   "@spamFolderNotFound": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youHaveNotAddedConditionToRule": "You have not added a condition to the rule.",
+  "@youHaveNotAddedConditionToRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youHaveNotAddedActionToRule": "You have not added a action to the rule.",
+  "@youHaveNotAddedActionToRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youHaveNotSelectedAnyActionForRule": "You have not selected any action for the rule.",
+  "@youHaveNotSelectedAnyActionForRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

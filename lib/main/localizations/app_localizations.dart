@@ -2192,12 +2192,6 @@ class AppLocalizations {
         name: 'toastMessageDeleteEmailRuleSuccessfully');
   }
 
-  String get toastErrorMessageWhenCreateNewRule {
-    return Intl.message(
-        'You have not filled in the information completely.',
-        name: 'toastErrorMessageWhenCreateNewRule');
-  }
-
   String get vacationSettingExplanation {
     return Intl.message(
         'Sends an automated reply to incoming messages.',
@@ -4186,5 +4180,23 @@ class AppLocalizations {
       'Spam folder not found',
       name: 'spamFolderNotFound',
     );
+  }
+
+  String get youHaveNotAddedConditionToRule {
+    return Intl.message(
+      'You have not added a condition to the rule.',
+      name: 'youHaveNotAddedConditionToRule');
+  }
+
+  String get youHaveNotAddedActionToRule {
+    return Intl.message(
+      'You have not added a action to the rule.',
+      name: 'youHaveNotAddedActionToRule');
+  }
+
+  String get youHaveNotSelectedAnyActionForRule {
+    return Intl.message(
+      'You have not selected any action for the rule.',
+      name: 'youHaveNotSelectedAnyActionForRule');
   }
 }
