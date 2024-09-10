@@ -1700,7 +1700,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
           searchController.updateFilterEmail(
             emailReceiveTimeType: receiveTime,
             startDateOption: optionOf(startDate?.toUTCDate()),
-            endDateOption: optionOf(startDate?.toUTCDate()),
+            endDateOption: optionOf(endDate?.toUTCDate()),
             beforeOption: const None()
           );
           dispatchAction(StartSearchEmailAction());
