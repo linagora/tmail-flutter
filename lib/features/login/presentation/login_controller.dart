@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/url_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
@@ -235,20 +236,30 @@ class LoginController extends ReloadableController {
     ));
   }
 
-  void handleBackButtonAction() {
+  void handleBackButtonAction(BuildContext context) {
+    KeyboardUtils.hideKeyboard(context);
     clearState();
-    if (loginFormType.value == LoginFormType.credentialForm) {
-      _password = null;
-      _username = null;
-      usernameInputController.clear();
-      passwordInputController.clear();
-      loginFormType.value = LoginFormType.baseUrlForm;
-    } else if (loginFormType.value == LoginFormType.passwordForm) {
-      _password = null;
-      _baseUri = null;
-      urlInputController.clear();
-      passwordInputController.clear();
-      loginFormType.value = LoginFormType.dnsLookupForm;
+    switch(loginFormType.value) {
+      case LoginFormType.dnsLookupForm:
+      case LoginFormType.baseUrlForm:
+        navigateToTwakeWelcomePage();
+        break;
+      case LoginFormType.passwordForm:
+        _password = null;
+        _baseUri = null;
+        urlInputController.clear();
+        passwordInputController.clear();
+        loginFormType.value = LoginFormType.dnsLookupForm;
+        break;
+      case LoginFormType.credentialForm:
+        _password = null;
+        _username = null;
+        usernameInputController.clear();
+        passwordInputController.clear();
+        loginFormType.value = LoginFormType.baseUrlForm;
+        break;
+      default:
+        break;
     }
   }
 
@@ -258,7 +269,8 @@ class LoginController extends ReloadableController {
     userNameFocusNode.requestFocus();
   }
 
-  void handleLoginPressed() {
+  void handleLoginPressed(BuildContext context) {
+    KeyboardUtils.hideKeyboard(context);
     log('LoginController::handleLoginPressed:_currentBaseUrl: $_currentBaseUrl | _username: $_username | _password: $_password');
     if (_currentBaseUrl == null) {
       consumeState(Stream.value(Left(AuthenticationUserFailure(CanNotFoundBaseUrl()))));
@@ -480,6 +492,11 @@ class LoginController extends ReloadableController {
     usernameInputController.clear();
     passwordInputController.clear();
   }
+
+  bool get isBackButtonActivated =>
+    loginFormType.value == LoginFormType.dnsLookupForm ||
+    loginFormType.value == LoginFormType.passwordForm ||
+    loginFormType.value == LoginFormType.credentialForm;
 
   @override
   void onClose() {

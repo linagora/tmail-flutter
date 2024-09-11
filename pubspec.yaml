@@ -104,6 +104,11 @@ dependencies:
       url: https://github.com/linagora/flutter_pdf_render.git
       ref: main
 
+  linagora_design_flutter:
+    git:
+      url: https://github.com/linagora/linagora-design-flutter.git
+      ref: master
+
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.6
 

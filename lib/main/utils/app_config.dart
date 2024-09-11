@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
+import 'package:tmail_ui_user/main/config_saas/config_saas.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class AppConfig {
@@ -14,6 +15,7 @@ class AppConfig {
   static const String appFCMConfigurationPath = "configurations/env.fcm";
   static const String iOSKeychainSharingGroupId = 'KUT463DS29.com.linagora.ios.teammail.shared';
   static const String iOSKeychainSharingService = 'com.linagora.ios.teammail.sessions';
+  static const String linagoraPrivacyUrl = 'https://www.linagora.com/en/legal/privacy';
 
   static String get baseUrl => dotenv.get('SERVER_URL', fallback: '');
   static String get domainRedirectUrl => dotenv.get('DOMAIN_REDIRECT_URL', fallback: '');
@@ -61,4 +63,11 @@ class AppConfig {
 
     return forwardWarningMessage;
   }
+
+  static const String _platformEnv = String.fromEnvironment(
+    'PLATFORM',
+    defaultValue: ConfigurationSaas.platform,
+  );
+
+  static bool get isSaasPlatForm => _platformEnv == 'saas';
 }

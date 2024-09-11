@@ -8,7 +8,6 @@ import 'package:tmail_ui_user/features/base/widget/recent_item_tile_widget.dart'
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart';
 import 'package:tmail_ui_user/features/login/presentation/base_login_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
-import 'package:tmail_ui_user/features/login/presentation/privacy_link_widget.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/dns_lookup_input_form.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/horizontal_progress_loading_button.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/login_back_button.dart';
@@ -25,42 +24,50 @@ class LoginView extends BaseLoginView {
   Widget build(BuildContext context) {
     ThemeUtils.setSystemDarkUIStyle();
 
-    return Scaffold(
-      backgroundColor: AppColor.primaryLightColor,
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: Container(
-          color: Colors.white,
-          child: SafeArea(
-            child: _supportScrollForm(context)
-                ? Stack(children: [
-                    Center(
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        child: _buildCenterForm(context)
-                      )
-                    ),
-                    Obx(() {
-                      if (controller.loginFormType.value == LoginFormType.passwordForm ||
-                          controller.loginFormType.value == LoginFormType.credentialForm) {
-                        return LoginBackButton(onBackAction: controller.handleBackButtonAction);
-                      }
-                      return const SizedBox.shrink();
-                    })
-                  ])
-                : Stack(children: [
-                    _buildCenterForm(context),
-                    Obx(() {
-                      if (controller.loginFormType.value == LoginFormType.passwordForm ||
-                          controller.loginFormType.value == LoginFormType.credentialForm) {
-                        return LoginBackButton(onBackAction: controller.handleBackButtonAction);
-                      }
-                      return const SizedBox.shrink();
-                    })
-                  ]),
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) => !didPop
+        ? controller.handleBackButtonAction(context)
+        : null,
+      child: Scaffold(
+        backgroundColor: AppColor.primaryLightColor,
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: Container(
+            color: Colors.white,
+            child: SafeArea(
+              child: _supportScrollForm(context)
+                  ? Stack(children: [
+                      Center(
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: _buildCenterForm(context)
+                        )
+                      ),
+                      Obx(() {
+                        if (controller.isBackButtonActivated) {
+                          return LoginBackButton(
+                            onBackAction: () => controller.handleBackButtonAction(context)
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      })
+                    ])
+                  : Stack(children: [
+                      _buildCenterForm(context),
+                      Obx(() {
+                        if (controller.isBackButtonActivated) {
+                          return LoginBackButton(
+                            onBackAction: () => controller.handleBackButtonAction(context)
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      })
+                    ]),
+            ),
           ),
-        ),
-      ));
+        )),
+    );
   }
 
   Widget _buildCenterForm(BuildContext context) {
@@ -101,7 +108,7 @@ class LoginView extends BaseLoginView {
                     textEditingController: controller.passwordInputController,
                     focusNode: controller.passFocusNode,
                     onTextChange: controller.onPasswordChange,
-                    onTextSubmitted: (_) => controller.handleLoginPressed(),
+                    onTextSubmitted: (_) => controller.handleLoginPressed(context),
                   );
                 case LoginFormType.baseUrlForm:
                   return _buildUrlInput(context);
@@ -111,11 +118,7 @@ class LoginView extends BaseLoginView {
                   return const SizedBox.shrink();
               }
             }),
-            _buildLoadingProgress(context),
-            const Padding(
-              padding: EdgeInsets.only(top: 16),
-              child: PrivacyLinkWidget(),
-            ),
+            _buildLoadingProgress(context)
           ]
         ),
       )

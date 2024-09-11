@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-08-23T16:45:33.629548",
+  "@@last_modified": "2024-09-05T12:03:51.372545",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3990,6 +3990,24 @@
   },
   "spamFolderNotFound": "Spam folder not found",
   "@spamFolderNotFound": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "descriptionWelcomeTo": "End-to-end encryption, collaborative\n features for secure and efficient\n teamwork",
+  "@descriptionWelcomeTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createTwakeId": "Create Twake ID",
+  "@createTwakeId": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "useCompanyServer": "Use company server",
+  "@useCompanyServer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -28,6 +28,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mailbox_da
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_view.dart' deferred as manage_account_dashboard;
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_bindings.dart';
+import 'package:tmail_ui_user/features/starting_page/presentation/twake_welcome/twake_welcome_bindings.dart';
+import 'package:tmail_ui_user/features/starting_page/presentation/twake_welcome/twake_welcome_view.dart';
 import 'package:tmail_ui_user/features/unknown_route_page/unknown_route_page_view.dart';
 import 'package:tmail_ui_user/main/pages/deferred_widget.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -83,6 +85,10 @@ class AppPages {
     unknownRoutePage,
     if (PlatformInfo.isMobile)
       ...[
+        GetPage(
+          name: AppRoutes.twakeWelcome,
+          page: () => const TwakeWelcomeView(),
+          binding: TwakeWelcomeBindings()),
         GetPage(
             name: AppRoutes.composer,
             page: () => DeferredWidget(
