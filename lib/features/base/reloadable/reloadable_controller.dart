@@ -89,7 +89,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   void _handleGetSessionFailure(dynamic exception) {
-    if (currentContext != null && currentOverlayContext != null && exception !is BadCredentialsException) {
+    if (currentContext != null && currentOverlayContext != null && exception is! BadCredentialsException) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
         MessageToastUtils.getMessageByException(currentContext!, exception) ?? AppLocalizations.of(currentContext!).unknownError
