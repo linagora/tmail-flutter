@@ -3,6 +3,8 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
@@ -14,26 +16,9 @@ enum QuickSearchFilter {
   fromMe,
   sortBy,
   dateTime,
-  from;
-
-  String getName(BuildContext context) {
-    switch(this) {
-      case QuickSearchFilter.hasAttachment:
-        return AppLocalizations.of(context).hasAttachment;
-      case QuickSearchFilter.last7Days:
-        return AppLocalizations.of(context).last7Days;
-      case QuickSearchFilter.fromMe:
-        return AppLocalizations.of(context).fromMe;
-      case QuickSearchFilter.sortBy:
-        return AppLocalizations.of(context).sortBy;
-      case QuickSearchFilter.dateTime:
-        return AppLocalizations.of(context).allTime;
-      case QuickSearchFilter.from:
-        return AppLocalizations.of(context).from_email_address_prefix;
-      default:
-        return '';
-    }
-  }
+  from,
+  to,
+  folder;
 
   String getTitle(
     BuildContext context, {
@@ -42,7 +27,9 @@ enum QuickSearchFilter {
     DateTime? startDate,
     DateTime? endDate,
     Set<String>? listAddressOfFrom,
-    UserName? userName
+    UserName? userName,
+    Set<String>? listAddressOfTo,
+    PresentationMailbox? mailbox
   }) {
     switch(this) {
       case QuickSearchFilter.hasAttachment:
@@ -61,17 +48,11 @@ enum QuickSearchFilter {
           endDate: endDate
         ) ?? AppLocalizations.of(context).allTime;
       case QuickSearchFilter.from:
-        if (listAddressOfFrom?.length != 1) {
-          return AppLocalizations.of(context).from_email_address_prefix;
-        }
-
-        if (userName?.value.isNotEmpty == true && listAddressOfFrom?.first == userName?.value) {
-          return AppLocalizations.of(context).fromMe;
-        } else {
-          return '${AppLocalizations.of(context).from_email_address_prefix} ${listAddressOfFrom?.first}';
-        }
-      default:
-        return '';
+        return AppLocalizations.of(context).from_email_address_prefix;
+      case QuickSearchFilter.folder:
+        return mailbox?.getDisplayName(context) ?? AppLocalizations.of(context).all;
+      case QuickSearchFilter.to:
+        return AppLocalizations.of(context).to_email_address_prefix;
     }
   }
 
@@ -89,6 +70,10 @@ enum QuickSearchFilter {
         return imagePaths.icCalendarSB;
       case QuickSearchFilter.from:
         return imagePaths.icUserSB;
+      case QuickSearchFilter.to:
+        return imagePaths.icUserSB;
+      case QuickSearchFilter.folder:
+        return imagePaths.icFolderMailbox;
     }
   }
 
@@ -136,6 +121,10 @@ enum QuickSearchFilter {
         return searchFilter.emailReceiveTimeType != EmailReceiveTimeType.allTime;
       case QuickSearchFilter.from:
         return searchFilter.from.isNotEmpty;
+      case QuickSearchFilter.to:
+        return searchFilter.to.isNotEmpty;
+      case QuickSearchFilter.folder:
+      return searchFilter.mailbox != null;
     }
   }
 
@@ -145,5 +134,7 @@ enum QuickSearchFilter {
   bool isArrowDownIconSupported() =>
     this == QuickSearchFilter.dateTime ||
     this == QuickSearchFilter.from ||
+    this == QuickSearchFilter.to ||
+    this == QuickSearchFilter.folder ||
     this == QuickSearchFilter.sortBy;
 }

@@ -158,7 +158,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     SearchQuery? text,
     Option<String>? subjectOption,
     Set<String>? notKeyword,
-    PresentationMailbox? mailbox,
+    Option<PresentationMailbox>? mailboxOption,
     EmailReceiveTimeType? emailReceiveTimeType,
     bool? hasAttachment,
     Option<UTCDate>? beforeOption,
@@ -173,7 +173,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
       text: text,
       subjectOption: subjectOption,
       notKeyword: notKeyword,
-      mailbox: mailbox,
+      mailboxOption: mailboxOption,
       emailReceiveTimeType: emailReceiveTimeType,
       hasAttachment: hasAttachment,
       beforeOption: beforeOption,
@@ -190,6 +190,8 @@ class SearchController extends BaseController with DateRangePickerMixin {
   DateTime? get startDateFiltered => searchEmailFilter.value.startDate?.value.toLocal();
 
   DateTime? get endDateFiltered => searchEmailFilter.value.endDate?.value.toLocal();
+
+  PresentationMailbox? get mailboxFiltered => searchEmailFilter.value.mailbox;
 
   bool isSearchActive() =>
       searchState.value.searchStatus == SearchStatus.ACTIVE;

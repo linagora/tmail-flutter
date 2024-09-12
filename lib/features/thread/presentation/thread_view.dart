@@ -22,10 +22,9 @@ import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.d
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
-import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
-import 'package:tmail_ui_user/features/thread/presentation/styles/banner_empty_trash_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/scroll_to_top_button_widget_styles.dart';
+import 'package:tmail_ui_user/features/thread/presentation/styles/thread_view_style.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/app_bar_thread_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete_all_spam_emails_widget.dart';
@@ -112,22 +111,26 @@ class ThreadView extends GetWidget<ThreadController>
                           SearchBarView(
                             key: const Key('email_search_bar_view'),
                             imagePaths: controller.imagePaths,
-                            margin: _getBannerMargin(context, controller.responsiveUtils),
+                            margin: ThreadViewStyle.getBannerMargin(
+                              context,
+                              controller.responsiveUtils),
                             hintTextSearch: AppLocalizations.of(context).search_emails,
                             onOpenSearchViewAction: controller.goToSearchView
                           ),
                           SpamReportBannerWidget(
                             spamReportController: controller.mailboxDashBoardController.spamReportController,
-                            margin: _getBannerMargin(context, controller.responsiveUtils),
+                            margin: ThreadViewStyle.getBannerMargin(
+                              context,
+                              controller.responsiveUtils),
                           ),
-                          QuotasBannerWidget(
-                            margin: _getBannerMargin(context, controller.responsiveUtils),
-                          ),
+                          QuotasBannerWidget(),
                           Obx(() {
                             final vacation = controller.mailboxDashBoardController.vacationResponse.value;
                             if (vacation?.vacationResponderIsValid == true) {
                               return VacationNotificationMessageWidget(
-                                margin: _getBannerMargin(context, controller.responsiveUtils),
+                                margin: ThreadViewStyle.getBannerMargin(
+                                  context,
+                                  controller.responsiveUtils),
                                 vacationResponse: vacation!,
                                 actionGotoVacationSetting: controller.mailboxDashBoardController.goToVacationSetting,
                                 actionEndNow: controller.mailboxDashBoardController.disableVacationResponder
@@ -145,13 +148,10 @@ class ThreadView extends GetWidget<ThreadController>
                       Obx(() {
                         final presentationMailbox = controller.mailboxDashBoardController.selectedMailbox.value;
                         if (controller.mailboxDashBoardController.isEmptyTrashBannerEnabledOnMobile(context, presentationMailbox)) {
-                          return Padding(
-                            padding: const EdgeInsetsDirectional.symmetric(
-                              horizontal: BannerEmptyTrashStyles.mobileMargin
-                            ),
-                            child: BannerEmptyTrashWidget(
-                              onTapAction: () => controller.deleteSelectionEmailsPermanently(context, DeleteActionType.all)
-                            ),
+                          return BannerEmptyTrashWidget(
+                            onTapAction: () => controller.deleteSelectionEmailsPermanently(
+                              context,
+                              DeleteActionType.all)
                           );
                         } else {
                           return const SizedBox.shrink();
@@ -160,13 +160,8 @@ class ThreadView extends GetWidget<ThreadController>
                       Obx(() {
                         final presentationMailbox = controller.mailboxDashBoardController.selectedMailbox.value;
                         if (controller.mailboxDashBoardController.isEmptySpamBannerEnabledOnMobile(context, presentationMailbox)) {
-                          return Padding(
-                            padding: const EdgeInsetsDirectional.symmetric(
-                              horizontal: BannerDeleteAllSpamEmailsStyles.mobileMargin
-                            ),
-                            child: BannerDeleteAllSpamEmailsWidget(
-                              onTapAction: () => controller.mailboxDashBoardController.openDialogEmptySpamFolder(context)
-                            ),
+                          return BannerDeleteAllSpamEmailsWidget(
+                            onTapAction: () => controller.mailboxDashBoardController.openDialogEmptySpamFolder(context)
                           );
                         } else {
                           return const SizedBox.shrink();
@@ -220,22 +215,6 @@ class ThreadView extends GetWidget<ThreadController>
         ),
       ),
     );
-  }
-
-  EdgeInsetsGeometry _getBannerMargin(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (PlatformInfo.isWeb) {
-      if (responsiveUtils.isMobile(context) || responsiveUtils.isTabletLarge(context)) {
-        return const EdgeInsetsDirectional.only(start: 12, end: 12, bottom: 8);
-      } else {
-        return const EdgeInsetsDirectional.only(start: 24, end: 24, bottom: 8);
-      }
-    } else {
-      if (responsiveUtils.isPortraitMobile(context) || responsiveUtils.isLandscapeTablet(context)) {
-        return const EdgeInsetsDirectional.only(start: 16, end: 16, bottom: 8);
-      } else {
-        return const EdgeInsetsDirectional.only(start: 32, end: 32, bottom: 8);
-      }
-    }
   }
 
   bool _supportVerticalDivider(BuildContext context) {
