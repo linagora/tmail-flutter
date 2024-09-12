@@ -4005,5 +4005,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "tryAgain": "Try again",
+  "@tryAgain": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youAreOffline": "You are offline. It looks like you are not connected.",
+  "@youAreOffline": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

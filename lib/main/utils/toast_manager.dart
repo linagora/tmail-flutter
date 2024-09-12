@@ -28,7 +28,7 @@ class ToastManager {
       return AppLocalizations.of(context).requiredPassword;
     } else if (exception is CanNotFoundOIDCLinks) {
       return AppLocalizations.of(context).ssoNotAvailable;
-    }  else if (exception is CanNotFoundToken) {
+    }  else if (exception is CanNotFindToken) {
       return AppLocalizations.of(context).canNotGetToken;
     } else if (exception is ConnectionTimeout || exception is BadGateway || exception is SocketError) {
       return AppLocalizations.of(context).wrongUrlMessage;
@@ -40,6 +40,8 @@ class ToastManager {
       return '[${exception.code ?? ''}] ${exception.message}';
     } else if (exception is NotFoundSessionException) {
       return AppLocalizations.of(context).notFoundSession;
+    } else if (exception is NoNetworkError) {
+      return AppLocalizations.of(context).youAreOffline;
     } else {
       return null;
     }

@@ -4199,4 +4199,18 @@ class AppLocalizations {
       'You have not selected any action for the rule.',
       name: 'youHaveNotSelectedAnyActionForRule');
   }
+
+  String get tryAgain {
+    return Intl.message(
+      'Try again',
+      name: 'tryAgain',
+    );
+  }
+
+  String get youAreOffline {
+    return Intl.message(
+      'You are offline. It looks like you are not connected.',
+      name: 'youAreOffline',
+    );
+  }
 }
