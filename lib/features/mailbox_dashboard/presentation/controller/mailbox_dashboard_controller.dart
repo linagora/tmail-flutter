@@ -1579,10 +1579,6 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     _getAllIdentities();
   }
 
-  void addFilterToSuggestionForm(QuickSearchFilter filter) {
-    searchController.addFilterToSuggestionForm(filter);
-  }
-
   Future<List<PresentationEmail>> quickSearchEmails(String query) async {
     if (sessionCurrent != null && accountId.value != null) {
       return searchController.quickSearchEmails(
@@ -1733,7 +1729,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
           : const None()
       );
 
-      dispatchAction(StartSearchEmailAction(filter: QuickSearchFilter.folder));
+      dispatchAction(StartSearchEmailAction());
     }
   }
 
@@ -1775,6 +1771,75 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     searchController.sortOrderFiltered.value = sortOrder;
     searchController.updateFilterEmail(sortOrderOption: sortOrder.getSortOrder());
     dispatchAction(StartSearchEmailAction());
+  }
+
+  void _deleteDateTimeSearchFilter() {
+    dispatchAction(ClearDateRangeToAdvancedSearch(EmailReceiveTimeType.allTime));
+    searchController.updateFilterEmail(
+      emailReceiveTimeType: EmailReceiveTimeType.allTime,
+      startDateOption: const None(),
+      endDateOption: const None(),
+      beforeOption: const None()
+    );
+    dispatchAction(StartSearchEmailAction());
+  }
+
+  void _deleteSortOrderSearchFilter() {
+    searchController.sortOrderFiltered.value = EmailSortOrderType.mostRecent;
+    searchController.updateFilterEmail(
+      sortOrderOption: EmailSortOrderType.mostRecent.getSortOrder());
+    dispatchAction(StartSearchEmailAction());
+  }
+
+  void _deleteFromSearchFilter() {
+    searchController.updateFilterEmail(fromOption: const None());
+    dispatchAction(StartSearchEmailAction(filter: QuickSearchFilter.from));
+  }
+
+  void _deleteToSearchFilter() {
+    searchController.updateFilterEmail(toOption: const None());
+    dispatchAction(StartSearchEmailAction(filter: QuickSearchFilter.to));
+  }
+
+  void _deleteHasAttachmentSearchFilter() {
+    searchController.updateFilterEmail(hasAttachment: false);
+    dispatchAction(StartSearchEmailAction());
+  }
+
+  void _deleteFolderSearchFilter() {
+    searchController.updateFilterEmail(
+      mailboxOption: const None(),
+      beforeOption: const None(),
+      positionOption: searchController.sortOrderFiltered.value.isScrollByPosition()
+        ? const Some(0)
+        : const None()
+    );
+    dispatchAction(StartSearchEmailAction());
+  }
+
+  void onDeleteSearchFilterAction(QuickSearchFilter searchFilter) {
+    switch(searchFilter) {
+      case QuickSearchFilter.dateTime:
+        _deleteDateTimeSearchFilter();
+        break;
+      case QuickSearchFilter.sortBy:
+        _deleteSortOrderSearchFilter();
+        break;
+      case QuickSearchFilter.from:
+        _deleteFromSearchFilter();
+        break;
+      case QuickSearchFilter.hasAttachment:
+        _deleteHasAttachmentSearchFilter();
+        break;
+      case QuickSearchFilter.to:
+        _deleteToSearchFilter();
+        break;
+      case QuickSearchFilter.folder:
+        _deleteFolderSearchFilter();
+        break;
+      default:
+        break;
+    }
   }
 
   bool isEmptyTrashBannerEnabledOnWeb(

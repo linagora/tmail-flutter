@@ -18,7 +18,10 @@ typedef ItemBuilder<T> = Widget Function(BuildContext context, T itemData);
 typedef SuggestionSelectionCallback<T> = void Function(T suggestion);
 typedef RecentSelectionCallback<R> = void Function(R recent);
 typedef ErrorBuilder = Widget Function(BuildContext context, Object? error);
-typedef ButtonActionBuilder = Widget Function(BuildContext context, dynamic action);
+typedef ButtonActionBuilder = Widget Function(
+  BuildContext context,
+  dynamic action,
+  SuggestionsListState suggestionsListState);
 typedef ButtonActionCallback = void Function(dynamic action);
 
 typedef AnimationTransitionBuilder = Widget Function(
@@ -315,8 +318,8 @@ class TypeAheadFieldQuickSearch<T, P, R> extends StatefulWidget {
 
   final QuickSearchSuggestionsBoxDecoration suggestionsBoxDecoration;
 
-  /// Used to control the `_SuggestionsBox`. Allows manual control to
-  /// open, close, toggle, or resize the `_SuggestionsBox`.
+  /// Used to control the `SuggestionsBox`. Allows manual control to
+  /// open, close, toggle, or resize the `SuggestionsBox`.
   final QuickSearchSuggestionsBoxController? suggestionsBoxController;
 
   /// The duration to wait after the user stops typing before calling
@@ -590,7 +593,7 @@ class _TypeAheadFieldQuickSearchState<T, P, R> extends State<TypeAheadFieldQuick
     with WidgetsBindingObserver {
   FocusNode? _focusNode;
   TextEditingController? _textEditingController;
-  _SuggestionsBox? _suggestionsBox;
+  SuggestionsBox? _suggestionsBox;
   late TextDirection _textDirection;
 
   TextEditingController? get _effectiveController =>
@@ -648,7 +651,7 @@ class _TypeAheadFieldQuickSearchState<T, P, R> extends State<TypeAheadFieldQuick
       _focusNode = FocusNode();
     }
 
-    _suggestionsBox = _SuggestionsBox(
+    _suggestionsBox = SuggestionsBox(
         context,
         widget.direction,
         widget.autoFlipDirection,
@@ -721,7 +724,7 @@ class _TypeAheadFieldQuickSearchState<T, P, R> extends State<TypeAheadFieldQuick
 
   void _initOverlayEntry() {
     _suggestionsBox!._overlayEntry = OverlayEntry(builder: (context) {
-      final suggestionsList = _SuggestionsList<T, P, R>(
+      final suggestionsList = SuggestionsList<T, P, R>(
         suggestionsBox: _suggestionsBox,
         decoration: widget.suggestionsBoxDecoration,
         debounceDuration: widget.debounceDuration,
@@ -905,8 +908,8 @@ class _TypeAheadFieldQuickSearchState<T, P, R> extends State<TypeAheadFieldQuick
   }
 }
 
-class _SuggestionsList<T, P, R> extends StatefulWidget {
-  final _SuggestionsBox? suggestionsBox;
+class SuggestionsList<T, P, R> extends StatefulWidget {
+  final SuggestionsBox? suggestionsBox;
   final TextEditingController? controller;
   final bool getImmediateSuggestions;
   final SuggestionSelectionCallback<T>? onSuggestionSelected;
@@ -942,7 +945,8 @@ class _SuggestionsList<T, P, R> extends StatefulWidget {
   final SuggestionsCallback<P>? contactSuggestionCallback;
   final SuggestionSelectionCallback<P>? onContactSuggestionSelected;
 
-  const _SuggestionsList({
+  const SuggestionsList({
+    super.key,
     required this.suggestionsBox,
     this.controller,
     this.getImmediateSuggestions = false,
@@ -981,10 +985,10 @@ class _SuggestionsList<T, P, R> extends StatefulWidget {
   });
 
   @override
-  _SuggestionsListState<T, P, R> createState() => _SuggestionsListState<T, P, R>();
+  SuggestionsListState<T, P, R> createState() => SuggestionsListState<T, P, R>();
 }
 
-class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
+class SuggestionsListState<T, P, R> extends State<SuggestionsList<T, P, R>>
     with SingleTickerProviderStateMixin {
   Iterable<T>? _suggestions;
   Iterable<R>? _recentItems;
@@ -998,7 +1002,7 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
   late final ScrollController _scrollController =
       widget.scrollController ?? ScrollController();
 
-  _SuggestionsListState() {
+  SuggestionsListState() {
     _controllerListener = () async {
       // If we came here because of a change in selected text, not because of
       // actual change in text
@@ -1015,7 +1019,7 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
               recentItems = await widget.fetchRecentActionCallback!(widget.controller!.text);
             }
           } catch (e) {
-            logError('_SuggestionsListState::_SuggestionsListState(): $e');
+            logError('SuggestionsListState::SuggestionsListState(): $e');
           }
 
           setState(() {
@@ -1046,7 +1050,7 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
   }
 
   @override
-  void didUpdateWidget(_SuggestionsList<T, P, R> oldWidget) {
+  void didUpdateWidget(SuggestionsList<T, P, R> oldWidget) {
     super.didUpdateWidget(oldWidget);
     widget.controller!.addListener(_controllerListener);
     _getSuggestions();
@@ -1215,7 +1219,7 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
         if (listActionWidget != null) listActionWidget,
         if (loadingWidget != null) loadingWidget,
         if (widget.buttonShowAllResult != null && widget.controller?.text.isNotEmpty == true)
-          widget.buttonShowAllResult!(context, widget.controller?.text),
+          widget.buttonShowAllResult!(context, widget.controller?.text, this),
         if (listItemContactWidget.isNotEmpty)
           ... listItemContactWidget,
         if (listItemContactWidget.isNotEmpty && listItemSuggestionWidget.isNotEmpty)
@@ -1253,7 +1257,7 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
         if (listActionWidget != null) listActionWidget,
         if (loadingWidget != null) loadingWidget,
         if (widget.buttonShowAllResult != null && widget.controller?.text.isNotEmpty == true)
-          widget.buttonShowAllResult!(context, widget.controller?.text),
+          widget.buttonShowAllResult!(context, widget.controller?.text, this),
         if (_recentItems?.isNotEmpty == true && widget.itemRecentBuilder != null && widget.titleHeaderRecent != null)
           widget.titleHeaderRecent!,
         if (listItemRecent.isNotEmpty)
@@ -1294,14 +1298,14 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
                 widget.buttonActionCallback?.call(action);
                 invalidateSuggestions();
               },
-              child: widget.actionButtonBuilder!(context, action),
+              child: widget.actionButtonBuilder!(context, action, this),
             ),
           ),
         );
       } else {
         return Padding(
           padding: const EdgeInsetsDirectional.only(end: 8, bottom: 8),
-          child: widget.actionButtonBuilder!(context, action)
+          child: widget.actionButtonBuilder!(context, action, this)
         );
       }
     })
@@ -1732,7 +1736,7 @@ class QuickSearchTextFieldConfiguration {
   }
 }
 
-class _SuggestionsBox {
+class SuggestionsBox {
   static const int waitMetricsTimeoutMillis = 1000;
   static const double minOverlaySpace = 64.0;
 
@@ -1751,7 +1755,7 @@ class _SuggestionsBox {
   double textBoxHeight = 100.0;
   late double directionUpOffset;
 
-  _SuggestionsBox(
+  SuggestionsBox(
       this.context,
       this.direction,
       this.autoFlipDirection,
@@ -1950,7 +1954,7 @@ class _SuggestionsBox {
 /// Supply an instance of this class to the [TypeAhead.suggestionsBoxController]
 /// property to manually control the suggestions box
 class QuickSearchSuggestionsBoxController {
-  _SuggestionsBox? _suggestionsBox;
+  SuggestionsBox? _suggestionsBox;
   FocusNode? _effectiveFocusNode;
 
   /// Opens the suggestions box
