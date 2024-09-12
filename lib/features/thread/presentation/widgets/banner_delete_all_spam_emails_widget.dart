@@ -1,9 +1,11 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/banner_delete_all_spam_emails_styles.dart';
+import 'package:tmail_ui_user/features/thread/presentation/styles/banner_empty_trash_styles.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class BannerDeleteAllSpamEmailsWidget extends StatelessWidget {
@@ -15,6 +17,8 @@ class BannerDeleteAllSpamEmailsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imagePaths = Get.find<ImagePaths>();
+    final responsiveUtils = Get.find<ResponsiveUtils>();
+
     return Container(
       decoration: const ShapeDecoration(
         color: BannerDeleteAllSpamEmailsStyles.backgroundColor,
@@ -26,6 +30,7 @@ class BannerDeleteAllSpamEmailsWidget extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(BannerDeleteAllSpamEmailsStyles.borderRadius)),
         ),
       ),
+      margin: BannerEmptyTrashStyles.getBannerMargin(context, responsiveUtils),
       child: Material(
         color: Colors.transparent,
         child: InkWell(

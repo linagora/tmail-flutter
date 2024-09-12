@@ -8,28 +8,23 @@ import 'package:tmail_ui_user/features/quotas/presentation/styles/quotas_banner_
 class QuotasBannerWidget extends StatelessWidget {
 
   final QuotasController _quotasController = Get.find<QuotasController>();
-  final EdgeInsetsGeometry? margin;
-  
-  QuotasBannerWidget({
-    Key? key, 
-    this.margin, 
-  }) : super(key: key);
+
+  QuotasBannerWidget({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      if (_quotasController.octetsQuota.value != null && _quotasController.octetsQuota.value!.allowedDisplayToQuotaBanner) {
-        final octetQuota = _quotasController.octetsQuota.value!;
+      final octetQuota = _quotasController.octetsQuota.value;
+      if (octetQuota != null && octetQuota.allowedDisplayToQuotaBanner) {
         return Container(
           decoration: BoxDecoration(
             color: octetQuota.getQuotaBannerBackgroundColor(),
             borderRadius: const BorderRadius.all(Radius.circular(QuotasBannerStyles.borderRadius)),
           ),
-          margin: margin,
-          padding: const EdgeInsetsDirectional.symmetric(
-            horizontal: QuotasBannerStyles.horizontalPadding,
-            vertical: QuotasBannerStyles.verticalPadding,
-          ),
+          margin: QuotasBannerStyles.getBannerMargin(
+            context,
+            _quotasController.responsiveUtils),
+          padding: QuotasBannerStyles.bannerPadding,
           child: Row(
             children: [
               SvgPicture.asset(

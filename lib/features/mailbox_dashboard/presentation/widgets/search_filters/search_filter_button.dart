@@ -5,6 +5,7 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
@@ -17,6 +18,8 @@ typedef OnSelectSearchFilterAction = Function(
 
 class SearchFilterButton extends StatelessWidget {
 
+  static const int _titleCharactersMaximum = 20;
+
   final QuickSearchFilter searchFilter;
   final bool isSelected;
   final ImagePaths imagePaths;
@@ -25,7 +28,9 @@ class SearchFilterButton extends StatelessWidget {
   final DateTime? startDate;
   final DateTime? endDate;
   final Set<String>? listAddressOfFrom;
+  final Set<String>? listAddressOfTo;
   final UserName? userName;
+  final PresentationMailbox? mailbox;
   final Color? backgroundColor;
   final OnSelectSearchFilterAction? onSelectSearchFilterAction;
 
@@ -39,18 +44,33 @@ class SearchFilterButton extends StatelessWidget {
     this.startDate,
     this.endDate,
     this.listAddressOfFrom,
+    this.listAddressOfTo,
     this.userName,
+    this.mailbox,
     this.backgroundColor,
     this.onSelectSearchFilterAction,
   });
 
   @override
   Widget build(BuildContext context) {
+    final filterTitle = searchFilter.getTitle(
+      context,
+      receiveTimeType: receiveTimeType,
+      startDate: startDate,
+      endDate: startDate,
+      sortOrderType: sortOrderType,
+      listAddressOfFrom: listAddressOfFrom,
+      userName: userName,
+      mailbox: mailbox,
+      listAddressOfTo: listAddressOfTo,
+    );
+
     final childItem = Container(
       decoration: BoxDecoration(
         borderRadius: SearchFilterButtonStyle.borderRadius,
         color: backgroundColor ?? searchFilter.getBackgroundColor(isFilterSelected: isSelected)),
       padding: SearchFilterButtonStyle.buttonPadding,
+      height: SearchFilterButtonStyle.buttonSize,
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -62,14 +82,9 @@ class SearchFilterButton extends StatelessWidget {
             fit: BoxFit.fill),
           const SizedBox(width: SearchFilterButtonStyle.spaceSize),
           Text(
-            searchFilter.getTitle(
-              context,
-              receiveTimeType: receiveTimeType,
-              startDate: startDate,
-              endDate: startDate,
-              sortOrderType: sortOrderType,
-              listAddressOfFrom: listAddressOfFrom,
-              userName: userName),
+            filterTitle.length > _titleCharactersMaximum
+              ? '${filterTitle.substring(0, _titleCharactersMaximum)}...'
+              : filterTitle,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: SearchFilterButtonStyle.titleStyle,

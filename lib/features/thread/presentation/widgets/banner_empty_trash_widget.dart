@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -15,6 +16,8 @@ class BannerEmptyTrashWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imagePaths = Get.find<ImagePaths>();
+    final responsiveUtils = Get.find<ResponsiveUtils>();
+
     return Container(
       decoration: const ShapeDecoration(
         color: BannerEmptyTrashStyles.backgroundColor,
@@ -26,6 +29,7 @@ class BannerEmptyTrashWidget extends StatelessWidget {
           borderRadius: BorderRadius.all(Radius.circular(BannerEmptyTrashStyles.borderRadius)),
         ),
       ),
+      margin: BannerEmptyTrashStyles.getBannerMargin(context, responsiveUtils),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
