@@ -118,7 +118,7 @@ class AdvancedFilterController extends BaseController {
     searchController.updateFilterEmail(sortOrderOption: searchController.sortOrderFiltered.value.getSortOrder());
 
     searchController.updateFilterEmail(
-      mailbox: _destinationMailboxSelected,
+      mailboxOption: optionOf(_destinationMailboxSelected),
       subjectOption: optionOf(subjectFilterInputController.text),
       emailReceiveTimeType: dateFilterSelectedFormAdvancedSearch.value,
       hasAttachment: hasAttachment.value,
@@ -397,8 +397,17 @@ class AdvancedFilterController extends BaseController {
           );
         } else if (action is ClearDateRangeToAdvancedSearch) {
           _updateDateRangeTime(action.receiveTime);
-        } else if (action is StartSearchEmailAction && action.filter == QuickSearchFilter.from) {
-          _updateFromField();
+        } else if (action is StartSearchEmailAction) {
+          switch(action.filter) {
+            case QuickSearchFilter.from:
+              _updateFromField();
+              break;
+            case QuickSearchFilter.to:
+              _updateToField();
+              break;
+            default:
+              break;
+          }
         } else if (action is SearchEmailByFromFieldsAction) {
           searchController.clearSearchFilter();
           _resetAllToOriginalValue();
@@ -437,8 +446,13 @@ class AdvancedFilterController extends BaseController {
   }
 
   void _updateFromField() {
-    final listEmailAddress = searchEmailFilter.from.map((address) => EmailAddress(null, address)).toList();
-    listFromEmailAddress = List.from(listEmailAddress);
+    listFromEmailAddress = List.from(
+      searchEmailFilter.from.map((address) => EmailAddress(null, address)));
+  }
+
+  void _updateToField() {
+    listToEmailAddress= List.from(
+      searchEmailFilter.to.map((address) => EmailAddress(null, address)));
   }
 
   void onSearchAction(BuildContext context) {

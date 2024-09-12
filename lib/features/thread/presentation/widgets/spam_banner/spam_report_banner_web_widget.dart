@@ -21,20 +21,12 @@ class SpamReportBannerWebWidget extends StatelessWidget {
     return Obx(() {
       if (spamReportController.spamReportState.value == SpamReportState.disabled
           || spamReportController.presentationSpamMailbox.value == null) {
-        return const SizedBox(
-          height: 8,
-        );
+        return const SizedBox.shrink();
       }
       return Container(
-        margin: const EdgeInsetsDirectional.only(
-          end: SpamReportBannerWebStyles.horizontalMargin,
-          top: SpamReportBannerWebStyles.verticalMargin,
-        ),
+        margin: SpamReportBannerWebStyles.bannerMargin,
         width: double.infinity,
-        padding: const EdgeInsetsDirectional.symmetric(
-          horizontal: SpamReportBannerWebStyles.horizontalPadding,
-          vertical: SpamReportBannerWebStyles.verticalPadding,
-        ),
+        padding: SpamReportBannerWebStyles.bannerPadding,
         decoration: ShapeDecoration(
           color: SpamReportBannerWebStyles.backgroundColor,
           shape: const RoundedRectangleBorder(

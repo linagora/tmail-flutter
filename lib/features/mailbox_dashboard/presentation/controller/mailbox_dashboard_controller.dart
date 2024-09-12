@@ -240,6 +240,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   PresentationMailbox? outboxMailbox;
   ComposerArguments? composerArguments;
   List<Identity>? _identities;
+  ScrollController? listSearchFilterScrollController;
 
   late StreamSubscription _emailAddressStreamSubscription;
   late StreamSubscription _emailContentStreamSubscription;
@@ -297,6 +298,9 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
 
   @override
   void onReady() {
+    if (PlatformInfo.isWeb) {
+      listSearchFilterScrollController = ScrollController();
+    }
     _registerPendingEmailAddress();
     _registerPendingEmailContents();
     _registerPendingFileInfo();
@@ -1679,6 +1683,60 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     }
   }
 
+  Future<void> selectToSearchFilter() async {
+    if (accountId.value == null || sessionCurrent == null) return;
+
+    final contactArgument = ContactArguments(
+      accountId.value!,
+      sessionCurrent!,
+      searchController.searchEmailFilter.value.to);
+
+    final newContact = await DialogRouter.pushGeneralDialog(
+      routeName: AppRoutes.contact,
+      arguments: contactArgument);
+
+    if (newContact is EmailAddress) {
+      searchController.updateFilterEmail(toOption: Some({newContact.emailAddress}));
+      dispatchAction(StartSearchEmailAction(filter: QuickSearchFilter.to));
+    }
+  }
+
+  Future<void> selectFolderSearchFilter() async {
+    if (accountId.value == null || sessionCurrent == null) return;
+
+    final mailboxIdSelected = searchController.mailboxFiltered?.id;
+
+    final destinationArgument = DestinationPickerArguments(
+      accountId.value!,
+      MailboxActions.select,
+      sessionCurrent!,
+      mailboxIdSelected: mailboxIdSelected);
+
+    final destinationMailbox = PlatformInfo.isWeb
+      ? await DialogRouter.pushGeneralDialog(
+          routeName: AppRoutes.destinationPicker,
+          arguments: destinationArgument)
+      : await push(
+          AppRoutes.destinationPicker,
+          arguments: destinationArgument);
+
+    if (destinationMailbox is! PresentationMailbox) return;
+
+    if (destinationMailbox != PresentationMailbox.unifiedMailbox &&
+        mailboxIdSelected != destinationMailbox.id) {
+
+      searchController.updateFilterEmail(
+        mailboxOption: Some(destinationMailbox),
+        beforeOption: const None(),
+        positionOption: searchController.sortOrderFiltered.value.isScrollByPosition()
+          ? const Some(0)
+          : const None()
+      );
+
+      dispatchAction(StartSearchEmailAction(filter: QuickSearchFilter.folder));
+    }
+  }
+
   void selectReceiveTimeQuickSearchFilter(BuildContext context, EmailReceiveTimeType receiveTime) {
     log('MailboxDashBoardController::selectReceiveTimeQuickSearchFilter():receiveTime: $receiveTime');
     popBack();
@@ -2694,6 +2752,9 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
 
   @override
   void onClose() {
+    if (PlatformInfo.isWeb) {
+      listSearchFilterScrollController?.dispose();
+    }
     _emailReceiveManager.closeEmailReceiveManagerStream();
     if (PlatformInfo.isIOS) {
       _iosNotificationManager?.dispose();
