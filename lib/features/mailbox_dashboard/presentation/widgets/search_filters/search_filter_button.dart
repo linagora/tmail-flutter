@@ -15,6 +15,7 @@ typedef OnSelectSearchFilterAction = Function(
   BuildContext context,
   QuickSearchFilter searchFilter,
   {RelativeRect? buttonPosition});
+typedef OnDeleteSearchFilterAction = Function(QuickSearchFilter searchFilter);
 
 class SearchFilterButton extends StatelessWidget {
 
@@ -32,7 +33,9 @@ class SearchFilterButton extends StatelessWidget {
   final UserName? userName;
   final PresentationMailbox? mailbox;
   final Color? backgroundColor;
+  final EdgeInsetsGeometry? buttonPadding;
   final OnSelectSearchFilterAction? onSelectSearchFilterAction;
+  final OnDeleteSearchFilterAction? onDeleteSearchFilterAction;
 
   const SearchFilterButton({
     super.key,
@@ -48,7 +51,9 @@ class SearchFilterButton extends StatelessWidget {
     this.userName,
     this.mailbox,
     this.backgroundColor,
+    this.buttonPadding,
     this.onSelectSearchFilterAction,
+    this.onDeleteSearchFilterAction,
   });
 
   @override
@@ -69,8 +74,7 @@ class SearchFilterButton extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: SearchFilterButtonStyle.borderRadius,
         color: backgroundColor ?? searchFilter.getBackgroundColor(isFilterSelected: isSelected)),
-      padding: SearchFilterButtonStyle.buttonPadding,
-      height: SearchFilterButtonStyle.buttonSize,
+      padding: buttonPadding ?? SearchFilterButtonStyle.getButtonPadding(isSelected),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -104,9 +108,9 @@ class SearchFilterButton extends StatelessWidget {
               icon: imagePaths.icDeleteSelection,
               iconSize: SearchFilterButtonStyle.deleteIconSize,
               iconColor: AppColor.colorTextBody,
-              padding: EdgeInsets.zero,
+              padding: const EdgeInsets.all(8),
               backgroundColor: Colors.transparent,
-              margin: SearchFilterButtonStyle.elementPadding,
+              onTapActionCallback: () => onDeleteSearchFilterAction?.call(searchFilter),
             ),
         ]
       )

@@ -446,13 +446,21 @@ class AdvancedFilterController extends BaseController {
   }
 
   void _updateFromField() {
-    listFromEmailAddress = List.from(
-      searchEmailFilter.from.map((address) => EmailAddress(null, address)));
+    if (searchEmailFilter.from.isNotEmpty) {
+      listFromEmailAddress = List.from(
+        searchEmailFilter.from.map((address) => EmailAddress(null, address)));
+    } else {
+      listFromEmailAddress.clear();
+    }
   }
 
   void _updateToField() {
-    listToEmailAddress= List.from(
-      searchEmailFilter.to.map((address) => EmailAddress(null, address)));
+    if (searchEmailFilter.to.isNotEmpty) {
+      listToEmailAddress = List.from(
+        searchEmailFilter.to.map((address) => EmailAddress(null, address)));
+    } else {
+      listToEmailAddress.clear();
+    }
   }
 
   void onSearchAction(BuildContext context) {

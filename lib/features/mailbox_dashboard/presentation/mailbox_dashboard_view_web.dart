@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dash
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/mailbox_dashboard_view_web_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/mark_mailbox_as_read_loading_banner.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
@@ -460,15 +461,15 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       controller: controller.listSearchFilterScrollController!,
                       children: [
                         _buildQuickSearchFilterButton(context, QuickSearchFilter.folder),
-                        const SizedBox(width: 8),
+                        MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
                         _buildQuickSearchFilterButton(context, QuickSearchFilter.from),
-                        const SizedBox(width: 8),
+                        MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
                         _buildQuickSearchFilterButton(context, QuickSearchFilter.to),
-                        const SizedBox(width: 8),
+                        MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
                         _buildQuickSearchFilterButton(context, QuickSearchFilter.dateTime),
-                        const SizedBox(width: 8),
+                        MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
                         _buildQuickSearchFilterButton(context, QuickSearchFilter.hasAttachment),
-                        const SizedBox(width: 8),
+                        MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
                       ],
                     ),
                   ),
@@ -484,8 +485,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   }
 
   Widget _buildQuickSearchFilterButton(
-      BuildContext context,
-      QuickSearchFilter searchFilter
+    BuildContext context,
+    QuickSearchFilter searchFilter,
   ) {
     return Obx(() {
       final searchEmailFilter = controller.searchController.searchEmailFilter.value;
@@ -503,6 +504,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         searchEmailFilter,
         sortOrderType);
 
+      EdgeInsetsGeometry? buttonPadding;
+      if (searchFilter != QuickSearchFilter.sortBy) {
+        buttonPadding = MailboxDashboardViewWebStyle.getSearchFilterButtonPadding(isSelected);
+      }
+
       return SearchFilterButton(
         key: Key('${searchFilter.name}_search_filter_button'),
         searchFilter: searchFilter,
@@ -516,12 +522,14 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         listAddressOfTo: listAddressOfTo,
         userName: userName,
         mailbox: mailbox,
+        buttonPadding: buttonPadding,
         onSelectSearchFilterAction: _onSelectSearchFilterAction,
+        onDeleteSearchFilterAction: controller.onDeleteSearchFilterAction,
       );
     });
   }
 
-  void _onSelectSearchFilterAction(
+  Future<void> _onSelectSearchFilterAction(
     BuildContext context,
     QuickSearchFilter searchFilter,
     {RelativeRect? buttonPosition}
