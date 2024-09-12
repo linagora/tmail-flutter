@@ -70,16 +70,19 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
               QuickSearchFilter.last7Days,
               QuickSearchFilter.fromMe,
             ],
-            actionButtonBuilder: (context, filterAction) {
+            actionButtonBuilder: (context, filterAction, suggestionsListState) {
               if (filterAction is QuickSearchFilter) {
-                return buildListButtonForQuickSearchForm(context, filterAction);
+                return buildListButtonForQuickSearchForm(
+                  context,
+                  filterAction,
+                  suggestionsListState);
               } else {
                 return const SizedBox.shrink();
               }
             },
             buttonActionCallback: (filterAction) {
               if (filterAction is QuickSearchFilter) {
-                _dashBoardController.addFilterToSuggestionForm(filterAction);
+                _searchController.addQuickSearchFilterToSuggestionSearchView(filterAction);
               }
             },
             listActionPadding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 6),
@@ -94,7 +97,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
                 )
               )
             ),
-            buttonShowAllResult: (context, keyword) {
+            buttonShowAllResult: (context, keyword, _) {
               if (keyword is String) {
                 return _buildShowAllResultButton(context, keyword);
               } else {
@@ -221,7 +224,11 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     );
   }
 
-  Widget buildListButtonForQuickSearchForm(BuildContext context, QuickSearchFilter searchFilter) {
+  Widget buildListButtonForQuickSearchForm(
+    BuildContext context,
+    QuickSearchFilter searchFilter,
+    SuggestionsListState suggestionsListState
+  ) {
     return Obx(() {
       final isSelected = searchFilter.isApplied(_searchController.listFilterOnSuggestionForm);
 
@@ -230,6 +237,10 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         imagePaths: _imagePaths,
         isSelected: isSelected,
         backgroundColor: searchFilter.getSuggestionBackgroundColor(isFilterSelected: isSelected),
+        onDeleteSearchFilterAction: (searchFilter) {
+          _searchController.deleteQuickSearchFilterFromSuggestionSearchView(searchFilter);
+          suggestionsListState.invalidateSuggestions();
+        },
       );
     });
   }
