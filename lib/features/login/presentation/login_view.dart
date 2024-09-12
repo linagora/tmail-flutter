@@ -88,6 +88,7 @@ class LoginView extends BaseLoginView {
             Obx(() {
               switch (controller.loginFormType.value) {
                 case LoginFormType.dnsLookupForm:
+                case LoginFormType.retry:
                   return DNSLookupInputForm(
                     textEditingController: controller.usernameInputController,
                     onTextChange: controller.onUsernameChange,
@@ -174,6 +175,9 @@ class LoginView extends BaseLoginView {
           style: const TextStyle(fontSize: 16, color: Colors.white)
         ),
         onPressed: () {
+          if (controller.loginFormType.value == LoginFormType.retry) {
+            controller.loginFormType.value = LoginFormType.dnsLookupForm;
+          }
           if (controller.loginFormType.value == LoginFormType.dnsLookupForm) {
             controller.invokeDNSLookupToGetJmapUrl();
           } else {
@@ -206,6 +210,7 @@ class LoginView extends BaseLoginView {
         switch (controller.loginFormType.value) {
           case LoginFormType.dnsLookupForm:
           case LoginFormType.baseUrlForm:
+          case LoginFormType.retry:
             return _buildNextButtonInContext(context);
           case LoginFormType.passwordForm:
           case LoginFormType.credentialForm:

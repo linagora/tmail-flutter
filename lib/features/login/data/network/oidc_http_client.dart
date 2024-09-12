@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.d
 import 'package:tmail_ui_user/features/login/data/network/endpoint.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
+import 'package:dio/dio.dart' show DioError;
 
 class OIDCHttpClient {
 
@@ -21,24 +22,29 @@ class OIDCHttpClient {
   OIDCHttpClient(this._dioClient);
 
   Future<OIDCResponse> checkOIDCIsAvailable(OIDCRequest oidcRequest) async {
-    final result = await _dioClient.get(
+    try {
+      final result = await _dioClient.get(
         Endpoint.webFinger
-            .generateOIDCPath(Uri.parse(oidcRequest.baseUrl))
-            .withQueryParameters([
-              StringQueryParameter('resource', oidcRequest.resourceUrl),
-              StringQueryParameter('rel', OIDCRequest.relUrl),
-            ])
-            .generateEndpointPath()
-    );
-    log('OIDCHttpClient::checkOIDCIsAvailable(): RESULT: $result');
-    if (result != null) {
+          .generateOIDCPath(Uri.parse(oidcRequest.baseUrl))
+          .withQueryParameters([
+            StringQueryParameter('resource', oidcRequest.resourceUrl),
+            StringQueryParameter('rel', OIDCRequest.relUrl),
+          ])
+          .generateEndpointPath()
+      );
+      log('OIDCHttpClient::checkOIDCIsAvailable(): RESULT: $result');
       if (result is Map<String, dynamic>) {
         return OIDCResponse.fromJson(result);
       } else {
         return OIDCResponse.fromJson(jsonDecode(result));
       }
-    } else {
-      throw CanNotFoundOIDCLinks();
+    } on DioError catch (exception) {
+      if (exception.response?.statusCode == 404) {
+        throw CanNotFoundOIDCLinks();
+      }
+      throw CanRetryOIDCException();
+    } catch (_) {
+      throw CanRetryOIDCException();
     }
   }
 

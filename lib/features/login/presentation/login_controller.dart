@@ -125,8 +125,9 @@ class LoginController extends ReloadableController {
     log('LoginController::handleFailureViewState(): $failure');
     if (failure is GetAuthenticationInfoFailure) {
       getAuthenticatedAccountAction();
-    } else if (failure is CheckOIDCIsAvailableFailure ||
-        failure is GetStoredOidcConfigurationFailure ||
+    } else if (failure is CheckOIDCIsAvailableFailure) {
+      _handleCheckOIDCIsAvailableFailure(failure);
+    } else if (failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCIsAvailableFailure ||
         failure is GetOIDCConfigurationFailure
     ) {
@@ -174,8 +175,9 @@ class LoginController extends ReloadableController {
   @override
   void handleUrgentException({Failure? failure, Exception? exception}) {
     logError('LoginController::handleUrgentException:Exception: $exception | Failure: $failure');
-    if (failure is CheckOIDCIsAvailableFailure ||
-        failure is GetStoredOidcConfigurationFailure ||
+    if (failure is CheckOIDCIsAvailableFailure) {
+      _handleCheckOIDCIsAvailableFailure(failure);
+    } else if (failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCConfigurationFailure ||
         failure is GetOIDCIsAvailableFailure) {
       _handleCommonOIDCFailure();
@@ -195,6 +197,23 @@ class LoginController extends ReloadableController {
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
       arguments: session
     );
+  }
+
+  void _handleCheckOIDCIsAvailableFailure(CheckOIDCIsAvailableFailure failure) {
+    if (failure.exception is CanNotFoundOIDCLinks) {
+      _handleCommonOIDCFailure();
+    } else {
+      loginFormType.value = LoginFormType.retry;
+    }
+  }
+
+  void retryCheckOidc() {
+    if (PlatformInfo.isMobile) {
+      loginFormType.value = LoginFormType.dnsLookupForm;
+    } else {
+      loginFormType.value = LoginFormType.none;
+    }
+    _checkOIDCIsAvailable();
   }
 
   void _getAuthenticationInfo() {
@@ -452,6 +471,9 @@ class LoginController extends ReloadableController {
       _username = null;
     } else {
       _username = UserName(value);
+    }
+    if (loginFormType.value == LoginFormType.retry && PlatformInfo.isMobile) {
+      loginFormType.value = LoginFormType.dnsLookupForm;
     }
   }
 

@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/login/presentation/base_login_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/privacy_link_widget.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/login_message_widget.dart';
+import 'package:tmail_ui_user/features/login/presentation/widgets/try_again_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class LoginView extends BaseLoginView {
@@ -57,6 +58,11 @@ class LoginView extends BaseLoginView {
                 switch (controller.loginFormType.value) {
                   case LoginFormType.credentialForm:
                     return buildInputCredentialForm(context);
+                  case LoginFormType.retry:
+                    return TryAgainButton(
+                      onRetry: controller.retryCheckOidc,
+                      responsiveUtils: controller.responsiveUtils,
+                    );
                   default:
                     return const SizedBox.shrink();
                 }
@@ -199,6 +205,11 @@ class LoginView extends BaseLoginView {
                       switch (controller.loginFormType.value) {
                         case LoginFormType.credentialForm:
                           return buildInputCredentialForm(context);
+                        case LoginFormType.retry:
+                          return TryAgainButton(
+                            onRetry: controller.retryCheckOidc,
+                            responsiveUtils: controller.responsiveUtils,
+                          );
                         default:
                           return const SizedBox.shrink();
                       }
