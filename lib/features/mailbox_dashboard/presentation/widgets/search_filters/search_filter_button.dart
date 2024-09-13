@@ -1,6 +1,6 @@
-
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -24,6 +24,7 @@ class SearchFilterButton extends StatelessWidget {
   final QuickSearchFilter searchFilter;
   final bool isSelected;
   final ImagePaths imagePaths;
+  final ResponsiveUtils responsiveUtils;
   final EmailReceiveTimeType? receiveTimeType;
   final EmailSortOrderType? sortOrderType;
   final DateTime? startDate;
@@ -41,6 +42,7 @@ class SearchFilterButton extends StatelessWidget {
     super.key,
     required this.searchFilter,
     required this.imagePaths,
+    required this.responsiveUtils,
     this.isSelected = false,
     this.receiveTimeType,
     this.sortOrderType,
@@ -120,14 +122,14 @@ class SearchFilterButton extends StatelessWidget {
       return childItem;
     }
 
-    if (!searchFilter.isOnTapWithPositionActionSupported()) {
+    if (!searchFilter.isOnTapWithPositionActionSupported(context, responsiveUtils)) {
       return Material(
         type: MaterialType.transparency,
         child: InkWell(
-          onTap: !searchFilter.isOnTapWithPositionActionSupported()
+          onTap: !searchFilter.isOnTapWithPositionActionSupported(context, responsiveUtils)
             ? () => _onTapAction(context)
             : null,
-          onTapDown: searchFilter.isOnTapWithPositionActionSupported() && !isSelected
+          onTapDown: searchFilter.isOnTapWithPositionActionSupported(context, responsiveUtils) && !isSelected
             ? (details) => _onTapDownAction(context, details)
             : null,
           borderRadius: SearchFilterButtonStyle.borderRadius,
@@ -155,7 +157,7 @@ class SearchFilterButton extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: SearchFilterButtonStyle.borderRadius,
         color: backgroundColor ?? searchFilter.getBackgroundColor(
-          isFilterSelected: isSelected
+          isSelected: isSelected
         )
       ),
       padding: buttonPadding ?? SearchFilterButtonStyle.getButtonPadding(isSelected),
