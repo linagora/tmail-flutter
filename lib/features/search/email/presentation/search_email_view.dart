@@ -247,6 +247,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         mailbox: mailbox,
         backgroundColor: searchFilter.getMobileBackgroundColor(isSelected: isSelected),
         onSelectSearchFilterAction: _onSelectSearchFilterAction,
+        onDeleteSearchFilterAction: (searchFilter) =>
+          controller.onDeleteSearchFilterAction(context, searchFilter),
       );
     });
   }
