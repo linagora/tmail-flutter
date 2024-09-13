@@ -19,11 +19,13 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dash
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/filter_message_button_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/mailbox_dashboard_view_web_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/mark_mailbox_as_read_loading_banner.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/filter_message_button.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/search_filter_button.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/top_bar_thread_selection.dart';
@@ -258,16 +260,18 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     return Row(children: [
       Obx(() {
         if (controller.isRefreshingAllMailboxAndEmail) {
-          return const TMailContainerWidget(
+          return TMailContainerWidget(
             borderRadius: 10,
-            padding: EdgeInsetsDirectional.symmetric(vertical: 8, horizontal: 8.5),
-            child: CupertinoLoadingWidget(size: 16));
+            backgroundColor: AppColor.colorFilterMessageButton.withOpacity(0.6),
+            padding: const EdgeInsetsDirectional.symmetric(vertical: 8, horizontal: 8.5),
+            child: const CupertinoLoadingWidget(size: 16));
         } else {
           return TMailButtonWidget.fromIcon(
             key: const Key('refresh_all_mailbox_and_email_button'),
             icon: controller.imagePaths.icRefresh,
             borderRadius: 10,
             iconSize: 16,
+            backgroundColor: AppColor.colorFilterMessageButton.withOpacity(0.6),
             onTapActionCallback: controller.refreshMailboxAction,
           );
         }
@@ -287,6 +291,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   width: 16,
                   height: 16,
                   fit: BoxFit.fill,
+                  colorFilter: AppColor.colorFilterMessageIcon.asFilter(),
                 ),
                 label: Text(
                   AppLocalizations.of(context).selectAllMessagesOfThisPage,
@@ -294,7 +299,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   overflow: TextOverflow.ellipsis
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.colorButtonHeaderThread,
+                  backgroundColor: AppColor.colorFilterMessageButton.withOpacity(0.6),
                   shadowColor: Colors.transparent,
                   padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
                   shape: const RoundedRectangleBorder(
@@ -303,7 +308,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   elevation: 0.0,
                   foregroundColor: AppColor.colorTextButtonHeaderThread,
                   maximumSize: const Size.fromWidth(250),
-                  textStyle: const TextStyle(fontSize: 12),
+                  textStyle: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.normal,
+                    color: AppColor.colorFilterMessageTitle
+                  ),
                 ),
               ),
             ),
@@ -316,6 +325,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             key: const Key('mark_as_read_emails_button'),
             text: AppLocalizations.of(context).mark_all_as_read,
             icon: controller.imagePaths.icSelectAll,
+            iconColor: AppColor.colorFilterMessageIcon,
+            textStyle: const TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.normal,
+              color: AppColor.colorFilterMessageTitle),
             borderRadius: 10,
             margin: const EdgeInsetsDirectional.only(start: 16),
             iconSize: 16,
@@ -327,34 +341,20 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         }
       }),
       Obx(() {
+        final filterMessageCurrent = controller.filterMessageOption.value;
+
         if (controller.validateNoEmailsInTrashAndSpamFolder()) {
           return const SizedBox.shrink();
         } else {
-          return TMailButtonWidget(
-            key: const Key('filter_emails_button'),
-            text: controller.filterMessageOption.value == FilterMessageOption.all
-              ? AppLocalizations.of(context).filter_messages
-              : controller.filterMessageOption.value.getTitle(context),
-            icon: controller.filterMessageOption.value.getIconSelected(controller.imagePaths),
-            borderRadius: 10,
-            iconSize: 16,
-            margin: const EdgeInsetsDirectional.only(start: 16),
-            padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
-            backgroundColor: controller.filterMessageOption.value.getBackgroundColor(),
-            textStyle: controller.filterMessageOption.value.getTextStyle(),
-            trailingIcon: controller.imagePaths.icArrowDown,
-            onTapActionAtPositionCallback: (position) {
-              return controller.openPopupMenuAction(
-                context,
-                position,
-                popupMenuFilterEmailActionTile(
-                  context,
-                  controller.filterMessageOption.value,
-                  (option) => controller.dispatchAction(FilterMessageAction(context, option)),
-                  isSearchEmailRunning: controller.searchController.isSearchEmailRunning
-                )
-              );
-            },
+          return Padding(
+            padding: FilterMessageButtonStyle.buttonMargin,
+            child: FilterMessageButton(
+              filterMessageOption: filterMessageCurrent,
+              imagePaths: controller.imagePaths,
+              isSelected: filterMessageCurrent != FilterMessageOption.all,
+              onSelectFilterMessageOptionAction: _onSelectFilterMessageOptionAction,
+              onDeleteFilterMessageOptionAction: (_) => _onDeleteFilterMessageOptionAction(context),
+            ),
           );
         }
       }),
@@ -365,6 +365,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             icon: controller.imagePaths.icRecoverDeletedMessages,
             borderRadius: 10,
             iconSize: 16,
+            backgroundColor: AppColor.colorFilterMessageButton.withOpacity(0.6),
             margin: const EdgeInsetsDirectional.only(start: 16),
             onTapActionCallback: () => controller.gotoEmailRecovery(),
           );
@@ -381,8 +382,32 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           return const SizedBox.shrink();
         }
       })
-
     ]);
+  }
+
+  void _onSelectFilterMessageOptionAction(
+    BuildContext context,
+    FilterMessageOption filterMessageCurrent,
+    RelativeRect buttonPosition
+  ) {
+    controller.openPopupMenuAction(
+      context,
+      buttonPosition,
+      popupMenuFilterEmailActionTile(
+        context,
+        filterMessageCurrent,
+        (filterMessageSelected) {
+          controller.dispatchAction(FilterMessageAction(
+            context,
+            filterMessageSelected));
+        },
+        isSearchEmailRunning: controller.searchController.isSearchEmailRunning
+      )
+    );
+  }
+
+  void _onDeleteFilterMessageOptionAction(BuildContext context) {
+    controller.dispatchAction(FilterMessageAction(context, FilterMessageOption.all));
   }
 
   Widget _buildDownloadTaskStateWidget() {
