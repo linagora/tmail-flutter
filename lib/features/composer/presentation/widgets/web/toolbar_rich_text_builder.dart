@@ -119,7 +119,8 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
                     path: RichTextStyleType.textColor.getIcon(_imagePaths),
                     color: richTextWebController.selectedTextColor.value,
                     tooltip: RichTextStyleType.textColor.getTooltipButton(context),
-                    opacity: opacity
+                    opacity: opacity,
+                    excludeFromSemantics: true
                   ),
                   onTap: () => richTextWebController.applyRichTextStyle(
                     context,
@@ -220,6 +221,7 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
                       path: richTextWebController.selectedParagraph.value.getIcon(_imagePaths),
                       color: AppColor.colorDefaultRichTextButton,
                       opacity: opacity,
+                      excludeFromSemantics: true,
                       tooltip: RichTextStyleType.paragraph.getTooltipButton(context)
                     )
                   ),
@@ -243,6 +245,7 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
                       path: richTextWebController.selectedOrderList.value.getIcon(_imagePaths),
                       color: AppColor.colorDefaultRichTextButton,
                       opacity: opacity,
+                      excludeFromSemantics: true,
                       tooltip: RichTextStyleType.orderList.getTooltipButton(context)
                     )
                   ),

@@ -27,7 +27,9 @@ class ContactView extends GetWidget<ContactController> {
         backgroundColor: Colors.black38,
         body: PointerInterceptor(
           child: GestureDetector(
-            onTap: () => FocusScope.of(context).unfocus(),
+            onTap: PlatformInfo.isWeb
+              ? null
+              : FocusScope.of(context).unfocus,
             child: SafeArea(
               bottom: false,
               left: false,
@@ -41,131 +43,129 @@ class ContactView extends GetWidget<ContactController> {
                     borderRadius: _getRadiusContactView(context),
                     color: Colors.white
                   ),
-                    child: ClipRRect(
-                      borderRadius: _getRadiusContactView(context),
-                        child: SafeArea(child: Container(
-                          color: Colors.white,
-                          child: Column(children: [
-                            Container(
-                                height: 52,
-                                color: Colors.white,
-                                padding: ContactUtils.getPaddingAppBar(context, controller.responsiveUtils),
-                                child: AppBarContactWidget(
-                                    onCloseContactView: () => controller.closeContactView(context))
-                            ),
-                            const Divider(color: AppColor.colorDividerComposer, height: 1),
-                            SearchAppBarWidget(
-                              imagePaths: controller.imagePaths,
-                              searchQuery: controller.searchQuery.value,
-                              searchFocusNode: controller.textInputSearchFocus,
-                              searchInputController: controller.textInputSearchController,
-                              hasBackButton: false,
-                              hasSearchButton: true,
-                              margin: ContactUtils.getPaddingSearchInputForm(context, controller.responsiveUtils),
-                              decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(10)),
-                                color: AppColor.colorBgSearchBar),
-                              iconClearText: SvgPicture.asset(
-                                controller.imagePaths.icClearTextSearch,
-                                width: 18,
-                                height: 18,
-                                fit: BoxFit.fill),
-                              hintText: AppLocalizations.of(context).hintSearchInputContact,
-                              onClearTextSearchAction: controller.clearAllTextInputSearchForm,
-                              onTextChangeSearchAction: controller.onTextSearchChange,
-                              onSearchTextAction: controller.onSearchTextAction,
-                            ),
-                            if (PlatformInfo.isWeb)
-                              Obx(() {
-                                final username = controller.session.value?.username.value ?? '';
-                                if (username.isNotEmpty) {
-                                  final userEmailAddress = EmailAddress(
-                                    AppLocalizations.of(context).me,
-                                    username);
-                                  final fromMeSuggestionEmailAddress = SuggestionEmailAddress(userEmailAddress, state: SuggestionEmailState.valid);
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                                    child: Column(
-                                      children: [
-                                        ContactSuggestionBoxItem(
-                                          fromMeSuggestionEmailAddress,
-                                          padding: ContactUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
-                                          selectedContactCallbackAction: (contact) {
-                                            controller.selectContact(context, contact);
-                                          },
-                                        ),
-                                        Padding(
-                                          padding: ContactUtils.getPaddingDividerSearchResultList(context, controller.responsiveUtils),
-                                          child: const Divider(height: 1, color: AppColor.colorDivider),
-                                        ),
-                                      ],
+                  clipBehavior: Clip.antiAlias,
+                  child: SafeArea(child: Container(
+                      color: Colors.white,
+                      child: Column(children: [
+                        Container(
+                            height: 52,
+                            color: Colors.white,
+                            padding: ContactUtils.getPaddingAppBar(context, controller.responsiveUtils),
+                            child: AppBarContactWidget(
+                                onCloseContactView: () => controller.closeContactView(context))
+                        ),
+                        const Divider(color: AppColor.colorDividerComposer, height: 1),
+                        SearchAppBarWidget(
+                          imagePaths: controller.imagePaths,
+                          searchQuery: controller.searchQuery.value,
+                          searchFocusNode: controller.textInputSearchFocus,
+                          searchInputController: controller.textInputSearchController,
+                          hasBackButton: false,
+                          hasSearchButton: true,
+                          margin: ContactUtils.getPaddingSearchInputForm(context, controller.responsiveUtils),
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10)),
+                            color: AppColor.colorBgSearchBar),
+                          iconClearText: SvgPicture.asset(
+                            controller.imagePaths.icClearTextSearch,
+                            width: 18,
+                            height: 18,
+                            fit: BoxFit.fill),
+                          hintText: AppLocalizations.of(context).hintSearchInputContact,
+                          onClearTextSearchAction: controller.clearAllTextInputSearchForm,
+                          onTextChangeSearchAction: controller.onTextSearchChange,
+                          onSearchTextAction: controller.onSearchTextAction,
+                        ),
+                        if (PlatformInfo.isWeb)
+                          Obx(() {
+                            final username = controller.session.value?.username.value ?? '';
+                            if (username.isNotEmpty) {
+                              final userEmailAddress = EmailAddress(
+                                AppLocalizations.of(context).me,
+                                username);
+                              final fromMeSuggestionEmailAddress = SuggestionEmailAddress(userEmailAddress, state: SuggestionEmailState.valid);
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 4),
+                                child: Column(
+                                  children: [
+                                    ContactSuggestionBoxItem(
+                                      fromMeSuggestionEmailAddress,
+                                      padding: ContactUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
+                                      selectedContactCallbackAction: (contact) {
+                                        controller.selectContact(context, contact);
+                                      },
                                     ),
-                                  );
-                                } else {
-                                  return const SizedBox.shrink();
-                                }
-                              }),
-                            Expanded(child: Obx(() {
-                              if (controller.listContactSearched.isNotEmpty) {
-                                if (PlatformInfo.isMobile) {
-                                  return Container(
-                                    color: Colors.white,
-                                    child: ListView.separated(
-                                      itemCount: controller.listContactSearched.length,
-                                      separatorBuilder: (context, index) {
-                                        return Padding(
-                                          padding: ContactUtils.getPaddingDividerSearchResultList(context, controller.responsiveUtils),
-                                          child: const Divider(height: 1, color: AppColor.colorDivider),
-                                        );
-                                      },
-                                      itemBuilder: (context, index) {
-                                        final emailAddress = controller.listContactSearched[index];
-                                        final suggestionEmailAddress = _toSuggestionEmailAddress(
-                                          emailAddress,
-                                          controller.contactSelected != null ? [controller.contactSelected!] : []
-                                        );
-                                        return ContactSuggestionBoxItem(
-                                          suggestionEmailAddress,
-                                          padding: ContactUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
-                                          selectedContactCallbackAction: (contact) => controller.selectContact(context, contact),
-                                        );
-                                      }
-                                    )
-                                  );
-                                } else {
-                                  return Container(
-                                    color: Colors.white,
-                                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                                    child: ListView.separated(
-                                      itemCount: controller.listContactSearched.length,
-                                      separatorBuilder: (context, index) {
-                                        return Padding(
-                                          padding: ContactUtils.getPaddingDividerSearchResultList(context, controller.responsiveUtils),
-                                          child: const Divider(height: 1, color: AppColor.colorDivider),
-                                        );
-                                      },
-                                      itemBuilder: (context, index) {
-                                        final emailAddress = controller.listContactSearched[index];
-                                        final suggestionEmailAddress = _toSuggestionEmailAddress(
-                                          emailAddress,
-                                          controller.contactSelected != null ? [controller.contactSelected!] : []
-                                        );
-                                        return ContactSuggestionBoxItem(
-                                          suggestionEmailAddress,
-                                          padding: ContactUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
-                                          selectedContactCallbackAction: (contact) => controller.selectContact(context, contact),
-                                        );
-                                      }
-                                    )
-                                  );
-                                }
-                              } else {
-                                return const SizedBox.shrink();
-                              }
-                            })),
-                          ]),
-                        ))
-                    )
+                                    Padding(
+                                      padding: ContactUtils.getPaddingDividerSearchResultList(context, controller.responsiveUtils),
+                                      child: const Divider(height: 1, color: AppColor.colorDivider),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }),
+                        Expanded(child: Obx(() {
+                          if (controller.listContactSearched.isNotEmpty) {
+                            if (PlatformInfo.isMobile) {
+                              return Container(
+                                color: Colors.white,
+                                child: ListView.separated(
+                                  itemCount: controller.listContactSearched.length,
+                                  separatorBuilder: (context, index) {
+                                    return Padding(
+                                      padding: ContactUtils.getPaddingDividerSearchResultList(context, controller.responsiveUtils),
+                                      child: const Divider(height: 1, color: AppColor.colorDivider),
+                                    );
+                                  },
+                                  itemBuilder: (context, index) {
+                                    final emailAddress = controller.listContactSearched[index];
+                                    final suggestionEmailAddress = _toSuggestionEmailAddress(
+                                      emailAddress,
+                                      controller.contactSelected != null ? [controller.contactSelected!] : []
+                                    );
+                                    return ContactSuggestionBoxItem(
+                                      suggestionEmailAddress,
+                                      padding: ContactUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
+                                      selectedContactCallbackAction: (contact) => controller.selectContact(context, contact),
+                                    );
+                                  }
+                                )
+                              );
+                            } else {
+                              return Container(
+                                color: Colors.white,
+                                padding: const EdgeInsets.symmetric(horizontal: 4),
+                                child: ListView.separated(
+                                  itemCount: controller.listContactSearched.length,
+                                  separatorBuilder: (context, index) {
+                                    return Padding(
+                                      padding: ContactUtils.getPaddingDividerSearchResultList(context, controller.responsiveUtils),
+                                      child: const Divider(height: 1, color: AppColor.colorDivider),
+                                    );
+                                  },
+                                  itemBuilder: (context, index) {
+                                    final emailAddress = controller.listContactSearched[index];
+                                    final suggestionEmailAddress = _toSuggestionEmailAddress(
+                                      emailAddress,
+                                      controller.contactSelected != null ? [controller.contactSelected!] : []
+                                    );
+                                    return ContactSuggestionBoxItem(
+                                      suggestionEmailAddress,
+                                      padding: ContactUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
+                                      selectedContactCallbackAction: (contact) => controller.selectContact(context, contact),
+                                    );
+                                  }
+                                )
+                              );
+                            }
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        })),
+                      ]),
+                    ))
                 ),
               ),
             ),

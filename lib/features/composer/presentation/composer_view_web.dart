@@ -39,6 +39,7 @@ class ComposerView extends GetWidget<ComposerController> {
         childBuilder: (context, constraints) {
           return GestureDetector(
             onTap: () => controller.clearFocus(context),
+            excludeFromSemantics: true,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -184,6 +185,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                     onInitial: controller.handleInitHtmlEditorWeb,
                                     onChangeContent: controller.onChangeTextEditorWeb,
                                     onFocus: controller.handleOnFocusHtmlEditorWeb,
+                                    onUnFocus: controller.handleOnUnFocusEditorWeb,
                                     onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
                                     onEditorSettings: controller.richTextWebController!.onEditorSettingsChange,
                                     onEditorTextSizeChanged: controller.richTextWebController!.onEditorTextSizeChanged,
@@ -292,6 +294,7 @@ class ComposerView extends GetWidget<ComposerController> {
         childBuilder: (context, constraints) {
           return GestureDetector(
             onTap: () => controller.clearFocus(context),
+            excludeFromSemantics: true,
             child: Column(children: [
               Obx(() => DesktopAppBarComposerWidget(
                 emailSubject: controller.subjectEmail.value ?? '',
@@ -436,6 +439,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                             onInitial: controller.handleInitHtmlEditorWeb,
                                             onChangeContent: controller.onChangeTextEditorWeb,
                                             onFocus: controller.handleOnFocusHtmlEditorWeb,
+                                            onUnFocus: controller.handleOnUnFocusEditorWeb,
                                             onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
                                             onEditorSettings: controller.richTextWebController?.onEditorSettingsChange,
                                             onEditorTextSizeChanged: controller.richTextWebController?.onEditorTextSizeChanged,
@@ -565,6 +569,7 @@ class ComposerView extends GetWidget<ComposerController> {
         childBuilder: (context, constraints) {
           return GestureDetector(
             onTap: () => controller.clearFocus(context),
+            excludeFromSemantics: true,
             child: Column(children: [
               Obx(() => DesktopAppBarComposerWidget(
                 emailSubject: controller.subjectEmail.value ?? '',
@@ -706,6 +711,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                           onInitial: controller.handleInitHtmlEditorWeb,
                                           onChangeContent: controller.onChangeTextEditorWeb,
                                           onFocus: controller.handleOnFocusHtmlEditorWeb,
+                                          onUnFocus: controller.handleOnUnFocusEditorWeb,
                                           onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
                                           onEditorSettings: controller.richTextWebController!.onEditorSettingsChange,
                                           onEditorTextSizeChanged: controller.richTextWebController!.onEditorTextSizeChanged,
@@ -832,6 +838,7 @@ class ComposerView extends GetWidget<ComposerController> {
   List<PopupMenuEntry> _createMoreOptionPopupItems(BuildContext context) {
     return [
       PopupMenuItem(
+        enabled: false,
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
           controller.imagePaths.icStyleCodeView,
@@ -848,6 +855,7 @@ class ComposerView extends GetWidget<ComposerController> {
         )
       ),
       PopupMenuItem(
+        enabled: false,
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
           controller.imagePaths.icReadReceipt,
@@ -864,6 +872,7 @@ class ComposerView extends GetWidget<ComposerController> {
         )
       ),
       PopupMenuItem(
+        enabled: false,
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
           controller.imagePaths.icSaveToDraft,
@@ -878,6 +887,7 @@ class ComposerView extends GetWidget<ComposerController> {
         )
       ),
       PopupMenuItem(
+        enabled: false,
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
           controller.imagePaths.icDeleteMailbox,

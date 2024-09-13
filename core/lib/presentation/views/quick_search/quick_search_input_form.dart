@@ -1200,51 +1200,9 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
   }
 
   Widget createSuggestionsWidget() {
-    final listItemSuggestionWidget = _suggestions?.map((T suggestion) {
-      if (widget.itemBuilder != null) {
-        return InkWell(
-          child: widget.itemBuilder!(context, suggestion),
-          onTap: () => widget.onSuggestionSelected?.call(suggestion),
-        );
-      } else {
-        return const SizedBox.shrink();
-      }
-    }).toList() ?? [];
-
-    final loadingWidget = widget.loadingBuilder != null
-        ? widget.loadingBuilder!(context)
-        : const Align(
-            alignment: Alignment.center,
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: CircularProgressIndicator(),
-            ),
-          );
-
-    final listAction = Wrap(
-        children: widget.listActionButton!.map((dynamic action) {
-          if (widget.actionButtonBuilder != null) {
-            return Padding(
-              padding: EdgeInsets.only(
-                right: widget.isDirectionRTL ? 0 : 8,
-                left: widget.isDirectionRTL ? 8 : 0,
-                bottom: kIsWeb ? 8 : 0
-              ),
-              child: InkWell(
-                borderRadius: const BorderRadius.all(Radius.circular(10)),
-                onTap: () {
-                  if (widget.buttonActionCallback != null) {
-                    widget.buttonActionCallback!(action);
-                    invalidateSuggestions();
-                  }
-                },
-                child: widget.actionButtonBuilder!(context, action),
-              ),
-            );
-          } else {
-            return const SizedBox.shrink();
-          }
-        }).toList());
+    final listItemSuggestionWidget = _buildListViewSuggestionWidget();
+    final loadingWidget = _buildLoadingBarWidget();
+    final listAction = _buildListActionWidget();
 
     final listItemContactWidget = _contacts?.map((P contact) {
       if (widget.contactSuggestionBuilder != null) {
@@ -1267,13 +1225,8 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
       controller: _scrollController,
       reverse: widget.suggestionsBox!.direction == AxisDirection.down ? false : true, // reverses the list to start at the bottom
       children: [
-        if (widget.listActionButton != null && widget.listActionButton?.isNotEmpty == true)
-          Padding(
-            padding: widget.listActionPadding ?? EdgeInsets.zero,
-            child: listAction,
-          ),
-        if (_isLoading == true && widget.hideOnLoading == false && widget.keepSuggestionsOnLoading == false)
-          loadingWidget,
+        if (listAction != null) listAction,
+        if (loadingWidget != null) loadingWidget,
         if (listItemContactWidget.isNotEmpty)
           ... listItemContactWidget,
         if (widget.buttonShowAllResult != null && widget.controller?.text.isNotEmpty == true)
@@ -1297,55 +1250,9 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
   }
 
   Widget createRecentWidget() {
-    final listItemRecent = _recentItems?.map((R recent) {
-      if (widget.itemRecentBuilder != null) {
-        return InkWell(
-          child: widget.itemRecentBuilder!(context, recent),
-          onTap: () {
-            if (widget.onRecentSelected != null) {
-              widget.onRecentSelected!(recent);
-            }
-          },
-        );
-      } else {
-        return const SizedBox.shrink();
-      }
-    }).toList() ?? [];
-
-    final loadingWidget = widget.loadingBuilder != null
-        ? widget.loadingBuilder!(context)
-        : const Align(
-            alignment: Alignment.center,
-            child: Padding(
-              padding: EdgeInsets.symmetric(vertical: 8.0),
-              child: CircularProgressIndicator(),
-            ),
-          );
-
-    final listAction = Wrap(
-        children: widget.listActionButton!.map((dynamic action) {
-          if (widget.actionButtonBuilder != null) {
-            return Padding(
-              padding: EdgeInsets.only(
-                right: widget.isDirectionRTL ? 0 : 8,
-                left: widget.isDirectionRTL ? 8 : 0,
-                bottom: kIsWeb ? 8 : 0
-              ),
-              child: InkWell(
-                borderRadius: const BorderRadius.all(Radius.circular(10)),
-                onTap: () {
-                  if (widget.buttonActionCallback != null) {
-                    widget.buttonActionCallback!(action);
-                    invalidateSuggestions();
-                  }
-                },
-                child: widget.actionButtonBuilder!(context, action),
-              ),
-            );
-          } else {
-            return const SizedBox.shrink();
-          }
-        }).toList());
+    final listItemRecent = _buildListViewRecentWidget();
+    final loadingWidget = _buildLoadingBarWidget();
+    final listAction = _buildListActionWidget();
 
     Widget child = ListView(
       padding: EdgeInsets.zero,
@@ -1354,13 +1261,8 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
       controller: _scrollController,
       reverse: widget.suggestionsBox!.direction == AxisDirection.down ? false : true, // reverses the list to start at the bottom
       children: [
-        if (widget.listActionButton != null && widget.listActionButton?.isNotEmpty == true)
-          Padding(
-            padding: widget.listActionPadding ?? EdgeInsets.zero,
-            child: listAction,
-          ),
-        if (_isLoading == true && widget.hideOnLoading == false && widget.keepSuggestionsOnLoading == false)
-          loadingWidget,
+        if (listAction != null) listAction,
+        if (loadingWidget != null) loadingWidget,
         if (widget.buttonShowAllResult != null && widget.controller?.text.isNotEmpty == true)
           widget.buttonShowAllResult!(context, widget.controller?.text),
         if (_recentItems?.isNotEmpty == true && widget.itemRecentBuilder != null && widget.titleHeaderRecent != null)
@@ -1381,6 +1283,102 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
     }
 
     return child;
+  }
+
+  Widget? _buildListActionWidget() {
+    if (widget.listActionButton?.isNotEmpty != true
+        || widget.actionButtonBuilder == null) {
+      return null;
+    }
+
+    final listActionWidget = Wrap(children: widget.listActionButton!
+      .map((action) {
+        if (widget.buttonActionCallback != null) {
+          return Padding(
+            padding: const EdgeInsetsDirectional.only(end: 8, bottom: 8),
+            child: InkWell(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              excludeFromSemantics: true,
+              onTap: () {
+                log('_SuggestionsListState::_buildListActionWidget:actionButtonBuilder::onTap');
+                widget.buttonActionCallback?.call(action);
+                invalidateSuggestions();
+              },
+              child: widget.actionButtonBuilder!(context, action),
+            ),
+          );
+        } else {
+          return Padding(
+            padding: const EdgeInsetsDirectional.only(end: 8, bottom: 8),
+            child: widget.actionButtonBuilder!(context, action)
+          );
+        }
+      })
+      .toList()
+    );
+
+    if (widget.listActionPadding != null) {
+      return Padding(padding: widget.listActionPadding!, child: listActionWidget);
+    } else {
+      return listActionWidget;
+    }
+  }
+
+  Widget? _buildLoadingBarWidget() {
+    if (_isLoading != true
+      || widget.hideOnLoading != false
+      || widget.keepSuggestionsOnLoading != false) {
+      return null;
+    }
+
+    if (widget.loadingBuilder != null) {
+      return widget.loadingBuilder!(context);
+    } else {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 8.0),
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+  }
+
+  List<Widget> _buildListViewRecentWidget() {
+    if (_recentItems?.isNotEmpty != true || widget.itemRecentBuilder == null) {
+      return [];
+    }
+
+    return _recentItems!
+      .map((recent) {
+        if (widget.onRecentSelected != null) {
+          return InkWell(
+            child: widget.itemRecentBuilder!(context, recent),
+            onTap: () => widget.onRecentSelected!(recent),
+          );
+        } else {
+          return widget.itemRecentBuilder!(context, recent);
+        }
+      })
+      .toList();
+  }
+
+  List<Widget> _buildListViewSuggestionWidget() {
+    if (_suggestions?.isNotEmpty != true || widget.itemBuilder == null) {
+      return [];
+    }
+
+    return _suggestions!
+      .map((suggestion) {
+        if (widget.onSuggestionSelected != null) {
+          return InkWell(
+            child: widget.itemBuilder!(context, suggestion),
+            onTap: () => widget.onSuggestionSelected?.call(suggestion),
+          );
+        } else {
+          return widget.itemBuilder!(context, suggestion);
+        }
+      })
+      .toList();
   }
 }
 

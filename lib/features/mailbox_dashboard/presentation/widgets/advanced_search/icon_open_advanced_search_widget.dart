@@ -38,9 +38,16 @@ class IconOpenAdvancedSearchWidget extends StatelessWidget {
                 width: 16,
                 height: 16),
             onTap: () {
-              log('IconOpenAdvancedSearchWidget::build(): clicked');
-              advancedFilterController.initSearchFilterField(context);
-              searchController.openAdvanceSearch();
+              log('IconOpenAdvancedSearchWidget::build:onTap: isAdvancedSearchViewOpen = ${searchController.isAdvancedSearchViewOpen}');
+              log('IconOpenAdvancedSearchWidget::build:onTap: advancedSearchIsActivated = ${searchController.advancedSearchIsActivated}');
+              FocusScope.of(context).unfocus();
+
+              if (searchController.isAdvancedSearchViewOpen.isTrue) {
+                searchController.closeAdvanceSearch();
+              } else {
+                advancedFilterController.initSearchFilterField(context);
+                searchController.openAdvanceSearch();
+              }
             }),
       ),
     );

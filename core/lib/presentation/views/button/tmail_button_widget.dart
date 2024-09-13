@@ -40,6 +40,7 @@ class TMailButtonWidget extends StatelessWidget {
   final MainAxisSize mainAxisSize;
   final bool isLoading;
   final Color? hoverColor;
+  final bool expandedText;
 
   const TMailButtonWidget({
     super.key,
@@ -74,6 +75,7 @@ class TMailButtonWidget extends StatelessWidget {
     this.mainAxisSize = MainAxisSize.max,
     this.isLoading = false,
     this.hoverColor,
+    this.expandedText = false,
   });
 
   factory TMailButtonWidget.fromIcon({
@@ -149,6 +151,7 @@ class TMailButtonWidget extends StatelessWidget {
     BoxBorder? border,
     int? maxLines,
     Color? hoverColor,
+    bool expandedText = false,
   }) {
     return TMailButtonWidget(
       key: key,
@@ -172,6 +175,7 @@ class TMailButtonWidget extends StatelessWidget {
       border: border,
       maxLines: maxLines,
       hoverColor: hoverColor,
+      expandedText: expandedText,
     );
   }
 
@@ -244,6 +248,20 @@ class TMailButtonWidget extends StatelessWidget {
                     softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
                   ),
                 )
+              else if (expandedText)
+                Expanded(
+                  child: Text(
+                    text,
+                    textAlign: textAlign,
+                    style: textStyle ?? const TextStyle(
+                      fontSize: 12,
+                      color: AppColor.colorTextButtonHeaderThread
+                    ),
+                    maxLines: maxLines,
+                    overflow: maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null,
+                    softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
+                  ),
+                )
               else
                 Text(
                   text,
@@ -276,6 +294,20 @@ class TMailButtonWidget extends StatelessWidget {
             children: [
               if (flexibleText)
                 Flexible(
+                  child: Text(
+                    text,
+                    textAlign: textAlign,
+                    style: textStyle ?? const TextStyle(
+                      fontSize: 12,
+                      color: AppColor.colorTextButtonHeaderThread
+                    ),
+                    maxLines: maxLines,
+                    overflow: maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null,
+                    softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
+                  ),
+                )
+              else if (expandedText)
+                Expanded(
                   child: Text(
                     text,
                     textAlign: textAlign,

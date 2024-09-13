@@ -278,7 +278,6 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
       return SettingDetailViewBuilder(
         responsiveUtils: controller.responsiveUtils,
         padding: const EdgeInsets.symmetric(horizontal: 4),
-        onTapGestureDetector: () => controller.clearFocusEditor(context),
         child: vacationInputForm,
       );
     } else {
