@@ -441,7 +441,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
+              Flexible(
                 child: SizedBox(
                   height: 45,
                   child: ScrollbarListView(
@@ -469,12 +469,33 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         _buildQuickSearchFilterButton(context, QuickSearchFilter.dateTime),
                         MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
                         _buildQuickSearchFilterButton(context, QuickSearchFilter.hasAttachment),
-                        MailboxDashboardViewWebStyle.searchFilterSizeBoxMargin,
                       ],
                     ),
                   ),
                 )
               ),
+              if (controller.isSearchFilterHasApplied)
+                TMailButtonWidget.fromText(
+                  text: AppLocalizations.of(context).clearFilter,
+                  backgroundColor: Colors.transparent,
+                  margin: const EdgeInsetsDirectional.only(start: 8),
+                  borderRadius: 10,
+                  textStyle: const TextStyle(
+                    color: AppColor.primaryColor,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500),
+                  onTapActionCallback: () => controller.clearAllSearchFilterApplied(context))
+              else
+                TMailButtonWidget.fromText(
+                  text: AppLocalizations.of(context).advancedSearch,
+                  backgroundColor: Colors.transparent,
+                  margin: const EdgeInsetsDirectional.only(start: 8),
+                  borderRadius: 10,
+                  textStyle: const TextStyle(
+                    color: AppColor.primaryColor,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500),
+                  onTapActionCallback: () => controller.openAdvancedSearchView(context))
             ]
           ),
         );

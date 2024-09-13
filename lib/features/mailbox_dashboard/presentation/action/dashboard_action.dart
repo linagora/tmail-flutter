@@ -162,3 +162,21 @@ class SearchEmailByFromFieldsAction extends DashBoardAction {
 class CloseSearchEmailViewAction extends DashBoardAction {}
 
 class CancelSelectionSearchEmailAction extends DashBoardAction {}
+
+class OpenAdvancedSearchViewAction extends DashBoardAction {
+  final BuildContext context;
+
+  OpenAdvancedSearchViewAction(this.context);
+
+  @override
+  List<Object?> get props => [context];
+}
+
+class ClearSearchFilterAppliedAction extends DashBoardAction {
+  final BuildContext context;
+
+  ClearSearchFilterAppliedAction(this.context);
+
+  @override
+  List<Object?> get props => [context];
+}
