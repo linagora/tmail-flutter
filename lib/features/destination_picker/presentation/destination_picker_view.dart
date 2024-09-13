@@ -476,7 +476,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
       MailboxId? mailboxIdSelected
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -494,8 +494,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
             child: Row(children: [
               SvgPicture.asset(
                 controller.imagePaths.icFolderMailbox,
-                width: PlatformInfo.isWeb ? 20 : 24,
-                height: PlatformInfo.isWeb ? 20 : 24,
+                width: PlatformInfo.isWeb ? 24 : 20,
+                height: PlatformInfo.isWeb ? 24 : 20,
                 fit: BoxFit.fill
               ),
               const SizedBox(width: 8),
