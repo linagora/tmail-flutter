@@ -291,6 +291,9 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           context,
           controller.mailboxFiltered);
         break;
+      case QuickSearchFilter.starred:
+        controller.selectStarredSearchFilter(context);
+        break;
       default:
         break;
     }
