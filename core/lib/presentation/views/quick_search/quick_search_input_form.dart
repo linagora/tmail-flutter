@@ -1202,7 +1202,7 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
   Widget createSuggestionsWidget() {
     final listItemSuggestionWidget = _buildListViewSuggestionWidget();
     final loadingWidget = _buildLoadingBarWidget();
-    final listAction = _buildListActionWidget();
+    final listActionWidget = _buildListActionWidget();
     final listItemContactWidget = _buildListViewContactWidget();
 
     Widget child = ListView(
@@ -1212,7 +1212,7 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
       controller: _scrollController,
       reverse: widget.suggestionsBox!.direction == AxisDirection.down ? false : true, // reverses the list to start at the bottom
       children: [
-        if (listAction != null) listAction,
+        if (listActionWidget != null) listActionWidget,
         if (loadingWidget != null) loadingWidget,
         if (widget.buttonShowAllResult != null && widget.controller?.text.isNotEmpty == true)
           widget.buttonShowAllResult!(context, widget.controller?.text),
@@ -1241,7 +1241,7 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
   Widget createRecentWidget() {
     final listItemRecent = _buildListViewRecentWidget();
     final loadingWidget = _buildLoadingBarWidget();
-    final listAction = _buildListActionWidget();
+    final listActionWidget = _buildListActionWidget();
 
     Widget child = ListView(
       padding: EdgeInsets.zero,
@@ -1250,7 +1250,7 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
       controller: _scrollController,
       reverse: widget.suggestionsBox!.direction == AxisDirection.down ? false : true, // reverses the list to start at the bottom
       children: [
-        if (listAction != null) listAction,
+        if (listActionWidget != null) listActionWidget,
         if (loadingWidget != null) loadingWidget,
         if (widget.buttonShowAllResult != null && widget.controller?.text.isNotEmpty == true)
           widget.buttonShowAllResult!(context, widget.controller?.text),

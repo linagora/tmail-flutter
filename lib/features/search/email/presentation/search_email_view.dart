@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_r
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_receive_time_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_sort_by_action_tile_widget.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_sort_by_cupertino_action_sheet_action_builder.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/widgets/search_email_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
@@ -74,7 +75,10 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             ),
             const Divider(color: AppColor.colorDividerComposer, height: 1),
             _buildListSearchFilterAction(context),
-            _buildLoadingView(),
+            Obx(() => SearchEmailLoadingBarWidget(
+              suggestionViewState: controller.suggestionSearchViewState.value,
+              resultSearchViewState: controller.viewState.value,
+            )),
             Expanded(child: Obx(() {
               if (controller.searchIsRunning.isFalse) {
                 return SingleChildScrollView(
@@ -620,16 +624,6 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             },
           )
     );
-  }
-
-  Widget _buildLoadingView() {
-    return Obx(() => controller.viewState.value.fold(
-        (failure) => const SizedBox.shrink(),
-        (success) => success is SearchingState
-            ? Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: loadingWidget)
-            : const SizedBox.shrink()));
   }
 
   List<Widget> _contextMenuActionTile(BuildContext context, PresentationEmail email) {

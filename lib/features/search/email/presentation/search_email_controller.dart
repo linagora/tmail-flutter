@@ -104,6 +104,7 @@ class SearchEmailController extends BaseController
   final emailReceiveTimeType = EmailReceiveTimeType.allTime.obs;
   final selectionMode = Rx<SelectMode>(SelectMode.INACTIVE);
   final emailSortOrderType = EmailSortOrderType.mostRecent.obs;
+  final suggestionSearchViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
   late Debouncer<String> _deBouncerTime;
   late Worker dashBoardViewStateWorker;
@@ -177,6 +178,7 @@ class SearchEmailController extends BaseController
         initialValue: '');
     _deBouncerTime.values.listen((value) async {
       log('SearchEmailController::_initializeDebounceTimeTextSearchChange(): $value');
+      suggestionSearchViewState.value = Right(LoadingState());
       currentSearchText.value = value;
       _updateSimpleSearchFilter(
         textOption: value.isNotEmpty ? Some(SearchQuery(value)) : const None(),
@@ -198,6 +200,7 @@ class SearchEmailController extends BaseController
       if (listSuggestionSearch.isEmpty && currentSearchText.isEmpty) {
         listRecentSearch.value = await getAllRecentSearchAction(pattern: value);
       }
+      suggestionSearchViewState.value = Right(UIState.idle);
     });
   }
 
