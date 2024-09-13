@@ -1302,7 +1302,7 @@ class ThreadController extends BaseController with EmailActionController {
     searchController.enableSearch();
     if (searchQuery != null) {
       searchController.updateTextSearch(searchQuery.value);
-      searchController.updateFilterEmail(text: searchQuery);
+      searchController.updateFilterEmail(textOption: Some(searchQuery));
       if (currentContext != null) {
         FocusScope.of(currentContext!).unfocus();
       }
@@ -1317,7 +1317,7 @@ class ThreadController extends BaseController with EmailActionController {
     dispatchState(Right(SearchingState()));
     searchController.enableSearch();
     searchController.updateTextSearch(searchQuery.value);
-    searchController.updateFilterEmail(text: searchQuery);
+    searchController.updateFilterEmail(textOption: Some(searchQuery));
     if (currentContext != null) {
       FocusScope.of(currentContext!).unfocus();
     }

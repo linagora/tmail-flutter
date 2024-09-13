@@ -146,8 +146,8 @@ class SearchController extends BaseController with DateRangePickerMixin {
     }
 
     updateFilterEmail(
-      emailReceiveTimeType: receiveTime,
-      hasAttachment: hasAttachment,
+      emailReceiveTimeTypeOption: Some(receiveTime),
+      hasAttachmentOption: Some(hasAttachment),
       fromOption: Some(listFromAddress)
     );
 
@@ -161,12 +161,12 @@ class SearchController extends BaseController with DateRangePickerMixin {
   void updateFilterEmail({
     Option<Set<String>>? fromOption,
     Option<Set<String>>? toOption,
-    SearchQuery? text,
+    Option<SearchQuery>? textOption,
     Option<String>? subjectOption,
-    Set<String>? notKeyword,
+    Option<Set<String>>? notKeywordOption,
     Option<PresentationMailbox>? mailboxOption,
-    EmailReceiveTimeType? emailReceiveTimeType,
-    bool? hasAttachment,
+    Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption,
+    Option<bool>? hasAttachmentOption,
     Option<UTCDate>? beforeOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
@@ -176,12 +176,12 @@ class SearchController extends BaseController with DateRangePickerMixin {
     searchEmailFilter.value = searchEmailFilter.value.copyWith(
       fromOption: fromOption,
       toOption: toOption,
-      text: text,
+      textOption: textOption,
       subjectOption: subjectOption,
-      notKeyword: notKeyword,
+      notKeywordOption: notKeywordOption,
       mailboxOption: mailboxOption,
-      emailReceiveTimeType: emailReceiveTimeType,
-      hasAttachment: hasAttachment,
+      emailReceiveTimeTypeOption: emailReceiveTimeTypeOption,
+      hasAttachmentOption: hasAttachmentOption,
       beforeOption: beforeOption,
       startDateOption: startDateOption,
       endDateOption: endDateOption,
@@ -198,6 +198,10 @@ class SearchController extends BaseController with DateRangePickerMixin {
   DateTime? get endDateFiltered => searchEmailFilter.value.endDate?.value.toLocal();
 
   PresentationMailbox? get mailboxFiltered => searchEmailFilter.value.mailbox;
+
+  Set<String> get listAddressOfToFiltered => searchEmailFilter.value.to;
+
+  Set<String> get listAddressOfFromFiltered => searchEmailFilter.value.from;
 
   bool isSearchActive() =>
       searchState.value.searchStatus == SearchStatus.ACTIVE;
@@ -218,7 +222,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
   }
 
   void disableSimpleSearch() {
-    updateFilterEmail(text: SearchQuery.initial());
+    updateFilterEmail(textOption: Some(SearchQuery.initial()));
     _clearAllTextInputSimpleSearch();
     deactivateSimpleSearch();
     hideSimpleSearchFormView();

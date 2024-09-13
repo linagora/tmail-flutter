@@ -20,7 +20,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/qu
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/search_more_state.dart';
-import 'package:tmail_ui_user/features/search/email/presentation/model/simple_search_filter.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/utils/search_email_utils.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/app_bar_selection_mode.dart';
@@ -265,8 +264,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   filter.getTitle(
                     context,
                     receiveTimeType: controller.emailReceiveTimeType.value,
-                    startDate: controller.simpleSearchFilter.value.startDate?.value.toLocal(),
-                    endDate: controller.simpleSearchFilter.value.endDate?.value.toLocal(),
+                    startDate: controller.startDateFiltered,
+                    endDate: controller.endDateFiltered,
                     sortOrderType: controller.emailSortOrderType.value
                   ),
                   maxLines: 1,
@@ -685,13 +684,13 @@ class SearchEmailView extends GetWidget<SearchEmailController>
 
   Widget _buildSearchFilterByMailboxButton(BuildContext context) {
     return Obx(() {
-      final filterSelected = controller.simpleSearchFilter.value.searchFilterByMailboxApplied;
+      final filterSelected = controller.searchEmailFilter.value.searchFilterByMailboxApplied;
       return Padding(
         padding: const EdgeInsets.only(right: 8),
         child: InkWell(
           onTap: () => controller.selectMailboxForSearchFilter(
               context,
-              controller.simpleSearchFilter.value.mailbox),
+              controller.mailboxFiltered),
           borderRadius: const BorderRadius.all(Radius.circular(10)),
           child: Container(
               decoration: BoxDecoration(
@@ -709,7 +708,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 const SizedBox(width: 4),
                 Text(
                   filterSelected
-                    ? controller.simpleSearchFilter.value.getMailboxName(context)
+                    ? controller.searchEmailFilter.value.getMailboxName(context)
                     : AppLocalizations.of(context).folder,
                   maxLines: 1,
                   overflow: CommonTextStyle.defaultTextOverFlow,
@@ -740,7 +739,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
 
   Widget _buildSearchFilterByContactButton(BuildContext context, PrefixEmailAddress prefixEmailAddress) {
     return Obx(() {
-      final filterSelected = controller.simpleSearchFilter.value
+      final filterSelected = controller.searchEmailFilter.value
           .searchFilterByContactApplied(prefixEmailAddress);
       return Padding(
         padding: const EdgeInsets.only(right: 8),
@@ -763,8 +762,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 const SizedBox(width: 4),
                 Text(
                     filterSelected
-                        ? controller.simpleSearchFilter.value.getNameContactApplied(context, prefixEmailAddress)
-                        : controller.simpleSearchFilter.value.getNameContactDefault(context, prefixEmailAddress),
+                        ? controller.searchEmailFilter.value.getNameContactApplied(context, prefixEmailAddress)
+                        : controller.searchEmailFilter.value.getNameContactDefault(context, prefixEmailAddress),
                     maxLines: 1,
                     overflow: CommonTextStyle.defaultTextOverFlow,
                     softWrap: CommonTextStyle.defaultSoftWrap,
