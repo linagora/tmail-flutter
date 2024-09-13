@@ -128,7 +128,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   void _handleGetSessionFailure(GetSessionFailure failure) {
-    if (failure.exception !is BadCredentialsException) {
+    if (failure.exception is! BadCredentialsException) {
       toastManager.showMessageFailure(failure);
     }
     clearDataAndGoToLoginPage();
