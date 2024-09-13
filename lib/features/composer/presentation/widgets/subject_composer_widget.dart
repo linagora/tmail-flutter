@@ -27,6 +27,7 @@ class SubjectComposerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Semantics(
       identifier: ComposerKeyValues.composerSubjectField,
+      container: true,
       child: Container(
         decoration: const BoxDecoration(
           border: Border(

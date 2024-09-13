@@ -87,6 +87,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
           const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
           Semantics(
             identifier: ComposerKeyValues.composerSendButton,
+            container: true,
             child: TMailButtonWidget.fromIcon(
               icon: isSendButtonEnabled
                 ? _imagePaths.icSendMobile

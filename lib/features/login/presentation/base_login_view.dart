@@ -45,11 +45,13 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
           children: [
             Semantics(
               identifier: LoginBasicAuthKeyValues.loginEmailField,
+              container: true,
               child: buildUserNameInput(context),
             ),
             const SizedBox(height: 24),
             Semantics(
               identifier: LoginBasicAuthKeyValues.loginPasswordField,
+              container: true,
               child: buildPasswordInput(context),
             ),
             const SizedBox(height: 40),

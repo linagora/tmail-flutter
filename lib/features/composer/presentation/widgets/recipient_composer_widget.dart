@@ -127,6 +127,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
       identifier: widget.prefix == PrefixEmailAddress.to
         ? ComposerKeyValues.composerToField
         : null,
+      container: true,
       child: Container(
         decoration: const BoxDecoration(
           border: Border(

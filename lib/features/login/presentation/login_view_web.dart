@@ -25,6 +25,7 @@ class LoginView extends BaseLoginView {
       body: Center(child: SingleChildScrollView(
           child: Semantics(
             identifier: LoginBasicAuthKeyValues.loginView,
+            container: true,
             child: ResponsiveWidget(
               responsiveUtils: controller.responsiveUtils,
               mobile: _buildMobileForm(context),

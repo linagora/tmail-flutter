@@ -853,6 +853,7 @@ class _TypeAheadFieldQuickSearchState<T, P, R> extends State<TypeAheadFieldQuick
             Expanded(
               child: Semantics(
                 identifier: SearchKeyValues.searchInputField,
+                container: true,
                 child: TextField(
                   focusNode: _effectiveFocusNode,
                   controller: _effectiveController,
@@ -1383,6 +1384,7 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
         if (widget.onContactSuggestionSelected != null) {
           return Semantics(
             identifier: SearchKeyValues.searchUserResult,
+            container: true,
             child: InkWell(
               child: widget.contactSuggestionBuilder!(context, contact),
               onTap: () => widget.onContactSuggestionSelected?.call(contact),

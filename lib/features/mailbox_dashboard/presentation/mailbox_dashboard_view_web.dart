@@ -647,6 +647,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       alignment: Alignment.centerLeft,
       child: Semantics(
         identifier: ComposerKeyValues.openComposerButton,
+        container: true,
         child: TMailButtonWidget(
           key: const Key('compose_email_button'),
           text: AppLocalizations.of(context).compose,

@@ -187,6 +187,7 @@ class ConfirmDialogBuilder {
                 alignment: AlignmentDirectional.centerEnd,
                 child: Semantics(
                   label: ConfirmationDialogKeyValues.closeButton,
+                  container: true,
                   child: TMailButtonWidget.fromIcon(
                     icon: _imagePath.icCircleClose,
                     iconSize: 30,
@@ -209,6 +210,7 @@ class ConfirmDialogBuilder {
                   child: Center(
                       child: Semantics(
                         identifier: ConfirmationDialogKeyValues.title,
+                        container: true,
                         child: Text(
                             _title,
                             textAlign: TextAlign.center,
@@ -223,6 +225,7 @@ class ConfirmDialogBuilder {
                 child: Center(
                   child: Semantics(
                     identifier: ConfirmationDialogKeyValues.content,
+                    container: true,
                     child: Text(_content,
                         textAlign: TextAlign.center,
                         style: _styleContent ?? const TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog)
@@ -236,6 +239,7 @@ class ConfirmDialogBuilder {
                 child: Center(
                   child: Semantics(
                     identifier: ConfirmationDialogKeyValues.content,
+                    container: true,
                     child: RichText(
                       textAlign: TextAlign.center,
                       text: TextSpan(
@@ -253,6 +257,7 @@ class ConfirmDialogBuilder {
                     padding: const EdgeInsetsDirectional.only(top: 8, start: 16, end: 16),
                     child: Semantics(
                       identifier: ConfirmationDialogKeyValues.cancelButton,
+                      container: true,
                       child: ConfirmDialogButton(
                         label: _cancelText,
                         backgroundColor: _colorCancelButton,
@@ -268,6 +273,7 @@ class ConfirmDialogBuilder {
                     padding: const EdgeInsetsDirectional.only(top: 8, start: 16, end: 16),
                     child: Semantics(
                       identifier: ConfirmationDialogKeyValues.confirmButton,
+                      container: true,
                       child: ConfirmDialogButton(
                         label: _confirmText,
                         backgroundColor: _colorConfirmButton,
@@ -288,6 +294,7 @@ class ConfirmDialogBuilder {
                       if (_cancelText.isNotEmpty)
                         Expanded(child: Semantics(
                           identifier: ConfirmationDialogKeyValues.cancelButton,
+                          container: true,
                           child: ConfirmDialogButton(
                             label: _cancelText,
                             backgroundColor: _colorCancelButton,
@@ -301,6 +308,7 @@ class ConfirmDialogBuilder {
                       if (_confirmText.isNotEmpty)
                         Expanded(child: Semantics(
                           identifier: ConfirmationDialogKeyValues.confirmButton,
+                          container: true,
                           child: ConfirmDialogButton(
                             label: _confirmText,
                             backgroundColor: _colorConfirmButton,
