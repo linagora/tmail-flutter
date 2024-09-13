@@ -3,6 +3,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -14,6 +15,7 @@ enum QuickSearchFilter {
   hasAttachment,
   last7Days,
   fromMe,
+  starred,
   sortBy,
   dateTime,
   from,
@@ -53,6 +55,8 @@ enum QuickSearchFilter {
         return mailbox?.getDisplayName(context) ?? AppLocalizations.of(context).all;
       case QuickSearchFilter.to:
         return AppLocalizations.of(context).to_email_address_prefix;
+      case QuickSearchFilter.starred:
+        return AppLocalizations.of(context).starred;
     }
   }
 
@@ -74,6 +78,8 @@ enum QuickSearchFilter {
         return imagePaths.icUserSB;
       case QuickSearchFilter.folder:
         return imagePaths.icFolderMailbox;
+      case QuickSearchFilter.starred:
+        return isSelected ? imagePaths.icSelectedSB : imagePaths.icStar;
     }
   }
 
@@ -106,15 +112,18 @@ enum QuickSearchFilter {
   bool isSelected(
     BuildContext context,
     SearchEmailFilter searchFilter,
-    EmailSortOrderType sortOrderType
+    EmailSortOrderType sortOrderType,
+    UserName? userName,
   ) {
     switch (this) {
       case QuickSearchFilter.hasAttachment:
         return searchFilter.hasAttachment;
       case QuickSearchFilter.last7Days:
-        return true;
+        return searchFilter.emailReceiveTimeType == EmailReceiveTimeType.last7Days;
       case QuickSearchFilter.fromMe:
-        return searchFilter.from.length == 1;
+        return searchFilter.from.length == 1 &&
+          userName?.value.isNotEmpty == true &&
+          userName?.value == searchFilter.from.first;
       case QuickSearchFilter.sortBy:
         return sortOrderType != EmailSortOrderType.mostRecent;
       case QuickSearchFilter.dateTime:
@@ -124,7 +133,9 @@ enum QuickSearchFilter {
       case QuickSearchFilter.to:
         return searchFilter.to.isNotEmpty;
       case QuickSearchFilter.folder:
-      return searchFilter.mailbox != null;
+        return searchFilter.mailbox != null;
+      case QuickSearchFilter.starred:
+        return searchFilter.hasKeyword.contains(KeyWordIdentifier.emailFlagged.value) == true;
     }
   }
 
