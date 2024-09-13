@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
@@ -168,45 +169,69 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   }
 
   Widget _buildListSearchFilterAction(BuildContext context) {
-    return Container(
-      height: 45,
-      margin: SearchEmailViewStyle.listSearchFilterButtonMargin,
-      alignment: AlignmentDirectional.centerStart,
-      child: ScrollbarListView(
-        scrollBehavior: ScrollConfiguration.of(context).copyWith(
-          dragDevices: {
-            PointerDeviceKind.touch,
-            PointerDeviceKind.mouse,
-            PointerDeviceKind.trackpad
-          },
-          scrollbars: false
-        ),
-        scrollController: controller.listSearchFilterScrollController,
-        child: ListView(
-          scrollDirection: Axis.horizontal,
-          shrinkWrap: true,
-          controller: controller.listSearchFilterScrollController,
-          padding: SearchEmailViewStyle.getListSearchFilterButtonPadding(
-            context,
-            controller.responsiveUtils
+    return Row(
+      children: [
+        Flexible(
+          child: Container(
+            height: 45,
+            margin: SearchEmailViewStyle.listSearchFilterButtonMargin,
+            alignment: AlignmentDirectional.centerStart,
+            child: ScrollbarListView(
+              scrollBehavior: ScrollConfiguration.of(context).copyWith(
+                dragDevices: {
+                  PointerDeviceKind.touch,
+                  PointerDeviceKind.mouse,
+                  PointerDeviceKind.trackpad
+                },
+                scrollbars: false
+              ),
+              scrollController: controller.listSearchFilterScrollController,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                shrinkWrap: true,
+                controller: controller.listSearchFilterScrollController,
+                padding: SearchEmailViewStyle.getListSearchFilterButtonPadding(
+                  context,
+                  controller.responsiveUtils
+                ),
+                children: [
+                  _buildSearchFilterButton(context, QuickSearchFilter.folder),
+                  SearchEmailViewStyle.searchFilterSizeBoxMargin,
+                  _buildSearchFilterButton(context, QuickSearchFilter.from),
+                  SearchEmailViewStyle.searchFilterSizeBoxMargin,
+                  _buildSearchFilterButton(context, QuickSearchFilter.to),
+                  SearchEmailViewStyle.searchFilterSizeBoxMargin,
+                  _buildSearchFilterButton(context, QuickSearchFilter.hasAttachment),
+                  SearchEmailViewStyle.searchFilterSizeBoxMargin,
+                  _buildSearchFilterButton(context, QuickSearchFilter.dateTime),
+                  SearchEmailViewStyle.searchFilterSizeBoxMargin,
+                  _buildSearchFilterButton(context, QuickSearchFilter.starred),
+                  SearchEmailViewStyle.searchFilterSizeBoxMargin,
+                  _buildSearchFilterButton(context, QuickSearchFilter.sortBy),
+                ],
+              ),
+            ),
           ),
-          children: [
-            _buildSearchFilterButton(context, QuickSearchFilter.folder),
-            SearchEmailViewStyle.searchFilterSizeBoxMargin,
-            _buildSearchFilterButton(context, QuickSearchFilter.from),
-            SearchEmailViewStyle.searchFilterSizeBoxMargin,
-            _buildSearchFilterButton(context, QuickSearchFilter.to),
-            SearchEmailViewStyle.searchFilterSizeBoxMargin,
-            _buildSearchFilterButton(context, QuickSearchFilter.hasAttachment),
-            SearchEmailViewStyle.searchFilterSizeBoxMargin,
-            _buildSearchFilterButton(context, QuickSearchFilter.dateTime),
-            SearchEmailViewStyle.searchFilterSizeBoxMargin,
-            _buildSearchFilterButton(context, QuickSearchFilter.starred),
-            SearchEmailViewStyle.searchFilterSizeBoxMargin,
-            _buildSearchFilterButton(context, QuickSearchFilter.sortBy),
-          ],
         ),
-      ),
+        Obx(() {
+          if (controller.isSearchFilterHasApplied) {
+            return TMailButtonWidget.fromText(
+              text: AppLocalizations.of(context).clearFilter,
+              backgroundColor: Colors.transparent,
+              margin: const EdgeInsetsDirectional.only(start: 8, top: 6, end: 8),
+              borderRadius: 10,
+              textStyle: const TextStyle(
+                color: AppColor.primaryColor,
+                fontSize: 13,
+                fontWeight: FontWeight.w500
+              ),
+              onTapActionCallback: () => controller.clearAllSearchFilterApplied(context)
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        })
+      ],
     );
   }
 

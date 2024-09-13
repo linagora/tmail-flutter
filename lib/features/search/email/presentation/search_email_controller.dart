@@ -1045,6 +1045,30 @@ class SearchEmailController extends BaseController
     _searchEmailAction(context);
   }
 
+  bool get isSearchFilterHasApplied {
+    return searchEmailFilter.value.from.isNotEmpty ||
+      searchEmailFilter.value.to.isNotEmpty ||
+      searchEmailFilter.value.emailReceiveTimeType != EmailReceiveTimeType.allTime ||
+      (searchEmailFilter.value.mailbox != PresentationMailbox.unifiedMailbox && searchEmailFilter.value.mailbox != null) ||
+      searchEmailFilter.value.hasAttachment == true ||
+      searchEmailFilter.value.hasKeyword.contains(KeyWordIdentifier.emailFlagged.value) ||
+      emailSortOrderType.value != EmailSortOrderType.mostRecent;
+  }
+
+  void clearAllSearchFilterApplied(BuildContext context) {
+    textInputSearchController.clear();
+    currentSearchText.value = '';
+    listRecentSearch.clear();
+    listSuggestionSearch.clear();
+    listResultSearch.clear();
+    canSearchMore = true;
+    searchMoreState = SearchMoreState.idle;
+    emailReceiveTimeType.value = EmailReceiveTimeType.allTime;
+    emailSortOrderType.value = EmailSortOrderType.mostRecent;
+    searchEmailFilter.value = SearchEmailFilter.initial();
+    _searchEmailAction(context);
+  }
+
   @override
   void onClose() {
     textInputSearchFocus.removeListener(_onSearchTextInputListener);
