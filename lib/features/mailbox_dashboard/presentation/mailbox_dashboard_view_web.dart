@@ -277,7 +277,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         }
       }),
       Obx(() {
-        if (controller.validateNoEmailsInTrashAndSpamFolder()) {
+        if (controller.emailsInCurrentMailbox.isEmpty) {
           return const SizedBox.shrink();
         } else {
           return Padding(
