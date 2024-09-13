@@ -14,6 +14,7 @@ import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/prefix_email_address.dart';
@@ -134,6 +135,8 @@ class SearchEmailController extends BaseController
   Set<String> get listAddressOfToFiltered => searchEmailFilter.value.to;
 
   Set<String> get listAddressOfFromFiltered => searchEmailFilter.value.from;
+
+  Set<String> get listHasKeywordFiltered => searchEmailFilter.value.hasKeyword;
 
   SearchEmailController(
       this._quickSearchEmailInteractor,
@@ -511,6 +514,21 @@ class SearchEmailController extends BaseController
     _searchEmailAction(context);
   }
 
+  void selectStarredSearchFilter(BuildContext context) {
+    final listKeyword = listHasKeywordFiltered;
+    if (!listKeyword.contains(KeyWordIdentifier.emailFlagged.value)) {
+      listKeyword.add(KeyWordIdentifier.emailFlagged.value);
+    }
+    _updateSimpleSearchFilter(
+      hasKeywordOption: Some(listKeyword),
+      beforeOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition()
+        ? const Some(0)
+        : const None()
+    );
+    _searchEmailAction(context);
+  }
+
   bool checkQuickSearchFilterSelected(QuickSearchFilter filter) {
     switch (filter) {
       case QuickSearchFilter.hasAttachment:
@@ -702,6 +720,7 @@ class SearchEmailController extends BaseController
     Option<UTCDate>? endDateOption,
     Option<Set<Comparator>>? sortOrderOption,
     Option<int>? positionOption,
+    Option<Set<String>>? hasKeywordOption,
   }) {
     searchEmailFilter.value = searchEmailFilter.value.copyWith(
       fromOption: fromOption,
@@ -715,6 +734,7 @@ class SearchEmailController extends BaseController
       endDateOption: endDateOption,
       sortOrderOption: sortOrderOption,
       positionOption: positionOption,
+      hasKeywordOption: hasKeywordOption,
     );
     searchEmailFilter.refresh();
   }
@@ -934,7 +954,7 @@ class SearchEmailController extends BaseController
         _deleteFolderSearchFilter(context);
         break;
       case QuickSearchFilter.starred:
-        _deleteFolderSearchFilter(context);
+        _deleteStarredSearchFilter(context);
         break;
       default:
         break;
@@ -1006,6 +1026,17 @@ class SearchEmailController extends BaseController
   void _deleteFolderSearchFilter(BuildContext context) {
     _updateSimpleSearchFilter(
       mailboxOption: const None(),
+      beforeOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition()
+        ? const Some(0)
+        : const None()
+    );
+    _searchEmailAction(context);
+  }
+
+  void _deleteStarredSearchFilter(BuildContext context) {
+    _updateSimpleSearchFilter(
+      hasKeywordOption: const None(),
       beforeOption: const None(),
       positionOption: emailSortOrderType.value.isScrollByPosition()
         ? const Some(0)
