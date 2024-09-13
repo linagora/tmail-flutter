@@ -91,16 +91,19 @@ class AdvancedFilterController extends BaseController {
 
   void _updateFilterEmailFromAdvancedSearchView() {
     if (hasKeyWordFilterInputController.text.isNotEmpty) {
-      searchController.updateFilterEmail(text: SearchQuery(hasKeyWordFilterInputController.text));
+      searchController.updateFilterEmail(
+        textOption: Some(SearchQuery(hasKeyWordFilterInputController.text)));
       searchController.searchInputController.text = hasKeyWordFilterInputController.text;
     } else {
-      searchController.updateFilterEmail(text: SearchQuery.initial());
+      searchController.updateFilterEmail(
+        textOption: Some(SearchQuery.initial()));
     }
 
     if (notKeyWordFilterInputController.text.isNotEmpty) {
-      searchController.updateFilterEmail(notKeyword: notKeyWordFilterInputController.text.split(',').toSet());
+      searchController.updateFilterEmail(
+        notKeywordOption: Some(notKeyWordFilterInputController.text.split(',').toSet()));
     } else {
-      searchController.updateFilterEmail(notKeyword: {});
+      searchController.updateFilterEmail(notKeywordOption: const None());
     }
 
     if (listFromEmailAddress.isNotEmpty) {
@@ -121,8 +124,8 @@ class AdvancedFilterController extends BaseController {
     searchController.updateFilterEmail(
       mailboxOption: optionOf(_destinationMailboxSelected),
       subjectOption: optionOf(subjectFilterInputController.text),
-      emailReceiveTimeType: dateFilterSelectedFormAdvancedSearch.value,
-      hasAttachment: hasAttachment.value,
+      emailReceiveTimeTypeOption: optionOf(dateFilterSelectedFormAdvancedSearch.value),
+      hasAttachmentOption: optionOf(hasAttachment.value),
       startDateOption: optionOf(startDate.value?.toUTCDate()),
       endDateOption: optionOf(endDate.value?.toUTCDate())
     );

@@ -1,18 +1,22 @@
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
+import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_filter_condition_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SearchEmailFilter with EquatableMixin, OptionParamMixin {
   final Set<String> from;
@@ -60,13 +64,13 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
   SearchEmailFilter copyWith({
     Option<Set<String>>? fromOption,
     Option<Set<String>>? toOption,
-    SearchQuery? text,
+    Option<SearchQuery>? textOption,
     Option<String>? subjectOption,
-    Set<String>? notKeyword,
-    Set<String>? hasKeyword,
+    Option<Set<String>>? notKeywordOption,
+    Option<Set<String>>? hasKeywordOption,
     Option<PresentationMailbox>? mailboxOption,
-    EmailReceiveTimeType? emailReceiveTimeType,
-    bool? hasAttachment,
+    Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption,
+    Option<bool>? hasAttachmentOption,
     Option<UTCDate>? beforeOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
@@ -76,13 +80,13 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     return SearchEmailFilter(
       from: getOptionParam(fromOption, from),
       to: getOptionParam(toOption, to),
-      text: text ?? this.text,
+      text: getOptionParam(textOption, text),
       subject: getOptionParam(subjectOption, subject),
-      notKeyword: notKeyword ?? this.notKeyword,
-      hasKeyword: hasKeyword ?? this.hasKeyword,
+      notKeyword: getOptionParam(notKeywordOption, notKeyword),
+      hasKeyword: getOptionParam(hasKeywordOption, hasKeyword),
       mailbox: getOptionParam(mailboxOption, mailbox),
-      emailReceiveTimeType: emailReceiveTimeType ?? this.emailReceiveTimeType,
-      hasAttachment: hasAttachment ?? this.hasAttachment,
+      emailReceiveTimeType: getOptionParam(emailReceiveTimeTypeOption, emailReceiveTimeType),
+      hasAttachment: getOptionParam(hasAttachmentOption, hasAttachment),
       before: getOptionParam(beforeOption, before),
       startDate: getOptionParam(startDateOption, startDate),
       endDate: getOptionParam(endDateOption, endDate),
@@ -138,6 +142,58 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     return listEmailCondition.isNotEmpty
       ? LogicFilterOperator(Operator.AND, listEmailCondition)
       : null;
+  }
+
+  Set<String> getContactApplied(PrefixEmailAddress prefixEmailAddress) {
+    switch(prefixEmailAddress) {
+      case PrefixEmailAddress.from:
+        return from;
+      case PrefixEmailAddress.to:
+        return to;
+      default:
+        return {};
+    }
+  }
+
+  bool get searchFilterByMailboxApplied => mailbox != null;
+
+  String getMailboxName(BuildContext context) => mailbox?.getDisplayName(context) ?? '';
+
+  bool get searchFilterByFromApplied => from.isNotEmpty;
+
+  bool get searchFilterByToApplied => to.isNotEmpty;
+
+  bool searchFilterByContactApplied(PrefixEmailAddress prefixEmailAddress) {
+    switch(prefixEmailAddress) {
+      case PrefixEmailAddress.from:
+        return searchFilterByFromApplied;
+      case PrefixEmailAddress.to:
+        return searchFilterByToApplied;
+      default:
+        return false;
+    }
+  }
+
+  String getNameContactApplied(BuildContext context, PrefixEmailAddress prefixEmailAddress) {
+    switch(prefixEmailAddress) {
+      case PrefixEmailAddress.from:
+        return '${AppLocalizations.of(context).from_email_address_prefix} ${from.first}';
+      case PrefixEmailAddress.to:
+        return '${AppLocalizations.of(context).to_email_address_prefix} ${to.first}';
+      default:
+        return '';
+    }
+  }
+
+  String getNameContactDefault(BuildContext context, PrefixEmailAddress prefixEmailAddress) {
+    switch(prefixEmailAddress) {
+      case PrefixEmailAddress.from:
+        return AppLocalizations.of(context).from_email_address_prefix;
+      case PrefixEmailAddress.to:
+        return AppLocalizations.of(context).to_email_address_prefix;
+      default:
+        return '';
+    }
   }
 
   @override
