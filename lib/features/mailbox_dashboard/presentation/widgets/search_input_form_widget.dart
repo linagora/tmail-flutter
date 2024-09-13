@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/quick_search/quick_search_input_form.dart';
 import 'package:core/utils/direction_utils.dart';
@@ -29,6 +30,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
   final _searchController = Get.find<search.SearchController>();
   final _dashBoardController = Get.find<MailboxDashBoardController>();
   final _imagePaths = Get.find<ImagePaths>();
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
   SearchInputFormWidget({Key? key}) : super(key: key);
 
@@ -235,8 +237,9 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
       return SearchFilterButton(
         searchFilter: searchFilter,
         imagePaths: _imagePaths,
+        responsiveUtils: _responsiveUtils,
         isSelected: isSelected,
-        backgroundColor: searchFilter.getSuggestionBackgroundColor(isFilterSelected: isSelected),
+        backgroundColor: searchFilter.getSuggestionBackgroundColor(isSelected: isSelected),
         onDeleteSearchFilterAction: (searchFilter) {
           _searchController.deleteQuickSearchFilterFromSuggestionSearchView(searchFilter);
           suggestionsListState.invalidateSuggestions();

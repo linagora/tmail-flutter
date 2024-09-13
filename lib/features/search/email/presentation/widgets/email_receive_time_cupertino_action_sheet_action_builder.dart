@@ -13,8 +13,8 @@ class EmailReceiveTimeCupertinoActionSheetActionBuilder
   final EmailReceiveTimeType? timeTypeCurrent;
   final SvgPicture? actionSelected;
   final Color? bgColor;
-  final EdgeInsets? iconLeftPadding;
-  final EdgeInsets? iconRightPadding;
+  final EdgeInsetsGeometry? iconLeftPadding;
+  final EdgeInsetsGeometry? iconRightPadding;
 
   EmailReceiveTimeCupertinoActionSheetActionBuilder(
       String actionName,

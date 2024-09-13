@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
@@ -83,16 +84,24 @@ enum QuickSearchFilter {
     }
   }
 
-  Color getBackgroundColor({bool isFilterSelected = false}) {
-    if (isFilterSelected) {
+  Color getBackgroundColor({bool isSelected = false}) {
+    if (isSelected) {
       return AppColor.primaryColor.withOpacity(0.06);
     } else {
       return AppColor.colorSearchFilterButton;
     }
   }
 
-  Color getSuggestionBackgroundColor({bool isFilterSelected = false}) {
-    if (isFilterSelected) {
+  Color getMobileBackgroundColor({bool isSelected = false}) {
+    if (isSelected) {
+      return AppColor.primaryColor.withOpacity(0.06);
+    } else {
+      return AppColor.colorMobileSearchFilterButton.withOpacity(0.6);
+    }
+  }
+
+  Color getSuggestionBackgroundColor({bool isSelected = false}) {
+    if (isSelected) {
       return AppColor.primaryColor.withOpacity(0.06);
     } else {
       return AppColor.colorSuggestionSearchFilterButton.withOpacity(0.6);
@@ -143,8 +152,16 @@ enum QuickSearchFilter {
     }
   }
 
-  bool isOnTapWithPositionActionSupported() =>
-    this == QuickSearchFilter.dateTime || this == QuickSearchFilter.sortBy;
+  bool isOnTapWithPositionActionSupported(
+    BuildContext context,
+    ResponsiveUtils responsiveUtils
+  ) {
+    if (responsiveUtils.isMobile(context)) {
+      return false;
+    } else {
+      return this == QuickSearchFilter.dateTime || this == QuickSearchFilter.sortBy;
+    }
+  }
 
   bool isArrowDownIconSupported() =>
     this == QuickSearchFilter.dateTime ||

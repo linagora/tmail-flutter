@@ -1,16 +1,17 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -19,8 +20,10 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/contact_quick_search_item.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/recent_search_item_tile_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/search_filter_button.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/search_more_state.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/styles/search_email_view_style.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/utils/search_email_utils.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/app_bar_selection_mode.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_receive_time_action_tile_widget.dart';
@@ -58,7 +61,10 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             Container(
                 height: 52,
                 color: Colors.white,
-                padding: SearchEmailUtils.getPaddingAppBar(context, controller.responsiveUtils),
+                padding: SearchEmailViewStyle.getAppBarPadding(
+                  context,
+                  controller.responsiveUtils
+                ),
                 child: Obx(() {
                   if (controller.selectionMode.value == SelectMode.ACTIVE) {
                     return AppBarSelectionMode(
@@ -98,10 +104,9 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 );
               } else {
                 if (controller.listResultSearch.isNotEmpty) {
-                  return Container(
-                      color: Colors.white,
-                      padding: const EdgeInsets.symmetric(horizontal: 4),
-                      child: _buildListEmailBody(context, controller.listResultSearch)
+                  return _buildListEmailBody(
+                    context,
+                    controller.listResultSearch
                   );
                 } else {
                   return _buildEmptyEmail(context);
@@ -164,133 +169,181 @@ class SearchEmailView extends GetWidget<SearchEmailController>
 
   Widget _buildListSearchFilterAction(BuildContext context) {
     return Container(
-      margin: SearchEmailUtils.getMarginSearchFilterButton(context, controller.responsiveUtils),
-      padding: SearchEmailUtils.getPaddingSearchFilterButton(context, controller.responsiveUtils),
-      height: 60,
-      child: ListView(
+      height: 45,
+      margin: SearchEmailViewStyle.listSearchFilterButtonMargin,
+      alignment: AlignmentDirectional.centerStart,
+      child: ScrollbarListView(
+        scrollBehavior: ScrollConfiguration.of(context).copyWith(
+          dragDevices: {
+            PointerDeviceKind.touch,
+            PointerDeviceKind.mouse,
+            PointerDeviceKind.trackpad
+          },
+          scrollbars: false
+        ),
+        scrollController: controller.listSearchFilterScrollController,
+        child: ListView(
           scrollDirection: Axis.horizontal,
+          shrinkWrap: true,
+          controller: controller.listSearchFilterScrollController,
+          padding: SearchEmailViewStyle.getListSearchFilterButtonPadding(
+            context,
+            controller.responsiveUtils
+          ),
           children: [
-            _buildSearchFilterByContactButton(context, PrefixEmailAddress.from),
-            _buildSearchFilterByContactButton(context, PrefixEmailAddress.to),
-            ...[
-              QuickSearchFilter.hasAttachment,
-              QuickSearchFilter.last7Days
-            ].map((filter) => _buildQuickSearchFilterButton(context, filter)),
-            _buildSearchFilterByMailboxButton(context),
-            _buildQuickSearchFilterButton(context, QuickSearchFilter.sortBy)
+            _buildSearchFilterButton(context, QuickSearchFilter.folder),
+            SearchEmailViewStyle.searchFilterSizeBoxMargin,
+            _buildSearchFilterButton(context, QuickSearchFilter.from),
+            SearchEmailViewStyle.searchFilterSizeBoxMargin,
+            _buildSearchFilterButton(context, QuickSearchFilter.to),
+            SearchEmailViewStyle.searchFilterSizeBoxMargin,
+            _buildSearchFilterButton(context, QuickSearchFilter.hasAttachment),
+            SearchEmailViewStyle.searchFilterSizeBoxMargin,
+            _buildSearchFilterButton(context, QuickSearchFilter.dateTime),
+            SearchEmailViewStyle.searchFilterSizeBoxMargin,
+            _buildSearchFilterButton(context, QuickSearchFilter.starred),
+            SearchEmailViewStyle.searchFilterSizeBoxMargin,
+            _buildSearchFilterButton(context, QuickSearchFilter.sortBy),
           ],
+        ),
       ),
     );
   }
 
-  Widget _buildQuickSearchFilterButton(BuildContext context, QuickSearchFilter filter) {
+  Widget _buildSearchFilterButton(
+    BuildContext context,
+    QuickSearchFilter searchFilter,
+  ) {
     return Obx(() {
-      final filterSelected = controller.checkQuickSearchFilterSelected(filter);
-      return Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: InkWell(
-          onTap: () {
-            FocusScope.of(context).unfocus();
+      final searchEmailFilter = controller.searchEmailFilter.value;
+      final sortOrderType = controller.emailSortOrderType.value;
+      final listAddressOfFrom = controller.listAddressOfFromFiltered;
+      final userName = controller.session?.username;
+      final startDate = controller.startDateFiltered;
+      final endDate = controller.endDateFiltered;
+      final receiveTimeType = controller.receiveTimeFiltered;
+      final mailbox = controller.mailboxFiltered;
+      final listAddressOfTo = controller.listAddressOfToFiltered;
 
-            if (filter == QuickSearchFilter.hasAttachment) {
-              controller.selectQuickSearchFilter(context, filter);
-            } else if (controller.responsiveUtils.isMobile(context)) {
-              if (filter == QuickSearchFilter.last7Days) {
-                controller.openContextMenuAction(
-                  context,
-                  _emailReceiveTimeCupertinoActionTile(
-                      context,
-                      controller.emailReceiveTimeType.value,
-                      (receiveTime) => controller.selectReceiveTimeQuickSearchFilter(context, receiveTime)));
-              } else {
-                controller.openContextMenuAction(
-                context,
-                _emailSortOrderCupertinoActionTitle(
-                  context,
-                  controller.emailSortOrderType.value,
-                  controller.selectSortOrderQuickSearchFilter
-                )
-              );
-              }
-            }
-          },
-          onTapDown: (detail) {
-            if (!controller.responsiveUtils.isMobile(context)) {
-              FocusScope.of(context).unfocus();
+      final isSelected = searchFilter.isSelected(
+        context,
+        searchEmailFilter,
+        sortOrderType,
+        userName);
 
-              final screenSize = MediaQuery.of(context).size;
-              final offset = detail.globalPosition;
-              final position = RelativeRect.fromLTRB(
-                offset.dx,
-                offset.dy,
-                screenSize.width - offset.dx,
-                screenSize.height - offset.dy,
-              );
-              if (filter == QuickSearchFilter.last7Days) {
-                controller.openPopupMenuAction(
-                  context,
-                  position,
-                  _popupMenuEmailReceiveTimeType(
-                      context,
-                      controller.emailReceiveTimeType.value,
-                      (receiveTime) => controller.selectReceiveTimeQuickSearchFilter(context, receiveTime)));
-              } else if (filter == QuickSearchFilter.sortBy) {
-                controller.openPopupMenuAction(
-                  context,
-                  position,
-                  _popupMenuEmailSortOrderType(
-                    context,
-                    controller.emailSortOrderType.value,
-                    controller.selectSortOrderQuickSearchFilter
-                  )
-                );
-              }
-            }
-          },
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: filter.getBackgroundColor(isFilterSelected: filterSelected)),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                SvgPicture.asset(
-                    filter.getIcon(controller.imagePaths, isSelected: filterSelected),
-                    width: 16,
-                    height: 16,
-                    fit: BoxFit.fill),
-                const SizedBox(width: 4),
-                Text(
-                  filter.getTitle(
-                    context,
-                    receiveTimeType: controller.emailReceiveTimeType.value,
-                    startDate: controller.startDateFiltered,
-                    endDate: controller.endDateFiltered,
-                    sortOrderType: controller.emailSortOrderType.value
-                  ),
-                  maxLines: 1,
-                  overflow: CommonTextStyle.defaultTextOverFlow,
-                  softWrap: CommonTextStyle.defaultSoftWrap,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.normal,
-                    color: AppColor.colorTextButtonHeaderThread),
-                ),
-                if (filter == QuickSearchFilter.last7Days || filter == QuickSearchFilter.sortBy)
-                  ... [
-                    const SizedBox(width: 4),
-                    SvgPicture.asset(
-                        controller.imagePaths.icChevronDownOutline,
-                        colorFilter: filterSelected
-                          ? AppColor.primaryColor.asFilter()
-                          : AppColor.colorDefaultRichTextButton.asFilter(),
-                        fit: BoxFit.fill),
-                  ]
-              ])
-          ),
-        ),
+      return SearchFilterButton(
+        key: Key('mobile_${searchFilter.name}_search_filter_button'),
+        searchFilter: searchFilter,
+        imagePaths: controller.imagePaths,
+        responsiveUtils: controller.responsiveUtils,
+        isSelected: isSelected,
+        receiveTimeType: receiveTimeType,
+        startDate: startDate,
+        endDate: endDate,
+        sortOrderType: sortOrderType,
+        listAddressOfFrom: listAddressOfFrom,
+        listAddressOfTo: listAddressOfTo,
+        userName: userName,
+        mailbox: mailbox,
+        backgroundColor: searchFilter.getMobileBackgroundColor(isSelected: isSelected),
+        onSelectSearchFilterAction: _onSelectSearchFilterAction,
       );
     });
+  }
+
+  Future<void> _onSelectSearchFilterAction(
+    BuildContext context,
+    QuickSearchFilter searchFilter,
+    {RelativeRect? buttonPosition}
+  ) async {
+    switch(searchFilter) {
+      case QuickSearchFilter.dateTime:
+        if (buttonPosition != null) {
+          _openPopupMenuDateFilter(context, buttonPosition);
+        } else {
+          _openContextMenuDateFilter(context);
+        }
+        break;
+      case QuickSearchFilter.sortBy:
+        if (buttonPosition != null) {
+          _openPopupMenuSortFilter(context, buttonPosition);
+        } else {
+          _openContextMenuSortFilter(context);
+        }
+        break;
+      case QuickSearchFilter.from:
+        controller.selectContactForSearchFilter(
+          context,
+          PrefixEmailAddress.from);
+        break;
+      case QuickSearchFilter.hasAttachment:
+        controller.selectHasAttachmentSearchFilter(context);
+        break;
+      case QuickSearchFilter.to:
+        controller.selectContactForSearchFilter(
+          context,
+          PrefixEmailAddress.to);
+        break;
+      case QuickSearchFilter.folder:
+        controller.selectMailboxForSearchFilter(
+          context,
+          controller.mailboxFiltered);
+        break;
+      default:
+        break;
+    }
+  }
+
+  void _openPopupMenuDateFilter(BuildContext context, RelativeRect position) {
+    controller.openPopupMenuAction(
+      context,
+      position,
+      _popupMenuEmailReceiveTimeType(
+        context,
+        controller.emailReceiveTimeType.value,
+        (receiveTime) => controller.selectReceiveTimeQuickSearchFilter(
+          context,
+          receiveTime
+        )
+      )
+    );
+  }
+
+  void _openContextMenuDateFilter(BuildContext context) {
+    controller.openContextMenuAction(
+      context,
+      _emailReceiveTimeCupertinoActionTile(
+        context,
+        controller.emailReceiveTimeType.value,
+        (receiveTime) => controller.selectReceiveTimeQuickSearchFilter(
+          context,
+          receiveTime
+        )
+      )
+    );
+  }
+
+  void _openPopupMenuSortFilter(BuildContext context, RelativeRect position) {
+    controller.openPopupMenuAction(
+      context,
+      position,
+      _popupMenuEmailSortOrderType(
+        context,
+        controller.emailSortOrderType.value,
+        controller.selectSortOrderQuickSearchFilter
+      )
+    );
+  }
+
+  void _openContextMenuSortFilter(BuildContext context) {
+    controller.openContextMenuAction(
+      context,
+      _emailSortOrderCupertinoActionTitle(
+        context,
+        controller.emailSortOrderType.value,
+        controller.selectSortOrderQuickSearchFilter
+      )
+    );
   }
 
   List<PopupMenuEntry> _popupMenuEmailReceiveTimeType(
@@ -320,10 +373,10 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                 timeType,
                 timeTypeCurrent: receiveTimeSelected,
                 iconLeftPadding: controller.responsiveUtils.isMobile(context)
-                    ? const EdgeInsets.only(left: 12, right: 16)
-                    : const EdgeInsets.only(right: 12),
+                    ? const EdgeInsetsDirectional.only(start: 12, end: 16)
+                    : const EdgeInsetsDirectional.only(end: 12),
                 iconRightPadding: controller.responsiveUtils.isMobile(context)
-                    ? const EdgeInsets.only(right: 12)
+                    ? const EdgeInsetsDirectional.only(end: 12)
                     : EdgeInsets.zero,
                 actionSelected: SvgPicture.asset(
                     controller.imagePaths.icFilterSelected,
@@ -394,20 +447,33 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           }
         },
         child: Padding(
-            padding: SearchEmailUtils.getPaddingShowAllResultButton(context, controller.responsiveUtils),
-            child: Row(children: [
-              Text(AppLocalizations.of(context).showingResultsFor,
-                  style: const TextStyle(fontSize: 13.0,
-                      color: AppColor.colorTextButtonHeaderThread,
-                      fontWeight: FontWeight.w500)
+          padding: SearchEmailViewStyle.getShowAllResultButtonPadding(
+            context,
+            controller.responsiveUtils
+          ),
+          child: Row(
+            children: [
+              Text(
+                AppLocalizations.of(context).showingResultsFor,
+                style: const TextStyle(
+                  fontSize: 13.0,
+                  color: AppColor.colorTextButtonHeaderThread,
+                  fontWeight: FontWeight.w500
+                )
               ),
               const SizedBox(width: 4),
-              Expanded(child: Text('"${controller.currentSearchText.value}"',
+              Expanded(
+                child: Text(
+                  '"${controller.currentSearchText.value}"',
                   style: const TextStyle(
-                      fontSize: 13.0,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500)))
-            ])
+                    fontSize: 13.0,
+                    color: Colors.black,
+                    fontWeight: FontWeight.w500
+                  )
+                )
+              )
+            ]
+          )
         ),
       ),
     );
@@ -417,16 +483,20 @@ class SearchEmailView extends GetWidget<SearchEmailController>
       BuildContext context,
       List<RecentSearch> listRecentSearch
   ) {
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      Padding(
-          padding: SearchEmailUtils.getPaddingSearchRecentTitle(context, controller.responsiveUtils),
-          child: Text(AppLocalizations.of(context).recent,
-              style: const TextStyle(fontSize: 13.0,
-                  color: AppColor.colorTextButtonHeaderThread,
-                  fontWeight: FontWeight.w500)
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: SearchEmailViewStyle.getSearchRecentTitleMargin(
+            context,
+            controller.responsiveUtils
+          ),
+          child: Text(
+            AppLocalizations.of(context).recent,
+            style: SearchEmailViewStyle.searchRecentTitleStyle
           )
-      ),
-      ListView.builder(
+        ),
+        ListView.builder(
           shrinkWrap: true,
           primary: false,
           itemCount: listRecentSearch.length,
@@ -436,13 +506,22 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               color: Colors.transparent,
               child: InkWell(
                 child: RecentSearchItemTileWidget(
-                    recentSearch,
-                    contentPadding: SearchEmailUtils.getPaddingListRecentSearch(context, controller.responsiveUtils)),
-                onTap: () => controller.searchEmailByRecentAction(context, recentSearch),
+                  recentSearch,
+                  contentPadding: SearchEmailViewStyle.getListRecentSearchPadding(
+                    context,
+                    controller.responsiveUtils
+                  )
+                ),
+                onTap: () => controller.searchEmailByRecentAction(
+                  context,
+                  recentSearch
+                ),
               ),
             );
-          })
-    ]);
+          }
+        )
+      ]
+    );
   }
 
   Widget _buildListSuggestionSearch(
@@ -458,9 +537,13 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             color: Colors.transparent,
             child: InkWell(
               child: EmailQuickSearchItemTileWidget(
-                  listSuggestionSearch[index],
-                  controller.currentMailbox,
-                  contentPadding: SearchEmailUtils.getPaddingSearchSuggestionList(context, controller.responsiveUtils)),
+                listSuggestionSearch[index],
+                controller.currentMailbox,
+                contentPadding: SearchEmailViewStyle.getSearchSuggestionListPadding(
+                  context,
+                  controller.responsiveUtils
+                )
+              ),
               onTap: () {
                 final emailPreview = listSuggestionSearch[index];
                 final mailboxContain = emailPreview
@@ -536,7 +619,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   searchQuery: controller.searchQuery,
                   isShowingEmailContent: controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
                   isSearchEmailRunning: true,
-                  padding: SearchEmailUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
+                  padding: SearchEmailViewStyle.getPaddingSearchResultList(context, controller.responsiveUtils),
                   mailboxContain: currentPresentationEmail.mailboxContain,
                   emailActionClick: (action, email) {
                     controller.pressEmailAction(
@@ -573,57 +656,60 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               },
             )
           : ListView.separated(
-            controller: controller.resultSearchScrollController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            key: const PageStorageKey('list_presentation_email_in_search_view'),
-            itemCount: listPresentationEmail.length,
-            itemBuilder: (context, index) {
-              final currentPresentationEmail = listPresentationEmail[index];
-              return Obx(() => EmailTileBuilder(
-                presentationEmail: currentPresentationEmail,
-                selectAllMode: controller.selectionMode.value,
-                searchQuery: controller.searchQuery,
-                isShowingEmailContent: controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
-                isSearchEmailRunning: true,
-                padding: SearchEmailUtils.getPaddingSearchResultList(context, controller.responsiveUtils),
-                mailboxContain: currentPresentationEmail.mailboxContain,
-                emailActionClick: (action, email) {
-                  controller.pressEmailAction(
+              controller: controller.resultSearchScrollController,
+              physics: const AlwaysScrollableScrollPhysics(),
+              key: const PageStorageKey('list_presentation_email_in_search_view'),
+              itemCount: listPresentationEmail.length,
+              itemBuilder: (context, index) {
+                final currentPresentationEmail = listPresentationEmail[index];
+                return Obx(() => EmailTileBuilder(
+                  presentationEmail: currentPresentationEmail,
+                  selectAllMode: controller.selectionMode.value,
+                  searchQuery: controller.searchQuery,
+                  isShowingEmailContent: controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
+                  isSearchEmailRunning: true,
+                  padding: SearchEmailViewStyle.getPaddingSearchResultList(
                     context,
-                    action,
-                    email,
-                    mailboxContain: currentPresentationEmail.mailboxContain
-                  );
-                },
-                onMoreActionClick: (email, position) {
-                  if (controller.responsiveUtils.isScreenWithShortestSide(context)) {
-                    controller.openContextMenuAction(
+                    controller.responsiveUtils
+                  ),
+                  mailboxContain: currentPresentationEmail.mailboxContain,
+                  emailActionClick: (action, email) {
+                    controller.pressEmailAction(
                       context,
-                      _contextMenuActionTile(context, email)
+                      action,
+                      email,
+                      mailboxContain: currentPresentationEmail.mailboxContain
                     );
-                  } else {
-                    controller.openPopupMenuAction(
-                      context,
-                      position,
-                      _popupMenuActionTile(context, email)
-                    );
-                  }
-                },
+                  },
+                  onMoreActionClick: (email, position) {
+                    if (controller.responsiveUtils.isScreenWithShortestSide(context)) {
+                      controller.openContextMenuAction(
+                        context,
+                        _contextMenuActionTile(context, email)
+                      );
+                    } else {
+                      controller.openPopupMenuAction(
+                        context,
+                        position,
+                        _popupMenuActionTile(context, email)
+                      );
+                    }
+                  },
 
-              ));
-            },
-            separatorBuilder: (context, index) {
-              return Padding(
-                padding: ItemEmailTileStyles.getPaddingDividerWeb(context, controller.responsiveUtils),
-                child: Divider(
-                  color: index < listPresentationEmail.length - 1 &&
-                    controller.selectionMode.value == SelectMode.INACTIVE
-                    ? null
-                    : Colors.white
-                )
-              );
-            },
-          )
+                ));
+              },
+              separatorBuilder: (context, index) {
+                return Padding(
+                  padding: ItemEmailTileStyles.getPaddingDividerWeb(context, controller.responsiveUtils),
+                  child: Divider(
+                    color: index < listPresentationEmail.length - 1 &&
+                      controller.selectionMode.value == SelectMode.INACTIVE
+                      ? null
+                      : Colors.white
+                  )
+                );
+              },
+            )
     );
   }
 
@@ -680,114 +766,5 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   child: loadingWidget)
               : const SizedBox.shrink();
         }));
-  }
-
-  Widget _buildSearchFilterByMailboxButton(BuildContext context) {
-    return Obx(() {
-      final filterSelected = controller.searchEmailFilter.value.searchFilterByMailboxApplied;
-      return Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: InkWell(
-          onTap: () => controller.selectMailboxForSearchFilter(
-              context,
-              controller.mailboxFiltered),
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: filterSelected
-                    ? AppColor.colorItemEmailSelectedDesktop
-                    : AppColor.colorButtonHeaderThread),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                SvgPicture.asset(
-                    filterSelected ? controller.imagePaths.icSelectedSB : controller.imagePaths.icFolderMailbox,
-                    width: 16,
-                    height: 16,
-                    fit: BoxFit.fill),
-                const SizedBox(width: 4),
-                Text(
-                  filterSelected
-                    ? controller.searchEmailFilter.value.getMailboxName(context)
-                    : AppLocalizations.of(context).folder,
-                  maxLines: 1,
-                  overflow: CommonTextStyle.defaultTextOverFlow,
-                  softWrap: CommonTextStyle.defaultSoftWrap,
-                  style: filterSelected
-                    ? const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: AppColor.colorTextButton)
-                    : const TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.normal,
-                        color: AppColor.colorTextButtonHeaderThread)
-                ),
-                const SizedBox(width: 4),
-                SvgPicture.asset(
-                    controller.imagePaths.icChevronDownOutline,
-                    colorFilter: filterSelected
-                      ? AppColor.primaryColor.asFilter()
-                      : AppColor.colorDefaultRichTextButton.asFilter(),
-                    fit: BoxFit.fill),
-              ])
-          ),
-        ),
-      );
-    });
-  }
-
-  Widget _buildSearchFilterByContactButton(BuildContext context, PrefixEmailAddress prefixEmailAddress) {
-    return Obx(() {
-      final filterSelected = controller.searchEmailFilter.value
-          .searchFilterByContactApplied(prefixEmailAddress);
-      return Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: InkWell(
-          onTap: () => controller.selectContactForSearchFilter(context, prefixEmailAddress),
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: filterSelected
-                      ? AppColor.colorItemEmailSelectedDesktop
-                      : AppColor.colorButtonHeaderThread),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                SvgPicture.asset(
-                    filterSelected ? controller.imagePaths.icSelectedSB : controller.imagePaths.icUserSB,
-                    width: 16,
-                    height: 16,
-                    fit: BoxFit.fill),
-                const SizedBox(width: 4),
-                Text(
-                    filterSelected
-                        ? controller.searchEmailFilter.value.getNameContactApplied(context, prefixEmailAddress)
-                        : controller.searchEmailFilter.value.getNameContactDefault(context, prefixEmailAddress),
-                    maxLines: 1,
-                    overflow: CommonTextStyle.defaultTextOverFlow,
-                    softWrap: CommonTextStyle.defaultSoftWrap,
-                    style: filterSelected
-                        ? const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                            color: AppColor.colorTextButton)
-                        : const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.normal,
-                            color: AppColor.colorTextButtonHeaderThread)
-                ),
-                const SizedBox(width: 4),
-                SvgPicture.asset(
-                    controller.imagePaths.icChevronDownOutline,
-                    colorFilter: filterSelected
-                      ? AppColor.primaryColor.asFilter()
-                      : AppColor.colorDefaultRichTextButton.asFilter(),
-                    fit: BoxFit.fill),
-              ])
-          ),
-        ),
-      );
-    });
   }
 }

@@ -570,6 +570,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         key: Key('${searchFilter.name}_search_filter_button'),
         searchFilter: searchFilter,
         imagePaths: controller.imagePaths,
+        responsiveUtils: controller.responsiveUtils,
         isSelected: isSelected,
         receiveTimeType: receiveTimeType,
         startDate: startDate,
