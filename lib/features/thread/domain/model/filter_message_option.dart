@@ -43,7 +43,7 @@ extension FilterMessageOptionExtension on FilterMessageOption {
   String getTitle(BuildContext context) {
     switch(this) {
       case FilterMessageOption.all:
-        return '';
+        return AppLocalizations.of(context).filter_messages;
       case FilterMessageOption.unread:
         return AppLocalizations.of(context).with_unread;
       case FilterMessageOption.attachments:
@@ -92,7 +92,7 @@ extension FilterMessageOptionExtension on FilterMessageOption {
     }
   }
 
-  String getIcon(ImagePaths imagePaths) {
+  String getContextMenuIcon(ImagePaths imagePaths) {
     switch(this) {
       case FilterMessageOption.all:
         return '';
@@ -105,7 +105,7 @@ extension FilterMessageOptionExtension on FilterMessageOption {
     }
   }
 
-  String getIconSelected(ImagePaths imagePaths) {
+  String getIcon(ImagePaths imagePaths) {
     switch(this) {
       case FilterMessageOption.all:
         return imagePaths.icFilterAdvanced;
@@ -116,14 +116,22 @@ extension FilterMessageOptionExtension on FilterMessageOption {
     }
   }
 
-  Color getBackgroundColor() {
+  Color getIconColor() {
     switch(this) {
       case FilterMessageOption.all:
-        return AppColor.colorButtonHeaderThread;
+        return AppColor.colorFilterMessageIcon;
       case FilterMessageOption.unread:
       case FilterMessageOption.attachments:
       case FilterMessageOption.starred:
-        return AppColor.colorItemEmailSelectedDesktop;
+        return AppColor.primaryColor;
+    }
+  }
+
+  Color getBackgroundColor({bool isSelected = false}) {
+    if (isSelected) {
+      return AppColor.primaryColor.withOpacity(0.06);
+    } else {
+      return AppColor.colorFilterMessageButton.withOpacity(0.6);
     }
   }
 
@@ -131,16 +139,16 @@ extension FilterMessageOptionExtension on FilterMessageOption {
     switch(this) {
       case FilterMessageOption.all:
         return const TextStyle(
-          fontSize: 12,
+          fontSize: 13,
           fontWeight: FontWeight.normal,
-          color: AppColor.colorTextButtonHeaderThread);
+          color: AppColor.colorFilterMessageTitle);
       case FilterMessageOption.unread:
       case FilterMessageOption.attachments:
       case FilterMessageOption.starred:
         return const TextStyle(
-          fontSize: 12,
-          fontWeight: FontWeight.w500,
-          color: AppColor.colorTextButton);
+          fontSize: 13,
+          fontWeight: FontWeight.normal,
+          color: AppColor.primaryColor);
     }
   }
 }

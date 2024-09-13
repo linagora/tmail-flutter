@@ -320,7 +320,7 @@ class ThreadView extends GetWidget<ThreadController>
     return listFilter.map((filter) => (FilterMessageCupertinoActionSheetActionBuilder(
              Key('filter_email_${filter.name}'),
             SvgPicture.asset(
-                filter.getIcon(controller.imagePaths),
+                filter.getContextMenuIcon(controller.imagePaths),
                 width: 20,
                 height: 20,
                 fit: BoxFit.fill,
