@@ -20,6 +20,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
   final SearchQuery? text;
   final String? subject;
   final Set<String> notKeyword;
+  final Set<String> hasKeyword;
   final PresentationMailbox? mailbox;
   final EmailReceiveTimeType emailReceiveTimeType;
   final bool hasAttachment;
@@ -41,6 +42,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     this.text,
     this.subject,
     Set<String>? notKeyword,
+    Set<String>? hasKeyword,
     this.mailbox,
     this.before,
     this.startDate,
@@ -50,6 +52,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
   })  : from = from ?? <String>{},
         to = to ?? <String>{},
         notKeyword = notKeyword ?? <String>{},
+        hasKeyword = hasKeyword ?? <String>{},
         hasAttachment = hasAttachment ?? false,
         emailReceiveTimeType =
             emailReceiveTimeType ?? EmailReceiveTimeType.allTime;
@@ -60,6 +63,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     SearchQuery? text,
     Option<String>? subjectOption,
     Set<String>? notKeyword,
+    Set<String>? hasKeyword,
     Option<PresentationMailbox>? mailboxOption,
     EmailReceiveTimeType? emailReceiveTimeType,
     bool? hasAttachment,
@@ -75,6 +79,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
       text: text ?? this.text,
       subject: getOptionParam(subjectOption, subject),
       notKeyword: notKeyword ?? this.notKeyword,
+      hasKeyword: hasKeyword ?? this.hasKeyword,
       mailbox: getOptionParam(mailboxOption, mailbox),
       emailReceiveTimeType: emailReceiveTimeType ?? this.emailReceiveTimeType,
       hasAttachment: hasAttachment ?? this.hasAttachment,
@@ -122,6 +127,10 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
         LogicFilterOperator(
           Operator.NOT,
           notKeyword.map((e) => EmailFilterCondition(text: e)).toSet()),
+      if (hasKeyword.isNotEmpty)
+        LogicFilterOperator(
+          Operator.AND,
+          hasKeyword.map((e) => EmailFilterCondition(hasKeyword: e)).toSet()),
       if (moreFilterCondition != null && moreFilterCondition.hasCondition)
         moreFilterCondition
     };
@@ -138,6 +147,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     text,
     subject,
     notKeyword,
+    hasKeyword,
     mailbox,
     emailReceiveTimeType,
     hasAttachment,
