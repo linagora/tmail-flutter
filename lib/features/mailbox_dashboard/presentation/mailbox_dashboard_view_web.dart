@@ -534,13 +534,13 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     return Obx(() {
       final searchEmailFilter = controller.searchController.searchEmailFilter.value;
       final sortOrderType = controller.searchController.sortOrderFiltered.value;
-      final listAddressOfFrom = controller.searchController.searchEmailFilter.value.from;
+      final listAddressOfFrom = controller.searchController.listAddressOfFromFiltered;
       final userName = controller.sessionCurrent?.username;
       final startDate = controller.searchController.startDateFiltered;
       final endDate = controller.searchController.endDateFiltered;
       final receiveTimeType = controller.searchController.receiveTimeFiltered;
       final mailbox = controller.searchController.mailboxFiltered;
-      final listAddressOfTo = controller.searchController.searchEmailFilter.value.to;
+      final listAddressOfTo = controller.searchController.listAddressOfToFiltered;
 
       final isSelected = searchFilter.isSelected(
         context,

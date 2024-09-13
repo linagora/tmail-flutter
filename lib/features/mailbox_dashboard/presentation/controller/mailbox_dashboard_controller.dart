@@ -672,7 +672,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     clearFilterMessageOption();
     searchController.clearFilterSuggestion();
     if (queryString?.isNotEmpty == true) {
-      searchController.updateFilterEmail(text: SearchQuery(queryString!));
+      searchController.updateFilterEmail(textOption: Some(SearchQuery(queryString!)));
     }
     searchController.updateFilterEmail(sortOrderOption: searchController.sortOrderFiltered.value.getSortOrder());
     dispatchAction(StartSearchEmailAction());
@@ -1657,7 +1657,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   }
 
   void selectHasAttachmentSearchFilter() {
-    searchController.updateFilterEmail(hasAttachment: true);
+    searchController.updateFilterEmail(hasAttachmentOption: const Some(true));
     dispatchAction(StartSearchEmailAction());
   }
 
@@ -1743,7 +1743,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
         onCallbackAction: (startDate, endDate) {
           dispatchAction(SelectDateRangeToAdvancedSearch(startDate, endDate));
           searchController.updateFilterEmail(
-            emailReceiveTimeType: receiveTime,
+            emailReceiveTimeTypeOption: Some(receiveTime),
             startDateOption: optionOf(startDate?.toUTCDate()),
             endDateOption: optionOf(endDate?.toUTCDate()),
             beforeOption: const None()
@@ -1754,7 +1754,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     } else {
       dispatchAction(ClearDateRangeToAdvancedSearch(receiveTime));
       searchController.updateFilterEmail(
-        emailReceiveTimeType: receiveTime,
+        emailReceiveTimeTypeOption: Some(receiveTime),
         startDateOption: const None(),
         endDateOption: const None(),
         beforeOption: const None()
@@ -1774,7 +1774,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   void _deleteDateTimeSearchFilter() {
     dispatchAction(ClearDateRangeToAdvancedSearch(EmailReceiveTimeType.allTime));
     searchController.updateFilterEmail(
-      emailReceiveTimeType: EmailReceiveTimeType.allTime,
+      emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.allTime),
       startDateOption: const None(),
       endDateOption: const None(),
       beforeOption: const None()
@@ -1800,7 +1800,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   }
 
   void _deleteHasAttachmentSearchFilter() {
-    searchController.updateFilterEmail(hasAttachment: false);
+    searchController.updateFilterEmail(hasAttachmentOption: const Some(false));
     dispatchAction(StartSearchEmailAction());
   }
 
