@@ -69,6 +69,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
               QuickSearchFilter.hasAttachment,
               QuickSearchFilter.last7Days,
               QuickSearchFilter.fromMe,
+              QuickSearchFilter.starred,
             ],
             actionButtonBuilder: (context, filterAction, suggestionsListState) {
               if (filterAction is QuickSearchFilter) {

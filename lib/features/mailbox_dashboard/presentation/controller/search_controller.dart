@@ -14,6 +14,7 @@ import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_filter_condition_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -117,6 +118,9 @@ class SearchController extends BaseController with DateRangePickerMixin {
         : null,
       from: listFilterOnSuggestionForm.contains(QuickSearchFilter.fromMe)
         ? userName.value
+        : null,
+      hasKeyword: listFilterOnSuggestionForm.contains(QuickSearchFilter.starred)
+        ? KeyWordIdentifier.emailFlagged.value
         : null
     );
 

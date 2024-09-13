@@ -535,7 +535,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       final isSelected = searchFilter.isSelected(
         context,
         searchEmailFilter,
-        sortOrderType);
+        sortOrderType,
+        userName);
 
       EdgeInsetsGeometry? buttonPadding;
       if (searchFilter != QuickSearchFilter.sortBy) {
