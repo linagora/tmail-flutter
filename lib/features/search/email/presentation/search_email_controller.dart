@@ -94,6 +94,7 @@ class SearchEmailController extends BaseController
   final textInputSearchController = TextEditingController();
   final resultSearchScrollController = ScrollController();
   final textInputSearchFocus = FocusNode();
+  final listSearchFilterScrollController = ScrollController();
 
   final currentSearchText = RxString('');
   final listRecentSearch = RxList<RecentSearch>();
@@ -499,8 +500,14 @@ class SearchEmailController extends BaseController
     _searchEmailAction(context);
   }
 
-  void selectQuickSearchFilter(BuildContext context, QuickSearchFilter filter) {
-    _selectQuickSearchFilter(filter);
+  void selectHasAttachmentSearchFilter(BuildContext context) {
+    _updateSimpleSearchFilter(
+      hasAttachmentOption: const Some(true),
+      beforeOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition()
+        ? const Some(0)
+        : const None()
+    );
     _searchEmailAction(context);
   }
 
@@ -514,34 +521,6 @@ class SearchEmailController extends BaseController
         return true;
       default:
         return false;
-    }
-  }
-
-  void _selectQuickSearchFilter(QuickSearchFilter filter) {
-    final filterSelected = checkQuickSearchFilterSelected(filter);
-    switch (filter) {
-      case QuickSearchFilter.hasAttachment:
-        _updateSimpleSearchFilter(
-          hasAttachmentOption: Some(!filterSelected),
-          beforeOption: const None(),
-          positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
-        );
-        break;
-      case QuickSearchFilter.last7Days:
-        _updateSimpleSearchFilter(
-          emailReceiveTimeTypeOption: optionOf(emailReceiveTimeType.value),
-          beforeOption: const None(),
-          positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
-        );
-        break;
-      case QuickSearchFilter.sortBy:
-        _updateSimpleSearchFilter(
-          sortOrderOption: emailSortOrderType.value.getSortOrder(),
-          beforeOption: const None(),
-          positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
-        );
-      default:
-        break;
     }
   }
 
@@ -937,6 +916,7 @@ class SearchEmailController extends BaseController
     textInputSearchController.dispose();
     textInputSearchFocus.dispose();
     resultSearchScrollController.dispose();
+    listSearchFilterScrollController.dispose();
     _deBouncerTime.cancel();
     dashBoardViewStateWorker.dispose();
     dashBoardActionWorker.dispose();
