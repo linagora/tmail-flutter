@@ -43,6 +43,7 @@ class ComposerView extends GetWidget<ComposerController> {
             excludeFromSemantics: true,
             child: Semantics(
               identifier: ComposerKeyValues.composerView,
+              container: true,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -289,6 +290,7 @@ class ComposerView extends GetWidget<ComposerController> {
             excludeFromSemantics: true,
             child: Semantics(
               identifier: ComposerKeyValues.composerView,
+              container: true,
               child: Column(children: [
                 Obx(() => DesktopAppBarComposerWidget(
                   emailSubject: controller.subjectEmail.value ?? '',
@@ -555,6 +557,7 @@ class ComposerView extends GetWidget<ComposerController> {
             excludeFromSemantics: true,
             child: Semantics(
               identifier: ComposerKeyValues.composerView,
+              container: true,
               child: Column(children: [
                 Obx(() => DesktopAppBarComposerWidget(
                   emailSubject: controller.subjectEmail.value ?? '',

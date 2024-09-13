@@ -65,6 +65,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
       case EmailActionType.composeFromFileShared:
         return Semantics(
           identifier: ComposerKeyValues.composerContentField,
+          container: true,
           child: WebEditorWidget(
             editorController: editorController,
             content: currentWebContent ?? HtmlExtension.editorStartTags,
@@ -93,6 +94,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
         return contentViewState!.fold(
           (failure) => Semantics(
             identifier: ComposerKeyValues.composerContentField,
+            container: true,
             child: WebEditorWidget(
               editorController: editorController,
               content: currentWebContent ?? HtmlExtension.editorStartTags,
@@ -121,6 +123,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
               }
               return Semantics(
                 identifier: ComposerKeyValues.composerContentField,
+                container: true,
                 child: WebEditorWidget(
                   editorController: editorController,
                   content: currentWebContent ?? newContent,
@@ -156,6 +159,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
             );
             return Semantics(
               identifier: ComposerKeyValues.composerContentField,
+              container: true,
               child: WebEditorWidget(
                 editorController: editorController,
                 content: currentWebContent ?? emailContentQuoted,
@@ -187,6 +191,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
               );
               return Semantics(
                 identifier: ComposerKeyValues.composerContentField,
+                container: true,
                 child: WebEditorWidget(
                   editorController: editorController,
                   content: currentWebContent ?? emailContentQuoted,
@@ -209,6 +214,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
       default:
         return Semantics(
           identifier: ComposerKeyValues.composerContentField,
+          container: true,
           child: WebEditorWidget(
             editorController: editorController,
             content: currentWebContent ?? HtmlExtension.editorStartTags,
