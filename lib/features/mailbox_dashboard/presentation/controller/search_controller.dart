@@ -200,6 +200,15 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   bool get isSearchEmailRunning => simpleSearchIsActivated.isTrue || advancedSearchIsActivated.isTrue;
 
+  bool get isSearchFilterHasApplied {
+    return searchEmailFilter.value.from.isNotEmpty ||
+      searchEmailFilter.value.to.isNotEmpty ||
+      searchEmailFilter.value.emailReceiveTimeType != EmailReceiveTimeType.allTime ||
+      (searchEmailFilter.value.mailbox != PresentationMailbox.unifiedMailbox && searchEmailFilter.value.mailbox != null) ||
+      searchEmailFilter.value.hasAttachment == true ||
+      sortOrderFiltered.value != EmailSortOrderType.mostRecent;
+  }
+
   void enableSearch() {
     searchState.value = searchState.value.enableSearchState();
   }
@@ -263,7 +272,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     searchFocus.unfocus();
   }
   
-  void _clearSortOrder() {
+  void clearSortOrder() {
     sortOrderFiltered.value = EmailSortOrderType.mostRecent;
   }
 
@@ -272,7 +281,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     deactivateSimpleSearch();
     hideSimpleSearchFormView();
 
-    _clearSortOrder();
+    clearSortOrder();
     clearSearchFilter();
     deactivateAdvancedSearch();
     hideAdvancedSearchFormView();
