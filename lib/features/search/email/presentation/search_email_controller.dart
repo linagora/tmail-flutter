@@ -910,6 +910,110 @@ class SearchEmailController extends BaseController
     }
   }
 
+  void onDeleteSearchFilterAction(
+    BuildContext context,
+    QuickSearchFilter searchFilter
+  ) {
+    switch(searchFilter) {
+      case QuickSearchFilter.dateTime:
+        _deleteDateTimeSearchFilter(context);
+        break;
+      case QuickSearchFilter.sortBy:
+        _deleteSortOrderSearchFilter(context);
+        break;
+      case QuickSearchFilter.from:
+        _deleteFromSearchFilter(context);
+        break;
+      case QuickSearchFilter.hasAttachment:
+        _deleteHasAttachmentSearchFilter(context);
+        break;
+      case QuickSearchFilter.to:
+        _deleteToSearchFilter(context);
+        break;
+      case QuickSearchFilter.folder:
+        _deleteFolderSearchFilter(context);
+        break;
+      case QuickSearchFilter.starred:
+        _deleteFolderSearchFilter(context);
+        break;
+      default:
+        break;
+    }
+  }
+
+  void _deleteDateTimeSearchFilter(BuildContext context) {
+    _updateSimpleSearchFilter(
+      emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.allTime),
+      textOption: searchQuery == null
+        ? Some(SearchQuery.initial())
+        : optionOf(searchEmailFilter.value.text),
+      beforeOption: const None(),
+      startDateOption: const None(),
+      endDateOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition()
+        ? const Some(0)
+        : const None()
+    );
+    _setEmailReceiveTimeType(EmailReceiveTimeType.allTime);
+    _searchEmailAction(context);
+  }
+
+  void _deleteSortOrderSearchFilter(BuildContext context) {
+    _updateSimpleSearchFilter(
+      sortOrderOption: EmailSortOrderType.mostRecent.getSortOrder(),
+      beforeOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition()
+        ? const Some(0)
+        : const None()
+    );
+    emailSortOrderType.value = EmailSortOrderType.mostRecent;
+    _searchEmailAction(context);
+  }
+
+  void _deleteFromSearchFilter(BuildContext context) {
+    _updateSimpleSearchFilter(
+      fromOption: const None(),
+      beforeOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition()
+        ? const Some(0)
+        : const None()
+    );
+    _searchEmailAction(context);
+  }
+
+  void _deleteToSearchFilter(BuildContext context) {
+    _updateSimpleSearchFilter(
+      toOption: const None(),
+      beforeOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition()
+        ? const Some(0)
+        : const None()
+    );
+    _searchEmailAction(context);
+  }
+
+  void _deleteHasAttachmentSearchFilter(BuildContext context) {
+    _updateSimpleSearchFilter(
+      hasAttachmentOption: const None(),
+      beforeOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition()
+        ? const Some(0)
+        : const None()
+    );
+    _searchEmailAction(context);
+  }
+
+  void _deleteFolderSearchFilter(BuildContext context) {
+    _updateSimpleSearchFilter(
+      mailboxOption: const None(),
+      beforeOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition()
+        ? const Some(0)
+        : const None()
+    );
+    _searchEmailAction(context);
+  }
+
   @override
   void onClose() {
     textInputSearchFocus.removeListener(_onSearchTextInputListener);
