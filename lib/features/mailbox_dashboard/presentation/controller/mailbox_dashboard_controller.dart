@@ -2815,6 +2815,20 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
       && selectedMailbox.value!.countTotalEmails <= 0;
   }
 
+  bool get isSearchFilterHasApplied {
+    return searchController.isSearchFilterHasApplied ||
+      filterMessageOption.value != FilterMessageOption.all;
+  }
+
+  void openAdvancedSearchView(BuildContext context) {
+    dispatchAction(OpenAdvancedSearchViewAction(context));
+    searchController.openAdvanceSearch();
+  }
+
+  void clearAllSearchFilterApplied(BuildContext context) {
+    dispatchAction(ClearSearchFilterAppliedAction(context));
+  }
+
   @override
   void onClose() {
     if (PlatformInfo.isWeb) {
