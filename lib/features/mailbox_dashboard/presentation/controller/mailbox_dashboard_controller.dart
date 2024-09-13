@@ -1800,7 +1800,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   }
 
   void _deleteHasAttachmentSearchFilter() {
-    searchController.updateFilterEmail(hasAttachmentOption: const Some(false));
+    searchController.updateFilterEmail(hasAttachmentOption: const None());
     dispatchAction(StartSearchEmailAction());
   }
 
