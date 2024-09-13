@@ -226,7 +226,13 @@ extension AppColor on Color {
   static const colorEmailTileCheckboxUnhover = Color(0xFFAEB7C2);
   static const colorEmailTileHoverWeb = Color(0xFFDFEEFF);
   static const colorSearchFilterButton = Color(0xFFECEEF1);
+  static const colorSearchFilterTitle = Color(0xFF686E76);
+  static const colorSearchFilterIcon = Color(0xFF686E76);
   static const colorSuggestionSearchFilterButton = Color(0xFFEBEDF0);
+  static const colorFilterMessageButton = Color(0xFFEBEDF0);
+  static const colorFilterMessageIcon = Color(0xFF686E76);
+  static const colorFilterMessageTitle = Color(0xFF686E76);
+  static const colorStarredSearchFilterIcon = Color(0xFFFFCC00);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

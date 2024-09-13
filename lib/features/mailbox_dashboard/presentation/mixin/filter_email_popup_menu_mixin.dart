@@ -54,12 +54,12 @@ mixin FilterEmailPopupMenuMixin {
     Function(FilterMessageOption)? onCallBack
   ) {
     return InkWell(
-      onTap: () => onCallBack?.call(option == optionSelected ? FilterMessageOption.all : option),
+      onTap: () => onCallBack?.call(option),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
         child: SizedBox(
             child: Row(children: [
-              SvgPicture.asset(option.getIcon(_imagePaths),
+              SvgPicture.asset(option.getContextMenuIcon(_imagePaths),
                   width: 20,
                   height: 20,
                   fit: BoxFit.fill,
