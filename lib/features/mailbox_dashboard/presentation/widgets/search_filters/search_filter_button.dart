@@ -70,68 +70,100 @@ class SearchFilterButton extends StatelessWidget {
       listAddressOfTo: listAddressOfTo,
     );
 
-    final childItem = Container(
-      decoration: BoxDecoration(
-        borderRadius: SearchFilterButtonStyle.borderRadius,
-        color: backgroundColor ?? searchFilter.getBackgroundColor(isFilterSelected: isSelected)),
-      padding: buttonPadding ?? SearchFilterButtonStyle.getButtonPadding(isSelected),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SvgPicture.asset(
-            searchFilter.getIcon(imagePaths, isSelected: isSelected),
-            width: SearchFilterButtonStyle.iconSize,
-            height: SearchFilterButtonStyle.iconSize,
-            colorFilter: searchFilter.getIconColor(isSelected: isSelected).asFilter(),
-            fit: BoxFit.fill),
-          const SizedBox(width: SearchFilterButtonStyle.spaceSize),
-          Text(
-            filterTitle.length > _titleCharactersMaximum
-              ? '${filterTitle.substring(0, _titleCharactersMaximum)}...'
-              : filterTitle,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: SearchFilterButtonStyle.titleStyle,
-          ),
-          if (searchFilter.isArrowDownIconSupported())
-            Padding(
-              padding: SearchFilterButtonStyle.elementPadding,
-              child: SvgPicture.asset(
-                imagePaths.icDropDown,
-                width: SearchFilterButtonStyle.iconSize,
-                height: SearchFilterButtonStyle.iconSize,
-                colorFilter: AppColor.colorTextBody.asFilter(),
-                fit: BoxFit.fill),
-            ),
-          if (isSelected)
-            TMailButtonWidget.fromIcon(
-              icon: imagePaths.icDeleteSelection,
-              iconSize: SearchFilterButtonStyle.deleteIconSize,
-              iconColor: AppColor.colorTextBody,
-              padding: const EdgeInsets.all(8),
-              backgroundColor: Colors.transparent,
-              onTapActionCallback: () => onDeleteSearchFilterAction?.call(searchFilter),
-            ),
-        ]
-      )
+    final deleteButtonWidget = TMailButtonWidget.fromIcon(
+      icon: imagePaths.icDeleteSelection,
+      iconSize: SearchFilterButtonStyle.deleteIconSize,
+      iconColor: AppColor.colorTextBody,
+      padding: const EdgeInsets.all(8),
+      backgroundColor: Colors.transparent,
+      onTapActionCallback: () => onDeleteSearchFilterAction?.call(searchFilter),
     );
 
-    if (onSelectSearchFilterAction != null) {
+    final listComponentsWidget = <Widget>[
+      SvgPicture.asset(
+        searchFilter.getIcon(imagePaths, isSelected: isSelected),
+        width: SearchFilterButtonStyle.iconSize,
+        height: SearchFilterButtonStyle.iconSize,
+        colorFilter: searchFilter.getIconColor(isSelected: isSelected).asFilter(),
+        fit: BoxFit.fill
+      ),
+      const SizedBox(width: SearchFilterButtonStyle.spaceSize),
+      Text(
+        filterTitle.length > _titleCharactersMaximum
+          ? '${filterTitle.substring(0, _titleCharactersMaximum)}...'
+          : filterTitle,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: SearchFilterButtonStyle.titleStyle,
+      ),
+      if (searchFilter.isArrowDownIconSupported())
+        Padding(
+          padding: SearchFilterButtonStyle.elementPadding,
+          child: SvgPicture.asset(
+            imagePaths.icDropDown,
+            width: SearchFilterButtonStyle.iconSize,
+            height: SearchFilterButtonStyle.iconSize,
+            colorFilter: AppColor.colorTextBody.asFilter(),
+            fit: BoxFit.fill
+          ),
+        ),
+    ];
+
+    final childItem = _buildContainerForComponents(
+      children: [
+        ...listComponentsWidget,
+        if (isSelected) deleteButtonWidget,
+      ]
+    );
+
+    if (onSelectSearchFilterAction == null) {
+      return childItem;
+    }
+
+    if (!searchFilter.isOnTapWithPositionActionSupported()) {
       return Material(
         type: MaterialType.transparency,
         child: InkWell(
-          onTap: searchFilter.isOnTapWithPositionActionSupported()
-            ? null
-            : () => _onTapAction(context),
-          onTapDown: searchFilter.isOnTapWithPositionActionSupported()
+          onTap: !searchFilter.isOnTapWithPositionActionSupported()
+            ? () => _onTapAction(context)
+            : null,
+          onTapDown: searchFilter.isOnTapWithPositionActionSupported() && !isSelected
             ? (details) => _onTapDownAction(context, details)
             : null,
           borderRadius: SearchFilterButtonStyle.borderRadius,
-          child: childItem),
+          child: childItem
+        ),
       );
-    } else {
-      return childItem;
     }
+
+    return _buildContainerForComponents(
+      children: [
+        InkWell(
+          onTapDown: (details) => _onTapDownAction(context, details),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: listComponentsWidget
+          ),
+        ),
+        if (isSelected) deleteButtonWidget,
+      ]
+    );
+  }
+
+  Widget _buildContainerForComponents({required List<Widget> children}) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: SearchFilterButtonStyle.borderRadius,
+        color: backgroundColor ?? searchFilter.getBackgroundColor(
+          isFilterSelected: isSelected
+        )
+      ),
+      padding: buttonPadding ?? SearchFilterButtonStyle.getButtonPadding(isSelected),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: children
+      )
+    );
   }
 
   void _onTapAction(BuildContext context) {

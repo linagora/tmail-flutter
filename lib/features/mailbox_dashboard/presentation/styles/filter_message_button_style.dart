@@ -1,10 +1,11 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 
-class SearchFilterButtonStyle {
+class FilterMessageButtonStyle {
   static const double iconSize = 16;
+  static const double arrowDownIconSize = 18;
   static const double deleteIconSize = 10;
-  static const double spaceSize = 4;
+  static const double spaceSize = 8;
 
   static EdgeInsetsGeometry getButtonPadding(bool isSelected) {
     if (isSelected) {
@@ -14,10 +15,11 @@ class SearchFilterButtonStyle {
     }
   }
   static const EdgeInsetsGeometry elementPadding = EdgeInsetsDirectional.only(start: 8);
+  static const EdgeInsetsGeometry buttonMargin = EdgeInsetsDirectional.only(start: 16);
   static const BorderRadius borderRadius = BorderRadius.all(Radius.circular(10));
 
   static const TextStyle titleStyle = TextStyle(
     fontSize: 13,
     fontWeight: FontWeight.normal,
-    color: AppColor.colorSearchFilterTitle);
+    color: AppColor.colorFilterMessageTitle);
 }

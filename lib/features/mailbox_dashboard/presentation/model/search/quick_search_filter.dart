@@ -103,7 +103,11 @@ enum QuickSearchFilter {
     if (isSelected) {
       return AppColor.primaryColor;
     } else {
-      return AppColor.colorTextBody;
+      if (this == QuickSearchFilter.starred) {
+        return AppColor.colorStarredSearchFilterIcon;
+      } else {
+        return AppColor.colorSearchFilterIcon;
+      }
     }
   }
 
