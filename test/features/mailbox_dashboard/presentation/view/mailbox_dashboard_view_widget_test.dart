@@ -9,6 +9,8 @@ import 'package:flutter/material.dart' hide SearchController, State;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:model/email/presentation_email.dart';
@@ -73,6 +75,7 @@ import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sendi
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_spam_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
@@ -583,6 +586,109 @@ void main() {
 
         final folder1ListViewEmailWidgetFinder = find.byKey(const PageStorageKey('list_presentation_email_in_threads'));
         expect(folder1ListViewEmailWidgetFinder, findsNothing);
+
+        debugDefaultTargetPlatformOverride = null;
+        tester.view.reset();
+      });
+
+      testWidgets(
+        'LoadMoreButton SHOULD be displayed\n'
+        'WHEN the load more action returns a non-empty list',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+        final dpi = tester.view.devicePixelRatio;
+        tester.view.physicalSize = Size(dpi * 1920 * 2, dpi * 1080 * 2);
+
+        when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
+        when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
+        when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
+
+        final widget = makeTestableWidget(child: MailboxDashBoardView());
+        await tester.pumpWidget(widget);
+
+        // Open mailbox Inbox
+        final listEmailsOfInbox = List.generate(
+          3,
+          (index) => PresentationEmail(
+            id: EmailId(Id('id_$index')),
+            mailboxIds: {
+              MailboxFixtures.inboxMailbox.id!: true
+            }
+          ));
+        mailboxDashboardController.setSelectedMailbox(MailboxFixtures.inboxMailbox.toPresentationMailbox());
+        mailboxDashboardController.updateEmailList(listEmailsOfInbox);
+
+        // Perform load more action
+        final emailList = <PresentationEmail>[
+          PresentationEmail(
+            id: EmailId(Id('id_4')),
+            mailboxIds: {
+              MailboxFixtures.inboxMailbox.id!: true
+            }
+          ),
+          PresentationEmail(
+            id: EmailId(Id('id_5')),
+            mailboxIds: {
+              MailboxFixtures.inboxMailbox.id!: true
+            }
+          ),
+        ];
+        threadController.consumeState(Stream.value(Right(LoadMoreEmailsSuccess(emailList))));
+
+        await tester.pump();
+
+        final listViewEmailWidgetFinder = find.byKey(const PageStorageKey('list_presentation_email_in_threads'));
+        expect(listViewEmailWidgetFinder, findsOneWidget);
+
+        final listViewEmailWidget = tester.widget<ListView>(listViewEmailWidgetFinder);
+        expect(listViewEmailWidget.semanticChildCount, equals(7));
+
+        expect(find.text('Load more'), findsOneWidget);
+
+        debugDefaultTargetPlatformOverride = null;
+        tester.view.reset();
+      });
+
+      testWidgets(
+        'LoadMoreButton SHOULD not be displayed\n'
+        'WHEN the load more action returns a empty list',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+        final dpi = tester.view.devicePixelRatio;
+        tester.view.physicalSize = Size(dpi * 1920 * 2, dpi * 1080 * 2);
+
+        when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
+        when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
+        when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
+
+        final widget = makeTestableWidget(child: MailboxDashBoardView());
+        await tester.pumpWidget(widget);
+
+        // Open mailbox Inbox
+        final listEmailsOfInbox = List.generate(
+          3,
+          (index) => PresentationEmail(
+            id: EmailId(Id('id_$index')),
+            mailboxIds: {
+              MailboxFixtures.inboxMailbox.id!: true
+            }
+          ));
+        mailboxDashboardController.setSelectedMailbox(MailboxFixtures.inboxMailbox.toPresentationMailbox());
+        mailboxDashboardController.updateEmailList(listEmailsOfInbox);
+
+        // Perform load more action
+        final emailList = <PresentationEmail>[];
+        threadController.consumeState(Stream.value(Right(LoadMoreEmailsSuccess(emailList))));
+
+        await tester.pump();
+
+        final listViewEmailWidgetFinder = find.byKey(const PageStorageKey('list_presentation_email_in_threads'));
+        expect(listViewEmailWidgetFinder, findsOneWidget);
+
+        final listViewEmailWidget = tester.widget<ListView>(listViewEmailWidgetFinder);
+        expect(listViewEmailWidget.semanticChildCount, equals(5));
+
+        expect(find.text('Load more'), findsNothing);
 
         debugDefaultTargetPlatformOverride = null;
         tester.view.reset();
