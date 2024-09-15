@@ -143,7 +143,8 @@ class ThreadView extends GetWidget<ThreadController>
                             )),
                         ],
                       Obx(() {
-                        if (controller.mailboxDashBoardController.isEmptyTrashBannerEnabledOnMobile(context)) {
+                        final presentationMailbox = controller.mailboxDashBoardController.selectedMailbox.value;
+                        if (controller.mailboxDashBoardController.isEmptyTrashBannerEnabledOnMobile(context, presentationMailbox)) {
                           return Padding(
                             padding: const EdgeInsetsDirectional.symmetric(
                               horizontal: BannerEmptyTrashStyles.mobileMargin
@@ -157,7 +158,8 @@ class ThreadView extends GetWidget<ThreadController>
                         }
                       }),
                       Obx(() {
-                        if (controller.mailboxDashBoardController.isEmptySpamBannerEnabledOnMobile(context)) {
+                        final presentationMailbox = controller.mailboxDashBoardController.selectedMailbox.value;
+                        if (controller.mailboxDashBoardController.isEmptySpamBannerEnabledOnMobile(context, presentationMailbox)) {
                           return Padding(
                             padding: const EdgeInsetsDirectional.symmetric(
                               horizontal: BannerDeleteAllSpamEmailsStyles.mobileMargin
@@ -305,7 +307,8 @@ class ThreadView extends GetWidget<ThreadController>
     }
 
     return Obx(() {
-      if (controller.isAllSearchInActive) {
+      final isAdvancedSearchViewOpen = controller.searchController.isAdvancedSearchViewOpen.value;
+      if (controller.searchController.isSearchActive() && !isAdvancedSearchViewOpen) {
         return Container(
           padding: PlatformInfo.isMobile && controller.listEmailSelected.isNotEmpty
             ? EdgeInsets.only(bottom: controller.responsiveUtils.isTabletLarge(context) ? 85 : 70)
