@@ -1,10 +1,11 @@
+import 'dart:async';
+
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -110,6 +111,8 @@ class ThreadController extends BaseController with EmailActionController {
   final FocusNode focusNodeKeyBoard = FocusNode();
   final latestEmailSelectedOrUnselected = Rxn<PresentationEmail>();
 
+  StreamSubscription<html.Event>? _resizeBrowserStreamSubscription;
+
   AccountId? get _accountId => mailboxDashBoardController.accountId.value;
 
   Session? get _session => mailboxDashBoardController.sessionCurrent;
@@ -154,6 +157,9 @@ class ThreadController extends BaseController with EmailActionController {
     _currentEmailState = null;
     listEmailController.dispose();
     focusNodeKeyBoard.dispose();
+    if (PlatformInfo.isWeb) {
+      _resizeBrowserStreamSubscription?.cancel();
+    }
     super.onClose();
   }
 
@@ -230,6 +236,15 @@ class ThreadController extends BaseController with EmailActionController {
     super.handleUrgentException(failure: failure, exception: exception);
   }
 
+  @override
+  void onDone() {
+    viewState.value.map((success) {
+      if (success is GetAllEmailSuccess) {
+        _handleOnDoneGetAllEmailSuccess(success);
+      }
+    });
+  }
+
   void _resetLoadingMore() {
     if (loadingMoreStatus.value == LoadingMoreStatus.running) {
       loadingMoreStatus.value = LoadingMoreStatus.idle;
@@ -238,7 +253,7 @@ class ThreadController extends BaseController with EmailActionController {
 
   void _registerObxStreamListener() {
     ever(mailboxDashBoardController.selectedMailbox, (mailbox) {
-      log('ThreadController::_registerObxStreamListener:TEST: SelectedMailbox: ${mailbox?.id} - ${mailbox?.name} | CurrentMemoryMailboxId: $_currentMemoryMailboxId');
+      log('ThreadController::_registerObxStreamListener:SelectedMailbox: ${mailbox?.id} - ${mailbox?.name} | CurrentMemoryMailboxId: $_currentMemoryMailboxId');
       if (mailbox is PresentationMailbox
           && mailbox.mailboxId != _currentMemoryMailboxId) {
         _currentMemoryMailboxId = mailbox.id;
@@ -381,23 +396,17 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _registerBrowserResizeListener() {
-    log('ThreadController::_registerBrowserResizeListener:');
-    html.window.onResize.listen((_) => _measureBrowserHeight());
+    _resizeBrowserStreamSubscription = html.window.onResize.listen((_) {
+      _validateBrowserHeight();
+    });
   }
 
-  void _initialMeasureBrowserHeight() {
-    log('ThreadController::_initialMeasureBrowserHeight:');
-    _measureBrowserHeight();
-  }
-
-  void _measureBrowserHeight() {
+  void _validateBrowserHeight() {
     final browserInnerHeight = html.window.innerHeight ?? 0;
-    log('ThreadController::_measureBrowserHeight: BROWSER_INTER_HEIGHT = $browserInnerHeight');
     final currentListEmails = mailboxDashBoardController.emailsInCurrentMailbox;
     final totalHeightListEmails = currentListEmails.isEmpty
       ? 0
       : currentListEmails.length * ThreadConstants.defaultMaxHeightEmailItemOnBrowser;
-    log('ThreadController::_handleResizeBrowser: TOTAL_HEIGHT_LIST_EMAILS = $totalHeightListEmails');
     if (browserInnerHeight >= ThreadConstants.defaultMaxHeightBrowser &&
         totalHeightListEmails <= browserInnerHeight) {
       _performAutomaticallyLoadMoreEmails();
@@ -434,7 +443,7 @@ class ThreadController extends BaseController with EmailActionController {
     mailboxDashBoardController.emailsInCurrentMailbox.clear();
     mailboxDashBoardController.listEmailSelected.clear();
     mailboxDashBoardController.currentSelectMode.value = SelectMode.INACTIVE;
-    canLoadMore = false;
+    canLoadMore = true;
     loadingMoreStatus.value = LoadingMoreStatus.idle;
   }
 
@@ -457,17 +466,15 @@ class ThreadController extends BaseController with EmailActionController {
 
     canLoadMore = newListEmail.length >= ThreadConstants.maxCountEmails;
 
-    SchedulerBinding.instance.addPostFrameCallback((_) {
-      if (listEmailController.hasClients) {
-        listEmailController.animateTo(
-          0,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.fastOutSlowIn);
-      }
-      if (PlatformInfo.isWeb) {
-        _initialMeasureBrowserHeight();
-      }
-    });
+    if (listEmailController.hasClients) {
+      listEmailController.jumpTo(0);
+    }
+  }
+
+  void _handleOnDoneGetAllEmailSuccess(GetAllEmailSuccess success) {
+    if (PlatformInfo.isWeb) {
+      _validateBrowserHeight();
+    }
   }
 
   void _refreshChangesAllEmailSuccess(RefreshChangesAllEmailSuccess success) {
@@ -494,11 +501,12 @@ class ThreadController extends BaseController with EmailActionController {
     if (mailboxDashBoardController.emailsInCurrentMailbox.isEmpty) {
       refreshAllEmail();
     } else if (PlatformInfo.isWeb) {
-      _initialMeasureBrowserHeight();
+      _validateBrowserHeight();
     }
   }
 
   void _getAllEmailAction() {
+    log('ThreadController::_getAllEmailAction:');
     if (_session != null &&_accountId != null) {
       consumeState(_getEmailsInMailboxInteractor.execute(
         _session!,
@@ -598,11 +606,12 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _loadMoreEmails() {
-    log('ThreadController::_loadMoreEmails()');
+    log('ThreadController::_loadMoreEmails()::canLoadMore = $canLoadMore');
     if (canLoadMore && _session != null && _accountId != null) {
       final oldestEmail = mailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty
         ? mailboxDashBoardController.emailsInCurrentMailbox.last
         : null;
+      log('ThreadController::_loadMoreEmails: OldestEmailID = ${oldestEmail?.id?.asString}');
       consumeState(_loadMoreEmailsInMailboxInteractor.execute(
         GetEmailRequest(
           _session!,
@@ -619,8 +628,13 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
+  bool _validatePresentationEmail(PresentationEmail email) {
+    return _belongToCurrentMailboxId(email)
+      && _notDuplicatedInCurrentList(email);
+  }
+
   bool _belongToCurrentMailboxId(PresentationEmail email) {
-    return (email.mailboxIds != null && email.mailboxIds!.keys.contains(selectedMailboxId));
+    return email.mailboxIds != null && email.mailboxIds!.keys.contains(selectedMailboxId);
   }
 
   bool _notDuplicatedInCurrentList(PresentationEmail email) {
@@ -630,29 +644,31 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void _loadMoreEmailsSuccess(LoadMoreEmailsSuccess success) {
-    log('ThreadController::_loadMoreEmailsSuccess: COUNT = ${success.emailList.length}');
-    if (success.emailList.isNotEmpty) {
-      final appendableList = success.emailList
-        .where(_belongToCurrentMailboxId)
-        .where(_notDuplicatedInCurrentList)
-        .toList()
-        .syncPresentationEmail(
-          mapMailboxById: mailboxDashBoardController.mapMailboxById,
-          selectedMailbox: selectedMailbox,
-          searchQuery: searchController.searchQuery,
-          isSearchEmailRunning: searchController.isSearchEmailRunning
-        );
-
-      mailboxDashBoardController.emailsInCurrentMailbox.addAll(appendableList);
-      canLoadMore = true;
-    } else {
-      canLoadMore = false;
-    }
+    canLoadMore = success.emailList.isNotEmpty;
     loadingMoreStatus.value = LoadingMoreStatus.completed;
-
-    if (PlatformInfo.isWeb) {
-      _initialMeasureBrowserHeight();
+    final appendableList = validateListEmailsLoadMore(success.emailList);
+    log('ThreadController::_loadMoreEmailsSuccess: emailList = ${success.emailList.length} | appendableList = ${appendableList.length}');
+    if (appendableList.isNotEmpty) {
+      mailboxDashBoardController.emailsInCurrentMailbox.addAll(appendableList);
     }
+    if (PlatformInfo.isWeb) {
+      _validateBrowserHeight();
+    }
+  }
+
+  List<PresentationEmail> validateListEmailsLoadMore(List<PresentationEmail> emailList) {
+    log('ThreadController::validateListEmailsLoadMore: BEFORE_EMAIL_LIST = ${emailList.length}');
+    final appendableList = emailList
+      .where(_validatePresentationEmail)
+      .toList()
+      .syncPresentationEmail(
+        mapMailboxById: mailboxDashBoardController.mapMailboxById,
+        selectedMailbox: selectedMailbox,
+        searchQuery: searchController.searchQuery,
+        isSearchEmailRunning: searchController.isSearchEmailRunning
+      );
+    log('ThreadController::validateListEmailsLoadMore: AFTER_EMAIL_LIST = ${appendableList.length}');
+    return appendableList;
   }
 
   SelectMode getSelectMode(PresentationEmail presentationEmail, PresentationEmail? selectedEmail) {
@@ -787,9 +803,6 @@ class ThreadController extends BaseController with EmailActionController {
 
   bool get isSearchActive => searchController.isSearchEmailRunning;
 
-  bool get isAllSearchInActive => !searchController.isSearchActive() &&
-    searchController.isAdvancedSearchViewOpen.isFalse;
-
   void clearTextSearch() {
     searchController.clearTextSearch();
   }
@@ -870,7 +883,7 @@ class ThreadController extends BaseController with EmailActionController {
     canSearchMore = newEmailListSynced.length >= ThreadConstants.maxCountEmails;
 
     if (PlatformInfo.isWeb) {
-      _initialMeasureBrowserHeight();
+      _validateBrowserHeight();
     }
   }
 
@@ -929,7 +942,7 @@ class ThreadController extends BaseController with EmailActionController {
     loadingMoreStatus.value = LoadingMoreStatus.completed;
 
     if (PlatformInfo.isWeb) {
-      _initialMeasureBrowserHeight();
+      _validateBrowserHeight();
     }
   }
 

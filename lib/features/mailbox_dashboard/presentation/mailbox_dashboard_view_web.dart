@@ -95,7 +95,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         ),
                         _buildVacationNotificationMessage(context),
                         Obx(() {
-                          if (controller.isEmptyTrashBannerEnabledOnWeb(context)) {
+                          final presentationMailbox = controller.selectedMailbox.value;
+                          if (controller.isEmptyTrashBannerEnabledOnWeb(context, presentationMailbox)) {
                             return Padding(
                               padding: const EdgeInsetsDirectional.only(
                                 top: BannerEmptyTrashStyles.webTopMargin,
@@ -110,7 +111,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                           }
                         }),
                         Obx(() {
-                          if (controller.isEmptySpamBannerEnabledOnWeb(context)) {
+                          final presentationMailbox = controller.selectedMailbox.value;
+                          if (controller.isEmptySpamBannerEnabledOnWeb(context, presentationMailbox)) {
                             return Padding(
                               padding: const EdgeInsetsDirectional.only(
                                 top: BannerDeleteAllSpamEmailsStyles.webTopMargin,

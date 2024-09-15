@@ -1726,18 +1726,24 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     dispatchAction(StartSearchEmailAction());
   }
 
-  bool isEmptyTrashBannerEnabledOnWeb(BuildContext context) {
-    return selectedMailbox.value != null &&
-      selectedMailbox.value!.isTrash &&
-      selectedMailbox.value!.countTotalEmails > 0 &&
+  bool isEmptyTrashBannerEnabledOnWeb(
+    BuildContext context,
+    PresentationMailbox? mailbox
+  ) {
+    return mailbox != null &&
+      mailbox.isTrash &&
+      mailbox.countTotalEmails > 0 &&
       !searchController.isSearchActive() &&
       responsiveUtils.isWebDesktop(context);
   }
 
-  bool isEmptyTrashBannerEnabledOnMobile(BuildContext context) {
-    return selectedMailbox.value != null &&
-      selectedMailbox.value!.isTrash &&
-      selectedMailbox.value!.countTotalEmails > 0 &&
+  bool isEmptyTrashBannerEnabledOnMobile(
+    BuildContext context,
+    PresentationMailbox? mailbox
+  ) {
+    return mailbox != null &&
+      mailbox.isTrash &&
+      mailbox.countTotalEmails > 0 &&
       !searchController.isSearchActive() &&
       !responsiveUtils.isWebDesktop(context);
   }
@@ -2184,18 +2190,24 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     }
   }
 
-  bool isEmptySpamBannerEnabledOnWeb(BuildContext context) {
-    return selectedMailbox.value != null &&
-      selectedMailbox.value!.isSpam &&
-      selectedMailbox.value!.countTotalEmails > 0 &&
+  bool isEmptySpamBannerEnabledOnWeb(
+    BuildContext context,
+    PresentationMailbox? mailbox
+  ) {
+    return mailbox != null &&
+      mailbox.isSpam &&
+      mailbox.countTotalEmails > 0 &&
       !searchController.isSearchActive() &&
       responsiveUtils.isWebDesktop(context);
   }
 
-  bool isEmptySpamBannerEnabledOnMobile(BuildContext context) {
-    return selectedMailbox.value != null &&
-      selectedMailbox.value!.isSpam &&
-      selectedMailbox.value!.countTotalEmails > 0 &&
+  bool isEmptySpamBannerEnabledOnMobile(
+    BuildContext context,
+    PresentationMailbox? mailbox
+  ) {
+    return mailbox != null &&
+      mailbox.isSpam &&
+      mailbox.countTotalEmails > 0 &&
       !searchController.isSearchActive() &&
       !responsiveUtils.isWebDesktop(context);
   }
