@@ -64,7 +64,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -405,9 +404,8 @@ void main() {
       expect(searchController.sortOrderFiltered.value, EmailSortOrderType.oldest);
 
       // expect filter in search controller update as expected
-      mailboxDashboardController.selectQuickSearchFilterAction(QuickSearchFilter.hasAttachment);
+      mailboxDashboardController.selectHasAttachmentSearchFilter();
       expect(searchController.searchEmailFilter.value.hasAttachment, true);
-      mailboxDashboardController.selectQuickSearchFilterAction(QuickSearchFilter.last7Days);
       mailboxDashboardController.selectReceiveTimeQuickSearchFilter(context, EmailReceiveTimeType.last30Days);
       expect(searchController.searchEmailFilter.value.emailReceiveTimeType, EmailReceiveTimeType.last30Days);
 

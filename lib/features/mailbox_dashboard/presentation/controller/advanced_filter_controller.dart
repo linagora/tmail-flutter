@@ -397,7 +397,7 @@ class AdvancedFilterController extends BaseController {
           );
         } else if (action is ClearDateRangeToAdvancedSearch) {
           _updateDateRangeTime(action.receiveTime);
-        } else if (action is StartSearchEmailAction && action.filter == QuickSearchFilter.fromMe) {
+        } else if (action is StartSearchEmailAction && action.filter == QuickSearchFilter.from) {
           _updateFromField();
         } else if (action is SearchEmailByFromFieldsAction) {
           searchController.clearSearchFilter();

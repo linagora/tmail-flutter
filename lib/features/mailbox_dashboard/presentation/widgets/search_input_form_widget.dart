@@ -1,7 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/quick_search/quick_search_input_form.dart';
 import 'package:core/utils/direction_utils.dart';
@@ -23,6 +22,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/ad
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/contact_quick_search_item.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/recent_search_item_tile_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/search_filter_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
@@ -65,9 +65,13 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
               borderRadius: BorderRadius.all(Radius.circular(16)),
             ),
             debounceDuration: const Duration(milliseconds: 300),
-            listActionButton: QuickSearchFilter.values,
+            listActionButton: const [
+              QuickSearchFilter.hasAttachment,
+              QuickSearchFilter.last7Days,
+              QuickSearchFilter.fromMe,
+            ],
             actionButtonBuilder: (context, filterAction) {
-              if (filterAction is QuickSearchFilter && filterAction != QuickSearchFilter.sortBy) {
+              if (filterAction is QuickSearchFilter) {
                 return buildListButtonForQuickSearchForm(context, filterAction);
               } else {
                 return const SizedBox.shrink();
@@ -217,34 +221,15 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     );
   }
 
-  Widget buildListButtonForQuickSearchForm(BuildContext context, QuickSearchFilter filter) {
+  Widget buildListButtonForQuickSearchForm(BuildContext context, QuickSearchFilter searchFilter) {
     return Obx(() {
-      final isFilterSelected = filter.isApplied(_searchController.listFilterOnSuggestionForm);
+      final isSelected = searchFilter.isApplied(_searchController.listFilterOnSuggestionForm);
 
-      return Chip(
-        labelPadding: const EdgeInsetsDirectional.only(
-          top: 2,
-          bottom: 2,
-          end: 10,
-        ),
-        label: Text(
-          filter.getName(context),
-          maxLines: 1,
-          overflow: CommonTextStyle.defaultTextOverFlow,
-          softWrap: CommonTextStyle.defaultSoftWrap,
-          style: filter.getTextStyle(isFilterSelected: isFilterSelected),
-        ),
-        avatar: SvgPicture.asset(
-          filter.getIcon(_imagePaths, isFilterSelected: isFilterSelected),
-          width: 16,
-          height: 16,
-          fit: BoxFit.fill),
-        labelStyle: filter.getTextStyle(isFilterSelected: isFilterSelected),
-        backgroundColor: filter.getBackgroundColor(isFilterSelected: isFilterSelected),
-        shape: RoundedRectangleBorder(
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          side: BorderSide(color: filter.getBackgroundColor(isFilterSelected: isFilterSelected)),
-        ),
+      return SearchFilterButton(
+        searchFilter: searchFilter,
+        imagePaths: _imagePaths,
+        isSelected: isSelected,
+        backgroundColor: searchFilter.getSuggestionBackgroundColor(isFilterSelected: isSelected),
       );
     });
   }
