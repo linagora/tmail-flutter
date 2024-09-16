@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/search_filter_button.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/top_bar_thread_selection.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
@@ -36,7 +37,6 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete
 import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_empty_trash_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_web_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
@@ -460,24 +460,23 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     });
   }
 
-  bool supportListButtonQuickSearchFilter(BuildContext context) {
-    return controller.searchController.isSearchEmailRunning
-      && controller.dashboardRoute.value == DashboardRoutes.thread;
-  }
-
   Widget _buildListButtonQuickSearchFilter(BuildContext context) {
     return Obx(() {
-      if (supportListButtonQuickSearchFilter(context)) {
+      if (controller.searchController.isSearchEmailRunning &&
+          controller.dashboardRoute.value == DashboardRoutes.thread) {
         return Padding(
           padding: const EdgeInsetsDirectional.only(end: 16, top: 8),
           child: Row(
             children: [
-                ...QuickSearchFilter.values
-                  .where((filter) => filter != QuickSearchFilter.sortBy)
-                  .map((filter) => _buildQuickSearchFilterButton(context, filter)),
-                const Spacer(),
-                _buildQuickSearchFilterButton(context, QuickSearchFilter.sortBy)
-              ]
+              _buildQuickSearchFilterButton(context, QuickSearchFilter.from),
+              const SizedBox(width: 8),
+              _buildQuickSearchFilterButton(context, QuickSearchFilter.dateTime),
+              const SizedBox(width: 8),
+              _buildQuickSearchFilterButton(context, QuickSearchFilter.hasAttachment),
+              const Spacer(),
+              _buildQuickSearchFilterButton(context, QuickSearchFilter.sortBy),
+              const SizedBox(width: 8),
+            ]
           ),
         );
       } else {
@@ -488,85 +487,62 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   Widget _buildQuickSearchFilterButton(
       BuildContext context,
-      QuickSearchFilter filter
+      QuickSearchFilter searchFilter
   ) {
     return Obx(() {
-      final isFilterSelected = filter.isSelected(
-        controller.searchController.searchEmailFilter.value,
-      );
+      final searchEmailFilter = controller.searchController.searchEmailFilter.value;
+      final sortOrderType = controller.searchController.sortOrderFiltered.value;
+      final listAddressOfFrom = controller.searchController.searchEmailFilter.value.from;
+      final userName = controller.sessionCurrent?.username;
+      final startDate = controller.searchController.startDateFiltered;
+      final endDate = controller.searchController.endDateFiltered;
+      final receiveTimeType = controller.searchController.receiveTimeFiltered;
 
-      return Padding(
-        padding: EdgeInsets.only(
-          right: AppUtils.isDirectionRTL(context) ? 0 : 8,
-          left: AppUtils.isDirectionRTL(context) ? 8 : 0,
-        ),
-        child: InkWell(
-          onTap: () {
-            if (!filter.isTapOpenPopupMenu()) {
-              controller.selectQuickSearchFilterAction(filter);
-            }
-          },
-          onTapDown: (detail) {
-            final screenSize = MediaQuery.of(context).size;
-            final offset = detail.globalPosition;
-            final position = RelativeRect.fromLTRB(
-              offset.dx,
-              offset.dy,
-              screenSize.width - offset.dx,
-              screenSize.height - offset.dy,
-            );
+      final isSelected = searchFilter.isSelected(
+        context,
+        searchEmailFilter,
+        sortOrderType);
 
-            switch(filter) {
-              case QuickSearchFilter.last7Days:
-                _openPopupMenuDateFilter(context, position);
-                break;
-              case QuickSearchFilter.sortBy:
-                _openPopupMenuSortFilter(context, position);
-                break;
-              default:
-                break;
-            }
-          },
-          borderRadius: const BorderRadius.all(Radius.circular(10)),
-          child: Container(
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: filter.getBackgroundColor(isFilterSelected: isFilterSelected)),
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                SvgPicture.asset(
-                    filter.getIcon(controller.imagePaths, isFilterSelected: isFilterSelected),
-                    width: 16,
-                    height: 16,
-                    fit: BoxFit.fill),
-                const SizedBox(width: 4),
-                Text(
-                  filter == QuickSearchFilter.fromMe
-                    ? _getQuickSearchFilterFromTitle(context)
-                    :  filter.getTitle(
-                        context,
-                        receiveTimeType: controller.searchController.receiveTimeFiltered,
-                        startDate: controller.searchController.startDateFiltered,
-                        endDate: controller.searchController.endDateFiltered,
-                        sortOrderType: controller.searchController.sortOrderFiltered.value,
-                      ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: filter.getTextStyle(isFilterSelected: isFilterSelected),
-                ),
-                if (filter == QuickSearchFilter.last7Days || filter == QuickSearchFilter.fromMe)
-                  ... [
-                    const SizedBox(width: 4),
-                    SvgPicture.asset(
-                        controller.imagePaths.icChevronDown,
-                        width: 16,
-                        height: 16,
-                        fit: BoxFit.fill),
-                  ]
-              ])),
-        ),
+      return SearchFilterButton(
+        searchFilter: searchFilter,
+        imagePaths: controller.imagePaths,
+        isSelected: isSelected,
+        receiveTimeType: receiveTimeType,
+        startDate: startDate,
+        endDate: endDate,
+        sortOrderType: sortOrderType,
+        listAddressOfFrom: listAddressOfFrom,
+        userName: userName,
+        onSelectSearchFilterAction: _onSelectSearchFilterAction,
       );
     });
+  }
+
+  void _onSelectSearchFilterAction(
+    BuildContext context,
+    QuickSearchFilter searchFilter,
+    {RelativeRect? buttonPosition}
+  ) async {
+    switch(searchFilter) {
+      case QuickSearchFilter.dateTime:
+        if (buttonPosition != null) {
+          _openPopupMenuDateFilter(context, buttonPosition);
+        }
+        break;
+      case QuickSearchFilter.sortBy:
+        if (buttonPosition != null) {
+          _openPopupMenuSortFilter(context, buttonPosition);
+        }
+        break;
+      case QuickSearchFilter.from:
+        controller.selectFromSearchFilter();
+        break;
+      case QuickSearchFilter.hasAttachment:
+        controller.selectHasAttachmentSearchFilter();
+        break;
+      default:
+        break;
+    }
   }
 
   List<PopupMenuEntry> popupMenuEmailReceiveTimeType(
@@ -665,19 +641,5 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         onTapActionCallback: () => controller.goToComposer(ComposerArguments()),
       ),
     );
-  }
-
-  String _getQuickSearchFilterFromTitle(BuildContext context) {
-    final searchEmailFilterFromFiled = controller.searchController.searchEmailFilter.value.from;
-    if (searchEmailFilterFromFiled.length == 1) {
-      if (searchEmailFilterFromFiled.first == controller.sessionCurrent?.username.value &&
-          controller.sessionCurrent?.username.value.isNotEmpty == true) {
-        return QuickSearchFilter.fromMe.getTitle(context);
-      } else {
-        return '${AppLocalizations.of(context).from_email_address_prefix} ${searchEmailFilterFromFiled.first}';
-      }
-    } else {
-      return AppLocalizations.of(context).from_email_address_prefix;
-    }
   }
 }

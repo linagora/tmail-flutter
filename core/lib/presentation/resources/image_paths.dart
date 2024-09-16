@@ -218,6 +218,7 @@ class ImagePaths {
   String get icCheckboxSelected => _getImagePath('ic_checkbox_selected.svg');
   String get icGoodSignature => _getImagePath('ic_good_signature.svg');
   String get icBadSignature => _getImagePath('ic_bad_signature.svg');
+  String get icDeleteSelection => _getImagePath('ic_delete_selection.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
