@@ -257,7 +257,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
               child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                 SvgPicture.asset(
-                    filter.getIcon(controller.imagePaths, isFilterSelected: filterSelected),
+                    filter.getIcon(controller.imagePaths, isSelected: filterSelected),
                     width: 16,
                     height: 16,
                     fit: BoxFit.fill),
@@ -273,7 +273,10 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   maxLines: 1,
                   overflow: CommonTextStyle.defaultTextOverFlow,
                   softWrap: CommonTextStyle.defaultSoftWrap,
-                  style: filter.getTextStyle(isFilterSelected: filterSelected),
+                  style: const TextStyle(
+                    fontSize: 13,
+                    fontWeight: FontWeight.normal,
+                    color: AppColor.colorTextButtonHeaderThread),
                 ),
                 if (filter == QuickSearchFilter.last7Days || filter == QuickSearchFilter.sortBy)
                   ... [

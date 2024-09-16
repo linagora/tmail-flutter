@@ -1286,13 +1286,16 @@ class _SuggestionsListState<T, P, R> extends State<_SuggestionsList<T, P, R>>
       if (widget.buttonActionCallback != null) {
         return Padding(
           padding: const EdgeInsetsDirectional.only(end: 8, bottom: 8),
-          child: InkWell(
-            borderRadius: const BorderRadius.all(Radius.circular(10)),
-            onTap: () {
-              widget.buttonActionCallback?.call(action);
-              invalidateSuggestions();
-            },
-            child: widget.actionButtonBuilder!(context, action),
+          child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              onTap: () {
+                widget.buttonActionCallback?.call(action);
+                invalidateSuggestions();
+              },
+              child: widget.actionButtonBuilder!(context, action),
+            ),
           ),
         );
       } else {

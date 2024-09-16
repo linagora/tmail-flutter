@@ -1575,17 +1575,6 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     _getAllIdentities();
   }
 
-  void selectQuickSearchFilter(QuickSearchFilter filter) {
-    return searchController.selectQuickSearchFilter(filter);
-  }
-
-  void selectQuickSearchFilterFrom(EmailAddress fromEmailFilter) {
-    return searchController.selectQuickSearchFilter(
-      QuickSearchFilter.fromMe,
-      fromEmailFilter: fromEmailFilter
-    );
-  }
-
   void addFilterToSuggestionForm(QuickSearchFilter filter) {
     searchController.addFilterToSuggestionForm(filter);
   }
@@ -1667,24 +1656,26 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     }
   }
 
-  void selectQuickSearchFilterAction(QuickSearchFilter filter) async {
-    log('MailboxDashBoardController::selectQuickSearchFilterAction(): filter: $filter');
-    if (filter == QuickSearchFilter.fromMe) {
-      if (accountId.value == null || sessionCurrent == null) {
-        logError('MailboxDashBoardController::selectQuickSearchFilterAction(): accountId or sessionCurrent is null');
-      }
-      final listContactSelected = searchController.searchEmailFilter.value.from;
-      final arguments = ContactArguments(accountId.value!, sessionCurrent!, listContactSelected);
+  void selectHasAttachmentSearchFilter() {
+    searchController.updateFilterEmail(hasAttachment: true);
+    dispatchAction(StartSearchEmailAction());
+  }
 
-      final newContact = await DialogRouter.pushGeneralDialog(routeName: AppRoutes.contact, arguments: arguments);
+  Future<void> selectFromSearchFilter() async {
+    if (accountId.value == null || sessionCurrent == null) return;
 
-      if (newContact is EmailAddress) {
-        selectQuickSearchFilterFrom(newContact);
-        dispatchAction(StartSearchEmailAction(filter: filter));
-      }
-    } else {
-      selectQuickSearchFilter(filter);
-      dispatchAction(StartSearchEmailAction(filter: filter));
+    final contactArgument = ContactArguments(
+      accountId.value!,
+      sessionCurrent!,
+      searchController.searchEmailFilter.value.from);
+
+    final newContact = await DialogRouter.pushGeneralDialog(
+      routeName: AppRoutes.contact,
+      arguments: contactArgument);
+
+    if (newContact is EmailAddress) {
+      searchController.updateFilterEmail(fromOption: Some({newContact.emailAddress}));
+      dispatchAction(StartSearchEmailAction(filter: QuickSearchFilter.from));
     }
   }
 

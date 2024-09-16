@@ -11,7 +11,6 @@ import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
@@ -69,32 +68,6 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   void clearSearchFilter() {
     searchEmailFilter.value = SearchEmailFilter.initial();
-  }
-
-  void selectQuickSearchFilter(
-    QuickSearchFilter quickSearchFilter,
-    {EmailAddress? fromEmailFilter}
-  ) {
-    final isFilterSelected = quickSearchFilter.isSelected(searchEmailFilter.value);
-
-    switch (quickSearchFilter) {
-      case QuickSearchFilter.hasAttachment:
-        updateFilterEmail(hasAttachment: !isFilterSelected);
-        return;
-      case QuickSearchFilter.last7Days:
-        updateFilterEmail(emailReceiveTimeType: EmailReceiveTimeType.allTime);
-        return;
-      case QuickSearchFilter.fromMe:
-        if (fromEmailFilter != null) {
-          final newListEmailAddress = (fromEmailFilter.email != null && fromEmailFilter.email!.isNotEmpty)
-            ? <String>{fromEmailFilter.email!}
-            : <String>{};
-          updateFilterEmail(fromOption: Some(newListEmailAddress));
-        }
-        return;
-      case QuickSearchFilter.sortBy:
-        return;
-    }
   }
 
   void addFilterToSuggestionForm(QuickSearchFilter filter) {

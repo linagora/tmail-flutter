@@ -225,6 +225,8 @@ extension AppColor on Color {
   static const loginViewShadowColor = Color(0x3DBCBCBC);
   static const colorEmailTileCheckboxUnhover = Color(0xFFAEB7C2);
   static const colorEmailTileHoverWeb = Color(0xFFDFEEFF);
+  static const colorSearchFilterButton = Color(0xFFECEEF1);
+  static const colorSuggestionSearchFilterButton = Color(0xFFEBEDF0);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
