@@ -813,7 +813,7 @@ class SearchEmailController extends BaseController
         markAsStarEmail(selectedEmail, MarkStarAction.unMarkStar);
         break;
       case EmailActionType.moveToMailbox:
-        moveToMailbox(context, selectedEmail, mailboxContain: mailboxContain);
+        moveToMailbox(selectedEmail, mailboxContain: mailboxContain);
         break;
       case EmailActionType.moveToTrash:
         moveToTrash(selectedEmail, mailboxContain: mailboxContain);
@@ -856,7 +856,6 @@ class SearchEmailController extends BaseController
   }
 
   void handleSelectionEmailAction(
-      BuildContext context,
       EmailActionType actionType,
       List<PresentationEmail> listEmails
   ) {
@@ -882,7 +881,7 @@ class SearchEmailController extends BaseController
         cancelSelectionMode();
         final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById);
         if (mailboxContainCurrent != null) {
-          moveSelectedMultipleEmailToMailbox(context, listEmails, mailboxContainCurrent);
+          moveSelectedMultipleEmailToMailbox(listEmails, mailboxContainCurrent);
         }
         break;
       case EmailActionType.moveToTrash:
@@ -894,9 +893,9 @@ class SearchEmailController extends BaseController
         break;
       case EmailActionType.deletePermanently:
         final mailboxContainCurrent = listEmails.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById);
-        if (mailboxContainCurrent != null) {
+        if (mailboxContainCurrent != null && currentContext != null) {
           deleteSelectionEmailsPermanently(
-              context,
+              currentContext!,
               DeleteActionType.multiple,
               listEmails: listEmails,
               mailboxCurrent: mailboxContainCurrent,

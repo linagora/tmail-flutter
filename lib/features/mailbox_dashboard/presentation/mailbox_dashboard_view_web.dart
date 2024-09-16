@@ -108,7 +108,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                           final presentationMailbox = controller.selectedMailbox.value;
                           if (controller.isEmptyTrashBannerEnabledOnWeb(context, presentationMailbox)) {
                             return BannerEmptyTrashWidget(
-                              onTapAction: () => controller.emptyTrashAction(context)
+                              onTapAction: controller.emptyTrashAction
                             );
                           } else {
                             return const SizedBox.shrink();
@@ -236,7 +236,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     controller.dispatchAction(CancelSelectionAllEmailAction()),
                   onEmailActionTypeAction: (listEmails, actionType) =>
                     controller.dispatchAction(HandleEmailActionTypeAction(
-                      context,
                       listEmails,
                       actionType
                     )),
@@ -353,7 +352,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               imagePaths: controller.imagePaths,
               isSelected: filterMessageCurrent != FilterMessageOption.all,
               onSelectFilterMessageOptionAction: _onSelectFilterMessageOptionAction,
-              onDeleteFilterMessageOptionAction: (_) => _onDeleteFilterMessageOptionAction(context),
+              onDeleteFilterMessageOptionAction: (_) => _onDeleteFilterMessageOptionAction(),
             ),
           );
         }
@@ -397,17 +396,15 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         context,
         filterMessageCurrent,
         (filterMessageSelected) {
-          controller.dispatchAction(FilterMessageAction(
-            context,
-            filterMessageSelected));
+          controller.dispatchAction(FilterMessageAction(filterMessageSelected));
         },
         isSearchEmailRunning: controller.searchController.isSearchEmailRunning
       )
     );
   }
 
-  void _onDeleteFilterMessageOptionAction(BuildContext context) {
-    controller.dispatchAction(FilterMessageAction(context, FilterMessageOption.all));
+  void _onDeleteFilterMessageOptionAction() {
+    controller.dispatchAction(FilterMessageAction(FilterMessageOption.all));
   }
 
   Widget _buildDownloadTaskStateWidget() {
@@ -509,7 +506,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     color: AppColor.primaryColor,
                     fontSize: 13,
                     fontWeight: FontWeight.w500),
-                  onTapActionCallback: () => controller.clearAllSearchFilterApplied(context))
+                  onTapActionCallback: controller.clearAllSearchFilterApplied)
               else
                 TMailButtonWidget.fromText(
                   text: AppLocalizations.of(context).advancedSearch,
@@ -520,7 +517,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     color: AppColor.primaryColor,
                     fontSize: 13,
                     fontWeight: FontWeight.w500),
-                  onTapActionCallback: () => controller.openAdvancedSearchView(context))
+                  onTapActionCallback: controller.openAdvancedSearchView)
             ]
           ),
         );

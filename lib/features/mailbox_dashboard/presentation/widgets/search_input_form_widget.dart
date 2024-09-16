@@ -111,20 +111,20 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
             ),
             fetchRecentActionCallback: _searchController.getAllRecentSearchAction,
             itemRecentBuilder: (context, recent) => RecentSearchItemTileWidget(recent),
-            onRecentSelected: (recent) => _invokeSelectRecentItem(context, recent),
+            onRecentSelected: _invokeSelectRecentItem,
             suggestionsCallback: _dashBoardController.quickSearchEmails,
             itemBuilder: (context, email) => EmailQuickSearchItemTileWidget(email, _dashBoardController.selectedMailbox.value),
-            onSuggestionSelected: (presentationEmail) => _invokeSelectSuggestionItem(context, presentationEmail),
+            onSuggestionSelected: _invokeSelectSuggestionItem,
             contactItemBuilder: (context, emailAddress) => ContactQuickSearchItem(emailAddress: emailAddress),
             contactSuggestionsCallback: _dashBoardController.getContactSuggestion,
-            onContactSuggestionSelected: (emailAddress) => _invokeSelectContactSuggestion(context, emailAddress),
+            onContactSuggestionSelected: _invokeSelectContactSuggestion,
           )
         ),
       );
     });
   }
 
-  void _invokeSearchEmailAction(BuildContext context, String query) {
+  void _invokeSearchEmailAction(String query) {
     _searchController.searchFocus.unfocus();
     _searchController.enableSearch();
 
@@ -134,33 +134,32 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
 
     if (query.isNotEmpty || _searchController.listFilterOnSuggestionForm.isNotEmpty) {
       _searchController.applyFilterSuggestionToSearchFilter(_dashBoardController.sessionCurrent?.username);
-      _dashBoardController.searchEmail(context, queryString: query);
+      _dashBoardController.searchEmail(queryString: query);
     } else {
       _dashBoardController.clearSearchEmail();
     }
   }
 
-  void _invokeSelectSuggestionItem(BuildContext context, PresentationEmail presentationEmail) {
+  void _invokeSelectSuggestionItem(PresentationEmail presentationEmail) {
     _dashBoardController.dispatchAction(
       OpenEmailDetailedFromSuggestionQuickSearchAction(
-        context,
         presentationEmail
       )
     );
   }
 
-  void _invokeSelectRecentItem(BuildContext context, RecentSearch recent) {
+  void _invokeSelectRecentItem(RecentSearch recent) {
     _searchController.searchInputController.text = recent.value;
     _searchController.searchFocus.unfocus();
     _searchController.enableSearch();
 
     _searchController.applyFilterSuggestionToSearchFilter(_dashBoardController.sessionCurrent?.username);
-    _dashBoardController.searchEmail(context, queryString: recent.value);
+    _dashBoardController.searchEmail(queryString: recent.value);
   }
 
   Widget _buildShowAllResultButton(BuildContext context, String keyword) {
     return InkWell(
-      onTap: () => _invokeSearchEmailAction(context, keyword.trim()),
+      onTap: () => _invokeSearchEmailAction(keyword.trim()),
       child: Padding(
         padding: const EdgeInsets.all(12),
         child: Row(children: [
@@ -193,7 +192,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
       textInputAction: TextInputAction.done,
       cursorColor: AppColor.primaryColor,
       textDirection: DirectionUtils.getDirectionByLanguage(context),
-      onSubmitted: (keyword) => _invokeSearchEmailAction(context, keyword.trim()),
+      onSubmitted: (keyword) => _invokeSearchEmailAction(keyword.trim()),
       decoration: InputDecoration(
         border: InputBorder.none,
         focusedBorder: InputBorder.none,
@@ -209,7 +208,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
           minSize: 40,
           iconPadding: EdgeInsets.zero,
           icon: SvgPicture.asset(_imagePaths.icSearchBar, fit: BoxFit.fill),
-          onTap: () => _invokeSearchEmailAction(context, _searchController.searchInputController.text.trim())
+          onTap: () => _invokeSearchEmailAction(_searchController.searchInputController.text.trim())
         )
       ),
       clearTextButton: buildIconWeb(
@@ -246,10 +245,10 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     });
   }
 
-  void _invokeSelectContactSuggestion(BuildContext context, EmailAddress emailAddress) {
+  void _invokeSelectContactSuggestion(EmailAddress emailAddress) {
     _searchController.searchInputController.clear();
     _searchController.searchFocus.unfocus();
     _searchController.enableSearch();
-    _dashBoardController.searchEmailByFromFields(context, emailAddress);
+    _dashBoardController.searchEmailByFromFields(emailAddress);
   }
 }

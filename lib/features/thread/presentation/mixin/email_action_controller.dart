@@ -111,7 +111,6 @@ mixin EmailActionController {
   }
 
   void moveToMailbox(
-    BuildContext context,
     PresentationEmail email,
     {PresentationMailbox? mailboxContain}
   ) async {
@@ -130,12 +129,10 @@ mixin EmailActionController {
         : await push(AppRoutes.destinationPicker, arguments: arguments);
 
       if (destinationMailbox != null &&
-          context.mounted &&
           destinationMailbox is PresentationMailbox &&
           mailboxDashBoardController.sessionCurrent != null
       ) {
         _dispatchMoveToAction(
-          context,
           accountId,
           mailboxDashBoardController.sessionCurrent!,
           email,
@@ -146,7 +143,6 @@ mixin EmailActionController {
   }
 
   void _dispatchMoveToAction(
-    BuildContext context,
     AccountId accountId,
     Session session,
     PresentationEmail emailSelected,
@@ -245,12 +241,10 @@ mixin EmailActionController {
   }
 
   void moveSelectedMultipleEmailToMailbox(
-    BuildContext context,
     List<PresentationEmail> listEmails,
     PresentationMailbox mailboxCurrent
   ) {
     mailboxDashBoardController.moveSelectedMultipleEmailToMailbox(
-      context,
       listEmails,
       mailboxCurrent);
   }
@@ -284,7 +278,7 @@ mixin EmailActionController {
       onCancelSelectionEmail: onCancelSelectionEmail);
   }
 
-  void openEmailInNewTabAction(BuildContext context, PresentationEmail email) {
+  void openEmailInNewTabAction(PresentationEmail email) {
     AppUtils.launchLink(email.routeWebAsString);
   }
 
