@@ -124,9 +124,12 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
   @override
   Widget build(BuildContext context) {
     return Semantics(
-      identifier: widget.prefix == PrefixEmailAddress.to
-        ? ComposerKeyValues.composerToField
-        : null,
+      identifier: switch (widget.prefix) {
+        PrefixEmailAddress.to => ComposerKeyValues.composerToField,
+        PrefixEmailAddress.cc => ComposerKeyValues.composerCcField,
+        PrefixEmailAddress.bcc => ComposerKeyValues.composerBccField,
+        _ => null,
+      },
       container: true,
       child: Container(
         decoration: const BoxDecoration(
@@ -333,48 +336,64 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
               if (PlatformInfo.isWeb || widget.isTestingForWeb)
                 ...[
                   if (widget.fromState == PrefixRecipientState.disabled)
-                    TMailButtonWidget.fromText(
-                      key: Key('prefix_${widget.prefix.name}_recipient_from_button'),
-                      text: AppLocalizations.of(context).from_email_address_prefix,
-                      textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
-                      backgroundColor: Colors.transparent,
-                      padding: RecipientComposerWidgetStyle.prefixButtonPadding,
-                      margin: RecipientComposerWidgetStyle.recipientMargin,
-                      onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.from),
+                    Semantics(
+                      container: true,
+                      identifier: ComposerKeyValues.openWebFromFieldButton,
+                      child: TMailButtonWidget.fromText(
+                        key: Key('prefix_${widget.prefix.name}_recipient_from_button'),
+                        text: AppLocalizations.of(context).from_email_address_prefix,
+                        textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
+                        backgroundColor: Colors.transparent,
+                        padding: RecipientComposerWidgetStyle.prefixButtonPadding,
+                        margin: RecipientComposerWidgetStyle.recipientMargin,
+                        onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.from),
+                      ),
                     ),
                   if (widget.ccState == PrefixRecipientState.disabled)
-                    TMailButtonWidget.fromText(
-                      key: Key('prefix_${widget.prefix.name}_recipient_cc_button'),
-                      text: AppLocalizations.of(context).cc_email_address_prefix,
-                      textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
-                      backgroundColor: Colors.transparent,
-                      padding: RecipientComposerWidgetStyle.prefixButtonPadding,
-                      margin: RecipientComposerWidgetStyle.recipientMargin,
-                      onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.cc),
+                    Semantics(
+                      container: true,
+                      identifier: ComposerKeyValues.openWebCcFieldButton,
+                      child: TMailButtonWidget.fromText(
+                        key: Key('prefix_${widget.prefix.name}_recipient_cc_button'),
+                        text: AppLocalizations.of(context).cc_email_address_prefix,
+                        textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
+                        backgroundColor: Colors.transparent,
+                        padding: RecipientComposerWidgetStyle.prefixButtonPadding,
+                        margin: RecipientComposerWidgetStyle.recipientMargin,
+                        onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.cc),
+                      ),
                     ),
                   if (widget.bccState == PrefixRecipientState.disabled)
-                    TMailButtonWidget.fromText(
-                      key: Key('prefix_${widget.prefix.name}_recipient_bcc_button'),
-                      text: AppLocalizations.of(context).bcc_email_address_prefix,
-                      textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
-                      backgroundColor: Colors.transparent,
-                      padding: RecipientComposerWidgetStyle.prefixButtonPadding,
-                      margin: RecipientComposerWidgetStyle.recipientMargin,
-                      onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.bcc),
+                    Semantics(
+                      container: true,
+                      identifier: ComposerKeyValues.openWebBccFieldButton,
+                      child: TMailButtonWidget.fromText(
+                        key: Key('prefix_${widget.prefix.name}_recipient_bcc_button'),
+                        text: AppLocalizations.of(context).bcc_email_address_prefix,
+                        textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
+                        backgroundColor: Colors.transparent,
+                        padding: RecipientComposerWidgetStyle.prefixButtonPadding,
+                        margin: RecipientComposerWidgetStyle.recipientMargin,
+                        onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.bcc),
+                      ),
                     ),
                 ]
               else if (PlatformInfo.isMobile)
-                TMailButtonWidget.fromIcon(
-                  key: Key('prefix_${widget.prefix.name}_recipient_expand_button'),
-                  icon: _isAllRecipientInputEnabled
-                    ? widget.imagePaths.icChevronUp
-                    : widget.imagePaths.icChevronDownOutline,
-                  backgroundColor: Colors.transparent,
-                  iconSize: 24,
-                  padding: const EdgeInsets.all(5),
-                  iconColor: AppColor.colorLabelComposer,
-                  margin: RecipientComposerWidgetStyle.enableRecipientButtonMargin,
-                  onTapActionCallback: () => widget.onEnableAllRecipientsInputAction?.call(_isAllRecipientInputEnabled),
+                Semantics(
+                  container: true,
+                  identifier: ComposerKeyValues.openMobileSecondaryFieldsButton,
+                  child: TMailButtonWidget.fromIcon(
+                    key: Key('prefix_${widget.prefix.name}_recipient_expand_button'),
+                    icon: _isAllRecipientInputEnabled
+                      ? widget.imagePaths.icChevronUp
+                      : widget.imagePaths.icChevronDownOutline,
+                    backgroundColor: Colors.transparent,
+                    iconSize: 24,
+                    padding: const EdgeInsets.all(5),
+                    iconColor: AppColor.colorLabelComposer,
+                    margin: RecipientComposerWidgetStyle.enableRecipientButtonMargin,
+                    onTapActionCallback: () => widget.onEnableAllRecipientsInputAction?.call(_isAllRecipientInputEnabled),
+                  ),
                 )
             else if (PlatformInfo.isWeb || widget.isTestingForWeb)
               TMailButtonWidget.fromIcon(
