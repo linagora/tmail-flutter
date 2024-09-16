@@ -22,4 +22,15 @@ class ComposerKeyValues {
   static const String toggleReadRecipientsButton = 'tmail_composer_toggle_read_recipients_button';
   static const String saveAsDraftButton = 'tmail_composer_save_as_draft_button';
   static const String openMobileMoreOptionsButton = 'tmail_composer_open_mobile_more_options_button';
+  static const String richtextHeaderStyleButton = 'tmail_composer_richtext_header_style_button';
+  static const String richtextFontSizeButton = 'tmail_composer_richtext_font_size_button';
+  static const String richtextFontNameButton = 'tmail_composer_richtext_font_name_button';
+  static const String richtextTextColorButton = 'tmail_composer_richtext_text_color_button';
+  static const String richtextBackgroundColorButton = 'tmail_composer_richtext_background_color_button';
+  static const String richtextBoldToggle = 'tmail_composer_richtext_bold_toggle';
+  static const String richtextItalicToggle = 'tmail_composer_richtext_italic_toggle';
+  static const String richtextUnderlineToggle = 'tmail_composer_richtext_underline_toggle';
+  static const String richtextStrikethroughToggle = 'tmail_composer_richtext_strikethrough_toggle';
+  static const String richtextAlignParagraphButton = 'tmail_composer_richtext_align_paragraph_button';
+  static const String richtextListStyleButton = 'tmail_composer_richtext_list_style_button'; 
 }
