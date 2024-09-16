@@ -58,38 +58,42 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                 children: [
                   if (emailSelected.from?.isNotEmpty == true)
                     Row(children: [
-                      Flexible(child: Transform(
-                          transform: Matrix4.translationValues(-5.0, 0.0, 0.0),
-                          child: EmailSenderBuilder(
-                            emailAddress: emailSelected.from!.first,
-                            openEmailAddressDetailAction: openEmailAddressDetailAction,
-                          )
-                      )),
-                      if (sMimeStatus != null && sMimeStatus != SMimeSignatureStatus.notSigned)
-                        Tooltip(
-                          key: const Key('smime_signature_status_icon'),
-                          message: sMimeStatus!.getTooltipMessage(context),
-                          child: MouseRegion(
-                            cursor: SystemMouseCursors.click,
-                            child: SvgPicture.asset(
-                              sMimeStatus!.getIcon(imagePaths),
-                              fit: BoxFit.fill,
+                      Expanded(child: Row(
+                        children: [
+                          Flexible(child: Transform(
+                            transform: Matrix4.translationValues(-5.0, 0.0, 0.0),
+                            child: EmailSenderBuilder(
+                              emailAddress: emailSelected.from!.first,
+                              openEmailAddressDetailAction: openEmailAddressDetailAction,
+                            )
+                          )),
+                          if (sMimeStatus != null && sMimeStatus != SMimeSignatureStatus.notSigned)
+                            Tooltip(
+                              key: const Key('smime_signature_status_icon'),
+                              message: sMimeStatus!.getTooltipMessage(context),
+                              child: MouseRegion(
+                                cursor: SystemMouseCursors.click,
+                                child: SvgPicture.asset(
+                                  sMimeStatus!.getIcon(imagePaths),
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
                             ),
-                          ),
-                        ),
-                      if (!emailSelected.isSubscribed && emailUnsubscribe != null && !responsiveUtils.isPortraitMobile(context))
-                        TMailButtonWidget.fromText(
-                          text: AppLocalizations.of(context).unsubscribe,
-                          textStyle: const TextStyle(
-                            fontWeight: FontWeight.normal,
-                            fontSize: 14,
-                            color: AppColor.colorTextBody,
-                            decoration: TextDecoration.underline,
-                          ),
-                          padding: const EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8),
-                          backgroundColor: Colors.transparent,
-                          onTapActionCallback: () => onEmailActionClick?.call(emailSelected, EmailActionType.unsubscribe),
-                        ),
+                          if (!emailSelected.isSubscribed && emailUnsubscribe != null && !responsiveUtils.isPortraitMobile(context))
+                            TMailButtonWidget.fromText(
+                              text: AppLocalizations.of(context).unsubscribe,
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 14,
+                                color: AppColor.colorTextBody,
+                                decoration: TextDecoration.underline,
+                              ),
+                              padding: const EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8),
+                              backgroundColor: Colors.transparent,
+                              onTapActionCallback: () => onEmailActionClick?.call(emailSelected, EmailActionType.unsubscribe),
+                            ),
+                        ]
+                      )),
                       ReceivedTimeBuilder(emailSelected: emailSelected),
                     ]),
                   if (emailSelected.numberOfAllEmailAddress() > 0)
