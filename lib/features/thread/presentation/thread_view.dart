@@ -74,13 +74,7 @@ class ThreadView extends GetWidget<ThreadController>
                               filterOption: controller.mailboxDashBoardController.filterMessageOption.value,
                               openMailboxAction: controller.openMailboxLeftMenu,
                               cancelEditThreadAction: controller.cancelSelectEmail,
-                              emailSelectionAction: (actionType, selectionEmail) {
-                                return controller.pressEmailSelectionAction(
-                                  context,
-                                  actionType,
-                                  selectionEmail
-                                );
-                              },
+                              emailSelectionAction: controller.pressEmailSelectionAction,
                               onContextMenuFilterEmailAction: controller.responsiveUtils.isScreenWithShortestSide(context)
                                 ? (filterOption) => controller.openContextMenuAction(
                                     context,
@@ -94,7 +88,7 @@ class ThreadView extends GetWidget<ThreadController>
                                     popupMenuFilterEmailActionTile(
                                       context,
                                       filterOption,
-                                      (option) => controller.filterMessagesAction(context, option)
+                                      controller.filterMessagesAction
                                     )
                                   )
                                 : null
@@ -245,12 +239,7 @@ class ThreadView extends GetWidget<ThreadController>
           controller.responsiveUtils,
           listEmailSelected,
           controller.mailboxDashBoardController.selectedMailbox.value,
-          onPressEmailSelectionActionClick: (actionType, selectionEmail) =>
-            controller.pressEmailSelectionAction(
-              context,
-              actionType,
-              selectionEmail
-            )
+          onPressEmailSelectionActionClick: controller.pressEmailSelectionAction
         );
       } else {
         return const SizedBox.shrink();
@@ -341,7 +330,7 @@ class ThreadView extends GetWidget<ThreadController>
                 width: 20,
                 height: 20,
                 fit: BoxFit.fill))
-        ..onActionClick((option) => controller.filterMessagesAction(context, option)))
+        ..onActionClick(controller.filterMessagesAction))
       .build()).toList();
   }
 
@@ -598,22 +587,20 @@ class ThreadView extends GetWidget<ThreadController>
         searchQuery: controller.searchQuery,
         mailboxContain: presentationEmail.mailboxContain,
         isSearchEmailRunning: controller.searchController.isSearchEmailRunning,
-        emailActionClick: (action, email) => _handleEmailActionClicked(context, email, action),
+        emailActionClick: _handleEmailActionClicked,
         onMoreActionClick: (email, position) => _handleEmailContextMenuAction(context, email, position),
       ),
     );
   }
 
   void _handleEmailActionClicked(
-    BuildContext context,
-    PresentationEmail presentationEmail,
-    EmailActionType actionType
+    EmailActionType actionType,
+    PresentationEmail presentationEmail
   ) {
     controller.handleEmailActionType(
       actionType,
       presentationEmail,
       mailboxContain: presentationEmail.mailboxContain,
-      context: context
     );
   }
 
@@ -736,7 +723,6 @@ class ThreadView extends GetWidget<ThreadController>
         mailboxContain?.isSpam == true ? EmailActionType.unSpam : EmailActionType.moveToSpam,
         email,
         mailboxContain: mailboxContain,
-        context: context,
       ))
     ).build();
   }
@@ -760,7 +746,7 @@ class ThreadView extends GetWidget<ThreadController>
         : EdgeInsets.zero)
       ..onActionClick((email) {
         popBack();
-        controller.openEmailInNewTabAction(context, email);
+        controller.openEmailInNewTabAction(email);
       })
     ).build();
   }
@@ -823,7 +809,6 @@ class ThreadView extends GetWidget<ThreadController>
           mailboxContain?.isSpam == true ? EmailActionType.unSpam : EmailActionType.moveToSpam,
           email,
           mailboxContain: mailboxContain,
-          context: context
         )
       )
     );
@@ -847,7 +832,7 @@ class ThreadView extends GetWidget<ThreadController>
         ),
         onCallbackAction: () {
           popBack();
-          controller.openEmailInNewTabAction(context, email);
+          controller.openEmailInNewTabAction(email);
         }
       )
     );

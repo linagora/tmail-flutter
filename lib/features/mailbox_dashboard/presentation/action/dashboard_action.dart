@@ -1,5 +1,4 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/email_action_type.dart';
@@ -26,36 +25,33 @@ class CancelSelectionAllEmailAction extends DashBoardAction {}
 
 class FilterMessageAction extends DashBoardAction {
 
-  final BuildContext context;
   final FilterMessageOption option;
 
-  FilterMessageAction(this.context, this.option);
+  FilterMessageAction(this.option);
 
   @override
-  List<Object?> get props => [context, option];
+  List<Object?> get props => [option];
 }
 
 class HandleEmailActionTypeAction extends DashBoardAction {
 
-  final BuildContext context;
   final EmailActionType emailAction;
   final List<PresentationEmail> listEmailSelected;
 
-  HandleEmailActionTypeAction(this.context, this.listEmailSelected, this.emailAction);
+  HandleEmailActionTypeAction(this.listEmailSelected, this.emailAction);
 
   @override
-  List<Object> get props => [context, listEmailSelected, emailAction];
+  List<Object> get props => [listEmailSelected, emailAction];
 }
 
 class OpenEmailDetailedFromSuggestionQuickSearchAction extends DashBoardAction {
 
-  final BuildContext context;
   final PresentationEmail presentationEmail;
 
-  OpenEmailDetailedFromSuggestionQuickSearchAction(this.context, this.presentationEmail);
+  OpenEmailDetailedFromSuggestionQuickSearchAction(this.presentationEmail);
 
   @override
-  List<Object?> get props => [context, presentationEmail];
+  List<Object?> get props => [presentationEmail];
 }
 
 class StartSearchEmailAction extends DashBoardAction {
@@ -67,15 +63,7 @@ class StartSearchEmailAction extends DashBoardAction {
   List<Object?> get props => [filter];
 }
 
-class EmptyTrashAction extends DashBoardAction {
-
-  final BuildContext context;
-
-  EmptyTrashAction(this.context);
-
-  @override
-  List<Object?> get props => [context];
-}
+class EmptyTrashAction extends DashBoardAction {}
 
 class ClearSearchEmailAction extends DashBoardAction {}
 
@@ -163,20 +151,6 @@ class CloseSearchEmailViewAction extends DashBoardAction {}
 
 class CancelSelectionSearchEmailAction extends DashBoardAction {}
 
-class OpenAdvancedSearchViewAction extends DashBoardAction {
-  final BuildContext context;
+class OpenAdvancedSearchViewAction extends DashBoardAction {}
 
-  OpenAdvancedSearchViewAction(this.context);
-
-  @override
-  List<Object?> get props => [context];
-}
-
-class ClearSearchFilterAppliedAction extends DashBoardAction {
-  final BuildContext context;
-
-  ClearSearchFilterAppliedAction(this.context);
-
-  @override
-  List<Object?> get props => [context];
-}
+class ClearSearchFilterAppliedAction extends DashBoardAction {}
