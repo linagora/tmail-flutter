@@ -2,6 +2,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/key_values/composer_key_values.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/app_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/title_composer_widget.dart';
@@ -53,22 +54,30 @@ class TabletAppBarComposerWidget extends StatelessWidget {
               children: [
                 if (isNetworkConnectionAvailable)
                   ...[
-                    TMailButtonWidget.fromIcon(
-                      icon: _imagePaths.icAttachFile,
-                      iconColor: AppBarComposerWidgetStyle.iconColor,
-                      backgroundColor: Colors.transparent,
-                      iconSize: AppBarComposerWidgetStyle.iconSize,
-                      tooltipMessage: AppLocalizations.of(context).attach_file,
-                      onTapActionCallback: attachFileAction,
+                    Semantics(
+                      container: true,
+                      identifier: ComposerKeyValues.pickAttachmentButton,
+                      child: TMailButtonWidget.fromIcon(
+                        icon: _imagePaths.icAttachFile,
+                        iconColor: AppBarComposerWidgetStyle.iconColor,
+                        backgroundColor: Colors.transparent,
+                        iconSize: AppBarComposerWidgetStyle.iconSize,
+                        tooltipMessage: AppLocalizations.of(context).attach_file,
+                        onTapActionCallback: attachFileAction,
+                      ),
                     ),
                     const SizedBox(width: AppBarComposerWidgetStyle.space),
-                    TMailButtonWidget.fromIcon(
-                      icon: _imagePaths.icInsertImage,
-                      iconColor: AppBarComposerWidgetStyle.iconColor,
-                      backgroundColor: Colors.transparent,
-                      iconSize: AppBarComposerWidgetStyle.iconSize,
-                      tooltipMessage: AppLocalizations.of(context).insertImage,
-                      onTapActionCallback: insertImageAction,
+                    Semantics(
+                      container: true,
+                      identifier: ComposerKeyValues.pickInlineImageButton,
+                      child: TMailButtonWidget.fromIcon(
+                        icon: _imagePaths.icInsertImage,
+                        iconColor: AppBarComposerWidgetStyle.iconColor,
+                        backgroundColor: Colors.transparent,
+                        iconSize: AppBarComposerWidgetStyle.iconSize,
+                        tooltipMessage: AppLocalizations.of(context).insertImage,
+                        onTapActionCallback: insertImageAction,
+                      ),
                     ),
                     const SizedBox(width: AppBarComposerWidgetStyle.space),
                   ],

@@ -817,64 +817,80 @@ class ComposerView extends GetWidget<ComposerController> {
       PopupMenuItem(
         enabled: false,
         padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          controller.imagePaths.icStyleCodeView,
-          AppLocalizations.of(context).embedCode,
-          styleName: ComposerStyle.popupItemTextStyle,
-          colorIcon: ComposerStyle.popupItemIconColor,
-          padding: ComposerStyle.popupItemPadding,
-          selectedIcon: controller.imagePaths.icFilterSelected,
-          isSelected: controller.richTextWebController?.codeViewEnabled,
-          onCallbackAction: () {
-            popBack();
-            controller.richTextWebController?.toggleCodeView();
-          }
+        child: Semantics(
+          container: true,
+          identifier: ComposerKeyValues.toggleCodeViewButton,
+          child: PopupItemWidget(
+            controller.imagePaths.icStyleCodeView,
+            AppLocalizations.of(context).embedCode,
+            styleName: ComposerStyle.popupItemTextStyle,
+            colorIcon: ComposerStyle.popupItemIconColor,
+            padding: ComposerStyle.popupItemPadding,
+            selectedIcon: controller.imagePaths.icFilterSelected,
+            isSelected: controller.richTextWebController?.codeViewEnabled,
+            onCallbackAction: () {
+              popBack();
+              controller.richTextWebController?.toggleCodeView();
+            }
+          ),
         )
       ),
       PopupMenuItem(
         enabled: false,
         padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          controller.imagePaths.icReadReceipt,
-          AppLocalizations.of(context).requestReadReceipt,
-          styleName: ComposerStyle.popupItemTextStyle,
-          padding: ComposerStyle.popupItemPadding,
-          colorIcon: ComposerStyle.popupItemIconColor,
-          selectedIcon: controller.imagePaths.icFilterSelected,
-          isSelected: controller.hasRequestReadReceipt.value,
-          onCallbackAction: () {
-            popBack();
-            controller.toggleRequestReadReceipt(context);
-          }
+        child: Semantics(
+          container: true,
+          identifier: ComposerKeyValues.toggleReadRecipientsButton,
+          child: PopupItemWidget(
+            controller.imagePaths.icReadReceipt,
+            AppLocalizations.of(context).requestReadReceipt,
+            styleName: ComposerStyle.popupItemTextStyle,
+            padding: ComposerStyle.popupItemPadding,
+            colorIcon: ComposerStyle.popupItemIconColor,
+            selectedIcon: controller.imagePaths.icFilterSelected,
+            isSelected: controller.hasRequestReadReceipt.value,
+            onCallbackAction: () {
+              popBack();
+              controller.toggleRequestReadReceipt(context);
+            }
+          ),
         )
       ),
       PopupMenuItem(
         enabled: false,
         padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          controller.imagePaths.icSaveToDraft,
-          AppLocalizations.of(context).saveAsDraft,
-          colorIcon: ComposerStyle.popupItemIconColor,
-          styleName: ComposerStyle.popupItemTextStyle,
-          padding: ComposerStyle.popupItemPadding,
-          onCallbackAction: () {
-            popBack();
-            controller.handleClickSaveAsDraftsButton(context);
-          }
+        child: Semantics(
+          container: true,
+          identifier: ComposerKeyValues.saveAsDraftButton,
+          child: PopupItemWidget(
+            controller.imagePaths.icSaveToDraft,
+            AppLocalizations.of(context).saveAsDraft,
+            colorIcon: ComposerStyle.popupItemIconColor,
+            styleName: ComposerStyle.popupItemTextStyle,
+            padding: ComposerStyle.popupItemPadding,
+            onCallbackAction: () {
+              popBack();
+              controller.handleClickSaveAsDraftsButton(context);
+            }
+          ),
         )
       ),
       PopupMenuItem(
         enabled: false,
         padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          controller.imagePaths.icDeleteMailbox,
-          AppLocalizations.of(context).delete,
-          styleName: ComposerStyle.popupItemTextStyle,
-          padding: ComposerStyle.popupItemPadding,
-          onCallbackAction: () {
-            popBack();
-            controller.handleClickDeleteComposer(context);
-          },
+        child: Semantics(
+          container: true,
+          identifier: ComposerKeyValues.deleteComposedEmailButton,
+          child: PopupItemWidget(
+            controller.imagePaths.icDeleteMailbox,
+            AppLocalizations.of(context).delete,
+            styleName: ComposerStyle.popupItemTextStyle,
+            padding: ComposerStyle.popupItemPadding,
+            onCallbackAction: () {
+              popBack();
+              controller.handleClickDeleteComposer(context);
+            },
+          ),
         )
       ),
     ];
