@@ -10536,7 +10536,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.applyFilterSuggestionToSearchFilter$1(t2 == null ? _null : t2.username);
         if (A.EmailUtils_isEmailAddressValid(query)) {
           t1.searchInputController.super$ValueNotifier$value(0, C.TextEditingValue_3bx);
-          t3.searchEmail$1$emailAddress(new A.EmailAddress(_null, query));
+          t3.searchEmail$1$emailAddress(query);
         } else
           t3.searchEmail$1$queryString(query);
       } else {
@@ -10559,7 +10559,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._search_input_form_widget$_dashBoardController.dashBoardAction.set$value(0, t1);
     },
     _invokeSelectRecentItem$1(recent) {
-      var t2, t3, _null = null,
+      var t2, t3, isEmailAddress, t4, _null = null,
         t1 = this._searchController;
       t1.searchFocus.unfocus$0();
       t2 = t1.searchState;
@@ -10571,14 +10571,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = t2.sessionCurrent;
       t1.applyFilterSuggestionToSearchFilter$1(t3 == null ? _null : t3.username);
       t3 = recent.value;
-      t1 = t1.searchInputController;
-      if (A.EmailUtils_isEmailAddressValid(t3)) {
-        t1.super$ValueNotifier$value(0, C.TextEditingValue_3bx);
-        t2.searchEmail$1$emailAddress(new A.EmailAddress(_null, t3));
-      } else {
-        t1.set$text(0, t3);
-        t2.searchEmail$1$queryString(t3);
-      }
+      isEmailAddress = A.EmailUtils_isEmailAddressValid(t3);
+      t4 = isEmailAddress ? "" : t3;
+      t1.searchInputController.set$text(0, t4);
+      t1 = !isEmailAddress ? t3 : _null;
+      t2.searchEmail$2$emailAddress$queryString(isEmailAddress ? t3 : _null, t1);
     },
     _buildShowAllResultButton$2(context, keyword) {
       var _null = null;
@@ -18858,7 +18855,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchEmailView__buildSearchInputForm_closure0.prototype = {
     call$1(text) {
-      var query, t3,
+      var query, isEmailAddress, t3,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -18867,15 +18864,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (query.length !== 0) {
         t2 = Date.now();
         t1.consumeState$1(t1._saveRecentSearchInteractor.execute$1(new A.RecentSearch(query, new A.DateTime(t2, false))));
-        if (A.EmailUtils_isEmailAddressValid(query)) {
-          t2 = A.LinkedHashSet_LinkedHashSet$_literal([query], type$.String);
-          t3 = t1.emailSortOrderType.get$value(0).isScrollByPosition$0() ? C.Some_0 : C.C_None0;
-          t1._updateSimpleSearchFilter$3$beforeOption$positionOption$toOption(C.C_None, t3, new A.Some(t2, type$.Some_Set_String));
+        isEmailAddress = A.EmailUtils_isEmailAddressValid(query);
+        t2 = !isEmailAddress ? new A.Some(new A.SearchQuery(query), type$.Some_SearchQuery) : null;
+        t3 = isEmailAddress ? new A.Some(A.LinkedHashSet_LinkedHashSet$_literal([query], type$.String), type$.Some_Set_String) : null;
+        t1._updateSimpleSearchFilter$4$beforeOption$positionOption$textOption$toOption(C.C_None, t1.emailSortOrderType.get$value(0).isScrollByPosition$0() ? C.Some_0 : C.C_None0, t2, t3);
+        if (isEmailAddress) {
           t1.textInputSearchController.super$ValueNotifier$value(0, C.TextEditingValue_3bx);
           t1.currentSearchText.set$value(0, "");
-        } else {
-          t2 = t1.emailSortOrderType.get$value(0).isScrollByPosition$0() ? C.Some_0 : C.C_None0;
-          t1._updateSimpleSearchFilter$3$beforeOption$positionOption$textOption(C.C_None, t2, new A.Some(new A.SearchQuery(query), type$.Some_SearchQuery));
         }
         t1._searchEmailAction$1(this.context);
       }
@@ -19100,7 +19095,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchEmailView__buildShowAllResultSearchButton_closure.prototype = {
     call$0() {
-      var t1, t2, t3, t4, t5,
+      var t1, t2, t3, t4, t5, isEmailAddress,
         query = C.JSString_methods.trim$0(this.textSearch);
       if (query.length !== 0) {
         t1 = this.$this;
@@ -19113,17 +19108,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4.consumeState$1(t4._saveRecentSearchInteractor.execute$1(new A.RecentSearch(query, new A.DateTime(t5, false))));
         A.Expando__checkType(t1);
         t1 = t3._as(t2.get(t1));
-        if (A.EmailUtils_isEmailAddressValid(query)) {
-          t2 = A.LinkedHashSet_LinkedHashSet$_literal([query], type$.String);
-          t3 = t1.emailSortOrderType.get$value(0).isScrollByPosition$0() ? C.Some_0 : C.C_None0;
-          t1._updateSimpleSearchFilter$3$beforeOption$positionOption$toOption(C.C_None, t3, new A.Some(t2, type$.Some_Set_String));
+        isEmailAddress = A.EmailUtils_isEmailAddressValid(query);
+        if (isEmailAddress) {
           t1.textInputSearchController.super$ValueNotifier$value(0, C.TextEditingValue_3bx);
           t1.currentSearchText.set$value(0, "");
-        } else {
+        } else
           t1.textInputSearchController.set$text(0, query);
-          t2 = t1.emailSortOrderType.get$value(0).isScrollByPosition$0() ? C.Some_0 : C.C_None0;
-          t1._updateSimpleSearchFilter$3$beforeOption$positionOption$textOption(C.C_None, t2, new A.Some(new A.SearchQuery(query), type$.Some_SearchQuery));
-        }
+        t2 = !isEmailAddress ? new A.Some(new A.SearchQuery(query), type$.Some_SearchQuery) : null;
+        t3 = isEmailAddress ? new A.Some(A.LinkedHashSet_LinkedHashSet$_literal([query], type$.String), type$.Some_Set_String) : null;
+        t1._updateSimpleSearchFilter$4$beforeOption$positionOption$textOption$toOption(C.C_None, t1.emailSortOrderType.get$value(0).isScrollByPosition$0() ? C.Some_0 : C.C_None0, t2, t3);
         t1._searchEmailAction$1(this.context);
       }
     },
@@ -19142,23 +19135,22 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchEmailView__buildListRecentSearch__closure.prototype = {
     call$0() {
-      var t3,
+      var isEmailAddress, t3, t4,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t1 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
       t2 = this.recentSearch.value;
-      if (A.EmailUtils_isEmailAddressValid(t2)) {
-        t2 = A.LinkedHashSet_LinkedHashSet$_literal([t2], type$.String);
-        t3 = t1.emailSortOrderType.get$value(0).isScrollByPosition$0() ? C.Some_0 : C.C_None0;
-        t1._updateSimpleSearchFilter$3$beforeOption$positionOption$toOption(C.C_None, t3, new A.Some(t2, type$.Some_Set_String));
-        t1.textInputSearchController.super$ValueNotifier$value(0, C.TextEditingValue_3bx);
+      isEmailAddress = A.EmailUtils_isEmailAddressValid(t2);
+      t3 = !isEmailAddress ? new A.Some(new A.SearchQuery(t2), type$.Some_SearchQuery) : null;
+      t4 = isEmailAddress ? new A.Some(A.LinkedHashSet_LinkedHashSet$_literal([t2], type$.String), type$.Some_Set_String) : null;
+      t1._updateSimpleSearchFilter$4$beforeOption$positionOption$textOption$toOption(C.C_None, t1.emailSortOrderType.get$value(0).isScrollByPosition$0() ? C.Some_0 : C.C_None0, t3, t4);
+      t3 = t1.textInputSearchController;
+      if (isEmailAddress) {
+        t3.super$ValueNotifier$value(0, C.TextEditingValue_3bx);
         t1.currentSearchText.set$value(0, "");
-      } else {
-        t1.textInputSearchController.set$text(0, t2);
-        t3 = t1.emailSortOrderType.get$value(0).isScrollByPosition$0() ? C.Some_0 : C.C_None0;
-        t1._updateSimpleSearchFilter$3$beforeOption$positionOption$textOption(C.C_None, t3, new A.Some(new A.SearchQuery(t2), type$.Some_SearchQuery));
-      }
+      } else
+        t3.set$text(0, t2);
       t1._searchEmailAction$1(this.context);
       return null;
     },
@@ -21591,5 +21583,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "HJu1LcHVCHXAJU6/UKOupHZ5CEQ=");
+})($__dart_deferred_initializers__, "mk94ZeN+YckWEfkBoTa87ApgtIA=");
 ;
