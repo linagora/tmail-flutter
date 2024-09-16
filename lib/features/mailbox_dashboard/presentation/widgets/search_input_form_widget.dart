@@ -13,6 +13,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -135,12 +136,22 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     }
 
     if (query.isNotEmpty || _searchController.listFilterOnSuggestionForm.isNotEmpty) {
+      _searchController.clearSortOrder();
+      _searchController.clearSearchFilter();
       _searchController.applyFilterSuggestionToSearchFilter(_dashBoardController.sessionCurrent?.username);
-      _dashBoardController.searchEmail(queryString: query);
+
+      if (EmailUtils.isEmailAddressValid(query)) {
+        _searchController.searchInputController.clear();
+        _dashBoardController.searchEmail(emailAddress: EmailAddress(null, query));
+      } else {
+        _dashBoardController.searchEmail(queryString: query);
+      }
     } else {
       _dashBoardController.clearSearchEmail();
     }
   }
+
+
 
   void _invokeSelectSuggestionItem(PresentationEmail presentationEmail) {
     _dashBoardController.dispatchAction(
@@ -151,12 +162,19 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
   }
 
   void _invokeSelectRecentItem(RecentSearch recent) {
-    _searchController.searchInputController.text = recent.value;
     _searchController.searchFocus.unfocus();
     _searchController.enableSearch();
-
+    _searchController.clearSortOrder();
+    _searchController.clearSearchFilter();
     _searchController.applyFilterSuggestionToSearchFilter(_dashBoardController.sessionCurrent?.username);
-    _dashBoardController.searchEmail(queryString: recent.value);
+
+    if (EmailUtils.isEmailAddressValid(recent.value)) {
+      _searchController.searchInputController.clear();
+      _dashBoardController.searchEmail(emailAddress: EmailAddress(null, recent.value));
+    } else {
+      _searchController.searchInputController.text = recent.value;
+      _dashBoardController.searchEmail(queryString: recent.value);
+    }
   }
 
   Widget _buildShowAllResultButton(BuildContext context, String keyword) {
