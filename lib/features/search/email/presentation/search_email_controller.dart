@@ -463,50 +463,46 @@ class SearchEmailController extends BaseController
   }
 
   void showAllResultSearchAction(BuildContext context, String query) {
-    if (EmailUtils.isEmailAddressValid(query)) {
-      _updateSimpleSearchFilter(
-        toOption: Some({query}),
-        beforeOption: const None(),
-        positionOption: emailSortOrderType.value.isScrollByPosition()
-          ? const Some(0)
-          : const None()
-      );
+    final isEmailAddress = EmailUtils.isEmailAddressValid(query);
+
+    if (isEmailAddress) {
       textInputSearchController.clear();
       currentSearchText.value = '';
     } else {
       setTextInputSearchForm(query);
-      _updateSimpleSearchFilter(
-        textOption: Some(SearchQuery(query)),
-        beforeOption: const None(),
-        positionOption: emailSortOrderType.value.isScrollByPosition()
-          ? const Some(0)
-          : const None()
-      );
     }
+
+    _updateSimpleSearchFilter(
+      textOption: !isEmailAddress ? Some(SearchQuery(query)) : null,
+      toOption: isEmailAddress ? Some({query}) : null,
+      beforeOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition()
+        ? const Some(0)
+        : const None()
+    );
+
     _searchEmailAction(context);
   }
 
   void searchEmailByRecentAction(BuildContext context, RecentSearch recentSearch) {
-    if (EmailUtils.isEmailAddressValid(recentSearch.value)) {
-      _updateSimpleSearchFilter(
-        toOption: Some({recentSearch.value}),
-        beforeOption: const None(),
-        positionOption: emailSortOrderType.value.isScrollByPosition()
-          ? const Some(0)
-          : const None()
-      );
+    final isEmailAddress = EmailUtils.isEmailAddressValid(recentSearch.value);
+
+    _updateSimpleSearchFilter(
+      textOption: !isEmailAddress ? Some(SearchQuery(recentSearch.value)) : null,
+      toOption: isEmailAddress ? Some({recentSearch.value}) : null,
+      beforeOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition()
+        ? const Some(0)
+        : const None()
+    );
+
+    if (isEmailAddress) {
       textInputSearchController.clear();
       currentSearchText.value = '';
     } else {
       setTextInputSearchForm(recentSearch.value);
-      _updateSimpleSearchFilter(
-        textOption: Some(SearchQuery(recentSearch.value)),
-        beforeOption: const None(),
-        positionOption: emailSortOrderType.value.isScrollByPosition()
-          ? const Some(0)
-          : const None()
-      );
     }
+
     _searchEmailAction(context);
   }
 
@@ -523,25 +519,22 @@ class SearchEmailController extends BaseController
   }
 
   void submitSearchAction(BuildContext context, String query) {
-    if (EmailUtils.isEmailAddressValid(query)) {
-      _updateSimpleSearchFilter(
-        toOption: Some({query}),
-        beforeOption: const None(),
-        positionOption: emailSortOrderType.value.isScrollByPosition()
-          ? const Some(0)
-          : const None()
-      );
+    final isEmailAddress = EmailUtils.isEmailAddressValid(query);
+
+    _updateSimpleSearchFilter(
+      textOption: !isEmailAddress ? Some(SearchQuery(query)) : null,
+      toOption: isEmailAddress ? Some({query}) : null,
+      beforeOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition()
+        ? const Some(0)
+        : const None()
+    );
+
+    if (isEmailAddress) {
       textInputSearchController.clear();
       currentSearchText.value = '';
-    } else {
-      _updateSimpleSearchFilter(
-        textOption: Some(SearchQuery(query)),
-        beforeOption: const None(),
-        positionOption: emailSortOrderType.value.isScrollByPosition()
-          ? const Some(0)
-          : const None()
-      );
     }
+
     _searchEmailAction(context);
   }
 

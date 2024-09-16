@@ -667,27 +667,26 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
 
   void searchEmail({
     String? queryString,
-    EmailAddress? emailAddress
+    String? emailAddress
   }) {
     log('MailboxDashBoardController::searchEmail():QueryString = $queryString | EmailAddress = $emailAddress');
     clearFilterMessageOption();
     searchController.clearFilterSuggestion();
-    if (queryString?.isNotEmpty == true) {
-      searchController.updateFilterEmail(
-        textOption: Some(SearchQuery(queryString!)),
-        sortOrderOption: searchController.sortOrderFiltered.value.getSortOrder()
-      );
-    } else {
-      searchController.updateFilterEmail(
-        sortOrderOption: searchController.sortOrderFiltered.value.getSortOrder()
-      );
-    }
-    if (emailAddress?.emailAddress.isNotEmpty == true) {
-      searchController.updateFilterEmail(toOption: Some({emailAddress!.emailAddress}));
-      dispatchAction(StartSearchEmailAction(filter: QuickSearchFilter.to));
-    } else {
-      dispatchAction(StartSearchEmailAction());
-    }
+
+    searchController.updateFilterEmail(
+      textOption: queryString?.isNotEmpty == true
+        ? Some(SearchQuery(queryString!))
+        : null,
+      toOption: emailAddress?.isNotEmpty == true
+        ? Some({emailAddress!})
+        : null,
+      sortOrderOption: searchController.sortOrderFiltered.value.getSortOrder()
+    );
+
+    dispatchAction(StartSearchEmailAction(
+      filter: emailAddress?.isNotEmpty == true ? QuickSearchFilter.to : null
+    ));
+
     FocusManager.instance.primaryFocus?.unfocus();
     if (_searchInsideEmailDetailedViewIsActive()) {
       _closeEmailDetailedView();

@@ -138,11 +138,13 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     if (query.isNotEmpty || _searchController.listFilterOnSuggestionForm.isNotEmpty) {
       _searchController.clearSortOrder();
       _searchController.clearSearchFilter();
-      _searchController.applyFilterSuggestionToSearchFilter(_dashBoardController.sessionCurrent?.username);
+      _searchController.applyFilterSuggestionToSearchFilter(
+        _dashBoardController.sessionCurrent?.username
+      );
 
       if (EmailUtils.isEmailAddressValid(query)) {
         _searchController.searchInputController.clear();
-        _dashBoardController.searchEmail(emailAddress: EmailAddress(null, query));
+        _dashBoardController.searchEmail(emailAddress: query);
       } else {
         _dashBoardController.searchEmail(queryString: query);
       }
@@ -150,8 +152,6 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
       _dashBoardController.clearSearchEmail();
     }
   }
-
-
 
   void _invokeSelectSuggestionItem(PresentationEmail presentationEmail) {
     _dashBoardController.dispatchAction(
@@ -168,13 +168,14 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     _searchController.clearSearchFilter();
     _searchController.applyFilterSuggestionToSearchFilter(_dashBoardController.sessionCurrent?.username);
 
-    if (EmailUtils.isEmailAddressValid(recent.value)) {
-      _searchController.searchInputController.clear();
-      _dashBoardController.searchEmail(emailAddress: EmailAddress(null, recent.value));
-    } else {
-      _searchController.searchInputController.text = recent.value;
-      _dashBoardController.searchEmail(queryString: recent.value);
-    }
+    final isEmailAddress = EmailUtils.isEmailAddressValid(recent.value);
+    _searchController.searchInputController.text = isEmailAddress
+      ? ''
+      : recent.value;
+    _dashBoardController.searchEmail(
+      queryString: !isEmailAddress ? recent.value : null,
+      emailAddress: isEmailAddress ? recent.value : null
+    );
   }
 
   Widget _buildShowAllResultButton(BuildContext context, String keyword) {
