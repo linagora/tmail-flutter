@@ -667,7 +667,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
 
   bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
 
-  void searchEmail(BuildContext context, {String? queryString}) {
+  void searchEmail({String? queryString}) {
     log('MailboxDashBoardController::searchEmail():');
     clearFilterMessageOption();
     searchController.clearFilterSuggestion();
@@ -676,17 +676,18 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     }
     searchController.updateFilterEmail(sortOrderOption: searchController.sortOrderFiltered.value.getSortOrder());
     dispatchAction(StartSearchEmailAction());
-    KeyboardUtils.hideKeyboard(context);
-    if (_searchInsideEmailDetailedViewIsActive(context)) {
+    FocusManager.instance.primaryFocus?.unfocus();
+    if (_searchInsideEmailDetailedViewIsActive()) {
       _closeEmailDetailedView();
     }
     _unSelectedMailbox();
   }
 
-  bool _searchInsideEmailDetailedViewIsActive(BuildContext context) {
+  bool _searchInsideEmailDetailedViewIsActive() {
     return PlatformInfo.isWeb
-        && responsiveUtils.isDesktop(context)
-        && dashboardRoute.value == DashboardRoutes.emailDetailed;
+      && currentContext != null
+      && responsiveUtils.isDesktop(currentContext!)
+      && dashboardRoute.value == DashboardRoutes.emailDetailed;
   }
 
   void clearSearchEmail() {
@@ -913,7 +914,6 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   }
 
   void moveSelectedMultipleEmailToMailbox(
-      BuildContext context,
       List<PresentationEmail> listEmails,
       PresentationMailbox currentMailbox
   ) async {
@@ -1864,8 +1864,8 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
       !responsiveUtils.isWebDesktop(context);
   }
 
-  void emptyTrashAction(BuildContext context) {
-    dispatchAction(EmptyTrashAction(context));
+  void emptyTrashAction() {
+    dispatchAction(EmptyTrashAction());
   }
 
   void showAppDashboardAction() async {
@@ -2487,11 +2487,11 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     return listEmailAddress;
   }
 
-  void searchEmailByFromFields(BuildContext context, EmailAddress emailAddress) {
-    KeyboardUtils.hideKeyboard(context);
+  void searchEmailByFromFields(EmailAddress emailAddress) {
+    FocusManager.instance.primaryFocus?.unfocus();
     clearFilterMessageOption();
     searchController.clearFilterSuggestion();
-    if (_searchInsideEmailDetailedViewIsActive(context)) {
+    if (_searchInsideEmailDetailedViewIsActive()) {
       _closeEmailDetailedView();
     }
     _unSelectedMailbox();
@@ -2820,13 +2820,13 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
       filterMessageOption.value != FilterMessageOption.all;
   }
 
-  void openAdvancedSearchView(BuildContext context) {
-    dispatchAction(OpenAdvancedSearchViewAction(context));
+  void openAdvancedSearchView() {
+    dispatchAction(OpenAdvancedSearchViewAction());
     searchController.openAdvanceSearch();
   }
 
-  void clearAllSearchFilterApplied(BuildContext context) {
-    dispatchAction(ClearSearchFilterAppliedAction(context));
+  void clearAllSearchFilterApplied() {
+    dispatchAction(ClearSearchFilterAppliedAction());
   }
 
   @override

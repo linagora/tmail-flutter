@@ -287,10 +287,10 @@ class ThreadController extends BaseController with EmailActionController {
         cancelSelectEmail();
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is FilterMessageAction) {
-        filterMessagesAction(action.context, action.option);
+        filterMessagesAction(action.option);
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is HandleEmailActionTypeAction) {
-        pressEmailSelectionAction(action.context, action.emailAction, action.listEmailSelected);
+        pressEmailSelectionAction(action.emailAction, action.listEmailSelected);
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is OpenEmailDetailedFromSuggestionQuickSearchAction) {
         final mailboxContain = action.presentationEmail.findMailboxContain(mailboxDashBoardController.mapMailboxById);
@@ -299,7 +299,6 @@ class ThreadController extends BaseController with EmailActionController {
           EmailActionType.preview,
           newEmail,
           mailboxContain: mailboxContain,
-          context: action.context,
         );
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is StartSearchEmailAction) {
@@ -307,8 +306,8 @@ class ThreadController extends BaseController with EmailActionController {
         _replaceBrowserHistory();
         _searchEmail();
         mailboxDashBoardController.clearDashBoardAction();
-      } else if (action is EmptyTrashAction) {
-        deleteSelectionEmailsPermanently(action.context, DeleteActionType.all);
+      } else if (action is EmptyTrashAction && currentContext != null) {
+        deleteSelectionEmailsPermanently(currentContext!, DeleteActionType.all);
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is OpenEmailInsideMailboxFromLocationBar) {
         _getEmailByIdFromLocationBar(
@@ -720,7 +719,7 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  void selectEmail(BuildContext context, PresentationEmail presentationEmailSelected) {
+  void selectEmail(PresentationEmail presentationEmailSelected) {
     final emailsInCurrentMailbox = mailboxDashBoardController.emailsInCurrentMailbox;
 
     if (_rangeSelectionMode && latestEmailSelectedOrUnselected.value != null && latestEmailSelectedOrUnselected.value?.id != presentationEmailSelected.id) {
@@ -780,7 +779,7 @@ class ThreadController extends BaseController with EmailActionController {
     popBack();
   }
 
-  void filterMessagesAction(BuildContext context, FilterMessageOption filterOption) {
+  void filterMessagesAction(FilterMessageOption filterOption) {
     popBack();
 
     final newFilterOption = mailboxDashBoardController.filterMessageOption.value == filterOption
@@ -789,11 +788,12 @@ class ThreadController extends BaseController with EmailActionController {
 
     mailboxDashBoardController.filterMessageOption.value = newFilterOption;
 
-    appToast.showToastMessage(
-      context,
-      newFilterOption.getMessageToast(context),
-      leadingSVGIcon: newFilterOption.getIconToast(imagePaths),
-    );
+    if (currentContext != null && currentOverlayContext != null) {
+      appToast.showToastMessage(
+        currentOverlayContext!,
+        newFilterOption.getMessageToast(currentContext!),
+        leadingSVGIcon: newFilterOption.getIconToast(imagePaths));
+    }
 
     if (searchController.isSearchEmailRunning) {
       _searchEmail();
@@ -947,7 +947,10 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  void pressEmailSelectionAction(BuildContext context, EmailActionType actionType, List<PresentationEmail> selectionEmail) {
+  void pressEmailSelectionAction(
+    EmailActionType actionType,
+    List<PresentationEmail> selectionEmail
+  ) {
     switch(actionType) {
       case EmailActionType.markAsRead:
         cancelSelectEmail();
@@ -971,7 +974,7 @@ class ThreadController extends BaseController with EmailActionController {
             ? selectionEmail.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById)
             : selectedMailbox;
         if (mailboxContainCurrent != null) {
-          moveSelectedMultipleEmailToMailbox(context, selectionEmail, mailboxContainCurrent);
+          moveSelectedMultipleEmailToMailbox(selectionEmail, mailboxContainCurrent);
         }
         break;
       case EmailActionType.moveToTrash:
@@ -987,9 +990,9 @@ class ThreadController extends BaseController with EmailActionController {
         final mailboxContainCurrent = searchController.isSearchEmailRunning
             ? selectionEmail.getCurrentMailboxContain(mailboxDashBoardController.mapMailboxById)
             : selectedMailbox;
-        if (mailboxContainCurrent != null) {
+        if (mailboxContainCurrent != null && currentContext != null) {
           deleteSelectionEmailsPermanently(
-            context,
+            currentContext!,
             DeleteActionType.multiple,
             listEmails: selectionEmail,
             mailboxCurrent: mailboxContainCurrent,
@@ -1019,7 +1022,6 @@ class ThreadController extends BaseController with EmailActionController {
     PresentationEmail selectedEmail,
     {
       PresentationMailbox? mailboxContain,
-      BuildContext? context,
     }
   ) {
     switch(actionType) {
@@ -1031,7 +1033,7 @@ class ThreadController extends BaseController with EmailActionController {
         }
         break;
       case EmailActionType.selection:
-        selectEmail(context!, selectedEmail);
+        selectEmail(selectedEmail);
         break;
       case EmailActionType.markAsRead:
         markAsEmailRead(selectedEmail, ReadActions.markAsRead, MarkReadAction.tap);
@@ -1046,13 +1048,15 @@ class ThreadController extends BaseController with EmailActionController {
         markAsStarEmail(selectedEmail, MarkStarAction.unMarkStar);
         break;
       case EmailActionType.moveToMailbox:
-        moveToMailbox(context!, selectedEmail, mailboxContain: mailboxContain);
+        moveToMailbox(selectedEmail, mailboxContain: mailboxContain);
         break;
       case EmailActionType.moveToTrash:
         moveToTrash(selectedEmail, mailboxContain: mailboxContain);
         break;
       case EmailActionType.deletePermanently:
-        deleteEmailPermanently(context!, selectedEmail);
+        if (currentContext != null) {
+          deleteEmailPermanently(currentContext!, selectedEmail);
+        }
         break;
       case EmailActionType.moveToSpam:
         popBack();
@@ -1063,7 +1067,7 @@ class ThreadController extends BaseController with EmailActionController {
         unSpam(selectedEmail);
         break;
       case EmailActionType.openInNewTab:
-        openEmailInNewTabAction(context!, selectedEmail);
+        openEmailInNewTabAction(selectedEmail);
         break;
       default:
         break;
