@@ -463,22 +463,50 @@ class SearchEmailController extends BaseController
   }
 
   void showAllResultSearchAction(BuildContext context, String query) {
-    setTextInputSearchForm(query);
-    _updateSimpleSearchFilter(
-      textOption: Some(SearchQuery(query)),
-      beforeOption: const None(),
-      positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
-    );
+    if (EmailUtils.isEmailAddressValid(query)) {
+      _updateSimpleSearchFilter(
+        toOption: Some({query}),
+        beforeOption: const None(),
+        positionOption: emailSortOrderType.value.isScrollByPosition()
+          ? const Some(0)
+          : const None()
+      );
+      textInputSearchController.clear();
+      currentSearchText.value = '';
+    } else {
+      setTextInputSearchForm(query);
+      _updateSimpleSearchFilter(
+        textOption: Some(SearchQuery(query)),
+        beforeOption: const None(),
+        positionOption: emailSortOrderType.value.isScrollByPosition()
+          ? const Some(0)
+          : const None()
+      );
+    }
     _searchEmailAction(context);
   }
 
   void searchEmailByRecentAction(BuildContext context, RecentSearch recentSearch) {
-    setTextInputSearchForm(recentSearch.value);
-    _updateSimpleSearchFilter(
-      textOption: Some(SearchQuery(recentSearch.value)),
-      beforeOption: const None(),
-      positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
-    );
+    if (EmailUtils.isEmailAddressValid(recentSearch.value)) {
+      _updateSimpleSearchFilter(
+        toOption: Some({recentSearch.value}),
+        beforeOption: const None(),
+        positionOption: emailSortOrderType.value.isScrollByPosition()
+          ? const Some(0)
+          : const None()
+      );
+      textInputSearchController.clear();
+      currentSearchText.value = '';
+    } else {
+      setTextInputSearchForm(recentSearch.value);
+      _updateSimpleSearchFilter(
+        textOption: Some(SearchQuery(recentSearch.value)),
+        beforeOption: const None(),
+        positionOption: emailSortOrderType.value.isScrollByPosition()
+          ? const Some(0)
+          : const None()
+      );
+    }
     _searchEmailAction(context);
   }
 
@@ -495,11 +523,25 @@ class SearchEmailController extends BaseController
   }
 
   void submitSearchAction(BuildContext context, String query) {
-    _updateSimpleSearchFilter(
-      textOption: Some(SearchQuery(query)),
-      beforeOption: const None(),
-      positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
-    );
+    if (EmailUtils.isEmailAddressValid(query)) {
+      _updateSimpleSearchFilter(
+        toOption: Some({query}),
+        beforeOption: const None(),
+        positionOption: emailSortOrderType.value.isScrollByPosition()
+          ? const Some(0)
+          : const None()
+      );
+      textInputSearchController.clear();
+      currentSearchText.value = '';
+    } else {
+      _updateSimpleSearchFilter(
+        textOption: Some(SearchQuery(query)),
+        beforeOption: const None(),
+        positionOption: emailSortOrderType.value.isScrollByPosition()
+          ? const Some(0)
+          : const None()
+      );
+    }
     _searchEmailAction(context);
   }
 
