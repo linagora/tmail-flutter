@@ -38,7 +38,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             onShowFullListEmailAddressAction: controller.showFullEmailAddress,
             onUpdateListEmailAddressAction: controller.updateListEmailAddress,
             onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
-            onSearchAction: () => controller.onSearchAction.call(context),
+            onSearchAction: controller.onSearchAction,
           )),
           Obx(() => TextFieldAutocompleteEmailAddressWeb(
             field: AdvancedSearchFilterField.to,
@@ -51,7 +51,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             onShowFullListEmailAddressAction: controller.showFullEmailAddress,
             onUpdateListEmailAddressAction: controller.updateListEmailAddress,
             onSuggestionEmailAddress: controller.getAutoCompleteSuggestion,
-            onSearchAction: () => controller.onSearchAction.call(context),
+            onSearchAction: controller.onSearchAction,
           )),
           _buildFilterField(
             textEditingController: controller.subjectFilterInputController,
@@ -287,7 +287,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           if (isSelectFormList) {
             onTap?.call();
           } else {
-            controller.onSearchAction.call(context);
+            controller.onSearchAction();
             popBack();
           }
         },

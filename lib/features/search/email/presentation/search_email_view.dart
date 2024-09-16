@@ -66,8 +66,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                         controller.listResultSearch.listEmailSelected,
                         controller.mailboxDashBoardController.mapMailboxById,
                         onCancelSelection: controller.cancelSelectionMode,
-                        onHandleEmailAction: (actionType, listEmails) =>
-                            controller.handleSelectionEmailAction(context, actionType, listEmails));
+                        onHandleEmailAction: controller.handleSelectionEmailAction);
                   } else {
                     return _buildSearchInputForm(context);
                   }

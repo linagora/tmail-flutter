@@ -78,7 +78,7 @@ class AdvancedFilterController extends BaseController {
     super.onReady();
   }
 
-  void clearSearchFilter(BuildContext context) {
+  void clearSearchFilter() {
     searchController.clearSearchFilter();
     _resetAllToOriginalValue();
     _clearAllTextFieldInput();
@@ -86,7 +86,7 @@ class AdvancedFilterController extends BaseController {
     searchController.clearSortOrder();
     searchController.deactivateAdvancedSearch();
     searchController.isAdvancedSearchViewOpen.value = false;
-    _mailboxDashBoardController.searchEmail(context);
+    _mailboxDashBoardController.searchEmail();
   }
 
   void _updateFilterEmailFromAdvancedSearchView() {
@@ -156,7 +156,7 @@ class AdvancedFilterController extends BaseController {
     }
   }
 
-  void applyAdvancedSearchFilter(BuildContext context) {
+  void applyAdvancedSearchFilter() {
     _updateFilterEmailFromAdvancedSearchView();
     if (isAdvancedSearchHasApplied) {
       searchController.activateAdvancedSearch();
@@ -167,7 +167,7 @@ class AdvancedFilterController extends BaseController {
       searchController.updateFilterEmail(beforeOption: const None());
     }
     searchController.isAdvancedSearchViewOpen.value = false;
-    _mailboxDashBoardController.searchEmail(context);
+    _mailboxDashBoardController.searchEmail();
   }
 
   Future<List<EmailAddress>> getAutoCompleteSuggestion(String word) async {
@@ -197,16 +197,20 @@ class AdvancedFilterController extends BaseController {
         hasAttachment.isTrue;
   }
 
-  void initSearchFilterField(BuildContext context) {
+  void initSearchFilterField() {
     subjectFilterInputController.text = StringConvert.writeNullToEmpty(searchEmailFilter.subject);
     hasKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(searchEmailFilter.text?.value);
     notKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(searchEmailFilter.notKeyword.firstOrNull);
     dateFilterSelectedFormAdvancedSearch.value = searchEmailFilter.emailReceiveTimeType;
     _destinationMailboxSelected = searchEmailFilter.mailbox;
-    if (searchEmailFilter.mailbox == null) {
-      mailBoxFilterInputController.text = AppLocalizations.of(context).allFolders;
-    } else {
-      mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(searchEmailFilter.mailbox?.getDisplayName(context));
+    if (currentContext != null) {
+      if (searchEmailFilter.mailbox == null) {
+        mailBoxFilterInputController.text = AppLocalizations.of(currentContext!).allFolders;
+      } else {
+        mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(
+          searchEmailFilter.mailbox?.getDisplayName(currentContext!)
+        );
+      }
     }
     hasAttachment.value = searchEmailFilter.hasAttachment;
     if (searchEmailFilter.from.isEmpty) {
@@ -423,9 +427,9 @@ class AdvancedFilterController extends BaseController {
 
           _mailboxDashBoardController.dispatchAction(StartSearchEmailAction());
         } else if (action is OpenAdvancedSearchViewAction) {
-          initSearchFilterField(action.context);
+          initSearchFilterField();
         } else if (action is ClearSearchFilterAppliedAction) {
-          clearSearchFilter(action.context);
+          clearSearchFilter();
         }
       }
     );
@@ -468,9 +472,9 @@ class AdvancedFilterController extends BaseController {
     }
   }
 
-  void onSearchAction(BuildContext context) {
-    FocusScope.of(context).unfocus();
-    applyAdvancedSearchFilter(context);
+  void onSearchAction() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    applyAdvancedSearchFilter();
   }
 
   @override

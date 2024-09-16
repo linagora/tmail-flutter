@@ -394,7 +394,7 @@ void main() {
       when(context.owner).thenReturn(BuildOwner(focusManager: FocusManager()));
       
       // expect query in search controller update as expected
-      mailboxDashboardController.searchEmail(context, queryString: queryString);
+      mailboxDashboardController.searchEmail(queryString: queryString);
       expect(searchController.searchEmailFilter.value.text, SearchQuery(queryString));
       
       // expect sort in search controller update as expected
@@ -455,7 +455,7 @@ void main() {
       // mailbox: impossible? due to private field
       advancedFilterController.updateReceiveDateSearchFilter(context, EmailReceiveTimeType.last30Days);
       advancedFilterController.updateSortOrder(EmailSortOrderType.relevance);
-      advancedFilterController.applyAdvancedSearchFilter(context);
+      advancedFilterController.applyAdvancedSearchFilter();
       expect(searchController.searchEmailFilter.value, SearchEmailFilter(
         from: {fromEmailAddress.email!},
         to: {toEmailAddress.email!},
