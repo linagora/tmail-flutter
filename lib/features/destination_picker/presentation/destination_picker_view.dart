@@ -609,11 +609,6 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(12)),
                   color: AppColor.colorBgSearchBar),
-                iconClearText: SvgPicture.asset(
-                  controller.imagePaths.icClearTextSearch,
-                  width: 18,
-                  height: 18,
-                  fit: BoxFit.fill),
                 hintText: AppLocalizations.of(context).hintSearchFolders,
                 onClearTextSearchAction: controller.clearSearchText,
                 onTextChangeSearchAction: (query) => controller.searchMailbox(context, query),

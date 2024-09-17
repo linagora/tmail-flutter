@@ -2,6 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
@@ -25,9 +26,12 @@ class SearchAppBarWidget extends StatelessWidget {
   final double? heightSearchBar;
   final Decoration? decoration;
   final EdgeInsets? padding;
-  final EdgeInsets? margin;
+  final EdgeInsetsGeometry? margin;
   final String? hintText;
-  final Widget? iconClearText;
+  final Color? searchIconColor;
+  final double? searchIconSize;
+  final TextStyle? inputHintTextStyle;
+  final TextStyle? inputTextStyle;
   final OnCancelSearchPressed? onCancelSearchPressed;
   final OnTextChangeSearchAction? onTextChangeSearchAction;
   final OnClearTextSearchAction? onClearTextSearchAction;
@@ -47,7 +51,10 @@ class SearchAppBarWidget extends StatelessWidget {
     this.padding,
     this.margin,
     this.hintText,
-    this.iconClearText,
+    this.searchIconColor,
+    this.searchIconSize,
+    this.inputHintTextStyle,
+    this.inputTextStyle,
     this.onCancelSearchPressed,
     this.onTextChangeSearchAction,
     this.onClearTextSearchAction,
@@ -65,10 +72,28 @@ class SearchAppBarWidget extends StatelessWidget {
       child: Row(
         children: [
           if (hasBackButton) _buildBackButton(),
-          if (hasSearchButton) _buildSearchButton(),
+          if (hasSearchButton)
+            TMailButtonWidget.fromIcon(
+              icon: imagePaths.icSearchBar,
+              iconColor: searchIconColor,
+              iconSize: searchIconSize,
+              backgroundColor: Colors.transparent,
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+              onTapActionCallback: () =>
+                onSearchTextAction?.call(searchInputController?.text ?? ''),
+            ),
           Expanded(child: _buildSearchInputForm(context)),
-          if (suggestionSearch?.isNotEmpty == true || (searchQuery != null && searchQuery!.value.isNotEmpty))
-            _buildClearTextSearchButton(),
+          if (suggestionSearch?.isNotEmpty == true ||
+              (searchQuery != null && searchQuery!.value.isNotEmpty))
+            TMailButtonWidget.fromIcon(
+              icon: imagePaths.icClearTextSearch,
+              backgroundColor: Colors.transparent,
+              margin: const EdgeInsets.symmetric(horizontal: 8),
+              onTapActionCallback: () {
+                searchInputController?.clear();
+                onClearTextSearchAction?.call();
+              },
+            ),
         ]
       )
     );
@@ -88,15 +113,6 @@ class SearchAppBarWidget extends StatelessWidget {
      });
  }
 
- Widget _buildClearTextSearchButton() {
-    return buildIconWeb(
-      icon: iconClearText ?? SvgPicture.asset(imagePaths.icComposerClose, width: 18, height: 18, fit: BoxFit.fill),
-      onTap: () {
-        searchInputController?.clear();
-        onClearTextSearchAction?.call();
-      });
- }
-
   Widget _buildSearchInputForm(BuildContext context) {
     return TextFieldBuilder(
       key: const Key('search_input_form'),
@@ -108,31 +124,22 @@ class SearchAppBarWidget extends StatelessWidget {
       textDirection: DirectionUtils.getDirectionByLanguage(context),
       autoFocus: true,
       focusNode: searchFocusNode,
-      textStyle: const TextStyle(color: AppColor.colorNameEmail, fontSize: 17),
+      textStyle: inputTextStyle ?? const TextStyle(
+        color: AppColor.colorNameEmail,
+        fontSize: 17
+      ),
       decoration: InputDecoration(
         border: InputBorder.none,
         focusedBorder: InputBorder.none,
         enabledBorder: InputBorder.none,
         contentPadding: EdgeInsets.zero,
         hintText: hintText,
-        hintStyle: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0),
+        hintStyle: inputHintTextStyle ?? const TextStyle(
+          color: AppColor.colorHintSearchBar,
+          fontSize: 17.0
+        ),
         labelStyle: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 17.0)),
       controller: searchInputController,
     );
   }
-
- Widget _buildSearchButton() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
-      child: buildIconWeb(
-        minSize: 40,
-        iconPadding: EdgeInsets.zero,
-        icon: SvgPicture.asset(
-          imagePaths.icSearchBar,
-          fit: BoxFit.fill
-        ),
-        onTap: () => onSearchTextAction?.call(searchInputController?.text ?? '')
-      ),
-    );
- }
 }
