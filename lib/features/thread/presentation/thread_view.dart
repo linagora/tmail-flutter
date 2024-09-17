@@ -308,7 +308,7 @@ class ThreadView extends GetWidget<ThreadController>
 
     return Obx(() {
       final isAdvancedSearchViewOpen = controller.searchController.isAdvancedSearchViewOpen.value;
-      if (controller.searchController.isSearchActive() && !isAdvancedSearchViewOpen) {
+      if (!controller.searchController.isSearchActive() && !isAdvancedSearchViewOpen) {
         return Container(
           padding: PlatformInfo.isMobile && controller.listEmailSelected.isNotEmpty
             ? EdgeInsets.only(bottom: controller.responsiveUtils.isTabletLarge(context) ? 85 : 70)
