@@ -102,6 +102,7 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
                     identifier: ComposerKeyValues.richtextFontNameButton,
                     child: DropDownButtonWidget<FontNameType>(
                       items: FontNameType.values,
+                      semanticIdentifier: ComposerKeyValues.richtextFontNameOption,
                       itemSelected: richTextWebController.selectedFontName.value,
                       onChanged: (newFont) => richTextWebController.applyNewFontStyle(newFont),
                       onMenuStateChange: (isOpen) {

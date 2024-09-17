@@ -121,34 +121,38 @@ Widget buildButtonWrapText(String name, {
   double? minWidth,
   EdgeInsetsGeometry? padding,
   FocusNode? focusNode,
+  String? semanticIdentifier,
   IconWebCallback? onTap
 }) {
   return Container(
     height: height ?? 40,
     padding: padding,
     constraints: BoxConstraints(minWidth: minWidth ?? 0),
-    child: ElevatedButton(
-      focusNode: focusNode,
-      onPressed: () => onTap?.call(),
-      style: ButtonStyle(
-          backgroundColor: WidgetStateProperty.resolveWith<Color>(
-              (Set<WidgetState> states) => bgColor ?? AppColor.colorTextButton),
-          shape: WidgetStateProperty.all(RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(radius ?? 8),
-              side: BorderSide(
-                  width: borderColor != null ? 1 : 0,
-                  color: borderColor ?? bgColor ?? AppColor.colorTextButton))),
-          padding: WidgetStateProperty.resolveWith<EdgeInsets>(
-              (Set<WidgetState> states) => const EdgeInsets.symmetric(horizontal: 16)),
-          elevation: WidgetStateProperty.resolveWith<double>(
-              (Set<WidgetState> states) => 0)),
-      child: Text(name,
-          textAlign: TextAlign.center,
-          style: textStyle ??
-              const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w500,
-                  color: Colors.white)),
+    child: Semantics(
+      identifier: semanticIdentifier,
+      child: ElevatedButton(
+        focusNode: focusNode,
+        onPressed: () => onTap?.call(),
+        style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.resolveWith<Color>(
+                (Set<WidgetState> states) => bgColor ?? AppColor.colorTextButton),
+            shape: WidgetStateProperty.all(RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(radius ?? 8),
+                side: BorderSide(
+                    width: borderColor != null ? 1 : 0,
+                    color: borderColor ?? bgColor ?? AppColor.colorTextButton))),
+            padding: WidgetStateProperty.resolveWith<EdgeInsets>(
+                (Set<WidgetState> states) => const EdgeInsets.symmetric(horizontal: 16)),
+            elevation: WidgetStateProperty.resolveWith<double>(
+                (Set<WidgetState> states) => 0)),
+        child: Text(name,
+            textAlign: TextAlign.center,
+            style: textStyle ??
+                const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white)),
+      ),
     ),
   );
 }
