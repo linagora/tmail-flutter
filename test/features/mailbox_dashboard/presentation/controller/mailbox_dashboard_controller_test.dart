@@ -394,7 +394,7 @@ void main() {
       when(context.owner).thenReturn(BuildOwner(focusManager: FocusManager()));
       
       // expect query in search controller update as expected
-      mailboxDashboardController.searchEmail(queryString: queryString);
+      mailboxDashboardController.searchEmailByQueryString(queryString);
       expect(searchController.searchEmailFilter.value.text, SearchQuery(queryString));
       
       // expect sort in search controller update as expected
@@ -463,7 +463,6 @@ void main() {
         text: SearchQuery(emailContainsWord),
         notKeyword: {emailNotContainsWord},
         emailReceiveTimeType: EmailReceiveTimeType.last30Days,
-        sortOrder: EmailSortOrderType.relevance.getSortOrder().toNullable(),
         position: 0));
 
       // expect mailbox dashboard controller calls GetEmailsInMailboxInteractor
@@ -500,8 +499,7 @@ void main() {
     when(context.owner).thenReturn(BuildOwner(focusManager: FocusManager()));
 
     // act
-    mailboxDashboardController.searchEmail(queryString: queryString);
-    mailboxDashboardController.selectSortOrderQuickSearchFilter(context, EmailSortOrderType.oldest);
+    mailboxDashboardController.searchEmailByQueryString(queryString);
     mailboxDashboardController.selectHasAttachmentSearchFilter();
     mailboxDashboardController.selectReceiveTimeQuickSearchFilter(context, EmailReceiveTimeType.last30Days);
 
@@ -521,7 +519,6 @@ void main() {
         text: SearchQuery(queryString),
         emailReceiveTimeType: EmailReceiveTimeType.last30Days,
         hasAttachment: true,
-        sortOrder: EmailSortOrderType.oldest.getSortOrder().toNullable()
       )
     );
   });

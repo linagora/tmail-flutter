@@ -170,7 +170,6 @@ class SearchController extends BaseController with DateRangePickerMixin {
     Option<UTCDate>? beforeOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
-    Option<Set<Comparator>>? sortOrderOption,
     Option<int>? positionOption,
   }) {
     searchEmailFilter.value = searchEmailFilter.value.copyWith(
@@ -185,7 +184,6 @@ class SearchController extends BaseController with DateRangePickerMixin {
       beforeOption: beforeOption,
       startDateOption: startDateOption,
       endDateOption: endDateOption,
-      sortOrderOption: sortOrderOption,
       positionOption: positionOption,
     );
     searchEmailFilter.refresh();
@@ -282,6 +280,15 @@ class SearchController extends BaseController with DateRangePickerMixin {
   
   void clearSortOrder() {
     sortOrderFiltered.value = EmailSortOrderType.mostRecent;
+  }
+
+  void clearAllFilterSearch() {
+    _clearAllTextInputSimpleSearch();
+    clearSortOrder();
+    clearFilterSuggestion();
+    clearSearchFilter();
+    deactivateAdvancedSearch();
+    hideAdvancedSearchFormView();
   }
 
   void disableAllSearchEmail() {

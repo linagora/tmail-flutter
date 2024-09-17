@@ -79,14 +79,9 @@ class AdvancedFilterController extends BaseController {
   }
 
   void clearSearchFilter() {
-    searchController.clearSearchFilter();
     _resetAllToOriginalValue();
     _clearAllTextFieldInput();
-    searchController.searchInputController.clear();
-    searchController.clearSortOrder();
-    searchController.deactivateAdvancedSearch();
-    searchController.isAdvancedSearchViewOpen.value = false;
-    _mailboxDashBoardController.searchEmail();
+    _mailboxDashBoardController.handleClearAdvancedSearchFilterEmail();
   }
 
   void _updateFilterEmailFromAdvancedSearchView() {
@@ -118,8 +113,6 @@ class AdvancedFilterController extends BaseController {
     } else {
       searchController.updateFilterEmail(toOption: const None());
     }
-
-    searchController.updateFilterEmail(sortOrderOption: searchController.sortOrderFiltered.value.getSortOrder());
 
     searchController.updateFilterEmail(
       mailboxOption: optionOf(_destinationMailboxSelected),
@@ -170,7 +163,7 @@ class AdvancedFilterController extends BaseController {
       searchController.updateFilterEmail(beforeOption: const None());
     }
     searchController.isAdvancedSearchViewOpen.value = false;
-    _mailboxDashBoardController.searchEmail();
+    _mailboxDashBoardController.handleAdvancedSearchEmail();
   }
 
   Future<List<EmailAddress>> getAutoCompleteSuggestion(String word) async {
@@ -405,17 +398,8 @@ class AdvancedFilterController extends BaseController {
           );
         } else if (action is ClearDateRangeToAdvancedSearch) {
           _updateDateRangeTime(action.receiveTime);
-        } else if (action is StartSearchEmailAction) {
-          switch(action.filter) {
-            case QuickSearchFilter.from:
-              _updateFromField();
-              break;
-            case QuickSearchFilter.to:
-              _updateToField();
-              break;
-            default:
-              break;
-          }
+        } else if (action is StartSearchEmailBySearchFilterAction) {
+          _handleSearchEmailBySearchFilterAction(action.searchFilter);
         } else if (action is SearchEmailByFromFieldsAction) {
           searchController.clearSearchFilter();
           _resetAllToOriginalValue();
@@ -478,6 +462,19 @@ class AdvancedFilterController extends BaseController {
   void onSearchAction() {
     FocusManager.instance.primaryFocus?.unfocus();
     applyAdvancedSearchFilter();
+  }
+
+  void _handleSearchEmailBySearchFilterAction(QuickSearchFilter searchFilter) {
+    switch(searchFilter) {
+      case QuickSearchFilter.from:
+        _updateFromField();
+        break;
+      case QuickSearchFilter.to:
+        _updateToField();
+        break;
+      default:
+        break;
+    }
   }
 
   @override
