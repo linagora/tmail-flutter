@@ -301,7 +301,9 @@ class ThreadController extends BaseController with EmailActionController {
           mailboxContain: mailboxContain,
         );
         mailboxDashBoardController.clearDashBoardAction();
-      } else if (action is StartSearchEmailAction) {
+      } else if (action is StartSearchEmailAction
+          || action is ClearAdvancedSearchFilterEmailAction
+          || action is StartSearchEmailBySearchFilterAction) {
         cancelSelectEmail();
         _replaceBrowserHistory();
         _searchEmail();
@@ -816,17 +818,11 @@ class ThreadController extends BaseController with EmailActionController {
       mailboxDashBoardController.emailsInCurrentMailbox.clear();
       canSearchMore = false;
 
-      if (searchController.sortOrderFiltered.value.isScrollByPosition()) {
-        searchController.updateFilterEmail(
-          positionOption: const Some(0),
-          beforeOption: const None(),
-        );
-      } else {
-        searchController.updateFilterEmail(
-          positionOption: const None(),
-          beforeOption: const None(),
-        );
-      }
+      searchController.updateFilterEmail(
+        positionOption: searchController.sortOrderFiltered.value.isScrollByPosition()
+          ? const Some(0)
+          : const None(),
+        beforeOption: const None());
 
       searchController.activateSimpleSearch();
 

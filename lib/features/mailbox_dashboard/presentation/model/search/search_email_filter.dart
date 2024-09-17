@@ -4,7 +4,6 @@ import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
-import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:model/email/prefix_email_address.dart';
@@ -28,12 +27,9 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
   final UTCDate? before;
   final UTCDate? startDate;
   final UTCDate? endDate;
-  final Set<Comparator>? sortOrder;
   final int? position;
 
-  factory SearchEmailFilter.initial() => SearchEmailFilter(
-    sortOrder: EmailSortOrderType.mostRecent.getSortOrder().toNullable()
-  );
+  factory SearchEmailFilter.initial() => SearchEmailFilter();
 
   SearchEmailFilter({
     Set<String>? from,
@@ -48,7 +44,6 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     this.before,
     this.startDate,
     this.endDate,
-    this.sortOrder,
     this.position,
   })  : from = from ?? <String>{},
         to = to ?? <String>{},
@@ -71,7 +66,6 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     Option<UTCDate>? beforeOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
-    Option<Set<Comparator>>? sortOrderOption,
     Option<int>? positionOption,
   }) {
     return SearchEmailFilter(
@@ -87,7 +81,6 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
       before: getOptionParam(beforeOption, before),
       startDate: getOptionParam(startDateOption, startDate),
       endDate: getOptionParam(endDateOption, endDate),
-      sortOrder: getOptionParam(sortOrderOption, sortOrder),
       position: getOptionParam(positionOption, position),
     );
   }
@@ -166,7 +159,6 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     before,
     startDate,
     endDate,
-    sortOrder,
     position,
   ];
 }

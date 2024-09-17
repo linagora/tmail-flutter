@@ -54,13 +54,15 @@ class OpenEmailDetailedFromSuggestionQuickSearchAction extends DashBoardAction {
   List<Object?> get props => [presentationEmail];
 }
 
-class StartSearchEmailAction extends DashBoardAction {
-  final QuickSearchFilter? filter;
+class StartSearchEmailAction extends DashBoardAction {}
 
-  StartSearchEmailAction({this.filter});
+class StartSearchEmailBySearchFilterAction extends DashBoardAction {
+  final QuickSearchFilter searchFilter;
+
+  StartSearchEmailBySearchFilterAction(this.searchFilter);
 
   @override
-  List<Object?> get props => [filter];
+  List<Object?> get props => [searchFilter];
 }
 
 class EmptyTrashAction extends DashBoardAction {}
@@ -154,3 +156,5 @@ class CancelSelectionSearchEmailAction extends DashBoardAction {}
 class OpenAdvancedSearchViewAction extends DashBoardAction {}
 
 class ClearSearchFilterAppliedAction extends DashBoardAction {}
+
+class ClearAdvancedSearchFilterEmailAction extends DashBoardAction {}
