@@ -9,6 +9,7 @@ import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -471,6 +472,24 @@ class AdvancedFilterController extends BaseController {
         break;
       case QuickSearchFilter.to:
         _updateToField();
+        break;
+      default:
+        break;
+    }
+  }
+
+  void removeDraggableEmailAddress(DraggableEmailAddress draggableEmailAddress) {
+    log('AdvancedFilterController::removeDraggableEmailAddress:removeDraggableEmailAddress: $draggableEmailAddress');
+    switch(draggableEmailAddress.prefix) {
+      case PrefixEmailAddress.to:
+        listToEmailAddress.remove(draggableEmailAddress.emailAddress);
+        toAddressExpandMode.value = ExpandMode.EXPAND;
+        toAddressExpandMode.refresh();
+        break;
+      case PrefixEmailAddress.from:
+        listFromEmailAddress.remove(draggableEmailAddress.emailAddress);
+        fromAddressExpandMode.value = ExpandMode.EXPAND;
+        fromAddressExpandMode.refresh();
         break;
       default:
         break;
