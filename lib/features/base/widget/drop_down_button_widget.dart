@@ -33,6 +33,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
   final double? dropdownWidth;
   final double? dropdownMaxHeight;
   final String? hintText;
+  final String? semanticIdentifier;
 
   const DropDownButtonWidget({
     Key? key,
@@ -52,6 +53,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
     this.colorButton = Colors.white,
     this.tooltip = '',
     this.hintText,
+    this.semanticIdentifier,
   }) : super(key: key);
 
   @override
@@ -80,6 +82,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
                     value: item,
                     child: Semantics(
                       excludeSemantics: true,
+                      identifier: semanticIdentifier,
                       child: PointerInterceptor(
                         child: Container(
                           color: Colors.transparent,

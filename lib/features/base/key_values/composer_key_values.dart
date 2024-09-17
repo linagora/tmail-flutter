@@ -32,5 +32,11 @@ class ComposerKeyValues {
   static const String richtextUnderlineToggle = 'tmail_composer_richtext_underline_toggle';
   static const String richtextStrikethroughToggle = 'tmail_composer_richtext_strikethrough_toggle';
   static const String richtextAlignParagraphButton = 'tmail_composer_richtext_align_paragraph_button';
-  static const String richtextListStyleButton = 'tmail_composer_richtext_list_style_button'; 
+  static const String richtextListStyleButton = 'tmail_composer_richtext_list_style_button';
+  // Added on 17/09/2024
+  static const String richtextHeaderStyleOption = 'tmail_composer_richtext_header_style_option';
+  static const String richtextFontSizeOption = 'tmail_composer_richtext_font_size_option';
+  static const String richtextFontNameOption = 'tmail_composer_richtext_font_name_option';
+  static const String richtextAlignParagraphOption = 'tmail_composer_richtext_align_paragraph_option';
+  static const String richtextListStyleOption = 'tmail_composer_richtext_list_style_option';
 }
