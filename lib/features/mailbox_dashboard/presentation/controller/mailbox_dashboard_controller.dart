@@ -667,20 +667,55 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
 
   bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
 
-  void searchEmail({String? queryString}) {
-    log('MailboxDashBoardController::searchEmail():');
+  void handleAdvancedSearchEmail() {
+    log('MailboxDashBoardController::handleAdvancedSearchEmail:');
     clearFilterMessageOption();
-    searchController.clearFilterSuggestion();
-    if (queryString?.isNotEmpty == true) {
-      searchController.updateFilterEmail(textOption: Some(SearchQuery(queryString!)));
-    }
-    searchController.updateFilterEmail(sortOrderOption: searchController.sortOrderFiltered.value.getSortOrder());
-    dispatchAction(StartSearchEmailAction());
-    FocusManager.instance.primaryFocus?.unfocus();
     if (_searchInsideEmailDetailedViewIsActive()) {
       _closeEmailDetailedView();
     }
     _unSelectedMailbox();
+    searchController.clearFilterSuggestion();
+    FocusManager.instance.primaryFocus?.unfocus();
+    dispatchAction(StartSearchEmailAction());
+  }
+
+  void handleClearAdvancedSearchFilterEmail() {
+    log('MailboxDashBoardController::handleClearAdvancedSearchFilterEmail:');
+    clearFilterMessageOption();
+    if (_searchInsideEmailDetailedViewIsActive()) {
+      _closeEmailDetailedView();
+    }
+    _unSelectedMailbox();
+    searchController.clearAllFilterSearch();
+    FocusManager.instance.primaryFocus?.unfocus();
+    dispatchAction(ClearAdvancedSearchFilterEmailAction());
+  }
+
+  void searchEmailByQueryString(String queryString) {
+    final isMailAddress = EmailUtils.isEmailAddressValid(queryString);
+    log('MailboxDashBoardController::searchEmailByQueryString():QueryString = $queryString | isMailAddress = $isMailAddress');
+    clearFilterMessageOption();
+    if (_searchInsideEmailDetailedViewIsActive()) {
+      _closeEmailDetailedView();
+    }
+    _unSelectedMailbox();
+    searchController.clearFilterSuggestion();
+
+    searchController.updateFilterEmail(
+      textOption: !isMailAddress
+        ? Some(SearchQuery(queryString))
+        : null,
+      fromOption: isMailAddress
+        ? Some({queryString})
+        : null);
+
+    FocusManager.instance.primaryFocus?.unfocus();
+
+    if (isMailAddress) {
+      dispatchAction(StartSearchEmailBySearchFilterAction(QuickSearchFilter.from));
+    } else {
+      dispatchAction(StartSearchEmailAction());
+    }
   }
 
   bool _searchInsideEmailDetailedViewIsActive() {
@@ -1675,7 +1710,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
 
     if (newContact is EmailAddress) {
       searchController.updateFilterEmail(fromOption: Some({newContact.emailAddress}));
-      dispatchAction(StartSearchEmailAction(filter: QuickSearchFilter.from));
+      dispatchAction(StartSearchEmailBySearchFilterAction(QuickSearchFilter.from));
     }
   }
 
@@ -1693,7 +1728,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
 
     if (newContact is EmailAddress) {
       searchController.updateFilterEmail(toOption: Some({newContact.emailAddress}));
-      dispatchAction(StartSearchEmailAction(filter: QuickSearchFilter.to));
+      dispatchAction(StartSearchEmailBySearchFilterAction(QuickSearchFilter.to));
     }
   }
 
@@ -1721,11 +1756,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     searchController.updateFilterEmail(
       mailboxOption: destinationMailbox.id == PresentationMailbox.unifiedMailbox.id
         ? const None()
-        : Some(destinationMailbox),
-      beforeOption: const None(),
-      positionOption: searchController.sortOrderFiltered.value.isScrollByPosition()
-        ? const Some(0)
-        : const None()
+        : Some(destinationMailbox)
     );
 
     dispatchAction(StartSearchEmailAction());
@@ -1745,8 +1776,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
           searchController.updateFilterEmail(
             emailReceiveTimeTypeOption: Some(receiveTime),
             startDateOption: optionOf(startDate?.toUTCDate()),
-            endDateOption: optionOf(endDate?.toUTCDate()),
-            beforeOption: const None()
+            endDateOption: optionOf(endDate?.toUTCDate())
           );
           dispatchAction(StartSearchEmailAction());
         }
@@ -1756,8 +1786,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
       searchController.updateFilterEmail(
         emailReceiveTimeTypeOption: Some(receiveTime),
         startDateOption: const None(),
-        endDateOption: const None(),
-        beforeOption: const None()
+        endDateOption: const None()
       );
       dispatchAction(StartSearchEmailAction());
     }
@@ -1767,7 +1796,6 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     log('MailboxDashBoardController::selectSortOrderQuickSearchFilter():sortOrder: $sortOrder');
     popBack();
     searchController.sortOrderFiltered.value = sortOrder;
-    searchController.updateFilterEmail(sortOrderOption: sortOrder.getSortOrder());
     dispatchAction(StartSearchEmailAction());
   }
 
@@ -1776,27 +1804,24 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     searchController.updateFilterEmail(
       emailReceiveTimeTypeOption: const Some(EmailReceiveTimeType.allTime),
       startDateOption: const None(),
-      endDateOption: const None(),
-      beforeOption: const None()
+      endDateOption: const None()
     );
     dispatchAction(StartSearchEmailAction());
   }
 
   void _deleteSortOrderSearchFilter() {
     searchController.sortOrderFiltered.value = EmailSortOrderType.mostRecent;
-    searchController.updateFilterEmail(
-      sortOrderOption: EmailSortOrderType.mostRecent.getSortOrder());
     dispatchAction(StartSearchEmailAction());
   }
 
   void _deleteFromSearchFilter() {
     searchController.updateFilterEmail(fromOption: const None());
-    dispatchAction(StartSearchEmailAction(filter: QuickSearchFilter.from));
+    dispatchAction(StartSearchEmailBySearchFilterAction(QuickSearchFilter.from));
   }
 
   void _deleteToSearchFilter() {
     searchController.updateFilterEmail(toOption: const None());
-    dispatchAction(StartSearchEmailAction(filter: QuickSearchFilter.to));
+    dispatchAction(StartSearchEmailBySearchFilterAction(QuickSearchFilter.to));
   }
 
   void _deleteHasAttachmentSearchFilter() {
@@ -1805,13 +1830,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   }
 
   void _deleteFolderSearchFilter() {
-    searchController.updateFilterEmail(
-      mailboxOption: const None(),
-      beforeOption: const None(),
-      positionOption: searchController.sortOrderFiltered.value.isScrollByPosition()
-        ? const Some(0)
-        : const None()
-    );
+    searchController.updateFilterEmail(mailboxOption: const None());
     dispatchAction(StartSearchEmailAction());
   }
 

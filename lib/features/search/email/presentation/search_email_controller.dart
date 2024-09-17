@@ -10,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -616,7 +615,6 @@ class SearchEmailController extends BaseController
   void selectSortOrderQuickSearchFilter(BuildContext context, EmailSortOrderType sortOrderType) {
     popBack();
     _updateSimpleSearchFilter(
-      sortOrderOption: sortOrderType.getSortOrder(),
       beforeOption: const None(),
       positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
     );
@@ -744,7 +742,6 @@ class SearchEmailController extends BaseController
     Option<UTCDate>? beforeOption,
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
-    Option<Set<Comparator>>? sortOrderOption,
     Option<int>? positionOption,
     Option<Set<String>>? hasKeywordOption,
   }) {
@@ -758,7 +755,6 @@ class SearchEmailController extends BaseController
       beforeOption: beforeOption,
       startDateOption: startDateOption,
       endDateOption: endDateOption,
-      sortOrderOption: sortOrderOption,
       positionOption: positionOption,
       hasKeywordOption: hasKeywordOption,
     );
@@ -1008,7 +1004,6 @@ class SearchEmailController extends BaseController
 
   void _deleteSortOrderSearchFilter(BuildContext context) {
     _updateSimpleSearchFilter(
-      sortOrderOption: EmailSortOrderType.mostRecent.getSortOrder(),
       beforeOption: const None(),
       positionOption: emailSortOrderType.value.isScrollByPosition()
         ? const Some(0)

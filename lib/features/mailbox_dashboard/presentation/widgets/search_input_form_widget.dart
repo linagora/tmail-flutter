@@ -4,6 +4,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/quick_search/quick_search_input_form.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
@@ -126,17 +127,20 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     });
   }
 
-  void _invokeSearchEmailAction(String query) {
+  void _invokeSearchEmailAction(String queryString) {
+    log('SearchInputFormWidget::_invokeSearchEmailAction:QueryString = $queryString');
     _searchController.searchFocus.unfocus();
     _searchController.enableSearch();
 
-    if (query.isNotEmpty) {
-      _searchController.saveRecentSearch(RecentSearch.now(query));
+    if (queryString.isNotEmpty) {
+      _searchController.saveRecentSearch(RecentSearch.now(queryString));
     }
 
-    if (query.isNotEmpty || _searchController.listFilterOnSuggestionForm.isNotEmpty) {
+    if (queryString.isNotEmpty || _searchController.listFilterOnSuggestionForm.isNotEmpty) {
+      _searchController.clearSortOrder();
+      _searchController.clearSearchFilter();
       _searchController.applyFilterSuggestionToSearchFilter(_dashBoardController.sessionCurrent?.username);
-      _dashBoardController.searchEmail(queryString: query);
+      _dashBoardController.searchEmailByQueryString(queryString);
     } else {
       _dashBoardController.clearSearchEmail();
     }
@@ -154,9 +158,10 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     _searchController.searchInputController.text = recent.value;
     _searchController.searchFocus.unfocus();
     _searchController.enableSearch();
-
+    _searchController.clearSortOrder();
+    _searchController.clearSearchFilter();
     _searchController.applyFilterSuggestionToSearchFilter(_dashBoardController.sessionCurrent?.username);
-    _dashBoardController.searchEmail(queryString: recent.value);
+    _dashBoardController.searchEmailByQueryString(recent.value);
   }
 
   Widget _buildShowAllResultButton(BuildContext context, String keyword) {
