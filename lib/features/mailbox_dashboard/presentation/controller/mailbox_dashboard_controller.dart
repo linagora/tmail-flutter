@@ -1696,13 +1696,15 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     dispatchAction(StartSearchEmailAction());
   }
 
-  Future<void> selectFromSearchFilter() async {
+  Future<void> selectFromSearchFilter(BuildContext context) async {
     if (accountId.value == null || sessionCurrent == null) return;
 
     final contactArgument = ContactArguments(
-      accountId.value!,
-      sessionCurrent!,
-      searchController.searchEmailFilter.value.from);
+      accountId: accountId.value!,
+      session: sessionCurrent!,
+      listContactSelected: searchController.searchEmailFilter.value.from,
+      contactViewTitle: '${AppLocalizations.of(context).findEmails} ${AppLocalizations.of(context).from_email_address_prefix.toLowerCase()}'
+    );
 
     final newContact = await DialogRouter.pushGeneralDialog(
       routeName: AppRoutes.contact,
@@ -1714,13 +1716,15 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     }
   }
 
-  Future<void> selectToSearchFilter() async {
+  Future<void> selectToSearchFilter(BuildContext context) async {
     if (accountId.value == null || sessionCurrent == null) return;
 
     final contactArgument = ContactArguments(
-      accountId.value!,
-      sessionCurrent!,
-      searchController.searchEmailFilter.value.to);
+      accountId: accountId.value!,
+      session: sessionCurrent!,
+      listContactSelected: searchController.searchEmailFilter.value.to,
+      contactViewTitle: '${AppLocalizations.of(context).findEmails} ${AppLocalizations.of(context).to_email_address_prefix.toLowerCase()}'
+    );
 
     final newContact = await DialogRouter.pushGeneralDialog(
       routeName: AppRoutes.contact,
