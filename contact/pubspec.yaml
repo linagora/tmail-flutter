@@ -45,6 +45,11 @@ dev_dependencies:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
+dependency_overrides:
+  build_runner: 2.4.12
+  build_runner_core: 7.2.9
+  json_annotation: 4.8.1
+
 # The following section is specific to Flutter.
 flutter:
 

@@ -10,6 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/key_values/composer_key_values.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile/from_composer_bottom_sheet_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -155,58 +156,62 @@ class FromComposerBottomSheetBuilder {
                                     final Identity identity = _identities[index];
                                     return Material(
                                       color: Colors.transparent,
-                                      child: InkWell(
-                                        borderRadius: FromComposerBottomSheetStyle.borderRadius,
-                                        onTap: () => _onChangeIdentity?.call(identity),
-                                        child: Padding(
-                                          padding: FromComposerBottomSheetStyle.searchTextInputPadding,
-                                          child: Row(
-                                            children: [
-                                              Container(
-                                                width: FromComposerBottomSheetStyle.identityItemSize,
-                                                height: FromComposerBottomSheetStyle.identityItemSize,
-                                                alignment: Alignment.center,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  color: AppColor.avatarColor,
-                                                  border: Border.all(
-                                                    color: AppColor.colorShadowBgContentEmail,
-                                                    width: FromComposerBottomSheetStyle.identityItemBorderWidth
-                                                  )
+                                      child: Semantics(
+                                        container: true,
+                                        identifier: ComposerKeyValues.fromEmailSelectorOption,
+                                        child: InkWell(
+                                          borderRadius: FromComposerBottomSheetStyle.borderRadius,
+                                          onTap: () => _onChangeIdentity?.call(identity),
+                                          child: Padding(
+                                            padding: FromComposerBottomSheetStyle.searchTextInputPadding,
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                  width: FromComposerBottomSheetStyle.identityItemSize,
+                                                  height: FromComposerBottomSheetStyle.identityItemSize,
+                                                  alignment: Alignment.center,
+                                                  decoration: BoxDecoration(
+                                                    shape: BoxShape.circle,
+                                                    color: AppColor.avatarColor,
+                                                    border: Border.all(
+                                                      color: AppColor.colorShadowBgContentEmail,
+                                                      width: FromComposerBottomSheetStyle.identityItemBorderWidth
+                                                    )
+                                                  ),
+                                                  child: Text(
+                                                    identity.name!.isNotEmpty
+                                                      ? identity.name!.firstLetterToUpperCase
+                                                      : identity.email!.firstLetterToUpperCase,
+                                                    style: FromComposerBottomSheetStyle.searchBarTextStyle,
+                                                  ),
                                                 ),
-                                                child: Text(
-                                                  identity.name!.isNotEmpty
-                                                    ? identity.name!.firstLetterToUpperCase
-                                                    : identity.email!.firstLetterToUpperCase,
-                                                  style: FromComposerBottomSheetStyle.searchBarTextStyle,
-                                                ),
-                                              ),
-                                              const SizedBox(width: FromComposerBottomSheetStyle.identityItemSpace),
-                                              Expanded(
-                                                child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  mainAxisAlignment: MainAxisAlignment.center,
-                                                  children: [
-                                                    if (identity.name!.isNotEmpty)
-                                                      Text(
-                                                        identity.name!,
-                                                        maxLines: 1,
-                                                        softWrap: CommonTextStyle.defaultSoftWrap,
-                                                        overflow: CommonTextStyle.defaultTextOverFlow,
-                                                        style: FromComposerBottomSheetStyle.identityItemTitleTextStyle,
-                                                      ),
-                                                    if (identity.email!.isNotEmpty)
-                                                      Text(
-                                                        identity.email!,
-                                                        maxLines: 1,
-                                                        softWrap: CommonTextStyle.defaultSoftWrap,
-                                                        overflow: CommonTextStyle.defaultTextOverFlow,
-                                                        style: FromComposerBottomSheetStyle.identityItemSubTitleTextStyle,
-                                                      )
-                                                  ],
-                                                ),
-                                              )
-                                            ],
+                                                const SizedBox(width: FromComposerBottomSheetStyle.identityItemSpace),
+                                                Expanded(
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      if (identity.name!.isNotEmpty)
+                                                        Text(
+                                                          identity.name!,
+                                                          maxLines: 1,
+                                                          softWrap: CommonTextStyle.defaultSoftWrap,
+                                                          overflow: CommonTextStyle.defaultTextOverFlow,
+                                                          style: FromComposerBottomSheetStyle.identityItemTitleTextStyle,
+                                                        ),
+                                                      if (identity.email!.isNotEmpty)
+                                                        Text(
+                                                          identity.email!,
+                                                          maxLines: 1,
+                                                          softWrap: CommonTextStyle.defaultSoftWrap,
+                                                          overflow: CommonTextStyle.defaultTextOverFlow,
+                                                          style: FromComposerBottomSheetStyle.identityItemSubTitleTextStyle,
+                                                        )
+                                                    ],
+                                                  ),
+                                                )
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),

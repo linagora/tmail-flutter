@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/style_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/key_values/composer_key_values.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/header_style_type.dart';
 
 class DropDownMenuHeaderStyleWidget extends StatelessWidget {
@@ -36,6 +37,7 @@ class DropDownMenuHeaderStyleWidget extends StatelessWidget {
                     value: item,
                     child: Semantics(
                       excludeSemantics: true,
+                      identifier: ComposerKeyValues.richtextHeaderStyleOption,
                       child: PointerInterceptor(
                         child: Container(
                           color: Colors.transparent,
