@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/utils/keyboard_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
@@ -31,6 +32,7 @@ class ContactController extends BaseController {
   final searchQuery = SearchQuery.initial().obs;
   final session = Rxn<Session>();
   final listContactSearched = RxList<EmailAddress>();
+  final contactArguments = Rxn<ContactArguments>();
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
@@ -39,7 +41,6 @@ class ContactController extends BaseController {
   final Debouncer<String> _deBouncerTime = Debouncer<String>(const Duration(milliseconds: 300), initialValue: '');
   AccountId? _accountId;
 
-  ContactArguments? arguments;
   EmailAddress? contactSelected;
   SelectedContactCallbackAction? onSelectedContactCallback;
   VoidCallback? onDismissContactView;
@@ -47,8 +48,9 @@ class ContactController extends BaseController {
   @override
   void onInit() {
     super.onInit();
+    ThemeUtils.setStatusBarTransparentColor();
     log('ContactController::onInit():arguments: ${Get.arguments}');
-    arguments = Get.arguments;
+    contactArguments.value = Get.arguments;
     _deBouncerTime.values.listen((value) {
       searchQuery.value = SearchQuery(value);
       _searchContactByNameOrEmail(searchQuery.value.value);
@@ -56,15 +58,13 @@ class ContactController extends BaseController {
   }
 
   @override
-  void onReady() async {
+  void onReady() {
     super.onReady();
-    log('ContactController::onReady():');
     textInputSearchFocus.requestFocus();
-    if (arguments != null) {
-      _accountId = arguments!.accountId;
-      session.value = arguments!.session;
-      final listContactSelected = arguments!.listContactSelected;
-      log('ContactController::onReady(): arguments: $arguments');
+    if (contactArguments.value != null) {
+      _accountId = contactArguments.value!.accountId;
+      session.value = contactArguments.value!.session;
+      final listContactSelected = contactArguments.value!.listContactSelected;
       log('ContactController::onReady(): listContactSelected: $listContactSelected');
       if (listContactSelected.isNotEmpty) {
         contactSelected = EmailAddress(listContactSelected.first, listContactSelected.first);
@@ -167,9 +167,11 @@ class ContactController extends BaseController {
     popBack(result: emailAddress);
   }
 
-  void closeContactView(BuildContext context) {
-    clearAllTextInputSearchForm();
-    KeyboardUtils.hideKeyboard(context);
+  void closeContactView() {
+    textInputSearchController.clear();
+    searchQuery.value = SearchQuery.initial();
+    textInputSearchFocus.unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
     popBack();
   }
 }

@@ -27,6 +27,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/date_range_picker_mixin.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
@@ -73,6 +74,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_
 import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/email_action_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
@@ -630,23 +632,30 @@ class SearchEmailController extends BaseController
     }
   }
 
-  void selectContactForSearchFilter(
+  Future<void> selectContactForSearchFilter(
       BuildContext context,
       PrefixEmailAddress prefixEmailAddress
   ) async {
-    if (accountId != null && session != null) {
-      final listContactSelected = searchEmailFilter.value.getContactApplied(prefixEmailAddress);
-      final arguments = ContactArguments(accountId!, session!, listContactSelected);
+    FocusManager.instance.primaryFocus?.unfocus();
 
-      final newContact = await push(AppRoutes.contact, arguments: arguments);
+    if (accountId == null || session == null) return;
 
-      if (newContact is EmailAddress && context.mounted) {
-        _dispatchApplyContactAction(
-          context,
-          listContactSelected,
-          prefixEmailAddress,
-          newContact);
-      }
+    final listContactSelected = searchEmailFilter.value.getContactApplied(prefixEmailAddress);
+    final arguments = ContactArguments(
+      accountId: accountId!,
+      session: session!,
+      listContactSelected: listContactSelected,
+      contactViewTitle: '${AppLocalizations.of(context).findEmails} ${prefixEmailAddress.asName(context).toLowerCase()}'
+    );
+
+    final newContact = await push(AppRoutes.contact, arguments: arguments);
+
+    if (newContact is EmailAddress && context.mounted) {
+      _dispatchApplyContactAction(
+        context,
+        listContactSelected,
+        prefixEmailAddress,
+        newContact);
     }
   }
 
