@@ -2,7 +2,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -61,27 +60,30 @@ class ContactView extends GetWidget<ContactController> {
                           responsiveUtils: controller.responsiveUtils,
                           onCloseContactView: controller.closeContactView,
                         )),
-                        SearchAppBarWidget(
+                        Obx(() => SearchAppBarWidget(
                           imagePaths: controller.imagePaths,
                           searchQuery: controller.searchQuery.value,
                           searchFocusNode: controller.textInputSearchFocus,
                           searchInputController: controller.textInputSearchController,
                           hasBackButton: false,
                           hasSearchButton: true,
-                          margin: ContactUtils.getPaddingSearchInputForm(context, controller.responsiveUtils),
+                          searchIconSize: 20,
+                          searchIconColor: AppColor.colorHintSearchBar,
+                          margin: ContactViewStyle.getSearchInputFormMargin(
+                            context,
+                            controller.responsiveUtils
+                          ),
                           decoration: const BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                            color: AppColor.colorBgSearchBar),
-                          iconClearText: SvgPicture.asset(
-                            controller.imagePaths.icClearTextSearch,
-                            width: 18,
-                            height: 18,
-                            fit: BoxFit.fill),
+                            borderRadius: BorderRadius.all(Radius.circular(12)),
+                            color: AppColor.colorBgSearchBar
+                          ),
                           hintText: AppLocalizations.of(context).hintSearchInputContact,
+                          inputHintTextStyle: ContactViewStyle.searchInputHintTextStyle,
+                          inputTextStyle: ContactViewStyle.searchInputTextStyle,
                           onClearTextSearchAction: controller.clearAllTextInputSearchForm,
                           onTextChangeSearchAction: controller.onTextSearchChange,
                           onSearchTextAction: controller.onSearchTextAction,
-                        ),
+                        )),
                         if (PlatformInfo.isWeb)
                           Obx(() {
                             final username = controller.session.value?.username.value ?? '';
