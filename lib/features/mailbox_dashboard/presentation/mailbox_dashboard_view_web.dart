@@ -591,13 +591,13 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         }
         break;
       case QuickSearchFilter.from:
-        controller.selectFromSearchFilter();
+        controller.selectFromSearchFilter(context);
         break;
       case QuickSearchFilter.hasAttachment:
         controller.selectHasAttachmentSearchFilter();
         break;
       case QuickSearchFilter.to:
-        controller.selectToSearchFilter();
+        controller.selectToSearchFilter(context);
         break;
       case QuickSearchFilter.folder:
         controller.selectFolderSearchFilter();

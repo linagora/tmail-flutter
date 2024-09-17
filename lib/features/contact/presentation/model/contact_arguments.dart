@@ -7,9 +7,20 @@ class ContactArguments with EquatableMixin {
   final AccountId accountId;
   final Session session;
   final Set<String> listContactSelected;
+  final String? contactViewTitle;
 
-  ContactArguments(this.accountId, this.session, this.listContactSelected);
+  ContactArguments({
+    required this.accountId,
+    required this.session,
+    required this.listContactSelected,
+    this.contactViewTitle
+  });
 
   @override
-  List<Object?> get props => [accountId, session, listContactSelected];
+  List<Object?> get props => [
+    accountId,
+    session,
+    listContactSelected,
+    contactViewTitle,
+  ];
 }

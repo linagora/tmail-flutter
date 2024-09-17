@@ -4213,4 +4213,10 @@ class AppLocalizations {
       name: 'youAreOffline',
     );
   }
+
+  String get findEmails {
+    return Intl.message(
+      'Find emails',
+      name: 'findEmails');
+  }
 }
