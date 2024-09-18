@@ -104,13 +104,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _ = this;
       _.fillColor = _.errorTextStyle = _.errorText = _.errorBorder = _.enabledBorder = _.contentPadding = _.hintStyle = _.hintText = _.labelText = _.prefixText = null;
     },
-    LoginMessageWidget: function LoginMessageWidget(t0, t1, t2) {
-      this.formType = t0;
-      this.viewState = t1;
-      this.key = t2;
+    LoginMessageWidget$(formType, viewState) {
+      return new C.LoginMessageWidget(formType, viewState, A.getBinding(null, type$.ToastManager), null);
     },
-    LoginMessageWidget_build_closure: function LoginMessageWidget_build_closure(t0) {
-      this.context = t0;
+    LoginMessageWidget: function LoginMessageWidget(t0, t1, t2, t3) {
+      var _ = this;
+      _.formType = t0;
+      _.viewState = t1;
+      _._toastManager = t2;
+      _.key = t3;
+    },
+    LoginMessageWidget_build_closure: function LoginMessageWidget_build_closure(t0, t1) {
+      this.$this = t0;
+      this.context = t1;
     },
     LoginMessageWidget_build_closure0: function LoginMessageWidget_build_closure0(t0, t1) {
       this.$this = t0;
@@ -144,6 +150,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _LoginTextInputBuilderState_build__closure: function _LoginTextInputBuilderState_build__closure(t0) {
       this.$this = t0;
+    },
+    TryAgainButton: function TryAgainButton(t0, t1, t2) {
+      this.onRetry = t0;
+      this.responsiveUtils = t1;
+      this.key = t2;
     },
     TextInput_finishAutofillContext(shouldSave) {
       var t1, t2, t3, t4, t5;
@@ -392,7 +403,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null,
         t1 = A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data.size._dx < 600 ? 280 : 320,
         t2 = this.viewState;
-      return new A.Padding(D.EdgeInsetsDirectional_58_11_58_36, new A.SizedBox(t1, _null, A.Text$(t2.fold$2(0, new C.LoginMessageWidget_build_closure(context), new C.LoginMessageWidget_build_closure0(this, context)), _null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, t2.fold$2(0, new C.LoginMessageWidget_build_closure1(), new C.LoginMessageWidget_build_closure2()), _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, B.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), B.TextAlign_2, _null, _null, _null, _null), _null), _null);
+      return new A.Padding(D.EdgeInsetsDirectional_58_11_58_36, new A.SizedBox(t1, _null, A.Text$(t2.fold$2(0, new C.LoginMessageWidget_build_closure(this, context), new C.LoginMessageWidget_build_closure0(this, context)), _null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, t2.fold$2(0, new C.LoginMessageWidget_build_closure1(), new C.LoginMessageWidget_build_closure2()), _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, B.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), B.TextAlign_2, _null, _null, _null, _null), _null), _null);
     }
   };
   C.LoginTextInputBuilder.prototype = {
@@ -443,30 +454,37 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.super$State$dispose();
     }
   };
+  C.TryAgainButton.prototype = {
+    build$1(context) {
+      var _null = null;
+      A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+      return A.TMailButtonWidget_TMailButtonWidget$fromText(B.Color_4278221567, 10, _null, D.EdgeInsetsDirectional_24_0_24_16, _null, 1 / 0, _null, this.onRetry, B.EdgeInsets_0_12_0_12, A.Intl__message("Try again", _null, "tryAgain", _null, _null), B.TextAlign_2, D.TextStyle_6nc1, _null, A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data.size._dx);
+    }
+  };
   var typesOffset = hunkHelpers.updateTypes(["LoginMessageWidget()", "RecentItemTileWidget<RecentLoginUsername>(BuildContext,RecentLoginUsername)"]);
   C._AutofillScopeTextInputConfiguration_toJson_closure.prototype = {
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1759
+    $signature: 1796
   };
   C.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1760
+    $signature: 1797
   };
   C.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1761
+    $signature: 1798
   };
   C.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1762
+    $signature: 1799
   };
   C.BaseLoginView_buildUserNameInput_closure.prototype = {
     call$2(_, loginUsername) {
@@ -483,7 +501,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return B.SizedBox_null_null_null_null;
     },
-    $signature: 527
+    $signature: 489
   };
   C.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(_) {
@@ -504,18 +522,26 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       t4 = t3._as(t2.get(t1)).loginFormType.get$value(0);
       A.Expando__checkType(t1);
-      return new C.LoginMessageWidget(t4, t3._as(t2.get(t1)).viewState.get$value(0), null);
+      return C.LoginMessageWidget$(t4, t3._as(t2.get(t1)).viewState.get$value(0));
     },
     $signature: typesOffset + 0
   };
   C.LoginView__buildMobileForm_closure0.prototype = {
     call$0() {
-      var t1 = this.$this,
+      var t3, t4,
+        t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      switch (A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).loginFormType.get$value(0)) {
-        case B.LoginFormType_2:
+      t2 = t2._jsWeakMap;
+      t3 = A._instanceType(t1)._eval$1("GetWidget.S");
+      switch (t3._as(t2.get(t1)).loginFormType.get$value(0)) {
+        case B.LoginFormType_3:
           return t1.buildInputCredentialForm$1(this.context);
+        case B.LoginFormType_1:
+          A.Expando__checkType(t1);
+          t4 = t3._as(t2.get(t1)).get$retryCheckOidc();
+          A.Expando__checkType(t1);
+          return new C.TryAgainButton(t4, t3._as(t2.get(t1)).responsiveUtils, null);
         default:
           return B.SizedBox_0_0_null_null;
       }
@@ -532,18 +558,26 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       t4 = t3._as(t2.get(t1)).loginFormType.get$value(0);
       A.Expando__checkType(t1);
-      return new C.LoginMessageWidget(t4, t3._as(t2.get(t1)).viewState.get$value(0), null);
+      return C.LoginMessageWidget$(t4, t3._as(t2.get(t1)).viewState.get$value(0));
     },
     $signature: typesOffset + 0
   };
   C.LoginView__buildWebForm_closure0.prototype = {
     call$0() {
-      var t1 = this.$this,
+      var t3, t4,
+        t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      switch (A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).loginFormType.get$value(0)) {
-        case B.LoginFormType_2:
+      t2 = t2._jsWeakMap;
+      t3 = A._instanceType(t1)._eval$1("GetWidget.S");
+      switch (t3._as(t2.get(t1)).loginFormType.get$value(0)) {
+        case B.LoginFormType_3:
           return t1.buildInputCredentialForm$1(this.context);
+        case B.LoginFormType_1:
+          A.Expando__checkType(t1);
+          t4 = t3._as(t2.get(t1)).get$retryCheckOidc();
+          A.Expando__checkType(t1);
+          return new C.TryAgainButton(t4, t3._as(t2.get(t1)).responsiveUtils, null);
         default:
           return B.SizedBox_0_0_null_null;
       }
@@ -567,13 +601,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       switch (A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).loginFormType.get$value(0)) {
-        case B.LoginFormType_2:
+        case B.LoginFormType_3:
           return t1.buildLoginButton$1(this.context);
         default:
           return B.SizedBox_0_0_null_null;
       }
     },
-    $signature: 192
+    $signature: 128
   };
   C.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -585,14 +619,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = $.$get$GetWidget__cache();
         A.Expando__checkType(t1);
         switch (A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).loginFormType.get$value(0)) {
-          case B.LoginFormType_2:
+          case B.LoginFormType_3:
             return t1.buildLoginButton$1(this.context);
           default:
             return B.SizedBox_0_0_null_null;
         }
       }
     },
-    $signature: 91
+    $signature: 62
   };
   C.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -602,65 +636,62 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.LoginMessageWidget_build_closure.prototype = {
     call$1(failure) {
-      var t1, errorMessage, _null = null,
+      var t1, _this = this, _null = null,
         _s40_ = "Unknown error occurred, please try again",
         _s12_ = "unknownError";
       if (failure instanceof A.GetOIDCConfigurationFailure) {
-        A.Localizations_of(this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+        A.Localizations_of(_this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
         return A.Intl__message("Can not verify SSO configuration, please check with your system administrator", _null, "canNotVerifySSOConfiguration", _null, _null);
       } else if (failure instanceof A.GetTokenOIDCFailure && failure.exception instanceof A.NoSuitableBrowserForOIDCException) {
-        A.Localizations_of(this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+        A.Localizations_of(_this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
         return A.Intl__message("No suitable browser for OIDC, please check with your system administrator", _null, "noSuitableBrowserForOIDC", _null, _null);
-      } else {
-        t1 = this.context;
-        if (failure instanceof A.FeatureFailure) {
-          errorMessage = A.MessageToastUtils_getMessageByException(t1, failure.exception);
-          if (errorMessage == null) {
-            A.Localizations_of(t1, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-            t1 = A.Intl__message(_s40_, _null, _s12_, _null, _null);
-          } else
-            t1 = errorMessage;
-          return t1;
-        } else {
-          A.Localizations_of(t1, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-          return A.Intl__message(_s40_, _null, _s12_, _null, _null);
+      } else if (failure instanceof A.FeatureFailure) {
+        t1 = _this.$this._toastManager;
+        t1 = t1 == null ? _null : t1.getMessageByException$2(_this.context, failure.exception);
+        if (t1 == null) {
+          A.Localizations_of(_this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+          t1 = A.Intl__message(_s40_, _null, _s12_, _null, _null);
         }
+        return t1;
+      } else {
+        A.Localizations_of(_this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+        return A.Intl__message(_s40_, _null, _s12_, _null, _null);
       }
     },
-    $signature: 1763
+    $signature: 1800
   };
   C.LoginMessageWidget_build_closure0.prototype = {
     call$1(success) {
       var _this = this, _null = null,
         t1 = _this.$this.formType;
-      if (t1 === B.LoginFormType_2) {
+      if (t1 === B.LoginFormType_3) {
         A.Localizations_of(_this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
         return A.Intl__message("Enter your credentials to sign in", _null, "loginInputCredentialMessage", _null, _null);
-      } else if (t1 === B.LoginFormType_4) {
+      } else if (t1 === B.LoginFormType_5) {
         A.Localizations_of(_this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
         return A.Intl__message("To login and access your message please enter your email", _null, "dnsLookupLoginMessage", _null, _null);
-      } else if (t1 === B.LoginFormType_3) {
+      } else if (t1 === B.LoginFormType_4) {
         A.Localizations_of(_this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
         return A.Intl__message("Enter your password to sign in", _null, "enterYourPasswordToSignIn", _null, _null);
-      } else if (t1 === B.LoginFormType_1) {
+      } else if (t1 === B.LoginFormType_2) {
         A.Localizations_of(_this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
         return A.Intl__message("To login and access your message please connect to your JMAP server", _null, "loginInputUrlMessage", _null, _null);
       } else
         return "";
     },
-    $signature: 1764
+    $signature: 1801
   };
   C.LoginMessageWidget_build_closure1.prototype = {
     call$1(failure) {
       return B.Color_4293281350;
     },
-    $signature: 1765
+    $signature: 1802
   };
   C.LoginMessageWidget_build_closure2.prototype = {
     call$1(success) {
       return B.Color_4278190080;
     },
-    $signature: 1766
+    $signature: 1803
   };
   C._LoginTextInputBuilderState_build_closure.prototype = {
     call$0() {
@@ -691,14 +722,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(C.AutofillGroupState, C._AutofillGroupState_State_AutofillScopeMixin);
     _inheritMany(A.Closure0Args, [C.AutofillGroupState_register_closure, C.LoginView__buildMobileForm_closure, C.LoginView__buildMobileForm_closure0, C.LoginView__buildWebForm_closure, C.LoginView__buildWebForm_closure0, C.LoginView__buildLoadingProgress_closure, C.PrivacyLinkWidget_build_closure, C._LoginTextInputBuilderState_build_closure, C._LoginTextInputBuilderState_build__closure]);
     _inherit(C._AutofillScope, A.InheritedWidget);
-    _inheritMany(A.StatelessWidget, [C.RecentItemTileWidget, C.PrivacyLinkWidget, C.LoginMessageWidget]);
+    _inheritMany(A.StatelessWidget, [C.RecentItemTileWidget, C.PrivacyLinkWidget, C.LoginMessageWidget, C.TryAgainButton]);
     _inherit(C.BaseLoginView, A.GetWidget);
     _inherit(C.BaseLoginView_buildUserNameInput_closure, A.Closure2Args);
     _inherit(C.LoginView, C.BaseLoginView);
     _inherit(C.LoginInputDecorationBuilder, A.InputDecorationBuilder);
     _mixin(C._AutofillGroupState_State_AutofillScopeMixin, C.AutofillScopeMixin);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"_AutofillScopeTextInputConfiguration":{"TextInputConfiguration":[]},"AutofillGroup":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"AutofillGroupState":{"State0":["AutofillGroup"]},"_AutofillScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecentItemTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BaseLoginView":{"GetWidget":["LoginController"],"Widget":[],"DiagnosticableTree":[]},"LoginView":{"GetWidget":["LoginController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"LoginController"},"PrivacyLinkWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LoginMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LoginTextInputBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_LoginTextInputBuilderState":{"State0":["LoginTextInputBuilder"]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"_AutofillScopeTextInputConfiguration":{"TextInputConfiguration":[]},"AutofillGroup":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"AutofillGroupState":{"State0":["AutofillGroup"]},"_AutofillScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecentItemTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BaseLoginView":{"GetWidget":["LoginController"],"Widget":[],"DiagnosticableTree":[]},"LoginView":{"GetWidget":["LoginController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"LoginController"},"PrivacyLinkWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LoginMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LoginTextInputBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_LoginTextInputBuilderState":{"State0":["LoginTextInputBuilder"]},"TryAgainButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
   var type$ = (function rtii() {
     var findType = A.findType;
     return {
@@ -712,6 +743,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       RecentItemTileWidget_RecentLoginUsername: findType("RecentItemTileWidget<RecentLoginUsername>"),
       RecentLoginUsername: findType("RecentLoginUsername"),
       String: findType("String"),
+      ToastManager: findType("ToastManager"),
       ValueKey_String: findType("ValueKey<String>"),
       void: findType("~")
     };
@@ -762,5 +794,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "V2WFq8iH8LSZuki7BFd6C/RvSEw=");
+})($__dart_deferred_initializers__, "DrmXLViX82mtwYSUoHOWBYfFaFE=");
 ;
