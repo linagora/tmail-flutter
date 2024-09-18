@@ -1,3 +1,22 @@
+## [0.13.2] - 2024-09-18
+### Fixed
+- Fix identity creator view on mobile
+- #3088 Ending date of date picker is not correct
+- #3077 Remove stacktrace from error toast
+- #3113 Cannot empty spam on mobile by isolate
+- #2769 Weird toast when upload attachment failed on mobile by isolate
+- #3082 Caching editor when user edit identity
+- Replace !is with is!
+- #3051 Prevent creating email rule with no action
+- #3035 Store identity in draft
+- #3087 Add email address to the suggestion list when user input email address in the composer
+- #3123 Fix load more button show irrelevant
+- #2903 Fix 3D links in email
+- #2602 Detect charset for text attachment
+- #2965 Handle error for checking OIDC failure
+- #3114 Prevent buttons is covered by keyboard in identity creator view 
+- #2940 Add speller check for some other place: identity creator, subject email composer, vacation form
+
 ## [0.13.1] - 2024-08-28
 ### Fixed
 - Get SMime signature status in headers parsed value
