@@ -1,4 +1,8 @@
 ## [0.13.2] - 2024-09-18
+### Added
+- User guide
+- Todo list for Release
+
 ### Fixed
 - Fix identity creator view on mobile
 - #3088 Ending date of date picker is not correct
@@ -16,6 +20,8 @@
 - #2965 Handle error for checking OIDC failure
 - #3114 Prevent buttons is covered by keyboard in identity creator view 
 - #2940 Add speller check for some other place: identity creator, subject email composer, vacation form
+- Update README.md
+- Translation vi, ru, fr, 
 
 ## [0.13.1] - 2024-08-28
 ### Fixed
