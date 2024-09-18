@@ -4210,37 +4210,37 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "spamFolderNotFound": "",
+  "spamFolderNotFound": "Không thấy thư mục Spam",
   "@spamFolderNotFound": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youHaveNotAddedActionToRule": "",
+  "youHaveNotAddedActionToRule": "Bạn chưa thêm các hành động.",
   "@youHaveNotAddedActionToRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youHaveNotAddedConditionToRule": "",
+  "youHaveNotAddedConditionToRule": "Bạn chưa thêm điều kiện.",
   "@youHaveNotAddedConditionToRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youHaveNotSelectedAnyActionForRule": "",
+  "youHaveNotSelectedAnyActionForRule": "Bạn chưa lựa chọn bất kì một hành động nào.",
   "@youHaveNotSelectedAnyActionForRule": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youAreOffline": "",
+  "youAreOffline": "Bạn đang ngoại tuyến.",
   "@youAreOffline": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "tryAgain": "",
+  "tryAgain": "Thử lại",
   "@tryAgain": {
     "type": "text",
     "placeholders_order": [],
