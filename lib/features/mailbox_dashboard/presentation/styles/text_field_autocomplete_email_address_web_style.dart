@@ -1,17 +1,28 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 
 class TextFieldAutoCompleteEmailAddressWebStyles {
   static const EdgeInsetsGeometry padding = EdgeInsets.symmetric(vertical: 8);
   static const EdgeInsetsGeometry textInputContentPadding = EdgeInsetsDirectional.only(top: 16, bottom: 16, start: 12);
+  static const EdgeInsetsGeometry textInputContentPaddingWithMeButton = EdgeInsetsDirectional.only(top: 16, bottom: 16, start: 12, end: 60);
   static const EdgeInsetsGeometry textInputContentPaddingWithSomeTag = EdgeInsetsDirectional.symmetric(vertical: 16);
   static const EdgeInsets tagEditorPadding = EdgeInsets.symmetric(horizontal: 12);
+
+  static EdgeInsets getTagEditorPaddingWithMeButton(BuildContext context) {
+    return EdgeInsets.only(
+      left: DirectionUtils.isDirectionRTLByLanguage(context) ? 60 : 12,
+      right: DirectionUtils.isDirectionRTLByLanguage(context) ? 12 : 60,
+    );
+  }
 
   static const double borderRadius = 10.0;
   static const double suggestionBoxRadius = 20.0;
 
   static const double borderWidth = 1.0;
   static const double minTextFieldWidth = 40.0;
+  static const double meButtonMaxWidth = 100.0;
+  static const double meButtonMinWidth = 40.0;
 
   static const double suggestionBoxElevation = 20.0;
   static const double suggestionBoxMaxHeight = 350.0;
@@ -41,6 +52,11 @@ class TextFieldAutoCompleteEmailAddressWebStyles {
   static const TextStyle textInputTextStyle = TextStyle(
     fontSize: 16,
     color: Colors.black,
+    fontWeight: FontWeight.w500,
+  );
+  static const TextStyle meButtonTextStyle = TextStyle(
+    fontSize: 15,
+    color: Colors.white,
     fontWeight: FontWeight.w500,
   );
 

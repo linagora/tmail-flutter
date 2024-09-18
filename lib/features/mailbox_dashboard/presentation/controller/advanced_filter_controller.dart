@@ -3,6 +3,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:super_tag_editor/tag_editor.dart';
@@ -62,6 +63,8 @@ class AdvancedFilterController extends BaseController {
   PresentationMailbox? _destinationMailboxSelected;
 
   late Worker _dashboardActionWorker;
+
+  UserName? get userName => _mailboxDashBoardController.sessionCurrent?.username;
 
   @override
   void onInit() {
