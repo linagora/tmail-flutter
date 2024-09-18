@@ -4209,5 +4209,41 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "spamFolderNotFound": "Không thấy thư mục Spam",
+  "@spamFolderNotFound": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youHaveNotAddedActionToRule": "Bạn chưa thêm các hành động.",
+  "@youHaveNotAddedActionToRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youHaveNotAddedConditionToRule": "Bạn chưa thêm điều kiện.",
+  "@youHaveNotAddedConditionToRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youHaveNotSelectedAnyActionForRule": "Bạn chưa lựa chọn bất kì một hành động nào.",
+  "@youHaveNotSelectedAnyActionForRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youAreOffline": "Bạn đang ngoại tuyến.",
+  "@youAreOffline": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "tryAgain": "Thử lại",
+  "@tryAgain": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
