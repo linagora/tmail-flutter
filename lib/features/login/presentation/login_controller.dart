@@ -6,6 +6,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
@@ -48,6 +49,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_m
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/sso_login_state.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -84,6 +86,89 @@ class LoginController extends ReloadableController {
   Password? _password;
   Uri? _baseUri;
 
+  static const String postRegisteredRedirectUrlPathParams = 'post_registered_redirect_url';
+  static const redirectPublicPlatformOnWeb = 'post_registered_redirect_url';
+  static const windowNameValue = '_self';
+
+  String get signupUrl =>
+      '${AppConfig.registrationUrl}?$postRegisteredRedirectUrlPathParams=${AppConfig.appOpenUrlScheme}://redirect&app=${AppConfig.appParameter}';
+
+  void onClickCreateTwakeId() {
+    _redirectRegistrationUrl(signupUrl);
+  }
+
+  void _redirectRegistrationUrl(String url) async {
+    try {
+      log('LoginController::_redirectRegistrationUrl: URL = $url');
+      final uri = await FlutterWebAuth2.authenticate(
+        url: url,
+        callbackUrlScheme: AppConfig.appOpenUrlScheme,
+        options: const FlutterWebAuth2Options(
+          intentFlags: ephemeralIntentFlags,
+        ),
+      );
+      log('LoginController::_redirectRegistrationUrl: URI = $uri');
+      await handleTokenFromRegistrationSite(uri: uri);
+    } catch (e) {
+      logError("LoginController::_redirectRegistrationUrl: $e");
+    }
+  }
+
+  Future<SsoLoginState> handleTokenFromRegistrationSite({
+    required String uri,
+  }) async {
+    try {
+      final token = Uri.parse(uri).queryParameters['loginToken'];
+      log('LoginController: handleTokenFromRegistrationSite: token: $token');
+      if (token == null || token.isEmpty == true) {
+        return SsoLoginState.tokenEmpty;
+      }
+      return SsoLoginState.success;
+    } catch (e) {
+      return SsoLoginState.error;
+    }
+  }
+
+  String _generateRedirectUrl() {
+    return '${AppConfig.appOpenUrlScheme.toLowerCase()}://login';
+  }
+
+  String generatePublicPlatformAuthenticationUrl({
+    required String redirectUrl,
+  }) {
+    final redirectUrlEncode = Uri.encodeQueryComponent(redirectUrl);
+    return '${AppConfig.registrationUrl}?$redirectPublicPlatformOnWeb=$redirectUrlEncode&app=${AppConfig.appParameter}';
+  }
+
+  String _getRedirectUrlScheme(String redirectUrl) {
+    return Uri.parse(redirectUrl).scheme;
+  }
+
+  Future<void> registerPublicPlatformAction() async {
+    final redirectUrl = _generateRedirectUrl();
+    final url = generatePublicPlatformAuthenticationUrl(
+      redirectUrl: redirectUrl,
+    );
+    final urlScheme = _getRedirectUrlScheme(redirectUrl);
+    final uri = await FlutterWebAuth2.authenticate(
+      url: url,
+      callbackUrlScheme: urlScheme,
+      options: const FlutterWebAuth2Options(
+        intentFlags: ephemeralIntentFlags,
+        windowName: windowNameValue,
+      ),
+    );
+    log("LoginController:_redirectRegistrationUrl: URI: $uri");
+  }
+
+  void _autoConnectSaas() async {
+    try {
+      await registerPublicPlatformAction();
+    } catch (e) {
+      logError('LoginController::_autoConnectSaas: $e');
+    }
+  }
+
   LoginController(
     this._authenticationInteractor,
     this._checkOIDCIsAvailableInteractor,
@@ -103,6 +188,8 @@ class LoginController extends ReloadableController {
   @override
   void onReady() {
     super.onReady();
+    log(':::');
+    _autoConnectSaas();
     final arguments = Get.arguments;
     if (arguments is LoginArguments) {
       if (arguments.loginFormType == LoginFormType.passwordForm) {
