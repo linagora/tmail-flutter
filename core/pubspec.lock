@@ -651,11 +651,10 @@ packages:
   languagetool_textfield:
     dependency: "direct main"
     description:
-      path: "."
-      ref: twake-supported
-      resolved-ref: f47dd9829e145acc795b4e3e62f8bc668135fcd6
-      url: "https://github.com/dab246/languagetool_textfield.git"
-    source: git
+      name: languagetool_textfield
+      sha256: "6b3d97445f1a82ff2cba39151cacebd3ef797c26aaeae0e13efcb1ffb89f1e80"
+      url: "https://pub.dev"
+    source: hosted
     version: "0.1.0"
   leak_tracker:
     dependency: transitive
