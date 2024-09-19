@@ -1,20 +1,37 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:rule_filter/rule_filter/tmail_rule.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_controller.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+
+typedef EditRuleAction = Function(BuildContext context, TMailRule rule);
+typedef DeleteRuleAction = Function(BuildContext context, TMailRule rule);
+typedef OpenEditRuleMenuAction = Function(BuildContext context, TMailRule rule);
 
 class EmailRulesItemWidget extends StatelessWidget {
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _imagePaths = Get.find<ImagePaths>();
-  final _emailRuleController = Get.find<EmailRulesController>();
 
+  final ResponsiveUtils responsiveUtils;
+  final ImagePaths imagePaths;
   final TMailRule rule;
+  final List<MailboxId>? mailboxIds;
+  final EditRuleAction? editRuleAction;
+  final DeleteRuleAction? deleteRuleAction;
+  final OpenEditRuleMenuAction? openEditRuleMenuAction;
 
-  EmailRulesItemWidget({
+  const EmailRulesItemWidget({
     Key? key,
     required this.rule,
+    required this.responsiveUtils,
+    required this.imagePaths,
+    this.mailboxIds,
+    this.editRuleAction,
+    this.deleteRuleAction,
+    this.openEditRuleMenuAction,
   }) : super(key: key);
 
   @override
@@ -23,47 +40,68 @@ class EmailRulesItemWidget extends StatelessWidget {
       padding: EdgeInsets.only(
         top: 15,
         bottom: 15,
-        left: _responsiveUtils.isMobile(context) ? 16 : 24,
-        right: _responsiveUtils.isMobile(context) ? 0 : 24
+        left: responsiveUtils.isMobile(context) ? 16 : 24,
+        right: responsiveUtils.isMobile(context) ? 0 : 24
       ),
       color: Colors.white,
       child: Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
-        Text(rule.name,
-            style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w400,
-                color: Colors.black)),
+        Text(
+          rule.name,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            fontSize: 16,
+            fontWeight: FontWeight.w400,
+            color: Colors.black
+          )
+        ),
+        if (_isMailboxAppendInNotExist)
+          TMailButtonWidget.fromIcon(
+            icon: imagePaths.icQuotasWarning,
+            iconSize: 20,
+            margin: const EdgeInsetsDirectional.only(start: 4),
+            padding: const EdgeInsets.all(3),
+            iconColor: AppColor.colorBackgroundQuotasWarning,
+            tooltipMessage: AppLocalizations.of(context).warningRuleCannotAppliedWhenTargetFolderNoExist,
+            backgroundColor: Colors.transparent,
+          ),
         const Spacer(),
-        if (!_responsiveUtils.isMobile(context))
+        if (!responsiveUtils.isMobile(context))
           buildIconWeb(
               icon: SvgPicture.asset(
-                _imagePaths.icEditRule,
+                imagePaths.icEditRule,
                 fit: BoxFit.fill,
                 colorFilter: AppColor.primaryColor.asFilter(),
               ),
               onTap: () {
-                _emailRuleController.editEmailRule(context, rule);
+                editRuleAction?.call(context, rule);
               }),
-        if (!_responsiveUtils.isMobile(context))
+        if (!responsiveUtils.isMobile(context))
           buildIconWeb(
               icon: SvgPicture.asset(
-                _imagePaths.icDeleteRule,
+                imagePaths.icDeleteRule,
                 fit: BoxFit.fill,
               ),
               onTap: () {
-                _emailRuleController.deleteEmailRule(context, rule);
+                deleteRuleAction?.call(context, rule);
               }),
-        if (_responsiveUtils.isMobile(context))
+        if (responsiveUtils.isMobile(context))
           buildIconWeb(
               icon: SvgPicture.asset(
-                _imagePaths.icOpenEditRule,
+                imagePaths.icOpenEditRule,
                 fit: BoxFit.fill,
               ),
               iconPadding: const EdgeInsets.all(0),
               onTap: () {
-                _emailRuleController.openEditRuleMenuAction(context, rule);
+                openEditRuleMenuAction?.call(context, rule);
               }),
       ]),
     );
+  }
+
+  bool get _isMailboxAppendInNotExist {
+    final ruleMailboxIds= rule.action.appendIn.mailboxIds;
+
+    return mailboxIds != null
+      && ruleMailboxIds.isNotEmpty
+      && ruleMailboxIds.any((mailboxId) => !mailboxIds!.contains(mailboxId));
   }
 }
