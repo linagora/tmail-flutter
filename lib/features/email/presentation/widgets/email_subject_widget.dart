@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:tmail_ui_user/features/base/key_values/email_details_key_values.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_subject_styles.dart';
 
 class EmailSubjectWidget extends StatelessWidget {
@@ -12,14 +13,18 @@ class EmailSubjectWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EmailSubjectStyles.padding,
-      child: Text(
-        presentationEmail.getEmailTitle(),
-        maxLines: EmailSubjectStyles.maxLines,
-        style: const TextStyle(
-          fontSize: EmailSubjectStyles.textSize,
-          color: EmailSubjectStyles.textColor,
-          fontWeight: EmailSubjectStyles.fontWeight
-        )
+      child: Semantics(
+        identifier: EmailDetailsKeyValues.subject,
+        container: true,
+        child: Text(
+          presentationEmail.getEmailTitle(),
+          maxLines: EmailSubjectStyles.maxLines,
+          style: const TextStyle(
+            fontSize: EmailSubjectStyles.textSize,
+            color: EmailSubjectStyles.textColor,
+            fontWeight: EmailSubjectStyles.fontWeight
+          )
+        ),
       )
     );
   }
