@@ -8808,7 +8808,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = new A.BoxDecoration(C.Color_4294967295, _null, A.Border_Border$all(E.Color_1555612108, 1), t1, _null, _null, _null, C.BoxShape_0);
       } else
         t1 = D.BoxDecoration_MUU;
-      return new B.SelectionArea(A.Scaffold$(_null, t4, A.SafeArea$(true, A.Container$(_null, new A.Obx(new B.EmailView_build_closure(_this, context), _null), C.Clip_2, _null, _null, t1, _null, _null, _null, _this._getMarginEmailView$1(context), _null, _null, _null, _null), t6, C.EdgeInsets_0_0_0_0, t5, true), _null, _null, true, _null, _null, _null), _null);
+      t1 = A.Container$(_null, new A.Obx(new B.EmailView_build_closure(_this, context), _null), C.Clip_2, _null, _null, t1, _null, _null, _null, _this._getMarginEmailView$1(context), _null, _null, _null, _null);
+      return new B.SelectionArea(A.Scaffold$(_null, t4, A.SafeArea$(true, new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, "tmail_email_details", _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), false, false, false, false, t1, _null), t6, C.EdgeInsets_0_0_0_0, t5, true), _null, _null, true, _null, _null, _null), _null);
     },
     _getMarginEmailView$1(context) {
       var t1 = $.$get$GetWidget__cache();
@@ -9386,7 +9387,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
     },
     _buildRecipientsTag$1$listEmailAddress(listEmailAddress) {
-      var t1 = B.ListExtensions_mapIndexed(listEmailAddress, new B._EmailReceiverWidgetState__buildRecipientsTag_closure(this, listEmailAddress), type$.EmailAddress, type$.TMailButtonWidget);
+      var t1 = B.ListExtensions_mapIndexed(listEmailAddress, new B._EmailReceiverWidgetState__buildRecipientsTag_closure(this, listEmailAddress), type$.EmailAddress, type$.Semantics);
       return A.List_List$of(t1, true, t1.$ti._eval$1("Iterable.E"));
     },
     _buildRecipientsWidgetToDisplayFull$3$context$listEmailAddress$prefixEmailAddress(context, listEmailAddress, prefixEmailAddress) {
@@ -9422,17 +9423,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if ((t4 ? "" : t3).length !== 0) {
         if (t4)
           t3 = "";
-        t1.push(F.MaterialTextButton$(8, _null, t3, C.Color_4278190080, 20, C.FontWeight_6_700, new B.EmailSenderBuilder_build_closure(_this, context), new B.EmailSenderBuilder_build_closure0(_this, context), C.TextOverflow_2, C.EdgeInsets_3_3_3_3, true));
+        t3 = F.MaterialTextButton$(8, _null, t3, C.Color_4278190080, 20, C.FontWeight_6_700, new B.EmailSenderBuilder_build_closure(_this, context), new B.EmailSenderBuilder_build_closure0(_this, context), C.TextOverflow_2, C.EdgeInsets_3_3_3_3, true);
+        t1.push(new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, "tmail_email_details_sender", _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), false, false, false, false, t3, _null));
       }
       t2 = t2.email;
-      t1.push(new A.Padding(C.EdgeInsets_0_2_0_0, F.MaterialTextButton$(8, _null, "<" + (t2 == null ? "" : t2) + ">", C.Color_4286680217, 16, C.FontWeight_4_500, new B.EmailSenderBuilder_build_closure1(_this, context), new B.EmailSenderBuilder_build_closure2(_this, context), C.TextOverflow_2, C.EdgeInsets_3_3_3_3, true), _null));
+      t2 = F.MaterialTextButton$(8, _null, "<" + (t2 == null ? "" : t2) + ">", C.Color_4286680217, 16, C.FontWeight_4_500, new B.EmailSenderBuilder_build_closure1(_this, context), new B.EmailSenderBuilder_build_closure2(_this, context), C.TextOverflow_2, C.EdgeInsets_3_3_3_3, true);
+      t1.push(new A.Padding(C.EdgeInsets_0_2_0_0, new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, "tmail_email_details_sender_email", _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), false, false, false, false, t2, _null), _null));
       return A.SingleChildScrollView$(A.Row$(t1, C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_0, _null), _null, _null, _null, D.NeverScrollableScrollPhysics_null, _null, C.Axis_0);
     }
   };
   B.EmailSubjectWidget.prototype = {
     build$1(context) {
-      var _null = null;
-      return new A.Padding(E.EdgeInsets_16_12_16_12, A.Text$(this.presentationEmail.getEmailTitle$0(), _null, _null, 2, _null, _null, _null, _null, _null, E.TextStyle_69t9, _null, _null, _null, _null, _null), _null);
+      var _null = null,
+        t1 = A.Text$(this.presentationEmail.getEmailTitle$0(), _null, _null, 2, _null, _null, _null, _null, _null, E.TextStyle_69t9, _null, _null, _null, _null, _null);
+      return new A.Padding(E.EdgeInsets_16_12_16_12, new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, "tmail_email_details_subject", _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), true, false, false, false, t1, _null), _null);
     }
   };
   B.EmailViewAppBarWidget.prototype = {
@@ -11242,7 +11246,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return email.getSenderName$0();
     },
     buildInformationSender$5(context, email, mailbox, isSearchEmailRunning, query) {
-      var t1, t2, t3, t4, _null = null;
+      var t1, t2, t3, t4,
+        _s23_ = "tmail_email_tile_sender",
+        _null = null;
       if (this.isSearchEnabled$2(isSearchEmailRunning, query)) {
         t1 = this.informationSender$2(email, mailbox);
         t2 = query == null ? _null : query.value;
@@ -11251,11 +11257,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = email.get$hasRead() ? C.Color_4285364357 : C.Color_4278190080;
         t3 = A.TextStyle$(_null, _null, t3, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, !email.get$hasRead() ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null);
         t4 = email.get$hasRead() ? C.Color_4285364357 : C.Color_4278190080;
-        return new B.RichTextBuilder(t1, t2, t3, A.TextStyle$(_null, D.Color_1023441663, t4, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, !email.get$hasRead() ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null);
+        t4 = A.TextStyle$(_null, D.Color_1023441663, t4, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, !email.get$hasRead() ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null);
+        return new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _s23_, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), true, false, false, false, new B.RichTextBuilder(t1, t2, t3, t4, _null), _null);
       } else {
         t1 = this.informationSender$2(email, mailbox);
         t2 = email.get$hasRead() ? C.Color_4285364357 : C.Color_4278190080;
-        return A.TextOverflowBuilder$(t1, A.TextStyle$(_null, _null, t2, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, !email.get$hasRead() ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, C.TextOverflow_2, _null, _null, _null, _null));
+        t1 = A.TextOverflowBuilder$(t1, A.TextStyle$(_null, _null, t2, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, !email.get$hasRead() ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, C.TextOverflow_2, _null, _null, _null, _null));
+        return new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _s23_, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), true, false, false, false, t1, _null);
       }
     },
     buildEmailTitle$4(context, email, isSearchEmailRunning, query) {
@@ -11276,13 +11284,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
     },
     buildEmailPartialContent$4(context, email, isSearchEmailRunning, query) {
-      var t1, t2;
+      var t1, t2,
+        _s24_ = "tmail_email_tile_preview",
+        _null = null;
       if (this.isSearchEnabled$2(isSearchEmailRunning, query)) {
         t1 = email.getPartialContent$0();
-        t2 = query == null ? null : query.value;
-        return new B.RichTextBuilder(t1, t2 == null ? "" : t2, E.TextStyle_yql, D.TextStyle_GF2, null);
-      } else
-        return A.TextOverflowBuilder$(email.getPartialContent$0(), E.TextStyle_yql);
+        t2 = query == null ? _null : query.value;
+        if (t2 == null)
+          t2 = "";
+        return new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _s24_, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), true, false, false, false, new B.RichTextBuilder(t1, t2, E.TextStyle_yql, D.TextStyle_GF2, _null), _null);
+      } else {
+        t1 = A.TextOverflowBuilder$(email.getPartialContent$0(), E.TextStyle_yql);
+        return new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _s24_, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), true, false, false, false, t1, _null);
+      }
     },
     buildDateTime$2(context, email) {
       var _null = null,
@@ -12142,7 +12156,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t8 = A.buildIconWeb(_null, _null, t12, C.EdgeInsets_0_0_0_0, _null, C.EdgeInsets_0_6_0_6, 28, _this._widget.presentationEmail.get$hasRead() ? _null : new B._EmailTileBuilderState_build_closure11(_this), _null, t8);
       t12 = _this.buildIconAvatarText$3$iconSize$textStyle(_this._widget.presentationEmail, 32, D.TextStyle_mtF8);
       t13 = _this._widget;
-      return A.ResponsiveWidget$(new A.Padding(D.EdgeInsetsDirectional_3_2_3_0, A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, C.BorderRadius_ww811, true, A.Container$(C.Alignment_0_0, A.Row$(A._setArrayType([C.SizedBox_10_null_null_null, t9, t11, t10, t8, t12, C.SizedBox_10_null_null_null, new A.SizedBox(160, _null, _this.buildInformationSender$5(context, t13.presentationEmail, t13.mailboxContain, t13.isSearchEmailRunning, t13.searchQuery), _null), E.SizedBox_24_null_null_null, A.Expanded$(_this._buildSubjectAndContent$0(), 1), E.SizedBox_16_null_null_null, new A.ValueListenableBuilder(t5, new B._EmailTileBuilderState_build_closure12(_this), _null, _null, t6)], t4), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, t7, _null, _null, _null, _null, t3, _null, _null, _null), _null, true, false, _null, _null, _null, C.Color_4292865791, _null, _null, _null, _null, _null, new B._EmailTileBuilderState_build_closure13(_this), _null, new B._EmailTileBuilderState_build_closure14(_this), _null, _null, _null, _null, _null, _null, _null), C.Clip_0, _null, 0, _null, _null, _null, _null, _null, C.MaterialType_4), _null), _null, _null, t1, _this.BaseEmailItemTile_responsiveUtils, t2, _null);
+      t3 = A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, C.BorderRadius_ww811, true, A.Container$(C.Alignment_0_0, A.Row$(A._setArrayType([C.SizedBox_10_null_null_null, t9, t11, t10, t8, t12, C.SizedBox_10_null_null_null, new A.SizedBox(160, _null, _this.buildInformationSender$5(context, t13.presentationEmail, t13.mailboxContain, t13.isSearchEmailRunning, t13.searchQuery), _null), E.SizedBox_24_null_null_null, A.Expanded$(_this._buildSubjectAndContent$0(), 1), E.SizedBox_16_null_null_null, new A.ValueListenableBuilder(t5, new B._EmailTileBuilderState_build_closure12(_this), _null, _null, t6)], t4), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, t7, _null, _null, _null, _null, t3, _null, _null, _null), _null, true, false, _null, _null, _null, C.Color_4292865791, _null, _null, _null, _null, _null, new B._EmailTileBuilderState_build_closure13(_this), _null, new B._EmailTileBuilderState_build_closure14(_this), _null, _null, _null, _null, _null, _null, _null), C.Clip_0, _null, 0, _null, _null, _null, _null, _null, C.MaterialType_4);
+      return A.ResponsiveWidget$(new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, "tmail_email_tile", _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), false, false, false, false, new A.Padding(D.EdgeInsetsDirectional_3_2_3_0, t3, _null), _null), _null, _null, t1, _this.BaseEmailItemTile_responsiveUtils, t2, _null);
     },
     _getPaddingItem$1(context) {
       if (A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx >= 1200)
@@ -16226,7 +16241,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3.toString;
       t3 = A.Theme_of(t3).textTheme.labelSmall;
       t3 = t3 == null ? _null : t3.copyWith$2$color$fontSize(C.Color_4278190080, 16);
-      return A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_0, 20, _null, _null, _null, 1 / 0, new B._EmailReceiverWidgetState__buildRecipientsTag__closure(t2, emailAddress), new B._EmailReceiverWidgetState__buildRecipientsTag__closure0(t2, emailAddress), C.EdgeInsetsDirectional_8_5_8_5, t1, _null, t3, _null, _null);
+      t3 = A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_0, 20, _null, _null, _null, 1 / 0, new B._EmailReceiverWidgetState__buildRecipientsTag__closure(t2, emailAddress), new B._EmailReceiverWidgetState__buildRecipientsTag__closure0(t2, emailAddress), C.EdgeInsetsDirectional_8_5_8_5, t1, _null, t3, _null, _null);
+      return new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, "tmail_email_details_recipient", _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), false, false, false, false, t3, _null);
     },
     $signature: 1765
   };
@@ -20944,7 +20960,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.push(t2.buildCalendarEventIcon$2$context$presentationEmail(context, t2._widget.presentationEmail));
       if (t2._widget.presentationEmail.getEmailTitle$0().length !== 0) {
         t3 = t2._widget;
-        t1.push(A.Container$(_null, t2.buildEmailTitle$4(context, t3.presentationEmail, t3.isSearchEmailRunning, t3.searchQuery), C.Clip_0, _null, new A.BoxConstraints(0, constraints.maxWidth / 2, 0, 1 / 0), _null, _null, _null, _null, _null, C.EdgeInsetsDirectional_0_0_12_0, _null, _null, _null));
+        t3 = t2.buildEmailTitle$4(context, t3.presentationEmail, t3.isSearchEmailRunning, t3.searchQuery);
+        t1.push(A.Container$(_null, new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, "tmail_email_tile_subject", _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), true, false, false, false, t3, _null), C.Clip_0, _null, new A.BoxConstraints(0, constraints.maxWidth / 2, 0, 1 / 0), _null, _null, _null, _null, _null, C.EdgeInsetsDirectional_0_0_12_0, _null, _null, _null));
       }
       t3 = t2._widget;
       t1.push(A.Expanded$(A.Container$(_null, t2.buildEmailPartialContent$4(context, t3.presentationEmail, t3.isSearchEmailRunning, t3.searchQuery), C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), 1));
@@ -21286,6 +21303,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       RestorableProperty_nullable_Object: findType("RestorableProperty<Object?>"),
       SearchController: findType("SearchController"),
       Selectable: findType("Selectable"),
+      Semantics: findType("Semantics"),
       SingleEmailController: findType("SingleEmailController"),
       Some_SearchQuery: findType("Some<SearchQuery>"),
       Some_Set_String: findType("Some<Set<String>>"),
@@ -21295,7 +21313,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       String: findType("String"),
       SuggestionEmailAddress: findType("SuggestionEmailAddress"),
       SuggestionEmailAddress_2: findType("SuggestionEmailAddress0"),
-      TMailButtonWidget: findType("TMailButtonWidget"),
       Type: findType("Type"),
       TypeAheadFieldQuickSearch_dynamic_dynamic_dynamic: findType("TypeAheadFieldQuickSearch<@,@,@>"),
       UTCDate: findType("UTCDate"),
@@ -21661,5 +21678,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "B5Ok/QfpHn+bjFOodFuwNguUK1E=");
+})($__dart_deferred_initializers__, "HaW0Gd3ZTldQJpEEID5EVh65foE=");
 ;
