@@ -194,7 +194,7 @@ dependencies:
 
   firebase_messaging: 15.1.0
 
-  flutter_local_notifications: 16.2.0
+  flutter_local_notifications: 17.2.2
 
   fading_edge_scrollview: 4.1.1
 
