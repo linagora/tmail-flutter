@@ -4209,5 +4209,35 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "youHaveNotAddedConditionToRule": "Vous n'avez pas ajouté de condition à la règle.",
+  "@youHaveNotAddedConditionToRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youHaveNotAddedActionToRule": "Vous n'avez pas ajouté d'action à la règle.",
+  "@youHaveNotAddedActionToRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youAreOffline": "Vous êtes hors ligne. Il semble que vous n'êtes pas connecté.",
+  "@youAreOffline": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youHaveNotSelectedAnyActionForRule": "Vous n’avez sélectionné aucune action pour la règle.",
+  "@youHaveNotSelectedAnyActionForRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "tryAgain": "Veuillez réessayer",
+  "@tryAgain": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
