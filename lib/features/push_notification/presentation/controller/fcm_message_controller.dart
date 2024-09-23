@@ -1,21 +1,17 @@
 
 import 'dart:async';
 
-import 'package:collection/collection.dart';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
 import 'package:model/model.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
@@ -30,10 +26,9 @@ import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/action/fcm_action.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_base_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_token_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/controller/push_base_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
@@ -42,12 +37,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class FcmMessageController extends FcmBaseController {
-
-  AccountId? _currentAccountId;
-  Session? _currentSession;
-  UserName? _userName;
-
+class FcmMessageController extends PushBaseController {
   GetAuthenticatedAccountInteractor? _getAuthenticatedAccountInteractor;
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
   AuthorizationInterceptors? _authorizationInterceptors;
@@ -64,10 +54,9 @@ class FcmMessageController extends FcmBaseController {
 
   static FcmMessageController get instance => _instance;
 
+  @override
   void initialize({AccountId? accountId, Session? session}) {
-    _currentAccountId = accountId;
-    _currentSession = session;
-    _userName = session?.username;
+    super.initialize(accountId: accountId, session: session);
 
     _listenTokenStream();
     _listenForegroundMessageStream();
@@ -96,15 +85,17 @@ class FcmMessageController extends FcmBaseController {
   }
 
   void _handleForegroundMessageAction(Map<String, dynamic> payloadData) {
-    log('FcmMessageController::_handleForegroundMessageAction():payloadData: $payloadData | _currentAccountId: $_currentAccountId');
-    if (_currentAccountId != null && _userName != null) {
+    log('FcmMessageController::_handleForegroundMessageAction():payloadData: $payloadData | accountId: $accountId');
+    if (accountId != null && session?.username != null) {
       final stateChange = FcmUtils.instance.convertFirebaseDataMessageToStateChange(payloadData);
-      final mapTypeState = stateChange.getMapTypeState(_currentAccountId!);
-      _mappingTypeStateToAction(
+      final mapTypeState = stateChange.getMapTypeState(accountId!);
+      mappingTypeStateToAction(
         mapTypeState,
-        _currentAccountId!,
-        _userName!,
-        session: _currentSession);
+        accountId!,
+        emailChangeListener: EmailChangeListener.instance,
+        mailboxChangeListener: MailboxChangeListener.instance,
+        session!.username,
+        session: session);
     }
   }
 
@@ -113,74 +104,6 @@ class FcmMessageController extends FcmBaseController {
     final stateChange = FcmUtils.instance.convertFirebaseDataMessageToStateChange(payloadData);
     await _initialAppConfig();
     _getAuthenticatedAccount(stateChange: stateChange);
-  }
-
-  void _mappingTypeStateToAction(
-    Map<String, dynamic> mapTypeState,
-    AccountId accountId,
-    UserName userName, {
-    bool isForeground = true,
-    Session? session
-  }) {
-    log('FcmMessageController::_mappingTypeStateToAction():mapTypeState: $mapTypeState');
-    final listTypeName = mapTypeState.keys
-      .map((value) => TypeName(value))
-      .toList();
-
-    final listEmailActions = listTypeName
-      .where((typeName) => typeName == TypeName.emailType || typeName == TypeName.emailDelivery)
-      .map((typeName) => toFcmAction(typeName, accountId, userName, mapTypeState, isForeground, session: session))
-      .whereNotNull()
-      .toList();
-
-    log('FcmMessageController::_mappingTypeStateToAction():listEmailActions: $listEmailActions');
-
-    if (listEmailActions.isNotEmpty) {
-       EmailChangeListener.instance.dispatchActions(listEmailActions);
-    }
-
-    final listMailboxActions = listTypeName
-      .where((typeName) => typeName == TypeName.mailboxType)
-      .map((typeName) => toFcmAction(typeName, accountId, userName, mapTypeState, isForeground))
-      .whereNotNull()
-      .toList();
-
-    log('FcmMessageController::_mappingTypeStateToAction():listMailboxActions: $listEmailActions');
-
-    if (listMailboxActions.isNotEmpty) {
-      MailboxChangeListener.instance.dispatchActions(listMailboxActions);
-    }
-  }
-
-  FcmAction? toFcmAction(
-    TypeName typeName,
-    AccountId accountId,
-    UserName userName,
-    Map<String, dynamic> mapTypeState,
-    isForeground,
-    {
-      Session? session
-    }
-  ) {
-    final newState = jmap.State(mapTypeState[typeName.value]);
-    if (typeName == TypeName.emailType) {
-      if (isForeground) {
-        return SynchronizeEmailOnForegroundAction(typeName, newState, accountId, session);
-      } else {
-        return StoreEmailStateToRefreshAction(typeName, newState, accountId, userName, session);
-      }
-    } else if (typeName == TypeName.emailDelivery) {
-      if (!isForeground) {
-        return PushNotificationAction(typeName, newState, session, accountId, userName);
-      }
-    } else if (typeName == TypeName.mailboxType) {
-      if (isForeground) {
-        return SynchronizeMailboxOnForegroundAction(typeName, newState, accountId);
-      } else {
-        return StoreMailboxStateToRefreshAction(typeName, newState, accountId, userName);
-      }
-    }
-    return null;
   }
 
   Future<void> _initialAppConfig() async {
@@ -312,10 +235,12 @@ class FcmMessageController extends FcmBaseController {
   }) {
     final mapTypeState = stateChange.getMapTypeState(accountId);
 
-    _mappingTypeStateToAction(
+    mappingTypeStateToAction(
       mapTypeState,
       accountId,
       userName,
+      emailChangeListener: EmailChangeListener.instance,
+      mailboxChangeListener: MailboxChangeListener.instance,
       isForeground: false,
       session: session);
   }
