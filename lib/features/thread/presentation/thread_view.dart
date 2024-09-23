@@ -308,7 +308,14 @@ class ThreadView extends GetWidget<ThreadController>
 
     return Obx(() {
       final isAdvancedSearchViewOpen = controller.searchController.isAdvancedSearchViewOpen.value;
-      if (!controller.searchController.isSearchActive() && !isAdvancedSearchViewOpen) {
+      final isTrashViewOpen = controller.isMailboxTrash;
+      final isSelectModeActive = controller.mailboxDashBoardController.currentSelectMode.value == SelectMode.ACTIVE;
+      if (
+        !controller.searchController.isSearchActive()
+        && !isAdvancedSearchViewOpen
+        && !isTrashViewOpen
+        && !isSelectModeActive
+      ) {
         return Container(
           padding: PlatformInfo.isMobile && controller.listEmailSelected.isNotEmpty
             ? EdgeInsets.only(bottom: controller.responsiveUtils.isTabletLarge(context) ? 85 : 70)
