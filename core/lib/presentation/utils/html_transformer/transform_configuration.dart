@@ -108,7 +108,7 @@ class TransformConfiguration {
     const RemoveScriptTransformer(),
     const BlockQuotedTransformer(),
     const BlockCodeTransformer(),
-    SanitizeHyperLinkTagInHtmlTransformer(),
+    SanitizeHyperLinkTagInHtmlTransformer(useTooltip: PlatformInfo.isWeb),
     const ImageTransformer(),
     const AddLazyLoadingForBackgroundImageTransformer(),
     const RemoveCollapsedSignatureButtonTransformer(),

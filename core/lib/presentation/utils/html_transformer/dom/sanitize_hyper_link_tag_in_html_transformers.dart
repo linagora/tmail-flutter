@@ -18,7 +18,9 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
   }) async {
     final elements = document.querySelectorAll('a');
     await Future.wait(elements.map((element) async {
-      _addToolTipWhenHoverLink(element);
+      if (useTooltip) {
+        _addToolTipWhenHoverLink(element);
+      }
       _addBlankForTargetProperty(element);
       _addNoReferrerForRelProperty(element);
     }));
