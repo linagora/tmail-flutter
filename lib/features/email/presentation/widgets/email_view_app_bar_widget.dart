@@ -74,8 +74,6 @@ class EmailViewAppBarWidget extends StatelessWidget {
           const Spacer(),
           Row(
             children: [
-                if(optionsWidget != null)
-                  ...optionsWidget!,
                 const SizedBox(width: EmailViewAppBarWidgetStyles.space),
                 TMailButtonWidget.fromIcon(
                   icon: _imagePaths.icMoveEmail,
@@ -156,6 +154,9 @@ class EmailViewAppBarWidget extends StatelessWidget {
                     ? (position) => onMoreActionClick?.call(presentationEmail, position)
                     : null
                 ),
+                if(optionsWidget != null)
+                  ...optionsWidget!,
+                const SizedBox(width: EmailViewAppBarWidgetStyles.space),
               ]
           ),
         ])
