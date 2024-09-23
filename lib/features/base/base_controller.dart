@@ -49,9 +49,11 @@ import 'package:tmail_ui_user/features/push_notification/domain/state/get_stored
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/destroy_firebase_registration_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_stored_firebase_registration_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/bindings/web_socket_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_token_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/controller/web_socket_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_receiver.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
@@ -369,6 +371,23 @@ abstract class BaseController extends GetxController
       }
     } catch(e) {
       logError('$runtimeType::injectFCMBindings(): exception: $e');
+    }
+  }
+
+  void injectWebSocket(Session? session, AccountId? accountId) {
+    try {
+      requireCapability(
+        session!,
+        accountId!,
+        [
+          CapabilityIdentifier.jmapWebSocket,
+          CapabilityIdentifier.jmapWebSocketTicket
+        ]
+      );
+      WebSocketInteractorBindings().dependencies();
+      WebSocketController.instance.initialize(accountId: accountId, session: session);
+    } catch(e) {
+      logError('$runtimeType::injectWebSocket(): exception: $e');
     }
   }
 
