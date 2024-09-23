@@ -18,21 +18,24 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
       margin: const EdgeInsetsDirectional.only(bottom: 16, start: 24, end: 24),
       width: controller.responsiveUtils.getDeviceWidth(context),
       height: 48,
-      child: ElevatedButton(
-        key: const Key('loginSubmitForm'),
-        style: ElevatedButton.styleFrom(
-          foregroundColor: Colors.white,
-          backgroundColor: AppColor.primaryColor,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
-            side: const BorderSide(width: 0, color: AppColor.primaryColor)
+      child: Semantics(
+        identifier: LoginBasicAuthKeyValues.loginSignInButton,
+        child: ElevatedButton(
+          key: const Key('loginSubmitForm'),
+          style: ElevatedButton.styleFrom(
+            foregroundColor: Colors.white,
+            backgroundColor: AppColor.primaryColor,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10),
+              side: const BorderSide(width: 0, color: AppColor.primaryColor)
+            )
+          ),
+          onPressed: controller.handleLoginPressed,
+          child: Text(
+            AppLocalizations.of(context).signIn,
+            style: const TextStyle(fontSize: 16, color: Colors.white)
           )
         ),
-        onPressed: controller.handleLoginPressed,
-        child: Text(
-          AppLocalizations.of(context).signIn,
-          style: const TextStyle(fontSize: 16, color: Colors.white)
-        )
       )
     );
   }
