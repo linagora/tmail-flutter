@@ -248,6 +248,8 @@ dependencies:
 
   app_settings: 5.1.1
 
+  web_socket_channel: 2.4.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
