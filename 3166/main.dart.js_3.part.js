@@ -5,7 +5,7 @@
   s[d][e].push({p: "main.dart.js_3", e: "beginPart"});
 })(self, "$__dart_deferred_initializers__", "eventLog");
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
-  var J, A, C, G,
+  var J, A, C, G, H,
   B = {ByteConverter: function ByteConverter(t0) {
       this._byte_converter_base$_bytes = t0;
       this._bits = 0;
@@ -5057,6 +5057,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   A = holdersList[0];
   C = holdersList[2];
   G = holdersList[9];
+  H = holdersList[11];
   B = hunkHelpers.updateHolder(holdersList[4], B);
   D = holdersList[12];
   F = holdersList[8];
@@ -9595,7 +9596,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Expando__checkType(_this);
         t2._as(t1.get(_this)).toString;
         t11 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx >= 1200 ? 32 : 16;
-        t8.push(A.Container$(_null, A.Row$(A._setArrayType([G.ApplicationLogoWidthTextWidget$(_null), E.ApplicationVersionWidget_null], t7), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_4294967295, _null, _null, _null, _null, _null, _null, new A.EdgeInsetsDirectional(t11, t9, 0, t10), _null, _null, _null));
+        t8.push(A.Container$(_null, A.Row$(A._setArrayType([G.ApplicationLogoWidthTextWidget$(_null), H.ApplicationVersionWidget_null], t7), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_4294967295, _null, _null, _null, _null, _null, _null, new A.EdgeInsetsDirectional(t11, t9, 0, t10), _null, _null, _null));
       }
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
@@ -21678,5 +21679,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "HaW0Gd3ZTldQJpEEID5EVh65foE=");
+})($__dart_deferred_initializers__, "1o4zUZpxSJOGmZ2QaN0ADETVsY4=");
 ;
