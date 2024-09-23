@@ -6,7 +6,7 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 
-class SynchronizeEmailOnForegroundAction extends FcmStateChangeAction {
+class SynchronizeEmailOnForegroundAction extends PushNotificationStateChangeAction {
 
   final AccountId accountId;
   final Session? session;
@@ -22,7 +22,7 @@ class SynchronizeEmailOnForegroundAction extends FcmStateChangeAction {
   List<Object?> get props => [typeName, newState, accountId, session];
 }
 
-class PushNotificationAction extends FcmStateChangeAction {
+class PushNotificationAction extends PushNotificationStateChangeAction {
 
   final Session? session;
   final AccountId accountId;
@@ -40,7 +40,7 @@ class PushNotificationAction extends FcmStateChangeAction {
   List<Object?> get props => [typeName, newState, accountId, session, userName];
 }
 
-class StoreEmailStateToRefreshAction extends FcmStateChangeAction {
+class StoreEmailStateToRefreshAction extends PushNotificationStateChangeAction {
 
   final AccountId accountId;
   final UserName userName;
@@ -58,7 +58,7 @@ class StoreEmailStateToRefreshAction extends FcmStateChangeAction {
   List<Object?> get props => [typeName, newState, accountId, session];
 }
 
-class SynchronizeMailboxOnForegroundAction extends FcmStateChangeAction {
+class SynchronizeMailboxOnForegroundAction extends PushNotificationStateChangeAction {
 
   final AccountId accountId;
 
@@ -72,7 +72,7 @@ class SynchronizeMailboxOnForegroundAction extends FcmStateChangeAction {
   List<Object?> get props => [typeName, newState, accountId];
 }
 
-class StoreMailboxStateToRefreshAction extends FcmStateChangeAction {
+class StoreMailboxStateToRefreshAction extends PushNotificationStateChangeAction {
 
   final AccountId accountId;
   final UserName userName;

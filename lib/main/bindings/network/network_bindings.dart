@@ -33,6 +33,7 @@ import 'package:tmail_ui_user/features/manage_account/data/network/rule_filter_a
 import 'package:tmail_ui_user/features/manage_account/data/network/vacation_api.dart';
 import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_sharing_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/data/network/fcm_api.dart';
+import 'package:tmail_ui_user/features/push_notification/data/network/web_socket_api.dart';
 import 'package:tmail_ui_user/features/quotas/data/network/quotas_api.dart';
 import 'package:tmail_ui_user/features/server_settings/data/network/server_settings_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
@@ -124,6 +125,7 @@ class NetworkBindings extends Bindings {
     Get.put(FcmApi(Get.find<HttpClient>()));
     Get.put(SpamReportApi(Get.find<HttpClient>()));
     Get.put(ServerSettingsAPI(Get.find<HttpClient>()));
+    Get.put(WebSocketApi(Get.find<DioClient>()));
   }
 
   void _bindingConnection() {
