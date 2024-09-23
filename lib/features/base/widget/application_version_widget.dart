@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/application_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/key_values/login_key_values.dart';
 
 class ApplicationVersionWidget extends StatefulWidget {
 
@@ -37,15 +38,19 @@ class _ApplicationVersionWidgetState extends State<ApplicationVersionWidget> {
       future: _versionStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return Padding(
-            padding: widget.padding ?? const EdgeInsets.only(top: 8),
-            child: Text(
-              '${widget.title ?? 'v.'}${snapshot.data}',
-              textAlign: TextAlign.center,
-              style: widget.textStyle ?? Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontSize: 13,
-                color: AppColor.colorContentEmail,
-                fontWeight: FontWeight.w500
+          return Semantics(
+            identifier: LoginKeyValues.loginVersionText,
+            container: true,
+            child: Padding(
+              padding: widget.padding ?? const EdgeInsets.only(top: 8),
+              child: Text(
+                '${widget.title ?? 'v.'}${snapshot.data}',
+                textAlign: TextAlign.center,
+                style: widget.textStyle ?? Theme.of(context).textTheme.labelMedium?.copyWith(
+                  fontSize: 13,
+                  color: AppColor.colorContentEmail,
+                  fontWeight: FontWeight.w500
+                ),
               ),
             ),
           );
