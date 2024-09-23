@@ -37,8 +37,7 @@ class RemoteWebSocketDatasourceImpl implements WebSocketDatasource {
       final webSocketUri = _getWebSocketUri(session, accountId);
       
       final webSocketChannel = WebSocketChannel.connect(
-        Uri.parse('$webSocketUri?ticket=$webSocketTicket'),
-        protocols: ['jmap']);
+        Uri.parse('$webSocketUri?ticket=$webSocketTicket'));
       await webSocketChannel.ready;
       webSocketChannel.sink.add(jsonEncode({"@type": "WebSocketPushEnable"}));
       
@@ -73,9 +72,9 @@ class RemoteWebSocketDatasourceImpl implements WebSocketDatasource {
     final webSocketTicketGenerationUrl = webSocketTicketCapability?.generationEndpoint;
     if (webSocketTicketGenerationUrl == null) throw WebSocketTicketUnavailableException();
     final webSocketTicket = await _webSocketApi.getWebSocketTicket('$webSocketTicketGenerationUrl');
-    if (webSocketTicket.ticket == null) throw WebSocketTicketUnavailableException();
+    if (webSocketTicket.value == null) throw WebSocketTicketUnavailableException();
 
-    return webSocketTicket.ticket!;
+    return webSocketTicket.value!;
   }
 
   Uri _getWebSocketUri(Session session, AccountId accountId) {

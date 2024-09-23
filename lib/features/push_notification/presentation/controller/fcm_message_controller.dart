@@ -28,14 +28,14 @@ import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.da
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_token_controller.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/controller/push_notification_base_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/controller/push_base_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class FcmMessageController extends PushNotificationBaseController {
+class FcmMessageController extends PushBaseController {
   GetAuthenticatedAccountInteractor? _getAuthenticatedAccountInteractor;
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
   AuthorizationInterceptors? _authorizationInterceptors;

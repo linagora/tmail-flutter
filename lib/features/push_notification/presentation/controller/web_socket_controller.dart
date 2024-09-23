@@ -7,11 +7,11 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/web_socket_push_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/connect_web_socket_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/controller/push_notification_base_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/controller/push_base_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_extension.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class WebSocketController extends PushNotificationBaseController {
+class WebSocketController extends PushBaseController {
   WebSocketController._internal();
 
   static final WebSocketController _instance = WebSocketController._internal();
@@ -50,6 +50,7 @@ class WebSocketController extends PushNotificationBaseController {
   }
   
   void _handleWebSocketPushStateReceived(WebSocketPushStateReceived success) {
+    log('WebSocketController::_handleWebSocketPushStateReceived(): $success');
     if (accountId == null || session == null) return;
     final stateChange = success.stateChange;
     final mapTypeState = stateChange.getMapTypeState(accountId!);

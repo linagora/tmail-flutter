@@ -5,16 +5,18 @@ part 'web_socket_ticket.g.dart';
 
 @JsonSerializable(includeIfNull: false)
 class WebSocketTicket with EquatableMixin {
-  final String? ticket;
+  final String? value;
   final String? clientAddress;
   final DateTime? generatedOn;
   final DateTime? validUntil;
+  final String? username;
 
   WebSocketTicket({
-    required this.ticket,
+    required this.value,
     required this.clientAddress,
     required this.generatedOn,
     required this.validUntil,
+    required this.username,
   });
 
   factory WebSocketTicket.fromJson(Map<String, dynamic> json) => _$WebSocketTicketFromJson(json);
@@ -22,8 +24,10 @@ class WebSocketTicket with EquatableMixin {
 
   @override
   List<Object?> get props => [
-    ticket,
+    value,
     clientAddress,
     generatedOn,
-    validUntil];
+    validUntil,
+    username,
+  ];
 }

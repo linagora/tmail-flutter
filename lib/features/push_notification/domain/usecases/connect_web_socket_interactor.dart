@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -24,6 +25,7 @@ class ConnectWebSocketInteractor {
         .getWebSocketChannel(session, accountId)
         .map(_toStateChange);
     } catch (e) {
+      log('ConnectWebSocketInteractor::execute: $e');
       yield Left(WebSocketConnectionFailed(exception: e));
     }
   }

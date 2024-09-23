@@ -13,7 +13,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/action/pus
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
 
-abstract class PushNotificationBaseController {
+abstract class PushBaseController {
   Session? session;
   AccountId? accountId;
 
