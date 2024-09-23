@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:tmail_ui_user/features/base/key_values/login_basic_auth_key_values.dart';
 import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/login/presentation/base_login_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/privacy_link_widget.dart';
@@ -77,6 +78,7 @@ class LoginView extends BaseLoginView {
                 padding: EdgeInsets.only(top: 16),
                 child: PrivacyLinkWidget(),
               ),
+              const ApplicationVersionWidget(),
             ],
           )
         ),
@@ -224,6 +226,7 @@ class LoginView extends BaseLoginView {
                       padding: EdgeInsets.only(top: 16),
                       child: PrivacyLinkWidget()
                     ),
+                    const ApplicationVersionWidget(),
                   ],
                 )
               ),
