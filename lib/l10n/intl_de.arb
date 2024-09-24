@@ -2085,7 +2085,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleReadReceiptRequestNotificationMessage": "",
+  "titleReadReceiptRequestNotificationMessage": "Lesebestätigung anfordern",
   "@titleReadReceiptRequestNotificationMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -3359,7 +3359,7 @@
       "maxSize": {}
     }
   },
-  "toastMessageMarkAsMailboxReadSuccess": "",
+  "toastMessageMarkAsMailboxReadSuccess": "Sie haben alle Nachrichten in \"{mailboxName}\" als gelesen markiert",
   "@toastMessageMarkAsMailboxReadSuccess": {
     "type": "text",
     "placeholders_order": [
@@ -3369,7 +3369,7 @@
       "mailboxName": {}
     }
   },
-  "Bad credentials": "",
+  "Bad credentials": "Ungültige Anmeldedaten",
   "@Bad credentials": {
     "type": "text",
     "placeholders_order": [],
@@ -3399,19 +3399,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "flag": "",
+  "flag": "Kennzeichnen",
   "@flag": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "un_spam": "",
+  "un_spam": "Kein Spam",
   "@un_spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "not_starred": "",
+  "not_starred": "Nicht markiert",
   "@not_starred": {
     "type": "text",
     "placeholders_order": [],
@@ -3423,13 +3423,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "star": "",
+  "star": "Stern",
   "@star": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageCannotFoundEmailIdWhenSendReceipt": "",
+  "toastMessageCannotFoundEmailIdWhenSendReceipt": "Die E-Mail-ID konnte nicht gefunden werden",
   "@toastMessageCannotFoundEmailIdWhenSendReceipt": {
     "type": "text",
     "placeholders_order": [],
@@ -3457,7 +3457,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDialogSendEmailUploadingAttachment": "",
+  "messageDialogSendEmailUploadingAttachment": "Ihre Nachricht konnte nicht gesendet werden, da ein Anhang hochgeladen wird",
   "@messageDialogSendEmailUploadingAttachment": {
     "type": "text",
     "placeholders_order": [],
@@ -3469,7 +3469,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageLocalCopyDisable": "",
+  "toastMessageLocalCopyDisable": "Lokale Kopie beibehalten deaktivieren.",
   "@toastMessageLocalCopyDisable": {
     "type": "text",
     "placeholders_order": [],
@@ -3481,25 +3481,25 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bcc_to": "",
+  "bcc_to": "Bcc to",
   "@bcc_to": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteFoldersSuccessfully": "",
+  "deleteFoldersSuccessfully": "Ordner erfolgreich gelöscht",
   "@deleteFoldersSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createNewFolderFailure": "",
+  "createNewFolderFailure": "Fehler beim Erstellen eines neuen Ordners",
   "@createNewFolderFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteFoldersFailure": "",
+  "deleteFoldersFailure": "Fehler beim Löschen der Ordner",
   "@deleteFoldersFailure": {
     "type": "text",
     "placeholders_order": [],
@@ -3605,19 +3605,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "ruleFilterAddressCcField": "",
+  "ruleFilterAddressCcField": "Cc",
   "@ruleFilterAddressCcField": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "exchange": "",
+  "exchange": "Austausch",
   "@exchange": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "selected": "",
+  "selected": "Ausgewählt",
   "@selected": {
     "type": "text",
     "placeholders_order": [],
@@ -3659,31 +3659,31 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "page_name": "",
+  "page_name": "Twake Mail",
   "@page_name": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "starred": "",
+  "starred": "Wichtig",
   "@starred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "allTime": "",
+  "allTime": "Seit jeher",
   "@allTime": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "clearAll": "",
+  "clearAll": "Alles leeren",
   "@clearAll": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "app_name": "",
+  "app_name": "Twake Mail",
   "@app_name": {
     "type": "text",
     "placeholders_order": [],
@@ -3747,19 +3747,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quickStyles": "",
+  "quickStyles": "Schnellformatvorlagen",
   "@quickStyles": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleQuickStyles": "",
+  "titleQuickStyles": "Schnellformatvorlagen",
   "@titleQuickStyles": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "un_star": "",
+  "un_star": "Markierung entfernen",
   "@un_star": {
     "type": "text",
     "placeholders_order": [],
@@ -3777,7 +3777,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "notSelected": "",
+  "notSelected": "Nicht ausgewählt",
   "@notSelected": {
     "type": "text",
     "placeholders_order": [],
@@ -3795,7 +3795,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageLocalCopyEnable": "",
+  "toastMessageLocalCopyEnable": "Lokale Kopie beibehalten aktivieren.",
   "@toastMessageLocalCopyEnable": {
     "type": "text",
     "placeholders_order": [],
@@ -3837,7 +3837,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "with_starred": "",
+  "with_starred": "Mit Stern markiert",
   "@with_starred": {
     "type": "text",
     "placeholders_order": [],
@@ -3873,13 +3873,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_internet_connection_try_again_later": "",
+  "no_internet_connection_try_again_later": "Keine Internetverbindung, versuche es später.",
   "@no_internet_connection_try_again_later": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageCannotFoundIdentityWhenSendReceipt": "",
+  "toastMessageCannotFoundIdentityWhenSendReceipt": "Die angegebene ID konnte nicht gefunden werden",
   "@toastMessageCannotFoundIdentityWhenSendReceipt": {
     "type": "text",
     "placeholders_order": [],
@@ -3891,7 +3891,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailRuleSettingExplanation": "",
+  "emailRuleSettingExplanation": "Erstellen von Regeln zur Verwaltung eingehender Nachrichten. Sie wählen sowohl die Bedingung, die eine Regel auslöst, als auch die Aktion, die die Regel ausführt.",
   "@emailRuleSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
@@ -3913,7 +3913,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_trash_folder": "",
+  "empty_trash_folder": "Papierkorb leeren",
   "@empty_trash_folder": {
     "type": "text",
     "placeholders_order": [],
@@ -4057,7 +4057,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageAddRecipientsSuccessfully": "",
+  "toastMessageAddRecipientsSuccessfully": "Die E-Mails wurden der Empfängerliste hinzugefügt.",
   "@toastMessageAddRecipientsSuccessfully": {
     "type": "text",
     "placeholders_order": [],
@@ -4069,13 +4069,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "renameFolderFailure": "",
+  "renameFolderFailure": "Fehler beim Umbenennen des Ordners",
   "@renameFolderFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_starred": "",
+  "mark_as_starred": "Als wichtig markieren",
   "@mark_as_starred": {
     "type": "text",
     "placeholders_order": [],
