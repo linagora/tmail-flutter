@@ -7,7 +7,7 @@ abstract class Action with EquatableMixin {}
 
 abstract class UIAction extends Action {}
 
-abstract class PushNotificationStateChangeAction extends UIAction {
+abstract class PushNotificationStateChangeAction extends Action {
   final TypeName typeName;
   final jmap.State newState;
 

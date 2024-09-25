@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
-import 'package:jmap_dart_client/jmap/core/capability/web_socket_ticket_capability.dart';
 import 'package:jmap_dart_client/jmap/core/capability/websocket_capability.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/extensions/session_extension.dart';
@@ -19,9 +18,7 @@ class RemoteWebSocketDatasourceImpl implements WebSocketDatasource {
   final WebSocketApi _webSocketApi;
   final ExceptionThrower _exceptionThrower;
   
-  RemoteWebSocketDatasourceImpl(this._webSocketApi, this._exceptionThrower);
-
-  int _webSocketRetryRemained = 3;
+  const RemoteWebSocketDatasourceImpl(this._webSocketApi, this._exceptionThrower);
 
   @override
   Stream getWebSocketChannel(Session session, AccountId accountId) {
@@ -30,10 +27,14 @@ class RemoteWebSocketDatasourceImpl implements WebSocketDatasource {
       .doOnError(_exceptionThrower.throwException);
   }
 
-  Stream _getWebSocketChannel(Session session, AccountId accountId) async* {
+  Stream _getWebSocketChannel(
+    Session session,
+    AccountId accountId,
+    [int retryRemained = 3]
+    ) async* {
     try {
       _verifyWebSocketCapabilities(session, accountId);
-      final webSocketTicket = await _generateWebSocketTicket(session, accountId);
+      final webSocketTicket = await _webSocketApi.getWebSocketTicket(session, accountId);
       final webSocketUri = _getWebSocketUri(session, accountId);
       
       final webSocketChannel = WebSocketChannel.connect(
@@ -43,10 +44,9 @@ class RemoteWebSocketDatasourceImpl implements WebSocketDatasource {
       
       yield* webSocketChannel.stream;
     } catch (e) {
-      log('RemoteWebSocketDatasourceImpl::getWebSocketChannel():error: $e');
-      if (_webSocketRetryRemained > 0) {
-        _webSocketRetryRemained--;
-        yield* _getWebSocketChannel(session, accountId);
+      logError('RemoteWebSocketDatasourceImpl::getWebSocketChannel():error: $e');
+      if (retryRemained > 0) {
+        yield* _getWebSocketChannel(session, accountId, retryRemained - 1);
       } else {
         rethrow;
       }
@@ -54,27 +54,11 @@ class RemoteWebSocketDatasourceImpl implements WebSocketDatasource {
   }
 
   void _verifyWebSocketCapabilities(Session session, AccountId accountId) {
-    requireCapability(
-      session,
-      accountId,
-      [
-        CapabilityIdentifier.jmapWebSocket,
-        CapabilityIdentifier.jmapWebSocketTicket
-      ]
-    );
-  }
-
-  Future<String> _generateWebSocketTicket(Session session, AccountId accountId) async {
-    final webSocketTicketCapability = session.getCapabilityProperties<WebSocketTicketCapability>(
-      accountId,
-      CapabilityIdentifier.jmapWebSocketTicket);
-
-    final webSocketTicketGenerationUrl = webSocketTicketCapability?.generationEndpoint;
-    if (webSocketTicketGenerationUrl == null) throw WebSocketTicketUnavailableException();
-    final webSocketTicket = await _webSocketApi.getWebSocketTicket('$webSocketTicketGenerationUrl');
-    if (webSocketTicket.value == null) throw WebSocketTicketUnavailableException();
-
-    return webSocketTicket.value!;
+    if (!CapabilityIdentifier.jmapWebSocket.isSupported(session, accountId)
+      || !CapabilityIdentifier.jmapWebSocketTicket.isSupported(session, accountId)
+    ) {
+      throw WebSocketPushNotSupportedException();
+    }
   }
 
   Uri _getWebSocketUri(Session session, AccountId accountId) {

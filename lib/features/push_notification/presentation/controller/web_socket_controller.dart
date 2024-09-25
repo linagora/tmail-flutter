@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -40,7 +38,7 @@ class WebSocketController extends PushBaseController {
     _connectWebSocket(accountId, session);
   }
 
-  Future<void> _connectWebSocket(AccountId? accountId, Session? session) async {
+  void _connectWebSocket(AccountId? accountId, Session? session) {
     _connectWebSocketInteractor = getBinding<ConnectWebSocketInteractor>();
     if (_connectWebSocketInteractor == null || accountId == null || session == null) {
       return;

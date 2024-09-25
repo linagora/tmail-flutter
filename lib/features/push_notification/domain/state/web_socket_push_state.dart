@@ -10,7 +10,7 @@ class WebSocketPushStateReceived extends UIState {
   WebSocketPushStateReceived(this.stateChange);
 
   @override
-  List<Object?> get props => [stateChange];
+  List<Object> get props => [stateChange];
 }
 
 class WebSocketConnectionFailed extends FeatureFailure {

@@ -25,7 +25,7 @@ class ConnectWebSocketInteractor {
         .getWebSocketChannel(session, accountId)
         .map(_toStateChange);
     } catch (e) {
-      log('ConnectWebSocketInteractor::execute: $e');
+      logError('ConnectWebSocketInteractor::execute: $e');
       yield Left(WebSocketConnectionFailed(exception: e));
     }
   }
