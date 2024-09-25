@@ -262,15 +262,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       t1 = t2._as(t1.get(_this)).get$handleLoginPressed();
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-      t4 = A.ElevatedButton$(false, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_6nc1, _null, _null, _null, _null, _null), _null, _null, C.IconAlignment_0, D.ValueKey_loginSubmitForm, _null, _null, _null, t1, _null, t4);
+      t4 = A.ElevatedButton$(false, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_6nc1, _null, _null, _null, _null, _null), _null, _null, C.IconAlignment_0, D.ValueKey_tmail_login_sign_in_button, _null, _null, _null, t1, _null, t4);
       return A.Container$(_null, new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, "tmail_login_sign_in_button", _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), false, false, false, false, t4, _null), C.Clip_0, _null, _null, _null, _null, 48, _null, D.EdgeInsetsDirectional_24_0_24_16, _null, _null, _null, t3.size._dx);
     },
     buildInputCredentialForm$1(context) {
-      var _null = null,
-        t1 = this.buildUserNameInput$1(context),
-        t2 = A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, "tmail_login_email_field", _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null),
-        t3 = this.buildPasswordInput$1(context);
-      return new B.AutofillGroup(new A.Padding(C.EdgeInsetsDirectional_24_0_24_0, A.Column$(A._setArrayType([new A.Semantics(t2, true, false, false, false, t1, _null), C.SizedBox_null_24_null_null, new A.Semantics(A.SemanticsProperties$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, "tmail_login_password_field", _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), true, false, false, false, t3, _null), D.SizedBox_null_40_null_null], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null), _null);
+      return new B.AutofillGroup(new A.Padding(C.EdgeInsetsDirectional_24_0_24_0, A.Column$(A._setArrayType([this.buildUserNameInput$1(context), C.SizedBox_null_24_null_null, this.buildPasswordInput$1(context), D.SizedBox_null_40_null_null], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), null), null);
     },
     buildUserNameInput$1(context) {
       var t2, t3, t4, t5, t6, t7, _this = this, _null = null, _s5_ = "email",
@@ -293,7 +289,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       t7 = t2._as(t1.get(_this)).get$getAllRecentLoginUsernameAction();
       A.Expando__checkType(_this);
-      return A.TypeAheadFormFieldBuilder$(false, D.List_email, t3, C.Duration_300000, t6, t5, true, true, true, new B.BaseLoginView_buildUserNameInput_closure(), D.ValueKey_login_username_input, C.TextInputType_5_null_null, new B.BaseLoginView_buildUserNameInput_closure0(), t2._as(t1.get(_this)).get$selectUsernameFromSuggestion(), t4, t7, C.TextInputAction_6, type$.RecentLoginUsername);
+      return A.TypeAheadFormFieldBuilder$(false, D.List_email, t3, C.Duration_300000, t6, t5, true, true, true, new B.BaseLoginView_buildUserNameInput_closure(), D.ValueKey_tmail_login_email_field, C.TextInputType_5_null_null, new B.BaseLoginView_buildUserNameInput_closure0(), t2._as(t1.get(_this)).get$selectUsernameFromSuggestion(), t4, t7, C.TextInputAction_6, type$.RecentLoginUsername);
     },
     buildPasswordInput$1(context) {
       var t2, t3, t4, t5, _this = this,
@@ -308,7 +304,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       t5 = t2._as(t1.get(_this)).passFocusNode;
       A.Expando__checkType(_this);
-      return new B.LoginTextInputBuilder(t4, C.TextInputAction_2, t3, t5, D.List_password, t2._as(t1.get(_this)).get$onPasswordChange(), new B.BaseLoginView_buildPasswordInput_closure(_this), D.ValueKey_login_password_input);
+      return new B.LoginTextInputBuilder(t4, C.TextInputAction_2, t3, t5, D.List_password, t2._as(t1.get(_this)).get$onPasswordChange(), new B.BaseLoginView_buildPasswordInput_closure(_this), D.ValueKey_tmail_login_password_field);
     }
   };
   B.LoginView.prototype = {
@@ -787,14 +783,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.TextStyle_6nc1 = new A.TextStyle(true, C.Color_4294967295, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_8eb4 = new A.TextStyle(true, C.Color_4293281350, null, null, null, null, 13, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_QBc = new A.TextStyle(true, C.Color_4285887861, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.ValueKey_loginSubmitForm = new A.ValueKey("loginSubmitForm", type$.ValueKey_String);
-    D.ValueKey_login_password_input = new A.ValueKey("login_password_input", type$.ValueKey_String);
-    D.ValueKey_login_username_input = new A.ValueKey("login_username_input", type$.ValueKey_String);
+    D.ValueKey_tmail_login_email_field = new A.ValueKey("tmail_login_email_field", type$.ValueKey_String);
+    D.ValueKey_tmail_login_password_field = new A.ValueKey("tmail_login_password_field", type$.ValueKey_String);
+    D.ValueKey_tmail_login_sign_in_button = new A.ValueKey("tmail_login_sign_in_button", type$.ValueKey_String);
   })();
 };
 ;
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "/drsy8zCHySY29LGCI3HhlZDbwM=");
+})($__dart_deferred_initializers__, "9Kuguxh/TDNCKmZ3FAwSnAlv7YI=");
 ;
