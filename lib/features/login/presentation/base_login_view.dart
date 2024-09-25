@@ -21,7 +21,7 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
       child: Semantics(
         identifier: LoginBasicAuthKeyValues.loginSignInButton,
         child: ElevatedButton(
-          key: const Key('loginSubmitForm'),
+          key: const ValueKey(LoginBasicAuthKeyValues.loginSignInButton),
           style: ElevatedButton.styleFrom(
             foregroundColor: Colors.white,
             backgroundColor: AppColor.primaryColor,
@@ -46,17 +46,9 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
         padding: const EdgeInsetsDirectional.symmetric(horizontal: 24),
         child: Column(
           children: [
-            Semantics(
-              identifier: LoginBasicAuthKeyValues.loginEmailField,
-              container: true,
-              child: buildUserNameInput(context),
-            ),
+            buildUserNameInput(context),
             const SizedBox(height: 24),
-            Semantics(
-              identifier: LoginBasicAuthKeyValues.loginPasswordField,
-              container: true,
-              child: buildPasswordInput(context),
-            ),
+            buildPasswordInput(context),
             const SizedBox(height: 40),
           ],
         ),
@@ -66,7 +58,7 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
 
   Widget buildUserNameInput(BuildContext context) {
     return TypeAheadFormFieldBuilder<RecentLoginUsername>(
-      key: const Key('login_username_input'),
+      key: const ValueKey(LoginBasicAuthKeyValues.loginEmailField),
       controller: controller.usernameInputController,
       onTextChange: controller.onUsernameChange,
       focusNode: controller.userNameFocusNode,
@@ -91,7 +83,7 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
 
   Widget buildPasswordInput(BuildContext context) {
     return LoginTextInputBuilder(
-      key: const Key('login_password_input'),
+      key: const ValueKey(LoginBasicAuthKeyValues.loginPasswordField),
       controller: controller.passwordInputController,
       autofillHints: const [AutofillHints.password],
       textInputAction: TextInputAction.done,

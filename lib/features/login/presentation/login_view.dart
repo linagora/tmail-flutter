@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/base/key_values/login_basic_auth_key_values.dart';
 import 'package:tmail_ui_user/features/base/key_values/login_key_values.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/recent_item_tile_widget.dart';
@@ -29,6 +30,7 @@ class LoginView extends BaseLoginView {
 
     return Scaffold(
       backgroundColor: AppColor.primaryLightColor,
+      key: const Key(LoginBasicAuthKeyValues.loginView),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Container(
