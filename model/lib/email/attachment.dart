@@ -49,7 +49,7 @@ class Attachment with EquatableMixin {
       'name' : name ?? '',
       'type' : type?.mimeType ?? '',
     });
-    return Uri.decodeFull(downloadUri);
+    return downloadUri;
   }
 
   String generateFileName() {
