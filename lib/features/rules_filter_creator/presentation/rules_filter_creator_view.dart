@@ -87,6 +87,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
               backgroundColor: Colors.black.withAlpha(24),
               body: GestureDetector(
                 onTap: () => FocusScope.of(context).unfocus(),
+                excludeFromSemantics: true,
                 child: Center(child: Card(
                     color: Colors.transparent,
                     shape: const RoundedRectangleBorder(
