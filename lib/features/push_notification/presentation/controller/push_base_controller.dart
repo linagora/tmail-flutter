@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -17,12 +19,12 @@ abstract class PushBaseController {
   Session? session;
   AccountId? accountId;
 
+  StreamSubscription<Either<Failure, Success>>? _stateStreamSubscription;
+
   void consumeState(Stream<Either<Failure, Success>> newStateStream) {
-    newStateStream.listen(
+    _stateStreamSubscription = newStateStream.listen(
       _handleStateStream,
-      onError: (error, stackTrace) {
-        logError('PushBaseController::consumeState():onError:error: $error | stackTrace: $stackTrace');
-      }
+      onError: handleErrorViewState,
     );
   }
 
@@ -33,6 +35,15 @@ abstract class PushBaseController {
   void handleFailureViewState(Failure failure);
 
   void handleSuccessViewState(Success success);
+
+  void handleErrorViewState(Object error, StackTrace stackTrace) {
+    logError('PushBaseController::handleErrorViewState():error: $error | stackTrace: $stackTrace');
+  }
+
+  void cancelStateStreamSubscription() {
+    _stateStreamSubscription?.cancel();
+    _stateStreamSubscription = null;
+  }
 
   void initialize({AccountId? accountId, Session? session}) {
     this.accountId = accountId;

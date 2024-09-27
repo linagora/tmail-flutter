@@ -1,4 +1,3 @@
-import 'dart:convert';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -12,7 +11,7 @@ import 'package:tmail_ui_user/features/push_notification/data/network/web_socket
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/web_socket_exceptions.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:universal_html/html.dart';
 
 class RemoteWebSocketDatasourceImpl implements WebSocketDatasource {
   final WebSocketApi _webSocketApi;
@@ -30,26 +29,28 @@ class RemoteWebSocketDatasourceImpl implements WebSocketDatasource {
   Stream _getWebSocketChannel(
     Session session,
     AccountId accountId,
-    [int retryRemained = 3]
-    ) async* {
+  ) async* {
+    final broadcastChannel = BroadcastChannel('background-message');
     try {
       _verifyWebSocketCapabilities(session, accountId);
       final webSocketTicket = await _webSocketApi.getWebSocketTicket(session, accountId);
       final webSocketUri = _getWebSocketUri(session, accountId);
+      window.navigator.serviceWorker?.controller?.postMessage({
+        'action': 'connect',
+        'url': webSocketUri.toString(),
+        'ticket': webSocketTicket,  
+      });
       
-      final webSocketChannel = WebSocketChannel.connect(
-        Uri.parse('$webSocketUri?ticket=$webSocketTicket'));
-      await webSocketChannel.ready;
-      webSocketChannel.sink.add(jsonEncode({"@type": "WebSocketPushEnable"}));
-      
-      yield* webSocketChannel.stream;
+      yield* broadcastChannel.onMessage.map((event) {
+        if (event.data == 'webSocketClosed') {
+          throw WebSocketClosedException();
+        }
+
+        return event.data;
+      });
     } catch (e) {
       logError('RemoteWebSocketDatasourceImpl::getWebSocketChannel():error: $e');
-      if (retryRemained > 0) {
-        yield* _getWebSocketChannel(session, accountId, retryRemained - 1);
-      } else {
-        rethrow;
-      }
+      rethrow;
     }
   }
 
