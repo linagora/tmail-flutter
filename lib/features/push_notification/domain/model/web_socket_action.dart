@@ -1,0 +1,1 @@
+enum WebSocketAction {connect, disconnect}
