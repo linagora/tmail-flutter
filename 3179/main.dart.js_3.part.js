@@ -5,7 +5,7 @@
   s[d][e].push({p: "main.dart.js_3", e: "beginPart"});
 })(self, "$__dart_deferred_initializers__", "eventLog");
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
-  var J, A, C, G,
+  var J, A, C, G, H,
   B = {ByteConverter: function ByteConverter(t0) {
       this._byte_converter_base$_bytes = t0;
       this._bits = 0;
@@ -5113,6 +5113,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   A = holdersList[0];
   C = holdersList[2];
   G = holdersList[9];
+  H = holdersList[11];
   B = hunkHelpers.updateHolder(holdersList[4], B);
   D = holdersList[12];
   F = holdersList[8];
@@ -9399,7 +9400,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Expando__checkType(_this);
         t2._as(t1.get(_this)).toString;
         t11 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx >= 1200 ? 32 : 16;
-        t8.push(A.Container$(_null, A.Row$(A._setArrayType([G.ApplicationLogoWidthTextWidget$(_null), E.ApplicationVersionWidget_null], t7), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_4294967295, _null, _null, _null, _null, _null, _null, new A.EdgeInsetsDirectional(t11, t9, 0, t10), _null, _null, _null));
+        t8.push(A.Container$(_null, A.Row$(A._setArrayType([G.ApplicationLogoWidthTextWidget$(_null), H.ApplicationVersionWidget_null], t7), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_4294967295, _null, _null, _null, _null, _null, _null, new A.EdgeInsetsDirectional(t11, t9, 0, t10), _null, _null, _null));
       }
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
@@ -19870,7 +19871,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ThreadView__buildFloatingButtonCompose_closure.prototype = {
     call$0() {
-      var t3, isAdvancedSearchViewOpen, _null = null,
+      var t3, isAdvancedSearchViewOpen, t4, t5, _null = null,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -19878,7 +19879,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       isAdvancedSearchViewOpen = t3._as(t2.get(t1)).EmailActionController_mailboxDashBoardController.searchController.isAdvancedSearchViewOpen.get$value(0);
       A.Expando__checkType(t1);
-      if (t3._as(t2.get(t1)).EmailActionController_mailboxDashBoardController.searchController.searchState.get$value(0).searchStatus !== C.SearchStatus_0 && !isAdvancedSearchViewOpen) {
+      t4 = t3._as(t2.get(t1)).EmailActionController_mailboxDashBoardController.selectedMailbox.get$value(0);
+      t4 = t4 == null ? _null : J.$eq$(t4.role, $.$get$PresentationMailbox_roleTrash());
+      A.Expando__checkType(t1);
+      t5 = t3._as(t2.get(t1)).EmailActionController_mailboxDashBoardController.currentSelectMode.get$value(0);
+      A.Expando__checkType(t1);
+      if (t3._as(t2.get(t1)).EmailActionController_mailboxDashBoardController.searchController.searchState.get$value(0).searchStatus !== C.SearchStatus_0 && !isAdvancedSearchViewOpen && t4 !== true && t5 !== C.SelectMode_0) {
         A.Expando__checkType(t1);
         return A.Container$(_null, new B.ComposeFloatingButton(t3._as(t2.get(t1)).listEmailController, new B.ThreadView__buildFloatingButtonCompose__closure(t1), _null), C.Clip_0, _null, _null, _null, _null, _null, _null, _null, C.EdgeInsets_0_0_0_0, _null, _null, _null);
       } else
@@ -21465,5 +21471,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "Iwc3CCBEXQ6eqNlORxErGv2rL+U=");
+})($__dart_deferred_initializers__, "wlaQgsZjRdZcqIeiYad4MVdrd2I=");
 ;
