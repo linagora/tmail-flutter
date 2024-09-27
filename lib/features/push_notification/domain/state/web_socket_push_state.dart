@@ -5,12 +5,12 @@ import 'package:jmap_dart_client/jmap/push/state_change.dart';
 class InitializingWebSocketPushChannel extends LoadingState {}
 
 class WebSocketPushStateReceived extends UIState {
-  final StateChange stateChange;
+  final StateChange? stateChange;
 
   WebSocketPushStateReceived(this.stateChange);
 
   @override
-  List<Object> get props => [stateChange];
+  List<Object?> get props => [stateChange];
 }
 
 class WebSocketConnectionFailed extends FeatureFailure {
