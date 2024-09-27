@@ -3,6 +3,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/exceptions/web_socket_exceptions.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/web_socket_push_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/connect_web_socket_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/push_base_controller.dart';
@@ -20,9 +21,15 @@ class WebSocketController extends PushBaseController {
 
   ConnectWebSocketInteractor? _connectWebSocketInteractor;
 
+  int _retryRemained = 3;
+
   @override
   void handleFailureViewState(Failure failure) {
     logError('WebSocketController::handleFailureViewState():Failure $failure');
+    cancelStateStreamSubscription();
+    if (failure is WebSocketConnectionFailed) {
+      _handleWebSocketConnectionRetry();
+    }
   }
 
   @override
@@ -30,6 +37,15 @@ class WebSocketController extends PushBaseController {
     log('WebSocketController::handleSuccessViewState():Success $success');
     if (success is WebSocketPushStateReceived) {
       _handleWebSocketPushStateReceived(success);
+    }
+  }
+
+  @override
+  void handleErrorViewState(Object error, StackTrace stackTrace) {
+    super.handleErrorViewState(error, stackTrace);
+    cancelStateStreamSubscription();
+    if (error is WebSocketClosedException) {
+      _handleWebSocketConnectionRetry();
     }
   }
 
@@ -51,8 +67,10 @@ class WebSocketController extends PushBaseController {
   
   void _handleWebSocketPushStateReceived(WebSocketPushStateReceived success) {
     log('WebSocketController::_handleWebSocketPushStateReceived(): $success');
+    _retryRemained = 3;
     if (accountId == null || session == null) return;
     final stateChange = success.stateChange;
+    if (stateChange == null) return;
     final mapTypeState = stateChange.getMapTypeState(accountId!);
     mappingTypeStateToAction(
       mapTypeState,
@@ -61,5 +79,12 @@ class WebSocketController extends PushBaseController {
       mailboxChangeListener: MailboxChangeListener.instance,
       session!.username,
       session: session);
+  }
+
+  void _handleWebSocketConnectionRetry() {
+    if (_retryRemained > 0) {
+      _retryRemained--;
+      _connectWebSocket(accountId, session);
+    }
   }
 }

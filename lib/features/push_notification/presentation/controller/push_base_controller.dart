@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:collection/collection.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -17,12 +19,12 @@ abstract class PushBaseController {
   Session? session;
   AccountId? accountId;
 
+  StreamSubscription<Either<Failure, Success>>? _stateStreamSubscription;
+
   void consumeState(Stream<Either<Failure, Success>> newStateStream) {
-    newStateStream.listen(
+    _stateStreamSubscription = newStateStream.listen(
       _handleStateStream,
-      onError: (error, stackTrace) {
-        logError('PushBaseController::consumeState():onError:error: $error | stackTrace: $stackTrace');
-      }
+      onError: handleErrorViewState,
     );
   }
 
@@ -33,6 +35,15 @@ abstract class PushBaseController {
   void handleFailureViewState(Failure failure);
 
   void handleSuccessViewState(Success success);
+
+  void handleErrorViewState(Object error, StackTrace stackTrace) {
+    logError('PushBaseController::handleErrorViewState():error: $error | stackTrace: $stackTrace');
+  }
+
+  void cancelStateStreamSubscription() {
+    _stateStreamSubscription?.cancel();
+    _stateStreamSubscription = null;
+  }
 
   void initialize({AccountId? accountId, Session? session}) {
     this.accountId = accountId;
@@ -87,22 +98,20 @@ abstract class PushBaseController {
     {Session? session}
   ) {
     final newState = jmap.State(mapTypeState[typeName.value]);
-    if (typeName == TypeName.emailType) {
-      if (isForeground) {
-        return SynchronizeEmailOnForegroundAction(typeName, newState, accountId, session);
-      } else {
-        return StoreEmailStateToRefreshAction(typeName, newState, accountId, userName, session);
-      }
-    } else if (typeName == TypeName.emailDelivery) {
-      if (!isForeground) {
-        return PushNotificationAction(typeName, newState, session, accountId, userName);
-      }
-    } else if (typeName == TypeName.mailboxType) {
-      if (isForeground) {
-        return SynchronizeMailboxOnForegroundAction(typeName, newState, accountId);
-      } else {
-        return StoreMailboxStateToRefreshAction(typeName, newState, accountId, userName);
-      }
+    switch (typeName) {
+      case TypeName.emailType:
+        return isForeground
+            ? SynchronizeEmailOnForegroundAction(typeName, newState, accountId, session)
+            : StoreEmailStateToRefreshAction(typeName, newState, accountId, userName, session);
+      case TypeName.emailDelivery:
+        if (!isForeground) {
+          return PushNotificationAction(typeName, newState, session, accountId, userName);
+        }
+        break;
+      case TypeName.mailboxType:
+        return isForeground
+            ? SynchronizeMailboxOnForegroundAction(typeName, newState, accountId)
+            : StoreMailboxStateToRefreshAction(typeName, newState, accountId, userName);
     }
     return null;
   }
