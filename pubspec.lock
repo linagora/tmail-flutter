@@ -1106,8 +1106,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: cc63bc2e8ddf9fad93b4f1dd6e0a04d17937ba05
+      ref: "bugfix/avoid-called-twice-when-editor-loses-focus"
+      resolved-ref: "60c4b31714b03a66c4deb741a7c580d97d9fe3ce"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "3.1.1"

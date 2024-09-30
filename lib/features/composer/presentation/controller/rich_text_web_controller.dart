@@ -296,6 +296,11 @@ class RichTextWebController extends BaseRichTextController {
       : FormattingOptionsState.enabled;
 
     formattingOptionsState.value = newState;
+
+    if (isFormattingOptionsEnabled) {
+      FocusManager.instance.primaryFocus?.unfocus();
+      editorController.setFocus();
+    }
   }
 
   bool get isFormattingOptionsEnabled => formattingOptionsState.value == FormattingOptionsState.enabled;
