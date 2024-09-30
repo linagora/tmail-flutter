@@ -15,7 +15,7 @@ import 'package:tmail_ui_user/main/permissions/storage_permission_service.dart';
 typedef OnSaveCallbackAction = Function(bool isSuccess);
 
 mixin SaveMediaToGalleryMixin {
-  Future<void> handleAndroidStoragePermission(BuildContext context) async {
+  Future<void> _handleAndroidStoragePermission(BuildContext context) async {
     if (await StoragePermissionService().isUserHaveToRequestStoragePermissionAndroid()) {
       final permission = await Permission.storage.request();
 
@@ -32,8 +32,7 @@ mixin SaveMediaToGalleryMixin {
                   AppLocalizations.of(context).app_name,
                 ),
               ),
-              onAcceptButton: () =>
-                  StoragePermissionService().goToSettingsForPermissionActions(),
+              onAcceptButton: StoragePermissionService().goToSettingsForPermissionActions,
             );
           },
         );
@@ -46,7 +45,7 @@ mixin SaveMediaToGalleryMixin {
     }
   }
 
-  Future<void> handlePhotoPermissionIOS(BuildContext context) async {
+  Future<void> _handlePhotoPermissionIOS(BuildContext context) async {
     final permissionStatus = await StoragePermissionService().requestPhotoAddOnlyPermissionIOS();
     if (permissionStatus.isPermanentlyDenied && context.mounted) {
       showDialog(
@@ -61,8 +60,7 @@ mixin SaveMediaToGalleryMixin {
                 AppLocalizations.of(context).app_name,
               ),
             ),
-            onAcceptButton: () =>
-                StoragePermissionService().goToSettingsForPermissionActions(),
+            onAcceptButton: StoragePermissionService().goToSettingsForPermissionActions,
           );
         },
       );
@@ -72,35 +70,34 @@ mixin SaveMediaToGalleryMixin {
     }
   }
 
-  Future<void> saveMediaToGallery({
+  Future<void> _saveMediaToGallery({
     required File fileInDownloadsInApp,
     required MediaType mediaType,
     OnSaveCallbackAction? onSaveCallbackAction
   }) async {
     if (mediaType.isImageFile()) {
-      await saveImageToGallery(file: fileInDownloadsInApp);
+      await _saveImageToGallery(file: fileInDownloadsInApp);
     } else if (mediaType.isVideoFile()) {
-      await saveVideoToGallery(file: fileInDownloadsInApp);
+      await _saveVideoToGallery(file: fileInDownloadsInApp);
     } else {
       return;
     }
     onSaveCallbackAction?.call(true);
   }
 
-  Future<void> saveImageToGallery({
+  Future<void> _saveImageToGallery({
     required File file,
   }) async {
    log('SaveMediaToGalleryMixin::saveImageToGallery:file path: ${file.path}');
     await Gal.putImage(file.path);
   }
 
-  Future<void> saveVideoToGallery({
+  Future<void> _saveVideoToGallery({
     required File file,
   }) async {
     log('SaveMediaToGalleryMixin::saveVideoToGallery:file path: ${file.path}');
     await Gal.putVideo(file.path);
   }
-
 
   Future<void> saveToGallery({
     required BuildContext context,
@@ -110,9 +107,9 @@ mixin SaveMediaToGalleryMixin {
   }) async {
     try {
       if (PlatformInfo.isAndroid) {
-        await handleAndroidStoragePermission(context);
+        await _handleAndroidStoragePermission(context);
       } else if (PlatformInfo.isIOS) {
-        await handlePhotoPermissionIOS(context);
+        await _handlePhotoPermissionIOS(context);
       } else {
         return;
       }
@@ -120,7 +117,7 @@ mixin SaveMediaToGalleryMixin {
       final fileInDownloadsInApp = File(filePath);
 
       if (context.mounted) {
-        await saveMediaToGallery(
+        await _saveMediaToGallery(
           mediaType: mediaType,
           fileInDownloadsInApp: fileInDownloadsInApp,
           onSaveCallbackAction: onSaveCallbackAction
