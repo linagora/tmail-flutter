@@ -24,11 +24,11 @@ function fetchServiceWorker() {
     // Wait for registration to finish before dropping the <script>tag.
     // Otherwise, the browser will load the script multiple times,
     // potentially different versions.
-    navigator.serviceWorker.register('firebase-messaging-sw.js').then(serviceWorkerRegistration => {
-      console.info('[TwakeMail] fetchServiceWorker(): Service worker firebase-messaging was registered.');
+    navigator.serviceWorker.register('web-sockets-worker.js').then(serviceWorkerRegistration => {
+      console.info('[TwakeMail] fetchServiceWorker(): Service worker web socket was registered.');
     }).catch(error => {
       console.error(
-        '[TwakeMail] fetchServiceWorker(): An error occurred while registering the service worker firebase-messaging.'
+        '[TwakeMail] fetchServiceWorker(): An error occurred while registering the service worker web socket.'
         );
       console.error(error);
     });
