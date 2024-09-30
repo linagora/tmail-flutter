@@ -273,6 +273,7 @@ mixin RichTextButtonMixin {
               path: RichTextStyleType.textColor.getIcon(_imagePaths),
               color: richTextController.selectedTextColor.value,
               tooltip: RichTextStyleType.textColor.getTooltipButton(context),
+              excludeFromSemantics: true
             ),
             onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.textColor)),
       ),
@@ -333,7 +334,8 @@ mixin RichTextButtonMixin {
               icon: buildIconWithTooltip(
                   path: richTextController.selectedParagraph.value.getIcon(_imagePaths),
                   color: AppColor.colorDefaultRichTextButton,
-                  tooltip: RichTextStyleType.paragraph.getTooltipButton(context))),
+                  tooltip: RichTextStyleType.paragraph.getTooltipButton(context),
+                  excludeFromSemantics: true)),
         ),
       ),
       Padding(
@@ -353,7 +355,8 @@ mixin RichTextButtonMixin {
               icon: buildIconWithTooltip(
                   path: richTextController.selectedOrderList.value.getIcon(_imagePaths),
                   color: AppColor.colorDefaultRichTextButton,
-                  tooltip: RichTextStyleType.orderList.getTooltipButton(context))),
+                  tooltip: RichTextStyleType.orderList.getTooltipButton(context),
+                  excludeFromSemantics: true)),
         ),
       )
     ];
