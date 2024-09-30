@@ -202,7 +202,6 @@ class ComposerController extends BaseController
   SignatureStatus _identityContentOnOpenPolicy = SignatureStatus.editedAvailable;
   int? _savedEmailDraftHash;
   bool _restoringSignatureButton = false;
-  bool _isEditorClicked = false;
 
   @visibleForTesting
   bool get restoringSignatureButton => _restoringSignatureButton;
@@ -271,7 +270,6 @@ class ComposerController extends BaseController
     subjectEmailInputFocusNode?.removeListener(_subjectEmailInputFocusListener);
     _composerCacheListener?.cancel();
     _beforeReconnectManager.removeListener(onBeforeReconnect);
-    _isEditorClicked = false;
     if (PlatformInfo.isWeb) {
       richTextWebController = null;
     } else {
@@ -397,12 +395,6 @@ class ComposerController extends BaseController
         }
       });
     });
-
-    if (richTextWebController != null) {
-      ever(richTextWebController!.formattingOptionsState, (_) {
-        richTextWebController!.editorController.setFocus();
-      });
-    }
   }
 
   void _triggerBrowserEventListener() {
@@ -530,6 +522,7 @@ class ComposerController extends BaseController
 
   KeyEventResult _subjectEmailInputOnKeyListener(FocusNode node, KeyEvent event) {
     if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
+      subjectEmailInputFocusNode?.unfocus();
       richTextWebController?.editorController.setFocus();
       return KeyEventResult.handled;
     }
@@ -1910,7 +1903,6 @@ class ComposerController extends BaseController
     return false;
   }
 
-
   void handleInitHtmlEditorWeb(String initContent) async {
     if (_isEmailBodyLoaded) return;
     log('ComposerController::handleInitHtmlEditorWeb:');
@@ -1933,20 +1925,12 @@ class ComposerController extends BaseController
     FocusManager.instance.primaryFocus?.unfocus();
     subjectEmailInputController.popupWidget?.popupRenderer.dismiss();
     richTextWebController?.editorController.setFocus();
+    log('ComposerController::handleOnFocusHtmlEditorWeb:');
     richTextWebController?.closeAllMenuPopup();
   }
 
-  void handleOnUnFocusEditorWeb() {
-    if (_isEditorClicked) {
-      _isEditorClicked = false;
-      richTextWebController?.editorController.setFocus();
-    }
-  }
-
-  void handleOnMouseDownHtmlEditorWeb(BuildContext context) {
-    _isEditorClicked = true;
-    Navigator.maybePop(context);
-    FocusScope.of(context).unfocus();
+  void handleOnMouseDownHtmlEditorWeb() {
+    log('ComposerController::handleOnMouseDownHtmlEditorWeb:');
     _collapseAllRecipient();
     _autoCreateEmailTag();
   }

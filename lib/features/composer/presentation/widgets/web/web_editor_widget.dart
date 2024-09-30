@@ -9,7 +9,7 @@ import 'package:universal_html/html.dart' hide VoidCallback;
 
 typedef OnChangeContentEditorAction = Function(String? text);
 typedef OnInitialContentEditorAction = Function(String text);
-typedef OnMouseDownEditorAction = Function(BuildContext context);
+typedef OnMouseDownEditorAction = Function();
 typedef OnEditorSettingsChange = Function(EditorSettings settings);
 typedef OnEditorTextSizeChanged = Function(int? size);
 typedef OnDragEnterListener = Function(List<dynamic>? types);
@@ -171,8 +171,8 @@ class _WebEditorState extends State<WebEditorWidget> {
               }
             },
             onFocus: widget.onFocus,
-            onBlur: widget.onUnFocus,
-            onMouseDown: () => widget.onMouseDown?.call(context),
+            onUnFocus: widget.onUnFocus,
+            onMouseDown: widget.onMouseDown,
             onChangeSelection: widget.onEditorSettings,
             onChangeCodeview: widget.onChangeContent,
             onTextFontSizeChanged: widget.onEditorTextSizeChanged,
