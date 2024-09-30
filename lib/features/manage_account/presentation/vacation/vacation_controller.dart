@@ -222,6 +222,7 @@ class VacationController extends BaseController {
     final timePicked = await showTimePicker(
       context: context,
       initialTime: currentTime ?? TimeOfDay.now(),
+      barrierDismissible: false,
       builder: (context, child) {
         return PointerInterceptor(
           child: Theme(
