@@ -6,7 +6,6 @@ import 'package:better_open_file/better_open_file.dart' as open_file;
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -29,6 +28,7 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/save_media_to_gallery_mixin.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
@@ -112,7 +112,8 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-class SingleEmailController extends BaseController with AppLoaderMixin {
+class SingleEmailController extends BaseController
+    with AppLoaderMixin, SaveMediaToGalleryMixin {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final emailSupervisorController = Get.find<EmailSupervisorController>();
@@ -726,44 +727,83 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void exportAttachment(BuildContext context, Attachment attachment) {
+  void downloadAttachmentToPreview(BuildContext context, Attachment attachment) {
+    log('SingleEmailController::downloadAttachmentToPreview: Attachment = ${attachment.name}');
     final cancelToken = CancelToken();
-    _showDownloadingFileDialog(context, attachment, cancelToken: cancelToken);
-    _exportAttachmentAction(attachment, cancelToken);
+
+    _showDownloadingFileDialog(
+      context: context,
+      attachment: attachment,
+      downloadTitle: AppLocalizations.of(context).preparing_to_export,
+      cancelToken: cancelToken);
+
+    _exportAttachmentAction(
+      attachment: attachment,
+      cancelToken: cancelToken,
+      isPreview: true);
   }
 
-  void _showDownloadingFileDialog(BuildContext context, Attachment attachment, {CancelToken? cancelToken}) {
+  void downloadAttachmentToSaveToStorage(BuildContext context, Attachment attachment) {
+    log('SingleEmailController::downloadAttachmentToSaveToStorage: Attachment = ${attachment.name}');
+    final cancelToken = CancelToken();
+
+    _showDownloadingFileDialog(
+      context: context,
+      attachment: attachment,
+      downloadTitle: attachment.type?.isSaveToGallerySupported() == true
+        ? AppLocalizations.of(context).preparing_to_save
+        : AppLocalizations.of(context).preparing_to_export,
+      cancelToken: cancelToken);
+
+    _exportAttachmentAction(
+      attachment: attachment,
+      cancelToken: cancelToken,
+      isPreview: attachment.type?.isSaveToGallerySupported() != true);
+  }
+
+  void _showDownloadingFileDialog({
+    required BuildContext context,
+    required Attachment attachment,
+    required String downloadTitle,
+    CancelToken? cancelToken,
+  }) {
+    final downloadDialog = DownloadingFileDialogBuilder()
+      ..key(const Key('downloading_file_dialog'))
+      ..title(downloadTitle)
+      ..content(AppLocalizations.of(context).downloading_file(attachment.name ?? ''));
+
     if (cancelToken != null) {
-      showCupertinoDialog(
-          context: context,
-          builder: (_) =>
-              PointerInterceptor(child: (DownloadingFileDialogBuilder()
-                    ..key(const Key('downloading_file_dialog'))
-                    ..title(AppLocalizations.of(context).preparing_to_export)
-                    ..content(AppLocalizations.of(context).downloading_file(attachment.name ?? ''))
-                    ..actionText(AppLocalizations.of(context).cancel)
-                    ..addCancelDownloadActionClick(() {
-                      cancelToken.cancel([AppLocalizations.of(context).user_cancel_download_file]);
-                      popBack();
-                    }))
-                .build()));
-    } else {
-      showCupertinoDialog(
-          context: context,
-          builder: (_) =>
-              PointerInterceptor(child: (DownloadingFileDialogBuilder()
-                  ..key(const Key('downloading_file_for_web_dialog'))
-                  ..title(AppLocalizations.of(context).preparing_to_save)
-                  ..content(AppLocalizations.of(context).downloading_file(attachment.name ?? '')))
-                .build()));
+      downloadDialog
+        ..actionText(AppLocalizations.of(context).cancel)
+        ..addCancelDownloadActionClick(() {
+          cancelToken.cancel([AppLocalizations.of(context).user_cancel_download_file]);
+          popBack();
+        });
     }
+
+    Get.dialog(
+      barrierDismissible: false,
+      downloadDialog.build()
+    );
   }
 
-  void _exportAttachmentAction(Attachment attachment, CancelToken cancelToken) async {
+  void _exportAttachmentAction({
+    required Attachment attachment,
+    required CancelToken cancelToken,
+    bool isPreview = false,
+  }) async {
     final accountId = mailboxDashBoardController.accountId.value;
-    if (accountId != null && mailboxDashBoardController.sessionCurrent != null) {
-      final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
-      consumeState(_exportAttachmentInteractor.execute(attachment, accountId, baseDownloadUrl, cancelToken));
+    final session = mailboxDashBoardController.sessionCurrent;
+    final baseDownloadUrl = session?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
+
+    if (accountId != null && session != null && baseDownloadUrl != null) {
+      consumeState(_exportAttachmentInteractor.execute(
+        attachment,
+        accountId,
+        baseDownloadUrl,
+        cancelToken,
+        isPreview
+      ));
     }
   }
 
@@ -779,13 +819,44 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _exportAttachmentSuccessAction(ExportAttachmentSuccess success) async {
+  Future<void> _exportAttachmentSuccessAction(ExportAttachmentSuccess success) async {
     popBack();
-    _openDownloadedPreviewWorkGroupDocument(success.downloadedResponse);
+
+    if (success.isPreview) {
+      await _openDownloadedDocument(success.downloadedResponse);
+    } else {
+      final mediaType = success.downloadedResponse.mediaType;
+      final filePath = success.downloadedResponse.filePath;
+
+      if (mediaType?.isSaveToGallerySupported() == true) {
+        await saveToGallery(
+          context: currentContext!,
+          filePath: filePath,
+          mediaType: mediaType!,
+          onSaveCallbackAction: (isSuccess) {
+            if (currentOverlayContext == null || currentContext == null) {
+              return;
+            }
+
+            if (isSuccess) {
+              appToast.showToastSuccessMessage(
+                currentOverlayContext!,
+                AppLocalizations.of(currentContext!).fileSavedToGallery);
+            } else {
+              appToast.showToastErrorMessage(
+                currentOverlayContext!,
+                AppLocalizations.of(currentContext!).saveFileToDownloadsError);
+            }
+          }
+        );
+      } else {
+        await _openDownloadedDocument(success.downloadedResponse);
+      }
+    }
   }
 
-  void _openDownloadedPreviewWorkGroupDocument(DownloadedResponse downloadedResponse) async {
-    log('SingleEmailController::_openDownloadedPreviewWorkGroupDocument(): $downloadedResponse');
+  Future<void> _openDownloadedDocument(DownloadedResponse downloadedResponse) async {
+    log('SingleEmailController::_openDownloadedDocument(): $downloadedResponse');
     if (downloadedResponse.mediaType == null) {
       await Share.shareXFiles([XFile(downloadedResponse.filePath)]);
     }
@@ -796,7 +867,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         uti: Platform.isIOS ? downloadedResponse.mediaType!.getDocumentUti().value : null);
 
     if (openResult.type != open_file.ResultType.done) {
-      logError('SingleEmailController::_openDownloadedPreviewWorkGroupDocument(): no preview available');
+      logError('SingleEmailController::_openDownloadedDocument(): no preview available');
       if (currentOverlayContext != null && currentContext != null) {
         appToast.showToastErrorMessage(
           currentOverlayContext!,
@@ -1796,7 +1867,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     if (PlatformInfo.isWeb) {
       downloadAttachmentForWeb(attachment);
     } else if (PlatformInfo.isMobile) {
-      exportAttachment(context, attachment);
+      downloadAttachmentToSaveToStorage(context, attachment);
     } else {
       log('EmailView::handleDownloadAttachmentAction: THE PLATFORM IS SUPPORTED');
     }
@@ -1810,7 +1881,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         downloadAttachmentForWeb(attachment);
       }
     } else if (PlatformInfo.isMobile) {
-      exportAttachment(context, attachment);
+      downloadAttachmentToPreview(context, attachment);
     } else {
       log('EmailView::_handleViewAttachmentAction: THE PLATFORM IS SUPPORTED');
     }

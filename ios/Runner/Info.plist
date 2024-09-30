@@ -55,7 +55,7 @@
 		<key>NSContactsUsageDescription</key>
 		<string>Used by Team-Mail for Email address auto-completion. You can easily to find the email address in your contact book to send the email.</string>
 		<key>NSPhotoLibraryAddUsageDescription</key>
-		<string>To save photo to library, we need permission to access your photo library.</string>
+		<string>To save photos or videos to library, we need permission to access your photo library.</string>
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>To select and upload photo, we need permission to access your photo library.</string>
 		<key>UIBackgroundModes</key>

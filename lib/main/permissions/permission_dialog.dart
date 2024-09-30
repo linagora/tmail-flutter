@@ -59,15 +59,12 @@ class _PermissionDialogState extends State<PermissionDialog>
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (widget.icon != null) ...[
-                const SizedBox(
-                  height: 24.0,
-                ),
-                widget.icon!,
-              ],
-              const SizedBox(
-                height: 16.0,
-              ),
+              if (widget.icon != null)
+                ...[
+                  const SizedBox(height: 24.0),
+                  widget.icon!,
+                ],
+              const SizedBox(height: 16.0),
               widget.explainTextRequestPermission,
               const SizedBox(height: 24.0),
               Expanded(
@@ -89,9 +86,9 @@ class _PermissionDialogState extends State<PermissionDialog>
                         if (widget.onAcceptButton != null) {
                           widget.onAcceptButton!.call();
                         } else {
-                          await widget.permission.request().then(
-                                (value) => Navigator.of(context).pop(),
-                              );
+                          await widget.permission
+                            .request()
+                            .then((value) => Navigator.of(context).pop());
                         }
                       },
                     ),
@@ -129,8 +126,8 @@ class _PermissionTextButton extends StatelessWidget {
           child: Text(
             text,
             style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                  color: Theme.of(context).colorScheme.primary,
-                ),
+              color: Theme.of(context).colorScheme.primary,
+            ),
           ),
         ),
       ),
