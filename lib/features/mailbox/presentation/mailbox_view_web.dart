@@ -284,6 +284,7 @@ class MailboxView extends BaseMailboxView {
           parent: Obx(() => MailboxItemWidget(
             mailboxNode: mailboxNode,
             mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value,
+            itemExcludeFromSemantics: true,
             onOpenMailboxFolderClick: (mailboxNode) => controller.openMailbox(context, mailboxNode.item),
             onExpandFolderActionClick: (mailboxNode) => controller.toggleMailboxFolder(mailboxNode, controller.mailboxListScrollController),
             onSelectMailboxFolderClick: controller.selectMailboxNode,
@@ -306,6 +307,7 @@ class MailboxView extends BaseMailboxView {
         return Obx(() => MailboxItemWidget(
           mailboxNode: mailboxNode,
           mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value,
+          itemExcludeFromSemantics: true,
           onOpenMailboxFolderClick: (mailboxNode) => controller.openMailbox(context, mailboxNode.item),
           onSelectMailboxFolderClick: controller.selectMailboxNode,
           onDragItemAccepted: _handleDragItemAccepted,

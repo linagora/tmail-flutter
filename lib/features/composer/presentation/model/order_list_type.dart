@@ -2,6 +2,7 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:tmail_ui_user/features/base/key_values/composer_key_values.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum OrderListType {
@@ -49,12 +50,16 @@ enum OrderListType {
       ImagePaths imagePaths,
       Function(OrderListType type) onActionCallback
   ) {
-    return buildIconWeb(
-        icon: SvgPicture.asset(getIcon(imagePaths)),
-        iconPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
-        minSize: 30,
-        iconSize: 30,
-        tooltip: getTooltipButton(context),
-        onTap: () => onActionCallback.call(this));
+    return Semantics(
+      identifier: ComposerKeyValues.richtextListStyleOption,
+      container: true,
+      child: buildIconWeb(
+          icon: SvgPicture.asset(getIcon(imagePaths)),
+          iconPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+          minSize: 30,
+          iconSize: 30,
+          tooltip: getTooltipButton(context),
+          onTap: () => onActionCallback.call(this)),
+    );
   }
 }

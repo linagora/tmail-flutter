@@ -1586,6 +1586,7 @@ class SingleEmailController extends BaseController
           )
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+        barrierDismissible: false
       );
     }
   }

@@ -13,6 +13,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
+import 'package:tmail_ui_user/features/base/key_values/email_details_key_values.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_sender_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/prefix_recipient_widget.dart';
@@ -231,18 +232,21 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
 
   List<Widget> _buildRecipientsTag({required List<EmailAddress> listEmailAddress}) {
     return listEmailAddress
-      .mapIndexed((index, emailAddress) => TMailButtonWidget.fromText(
-        text: index == listEmailAddress.length - 1
-          ? emailAddress.asString()
-          : '${emailAddress.asString()},',
-        textStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: Colors.black,
-          fontSize: 16,
+      .mapIndexed((index, emailAddress) => Semantics(
+        identifier: EmailDetailsKeyValues.recipient,
+        child: TMailButtonWidget.fromText(
+          text: index == listEmailAddress.length - 1
+            ? emailAddress.asString()
+            : '${emailAddress.asString()},',
+          textStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: Colors.black,
+            fontSize: 16,
+          ),
+          padding: const EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8),
+          backgroundColor: Colors.transparent,
+          onTapActionCallback: () => widget.openEmailAddressDetailAction?.call(context, emailAddress),
+          onLongPressActionCallback: () => AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress),
         ),
-        padding: const EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8),
-        backgroundColor: Colors.transparent,
-        onTapActionCallback: () => widget.openEmailAddressDetailAction?.call(context, emailAddress),
-        onLongPressActionCallback: () => AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress),
       ))
       .toList();
   }

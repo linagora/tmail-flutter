@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/constants/color_picker_key_values.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:flex_color_picker/flex_color_picker.dart';
@@ -82,28 +83,32 @@ class ColorPickerDialogBuilder {
                   ),
                   Padding(
                     padding: const EdgeInsets.symmetric(vertical: 16),
-                    child: ColorCodeField(
-                      color: _currentColor.value,
-                      colorCodeHasColor: true,
-                      shouldUpdate: _shouldUpdate,
-                      onColorChanged: (Color color) {
-                        if (AppColor.listColorsPicker.any((element) => element.value == color.value)) {
-                          _shouldUpdate = true;
-                          _currentColor.value = color;
-                        } else {
-                          _shouldUpdate = false;
-                          _currentColor.value = Colors.black;
-                          _colorCode = color;
-                        }
-                      },
-                      onEditFocused: (bool editInFocus) {
-                        _shouldUpdate = editInFocus ? true : false;
-                      },
-                      copyPasteBehavior: const ColorPickerCopyPasteBehavior(
-                        parseShortHexCode: true,
-                      ),
-                      toolIcons: const ColorPickerActionButtons(
-                        dialogActionButtons: true,
+                    child: Semantics(
+                      excludeSemantics: true,
+                      identifier: ColorPickerKeyValues.colorPickerCopyButton,
+                      child: ColorCodeField(
+                        color: _currentColor.value,
+                        colorCodeHasColor: true,
+                        shouldUpdate: _shouldUpdate,
+                        onColorChanged: (Color color) {
+                          if (AppColor.listColorsPicker.any((element) => element.value == color.value)) {
+                            _shouldUpdate = true;
+                            _currentColor.value = color;
+                          } else {
+                            _shouldUpdate = false;
+                            _currentColor.value = Colors.black;
+                            _colorCode = color;
+                          }
+                        },
+                        onEditFocused: (bool editInFocus) {
+                          _shouldUpdate = editInFocus ? true : false;
+                        },
+                        copyPasteBehavior: const ColorPickerCopyPasteBehavior(
+                          parseShortHexCode: true,
+                        ),
+                        toolIcons: const ColorPickerActionButtons(
+                          dialogActionButtons: true,
+                        ),
                       ),
                     ),
                   ),
@@ -121,7 +126,8 @@ class ColorPickerDialogBuilder {
                     fontSize: 16,
                     fontWeight: FontWeight.normal),
                 bgColor: AppColor.colorShadowComposer,
-                onTap: () => cancelActionCallback?.call()),
+                onTap: () => cancelActionCallback?.call(),
+                semanticIdentifier: ColorPickerKeyValues.colorPickerCancelButton),
             buildButtonWrapText(
                 textActionResetDefault ?? '',
                 radius: 5,
@@ -132,7 +138,8 @@ class ColorPickerDialogBuilder {
                     fontWeight: FontWeight.normal),
                 bgColor: Colors.white,
                 borderColor: Colors.black26,
-                onTap: () => resetToDefaultActionCallback?.call()),
+                onTap: () => resetToDefaultActionCallback?.call(),
+                semanticIdentifier: ColorPickerKeyValues.colorPickerResetToDefaultButton),
             buildButtonWrapText(
                 textActionSetColor ?? '',
                 radius: 5,
@@ -147,7 +154,8 @@ class ColorPickerDialogBuilder {
                   } else {
                     setColorActionCallback?.call(_currentColor.value);
                   }
-                })
+                },
+                semanticIdentifier: ColorPickerKeyValues.colorPickerSetButton),
           ],
         ),
       )
@@ -157,21 +165,25 @@ class ColorPickerDialogBuilder {
   Widget _itemColorWidget(BuildContext context, Color color) {
     return Material(
       color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          _shouldUpdate = true;
-          _currentColor.value = color;
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            color: color,
-            border: Border.all(
-              color: _currentColor.value == color ? Colors.white : Colors.transparent,
-              width: 8,
+      child: Semantics(
+        excludeSemantics: true,
+        identifier: ColorPickerKeyValues.colorPickerOption(color),
+        child: InkWell(
+          onTap: () {
+            _shouldUpdate = true;
+            _currentColor.value = color;
+          },
+          child: Container(
+            decoration: BoxDecoration(
+              color: color,
+              border: Border.all(
+                color: _currentColor.value == color ? Colors.white : Colors.transparent,
+                width: 8,
+              ),
             ),
+            width: 40,
+            height: 40,
           ),
-          width: 40,
-          height: 40,
         ),
       ),
     );

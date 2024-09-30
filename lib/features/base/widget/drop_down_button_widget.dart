@@ -33,6 +33,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
   final double? dropdownWidth;
   final double? dropdownMaxHeight;
   final String? hintText;
+  final String? semanticIdentifier;
 
   const DropDownButtonWidget({
     Key? key,
@@ -52,6 +53,7 @@ class DropDownButtonWidget<T> extends StatelessWidget {
     this.colorButton = Colors.white,
     this.tooltip = '',
     this.hintText,
+    this.semanticIdentifier,
   }) : super(key: key);
 
   @override
@@ -78,26 +80,30 @@ class DropDownButtonWidget<T> extends StatelessWidget {
           items: items
               .map((item) => DropdownMenuItem<T>(
                     value: item,
-                    child: PointerInterceptor(
-                      child: Container(
-                        color: Colors.transparent,
-                        height: heightItem,
-                        child: Row(children: [
-                          Expanded(child: Text(_getTextItemDropdown(context, item: item),
-                            style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.normal,
-                                color: Colors.black),
-                            maxLines: 1,
-                            softWrap: CommonTextStyle.defaultSoftWrap,
-                            overflow: CommonTextStyle.defaultTextOverFlow,
-                          )),
-                          if (supportSelectionIcon && item == itemSelected)
-                            SvgPicture.asset(imagePaths.icChecked,
-                              width: sizeIconChecked,
-                              height: sizeIconChecked,
-                              fit: BoxFit.fill)
-                        ]),
+                    child: Semantics(
+                      excludeSemantics: true,
+                      identifier: semanticIdentifier,
+                      child: PointerInterceptor(
+                        child: Container(
+                          color: Colors.transparent,
+                          height: heightItem,
+                          child: Row(children: [
+                            Expanded(child: Text(_getTextItemDropdown(context, item: item),
+                              style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.black),
+                              maxLines: 1,
+                              softWrap: CommonTextStyle.defaultSoftWrap,
+                              overflow: CommonTextStyle.defaultTextOverFlow,
+                            )),
+                            if (supportSelectionIcon && item == itemSelected)
+                              SvgPicture.asset(imagePaths.icChecked,
+                                width: sizeIconChecked,
+                                height: sizeIconChecked,
+                                fit: BoxFit.fill)
+                          ]),
+                        ),
                       ),
                     ),
                   ))

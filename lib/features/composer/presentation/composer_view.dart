@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/email/prefix_email_address.dart';
+import 'package:tmail_ui_user/features/base/key_values/composer_key_values.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
@@ -48,6 +49,7 @@ class ComposerView extends GetWidget<ComposerController> {
               children: [
                 if (controller.responsiveUtils.isLandscapeMobile(context))
                   Obx(() => LandscapeAppBarComposerWidget(
+                    key: const ValueKey(ComposerKeyValues.composerSendButton),
                     isSendButtonEnabled: controller.isEnableEmailSendButton.value,
                     onCloseViewAction: () => controller.handleClickCloseComposer(context),
                     sendMessageAction: () => controller.handleClickSendButton(context),
@@ -73,6 +75,7 @@ class ComposerView extends GetWidget<ComposerController> {
                   ))
                 else
                   Obx(() => AppBarComposerWidget(
+                    key: const ValueKey(ComposerKeyValues.composerSendButton),
                     isSendButtonEnabled: controller.isEnableEmailSendButton.value,
                     onCloseViewAction: () => controller.handleClickCloseComposer(context),
                     sendMessageAction: () => controller.handleClickSendButton(context),
@@ -120,6 +123,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             }
                           }),
                           Obx(() => RecipientComposerWidget(
+                            key: const ValueKey(ComposerKeyValues.composerToField),
                             prefix: PrefixEmailAddress.to,
                             listEmailAddress: controller.listToEmailAddress,
                             imagePaths: controller.imagePaths,
@@ -196,6 +200,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             }
                           }),
                           SubjectComposerWidget(
+                            key: const ValueKey(ComposerKeyValues.composerSubjectField),
                             focusNode: controller.subjectEmailInputFocusNode,
                             textController: controller.subjectEmailInputController,
                             onTextChange: controller.setSubjectEmail,
@@ -222,6 +227,7 @@ class ComposerView extends GetWidget<ComposerController> {
                           Obx(() => Padding(
                             padding: ComposerStyle.mobileEditorPadding,
                             child: MobileEditorView(
+                              key: const ValueKey(ComposerKeyValues.composerContentField),
                               arguments: controller.composerArguments.value,
                               contentViewState: controller.emailContentsViewState.value,
                               onCreatedEditorAction: controller.onCreatedMobileEditorAction,
@@ -276,6 +282,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               onChangeIdentity: controller.onChangeIdentity,
                             ),
                           RecipientComposerWidget(
+                            key: const ValueKey(ComposerKeyValues.composerToField),
                             prefix: PrefixEmailAddress.to,
                             listEmailAddress: controller.listToEmailAddress,
                             imagePaths: controller.imagePaths,
@@ -344,6 +351,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         ],
                       )),
                       SubjectComposerWidget(
+                        key: const ValueKey(ComposerKeyValues.composerSubjectField),
                         focusNode: controller.subjectEmailInputFocusNode,
                         textController: controller.subjectEmailInputController,
                         onTextChange: controller.setSubjectEmail,
@@ -370,6 +378,7 @@ class ComposerView extends GetWidget<ComposerController> {
                       Obx(() => Padding(
                         padding: ComposerStyle.mobileEditorPadding,
                         child: MobileEditorView(
+                          key: const ValueKey(ComposerKeyValues.composerContentField),
                           arguments: controller.composerArguments.value,
                           contentViewState: controller.emailContentsViewState.value,
                           onCreatedEditorAction: controller.onCreatedMobileEditorAction,
@@ -382,6 +391,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 )
               ),
               Obx(() => TabletBottomBarComposerWidget(
+                key: const ValueKey(ComposerKeyValues.composerSendButton),
                 hasReadReceipt: controller.hasRequestReadReceipt.value,
                 deleteComposerAction: () => controller.handleClickDeleteComposer(context),
                 saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
@@ -424,46 +434,61 @@ class ComposerView extends GetWidget<ComposerController> {
   List<PopupMenuEntry> _createMoreOptionPopupItems(BuildContext context) {
     return [
       PopupMenuItem(
+        enabled: false,
         padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          controller.imagePaths.icReadReceipt,
-          AppLocalizations.of(context).requestReadReceipt,
-          styleName: ComposerStyle.popupItemTextStyle,
-          padding: ComposerStyle.popupItemPadding,
-          colorIcon: ComposerStyle.popupItemIconColor,
-          selectedIcon: controller.imagePaths.icFilterSelected,
-          isSelected: controller.hasRequestReadReceipt.value,
-          onCallbackAction: () {
-            popBack();
-            controller.toggleRequestReadReceipt(context);
-          }
+        child: Semantics(
+          container: true,
+          identifier: ComposerKeyValues.toggleReadRecipientsButton,
+          child: PopupItemWidget(
+            controller.imagePaths.icReadReceipt,
+            AppLocalizations.of(context).requestReadReceipt,
+            styleName: ComposerStyle.popupItemTextStyle,
+            padding: ComposerStyle.popupItemPadding,
+            colorIcon: ComposerStyle.popupItemIconColor,
+            selectedIcon: controller.imagePaths.icFilterSelected,
+            isSelected: controller.hasRequestReadReceipt.value,
+            onCallbackAction: () {
+              popBack();
+              controller.toggleRequestReadReceipt(context);
+            }
+          ),
         )
       ),
       PopupMenuItem(
+        enabled: false,
         padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          controller.imagePaths.icSaveToDraft,
-          AppLocalizations.of(context).saveAsDraft,
-          colorIcon: ComposerStyle.popupItemIconColor,
-          styleName: ComposerStyle.popupItemTextStyle,
-          padding: ComposerStyle.popupItemPadding,
-          onCallbackAction: () {
-            popBack();
-            controller.handleClickSaveAsDraftsButton(context);
-          }
+        child: Semantics(
+          container: true,
+          identifier: ComposerKeyValues.saveAsDraftButton,
+          child: PopupItemWidget(
+            controller.imagePaths.icSaveToDraft,
+            AppLocalizations.of(context).saveAsDraft,
+            colorIcon: ComposerStyle.popupItemIconColor,
+            styleName: ComposerStyle.popupItemTextStyle,
+            padding: ComposerStyle.popupItemPadding,
+            onCallbackAction: () {
+              popBack();
+              controller.handleClickSaveAsDraftsButton(context);
+            }
+          ),
         )
       ),
       PopupMenuItem(
+        enabled: false,
         padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          controller.imagePaths.icDeleteMailbox,
-          AppLocalizations.of(context).delete,
-          styleName: ComposerStyle.popupItemTextStyle,
-          padding: ComposerStyle.popupItemPadding,
-          onCallbackAction: () {
-            popBack();
-            controller.handleClickDeleteComposer(context);
-          },
+        child: Semantics(
+          container: true,
+          identifier: ComposerKeyValues.deleteComposedEmailButton,
+          child: PopupItemWidget(
+            controller.imagePaths.icDeleteMailbox,
+            AppLocalizations.of(context).delete,
+            styleName: ComposerStyle.popupItemTextStyle,
+            padding: ComposerStyle.popupItemPadding,
+            onCallbackAction: () {
+              popBack();
+              controller.handleClickDeleteComposer(context);
+            },
+          ),
         )
       ),
     ];

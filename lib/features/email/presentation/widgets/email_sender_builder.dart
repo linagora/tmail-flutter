@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/style_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
+import 'package:tmail_ui_user/features/base/key_values/email_details_key_values.dart';
 import 'package:tmail_ui_user/features/base/widget/material_text_button.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
@@ -30,35 +31,41 @@ class EmailSenderBuilder extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (emailAddress.displayName.isNotEmpty)
-            MaterialTextButton(
-              label: emailAddress.displayName,
-              onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
-              onLongPress: () {
-                AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
-              },
-              borderRadius: 8,
-              padding: const EdgeInsets.all(3),
-              labelSize: 20,
-              labelColor: Colors.black,
-              labelWeight: FontWeight.bold,
-              overflow: CommonTextStyle.defaultTextOverFlow,
-              softWrap: CommonTextStyle.defaultSoftWrap
+            Semantics(
+              identifier: EmailDetailsKeyValues.sender,
+              child: MaterialTextButton(
+                label: emailAddress.displayName,
+                onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
+                onLongPress: () {
+                  AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
+                },
+                borderRadius: 8,
+                padding: const EdgeInsets.all(3),
+                labelSize: 20,
+                labelColor: Colors.black,
+                labelWeight: FontWeight.bold,
+                overflow: CommonTextStyle.defaultTextOverFlow,
+                softWrap: CommonTextStyle.defaultSoftWrap
+              ),
             ),
           Padding(
             padding: const EdgeInsets.only(top: 2),
-            child: MaterialTextButton(
-              label: '<${emailAddress.emailAddress}>',
-              onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
-              onLongPress: () {
-                AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
-              },
-              borderRadius: 8,
-              padding: const EdgeInsets.all(3),
-              labelSize: 16,
-              labelColor: AppColor.colorEmailAddressFull,
-              labelWeight: FontWeight.w500,
-              overflow: CommonTextStyle.defaultTextOverFlow,
-              softWrap: CommonTextStyle.defaultSoftWrap
+            child: Semantics(
+              identifier: EmailDetailsKeyValues.senderEmail,
+              child: MaterialTextButton(
+                label: '<${emailAddress.emailAddress}>',
+                onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
+                onLongPress: () {
+                  AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
+                },
+                borderRadius: 8,
+                padding: const EdgeInsets.all(3),
+                labelSize: 16,
+                labelColor: AppColor.colorEmailAddressFull,
+                labelWeight: FontWeight.w500,
+                overflow: CommonTextStyle.defaultTextOverFlow,
+                softWrap: CommonTextStyle.defaultSoftWrap
+              ),
             ),
           )
         ]

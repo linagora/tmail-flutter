@@ -2,6 +2,7 @@ import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:languagetool_textfield/languagetool_textfield.dart';
+import 'package:tmail_ui_user/features/base/key_values/composer_key_values.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/subject_composer_widget_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -24,37 +25,41 @@ class SubjectComposerWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: SubjectComposerWidgetStyle.borderColor,
-            width: 1
-          )
-        ),
-      ),
-      margin: margin,
-      padding: padding,
-      child: Row(
-        children: [
-          Text(
-            '${AppLocalizations.of(context).subject_email}:',
-            style: SubjectComposerWidgetStyle.labelTextStyle
-          ),
-          const SizedBox(width:SubjectComposerWidgetStyle.space),
-          Expanded(
-            child: TextFieldBuilder(
-              cursorColor: SubjectComposerWidgetStyle.cursorColor,
-              focusNode: focusNode,
-              onTextChange: onTextChange,
-              maxLines: 1,
-              decoration: const InputDecoration(border: InputBorder.none),
-              textDirection: DirectionUtils.getDirectionByLanguage(context),
-              textStyle: SubjectComposerWidgetStyle.inputTextStyle,
-              languageToolController: textController,
+    return Semantics(
+      identifier: ComposerKeyValues.composerSubjectField,
+      container: true,
+      child: Container(
+        decoration: const BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: SubjectComposerWidgetStyle.borderColor,
+              width: 1
             )
-          )
-        ]
+          ),
+        ),
+        margin: margin,
+        padding: padding,
+        child: Row(
+          children: [
+            Text(
+              '${AppLocalizations.of(context).subject_email}:',
+              style: SubjectComposerWidgetStyle.labelTextStyle
+            ),
+            const SizedBox(width:SubjectComposerWidgetStyle.space),
+            Expanded(
+              child: TextFieldBuilder(
+                cursorColor: SubjectComposerWidgetStyle.cursorColor,
+                focusNode: focusNode,
+                onTextChange: onTextChange,
+                maxLines: 1,
+                decoration: const InputDecoration(border: InputBorder.none),
+                textDirection: DirectionUtils.getDirectionByLanguage(context),
+                textStyle: SubjectComposerWidgetStyle.inputTextStyle,
+                languageToolController: textController,
+              )
+            )
+          ]
+        ),
       ),
     );
   }

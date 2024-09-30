@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:model/email/prefix_email_address.dart';
+import 'package:tmail_ui_user/features/base/key_values/composer_key_values.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile/from_composer_mobile_widget_style.dart';
 
@@ -49,43 +50,47 @@ class FromComposerMobileWidget extends StatelessWidget {
           Flexible(
             child: Padding(
               padding: FromComposerMobileWidgetStyle.identityButtonInkWellPadding,
-              child: InkWell(
-                borderRadius: FromComposerMobileWidgetStyle.identityButtonInkWellBorderRadius,
-                onTap: onTap,
-                child: Container(
-                  height: FromComposerMobileWidgetStyle.identityButtonHeight,
-                  padding: FromComposerMobileWidgetStyle.identityButtonPadding,
-                  decoration: FromComposerMobileWidgetStyle.identityButtonDecoration,
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      if (selectedIdentity != null)
-                        Flexible(
-                          child: RichText(
-                            maxLines: 1,
-                            softWrap: false,
-                            overflow: CommonTextStyle.defaultTextOverFlow,
-                            text: TextSpan(
-                              children: [
-                                if (selectedIdentity!.name!.isNotEmpty)
-                                  TextSpan(
-                                    text: '${selectedIdentity!.name} ',
-                                    style: FromComposerMobileWidgetStyle.buttonTitleTextStyle,
-                                  ),
-                                  TextSpan(
-                                    text: '(${selectedIdentity!.email})',
-                                    style: selectedIdentity!.name!.isNotEmpty
-                                      ? FromComposerMobileWidgetStyle.buttonSubTitleTextStyle
-                                      : FromComposerMobileWidgetStyle.buttonTitleTextStyle
-                                  )
-                              ]
+              child: Semantics(
+                container: true,
+                identifier: ComposerKeyValues.openFromEmailSelector,
+                child: InkWell(
+                  borderRadius: FromComposerMobileWidgetStyle.identityButtonInkWellBorderRadius,
+                  onTap: onTap,
+                  child: Container(
+                    height: FromComposerMobileWidgetStyle.identityButtonHeight,
+                    padding: FromComposerMobileWidgetStyle.identityButtonPadding,
+                    decoration: FromComposerMobileWidgetStyle.identityButtonDecoration,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (selectedIdentity != null)
+                          Flexible(
+                            child: RichText(
+                              maxLines: 1,
+                              softWrap: false,
+                              overflow: CommonTextStyle.defaultTextOverFlow,
+                              text: TextSpan(
+                                children: [
+                                  if (selectedIdentity!.name!.isNotEmpty)
+                                    TextSpan(
+                                      text: '${selectedIdentity!.name} ',
+                                      style: FromComposerMobileWidgetStyle.buttonTitleTextStyle,
+                                    ),
+                                    TextSpan(
+                                      text: '(${selectedIdentity!.email})',
+                                      style: selectedIdentity!.name!.isNotEmpty
+                                        ? FromComposerMobileWidgetStyle.buttonSubTitleTextStyle
+                                        : FromComposerMobileWidgetStyle.buttonTitleTextStyle
+                                    )
+                                ]
+                              ),
                             ),
-                          ),
-                        )
-                      else 
-                        const SizedBox.shrink(),
-                      SvgPicture.asset(imagePaths.icDropDown),
-                    ],
+                          )
+                        else 
+                          const SizedBox.shrink(),
+                        SvgPicture.asset(imagePaths.icDropDown),
+                      ],
+                    ),
                   ),
                 ),
               ),

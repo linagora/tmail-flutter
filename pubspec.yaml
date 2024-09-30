@@ -136,7 +136,7 @@ dependencies:
 
   http_parser: 4.0.2
 
-  collection: 1.18.0
+  collection: 1.19.0
 
   filesize: 2.0.1
 
@@ -148,7 +148,7 @@ dependencies:
 
   path_provider: 2.1.1
 
-  device_info_plus: 8.1.0
+  device_info_plus: 9.1.0
 
   permission_handler: 10.2.0
 
@@ -156,7 +156,7 @@ dependencies:
 
   hive: 2.2.3
 
-  pointer_interceptor: 0.10.1
+  pointer_interceptor: 0.10.1+1
 
   rxdart: 0.27.7
 
@@ -190,11 +190,11 @@ dependencies:
 
   url_launcher: 6.1.10
 
-  firebase_core: 2.7.0
+  firebase_core: 3.4.0
 
-  firebase_messaging: 14.2.5
+  firebase_messaging: 15.1.0
 
-  flutter_local_notifications: 16.2.0
+  flutter_local_notifications: 17.2.2
 
   fading_edge_scrollview: 4.1.1
 
@@ -218,13 +218,16 @@ dependencies:
 
   flutter_keyboard_visibility: 6.0.0
 
-  extended_text: 13.0.2
+  extended_text: 14.0.1
 
   date_format: 2.0.7
 
   flutter_linkify: 6.0.0
 
-  flutter_slidable: 3.1.0
+  flutter_slidable:
+    git:
+      url: https://github.com/letsar/flutter_slidable.git
+      ref: master
 
   url_strategy: 0.2.0
 
@@ -254,6 +257,8 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
+  appium_flutter_server: 0.0.26
+
   build_runner: 2.3.3
 
   mockito: 5.4.4
@@ -275,12 +280,14 @@ dev_dependencies:
 dependency_overrides:
   firebase_core_platform_interface: 4.6.0
 
+  build_runner: 2.4.12
+  build_runner_core: 7.2.9
+  json_annotation: 4.8.1
+  win32: 5.5.4
+
   # TODO: replace when upstream PR is merged:
   # https://github.com/miguelpruivo/flutter_file_picker/pull/1482
-  file_picker:
-    git:
-      url: https://github.com/linagora/flutter_file_picker
-      ref: email_supported_5.3.1
+  file_picker: 8.0.7
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
