@@ -1514,7 +1514,7 @@ class ComposerController extends BaseController
       final existedSignatureButton = emailDocument.querySelector(
         'button.tmail-signature-button');
       if (existedSignatureButton != null) return;
-      
+
       final signature = emailDocument.querySelector('div.tmail-signature');
       if (signature == null) return;
       _restoringSignatureButton = true;
