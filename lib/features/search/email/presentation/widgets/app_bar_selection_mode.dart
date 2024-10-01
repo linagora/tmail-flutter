@@ -1,9 +1,8 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
@@ -37,114 +36,103 @@ class AppBarSelectionMode extends StatelessWidget {
     final isAllBelongToTheSameMailbox = listEmail.isAllBelongToTheSameMailbox(mapMailbox);
 
     return Row(children: [
-      buildIconWeb(
-          icon: SvgPicture.asset(
-            _imagePaths.icClose,
-            colorFilter: AppColor.colorTextButton.asFilter(),
-            fit: BoxFit.fill),
-          minSize: 25,
-          iconSize: 25,
-          iconPadding: const EdgeInsets.all(5),
-          splashRadius: 15,
-          tooltip: AppLocalizations.of(context).cancel,
-          onTap: onCancelSelection),
-      Expanded(child: Text(
+      TMailButtonWidget.fromIcon(
+        icon: _imagePaths.icClose,
+        iconSize: 25,
+        iconColor: AppColor.colorTextButton,
+        backgroundColor: Colors.transparent,
+        tooltipMessage: AppLocalizations.of(context).cancel,
+        onTapActionCallback: onCancelSelection,
+      ),
+      Expanded(
+        child: Text(
           AppLocalizations.of(context).count_email_selected(listEmail.length),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
           style: const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w500,
-              color: AppColor.colorTextButton))),
-      buildIconWeb(
-          minSize: 25,
-          iconSize: 25,
-          iconPadding: const EdgeInsets.all(5),
-          splashRadius: 15,
-          icon: SvgPicture.asset(
-              listEmail.isAllEmailRead
-                  ? _imagePaths.icUnread
-                  : _imagePaths.icRead,
-              fit: BoxFit.fill),
-          tooltip: listEmail.isAllEmailRead
-              ? AppLocalizations.of(context).unread
-              : AppLocalizations.of(context).read,
-          onTap: () => onHandleEmailAction?.call(
-              listEmail.isAllEmailRead
-                  ? EmailActionType.markAsUnread
-                  : EmailActionType.markAsRead,
-              listEmail)),
+            fontSize: 17,
+            fontWeight: FontWeight.w500,
+            color: AppColor.colorTextButton
+          )
+        )
+      ),
+      TMailButtonWidget.fromIcon(
+        icon: listEmail.isAllEmailRead
+          ? _imagePaths.icUnread
+          : _imagePaths.icRead,
+        iconSize: 25,
+        backgroundColor: Colors.transparent,
+        tooltipMessage: listEmail.isAllEmailRead
+          ? AppLocalizations.of(context).unread
+          : AppLocalizations.of(context).read,
+        onTapActionCallback: () => onHandleEmailAction?.call(
+          listEmail.isAllEmailRead
+            ? EmailActionType.markAsUnread
+            : EmailActionType.markAsRead,
+          listEmail
+        ),
+      ),
       const SizedBox(width: 5),
-      buildIconWeb(
-          minSize: 25,
-          iconSize: 25,
-          iconPadding: const EdgeInsets.all(5),
-          splashRadius: 15,
-          icon: SvgPicture.asset(
-              listEmail.isAllEmailStarred
-                  ? _imagePaths.icUnStar
-                  : _imagePaths.icStar,
-              fit: BoxFit.fill),
-          tooltip: listEmail.isAllEmailStarred
-              ? AppLocalizations.of(context).not_starred
-              : AppLocalizations.of(context).starred,
-          onTap: () => onHandleEmailAction?.call(
-              listEmail.isAllEmailStarred
-                  ? EmailActionType.unMarkAsStarred
-                  : EmailActionType.markAsStarred,
-              listEmail)),
+      TMailButtonWidget.fromIcon(
+        icon: listEmail.isAllEmailStarred
+          ? _imagePaths.icUnStar
+          : _imagePaths.icStar,
+        iconSize: 25,
+        backgroundColor: Colors.transparent,
+        tooltipMessage: listEmail.isAllEmailStarred
+          ? AppLocalizations.of(context).not_starred
+          : AppLocalizations.of(context).starred,
+        onTapActionCallback: () => onHandleEmailAction?.call(
+          listEmail.isAllEmailStarred
+            ? EmailActionType.unMarkAsStarred
+            : EmailActionType.markAsStarred,
+          listEmail
+        ),
+      ),
       const SizedBox(width: 5),
       if (canSpamAndMove)
         ... [
-          buildIconWeb(
-              minSize: 25,
-              iconSize: 25,
-              iconPadding: const EdgeInsets.all(5),
-              splashRadius: 15,
-              icon: SvgPicture.asset(_imagePaths.icMove, fit: BoxFit.fill),
-              tooltip: AppLocalizations.of(context).move,
-              onTap: () => onHandleEmailAction?.call(EmailActionType.moveToMailbox, listEmail)),
+          TMailButtonWidget.fromIcon(
+            icon: _imagePaths.icMove,
+            iconSize: 25,
+            backgroundColor: Colors.transparent,
+            tooltipMessage: AppLocalizations.of(context).move,
+            onTapActionCallback: () => onHandleEmailAction?.call(
+              EmailActionType.moveToMailbox,
+              listEmail
+            ),
+          ),
           const SizedBox(width: 5),
-          buildIconWeb(
-              minSize: 25,
-              iconSize: 25,
-              iconPadding: const EdgeInsets.all(5),
-              splashRadius: 15,
-              icon: SvgPicture.asset(isAllSpam
-                  ? _imagePaths.icNotSpam
-                  : _imagePaths.icSpam,
-                  fit: BoxFit.fill),
-              tooltip: isAllSpam
-                  ? AppLocalizations.of(context).un_spam
-                  : AppLocalizations.of(context).mark_as_spam,
-              onTap: () => isAllSpam
-                  ? onHandleEmailAction?.call(EmailActionType.unSpam, listEmail)
-                  : onHandleEmailAction?.call(EmailActionType.moveToSpam, listEmail.listEmailCanSpam(mapMailbox))),
+          TMailButtonWidget.fromIcon(
+            icon: isAllSpam
+              ? _imagePaths.icNotSpam
+              : _imagePaths.icSpam,
+            iconSize: 25,
+            backgroundColor: Colors.transparent,
+            tooltipMessage: isAllSpam
+              ? AppLocalizations.of(context).un_spam
+              : AppLocalizations.of(context).mark_as_spam,
+            onTapActionCallback: () => isAllSpam
+              ? onHandleEmailAction?.call(EmailActionType.unSpam, listEmail)
+              : onHandleEmailAction?.call(EmailActionType.moveToSpam, listEmail.listEmailCanSpam(mapMailbox)),
+          ),
           const SizedBox(width: 5),
         ],
       if (isAllBelongToTheSameMailbox)
-        ...[
-          buildIconWeb(
-              minSize: 25,
-              iconSize: 25,
-              iconPadding: const EdgeInsets.all(5),
-              splashRadius: 15,
-              icon: SvgPicture.asset(
-                  canDeletePermanently
-                    ? _imagePaths.icDeleteComposer
-                    : _imagePaths.icDelete,
-                  colorFilter: canDeletePermanently
-                    ? AppColor.colorDeletePermanentlyButton.asFilter()
-                    : AppColor.primaryColor.asFilter(),
-                  width: 20,
-                  height: 20,
-                  fit: BoxFit.fill),
-              tooltip: canDeletePermanently
-                  ? AppLocalizations.of(context).delete_permanently
-                  : AppLocalizations.of(context).move_to_trash,
-              onTap: () => canDeletePermanently
-                  ? onHandleEmailAction?.call(EmailActionType.deletePermanently, listEmail)
-                  : onHandleEmailAction?.call(EmailActionType.moveToTrash, listEmail)),
-          const SizedBox(width: 10)
-        ],
+        TMailButtonWidget.fromIcon(
+          icon: _imagePaths.icDeleteComposer,
+          iconSize: 20,
+          backgroundColor: Colors.transparent,
+          iconColor: canDeletePermanently
+            ? AppColor.colorDeletePermanentlyButton
+            : AppColor.primaryColor,
+          tooltipMessage: canDeletePermanently
+            ? AppLocalizations.of(context).delete_permanently
+            : AppLocalizations.of(context).move_to_trash,
+          onTapActionCallback: () => canDeletePermanently
+            ? onHandleEmailAction?.call(EmailActionType.deletePermanently, listEmail)
+            : onHandleEmailAction?.call(EmailActionType.moveToTrash, listEmail),
+        ),
     ]);
   }
 }
