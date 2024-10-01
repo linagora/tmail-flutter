@@ -124,6 +124,8 @@ class PresentationEmail with EquatableMixin {
 
   bool get isAnsweredAndForwarded => isAnswered && isForwarded;
 
+  bool get isAnsweredOrForwarded => isAnswered || isForwarded;
+
   bool get withAttachments => hasAttachment == true;
 
   bool get isSelected => selectMode == SelectMode.ACTIVE;
