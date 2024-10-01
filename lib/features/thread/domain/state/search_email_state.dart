@@ -4,6 +4,8 @@ import 'package:model/email/presentation_email.dart';
 
 class SearchingState extends LoadingState {}
 
+class RefreshingSearchState extends LoadingState {}
+
 class SearchEmailSuccess extends UIState {
   final List<PresentationEmail> emailList;
 
