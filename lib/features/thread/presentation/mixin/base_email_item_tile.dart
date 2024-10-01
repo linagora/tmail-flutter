@@ -17,7 +17,6 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnPressEmailActionClick = void Function(EmailActionType, PresentationEmail);
 typedef OnMoreActionClick = void Function(PresentationEmail, RelativeRect?);
@@ -323,18 +322,6 @@ mixin BaseEmailItemTile {
       height: height ?? 20,
       colorFilter: AppColor.colorAttachmentIcon.asFilter(),
       fit: BoxFit.fill);
-  }
-
-  String? messageToolTipForAnsweredOrForwarded(BuildContext context, PresentationEmail presentationEmail) {
-    if (presentationEmail.isAnsweredAndForwarded) {
-      return AppLocalizations.of(context).repliedAndForwardedMessage;
-    } else if (presentationEmail.isAnswered) {
-      return AppLocalizations.of(context).repliedMessage;
-    } else if (presentationEmail.isForwarded){
-      return AppLocalizations.of(context).forwardedMessage;
-    } else {
-      return null;
-    }
   }
 
   Widget buildCalendarEventIcon({
