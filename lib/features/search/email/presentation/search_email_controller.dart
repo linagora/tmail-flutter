@@ -600,19 +600,20 @@ class SearchEmailController extends BaseController
       ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
       : await push(AppRoutes.destinationPicker, arguments: arguments);
 
-    if (destinationMailbox is PresentationMailbox) {
-      final mailboxSelected = destinationMailbox == PresentationMailbox.unifiedMailbox ? null : destinationMailbox;
-      if (mailboxSelected != null && mailbox?.id != mailboxSelected.id) {
-        _updateSimpleSearchFilter(
-          mailboxOption: Some(mailboxSelected),
-          beforeOption: const None(),
-          positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
-        );
+    if (destinationMailbox is! PresentationMailbox) return;
 
-        if (context.mounted) {
-          _searchEmailAction(context);
-        }
-      }
+    _updateSimpleSearchFilter(
+      mailboxOption: destinationMailbox.id == PresentationMailbox.unifiedMailbox.id
+        ? const None()
+        : Some(destinationMailbox),
+      beforeOption: const None(),
+      positionOption: emailSortOrderType.value.isScrollByPosition()
+        ? const Some(0)
+        : const None()
+    );
+
+    if (context.mounted) {
+      _searchEmailAction(context);
     }
   }
 

@@ -1718,19 +1718,17 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
 
     if (destinationMailbox is! PresentationMailbox) return;
 
-    if (destinationMailbox != PresentationMailbox.unifiedMailbox &&
-        mailboxIdSelected != destinationMailbox.id) {
+    searchController.updateFilterEmail(
+      mailboxOption: destinationMailbox.id == PresentationMailbox.unifiedMailbox.id
+        ? const None()
+        : Some(destinationMailbox),
+      beforeOption: const None(),
+      positionOption: searchController.sortOrderFiltered.value.isScrollByPosition()
+        ? const Some(0)
+        : const None()
+    );
 
-      searchController.updateFilterEmail(
-        mailboxOption: Some(destinationMailbox),
-        beforeOption: const None(),
-        positionOption: searchController.sortOrderFiltered.value.isScrollByPosition()
-          ? const Some(0)
-          : const None()
-      );
-
-      dispatchAction(StartSearchEmailAction());
-    }
+    dispatchAction(StartSearchEmailAction());
   }
 
   void selectReceiveTimeQuickSearchFilter(BuildContext context, EmailReceiveTimeType receiveTime) {

@@ -481,8 +481,12 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
         color: Colors.transparent,
         child: InkWell(
           onTap: () {
-            controller.selectMailboxAction(PresentationMailbox.unifiedMailbox);
-            controller.dispatchSelectMailboxDestination(context);
+            if (mailboxIdSelected != null
+                && mailboxIdSelected != PresentationMailbox.unifiedMailbox.id
+            ) {
+              controller.selectMailboxAction(PresentationMailbox.unifiedMailbox);
+              controller.dispatchSelectMailboxDestination(context);
+            }
           },
           customBorder: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
           hoverColor: AppColor.colorMailboxHovered,
@@ -511,15 +515,16 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
                 ),
               )),
               const SizedBox(width: 8),
-              if (actions == MailboxActions.select && (mailboxIdSelected == null ||
-                  mailboxIdSelected == PresentationMailbox.unifiedMailbox.id))
+              if (_validateDisplaySelectedIcon(
+                actions: actions,
+                mailboxIdSelected: mailboxIdSelected
+              ))
                 Padding(
-                  padding: EdgeInsets.only(
-                    right: AppUtils.isDirectionRTL(context) ? 0 : 30.0,
-                    left: AppUtils.isDirectionRTL(context) ? 30 : 0.0,
-                  ),
+                  padding: const EdgeInsetsDirectional.only(end: 30.0),
                   child: SvgPicture.asset(
-                    controller.imagePaths.icFilterSelected,
+                    actions == MailboxActions.create
+                      ? controller.imagePaths.icSelectedSB
+                      : controller.imagePaths.icFilterSelected,
                     width: 20,
                     height: 20,
                     fit: BoxFit.fill
@@ -530,6 +535,14 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
         ),
       ),
     );
+  }
+
+  bool _validateDisplaySelectedIcon({
+    MailboxActions? actions,
+    MailboxId? mailboxIdSelected
+  }) {
+    return (actions == MailboxActions.select || actions == MailboxActions.create)
+      && (mailboxIdSelected == null || mailboxIdSelected == PresentationMailbox.unifiedMailbox.id);
   }
 
   void _handleOpenMailboxNodeClick(MailboxNode mailboxNode) {
