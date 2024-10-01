@@ -1009,9 +1009,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
           inlineAttachments: uploadController.mapInlineAttachments,
           outboxMailboxId: mailboxDashBoardController.outboxMailbox?.mailboxId,
           sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
-          draftsEmailId: composerArguments.value!.emailActionType == EmailActionType.editDraft
-            ? composerArguments.value!.presentationEmail?.id
-            : null,
+          draftsEmailId: _getDraftEmailId(),
           answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
           unsubscribeEmailId: composerArguments.value!.previousEmailId,
           messageId: composerArguments.value!.messageId,
