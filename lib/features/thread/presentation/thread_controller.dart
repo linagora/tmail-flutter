@@ -465,7 +465,9 @@ class ThreadController extends BaseController with EmailActionController {
       isSearchEmailRunning: searchController.isSearchEmailRunning
     );
     mailboxDashBoardController.updateEmailList(newListEmail);
-
+    if (mailboxDashBoardController.isSelectionEnabled()) {
+      mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
+    }
     canLoadMore = newListEmail.length >= ThreadConstants.maxCountEmails;
 
     if (listEmailController.hasClients) {
@@ -497,7 +499,9 @@ class ThreadController extends BaseController with EmailActionController {
       isSearchEmailRunning: searchController.isSearchEmailRunning
     );
     mailboxDashBoardController.updateEmailList(emailListSynced);
-
+    if (mailboxDashBoardController.isSelectionEnabled()) {
+      mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
+    }
     canLoadMore = newListEmail.length >= ThreadConstants.maxCountEmails;
 
     if (mailboxDashBoardController.emailsInCurrentMailbox.isEmpty) {
@@ -879,7 +883,9 @@ class ThreadController extends BaseController with EmailActionController {
       isSearchEmailRunning: searchController.isSearchEmailRunning
     );
     mailboxDashBoardController.updateEmailList(newEmailListSynced);
-
+    if (mailboxDashBoardController.isSelectionEnabled()) {
+      mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
+    }
     canSearchMore = newEmailListSynced.length >= ThreadConstants.maxCountEmails;
 
     if (PlatformInfo.isWeb) {
