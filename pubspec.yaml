@@ -270,6 +270,8 @@ dev_dependencies:
 
   http_mock_adapter: 0.4.2
 
+  plugin_platform_interface: 2.1.8
+
 dependency_overrides:
   firebase_core_platform_interface: 4.6.0
 

@@ -62,6 +62,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/list_sha
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/saved_email_draft.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/signature_status.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
@@ -109,7 +110,6 @@ class ComposerController extends BaseController with DragDropFileMixin implement
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final networkConnectionController = Get.find<NetworkConnectionController>();
-  final _dynamicUrlInterceptors = Get.find<DynamicUrlInterceptors>();
   final _beforeReconnectManager = Get.find<BeforeReconnectManager>();
 
   final composerArguments = Rxn<ComposerArguments>();
@@ -199,6 +199,14 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   ButtonState _saveToDraftButtonState = ButtonState.enabled;
   ButtonState _sendButtonState = ButtonState.enabled;
   SignatureStatus _identityContentOnOpenPolicy = SignatureStatus.editedAvailable;
+  int? _savedEmailDraftHash;
+  bool _restoringSignatureButton = false;
+  
+  @visibleForTesting
+  bool get restoringSignatureButton => _restoringSignatureButton;
+
+  @visibleForTesting
+  int? get savedEmailDraftHash => _savedEmailDraftHash;
 
   late Worker uploadInlineImageWorker;
   late Worker dashboardViewStateWorker;
@@ -330,6 +338,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
       maxWithEditor = null;
     } else if (success is GetAlwaysReadReceiptSettingSuccess) {
       hasRequestReadReceipt.value = success.alwaysReadReceiptEnabled;
+      _initEmailDraftHash();
     } else if (success is RestoreEmailInlineImagesSuccess) {
       _updateEditorContent(success);
     }
@@ -358,6 +367,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
       }
     } else if (failure is GetAlwaysReadReceiptSettingFailure) {
       hasRequestReadReceipt.value = false;
+      _initEmailDraftHash();
     }
   }
 
@@ -732,16 +742,18 @@ class ComposerController extends BaseController with DragDropFileMixin implement
       (identity) => identity.id == identityId);
   }
 
-  void _initIdentities(ComposerArguments composerArguments) {
+  Future<void> _initIdentities(ComposerArguments composerArguments) async {
     listFromIdentities.value = composerArguments.identities ?? [];
     final selectedIdentityFromId = _selectIdentityFromId(
       composerArguments.selectedIdentityId);
     if (listFromIdentities.isEmpty) {
       _getAllIdentities();
     } else if (selectedIdentityFromId != null) {
-      _selectIdentity(selectedIdentityFromId);
+      await _selectIdentity(selectedIdentityFromId);
+      _initEmailDraftHash();
     } else if (composerArguments.identities?.isNotEmpty == true) {
-      _selectIdentity(composerArguments.identities!.first);
+      await _selectIdentity(composerArguments.identities!.first);
+      _initEmailDraftHash();
     }
   }
 
@@ -764,8 +776,10 @@ class ComposerController extends BaseController with DragDropFileMixin implement
           composerArguments.value?.selectedIdentityId);
         if (selectedIdentityFromId != null) {
           await _selectIdentity(selectedIdentityFromId);
+          _initEmailDraftHash();
         } else {
           await _selectIdentity(listIdentitiesMayDeleted.firstOrNull);
+          _initEmailDraftHash();
         }
       }
     }
@@ -1216,7 +1230,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     if (session != null && accountId != null) {
-      final uploadUri = session.getUploadUri(accountId, jmapUrl: _dynamicUrlInterceptors.jmapUrl);
+      final uploadUri = session.getUploadUri(accountId, jmapUrl: dynamicUrlInterceptors.jmapUrl);
       uploadController.justUploadAttachmentsAction(
         uploadFiles: pickedFiles,
         uploadUri: uploadUri,
@@ -1230,50 +1244,41 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     uploadController.deleteFileUploaded(uploadId);
   }
 
-  Future<bool> _validateEmailChange({
-    required BuildContext context,
-    required EmailActionType emailActionType,
-    PresentationEmail? presentationEmail,
-    Role? mailboxRole,
-  }) async {
-    final newEmailBody = await _getContentInEditor();
-    final oldEmailBody = _initTextEditor ?? '';
-    log('ComposerController::_validateEmailChange: newEmailBody = $newEmailBody | oldEmailBody = $oldEmailBody');
-    final isEmailBodyChanged = !oldEmailBody.trim().isSame(newEmailBody.trim());
+  Future<bool> _validateEmailChange() async {
+    final newDraftHash = await _hashDraftEmail();
 
-    final newEmailSubject = subjectEmail.value ?? '';
-    final oldEmailSubject = emailActionType == EmailActionType.editDraft
-      ? presentationEmail?.getEmailTitle().trim() ?? ''
-      : '';
-    final isEmailSubjectChanged = !oldEmailSubject.trim().isSame(newEmailSubject.trim());
+    return _savedEmailDraftHash != newDraftHash;
+  }
 
-    final recipients = presentationEmail
-      ?.generateRecipientsEmailAddressForComposer(
-          emailActionType: emailActionType,
-          mailboxRole: mailboxRole
-        ) ?? const Tuple3(<EmailAddress>[], <EmailAddress>[], <EmailAddress>[]);
+  Future<int> _hashDraftEmail() async {
+    final emailContent = await _getContentInEditor();
 
-    final newToEmailAddress = listToEmailAddress;
-    final oldToEmailAddress = emailActionType == EmailActionType.editDraft ? recipients.value1 : [];
-    final isToEmailAddressChanged = !oldToEmailAddress.isSame(newToEmailAddress);
+    final savedEmailDraft = SavedEmailDraft(
+      subject: subjectEmail.value ?? '',
+      content: emailContent,
+      toRecipients: listToEmailAddress.toSet(),
+      ccRecipients: listCcEmailAddress.toSet(),
+      bccRecipients: listBccEmailAddress.toSet(),
+      identity: identitySelected.value,
+      attachments: uploadController.attachmentsUploaded,
+      hasReadReceipt: hasRequestReadReceipt.value,
+    );
 
-    final newCcEmailAddress = listCcEmailAddress;
-    final oldCcEmailAddress = emailActionType == EmailActionType.editDraft ? recipients.value2 : [];
-    final isCcEmailAddressChanged = !oldCcEmailAddress.isSame(newCcEmailAddress);
+    return savedEmailDraft.hashCode;
+  }
 
-    final newBccEmailAddress = listBccEmailAddress;
-    final oldBccEmailAddress = emailActionType == EmailActionType.editDraft ? recipients.value3 : [];
-    final isBccEmailAddressChanged = !oldBccEmailAddress.isSame(newBccEmailAddress);
+  Future<void> _updateSavedEmailDraftHash() async {
+    _savedEmailDraftHash = await _hashDraftEmail();
+  }
 
-    final isAttachmentsChanged = !initialAttachments.isSame(uploadController.attachmentsUploaded.toList());
-    log('ComposerController::_validateChangeEmail: isEmailBodyChanged = $isEmailBodyChanged | isEmailSubjectChanged = $isEmailSubjectChanged | isToEmailAddressChanged = $isToEmailAddressChanged | isCcEmailAddressChanged = $isCcEmailAddressChanged | isBccEmailAddressChanged = $isBccEmailAddressChanged | isAttachmentsChanged = $isAttachmentsChanged');
-    if (isEmailBodyChanged || isEmailSubjectChanged
-        || isToEmailAddressChanged || isCcEmailAddressChanged
-        || isBccEmailAddressChanged || isAttachmentsChanged) {
-      return true;
+  Future<void> _initEmailDraftHash() async {
+    if (composerArguments.value?.emailActionType != EmailActionType.compose
+      && composerArguments.value?.emailActionType != EmailActionType.editDraft
+    ) {
+      return;
     }
 
-    return false;
+    _savedEmailDraftHash = await _hashDraftEmail();
   }
 
   void handleClickSaveAsDraftsButton(BuildContext context) async {
@@ -1306,10 +1311,12 @@ class ComposerController extends BaseController with DragDropFileMixin implement
       _saveToDraftButtonState = ButtonState.enabled;
       _emailIdEditing = resultState.emailId;
       mailboxDashBoardController.consumeState(Stream.value(Right<Failure, Success>(resultState)));
+      _updateSavedEmailDraftHash();
     } else if (resultState is UpdateEmailDraftsSuccess) {
       _saveToDraftButtonState = ButtonState.enabled;
       _emailIdEditing = resultState.emailId;
       mailboxDashBoardController.consumeState(Stream.value(Right<Failure, Success>(resultState)));
+      _updateSavedEmailDraftHash();
     } else if ((resultState is SaveEmailAsDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException) ||
         (resultState is UpdateEmailDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException)) {
       _saveToDraftButtonState = ButtonState.enabled;
@@ -1437,6 +1444,8 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     final selectedIdentityFromHeader = _selectIdentityFromId(identityIdFromHeader);
     if (selectedIdentityFromHeader == null) return;
     identitySelected.value = selectedIdentityFromHeader;
+
+    _initEmailDraftHash();
   }
 
   Future<void> restoreCollapsibleButton(String? emailContent) async {
@@ -1445,6 +1454,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
       final emailDocument = parse(emailContent);
       final signature = emailDocument.querySelector('div.tmail-signature');
       if (signature == null) return;
+      _restoringSignatureButton = true;
       await _applySignature(signature.innerHtml);
     } catch (e) {
       logError('ComposerController::_restoreCollapsibleButton: $e');
@@ -1793,7 +1803,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   void _handleUploadInlineSuccess(SuccessAttachmentUploadState uploadState) {
     uploadController.clearUploadInlineViewState();
 
-    final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors.jmapUrl);
+    final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
     final accountId = mailboxDashBoardController.accountId.value;
 
     if (baseDownloadUrl != null && accountId != null) {
@@ -1988,6 +1998,18 @@ class ComposerController extends BaseController with DragDropFileMixin implement
       initTextEditor(text);
     }
     _textEditorWeb = text;
+
+    _initEmailDraftHashAfterSignatureButtonRestored(text);
+  }
+
+  void _initEmailDraftHashAfterSignatureButtonRestored(String? emailContent) {
+    if (!_restoringSignatureButton) return;
+    final emailDocument = parse(emailContent);
+    final signatureButton = emailDocument.querySelector('button.tmail-signature-button');
+    if (signatureButton == null) return;
+
+    _restoringSignatureButton = false;
+    _initEmailDraftHash();
   }
 
   void initTextEditor(String? text) {
@@ -2087,12 +2109,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
       return;
     }
 
-    final isChanged = await _validateEmailChange(
-      context: context,
-      emailActionType: composerArguments.value!.emailActionType,
-      presentationEmail: composerArguments.value!.presentationEmail,
-      mailboxRole: composerArguments.value!.mailboxRole
-    );
+    final isChanged = await _validateEmailChange();
 
     if (isChanged && context.mounted) {
       clearFocus(context);
@@ -2368,6 +2385,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
   void _setUpRequestReadReceiptForDraftEmail(Email? email) {
     if (email?.hasRequestReadReceipt == true) {
       hasRequestReadReceipt.value = true;
+      _initEmailDraftHash();
     } else {
       _getAlwaysReadReceiptSetting();
     }

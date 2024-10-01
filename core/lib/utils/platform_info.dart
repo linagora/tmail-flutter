@@ -7,12 +7,12 @@ abstract class PlatformInfo {
   static bool isTestingForWeb = false;
 
   static bool get isWeb => kIsWeb || isTestingForWeb;
-  static bool get isLinux => !kIsWeb && defaultTargetPlatform == TargetPlatform.linux;
-  static bool get isWindows => !kIsWeb && defaultTargetPlatform == TargetPlatform.windows;
-  static bool get isMacOS => !kIsWeb && defaultTargetPlatform == TargetPlatform.macOS;
-  static bool get isFuchsia => !kIsWeb && defaultTargetPlatform == TargetPlatform.fuchsia;
-  static bool get isIOS => !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
-  static bool get isAndroid => !kIsWeb && defaultTargetPlatform == TargetPlatform.android;
+  static bool get isLinux => !isWeb && defaultTargetPlatform == TargetPlatform.linux;
+  static bool get isWindows => !isWeb && defaultTargetPlatform == TargetPlatform.windows;
+  static bool get isMacOS => !isWeb && defaultTargetPlatform == TargetPlatform.macOS;
+  static bool get isFuchsia => !isWeb && defaultTargetPlatform == TargetPlatform.fuchsia;
+  static bool get isIOS => !isWeb && defaultTargetPlatform == TargetPlatform.iOS;
+  static bool get isAndroid => !isWeb && defaultTargetPlatform == TargetPlatform.android;
   static bool get isMobile => isAndroid || isIOS;
   static bool get isDesktop => isLinux || isWindows || isMacOS;
   static bool get isCanvasKit => isRendererCanvasKit;
