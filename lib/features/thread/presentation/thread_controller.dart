@@ -578,7 +578,7 @@ class ThreadController extends BaseController with EmailActionController {
   void _refreshEmailChanges({jmap.State? currentEmailState}) {
     log('ThreadController::_refreshEmailChanges(): currentEmailState: $currentEmailState');
     if (searchController.isSearchEmailRunning) {
-      _searchEmail(limit: limitEmailFetched);
+      _searchEmail(limit: limitEmailFetched, isRefreshChange: true);
     } else {
       final newEmailState = currentEmailState ?? _currentEmailState;
       log('ThreadController::_refreshEmailChanges(): newEmailState: $newEmailState');
@@ -802,12 +802,14 @@ class ThreadController extends BaseController with EmailActionController {
     searchController.clearTextSearch();
   }
 
-  void _searchEmail({UnsignedInt? limit}) {
+  void _searchEmail({UnsignedInt? limit, bool isRefreshChange = false}) {
     if (_session != null && _accountId != null) {
-      if (listEmailController.hasClients) {
+      if (!isRefreshChange && listEmailController.hasClients) {
         listEmailController.jumpTo(0);
       }
-      mailboxDashBoardController.emailsInCurrentMailbox.clear();
+      if (!isRefreshChange) {
+        mailboxDashBoardController.emailsInCurrentMailbox.clear();
+      }
       canSearchMore = false;
 
       searchController.updateFilterEmail(
@@ -826,6 +828,7 @@ class ThreadController extends BaseController with EmailActionController {
           moreFilterCondition: _getFilterCondition()
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
+        isRefreshChange: isRefreshChange
       ));
     } else {
       consumeState(Stream.value(Left(SearchEmailFailure(NotFoundSessionException()))));
