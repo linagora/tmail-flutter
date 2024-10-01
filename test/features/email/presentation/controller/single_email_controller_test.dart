@@ -39,6 +39,7 @@ import 'package:tmail_ui_user/features/email/presentation/controller/email_super
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/data/network/interceptors/timeout_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -76,6 +77,7 @@ const fallbackGenerators = {
   MockSpec<LanguageCacheManager>(fallbackGenerators: fallbackGenerators),
   MockSpec<AuthorizationInterceptors>(),
   MockSpec<DynamicUrlInterceptors>(),
+  MockSpec<TimeoutInterceptors>(),
   MockSpec<DeleteCredentialInteractor>(),
   MockSpec<LogoutOidcInteractor>(),
   MockSpec<DeleteAuthorityOidcInteractor>(),
@@ -113,6 +115,7 @@ void main() {
   final languageCacheManager = MockLanguageCacheManager();
   final authorizationInterceptors = MockAuthorizationInterceptors();
   final dynamicUrlInterceptors = MockDynamicUrlInterceptors();
+  final timeoutInterceptors = MockTimeoutInterceptors();
   final deleteCredentialInteractor = MockDeleteCredentialInteractor();
   final logoutOidcInteractor = MockLogoutOidcInteractor();
   final deleteAuthorityOidcInteractor = MockDeleteAuthorityOidcInteractor();
@@ -150,6 +153,7 @@ void main() {
       tag: BindingTag.isolateTag,
     );
     Get.put<DynamicUrlInterceptors>(dynamicUrlInterceptors);
+    Get.put<TimeoutInterceptors>(timeoutInterceptors);
     Get.put<DeleteCredentialInteractor>(deleteCredentialInteractor);
     Get.put<LogoutOidcInteractor>(logoutOidcInteractor);
     Get.put<DeleteAuthorityOidcInteractor>(deleteAuthorityOidcInteractor);

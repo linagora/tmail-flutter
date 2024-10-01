@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/composer/domain/repository/composer_repos
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:tmail_ui_user/features/login/data/network/interceptors/timeout_interceptors.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
@@ -18,21 +19,25 @@ import 'create_new_and_save_email_to_drafts_interactor_test.mocks.dart';
   MockSpec<EmailRepository>(),
   MockSpec<MailboxRepository>(),
   MockSpec<ComposerRepository>(),
+  MockSpec<TimeoutInterceptors>(),
 ])
 void main() {
   late MockEmailRepository emailRepository;
   late MockMailboxRepository mailboxRepository;
   late MockComposerRepository composerRepository;
+  late MockTimeoutInterceptors timeoutInterceptors;
   late CreateNewAndSaveEmailToDraftsInteractor createNewAndSaveEmailToDraftsInteractor;
 
   setUp(() {
     emailRepository = MockEmailRepository();
     mailboxRepository = MockMailboxRepository();
     composerRepository = MockComposerRepository();
+    timeoutInterceptors = MockTimeoutInterceptors();
     createNewAndSaveEmailToDraftsInteractor = CreateNewAndSaveEmailToDraftsInteractor(
       emailRepository,
       mailboxRepository,
-      composerRepository);
+      composerRepository,
+      timeoutInterceptors);
   });
   
   group('create new and save email to drafts interactor test:', () {
