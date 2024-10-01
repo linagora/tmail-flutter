@@ -528,6 +528,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       break;
                   }
                 },
+            excludeFromSemantics: true,
             borderRadius: const BorderRadius.all(Radius.circular(10)),
             child: Container(
                 decoration: BoxDecoration(
