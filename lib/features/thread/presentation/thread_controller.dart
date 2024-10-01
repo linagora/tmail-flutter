@@ -111,6 +111,8 @@ class ThreadController extends BaseController with EmailActionController {
   final ScrollController listEmailController = ScrollController();
   final FocusNode focusNodeKeyBoard = FocusNode();
   final latestEmailSelectedOrUnselected = Rxn<PresentationEmail>();
+  @visibleForTesting
+  bool isListEmailScrollViewJumping = false;
 
   StreamSubscription<html.Event>? _resizeBrowserStreamSubscription;
 
@@ -458,7 +460,9 @@ class ThreadController extends BaseController with EmailActionController {
       isSearchEmailRunning: searchController.isSearchEmailRunning
     );
     mailboxDashBoardController.updateEmailList(newListEmail);
-
+    if (mailboxDashBoardController.isSelectionEnabled()) {
+      mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
+    }
     canLoadMore = newListEmail.length >= ThreadConstants.maxCountEmails;
 
     if (listEmailController.hasClients) {
@@ -490,7 +494,9 @@ class ThreadController extends BaseController with EmailActionController {
       isSearchEmailRunning: searchController.isSearchEmailRunning
     );
     mailboxDashBoardController.updateEmailList(emailListSynced);
-
+    if (mailboxDashBoardController.isSelectionEnabled()) {
+      mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
+    }
     canLoadMore = newListEmail.length >= ThreadConstants.maxCountEmails;
 
     if (mailboxDashBoardController.emailsInCurrentMailbox.isEmpty) {
@@ -578,7 +584,7 @@ class ThreadController extends BaseController with EmailActionController {
   void _refreshEmailChanges({jmap.State? currentEmailState}) {
     log('ThreadController::_refreshEmailChanges(): currentEmailState: $currentEmailState');
     if (searchController.isSearchEmailRunning) {
-      _searchEmail(limit: limitEmailFetched, isRefreshChange: true);
+      _searchEmail(limit: limitEmailFetched, needRefreshSearchState: true);
     } else {
       final newEmailState = currentEmailState ?? _currentEmailState;
       log('ThreadController::_refreshEmailChanges(): newEmailState: $newEmailState');
@@ -802,12 +808,13 @@ class ThreadController extends BaseController with EmailActionController {
     searchController.clearTextSearch();
   }
 
-  void _searchEmail({UnsignedInt? limit, bool isRefreshChange = false}) {
+  void _searchEmail({UnsignedInt? limit, bool needRefreshSearchState = false}) {
     if (_session != null && _accountId != null) {
-      if (!isRefreshChange && listEmailController.hasClients) {
+      if (!needRefreshSearchState && listEmailController.hasClients) {
+        isListEmailScrollViewJumping = true;
         listEmailController.jumpTo(0);
       }
-      if (!isRefreshChange) {
+      if (!needRefreshSearchState) {
         mailboxDashBoardController.emailsInCurrentMailbox.clear();
       }
       canSearchMore = false;
@@ -828,7 +835,7 @@ class ThreadController extends BaseController with EmailActionController {
           moreFilterCondition: _getFilterCondition()
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
-        isRefreshChange: isRefreshChange
+        needRefreshSearchState: needRefreshSearchState
       ));
     } else {
       consumeState(Stream.value(Left(SearchEmailFailure(NotFoundSessionException()))));
@@ -868,7 +875,9 @@ class ThreadController extends BaseController with EmailActionController {
       isSearchEmailRunning: searchController.isSearchEmailRunning
     );
     mailboxDashBoardController.updateEmailList(newEmailListSynced);
-
+    if (mailboxDashBoardController.isSelectionEnabled()) {
+      mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
+    }
     canSearchMore = newEmailListSynced.length >= ThreadConstants.maxCountEmails;
 
     if (PlatformInfo.isWeb) {

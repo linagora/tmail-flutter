@@ -1,5 +1,6 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
@@ -26,11 +27,11 @@ class SearchEmailInteractor {
       Set<Comparator>? sort,
       Filter? filter,
       Properties? properties,
-      bool isRefreshChange = false,
+      bool needRefreshSearchState = false,
     }
   ) async* {
     try {
-      if (isRefreshChange) {
+      if (needRefreshSearchState) {
         yield Right(RefreshingSearchState());
       } else {
         yield Right(SearchingState());
