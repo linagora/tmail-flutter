@@ -279,42 +279,27 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         if (controller.emailsInCurrentMailbox.isEmpty) {
           return const SizedBox.shrink();
         } else {
-          return Padding(
-            padding: const EdgeInsetsDirectional.only(start: 16),
-            child: Tooltip(
-              message: AppLocalizations.of(context).selectAllMessagesOfThisPage,
-              child: ElevatedButton.icon(
-                onPressed: controller.selectAllEmailAction,
-                icon: SvgPicture.asset(
-                  controller.imagePaths.icSelectAll,
-                  width: 16,
-                  height: 16,
-                  fit: BoxFit.fill,
-                  colorFilter: AppColor.colorFilterMessageIcon.asFilter(),
-                ),
-                label: Text(
-                  AppLocalizations.of(context).selectAllMessagesOfThisPage,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.colorFilterMessageButton.withOpacity(0.6),
-                  shadowColor: Colors.transparent,
-                  padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(10)),
-                  ),
-                  elevation: 0.0,
-                  foregroundColor: AppColor.colorTextButtonHeaderThread,
-                  maximumSize: const Size.fromWidth(250),
-                  textStyle: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.normal,
-                    color: AppColor.colorFilterMessageTitle
-                  ),
-                ),
-              ),
-            ),
+          return TMailButtonWidget(
+            key: const Key('select_all_emails_button'),
+            text: AppLocalizations.of(context).selectAllMessagesOfThisPage,
+            maxLines: 1,
+            backgroundColor: AppColor.colorButtonHeaderThread,
+            maxWidth: 270,
+            textStyle: const TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.normal,
+              color: AppColor.colorTextButtonHeaderThread),
+            icon: controller.imagePaths.icSelectAll,
+            iconSize: 16,
+            borderRadius: 10,
+            padding: const EdgeInsetsDirectional.symmetric(
+              horizontal: 12,
+              vertical: 8),
+            flexibleText: true,
+            mainAxisSize: MainAxisSize.min,
+            margin: const EdgeInsetsDirectional.only(start: 16),
+            tooltipMessage: AppLocalizations.of(context).selectAllMessagesOfThisPage,
+            onTapActionCallback: controller.selectAllEmailAction,
           );
         }
       }),
