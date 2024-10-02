@@ -1445,6 +1445,11 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     try {
       if (emailContent == null) return;
       final emailDocument = parse(emailContent);
+
+      final existedSignatureButton = emailDocument.querySelector(
+        'button.tmail-signature-button');
+      if (existedSignatureButton != null) return;
+      
       final signature = emailDocument.querySelector('div.tmail-signature');
       if (signature == null) return;
       await _applySignature(signature.innerHtml);
