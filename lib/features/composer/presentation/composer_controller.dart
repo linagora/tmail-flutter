@@ -1932,6 +1932,7 @@ class ComposerController extends BaseController with DragDropFileMixin implement
 
 
   void handleInitHtmlEditorWeb(String initContent) async {
+    if (_isEmailBodyLoaded) return;
     log('ComposerController::handleInitHtmlEditorWeb:');
     _isEmailBodyLoaded = true;
     richTextWebController?.editorController.setFullScreen();
