@@ -286,7 +286,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     searchFocus.unfocus();
   }
   
-  void _clearSortOrder() {
+  void clearSortOrder() {
     sortOrderFiltered.value = EmailSortOrderType.mostRecent;
   }
 
@@ -295,7 +295,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     deactivateSimpleSearch();
     hideSimpleSearchFormView();
 
-    _clearSortOrder();
+    clearSortOrder();
     clearSearchFilter();
     deactivateAdvancedSearch();
     hideAdvancedSearchFormView();

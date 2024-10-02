@@ -83,6 +83,7 @@ class AdvancedFilterController extends BaseController {
     _resetAllToOriginalValue();
     _clearAllTextFieldInput();
     searchController.searchInputController.clear();
+    searchController.clearSortOrder();
     searchController.deactivateAdvancedSearch();
     searchController.isAdvancedSearchViewOpen.value = false;
     _mailboxDashBoardController.searchEmail(context);
