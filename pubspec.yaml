@@ -269,7 +269,7 @@ dev_dependencies:
   json_serializable: 6.6.1
 
   http_mock_adapter: 0.4.2
-  patrol: 3.9.0
+  patrol: 3.11.0
 
   plugin_platform_interface: 2.1.8
 
