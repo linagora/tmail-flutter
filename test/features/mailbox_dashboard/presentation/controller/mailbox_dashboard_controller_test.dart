@@ -487,8 +487,44 @@ void main() {
           filterOption: FilterMessageOption.all,
           mailboxId: testMailboxId),
         propertiesCreated: ThreadConstants.propertiesDefault,
-        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault));
+        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault
+      )).called(1);
     });
+
+    test(
+      'WHEN user search email by keyword\n'
+      'THEN user select chip filter\n'
+      'SHOULD search filter matched with user changed',
+    () async {
+    // arrange
+    when(context.owner).thenReturn(BuildOwner(focusManager: FocusManager()));
+
+    // act
+    mailboxDashboardController.searchEmail(queryString: queryString);
+    mailboxDashboardController.selectSortOrderQuickSearchFilter(context, EmailSortOrderType.oldest);
+    mailboxDashboardController.selectHasAttachmentSearchFilter();
+    mailboxDashboardController.selectReceiveTimeQuickSearchFilter(context, EmailReceiveTimeType.last30Days);
+
+    await untilCalled(searchEmailInteractor.execute(
+      any,
+      any,
+      limit: anyNamed('limit'),
+      position: anyNamed('position'),
+      sort: anyNamed('sort'),
+      filter: anyNamed('filter'),
+      properties: anyNamed('properties')));
+
+    // assert
+    expect(
+      searchController.searchEmailFilter.value,
+      SearchEmailFilter(
+        text: SearchQuery(queryString),
+        emailReceiveTimeType: EmailReceiveTimeType.last30Days,
+        hasAttachment: true,
+        sortOrder: EmailSortOrderType.oldest.getSortOrder().toNullable()
+      )
+    );
+  });
 
     tearDown(Get.deleteAll);
   });
