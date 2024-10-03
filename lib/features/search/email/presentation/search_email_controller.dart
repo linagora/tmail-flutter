@@ -747,22 +747,24 @@ class SearchEmailController extends BaseController
   }
 
   void onTextSearchSubmitted(BuildContext context, String text) {
-    final query = text.trim();
-    if (query.isNotEmpty) {
-      saveRecentSearch(RecentSearch.now(query));
-      submitSearchAction(context, query);
+    if (text.trim().isNotEmpty) {
+      saveRecentSearch(RecentSearch.now(text.trim()));
     }
+    submitSearchAction(context, text);
   }
 
   void setTextInputSearchForm(String value) {
     textInputSearchController.text = value;
   }
 
-  void clearAllTextInputSearchForm() {
+  void clearAllTextInputSearchForm({bool requestFocus = false}) {
     textInputSearchController.clear();
     currentSearchText.value = '';
     listSuggestionSearch.clear();
     listContactSuggestionSearch.clear();
+    if (requestFocus) {
+      textInputSearchFocus.requestFocus();
+    }
   }
 
   void clearAllResultSearch() {

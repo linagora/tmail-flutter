@@ -159,7 +159,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                         height: 18,
                         fit: BoxFit.fill),
                     tooltip: AppLocalizations.of(context).clearAll,
-                    onTap: controller.clearAllTextInputSearchForm);
+                    onTap: () => controller.clearAllTextInputSearchForm(requestFocus: true));
             } else {
               return const SizedBox.shrink();
             }
