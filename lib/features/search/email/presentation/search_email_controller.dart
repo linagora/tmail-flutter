@@ -486,7 +486,10 @@ class SearchEmailController extends BaseController
     BuildContext context,
     EmailAddress emailAddress
   ) {
+    textInputSearchController.clear();
+    currentSearchText.value = '';
     _updateSimpleSearchFilter(
+      textOption: const None(),
       fromOption: Some({emailAddress.emailAddress}),
       beforeOption: const None(),
       positionOption: emailSortOrderType.value.isScrollByPosition() ? const Some(0) : const None()
