@@ -107,6 +107,7 @@ class SearchEmailController extends BaseController
   final selectionMode = Rx<SelectMode>(SelectMode.INACTIVE);
   final emailSortOrderType = EmailSortOrderType.mostRecent.obs;
   final suggestionSearchViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
+  final resultSearchViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
   late Debouncer<String> _deBouncerTime;
   late Worker dashBoardViewStateWorker;
@@ -175,6 +176,8 @@ class SearchEmailController extends BaseController
       _searchMoreEmailsSuccess(success);
     } else if (success is RefreshChangesSearchEmailSuccess) {
       _refreshChangesSearchEmailsSuccess(success);
+    } else if (success is SearchingState) {
+      resultSearchViewState.value = Right(success);
     }
   }
 
@@ -185,6 +188,22 @@ class SearchEmailController extends BaseController
       _searchEmailsFailure(failure);
     } else if (failure is SearchMoreEmailFailure) {
       _searchMoreEmailsFailure(failure);
+    }
+  }
+
+  @override
+  void handleUrgentExceptionOnMobile({Failure? failure, Exception? exception}) {
+    super.handleUrgentExceptionOnMobile(failure: failure, exception: exception);
+    if (failure is SearchEmailFailure) {
+      _searchEmailsFailure(failure);
+    }
+  }
+
+  @override
+  void handleUrgentExceptionOnWeb({Failure? failure, Exception? exception}) {
+    super.handleUrgentExceptionOnWeb(failure: failure, exception: exception);
+    if (failure is SearchEmailFailure) {
+      _searchEmailsFailure(failure);
     }
   }
 
@@ -345,6 +364,7 @@ class SearchEmailController extends BaseController
     textInputSearchFocus.unfocus();
 
     if (session != null && accountId != null) {
+      resultSearchViewState.value = Right(SearchingState());
       canSearchMore = true;
       searchIsRunning.value = true;
       cancelSelectionMode();
@@ -400,6 +420,8 @@ class SearchEmailController extends BaseController
       isSearchEmailRunning: true
     );
 
+    resultSearchViewState.value = Right(success);
+
     if (resultSearchScrollController.hasClients) {
       resultSearchScrollController.animateTo(
           0,
@@ -410,6 +432,7 @@ class SearchEmailController extends BaseController
 
   void _searchEmailsFailure(SearchEmailFailure failure) {
     listResultSearch.clear();
+    resultSearchViewState.value = Left(failure);
   }
 
   void searchMoreEmailsAction() {

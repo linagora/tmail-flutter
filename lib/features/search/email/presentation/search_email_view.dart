@@ -31,13 +31,12 @@ import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_r
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_receive_time_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_sort_by_action_tile_widget.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_sort_by_cupertino_action_sheet_action_builder.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/widgets/empty_search_email_widget.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/search_email_loading_bar_widget.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SearchEmailView extends GetWidget<SearchEmailController>
@@ -82,7 +81,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
             _buildListSearchFilterAction(context),
             Obx(() => SearchEmailLoadingBarWidget(
               suggestionViewState: controller.suggestionSearchViewState.value,
-              resultSearchViewState: controller.viewState.value,
+              resultSearchViewState: controller.resultSearchViewState.value,
             )),
             Expanded(child: Obx(() {
               if (controller.searchIsRunning.isFalse) {
@@ -110,7 +109,11 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                     controller.listResultSearch
                   );
                 } else {
-                  return _buildEmptyEmail(context);
+                  return Obx(() => EmptySearchEmailWidget(
+                    suggestionViewState: controller.suggestionSearchViewState.value,
+                    resultSearchViewState: controller.resultSearchViewState.value,
+                    isNetworkConnectionAvailable: controller.networkConnectionController.isNetworkConnectionAvailable(),
+                  ));
                 }
               }
             })),
@@ -610,18 +613,6 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           ),
         );
       }
-    );
-  }
-
-  Widget _buildEmptyEmail(BuildContext context) {
-    return Obx(() => controller.viewState.value.fold(
-        (failure) => const SizedBox.shrink(),
-        (success) => success is! SearchingState
-            ? EmptyEmailsWidget(
-                key: const Key('empty_search_email_view'),
-                isNetworkConnectionAvailable: controller.networkConnectionController.isNetworkConnectionAvailable(),
-                isSearchActive: true)
-            : const SizedBox.shrink())
     );
   }
 
