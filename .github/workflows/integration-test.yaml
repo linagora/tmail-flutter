@@ -2,47 +2,32 @@ name: Integration tests
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "45 10 * * *" # 10:45 UTC (24 hour clock)
 
 env:
   JAVA_VERSION: 17
   FLUTTER_VERSION: 3.22.2
 
 jobs:
-  # desktop_integration_test:
-  #   name: Run integration tests on desktop browsers
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - name: Checkout repository
-  #       uses: actions/checkout@v4
-
-  #     - name: Set up Java
-  #       uses: actions/setup-java@v4
-  #       with:
-  #         java-version: ${{ env.JAVA_VERSION }}
-  #         distribution: "temurin"
-  #         cache: maven
-  #         cache-dependency-path: "tmail_selenium/pom.xml"
-
-  #     - name: Frontend configuration
-  #       env:
-  #         FRONTEND_CONFIG: ${{ secrets.FRONTEND_CONFIG }}
-  #       run: |
-  #         echo "$FRONTEND_CONFIG" > env.file
-  #       working-directory: tmail_selenium
-
-  #     - name: Run integration tests
-  #       run: ../scripts/integration-tests.sh
-  #       working-directory: tmail_selenium
-
   mobile_integration_test:
-    name: Run integration tests on mobile apps
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    name: Run integration tests for mobile apps
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: "google-github-actions/auth@v2"
+        with:
+          project_id: ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.GOOGLE_CLOUD_WORKLOAD_IDENTITY_PROVIDER_ID }}
+          service_account: ${{ secrets.GOOGLE_CLOUD_SERVICE_ACCOUNT }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -57,15 +42,6 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: "temurin"
 
-      - name: Set up Homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-
-      - name: Setup integration tests
-        env:
-          TMAIL_PATROL_CREDENTIALS: ${{ secrets.TMAIL_PATROL_CREDENTIALS }}
-        run: ./scripts/setup-mobile-integration-tests.sh
-
-      - name: Run integration tests
-        env:
-          BS_CREDENTIALS: ${{ secrets.BROWSERSTACK_CREDENTIALS }}
-        run: ./scripts/run-mobile-integration-tests.sh
+      # Put your test steps below here!!!
+      - name: Test
+        run: gcloud firebase test android models list
