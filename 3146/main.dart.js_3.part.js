@@ -19137,10 +19137,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t1 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
+      t1.textInputSearchController.set$value(0, C.TextEditingValue_3bx);
+      t1.currentSearchText.set$value(0, "");
       t2 = this.emailAddress.email;
       t2 = A.LinkedHashSet_LinkedHashSet$_literal([t2 == null ? "" : t2], type$.String);
       t3 = t1.emailSortOrderType.get$value(0).isScrollByPosition$0() ? C.Some_0 : C.C_None0;
-      t1._updateSimpleSearchFilter$3$beforeOption$fromOption$positionOption(C.C_None, new A.Some(t2, type$.Some_Set_String), t3);
+      t1._updateSimpleSearchFilter$4$beforeOption$fromOption$positionOption$textOption(C.C_None, new A.Some(t2, type$.Some_Set_String), t3, C.C_None1);
       t1._searchEmailAction$1(this.context);
       return null;
     },
@@ -21520,5 +21522,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "EabII3IH1YDMN5x7buGHfQ+mYXU=");
+})($__dart_deferred_initializers__, "DzxEepKHxcbFlHEkZGlXHns5E+4=");
 ;
