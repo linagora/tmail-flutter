@@ -1020,7 +1020,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 3
+    $signature: 4
   };
   C.AppGridDashboardItem_build_closure0.prototype = {
     call$0() {
@@ -1177,5 +1177,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "bbNfnRHMS3dWRi5bEhT3JSy/7M0=");
+})($__dart_deferred_initializers__, "nqtO/Z9gNZm5SVDoUzlWB8RCWzc=");
 ;
