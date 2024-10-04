@@ -42,5 +42,8 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: "temurin"
 
+      - name: Run prebuild
+        run: ./scripts/prebuild.sh
+
       - name: Test
-        run: ./scripts/patrol-gcloud.sh
+        run: ./scripts/integration-tests.sh

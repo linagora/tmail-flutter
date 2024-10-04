@@ -1,6 +1,12 @@
 #!/usr/bin/env bash
 
-docker run -d -p 2023:80 -v "$PWD"/env.file:/usr/share/nginx/html/assets/env.file linagora/tmail-web
-curl localhost:2023
-
-mvn test
+dart pub global activate patrol_cli
+patrol build android
+gcloud firebase test android run \
+    --type instrumentation \
+    --app build/app/outputs/apk/debug/app-debug.apk \
+    --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk \
+    --device 'model="oriole",version="33",locale=en,orientation=portrait' \
+    --timeout 10m \
+    --use-orchestrator \
+    --environment-variables clearPackageData=true
