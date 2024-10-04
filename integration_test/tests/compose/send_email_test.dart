@@ -1,4 +1,3 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
@@ -20,14 +19,14 @@ void main() {
     await TestBase().runTestApp();
     
     final loginWithBasicAuthScenario = LoginWithBasicAuth($,
-      username: dotenv.get('USERNAME'),
-      hostUrl: dotenv.get('BASIC_AUTH_URL'),
-      email: dotenv.get('BASIC_AUTH_EMAIL'),
-      password: dotenv.get('PASSWORD'),
+      username: const String.fromEnvironment('USERNAME'),
+      hostUrl: const String.fromEnvironment('BASIC_AUTH_URL'),
+      email: const String.fromEnvironment('BASIC_AUTH_EMAIL'),
+      password: const String.fromEnvironment('PASSWORD'),
     );
     final sendEmailScenario = SendEmail($,
       loginWithBasicAuthScenario: loginWithBasicAuthScenario,
-      additionalRecipient: dotenv.get('ADDITIONAL_MAIL_RECIPIENT'),
+      additionalRecipient: const String.fromEnvironment('ADDITIONAL_MAIL_RECIPIENT'),
       subject: 'Test subject',
       content: 'Test content');
 

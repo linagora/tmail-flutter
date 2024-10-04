@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:tmail_ui_user/main.dart' as app;
 
 class TestBase {
@@ -10,7 +9,5 @@ class TestBase {
     FlutterError.onError = (FlutterErrorDetails details) {
       originalOnError(details);
     };
-
-    await dotenv.load(fileName: 'secrets.env', mergeWith: dotenv.env);
   }
 }

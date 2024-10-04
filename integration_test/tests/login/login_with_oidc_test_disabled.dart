@@ -1,4 +1,3 @@
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
@@ -19,9 +18,9 @@ void main() {
     await TestBase().runTestApp();
 
     final loginWithOidcScenario = LoginWithOidc($,
-      email: dotenv.get('USERNAME'),
-      password: dotenv.get('PASSWORD'),
-      hostUrl: dotenv.get('HOST_URL'));
+      email: const String.fromEnvironment('USERNAME'),
+      password: const String.fromEnvironment('PASSWORD'),
+      hostUrl: const String.fromEnvironment('HOST_URL'));
 
     await loginWithOidcScenario.execute();
   });
