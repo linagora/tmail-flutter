@@ -1,6 +1,9 @@
+import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:patrol/patrol.dart';
+import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
+import 'package:tmail_ui_user/features/login/presentation/widgets/login_text_input_builder.dart';
 
 import '../base/core_robot.dart';
 
@@ -19,10 +22,10 @@ class LoginRobot extends CoreRobot {
     final finder = $(LoginView).$(TextField);
     await finder.enterText(url);
     await $('Next').tap();
-    await $.pumpAndTrySettle(duration: const Duration(seconds: 20));
   }
 
   Future<void> enterOidcUsername(String username) async {
+    await $.pumpAndTrySettle(duration: const Duration(seconds: 20));
     await $.native.enterTextByIndex(username, index: 0);
   }
 
@@ -32,5 +35,23 @@ class LoginRobot extends CoreRobot {
 
   Future<void> loginOidc() async {
     await $.native.tap(Selector(text: 'Sign In'));
+  }
+
+  Future<void> enterBasicAuthEmail(String email) async {
+    await $(LoginView)
+      .$(TypeAheadFormFieldBuilder<RecentLoginUsername>)
+      .$(TextField)
+      .enterText(email);
+  }
+
+  Future<void> enterBasicAuthPassword(String password) async {
+    await $(LoginView)
+      .$(LoginTextInputBuilder)
+      .$(TextField)
+      .enterText(password);
+  }
+
+  Future<void> loginBasicAuth() async {
+    await $(Container).$(ElevatedButton).tap();
   }
 }

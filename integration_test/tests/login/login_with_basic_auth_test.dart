@@ -4,11 +4,10 @@ import 'package:patrol/patrol.dart';
 
 import '../../base/test_base.dart';
 import '../../scenarios/login_with_basic_auth.dart';
-import '../../scenarios/send_email.dart';
 
 void main() {
   patrolTest(
-    'Should see success toast when send email successfully',
+    'Should see thread view when login with basic auth successfully',
     config: const PatrolTesterConfig(
       settlePolicy: SettlePolicy.trySettle,
       visibleTimeout: Duration(minutes: 1)),
@@ -18,19 +17,14 @@ void main() {
     framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
   ($) async {
     await TestBase().runTestApp();
-    
+
     final loginWithBasicAuthScenario = LoginWithBasicAuth($,
       username: dotenv.get('USERNAME'),
       hostUrl: dotenv.get('BASIC_AUTH_URL'),
       email: dotenv.get('BASIC_AUTH_EMAIL'),
       password: dotenv.get('PASSWORD'),
     );
-    final sendEmailScenario = SendEmail($,
-      loginWithBasicAuthScenario: loginWithBasicAuthScenario,
-      additionalRecipient: dotenv.get('ADDITIONAL_MAIL_RECIPIENT'),
-      subject: 'Test subject',
-      content: 'Test content');
 
-    await sendEmailScenario.execute();
+    await loginWithBasicAuthScenario.execute();
   });
 }
