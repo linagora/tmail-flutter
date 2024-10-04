@@ -42,6 +42,5 @@ jobs:
           java-version: ${{ env.JAVA_VERSION }}
           distribution: "temurin"
 
-      # Put your test steps below here!!!
       - name: Test
-        run: gcloud firebase test android models list
+        run: ./scripts/patrol-gcloud.sh
