@@ -302,7 +302,7 @@ const RESOURCES = {"assets/AssetManifest.json": "9215256a67347739bbe0034f72ab8c8
 "icons/Icon-192.png": "009a8eae32218365ab20cce81aa896c3",
 "icons/Icon-maskable-512.png": "3a55e614a03964225fd5b8ca94384524",
 "icons/Icon-maskable-192.png": "009a8eae32218365ab20cce81aa896c3",
-"flutter_bootstrap.js": "52ad40921e535254127faf511b8886ad",
+"flutter_bootstrap.js": "4610e05c5ff2bf1a2373f336050167ec",
 "main.dart.js_1.part.js": "441a1e132434f5079d24cb85e009ab1a",
 "firebase-messaging-sw.js": "ed5b30ced7e7646f08edc16e2d5d5ad5",
 "logout-callback.html": "999326dc9a0f37c9a9a4280b4a35dc51",
