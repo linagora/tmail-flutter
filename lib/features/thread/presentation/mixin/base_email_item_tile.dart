@@ -96,7 +96,7 @@ mixin BaseEmailItemTile {
         styleWord: TextStyle(
           fontSize: 15,
           color: buildTextColorForReadEmail(email),
-          backgroundColor: AppColor.bgWordSearch,
+          backgroundColor: Colors.amberAccent[200],
           fontWeight: buildFontForReadEmail(email)
         )
       );
@@ -129,7 +129,7 @@ mixin BaseEmailItemTile {
         ),
         styleWord: TextStyle(
           fontSize: 13,
-          backgroundColor: AppColor.bgWordSearch,
+          backgroundColor: Colors.amberAccent[200],
           color: buildTextColorForReadEmail(email),
           fontWeight: buildFontForReadEmail(email)
         )
@@ -160,10 +160,10 @@ mixin BaseEmailItemTile {
           color: AppColor.colorContentEmail,
           fontWeight: FontWeight.normal
         ),
-        styleWord: const TextStyle(
+        styleWord: TextStyle(
           fontSize: 13,
           color: AppColor.colorContentEmail,
-          backgroundColor: AppColor.bgWordSearch
+          backgroundColor: Colors.amberAccent[200],
         )
       );
     } else {

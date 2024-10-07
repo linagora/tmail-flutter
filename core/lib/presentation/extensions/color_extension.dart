@@ -61,7 +61,6 @@ extension AppColor on Color {
   static const buttonActionToastWithActionColor = Color(0xFF7ADCF8);
   static const backgroundCountAttachment = Color(0x681C1C1C);
   static const bgStatusResultSearch = Color(0xFFF5F5F7);
-  static const bgWordSearch = Color(0x3D007AFF);
   static const colorNameEmail = Color(0xFF000000);
   static const colorContentEmail = Color(0xFF6D7885);
   static const colorTextButton = Color(0xFF007AFF);
