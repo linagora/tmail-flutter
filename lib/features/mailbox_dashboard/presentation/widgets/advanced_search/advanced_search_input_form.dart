@@ -30,6 +30,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           Obx(() => TextFieldAutocompleteEmailAddressWeb(
             field: AdvancedSearchFilterField.from,
             listEmailAddress: controller.listFromEmailAddress,
+            userName: controller.userName,
             expandMode: controller.fromAddressExpandMode.value,
             controller: controller.fromEmailAddressController,
             focusNode: controller.focusManager.fromFieldFocusNode,
@@ -43,6 +44,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           Obx(() => TextFieldAutocompleteEmailAddressWeb(
             field: AdvancedSearchFilterField.to,
             listEmailAddress: controller.listToEmailAddress,
+            userName: controller.userName,
             expandMode: controller.toAddressExpandMode.value,
             controller: controller.toEmailAddressController,
             focusNode: controller.focusManager.toFieldFocusNode,
