@@ -75,12 +75,23 @@ class ContactViewStyle {
 
   static EdgeInsetsGeometry getSearchInputFormMargin(
     BuildContext context,
-    ResponsiveUtils responsiveUtils
+    ResponsiveUtils responsiveUtils,
   ) {
     if (PlatformInfo.isWeb || responsiveUtils.isScreenWithShortestSide(context)) {
       return const EdgeInsets.symmetric(horizontal: 16, vertical: 10);
     } else {
       return const EdgeInsets.symmetric(horizontal: 32, vertical: 10);
+    }
+  }
+
+  static EdgeInsets getDividerSearchResultListPadding(
+    BuildContext context,
+    ResponsiveUtils responsiveUtils
+  ) {
+    if (PlatformInfo.isWeb || responsiveUtils.isScreenWithShortestSide(context)) {
+      return const EdgeInsets.symmetric(horizontal: 16);
+    } else {
+      return const EdgeInsets.symmetric(horizontal: 32);
     }
   }
 }

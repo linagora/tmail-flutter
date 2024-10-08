@@ -640,22 +640,26 @@ class SearchEmailController extends BaseController
 
     if (accountId == null || session == null) return;
 
-    final listContactSelected = searchEmailFilter.value.getContactApplied(prefixEmailAddress);
+    final selectedContactList = searchEmailFilter.value.getContactApplied(prefixEmailAddress);
     final arguments = ContactArguments(
       accountId: accountId!,
       session: session!,
-      listContactSelected: listContactSelected,
+      selectedContactList: selectedContactList,
       contactViewTitle: '${AppLocalizations.of(context).findEmails} ${prefixEmailAddress.asName(context).toLowerCase()}'
     );
 
-    final newContact = await push(AppRoutes.contact, arguments: arguments);
+    final newListContact = await push(AppRoutes.contact, arguments: arguments);
 
-    if (newContact is EmailAddress && context.mounted) {
+    if (newListContact is List<EmailAddress> && context.mounted) {
+      final listMailAddress = newListContact
+        .map((emailAddress) => emailAddress.emailAddress)
+        .toSet();
+
       _dispatchApplyContactAction(
         context,
-        listContactSelected,
-        prefixEmailAddress,
-        newContact);
+        listMailAddress,
+        prefixEmailAddress
+      );
     }
   }
 
@@ -663,48 +667,21 @@ class SearchEmailController extends BaseController
       BuildContext context,
       Set<String> listContactSelected,
       PrefixEmailAddress prefixEmailAddress,
-      EmailAddress newContact
   ) {
-    if (listContactSelected.isNotEmpty) {
-      switch(prefixEmailAddress) {
-        case PrefixEmailAddress.from:
-          if (listContactSelected.first == newContact.email) {
-            searchEmailFilter.value.from.clear();
-          } else {
-            searchEmailFilter.value.from.clear();
-            searchEmailFilter.value.from.add(newContact.email!);
-          }
-          break;
-        case PrefixEmailAddress.to:
-          if (listContactSelected.first == newContact.email) {
-            searchEmailFilter.value.to.clear();
-          } else {
-            searchEmailFilter.value.to.clear();
-            searchEmailFilter.value.to.add(newContact.email!);
-          }
-          break;
-        default:
-          break;
-      }
-    } else {
-      switch(prefixEmailAddress) {
-        case PrefixEmailAddress.from:
-          searchEmailFilter.value.from.add(newContact.email!);
-          break;
-        case PrefixEmailAddress.to:
-          searchEmailFilter.value.to.add(newContact.email!);
-          break;
-        default:
-          break;
-      }
-    }
-
     switch(prefixEmailAddress) {
       case PrefixEmailAddress.from:
-        _updateSimpleSearchFilter(fromOption: Some(searchEmailFilter.value.from));
+        _updateSimpleSearchFilter(
+          fromOption: listContactSelected.isNotEmpty
+            ? Some(listContactSelected)
+            : const None()
+        );
         break;
       case PrefixEmailAddress.to:
-        _updateSimpleSearchFilter(toOption: Some(searchEmailFilter.value.to));
+        _updateSimpleSearchFilter(
+          toOption: listContactSelected.isNotEmpty
+            ? Some(listContactSelected)
+            : const None()
+        );
         break;
       default:
         break;

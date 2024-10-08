@@ -1696,42 +1696,48 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     dispatchAction(StartSearchEmailAction());
   }
 
-  Future<void> selectFromSearchFilter(BuildContext context) async {
+  Future<void> selectFromSearchFilter({required AppLocalizations appLocalizations}) async {
     if (accountId.value == null || sessionCurrent == null) return;
 
     final contactArgument = ContactArguments(
       accountId: accountId.value!,
       session: sessionCurrent!,
-      listContactSelected: searchController.searchEmailFilter.value.from,
-      contactViewTitle: '${AppLocalizations.of(context).findEmails} ${AppLocalizations.of(context).from_email_address_prefix.toLowerCase()}'
+      selectedContactList: searchController.searchEmailFilter.value.from,
+      contactViewTitle: '${appLocalizations.findEmails} ${appLocalizations.from_email_address_prefix.toLowerCase()}'
     );
 
-    final newContact = await DialogRouter.pushGeneralDialog(
+    final newListContact = await DialogRouter.pushGeneralDialog(
       routeName: AppRoutes.contact,
       arguments: contactArgument);
 
-    if (newContact is EmailAddress) {
-      searchController.updateFilterEmail(fromOption: Some({newContact.emailAddress}));
+    if (newListContact is List<EmailAddress>) {
+      final listMailAddress = newListContact
+        .map((emailAddress) => emailAddress.emailAddress)
+        .toSet();
+      searchController.updateFilterEmail(fromOption: Some(listMailAddress));
       dispatchAction(StartSearchEmailBySearchFilterAction(QuickSearchFilter.from));
     }
   }
 
-  Future<void> selectToSearchFilter(BuildContext context) async {
+  Future<void> selectToSearchFilter({required AppLocalizations appLocalizations}) async {
     if (accountId.value == null || sessionCurrent == null) return;
 
     final contactArgument = ContactArguments(
       accountId: accountId.value!,
       session: sessionCurrent!,
-      listContactSelected: searchController.searchEmailFilter.value.to,
-      contactViewTitle: '${AppLocalizations.of(context).findEmails} ${AppLocalizations.of(context).to_email_address_prefix.toLowerCase()}'
+      selectedContactList: searchController.searchEmailFilter.value.to,
+      contactViewTitle: '${appLocalizations.findEmails} ${appLocalizations.to_email_address_prefix.toLowerCase()}'
     );
 
-    final newContact = await DialogRouter.pushGeneralDialog(
+    final newListContact = await DialogRouter.pushGeneralDialog(
       routeName: AppRoutes.contact,
       arguments: contactArgument);
 
-    if (newContact is EmailAddress) {
-      searchController.updateFilterEmail(toOption: Some({newContact.emailAddress}));
+    if (newListContact is List<EmailAddress>) {
+      final listMailAddress = newListContact
+        .map((emailAddress) => emailAddress.emailAddress)
+        .toSet();
+      searchController.updateFilterEmail(toOption: Some(listMailAddress));
       dispatchAction(StartSearchEmailBySearchFilterAction(QuickSearchFilter.to));
     }
   }
@@ -1796,7 +1802,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     }
   }
 
-  void selectSortOrderQuickSearchFilter(BuildContext context, EmailSortOrderType sortOrder) {
+  void selectSortOrderQuickSearchFilter(EmailSortOrderType sortOrder) {
     log('MailboxDashBoardController::selectSortOrderQuickSearchFilter():sortOrder: $sortOrder');
     popBack();
     searchController.sortOrderFiltered.value = sortOrder;

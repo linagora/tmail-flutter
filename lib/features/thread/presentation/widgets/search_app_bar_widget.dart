@@ -32,6 +32,7 @@ class SearchAppBarWidget extends StatelessWidget {
   final double? searchIconSize;
   final TextStyle? inputHintTextStyle;
   final TextStyle? inputTextStyle;
+  final bool? autoFocus;
   final OnCancelSearchPressed? onCancelSearchPressed;
   final OnTextChangeSearchAction? onTextChangeSearchAction;
   final OnClearTextSearchAction? onClearTextSearchAction;
@@ -55,6 +56,7 @@ class SearchAppBarWidget extends StatelessWidget {
     this.searchIconSize,
     this.inputHintTextStyle,
     this.inputTextStyle,
+    this.autoFocus,
     this.onCancelSearchPressed,
     this.onTextChangeSearchAction,
     this.onClearTextSearchAction,
@@ -122,7 +124,7 @@ class SearchAppBarWidget extends StatelessWidget {
       cursorColor: AppColor.colorTextButton,
       maxLines: 1,
       textDirection: DirectionUtils.getDirectionByLanguage(context),
-      autoFocus: true,
+      autoFocus: autoFocus ?? true,
       focusNode: searchFocusNode,
       textStyle: inputTextStyle ?? const TextStyle(
         color: AppColor.colorNameEmail,

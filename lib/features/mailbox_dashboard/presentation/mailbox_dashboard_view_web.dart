@@ -591,13 +591,17 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         }
         break;
       case QuickSearchFilter.from:
-        controller.selectFromSearchFilter(context);
+        controller.selectFromSearchFilter(
+          appLocalizations: AppLocalizations.of(context)
+        );
         break;
       case QuickSearchFilter.hasAttachment:
         controller.selectHasAttachmentSearchFilter();
         break;
       case QuickSearchFilter.to:
-        controller.selectToSearchFilter(context);
+        controller.selectToSearchFilter(
+          appLocalizations: AppLocalizations.of(context)
+        );
         break;
       case QuickSearchFilter.folder:
         controller.selectFolderSearchFilter();
@@ -665,7 +669,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       popupMenuEmailSortOrderType(
         context,
         controller.searchController.sortOrderFiltered.value,
-        onCallBack: (sortOrder) => controller.selectSortOrderQuickSearchFilter(context, sortOrder)
+        onCallBack: controller.selectSortOrderQuickSearchFilter
       )
     );
   }

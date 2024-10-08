@@ -6,13 +6,13 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 class ContactArguments with EquatableMixin {
   final AccountId accountId;
   final Session session;
-  final Set<String> listContactSelected;
+  final Set<String> selectedContactList;
   final String? contactViewTitle;
 
   ContactArguments({
     required this.accountId,
     required this.session,
-    required this.listContactSelected,
+    required this.selectedContactList,
     this.contactViewTitle
   });
 
@@ -20,7 +20,7 @@ class ContactArguments with EquatableMixin {
   List<Object?> get props => [
     accountId,
     session,
-    listContactSelected,
+    selectedContactList,
     contactViewTitle,
   ];
 }
