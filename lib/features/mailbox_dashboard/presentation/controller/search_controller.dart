@@ -107,6 +107,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     log('SearchController::_mappingToFilterOnSuggestionForm():query: $query');
     final filterCondition = EmailFilterCondition(
       text: query.isNotEmpty == true ? query : null,
+      body: query.isNotEmpty == true ? query : null,
       after: listFilterOnSuggestionForm.contains(QuickSearchFilter.last7Days)
         ? EmailReceiveTimeType.last7Days.toOldestUTCDate()
         : null,

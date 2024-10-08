@@ -93,6 +93,9 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
       text: text?.value.trim().isNotEmpty == true
         ? text?.value
         : null,
+      body: text?.value.trim().isNotEmpty == true
+        ? text?.value
+        : null,
       inMailbox: mailbox?.mailboxId,
       after: sortOrderType.isScrollByPosition()
         ? null
