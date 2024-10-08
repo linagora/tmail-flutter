@@ -1,15 +1,19 @@
 
-import 'package:core/presentation/utils/keyboard_utils.dart';
+import 'dart:async';
+
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:dartz/dartz.dart';
 import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/autocomplete/auto_complete_pattern.dart';
+import 'package:model/extensions/email_address_extension.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
@@ -21,6 +25,8 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_conta
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_suggestion_box_item.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ContactController extends BaseController {
@@ -30,20 +36,24 @@ class ContactController extends BaseController {
   ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.tMailContact;
 
   final searchQuery = SearchQuery.initial().obs;
-  final session = Rxn<Session>();
-  final listContactSearched = RxList<EmailAddress>();
+  final searchedContactList = RxList<EmailAddress>();
+  final selectedContactList = RxList<EmailAddress>();
   final contactArguments = Rxn<ContactArguments>();
+  final searchStatus = SearchStatus.INACTIVE.obs;
+  final searchViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
   GetDeviceContactSuggestionsInteractor? _getDeviceContactSuggestionsInteractor;
 
-  final Debouncer<String> _deBouncerTime = Debouncer<String>(const Duration(milliseconds: 300), initialValue: '');
+  final Debouncer<String> _deBouncerTime = Debouncer<String>(
+    const Duration(milliseconds: 300),
+    initialValue: ''
+  );
   AccountId? _accountId;
-
-  EmailAddress? contactSelected;
   SelectedContactCallbackAction? onSelectedContactCallback;
   VoidCallback? onDismissContactView;
+  StreamSubscription<String>? _deBouncerTimeStreamSubscription;
 
   @override
   void onInit() {
@@ -51,25 +61,23 @@ class ContactController extends BaseController {
     ThemeUtils.setStatusBarTransparentColor();
     log('ContactController::onInit():arguments: ${Get.arguments}');
     contactArguments.value = Get.arguments;
-    _deBouncerTime.values.listen((value) {
-      searchQuery.value = SearchQuery(value);
-      _searchContactByNameOrEmail(searchQuery.value.value);
-    });
+    _deBouncerTimeStreamSubscription = _deBouncerTime.values.listen(_handleDeBounceTimeSearchContact);
+    textInputSearchFocus.addListener(_onSearchInputTextFocusListener);
   }
 
   @override
   void onReady() {
     super.onReady();
-    textInputSearchFocus.requestFocus();
     if (contactArguments.value != null) {
       _accountId = contactArguments.value!.accountId;
-      session.value = contactArguments.value!.session;
-      final listContactSelected = contactArguments.value!.listContactSelected;
-      log('ContactController::onReady(): listContactSelected: $listContactSelected');
-      if (listContactSelected.isNotEmpty) {
-        contactSelected = EmailAddress(listContactSelected.first, listContactSelected.first);
+      selectedContactList.value = contactArguments.value!.selectedContactList
+        .map((mailAddress) => EmailAddress(null, mailAddress))
+        .toList();
+      injectAutoCompleteBindings(contactArguments.value!.session, _accountId);
+
+      if (selectedContactList.isEmpty) {
+        textInputSearchFocus.requestFocus();
       }
-      injectAutoCompleteBindings(session.value, _accountId);
     }
     if (PlatformInfo.isMobile) {
       Future.delayed(
@@ -81,10 +89,19 @@ class ContactController extends BaseController {
   @override
   void onClose() {
     log('ContactController::onClose():');
+    searchViewState.value = Right(UIState.idle);
+    textInputSearchFocus.removeListener(_onSearchInputTextFocusListener);
     textInputSearchFocus.dispose();
     textInputSearchController.dispose();
+    _deBouncerTimeStreamSubscription?.cancel();
     _deBouncerTime.cancel();
     super.onClose();
+  }
+
+  void _onSearchInputTextFocusListener() {
+    if (textInputSearchFocus.hasFocus && textInputSearchController.text.trim().isEmpty) {
+      searchStatus.value = SearchStatus.INACTIVE;
+    }
   }
 
   void onTextSearchChange(String text) {
@@ -95,9 +112,23 @@ class ContactController extends BaseController {
     _deBouncerTime.value = text;
   }
 
+  Future<void> _handleDeBounceTimeSearchContact(String value) async {
+    if (value.trim().isEmpty) {
+      searchStatus.value = SearchStatus.INACTIVE;
+      return;
+    }
+
+    searchStatus.value = SearchStatus.ACTIVE;
+    searchViewState.value = Right(SearchingState());
+    searchQuery.value = SearchQuery(value);
+    await _searchContactByNameOrEmail(searchQuery.value.value);
+    searchViewState.value = Right(UIState.idle);
+  }
+
   void clearAllTextInputSearchForm() {
     textInputSearchController.clear();
     searchQuery.value = SearchQuery.initial();
+    searchedContactList.clear();
     textInputSearchFocus.requestFocus();
   }
 
@@ -113,10 +144,10 @@ class ContactController extends BaseController {
     }
   }
 
-  void _searchContactByNameOrEmail(String query) async {
+  Future<void> _searchContactByNameOrEmail(String query) async {
     log('ContactController::_searchContactByNameOrEmail(): query: $query');
     final listContact = await _getAutoCompleteSuggestion(query);
-    listContactSearched.value = listContact;
+    searchedContactList.value = listContact;
   }
 
   Future<List<EmailAddress>> _getAutoCompleteSuggestion(String query) async {
@@ -162,16 +193,46 @@ class ContactController extends BaseController {
     }
   }
 
-  void selectContact(BuildContext context, EmailAddress emailAddress) {
-    KeyboardUtils.hideKeyboard(context);
-    popBack(result: emailAddress);
+  void handleOnSelectContactAction(EmailAddress emailAddress) {
+    log('ContactController::selectContact:emailAddress = $emailAddress');
+    final isEmailAddressExist = selectedContactList
+      .any((contact) => contact.emailAddress == emailAddress.emailAddress);
+    log('ContactController::selectContact:isEmailAddressExist = $isEmailAddressExist');
+    if (!isEmailAddressExist) {
+      selectedContactList.add(emailAddress);
+    }
+  }
+
+  void handleOnDeleteContactAction(EmailAddress emailAddress) {
+    log('ContactController::handleOnDeleteContactAction:emailAddress = $emailAddress');
+    selectedContactList.removeWhere((contact) => contact.emailAddress == emailAddress.emailAddress);
   }
 
   void closeContactView() {
-    textInputSearchController.clear();
-    searchQuery.value = SearchQuery.initial();
     textInputSearchFocus.unfocus();
     FocusManager.instance.primaryFocus?.unfocus();
     popBack();
+  }
+
+  void handleOnClearFilterAction() {
+    selectedContactList.clear();
+    textInputSearchFocus.unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
+    popBack(result: selectedContactList);
+  }
+
+  void handleOnDoneAction() {
+    textInputSearchFocus.unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
+    popBack(result: selectedContactList);
+  }
+
+  void handleOnSearchBackAction() {
+    textInputSearchController.clear();
+    searchQuery.value = SearchQuery.initial();
+    searchedContactList.clear();
+    textInputSearchFocus.unfocus();
+    FocusManager.instance.primaryFocus?.unfocus();
+    searchStatus.value = SearchStatus.INACTIVE;
   }
 }
