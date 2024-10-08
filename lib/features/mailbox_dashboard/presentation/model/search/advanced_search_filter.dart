@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:model/email/prefix_email_address.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum AdvancedSearchFilterField {
@@ -62,6 +63,17 @@ enum AdvancedSearchFilterField {
         fontSize: 14,
         fontWeight: FontWeight.w400,
         color: AppColor.colorContentEmail);
+  }
+
+  PrefixEmailAddress getPrefixEmailAddress() {
+    switch (this) {
+      case AdvancedSearchFilterField.from:
+        return PrefixEmailAddress.from;
+      case AdvancedSearchFilterField.to:
+        return PrefixEmailAddress.to;
+      default:
+        return PrefixEmailAddress.cc;
+    }
   }
 
   TextStyle getHintTextStyle() {
