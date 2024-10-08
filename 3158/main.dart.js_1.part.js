@@ -247,7 +247,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   C.RecentItemTileWidget.prototype = {
     build$1(context) {
       var _null = null;
-      return new A.Padding(B.EdgeInsets_12_12_12_12, A.Row$(A._setArrayType([A.SvgPicture$asset("assets/images/ic_clock_sb.svg", B.Alignment_0_0, _null, B.BoxFit_1, _null, _null, _null, _null), B.SizedBox_8_null_null_null, A.Expanded$(A.Text$(this._getTitle$1(this.item), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_69t0, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), _null);
+      return new A.Padding(B.EdgeInsets_12_12_12_12, A.Row$(A._setArrayType([A.SvgPicture$asset("assets/images/ic_clock_sb.svg", B.Alignment_0_0, _null, B.BoxFit_1, _null, _null, _null, _null), B.SizedBox_8_null_null_null, A.Expanded$(A.Text$(this._getTitle$1(this.item), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_69t1, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), _null);
     },
     _getTitle$1(item) {
       return item.username;
@@ -501,7 +501,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return B.SizedBox_null_null_null_null;
     },
-    $signature: 541
+    $signature: 543
   };
   C.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(_) {
@@ -626,7 +626,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 50
+    $signature: 54
   };
   C.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -794,5 +794,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "7M9xJ5ls7IOxiL9YCVkXRj0+ZRU=");
+})($__dart_deferred_initializers__, "8tq1DHgUZ7OyEVwURKcOGGx2Peg=");
 ;
