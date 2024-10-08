@@ -3,6 +3,7 @@
 echo "$TEST_CREDENTIALS" >tests.env
 set -o allexport && source tests.env && set +o allexport
 dart pub global activate patrol_cli
+flutter build apk --config-only
 patrol build android -v \
     --dart-define=USERNAME="$USERNAME" \
     --dart-define=PASSWORD="$PASSWORD" \
