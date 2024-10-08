@@ -4,36 +4,19 @@ set -e
 # debug log
 set -x
 
-cd core
-flutter pub get && dart run build_runner build --delete-conflicting-outputs
+# Add additional modules to the end of this, seperated by space
+modules=("core" "model" "contact" "forward" "rule_filter" "fcm" "email_recovery" "server_settings")
 
-## Install necessary pods
-# cd ../ios
-# flutter pub get && pod install
+for mod in "${modules[@]}"; do
+    (
+        cd "$mod"
+        flutter pub get
+        dart run build_runner build --delete-conflicting-outputs
+    )
+done
 
-cd ../model
-flutter pub get && dart run build_runner build --delete-conflicting-outputs
-
-cd ../contact
-flutter pub get && dart run build_runner build --delete-conflicting-outputs
-
-cd ../forward
-flutter pub get && dart run build_runner build --delete-conflicting-outputs
-
-cd ../rule_filter
-flutter pub get && dart run build_runner build --delete-conflicting-outputs
-
-cd ../fcm
-flutter pub get && dart run build_runner build --delete-conflicting-outputs
-
-cd ../email_recovery
-flutter pub get && dart run build_runner build --delete-conflicting-outputs
-
-cd ../server_settings
-flutter pub get && dart run build_runner build --delete-conflicting-outputs
-
-cd ..
-flutter pub get \
-    && dart run build_runner build --delete-conflicting-outputs \
-    && dart run intl_generator:extract_to_arb --output-dir=./lib/l10n lib/main/localizations/app_localizations.dart \
-    && dart run intl_generator:generate_from_arb --output-dir=lib/l10n --no-use-deferred-loading lib/main/localizations/app_localizations.dart lib/l10n/intl*.arb
+# For the parent module
+flutter pub get
+dart run build_runner build --delete-conflicting-outputs &&
+    dart run intl_generator:extract_to_arb --output-dir=./lib/l10n lib/main/localizations/app_localizations.dart &&
+    dart run intl_generator:generate_from_arb --output-dir=lib/l10n --no-use-deferred-loading lib/main/localizations/app_localizations.dart lib/l10n/intl*.arb
