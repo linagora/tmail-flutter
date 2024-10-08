@@ -1483,10 +1483,11 @@ packages:
   patrol:
     dependency: "direct dev"
     description:
-      name: patrol
-      sha256: "6ac5e239384282da389a6b78d68aa86d8760ad8d5481d665937c4eb586c0b3dc"
-      url: "https://pub.dev"
-    source: hosted
+      path: "packages/patrol"
+      ref: fix-androidx-test-orchestrator
+      resolved-ref: "4f3e1420491616fb6bcb01a10eb3b4d7ff115146"
+      url: "https://github.com/tddang-linagora/patrol.git"
+    source: git
     version: "3.11.0"
   patrol_finders:
     dependency: transitive

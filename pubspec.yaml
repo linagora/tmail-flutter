@@ -269,7 +269,12 @@ dev_dependencies:
   json_serializable: 6.6.1
 
   http_mock_adapter: 0.4.2
-  patrol: 3.11.0
+
+  patrol:
+    git:
+      url: https://github.com/tddang-linagora/patrol.git
+      ref: fix-androidx-test-orchestrator
+      path: packages/patrol
 
   plugin_platform_interface: 2.1.8
 
