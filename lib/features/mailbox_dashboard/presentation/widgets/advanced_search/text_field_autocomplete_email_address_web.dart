@@ -379,16 +379,12 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
           _isDragging = false;
         });
         _updateListEmailAddressAction();
-      } else {
-        if (_isDragging) {
-          stateSetter(() => _isDragging = false);
-        }
-      }
-      widget.onRemoveDraggableEmailAddressAction?.call(draggableEmailAddress);
-    } else {
-      if (_isDragging) {
+      } else if (_isDragging) {
         stateSetter(() => _isDragging = false);
       }
+      widget.onRemoveDraggableEmailAddressAction?.call(draggableEmailAddress);
+    } else if (_isDragging) {
+      stateSetter(() => _isDragging = false);
     }
   }
 }
