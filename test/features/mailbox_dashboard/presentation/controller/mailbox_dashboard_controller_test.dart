@@ -399,7 +399,6 @@ void main() {
       
       // expect sort in search controller update as expected
       mailboxDashboardController.selectSortOrderQuickSearchFilter(
-        context,
         EmailSortOrderType.oldest);
       expect(searchController.sortOrderFiltered.value, EmailSortOrderType.oldest);
 
