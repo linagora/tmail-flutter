@@ -6,7 +6,12 @@ function connect(url, ticket) {
 
   webSocket.onopen = () => {
     console.log("websocket open");
-    webSocket.send(JSON.stringify({ "@type": "WebSocketPushEnable" }));
+    webSocket.send(
+      JSON.stringify({
+        "@type": "WebSocketPushEnable",
+        dataTypes: ["Mailbox, Email, EmailDelivery"],
+      })
+    );
   };
 
   webSocket.onmessage = (event) => {

@@ -41,13 +41,7 @@ class RemoteWebSocketDatasourceImpl implements WebSocketDatasource {
         'ticket': webSocketTicket,  
       });
       
-      yield* broadcastChannel.onMessage.map((event) {
-        if (event.data == 'webSocketClosed') {
-          throw WebSocketClosedException();
-        }
-
-        return event.data;
-      });
+      yield* _webSocketListener(broadcastChannel);
     } catch (e) {
       logError('RemoteWebSocketDatasourceImpl::getWebSocketChannel():error: $e');
       rethrow;
@@ -73,5 +67,15 @@ class RemoteWebSocketDatasourceImpl implements WebSocketDatasource {
     if (webSocketUri == null) throw WebSocketUriUnavailableException();
 
     return webSocketUri;
+  }
+
+  Stream _webSocketListener(BroadcastChannel broadcastChannel) {
+    return broadcastChannel.onMessage.map((event) {
+      if (event.data == 'webSocketClosed') {
+        throw WebSocketClosedException();
+      }
+
+      return event.data;
+    });
   }
 }
