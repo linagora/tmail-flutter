@@ -19,6 +19,8 @@ class RemoteWebSocketDatasourceImpl implements WebSocketDatasource {
   
   const RemoteWebSocketDatasourceImpl(this._webSocketApi, this._exceptionThrower);
 
+  static const String _webSocketClosed = 'webSocketClosed';
+
   @override
   Stream getWebSocketChannel(Session session, AccountId accountId) {
     return Stream
@@ -71,7 +73,7 @@ class RemoteWebSocketDatasourceImpl implements WebSocketDatasource {
 
   Stream _webSocketListener(BroadcastChannel broadcastChannel) {
     return broadcastChannel.onMessage.map((event) {
-      if (event.data == 'webSocketClosed') {
+      if (event.data == _webSocketClosed) {
         throw WebSocketClosedException();
       }
 
