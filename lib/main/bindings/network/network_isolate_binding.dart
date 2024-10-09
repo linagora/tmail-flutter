@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/data/network/interceptors/timeout_interceptors.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_auth_plugin/app_auth_plugin.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
@@ -57,6 +58,8 @@ class NetworkIsolateBindings extends Bindings {
     ), tag: BindingTag.isolateTag);
     Get.find<Dio>(tag: BindingTag.isolateTag).interceptors
       .add(Get.find<DynamicUrlInterceptors>());
+    Get.find<Dio>(tag: BindingTag.isolateTag).interceptors
+      .add(Get.find<TimeoutInterceptors>());
     Get.find<Dio>(tag: BindingTag.isolateTag).interceptors
       .add(Get.find<AuthorizationInterceptors>(tag: BindingTag.isolateTag));
     if (BuildUtils.isDebugMode) {

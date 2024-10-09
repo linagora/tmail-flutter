@@ -29,6 +29,7 @@ import 'package:rule_filter/rule_filter/tmail_rule.dart';
 import 'package:tmail_ui_user/features/base/state/base_ui_state.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/data/network/interceptors/timeout_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
@@ -59,6 +60,7 @@ import 'rule_filter_creator_controller_test.mocks.dart';
   MockSpec<LanguageCacheManager>(),
   MockSpec<AuthorizationInterceptors>(),
   MockSpec<DynamicUrlInterceptors>(),
+  MockSpec<TimeoutInterceptors>(),
   MockSpec<DeleteCredentialInteractor>(),
   MockSpec<LogoutOidcInteractor>(),
   MockSpec<DeleteAuthorityOidcInteractor>(),
@@ -86,6 +88,7 @@ void main() {
   late MockLanguageCacheManager mockLanguageCacheManager;
   late MockAuthorizationInterceptors mockAuthorizationInterceptors;
   late MockDynamicUrlInterceptors mockDynamicUrlInterceptors;
+  late MockTimeoutInterceptors mockTimeoutInterceptors;
   late MockDeleteCredentialInteractor mockDeleteCredentialInteractor;
   late MockLogoutOidcInteractor mockLogoutOidcInteractor;
   late MockDeleteAuthorityOidcInteractor mockDeleteAuthorityOidcInteractor;
@@ -104,6 +107,7 @@ void main() {
     mockLanguageCacheManager = MockLanguageCacheManager();
     mockAuthorizationInterceptors = MockAuthorizationInterceptors();
     mockDynamicUrlInterceptors = MockDynamicUrlInterceptors();
+    mockTimeoutInterceptors = MockTimeoutInterceptors();
     mockDeleteCredentialInteractor = MockDeleteCredentialInteractor();
     mockLogoutOidcInteractor = MockLogoutOidcInteractor();
     mockDeleteAuthorityOidcInteractor = MockDeleteAuthorityOidcInteractor();
@@ -122,6 +126,7 @@ void main() {
       tag: BindingTag.isolateTag,
     );
     Get.put<DynamicUrlInterceptors>(mockDynamicUrlInterceptors);
+    Get.put<TimeoutInterceptors>(mockTimeoutInterceptors);
     Get.put<DeleteCredentialInteractor>(mockDeleteCredentialInteractor);
     Get.put<LogoutOidcInteractor>(mockLogoutOidcInteractor);
     Get.put<DeleteAuthorityOidcInteractor>(mockDeleteAuthorityOidcInteractor);

@@ -45,6 +45,10 @@ class RemoteExceptionThrower extends ExceptionThrower {
         switch (error.type) {
           case DioErrorType.connectionTimeout:
             throw ConnectionTimeout(message: error.message);
+          case DioErrorType.sendTimeout:
+            throw SendTimeout(message: error.message);
+          case DioErrorType.receiveTimeout:
+            throw ReceiveTimeout(message: error.message);
           case DioErrorType.connectionError:
             throw ConnectionError(message: error.message);
           case DioErrorType.badResponse:

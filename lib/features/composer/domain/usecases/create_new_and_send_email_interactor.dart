@@ -15,24 +15,29 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/create_e
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:tmail_ui_user/features/login/data/network/interceptors/timeout_interceptors.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class CreateNewAndSendEmailInteractor {
   final EmailRepository _emailRepository;
   final MailboxRepository _mailboxRepository;
   final ComposerRepository _composerRepository;
+  final TimeoutInterceptors _timeoutInterceptors;
 
   CreateNewAndSendEmailInteractor(
     this._emailRepository,
     this._mailboxRepository,
     this._composerRepository,
+    this._timeoutInterceptors,
   );
 
   Stream<dartz.Either<Failure, Success>> execute({
     required CreateEmailRequest createEmailRequest,
-    CancelToken? cancelToken
+    CancelToken? cancelToken,
+    bool enableTimeout = false,
   }) async* {
     SendingEmailArguments? sendingEmailArguments;
     try {
@@ -45,41 +50,65 @@ class CreateNewAndSendEmailInteractor {
 
       sendingEmailArguments = await _createEmailObject(createEmailRequest);
 
-      if (sendingEmailArguments != null) {
-        yield dartz.Right<Failure, Success>(SendEmailLoading());
+      if (sendingEmailArguments == null) {
+        yield dartz.Left<Failure, Success>(GenerateEmailFailure(CannotCreateEmailObjectException()));
+        return;
+      }
 
-        await _emailRepository.sendEmail(
-          sendingEmailArguments.session,
-          sendingEmailArguments.accountId,
-          sendingEmailArguments.emailRequest,
-          mailboxRequest: sendingEmailArguments.mailboxRequest,
+      if (enableTimeout) {
+        _timeoutInterceptors.setTimeout(
+          connectionTimeout: AppConfig.sendingMessageTimeout,
+          sendTimeout: AppConfig.sendingMessageTimeout,
+          receiveTimeout: AppConfig.sendingMessageTimeout,
+        );
+      }
+
+      yield dartz.Right<Failure, Success>(SendEmailLoading());
+
+      await _emailRepository.sendEmail(
+        sendingEmailArguments.session,
+        sendingEmailArguments.accountId,
+        sendingEmailArguments.emailRequest,
+        mailboxRequest: sendingEmailArguments.mailboxRequest,
+        cancelToken: cancelToken,
+      );
+
+      if (enableTimeout) {
+        _timeoutInterceptors.resetTimeout();
+      }
+
+      if (sendingEmailArguments.emailRequest.emailIdDestroyed != null) {
+        await _deleteOldDraftsEmail(
+          session: sendingEmailArguments.session,
+          accountId: sendingEmailArguments.accountId,
+          draftEmailId: sendingEmailArguments.emailRequest.emailIdDestroyed!,
           cancelToken: cancelToken
         );
-
-        if (sendingEmailArguments.emailRequest.emailIdDestroyed != null) {
-          await _deleteOldDraftsEmail(
-            session: sendingEmailArguments.session,
-            accountId: sendingEmailArguments.accountId,
-            draftEmailId: sendingEmailArguments.emailRequest.emailIdDestroyed!,
-            cancelToken: cancelToken
-          );
-        }
-
-        yield dartz.Right<Failure, Success>(
-          SendEmailSuccess(
-            currentMailboxState: listCurrentState?.value1,
-            currentEmailState: listCurrentState?.value2,
-            emailRequest: sendingEmailArguments.emailRequest
-          )
-        );
-      } else {
-        yield dartz.Left<Failure, Success>(GenerateEmailFailure(CannotCreateEmailObjectException()));
       }
+
+      yield dartz.Right<Failure, Success>(
+        SendEmailSuccess(
+          currentMailboxState: listCurrentState?.value1,
+          currentEmailState: listCurrentState?.value2,
+          emailRequest: sendingEmailArguments.emailRequest
+        )
+      );
     } catch (e) {
       logError('CreateNewAndSendEmailInteractor::execute: Exception: $e');
+      if (enableTimeout) {
+        _timeoutInterceptors.resetTimeout();
+      }
       if (e is UnknownError && e.message is List<SendingEmailCanceledException>) {
         yield dartz.Left<Failure, Success>(SendEmailFailure(
           exception: SendingEmailCanceledException(),
+          session: sendingEmailArguments?.session,
+          accountId: sendingEmailArguments?.accountId,
+          emailRequest: sendingEmailArguments?.emailRequest,
+          mailboxRequest: sendingEmailArguments?.mailboxRequest,
+        ));
+      } else if (e is ConnectionTimeout || e is SendTimeout || e is ReceiveTimeout) {
+        yield dartz.Left<Failure, Success>(SendEmailFailure(
+          exception: SendingEmailTimeoutException(),
           session: sendingEmailArguments?.session,
           accountId: sendingEmailArguments?.accountId,
           emailRequest: sendingEmailArguments?.emailRequest,

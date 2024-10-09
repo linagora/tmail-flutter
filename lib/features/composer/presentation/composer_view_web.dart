@@ -499,7 +499,10 @@ class ComposerView extends GetWidget<ComposerController> {
                               insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                               showCodeViewAction: controller.richTextWebController!.toggleCodeView,
                               deleteComposerAction: () => controller.handleClickDeleteComposer(context),
-                              saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
+                              saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(
+                                context: context,
+                                enableTimeout: true
+                              ),
                               sendMessageAction: () => controller.handleClickSendButton(context),
                               requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
                             )),
@@ -769,7 +772,10 @@ class ComposerView extends GetWidget<ComposerController> {
                               insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                               showCodeViewAction: controller.richTextWebController!.toggleCodeView,
                               deleteComposerAction: () => controller.handleClickDeleteComposer(context),
-                              saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
+                              saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(
+                                context: context,
+                                enableTimeout: true
+                              ),
                               sendMessageAction: () => controller.handleClickSendButton(context),
                               requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
                             )),
@@ -876,7 +882,10 @@ class ComposerView extends GetWidget<ComposerController> {
           padding: ComposerStyle.popupItemPadding,
           onCallbackAction: () {
             popBack();
-            controller.handleClickSaveAsDraftsButton(context);
+            controller.handleClickSaveAsDraftsButton(
+              context: context,
+              enableTimeout: true
+            );
           }
         )
       ),
