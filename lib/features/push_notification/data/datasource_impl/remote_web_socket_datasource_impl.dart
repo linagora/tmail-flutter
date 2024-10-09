@@ -1,5 +1,6 @@
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/websocket_capability.dart';
@@ -11,7 +12,7 @@ import 'package:tmail_ui_user/features/push_notification/data/network/web_socket
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/web_socket_exceptions.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
-import 'package:universal_html/html.dart';
+import 'package:tmail_ui_user/main/universal_import/html_stub.dart';
 
 class RemoteWebSocketDatasourceImpl implements WebSocketDatasource {
   final WebSocketApi _webSocketApi;
@@ -32,6 +33,8 @@ class RemoteWebSocketDatasourceImpl implements WebSocketDatasource {
     Session session,
     AccountId accountId,
   ) async* {
+    if (PlatformInfo.isMobile) throw WebSocketPushNotSupportedException();
+
     final broadcastChannel = BroadcastChannel('background-message');
     try {
       _verifyWebSocketCapabilities(session, accountId);
