@@ -1,7 +1,7 @@
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/interactors_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/web_socket_datasource.dart';
-import 'package:tmail_ui_user/features/push_notification/data/datasource_impl/remote_web_socket_datasource_impl.dart';
+import 'package:tmail_ui_user/features/push_notification/data/datasource_impl/web_socket_datasource_impl.dart';
 import 'package:tmail_ui_user/features/push_notification/data/network/web_socket_api.dart';
 import 'package:tmail_ui_user/features/push_notification/data/repository/web_socket_repository_impl.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/web_socket_repository.dart';
@@ -11,12 +11,12 @@ import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 class WebSocketInteractorBindings extends InteractorsBindings {
   @override
   void bindingsDataSource() {
-    Get.lazyPut<WebSocketDatasource>(() => Get.find<RemoteWebSocketDatasourceImpl>());
+    Get.lazyPut<WebSocketDatasource>(() => Get.find<WebSocketDatasourceImpl>());
   }
 
   @override
   void bindingsDataSourceImpl() {
-    Get.lazyPut(() => RemoteWebSocketDatasourceImpl(
+    Get.lazyPut(() => WebSocketDatasourceImpl(
       Get.find<WebSocketApi>(),
       Get.find<RemoteExceptionThrower>(),
     ));

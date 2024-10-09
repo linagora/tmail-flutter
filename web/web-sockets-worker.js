@@ -2,14 +2,14 @@ var webSocket;
 const broadcast = new BroadcastChannel("background-message");
 
 function connect(url, ticket) {
-  webSocket = new WebSocket(`${url}?ticket=${ticket}`);
+  webSocket = new WebSocket(`${url}?ticket=${ticket}`, "jmap");
 
   webSocket.onopen = () => {
     console.log("websocket open");
     webSocket.send(
       JSON.stringify({
         "@type": "WebSocketPushEnable",
-        dataTypes: ["Mailbox, Email, EmailDelivery"],
+        dataTypes: ["Mailbox", "Email", "EmailDelivery"],
       })
     );
   };
