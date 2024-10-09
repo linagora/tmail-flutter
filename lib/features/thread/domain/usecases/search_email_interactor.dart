@@ -26,10 +26,15 @@ class SearchEmailInteractor {
       Set<Comparator>? sort,
       Filter? filter,
       Properties? properties,
+      bool isRefreshChange = false,
     }
   ) async* {
     try {
-      yield Right(SearchingState());
+      if (isRefreshChange) {
+        yield Right(RefreshingSearchState());
+      } else {
+        yield Right(SearchingState());
+      }
 
       final emailList = await threadRepository.searchEmails(
         session,
