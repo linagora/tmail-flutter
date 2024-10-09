@@ -533,7 +533,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   ) {
     return Obx(() {
       final searchEmailFilter = controller.searchController.searchEmailFilter.value;
-      final sortOrderType = controller.searchController.sortOrderFiltered.value;
+      final sortOrderType = controller.searchController.sortOrderFiltered;
       final listAddressOfFrom = controller.searchController.listAddressOfFromFiltered;
       final userName = controller.sessionCurrent?.username;
       final startDate = controller.searchController.startDateFiltered;
@@ -668,7 +668,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       position,
       popupMenuEmailSortOrderType(
         context,
-        controller.searchController.sortOrderFiltered.value,
+        controller.searchController.sortOrderFiltered,
         onCallBack: controller.selectSortOrderQuickSearchFilter
       )
     );

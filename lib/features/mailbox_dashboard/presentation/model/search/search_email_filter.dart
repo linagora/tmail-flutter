@@ -28,30 +28,33 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
   final UTCDate? startDate;
   final UTCDate? endDate;
   final int? position;
+  final EmailSortOrderType sortOrderType;
 
   factory SearchEmailFilter.initial() => SearchEmailFilter();
 
   SearchEmailFilter({
-    Set<String>? from,
-    Set<String>? to,
-    EmailReceiveTimeType? emailReceiveTimeType,
-    bool? hasAttachment,
     this.text,
     this.subject,
-    Set<String>? notKeyword,
-    Set<String>? hasKeyword,
     this.mailbox,
     this.before,
     this.startDate,
     this.endDate,
     this.position,
+    Set<String>? from,
+    Set<String>? to,
+    EmailReceiveTimeType? emailReceiveTimeType,
+    bool? hasAttachment,
+    Set<String>? notKeyword,
+    Set<String>? hasKeyword,
+    EmailSortOrderType? sortOrderType,
   })  : from = from ?? <String>{},
         to = to ?? <String>{},
         notKeyword = notKeyword ?? <String>{},
         hasKeyword = hasKeyword ?? <String>{},
         hasAttachment = hasAttachment ?? false,
         emailReceiveTimeType =
-            emailReceiveTimeType ?? EmailReceiveTimeType.allTime;
+          emailReceiveTimeType ?? EmailReceiveTimeType.allTime,
+        sortOrderType = sortOrderType ?? EmailSortOrderType.mostRecent;
 
   SearchEmailFilter copyWith({
     Option<Set<String>>? fromOption,
@@ -67,6 +70,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     Option<UTCDate>? startDateOption,
     Option<UTCDate>? endDateOption,
     Option<int>? positionOption,
+    Option<EmailSortOrderType>? sortOrderTypeOption,
   }) {
     return SearchEmailFilter(
       from: getOptionParam(fromOption, from),
@@ -82,24 +86,24 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
       startDate: getOptionParam(startDateOption, startDate),
       endDate: getOptionParam(endDateOption, endDate),
       position: getOptionParam(positionOption, position),
+      sortOrderType: getOptionParam(sortOrderTypeOption, sortOrderType),
     );
   }
 
   Filter? mappingToEmailFilterCondition({
-    required EmailSortOrderType sortOrderType,
     EmailFilterCondition? moreFilterCondition
   }) {
     final emailEmailFilterConditionShared = EmailFilterCondition(
       text: text?.value.trim().isNotEmpty == true
-        ? text?.value
+        ? text?.value.trim()
         : null,
       inMailbox: mailbox?.mailboxId,
       after: sortOrderType.isScrollByPosition()
         ? null
         : emailReceiveTimeType.getAfterDate(startDate),
-      hasAttachment: hasAttachment == false ? null : hasAttachment,
+      hasAttachment: !hasAttachment ? null : hasAttachment,
       subject: subject?.trim().isNotEmpty == true
-        ? subject
+        ? subject?.trim()
         : null,
       before: sortOrderType.isScrollByPosition()
         ? null
@@ -145,6 +149,17 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     }
   }
 
+  bool get isApplied => from.isNotEmpty ||
+    to.isNotEmpty ||
+    text?.value.trim().isNotEmpty == true ||
+    subject?.trim().isNotEmpty == true ||
+    hasKeyword.isNotEmpty == true ||
+    notKeyword.isNotEmpty == true ||
+    emailReceiveTimeType != EmailReceiveTimeType.allTime ||
+    sortOrderType != EmailSortOrderType.mostRecent ||
+    (mailbox != null && mailbox?.id != PresentationMailbox.unifiedMailbox.id) ||
+    hasAttachment;
+
   @override
   List<Object?> get props => [
     from,
@@ -160,5 +175,6 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     startDate,
     endDate,
     position,
+    sortOrderType
   ];
 }
