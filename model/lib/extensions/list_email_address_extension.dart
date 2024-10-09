@@ -2,7 +2,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/extensions/email_address_extension.dart';
 
-extension ListEmailAddressExtension on Set<EmailAddress>? {
+extension SetEmailAddressExtension on Set<EmailAddress>? {
 
   List<String>? getListAddress() => this?.map((emailAddress) => emailAddress.emailAddress).toList();
 
@@ -34,4 +34,8 @@ extension ListEmailAddressExtension on Set<EmailAddress>? {
       ? this!.where((emailAddress) => emailAddress.email != emailAddressNotExist).toList()
       : List.empty();
   }
+}
+
+extension ListEmailAddressExtension on List<EmailAddress> {
+  Set<String> asSetAddress() => map((emailAddress) => emailAddress.emailAddress).toSet();
 }

@@ -39,7 +39,7 @@ class IconOpenAdvancedSearchWidget extends StatelessWidget {
                 height: 16),
             onTap: () {
               log('IconOpenAdvancedSearchWidget::build(): clicked');
-              advancedFilterController.initSearchFilterField();
+              advancedFilterController.initSearchFilterField(context);
               searchController.openAdvanceSearch();
             }),
       ),
