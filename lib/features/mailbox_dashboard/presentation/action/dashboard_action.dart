@@ -6,7 +6,6 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 
@@ -55,15 +54,6 @@ class OpenEmailDetailedFromSuggestionQuickSearchAction extends DashBoardAction {
 }
 
 class StartSearchEmailAction extends DashBoardAction {}
-
-class StartSearchEmailBySearchFilterAction extends DashBoardAction {
-  final QuickSearchFilter searchFilter;
-
-  StartSearchEmailBySearchFilterAction(this.searchFilter);
-
-  @override
-  List<Object?> get props => [searchFilter];
-}
 
 class EmptyTrashAction extends DashBoardAction {}
 
@@ -139,11 +129,11 @@ class ClearDateRangeToAdvancedSearch extends DashBoardAction {
   List<Object?> get props => [receiveTime];
 }
 
-class SearchEmailByFromFieldsAction extends DashBoardAction {
+class QuickSearchEmailByFromAction extends DashBoardAction {
 
   final EmailAddress emailAddress;
 
-  SearchEmailByFromFieldsAction(this.emailAddress);
+  QuickSearchEmailByFromAction(this.emailAddress);
 
   @override
   List<Object?> get props => [emailAddress];

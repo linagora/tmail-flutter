@@ -400,7 +400,7 @@ void main() {
       // expect sort in search controller update as expected
       mailboxDashboardController.selectSortOrderQuickSearchFilter(
         EmailSortOrderType.oldest);
-      expect(searchController.sortOrderFiltered.value, EmailSortOrderType.oldest);
+      expect(searchController.sortOrderFiltered, EmailSortOrderType.oldest);
 
       // expect filter in search controller update as expected
       mailboxDashboardController.selectHasAttachmentSearchFilter();
@@ -418,7 +418,7 @@ void main() {
         emailFilter: anyNamed('emailFilter'),
         propertiesCreated: anyNamed('propertiesCreated'),
         propertiesUpdated: anyNamed('propertiesUpdated')));
-      expect(searchController.sortOrderFiltered.value, EmailSortOrderType.mostRecent);
+      expect(searchController.sortOrderFiltered, EmailSortOrderType.mostRecent);
       expect(searchController.searchEmailFilter.value, SearchEmailFilter.initial());
       verify(getEmailsInMailboxInteractor.execute(
         testSession, testAccountId,
@@ -459,6 +459,7 @@ void main() {
         from: {fromEmailAddress.email!},
         to: {toEmailAddress.email!},
         subject: emailSubject,
+        sortOrderType: EmailSortOrderType.relevance,
         text: SearchQuery(emailContainsWord),
         notKeyword: {emailNotContainsWord},
         emailReceiveTimeType: EmailReceiveTimeType.last30Days,
@@ -474,7 +475,7 @@ void main() {
         emailFilter: anyNamed('emailFilter'),
         propertiesCreated: anyNamed('propertiesCreated'),
         propertiesUpdated: anyNamed('propertiesUpdated')));
-      expect(searchController.sortOrderFiltered.value, EmailSortOrderType.mostRecent);
+      expect(searchController.sortOrderFiltered, EmailSortOrderType.mostRecent);
       expect(searchController.searchEmailFilter.value, SearchEmailFilter.initial());
       verify(getEmailsInMailboxInteractor.execute(
         testSession, testAccountId,
