@@ -60,14 +60,22 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             context: context,
             advancedSearchFilterField: AdvancedSearchFilterField.subject,
             currentFocusNode: controller.focusManager.subjectFieldFocusNode,
-            nextFocusNode: controller.focusManager.hasKeywordFieldFocusNode
+            nextFocusNode: controller.focusManager.hasKeywordFieldFocusNode,
+            onTextChange: (value) => controller.onTextChanged(
+              AdvancedSearchFilterField.subject,
+              value
+            ),
           ),
           _buildFilterField(
             textEditingController: controller.hasKeyWordFilterInputController,
             context: context,
             advancedSearchFilterField: AdvancedSearchFilterField.hasKeyword,
             currentFocusNode: controller.focusManager.hasKeywordFieldFocusNode,
-            nextFocusNode: controller.focusManager.notKeywordFieldFocusNode
+            nextFocusNode: controller.focusManager.notKeywordFieldFocusNode,
+            onTextChange: (value) => controller.onTextChanged(
+              AdvancedSearchFilterField.hasKeyword,
+              value
+            ),
           ),
           _buildFilterField(
             textEditingController: controller.notKeyWordFilterInputController,
@@ -75,6 +83,10 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             advancedSearchFilterField: AdvancedSearchFilterField.notKeyword,
             currentFocusNode: controller.focusManager.notKeywordFieldFocusNode,
             nextFocusNode: controller.focusManager.mailboxFieldFocusNode,
+            onTextChange: (value) => controller.onTextChanged(
+              AdvancedSearchFilterField.notKeyword,
+              value
+            ),
           ),
           _buildFilterField(
             textEditingController: controller.mailBoxFilterInputController,
@@ -127,7 +139,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           receiveTime.getTitle(context),
           svgIconSelected: controller.imagePaths.icFilterSelected,
           maxWidth: 320,
-          isSelected: controller.dateFilterSelectedFormAdvancedSearch.value == receiveTime,
+          isSelected: controller.receiveTimeType.value == receiveTime,
           onCallbackAction: () => controller.updateReceiveDateSearchFilter(context, receiveTime),
         )))
       .toList();
@@ -142,6 +154,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     MouseCursor? mouseCursor,
     FocusNode? currentFocusNode,
     FocusNode? nextFocusNode,
+    ValueChanged<String>? onTextChange,
   }) {
     final child = [
       SizedBox(
@@ -166,6 +179,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           nextFocusNode: nextFocusNode,
           advancedSearchFilterField: advancedSearchFilterField,
           textEditingController: textEditingController,
+          onTextChange: onTextChange,
         )
       else if (controller.responsiveUtils.landscapeTabletSupported(context))
         if (advancedSearchFilterField == AdvancedSearchFilterField.date)
@@ -173,13 +187,13 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             controller.imagePaths,
             startDate: controller.startDate.value,
             endDate: controller.endDate.value,
-            receiveTimeSelected: controller.dateFilterSelectedFormAdvancedSearch.value,
+            receiveTimeSelected: controller.receiveTimeType.value,
             onReceiveTimeSelected: (receiveTime) => controller.updateReceiveDateSearchFilter(context, receiveTime),
           ))
         else if (advancedSearchFilterField == AdvancedSearchFilterField.sortBy)
           Obx(() => SortByDropDownButton(
             imagePaths: controller.imagePaths,
-            sortOrderSelected: controller.searchController.sortOrderFiltered.value,
+            sortOrderSelected: controller.sortOrderType.value,
             onSortOrderSelected: controller.updateSortOrder,
           ))
         else
@@ -192,6 +206,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             nextFocusNode: nextFocusNode,
             advancedSearchFilterField: advancedSearchFilterField,
             textEditingController: textEditingController,
+            onTextChange: onTextChange,
           )
       else
         Expanded(
@@ -204,6 +219,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             nextFocusNode: nextFocusNode,
             advancedSearchFilterField: advancedSearchFilterField,
             textEditingController: textEditingController,
+            onTextChange: onTextChange,
           ),
         )
     ];
@@ -229,6 +245,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     MouseCursor? mouseCursor,
     FocusNode? currentFocusNode,
     FocusNode? nextFocusNode,
+    ValueChanged<String>? onTextChange,
   }) {
     switch (advancedSearchFilterField) {
       case AdvancedSearchFilterField.date:
@@ -236,13 +253,13 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           controller.imagePaths,
           startDate: controller.startDate.value,
           endDate: controller.endDate.value,
-          receiveTimeSelected: controller.dateFilterSelectedFormAdvancedSearch.value,
+          receiveTimeSelected: controller.receiveTimeType.value,
           onReceiveTimeSelected: (receiveTime) => controller.updateReceiveDateSearchFilter(context, receiveTime),
         ));
       case AdvancedSearchFilterField.sortBy:
         return Obx(() => SortByDropDownButton(
           imagePaths: controller.imagePaths,
-          sortOrderSelected: controller.searchController.sortOrderFiltered.value,
+          sortOrderSelected: controller.sortOrderType.value,
           onSortOrderSelected: controller.updateSortOrder,
         ));
       default:
@@ -255,6 +272,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           nextFocusNode: nextFocusNode,
           advancedSearchFilterField: advancedSearchFilterField,
           textEditingController: textEditingController,
+          onTextChange: onTextChange,
         );
     }
   }
@@ -268,6 +286,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
     MouseCursor? mouseCursor,
     FocusNode? currentFocusNode,
     FocusNode? nextFocusNode,
+    ValueChanged<String>? onTextChange,
   }) {
     return KeyboardListener(
       focusNode: currentFocusNode ?? FocusNode(),
@@ -293,6 +312,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             popBack();
           }
         },
+        onTextChange: onTextChange,
         decoration: InputDecoration(
           filled: true,
           fillColor: isSelectFormList ? AppColor.colorItemSelected : Colors.white,

@@ -217,7 +217,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           ),
         ),
         Obx(() {
-          if (controller.isSearchFilterHasApplied) {
+          if (controller.searchEmailFilter.value.isApplied) {
             return TMailButtonWidget.fromText(
               text: AppLocalizations.of(context).clearFilter,
               backgroundColor: Colors.transparent,

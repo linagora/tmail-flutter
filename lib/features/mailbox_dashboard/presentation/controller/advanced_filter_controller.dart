@@ -3,6 +3,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:super_tag_editor/tag_editor.dart';
@@ -20,7 +21,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -32,10 +32,11 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class AdvancedFilterController extends BaseController {
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
 
-  final dateFilterSelectedFormAdvancedSearch = EmailReceiveTimeType.allTime.obs;
+  final receiveTimeType = EmailReceiveTimeType.allTime.obs;
   final hasAttachment = false.obs;
   final startDate = Rxn<DateTime>();
   final endDate = Rxn<DateTime>();
+  final sortOrderType = EmailSortOrderType.mostRecent.obs;
 
   final GlobalKey<TagsEditorState> keyFromEmailTagEditor = GlobalKey<TagsEditorState>();
   final GlobalKey<TagsEditorState> keyToEmailTagEditor = GlobalKey<TagsEditorState>();
@@ -55,10 +56,8 @@ class AdvancedFilterController extends BaseController {
   final search.SearchController searchController = Get.find<search.SearchController>();
   final MailboxDashBoardController _mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 
-  SearchEmailFilter get searchEmailFilter =>
-      searchController.searchEmailFilter.value;
-
   final focusManager = InputFieldFocusManager.initial();
+  SearchEmailFilter _memorySearchFilter = SearchEmailFilter.initial();
 
   PresentationMailbox? _destinationMailboxSelected;
 
@@ -80,87 +79,144 @@ class AdvancedFilterController extends BaseController {
   }
 
   void clearSearchFilter() {
+    _memorySearchFilter = SearchEmailFilter.initial();
     _resetAllToOriginalValue();
     _clearAllTextFieldInput();
     _mailboxDashBoardController.handleClearAdvancedSearchFilterEmail();
   }
 
-  void _updateFilterEmailFromAdvancedSearchView() {
-    if (hasKeyWordFilterInputController.text.isNotEmpty) {
-      searchController.updateFilterEmail(
-        textOption: Some(SearchQuery(hasKeyWordFilterInputController.text)));
-      searchController.searchInputController.text = hasKeyWordFilterInputController.text;
-    } else {
-      searchController.updateFilterEmail(
-        textOption: Some(SearchQuery.initial()));
-    }
+  @visibleForTesting
+  void setDestinationMailboxSelected(PresentationMailbox? presentationMailbox) {
+    _destinationMailboxSelected = presentationMailbox;
+  }
 
-    if (notKeyWordFilterInputController.text.isNotEmpty) {
-      searchController.updateFilterEmail(
-        notKeywordOption: Some(notKeyWordFilterInputController.text.split(',').toSet()));
-    } else {
-      searchController.updateFilterEmail(notKeywordOption: const None());
-    }
+  @visibleForTesting
+  SearchEmailFilter get memorySearchFilter => _memorySearchFilter;
 
-    if (listFromEmailAddress.isNotEmpty) {
-      final listAddress = listFromEmailAddress.map((emailAddress) => emailAddress.emailAddress).toSet();
-      searchController.updateFilterEmail(fromOption: Some(listAddress));
-    } else {
-      searchController.updateFilterEmail(fromOption: const None());
-    }
-    if (listToEmailAddress.isNotEmpty) {
-      final listAddress = listToEmailAddress.map((emailAddress) => emailAddress.emailAddress).toSet();
-      searchController.updateFilterEmail(toOption: Some(listAddress));
-    } else {
-      searchController.updateFilterEmail(toOption: const None());
-    }
+  @visibleForTesting
+  void setMemorySearchFilter(SearchEmailFilter searchFilter) {
+    _memorySearchFilter = searchFilter;
+  }
 
-    searchController.updateFilterEmail(
-      mailboxOption: optionOf(_destinationMailboxSelected),
-      subjectOption: optionOf(subjectFilterInputController.text),
-      emailReceiveTimeTypeOption: optionOf(dateFilterSelectedFormAdvancedSearch.value),
-      hasAttachmentOption: optionOf(hasAttachment.value),
-      startDateOption: optionOf(startDate.value?.toUTCDate()),
-      endDateOption: optionOf(endDate.value?.toUTCDate())
+  @visibleForTesting
+  MailboxDashBoardController get mailboxDashBoardController => _mailboxDashBoardController;
+
+  void _updateMemorySearchFilter({
+    Option<Set<String>>? fromOption,
+    Option<Set<String>>? toOption,
+    Option<SearchQuery>? textOption,
+    Option<String>? subjectOption,
+    Option<Set<String>>? notKeywordOption,
+    Option<PresentationMailbox>? mailboxOption,
+    Option<EmailReceiveTimeType>? emailReceiveTimeTypeOption,
+    Option<bool>? hasAttachmentOption,
+    Option<UTCDate>? beforeOption,
+    Option<UTCDate>? startDateOption,
+    Option<UTCDate>? endDateOption,
+    Option<int>? positionOption,
+    Option<EmailSortOrderType>? sortOrderTypeOption,
+  }) {
+    _memorySearchFilter = _memorySearchFilter.copyWith(
+      fromOption: fromOption,
+      toOption: toOption,
+      textOption: textOption,
+      subjectOption: subjectOption,
+      notKeywordOption: notKeywordOption,
+      mailboxOption: mailboxOption,
+      emailReceiveTimeTypeOption: emailReceiveTimeTypeOption,
+      hasAttachmentOption: hasAttachmentOption,
+      beforeOption: beforeOption,
+      startDateOption: startDateOption,
+      endDateOption: endDateOption,
+      positionOption: positionOption,
+      sortOrderTypeOption: sortOrderTypeOption);
+  }
+
+  void _synchronizeSearchFilter() {
+    final textOption = option(
+      hasKeyWordFilterInputController.text.trim().isNotEmpty,
+      SearchQuery(hasKeyWordFilterInputController.text.trim()));
+
+    final notKeywordsOption = option(
+      notKeyWordFilterInputController.text.trim().isNotEmpty,
+      notKeyWordFilterInputController.text.trim().split(',').map((value) => value.trim()).toSet());
+
+    final fromOption = option(
+      listFromEmailAddress.isNotEmpty,
+      listFromEmailAddress.asSetAddress());
+
+    final toOption = option(
+      listToEmailAddress.isNotEmpty,
+      listToEmailAddress.asSetAddress());
+
+    final sortOrderTypeOption = Some(sortOrderType.value);
+
+    final mailboxOption = optionOf(_destinationMailboxSelected);
+
+    final subjectOption = option(
+      subjectFilterInputController.text.trim().isNotEmpty,
+      subjectFilterInputController.text.trim());
+
+    final emailReceiveTimeTypeOption = Some(receiveTimeType.value);
+
+    final hasAttachmentOption = Some(hasAttachment.value);
+
+    final startDateOption = optionOf(startDate.value?.toUTCDate());
+
+    final endDateOption = optionOf(endDate.value?.toUTCDate());
+
+    _updateMemorySearchFilter(
+      textOption: textOption,
+      notKeywordOption: notKeywordsOption,
+      fromOption: fromOption,
+      toOption: toOption,
+      sortOrderTypeOption: sortOrderTypeOption,
+      mailboxOption: mailboxOption,
+      subjectOption: subjectOption,
+      emailReceiveTimeTypeOption: emailReceiveTimeTypeOption,
+      hasAttachmentOption: hasAttachmentOption,
+      startDateOption: startDateOption,
+      endDateOption: endDateOption
     );
+
+    searchController.synchronizeSearchFilter(_memorySearchFilter);
   }
 
   void selectedMailBox(BuildContext context) async {
     final accountId = _mailboxDashBoardController.accountId.value;
     final session = _mailboxDashBoardController.sessionCurrent;
-    if (accountId != null && session != null) {
-      final arguments = DestinationPickerArguments(
-        accountId,
-        MailboxActions.select,
-        session,
-        mailboxIdSelected: _destinationMailboxSelected?.id
-      );
 
-      final destinationMailbox = PlatformInfo.isWeb
-        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
-        : await push(AppRoutes.destinationPicker, arguments: arguments);
+    if (session == null || accountId == null) return;
 
-      if (destinationMailbox is PresentationMailbox) {
-        _destinationMailboxSelected = destinationMailbox;
-        String? mailboxName;
-        if (context.mounted) {
-          mailboxName = _destinationMailboxSelected?.getDisplayName(context);
-        } else {
-          mailboxName = _destinationMailboxSelected?.name?.name;
-        }
-        mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(mailboxName);
-      }
-    }
+    final arguments = DestinationPickerArguments(
+      accountId,
+      MailboxActions.select,
+      session,
+      mailboxIdSelected: _destinationMailboxSelected?.id
+    );
+
+    final destinationMailbox = PlatformInfo.isWeb
+      ? await DialogRouter.pushGeneralDialog(
+          routeName: AppRoutes.destinationPicker,
+          arguments: arguments)
+      : await push(AppRoutes.destinationPicker, arguments: arguments);
+
+    if (destinationMailbox is! PresentationMailbox) return;
+
+    _destinationMailboxSelected = destinationMailbox;
+    final mailboxName = context.mounted
+      ? _destinationMailboxSelected?.getDisplayName(context)
+      : _destinationMailboxSelected?.name?.name;
+    mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(mailboxName);
+    _updateMemorySearchFilter(mailboxOption: optionOf(_destinationMailboxSelected));
   }
 
   void applyAdvancedSearchFilter() {
-    _updateFilterEmailFromAdvancedSearchView();
-    if (isAdvancedSearchHasApplied) {
+    _synchronizeSearchFilter();
+    if (searchController.searchEmailFilter.value.isApplied) {
       searchController.activateAdvancedSearch();
     } else {
       searchController.deactivateAdvancedSearch();
-    }
-    if (!isAdvancedSearchHasApplied) {
       searchController.updateFilterEmail(beforeOption: const None());
     }
     searchController.isAdvancedSearchViewOpen.value = false;
@@ -183,42 +239,47 @@ class AdvancedFilterController extends BaseController {
       )) ?? [];
   }
 
-  bool get isAdvancedSearchHasApplied {
-    return searchEmailFilter.from.isNotEmpty ||
-        searchEmailFilter.to.isNotEmpty ||
-        subjectFilterInputController.text.isNotEmpty ||
-        hasKeyWordFilterInputController.text.isNotEmpty ||
-        notKeyWordFilterInputController.text.isNotEmpty ||
-        searchEmailFilter.emailReceiveTimeType != EmailReceiveTimeType.allTime ||
-        searchEmailFilter.mailbox != PresentationMailbox.unifiedMailbox ||
-        hasAttachment.isTrue;
-  }
+  void initSearchFilterField(BuildContext? context) {
+    subjectFilterInputController.text = StringConvert.writeNullToEmpty(
+      _memorySearchFilter.subject);
 
-  void initSearchFilterField() {
-    subjectFilterInputController.text = StringConvert.writeNullToEmpty(searchEmailFilter.subject);
-    hasKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(searchEmailFilter.text?.value);
-    notKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(searchEmailFilter.notKeyword.firstOrNull);
-    dateFilterSelectedFormAdvancedSearch.value = searchEmailFilter.emailReceiveTimeType;
-    _destinationMailboxSelected = searchEmailFilter.mailbox;
-    if (currentContext != null) {
-      if (searchEmailFilter.mailbox == null) {
-        mailBoxFilterInputController.text = AppLocalizations.of(currentContext!).allFolders;
-      } else {
-        mailBoxFilterInputController.text = StringConvert.writeNullToEmpty(
-          searchEmailFilter.mailbox?.getDisplayName(currentContext!)
-        );
-      }
-    }
-    hasAttachment.value = searchEmailFilter.hasAttachment;
-    if (searchEmailFilter.from.isEmpty) {
+    hasKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(
+      _memorySearchFilter.text?.value);
+
+    notKeyWordFilterInputController.text = StringConvert.writeNullToEmpty(
+      _memorySearchFilter.notKeyword.join(','));
+
+    receiveTimeType.value = _memorySearchFilter.emailReceiveTimeType;
+
+    sortOrderType.value = _memorySearchFilter.sortOrderType;
+
+    _destinationMailboxSelected = _memorySearchFilter.mailbox;
+
+    hasAttachment.value = _memorySearchFilter.hasAttachment;
+
+    if (_memorySearchFilter.from.isEmpty) {
       listFromEmailAddress.clear();
     } else {
+      final listEmailAddress = _memorySearchFilter.from
+        .map((email) => EmailAddress(null, email));
+      listFromEmailAddress = List.from(listEmailAddress);
       fromAddressExpandMode.value = ExpandMode.COLLAPSE;
     }
-    if (searchEmailFilter.to.isEmpty) {
+
+    if (_memorySearchFilter.to.isEmpty) {
       listToEmailAddress.clear();
     } else {
+      final listEmailAddress = _memorySearchFilter.to
+        .map((email) => EmailAddress(null, email));
+      listToEmailAddress = List.from(listEmailAddress);
       toAddressExpandMode.value = ExpandMode.COLLAPSE;
+    }
+
+    if (context != null) {
+      mailBoxFilterInputController.text = _memorySearchFilter.mailbox == null
+        ? AppLocalizations.of(context).allFolders
+        : StringConvert.writeNullToEmpty(
+            _memorySearchFilter.mailbox?.getDisplayName(context));
     }
   }
 
@@ -239,7 +300,13 @@ class AdvancedFilterController extends BaseController {
   void _updateDateRangeTime(EmailReceiveTimeType receiveTime, {DateTime? newStartDate, DateTime? newEndDate}) {
     startDate.value = newStartDate;
     endDate.value = newEndDate;
-    dateFilterSelectedFormAdvancedSearch.value = receiveTime;
+    receiveTimeType.value = receiveTime;
+
+    _updateMemorySearchFilter(
+      emailReceiveTimeTypeOption: Some(receiveTimeType.value),
+      startDateOption: optionOf(startDate.value?.toUTCDate()),
+      endDateOption: optionOf(endDate.value?.toUTCDate())
+    );
   }
 
   void updateReceiveDateSearchFilter(BuildContext context, EmailReceiveTimeType receiveTime) {
@@ -314,9 +381,17 @@ class AdvancedFilterController extends BaseController {
     switch(field) {
       case AdvancedSearchFilterField.from:
         listFromEmailAddress = List.from(listEmailAddress);
+        _updateMemorySearchFilter(
+          fromOption: option(
+            listFromEmailAddress.isNotEmpty,
+            listFromEmailAddress.asSetAddress()));
         break;
       case AdvancedSearchFilterField.to:
         listToEmailAddress = List.from(listEmailAddress);
+        _updateMemorySearchFilter(
+          toOption: option(
+            listToEmailAddress.isNotEmpty,
+            listToEmailAddress.asSetAddress()));
         break;
       default:
         break;
@@ -339,6 +414,7 @@ class AdvancedFilterController extends BaseController {
     if (!_isDuplicatedEmailAddress(inputEmail, listFromEmailAddress)) {
       final emailAddress = EmailAddress(null, inputEmail);
       listFromEmailAddress.add(emailAddress);
+      _updateMemorySearchFilter(fromOption: Some(listFromEmailAddress.asSetAddress()));
       keyFromEmailTagEditor.currentState?.resetTextField();
       Future.delayed(const Duration(milliseconds: 300), () {
         keyFromEmailTagEditor.currentState?.closeSuggestionBox();
@@ -353,8 +429,8 @@ class AdvancedFilterController extends BaseController {
     }
 
     if (!_isDuplicatedEmailAddress(inputEmail, listToEmailAddress)) {
-      final emailAddress = EmailAddress(null, inputEmail);
-      listToEmailAddress.add(emailAddress);
+      listToEmailAddress.add(EmailAddress(null, inputEmail));
+      _updateMemorySearchFilter(toOption: Some(listToEmailAddress.asSetAddress()));
       keyToEmailTagEditor.currentState?.resetTextField();
       Future.delayed(const Duration(milliseconds: 300), () {
         keyToEmailTagEditor.currentState?.closeSuggestionBox();
@@ -364,12 +440,15 @@ class AdvancedFilterController extends BaseController {
 
   void updateSortOrder(EmailSortOrderType? sortOrder) {
     if (sortOrder != null) {
-      searchController.sortOrderFiltered.value = sortOrder;
+      sortOrderType.value = sortOrder;
+      _updateMemorySearchFilter(sortOrderTypeOption: Some(sortOrder));
     }
   }
 
   void _resetAllToOriginalValue() {
-    _updateDateRangeTime(EmailReceiveTimeType.allTime);
+    startDate.value = null;
+    endDate.value = null;
+    receiveTimeType.value = EmailReceiveTimeType.allTime;
     hasAttachment.value = false;
     listFromEmailAddress.clear();
     listToEmailAddress.clear();
@@ -399,23 +478,12 @@ class AdvancedFilterController extends BaseController {
           );
         } else if (action is ClearDateRangeToAdvancedSearch) {
           _updateDateRangeTime(action.receiveTime);
-        } else if (action is StartSearchEmailBySearchFilterAction) {
-          _handleSearchEmailBySearchFilterAction(action.searchFilter);
-        } else if (action is SearchEmailByFromFieldsAction) {
-          searchController.clearSearchFilter();
-          _resetAllToOriginalValue();
-          _clearAllTextFieldInput();
-          searchController.searchInputController.clear();
-          searchController.deactivateAdvancedSearch();
-          searchController.isAdvancedSearchViewOpen.value = false;
-
-          listFromEmailAddress = List.from({action.emailAddress});
-          final listAddress = listFromEmailAddress.map((emailAddress) => emailAddress.emailAddress).toSet();
-          searchController.updateFilterEmail(fromOption: Some(listAddress));
-
-          _mailboxDashBoardController.dispatchAction(StartSearchEmailAction());
+        } else if (action is StartSearchEmailAction) {
+          _handleStartSearchEmailAction();
+        } else if (action is QuickSearchEmailByFromAction) {
+          _handleQuickSearchEmailByFromAction(action.emailAddress);
         } else if (action is OpenAdvancedSearchViewAction) {
-          initSearchFilterField();
+          initSearchFilterField(currentContext);
         } else if (action is ClearSearchFilterAppliedAction) {
           clearSearchFilter();
         }
@@ -440,24 +508,7 @@ class AdvancedFilterController extends BaseController {
   void _handleClearAllFieldOfAdvancedSearch() {
     _resetAllToOriginalValue();
     _clearAllTextFieldInput();
-  }
-
-  void _updateFromField() {
-    if (searchEmailFilter.from.isNotEmpty) {
-      listFromEmailAddress = List.from(
-        searchEmailFilter.from.map((address) => EmailAddress(null, address)));
-    } else {
-      listFromEmailAddress.clear();
-    }
-  }
-
-  void _updateToField() {
-    if (searchEmailFilter.to.isNotEmpty) {
-      listToEmailAddress = List.from(
-        searchEmailFilter.to.map((address) => EmailAddress(null, address)));
-    } else {
-      listToEmailAddress.clear();
-    }
+    _memorySearchFilter = SearchEmailFilter.initial();
   }
 
   void onSearchAction() {
@@ -465,13 +516,33 @@ class AdvancedFilterController extends BaseController {
     applyAdvancedSearchFilter();
   }
 
-  void _handleSearchEmailBySearchFilterAction(QuickSearchFilter searchFilter) {
-    switch(searchFilter) {
-      case QuickSearchFilter.from:
-        _updateFromField();
+  void _handleStartSearchEmailAction() {
+    _memorySearchFilter = searchController.searchEmailFilter.value;
+    initSearchFilterField(currentContext);
+  }
+
+  void onHasAttachmentCheckboxChanged(bool? isChecked) {
+    hasAttachment.value = isChecked ?? false;
+    _updateMemorySearchFilter(hasAttachmentOption: Some(hasAttachment.value));
+  }
+
+  void onTextChanged(AdvancedSearchFilterField filterField, String value) {
+    switch (filterField) {
+      case AdvancedSearchFilterField.subject:
+        final subjectOption = option(value.trim().isNotEmpty, value.trim());
+        _updateMemorySearchFilter(subjectOption: subjectOption);
         break;
-      case QuickSearchFilter.to:
-        _updateToField();
+      case AdvancedSearchFilterField.hasKeyword:
+        final textOption = option(
+          value.trim().isNotEmpty,
+          SearchQuery(value.trim()));
+        _updateMemorySearchFilter(textOption: textOption);
+        break;
+      case AdvancedSearchFilterField.notKeyword:
+        final notKeywordsOption = option(
+          value.trim().isNotEmpty,
+          value.trim().split(',').map((value) => value.trim()).toSet());
+        _updateMemorySearchFilter(notKeywordOption: notKeywordsOption);
         break;
       default:
         break;
@@ -496,6 +567,20 @@ class AdvancedFilterController extends BaseController {
     }
   }
 
+  void _handleQuickSearchEmailByFromAction(EmailAddress emailAddress) {
+    searchController.clearSearchFilter();
+    _memorySearchFilter = SearchEmailFilter.initial();
+    _resetAllToOriginalValue();
+    _clearAllTextFieldInput();
+    searchController.searchInputController.clear();
+    searchController.deactivateAdvancedSearch();
+    searchController.isAdvancedSearchViewOpen.value = false;
+    listFromEmailAddress = List.from({emailAddress});
+    searchController.updateFilterEmail(fromOption: Some(listFromEmailAddress.asSetAddress()));
+    _updateMemorySearchFilter(fromOption: Some(listFromEmailAddress.asSetAddress()));
+    _mailboxDashBoardController.dispatchAction(StartSearchEmailAction());
+  }
+
   @override
   void onClose() {
     _removeFocusListener();
@@ -507,6 +592,8 @@ class AdvancedFilterController extends BaseController {
     toEmailAddressController.dispose();
     fromEmailAddressController.dispose();
     _unregisterWorkerListener();
+    _resetAllToOriginalValue();
+    _memorySearchFilter = SearchEmailFilter.initial();
     super.onClose();
   }
 }

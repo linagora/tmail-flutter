@@ -273,12 +273,6 @@ class ThreadController extends BaseController with EmailActionController {
       }
     });
 
-    ever(searchController.isAdvancedSearchViewOpen, (hasOpen) {
-      if (hasOpen == true) {
-        mailboxDashBoardController.filterMessageOption.value = FilterMessageOption.all;
-      }
-    });
-
     ever(mailboxDashBoardController.dashBoardAction, (action) {
       if (action is SelectionAllEmailAction) {
         setSelectAllEmailAction();
@@ -302,8 +296,7 @@ class ThreadController extends BaseController with EmailActionController {
         );
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is StartSearchEmailAction
-          || action is ClearAdvancedSearchFilterEmailAction
-          || action is StartSearchEmailBySearchFilterAction) {
+          || action is ClearAdvancedSearchFilterEmailAction) {
         cancelSelectEmail();
         _replaceBrowserHistory();
         _searchEmail();
@@ -514,7 +507,7 @@ class ThreadController extends BaseController with EmailActionController {
         _session!,
         _accountId!,
         limit: ThreadConstants.defaultLimit,
-        sort: searchController.sortOrderFiltered.value.getSortOrder().toNullable(),
+        sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
         emailFilter: EmailFilter(
           filter: _getFilterCondition(mailboxIdSelected: selectedMailboxId),
           filterOption: mailboxDashBoardController.filterMessageOption.value,
@@ -594,7 +587,7 @@ class ThreadController extends BaseController with EmailActionController {
           _session!,
           _accountId!,
           newEmailState,
-          sort: searchController.sortOrderFiltered.value.getSortOrder().toNullable(),
+          sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
           propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
           emailFilter: EmailFilter(
@@ -619,8 +612,7 @@ class ThreadController extends BaseController with EmailActionController {
           _session!,
           _accountId!,
           limit: ThreadConstants.defaultLimit,
-          position: _searchEmailFilter.position,
-          sort: searchController.sortOrderFiltered.value.getSortOrder().toNullable(),
+          sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
           filterOption: mailboxDashBoardController.filterMessageOption.value,
           filter: _getFilterCondition(oldestEmail: oldestEmail, mailboxIdSelected: selectedMailboxId),
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
@@ -821,9 +813,7 @@ class ThreadController extends BaseController with EmailActionController {
       canSearchMore = false;
 
       searchController.updateFilterEmail(
-        positionOption: searchController.sortOrderFiltered.value.isScrollByPosition()
-          ? const Some(0)
-          : const None(),
+        positionOption: option(_searchEmailFilter.sortOrderType.isScrollByPosition(), 0),
         beforeOption: const None());
 
       searchController.activateSimpleSearch();
@@ -833,9 +823,8 @@ class ThreadController extends BaseController with EmailActionController {
         _accountId!,
         limit: limit ?? ThreadConstants.defaultLimit,
         position: _searchEmailFilter.position,
-        sort: searchController.sortOrderFiltered.value.getSortOrder().toNullable(),
+        sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
         filter: _searchEmailFilter.mappingToEmailFilterCondition(
-          sortOrderType: searchController.sortOrderFiltered.value,
           moreFilterCondition: _getFilterCondition()
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
@@ -894,14 +883,14 @@ class ThreadController extends BaseController with EmailActionController {
         ? mailboxDashBoardController.emailsInCurrentMailbox.last
         : null;
 
-      if (searchController.sortOrderFiltered.value.isScrollByPosition()) {
+      if (_searchEmailFilter.sortOrderType.isScrollByPosition()) {
         final nextPosition = mailboxDashBoardController.emailsInCurrentMailbox.length;
         log('ThreadController::_searchMoreEmails:nextPosition: $nextPosition');
         searchController.updateFilterEmail(
           positionOption: Some(nextPosition),
           beforeOption: const None()
         );
-      } else if (searchController.sortOrderFiltered.value == EmailSortOrderType.oldest) {
+      } else if (_searchEmailFilter.sortOrderType == EmailSortOrderType.oldest) {
         searchController.updateFilterEmail(startDateOption: optionOf(lastEmail?.receivedAt));
       } else {
         searchController.updateFilterEmail(beforeOption: optionOf(lastEmail?.receivedAt));
@@ -911,10 +900,9 @@ class ThreadController extends BaseController with EmailActionController {
         _session!,
         _accountId!,
         limit: ThreadConstants.defaultLimit,
-        sort: searchController.sortOrderFiltered.value.getSortOrder().toNullable(),
+        sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
         position: _searchEmailFilter.position,
         filter: _searchEmailFilter.mappingToEmailFilterCondition(
-          sortOrderType: searchController.sortOrderFiltered.value,
           moreFilterCondition: _getFilterCondition()
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
