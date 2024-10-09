@@ -64,7 +64,7 @@ abstract class PushBaseController {
 
     final listEmailActions = listTypeName
       .where((typeName) => typeName == TypeName.emailType || typeName == TypeName.emailDelivery)
-      .map((typeName) => _toFcmAction(typeName, accountId, userName, mapTypeState, isForeground, session: session))
+      .map((typeName) => _toPushNotificationAction(typeName, accountId, userName, mapTypeState, isForeground, session: session))
       .whereNotNull()
       .toList();
 
@@ -76,7 +76,7 @@ abstract class PushBaseController {
 
     final listMailboxActions = listTypeName
       .where((typeName) => typeName == TypeName.mailboxType)
-      .map((typeName) => _toFcmAction(typeName, accountId, userName, mapTypeState, isForeground))
+      .map((typeName) => _toPushNotificationAction(typeName, accountId, userName, mapTypeState, isForeground))
       .whereNotNull()
       .toList();
 
@@ -87,7 +87,7 @@ abstract class PushBaseController {
     }
   }
 
-  PushNotificationStateChangeAction? _toFcmAction(
+  PushNotificationStateChangeAction? _toPushNotificationAction(
     TypeName typeName,
     AccountId accountId,
     UserName userName,
