@@ -270,11 +270,7 @@ dev_dependencies:
 
   http_mock_adapter: 0.4.2
 
-  patrol:
-    git:
-      url: https://github.com/tddang-linagora/patrol.git
-      ref: fix-androidx-test-orchestrator
-      path: packages/patrol
+  patrol: 3.11.1
 
   plugin_platform_interface: 2.1.8
 
