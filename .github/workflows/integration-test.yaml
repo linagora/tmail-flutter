@@ -50,5 +50,5 @@ jobs:
 
       - name: Test
         env:
-          TEST_CREDENTIALS: ${{ secrets.TEST_CREDENTIALS }}
-        run: ./scripts/integration-tests.sh
+          NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
+        run: ./scripts/integration-test-with-docker.sh
