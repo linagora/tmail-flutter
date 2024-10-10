@@ -34,6 +34,14 @@ class ConnectWebSocketInteractor {
     if (data is String) {
       data = jsonDecode(data);
     }
-    return Right(WebSocketPushStateReceived(StateChange.fromJson(data)));
+    StateChange? possibleStateChange;
+    try {
+      possibleStateChange = StateChange.fromJson(data);
+      return Right(WebSocketPushStateReceived(possibleStateChange));
+    } catch (e) {
+      logError('ConnectWebSocketInteractor::_toStateChange: '
+        'websocket message is not StateChange: $data');
+      return Right(WebSocketPushStateReceived(null));
+    }
   }
 }

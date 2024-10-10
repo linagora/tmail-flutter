@@ -67,6 +67,7 @@ class WebSocketController extends PushBaseController {
     log('WebSocketController::_handleWebSocketPushStateReceived(): $success');
     if (accountId == null || session == null) return;
     final stateChange = success.stateChange;
+    if (stateChange == null) return;
     final mapTypeState = stateChange.getMapTypeState(accountId!);
     mappingTypeStateToAction(
       mapTypeState,

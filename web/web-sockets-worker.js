@@ -1,5 +1,7 @@
 var webSocket;
 const broadcast = new BroadcastChannel("background-message");
+var intervalId;
+const pingIntervalInMs = 20000;
 
 function connect(url, ticket) {
   webSocket = new WebSocket(`${url}?ticket=${ticket}`, "jmap");
@@ -12,6 +14,16 @@ function connect(url, ticket) {
         dataTypes: ["Mailbox", "Email", "EmailDelivery"],
       })
     );
+    intervalId = setInterval(() => {
+      webSocket.send(
+        JSON.stringify({
+          "@type": "Request",
+          id: "R1",
+          using: ["urn:ietf:params:jmap:core"],
+          methodCalls: [["Core/echo", {}, "c0"]],
+        })
+      );
+    }, pingIntervalInMs);
   };
 
   webSocket.onmessage = (event) => {
@@ -25,6 +37,7 @@ function connect(url, ticket) {
     );
     broadcast.postMessage("webSocketClosed");
     webSocket = null;
+    clearInterval(intervalId);
   };
 }
 
