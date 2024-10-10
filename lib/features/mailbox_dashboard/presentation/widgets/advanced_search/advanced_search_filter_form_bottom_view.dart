@@ -12,11 +12,11 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterController> {
 
-  final InputFieldFocusManager? focusManager;
+  final InputFieldFocusManager focusManager;
 
   const AdvancedSearchFilterFormBottomView({
     Key? key,
-    this.focusManager,
+    required this.focusManager,
   }) : super(key: key);
 
   @override
@@ -30,8 +30,8 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
             transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
             child: _buildCheckboxHasAttachment(
               context,
-              currentFocusNode: focusManager?.attachmentCheckboxFocusNode,
-              nextFocusNode: focusManager?.searchButtonFocusNode),
+              currentFocusNode: focusManager.attachmentCheckboxFocusNode,
+              nextFocusNode: focusManager.searchButtonFocusNode),
           ),
           _buildListButton(context, controller.responsiveUtils),
         ],
@@ -67,8 +67,8 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
             text: AppLocalizations.of(context).search,
             context: context,
             responsiveUtils: responsiveUtils,
-            currentFocusNode: focusManager?.searchButtonFocusNode,
-            nextFocusNode: focusManager?.fromFieldFocusNode
+            currentFocusNode: focusManager.searchButtonFocusNode,
+            nextFocusNode: focusManager.fromFieldFocusNode
           ),
         ),
       ]);
@@ -99,8 +99,8 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
           context: context,
           responsiveUtils: responsiveUtils,
           minWidth: 144,
-          currentFocusNode: focusManager?.searchButtonFocusNode,
-          nextFocusNode: focusManager?.fromFieldFocusNode
+          currentFocusNode: focusManager.searchButtonFocusNode,
+          nextFocusNode: focusManager.fromFieldFocusNode
         ),
       ]);
     }
@@ -128,7 +128,7 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
           contentPadding: EdgeInsets.zero,
           value: controller.hasAttachment.value,
           activeColor: AppColor.primaryColor,
-          onChanged: (value) => controller.hasAttachment.value = value ?? false,
+          onChanged: controller.onHasAttachmentCheckboxChanged,
         ),
       ),
     );
