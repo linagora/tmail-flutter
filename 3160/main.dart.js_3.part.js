@@ -10603,7 +10603,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t1._searchInsideEmailDetailedViewIsActive$0())
         t1._closeEmailDetailedView$0();
       t1.selectedMailbox.set$value(0, null);
-      t2 = new A.SearchEmailByFromFieldsAction(emailAddress);
+      t2 = new A.QuickSearchEmailByFromAction(emailAddress);
       A.log(string$.Mailbo + A.getRuntimeTypeOfDartObject(t2).toString$0(0), C.Level_3);
       t1.dashBoardAction.set$value(0, t2);
     }
@@ -21558,5 +21558,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "opXr2hGiVBr0hD4SXm++JjIDaPY=");
+})($__dart_deferred_initializers__, "MNNEHZ3exaoZf6EqDqOdUyNEMi0=");
 ;
