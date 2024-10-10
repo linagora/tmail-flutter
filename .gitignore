@@ -120,3 +120,4 @@ app.*.symbols
 *.g.dart
 messages_*.dart
 *.mocks.dart
+integration_test/test_bundle.dart

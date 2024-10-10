@@ -1,0 +1,27 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:patrol/patrol.dart';
+
+import '../../base/test_base.dart';
+import '../../scenarios/login_with_oidc.dart';
+
+void main() {
+  patrolTest(
+    'Should see thread view when login with oidc successfully',
+    config: const PatrolTesterConfig(
+      settlePolicy: SettlePolicy.trySettle,
+      visibleTimeout: Duration(minutes: 1)),
+    nativeAutomatorConfig: const NativeAutomatorConfig(
+      findTimeout: Duration(seconds: 10),
+    ),
+    framePolicy: LiveTestWidgetsFlutterBindingFramePolicy.benchmarkLive,
+  ($) async {
+    await TestBase().runTestApp();
+
+    final loginWithOidcScenario = LoginWithOidc($,
+      email: const String.fromEnvironment('USERNAME'),
+      password: const String.fromEnvironment('PASSWORD'),
+      hostUrl: const String.fromEnvironment('HOST_URL'));
+
+    await loginWithOidcScenario.execute();
+  });
+}

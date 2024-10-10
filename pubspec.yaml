@@ -270,6 +270,8 @@ dev_dependencies:
 
   http_mock_adapter: 0.4.2
 
+  patrol: 3.11.1
+
   plugin_platform_interface: 2.1.8
 
 dependency_overrides:
@@ -281,6 +283,8 @@ dependency_overrides:
     git:
       url: https://github.com/linagora/flutter_file_picker
       ref: email_supported_5.3.1
+
+  json_annotation: 4.8.1
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -355,3 +359,8 @@ flutter_native_splash:
 cider:
   link_template:
     tag: https://github.com/linagora/tmail-flutter/releases/tag/v%tag% # initial release link template
+
+patrol:
+  app_name: Twake Mail
+  android:
+    package_name: com.linagora.android.teammail
