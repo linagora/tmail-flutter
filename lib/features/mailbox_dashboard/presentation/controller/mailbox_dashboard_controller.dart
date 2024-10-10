@@ -2510,7 +2510,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     return listEmailAddress;
   }
 
-  void searchEmailByFromFields(EmailAddress emailAddress) {
+  void quickSearchEmailByFrom(EmailAddress emailAddress) {
     FocusManager.instance.primaryFocus?.unfocus();
     clearFilterMessageOption();
     searchController.clearFilterSuggestion();
@@ -2518,7 +2518,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
       _closeEmailDetailedView();
     }
     _unSelectedMailbox();
-    dispatchAction(SearchEmailByFromFieldsAction(emailAddress));
+    dispatchAction(QuickSearchEmailByFromAction(emailAddress));
   }
 
   void unsubscribeMail(EmailId emailId) {

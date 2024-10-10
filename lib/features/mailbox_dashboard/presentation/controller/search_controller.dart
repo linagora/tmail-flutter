@@ -70,6 +70,10 @@ class SearchController extends BaseController with DateRangePickerMixin {
     searchEmailFilter.value = SearchEmailFilter.initial();
   }
 
+  void synchronizeSearchFilter(SearchEmailFilter searchFilter) {
+    searchEmailFilter.value = searchFilter;
+  }
+
   void addQuickSearchFilterToSuggestionSearchView(QuickSearchFilter searchFilter) {
     if (!listFilterOnSuggestionForm.contains(searchFilter)) {
       listFilterOnSuggestionForm.add(searchFilter);

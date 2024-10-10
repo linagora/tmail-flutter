@@ -129,11 +129,11 @@ class ClearDateRangeToAdvancedSearch extends DashBoardAction {
   List<Object?> get props => [receiveTime];
 }
 
-class SearchEmailByFromFieldsAction extends DashBoardAction {
+class QuickSearchEmailByFromAction extends DashBoardAction {
 
   final EmailAddress emailAddress;
 
-  SearchEmailByFromFieldsAction(this.emailAddress);
+  QuickSearchEmailByFromAction(this.emailAddress);
 
   @override
   List<Object?> get props => [emailAddress];

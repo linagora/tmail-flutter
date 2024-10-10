@@ -255,6 +255,6 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     _searchController.searchInputController.clear();
     _searchController.searchFocus.unfocus();
     _searchController.enableSearch();
-    _dashBoardController.searchEmailByFromFields(emailAddress);
+    _dashBoardController.quickSearchEmailByFrom(emailAddress);
   }
 }
