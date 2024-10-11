@@ -1,26 +1,19 @@
 version: "3"
 
 services:
-  tmail-frontend:
-    image: linagora/tmail-web:master
-    container_name: tmail-frontend
-    ports:
-      - "8080:80"
-    volumes:
-      - ./env.file:/usr/share/nginx/html/assets/env.file
-    networks:
-      - tmail
-    depends_on:
-      - tmail-backend
-
   tmail-backend:
     image: linagora/tmail-backend:memory-branch-master
     container_name: tmail-backend
     volumes:
       - ./jwt_publickey:/root/conf/jwt_publickey
       - ./jwt_privatekey:/root/conf/jwt_privatekey
+      - ./mailetcontainer.xml:/root/conf/mailetcontainer.xml
+      - ./imapserver.xml:/root/conf/imapserver.xml
+      - ./jmap.properties:/root/conf/jmap.properties
     ports:
       - "80:80"
+    environment:
+      - DOMAIN=example.com
     networks:
       - tmail
 

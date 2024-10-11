@@ -1,0 +1,56 @@
+name: Integration tests
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 0 * * *"
+
+env:
+  JAVA_VERSION: 17
+  FLUTTER_VERSION: 3.22.2
+
+jobs:
+  mobile_integration_test:
+    permissions:
+      contents: "read"
+      id-token: "write"
+
+    name: Run integration tests for mobile apps
+    runs-on: ubuntu-latest
+    concurrency:
+      group: ngrok
+      cancel-in-progress: false
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: "google-github-actions/auth@v2"
+        with:
+          project_id: ${{ secrets.GOOGLE_CLOUD_PROJECT_ID }}
+          workload_identity_provider: ${{ secrets.GOOGLE_CLOUD_WORKLOAD_IDENTITY_PROVIDER_ID }}
+          service_account: ${{ secrets.GOOGLE_CLOUD_SERVICE_ACCOUNT }}
+
+      - name: Setup Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: "stable"
+          cache: true
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ env.JAVA_VERSION }}
+          distribution: "temurin"
+
+      - name: Run prebuild
+        run: ./scripts/prebuild.sh
+
+      - name: Test
+        env:
+          NGROK_AUTHTOKEN: ${{ secrets.NGROK_AUTHTOKEN }}
+        run: ./scripts/patrol-integration-test-with-docker.sh
