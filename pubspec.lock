@@ -1252,10 +1252,10 @@ packages:
     dependency: "direct main"
     description:
       name: json_annotation
-      sha256: c33da08e136c3df0190bd5bbe51ae1df4a7d96e7954d1d7249fea2968a72d317
+      sha256: b10a7b2ff83d83c777edba3c6a0f97045ddadd56c944e1a23a3fdf43a1bf4467
       url: "https://pub.dev"
     source: hosted
-    version: "4.8.0"
+    version: "4.8.1"
   json_serializable:
     dependency: "direct dev"
     description:
@@ -1480,6 +1480,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.1"
+  patrol:
+    dependency: "direct dev"
+    description:
+      name: patrol
+      sha256: ef07b0022f6eabee77655a3cde2364ff57cf22c29018d524476e972a5476724f
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.11.1"
+  patrol_finders:
+    dependency: transitive
+    description:
+      name: patrol_finders
+      sha256: "6bf2c3093fbccd02f80f73fafc1bd021d76410cbab6e329be220b5e3bc58f072"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.2"
   pattern_formatter:
     dependency: transitive
     description:
@@ -2201,4 +2217,4 @@ packages:
     version: "3.1.2"
 sdks:
   dart: ">=3.3.0 <4.0.0"
-  flutter: ">=3.20.0-7.0.pre.48"
+  flutter: ">=3.22.0"
