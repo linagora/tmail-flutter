@@ -13,7 +13,7 @@ Accepted
 
 ## Decision
 
-- Web socket is implemented for real time update data
+- Web socket is implemented for real time update data for Twake Mail web
 - Service worker is implemented for background tasks, helping web socket working in background
 
 ## Consequences
