@@ -96,22 +96,20 @@ abstract class PushBaseController {
     {Session? session}
   ) {
     final newState = jmap.State(mapTypeState[typeName.value]);
-    if (typeName == TypeName.emailType) {
-      if (isForeground) {
-        return SynchronizeEmailOnForegroundAction(typeName, newState, accountId, session);
-      } else {
-        return StoreEmailStateToRefreshAction(typeName, newState, accountId, userName, session);
-      }
-    } else if (typeName == TypeName.emailDelivery) {
-      if (!isForeground) {
-        return PushNotificationAction(typeName, newState, session, accountId, userName);
-      }
-    } else if (typeName == TypeName.mailboxType) {
-      if (isForeground) {
-        return SynchronizeMailboxOnForegroundAction(typeName, newState, accountId);
-      } else {
-        return StoreMailboxStateToRefreshAction(typeName, newState, accountId, userName);
-      }
+    switch (typeName) {
+      case TypeName.emailType:
+        return isForeground
+            ? SynchronizeEmailOnForegroundAction(typeName, newState, accountId, session)
+            : StoreEmailStateToRefreshAction(typeName, newState, accountId, userName, session);
+      case TypeName.emailDelivery:
+        if (!isForeground) {
+          return PushNotificationAction(typeName, newState, session, accountId, userName);
+        }
+        break;
+      case TypeName.mailboxType:
+        return isForeground
+            ? SynchronizeMailboxOnForegroundAction(typeName, newState, accountId)
+            : StoreMailboxStateToRefreshAction(typeName, newState, accountId, userName);
     }
     return null;
   }

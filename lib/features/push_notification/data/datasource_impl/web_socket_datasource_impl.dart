@@ -1,4 +1,5 @@
 
+import 'package:core/data/constants/constant.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -32,7 +33,7 @@ class WebSocketDatasourceImpl implements WebSocketDatasource {
     Session session,
     AccountId accountId,
   ) async* {
-    final broadcastChannel = BroadcastChannel('background-message');
+    final broadcastChannel = BroadcastChannel(Constant.websocketBroadcastChannel);
     try {
       _verifyWebSocketCapabilities(session, accountId);
       final webSocketTicket = await _webSocketApi.getWebSocketTicket(session, accountId);

@@ -7,6 +7,7 @@ import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
+import 'package:tmail_ui_user/features/push_notification/data/model/web_socket_echo.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/repository/web_socket_repository.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/web_socket_push_state.dart';
 
@@ -41,7 +42,11 @@ class ConnectWebSocketInteractor {
     } catch (e) {
       logError('ConnectWebSocketInteractor::_toStateChange: '
         'websocket message is not StateChange: $data');
-      return Right(WebSocketPushStateReceived(null));
+      final dataIsWebSocketEcho = WebSocketEcho.isValid(data);
+      if (dataIsWebSocketEcho) {
+        return Right(WebSocketPushStateReceived(null));
+      }
+      return Left(WebSocketConnectionFailed(exception: e));
     }
   }
 }
