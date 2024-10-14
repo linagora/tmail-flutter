@@ -10981,57 +10981,54 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         canSpamAndMove = B.ListPresentationEmailExtension_isAllCanSpamAndMove(t1, t2),
         isAllSpam = B.ListPresentationEmailExtension_isAllSpam(t1, t2),
         isAllBelongToTheSameMailbox = B.ListPresentationEmailExtension_isAllBelongToTheSameMailbox(t1, t2);
-      t2 = A.SvgPicture$asset("assets/images/ic_close.svg", C.Alignment_0_0, A.ColorNullableExtension_asFilter(C.Color_4278221567), C.BoxFit_0, _null, _null, _null, _null);
-      t3 = type$.AppLocalizations;
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
-      t2 = A.buildIconWeb(_null, _null, t2, C.EdgeInsets_5_5_5_5, 25, _null, 25, _this.onCancelSelection, 15, A.Intl__message("Cancel", _null, "cancel", _null, _null));
-      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+      t2 = type$.AppLocalizations;
+      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t2).toString;
+      t3 = A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_close.svg", C.Color_4278221567, 25, _null, _null, 1 / 0, _null, _this.onCancelSelection, _null, A.Intl__message("Cancel", _null, "cancel", _null, _null));
+      A.Localizations_of(context, C.Type_AppLocalizations_CTL, t2).toString;
       t4 = t1.length;
-      t4 = A.Expanded$(A.Text$(A.Intl__message("" + t4 + " selected", _null, "count_email_selected", A._setArrayType([t4], type$.JSArray_Object), _null), _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_yT3, _null, _null, _null, _null, _null), 1);
-      t5 = A.SvgPicture$asset(B.ListPresentationEmailExtension_get_isAllEmailRead(t1) ? "assets/images/ic_unread.svg" : "assets/images/ic_read.svg", C.Alignment_0_0, _null, C.BoxFit_0, _null, _null, _null, _null);
+      t4 = A.Expanded$(A.Text$(A.Intl__message("" + t4 + " selected", _null, "count_email_selected", A._setArrayType([t4], type$.JSArray_Object), _null), _null, _null, 1, C.TextOverflow_2, _null, _null, _null, _null, C.TextStyle_yT3, _null, _null, _null, _null, _null), 1);
+      t5 = B.ListPresentationEmailExtension_get_isAllEmailRead(t1) ? "assets/images/ic_unread.svg" : "assets/images/ic_read.svg";
       if (B.ListPresentationEmailExtension_get_isAllEmailRead(t1)) {
-        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t2).toString;
         t6 = A.Intl__message("Unread", _null, "unread", _null, _null);
       } else {
-        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t2).toString;
         t6 = A.Intl__message("Read", _null, "read", _null, _null);
       }
-      t6 = A.buildIconWeb(_null, _null, t5, C.EdgeInsets_5_5_5_5, 25, _null, 25, new B.AppBarSelectionMode_build_closure(_this), 15, t6);
-      t5 = A.SvgPicture$asset(B.ListPresentationEmailExtension_get_isAllEmailStarred(t1) ? "assets/images/ic_unstar.svg" : "assets/images/ic_star.svg", C.Alignment_0_0, _null, C.BoxFit_0, _null, _null, _null, _null);
+      t6 = A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, t5, _null, 25, _null, _null, 1 / 0, _null, new B.AppBarSelectionMode_build_closure(_this), _null, t6);
+      t5 = B.ListPresentationEmailExtension_get_isAllEmailStarred(t1) ? "assets/images/ic_unstar.svg" : "assets/images/ic_star.svg";
       if (B.ListPresentationEmailExtension_get_isAllEmailStarred(t1)) {
-        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t2).toString;
         t1 = A.Intl__message("Not starred", _null, "not_starred", _null, _null);
       } else {
-        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t2).toString;
         t1 = A.Intl__message("Starred", _null, "starred", _null, _null);
       }
       t7 = type$.JSArray_Widget;
-      t1 = A._setArrayType([t2, t4, t6, C.SizedBox_5_null_null_null, A.buildIconWeb(_null, _null, t5, C.EdgeInsets_5_5_5_5, 25, _null, 25, new B.AppBarSelectionMode_build_closure0(_this), 15, t1), C.SizedBox_5_null_null_null], t7);
+      t1 = A._setArrayType([t3, t4, t6, C.SizedBox_5_null_null_null, A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, t5, _null, 25, _null, _null, 1 / 0, _null, new B.AppBarSelectionMode_build_closure0(_this), _null, t1), C.SizedBox_5_null_null_null], t7);
       if (canSpamAndMove) {
-        t2 = A.SvgPicture$asset("assets/images/ic_move.svg", C.Alignment_0_0, _null, C.BoxFit_0, _null, _null, _null, _null);
-        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
-        t2 = A.buildIconWeb(_null, _null, t2, C.EdgeInsets_5_5_5_5, 25, _null, 25, new B.AppBarSelectionMode_build_closure1(_this), 15, A.Intl__message("Move", _null, "move", _null, _null));
-        t4 = A.SvgPicture$asset(isAllSpam ? "assets/images/ic_unspam.svg" : "assets/images/ic_spam.svg", C.Alignment_0_0, _null, C.BoxFit_0, _null, _null, _null, _null);
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t2).toString;
+        t3 = A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_move.svg", _null, 25, _null, _null, 1 / 0, _null, new B.AppBarSelectionMode_build_closure1(_this), _null, A.Intl__message("Move", _null, "move", _null, _null));
+        t4 = isAllSpam ? "assets/images/ic_unspam.svg" : "assets/images/ic_spam.svg";
         if (isAllSpam) {
-          A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+          A.Localizations_of(context, C.Type_AppLocalizations_CTL, t2).toString;
           t5 = A.Intl__message("Unspam", _null, "un_spam", _null, _null);
         } else {
-          A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
+          A.Localizations_of(context, C.Type_AppLocalizations_CTL, t2).toString;
           t5 = A.Intl__message("Mark as spam", _null, "mark_as_spam", _null, _null);
         }
-        C.JSArray_methods.addAll$1(t1, A._setArrayType([t2, C.SizedBox_5_null_null_null, A.buildIconWeb(_null, _null, t4, C.EdgeInsets_5_5_5_5, 25, _null, 25, new B.AppBarSelectionMode_build_closure2(_this, isAllSpam), 15, t5), C.SizedBox_5_null_null_null], t7));
+        C.JSArray_methods.addAll$1(t1, A._setArrayType([t3, C.SizedBox_5_null_null_null, A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, t4, _null, 25, _null, _null, 1 / 0, _null, new B.AppBarSelectionMode_build_closure2(_this, isAllSpam), _null, t5), C.SizedBox_5_null_null_null], t7));
       }
       if (isAllBelongToTheSameMailbox) {
-        t2 = canDeletePermanently ? "assets/images/ic_delete_composer.svg" : "assets/images/ic_delete.svg";
-        t2 = A.SvgPicture$asset(t2, C.Alignment_0_0, canDeletePermanently ? A.ColorNullableExtension_asFilter(C.Color_4293281350) : A.ColorNullableExtension_asFilter(C.Color_4278221567), C.BoxFit_0, 20, _null, _null, 20);
+        t3 = canDeletePermanently ? C.Color_4293281350 : C.Color_4278221567;
         if (canDeletePermanently) {
-          A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
-          t3 = A.Intl__message("Delete permanently", _null, "delete_permanently", _null, _null);
+          A.Localizations_of(context, C.Type_AppLocalizations_CTL, t2).toString;
+          t2 = A.Intl__message("Delete permanently", _null, "delete_permanently", _null, _null);
         } else {
-          A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
-          t3 = A.Intl__message("Move to trash", _null, "move_to_trash", _null, _null);
+          A.Localizations_of(context, C.Type_AppLocalizations_CTL, t2).toString;
+          t2 = A.Intl__message("Move to trash", _null, "move_to_trash", _null, _null);
         }
-        C.JSArray_methods.addAll$1(t1, A._setArrayType([A.buildIconWeb(_null, _null, t2, C.EdgeInsets_5_5_5_5, 25, _null, 25, new B.AppBarSelectionMode_build_closure3(_this, canDeletePermanently), 15, t3), C.SizedBox_10_null_null_null], t7));
+        t1.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_delete_composer.svg", t3, 20, _null, _null, 1 / 0, _null, new B.AppBarSelectionMode_build_closure3(_this, canDeletePermanently), _null, t2));
       }
       return A.Row$(t1, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     }
@@ -21558,5 +21555,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "MNNEHZ3exaoZf6EqDqOdUyNEMi0=");
+})($__dart_deferred_initializers__, "cXD+irxXe8ibyiyRBpoRjq7F24I=");
 ;
