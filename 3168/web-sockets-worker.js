@@ -1,7 +1,7 @@
 var webSocket;
 const broadcast = new BroadcastChannel("background-message");
 var intervalId;
-const pingIntervalInMs = 20000;
+const pingIntervalInMs = 10000;
 
 function connect(url, ticket) {
   webSocket = new WebSocket(`${url}?ticket=${ticket}`, "jmap");
