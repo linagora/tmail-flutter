@@ -10,6 +10,8 @@ abstract class RemoteException with EquatableMixin implements Exception {
   static const noNetworkError = 'No network error';
   static const badCredentials = 'Bad credentials';
   static const socketException = 'Socket exception';
+  static const sendTimeout = 'Send data timeout';
+  static const receiveTimeout = 'Receive data timeout';
 
   final Object? message;
   final int? code;
@@ -34,6 +36,14 @@ class ConnectionError extends RemoteException {
 
 class ConnectionTimeout extends RemoteException {
   const ConnectionTimeout({String? message}) : super(message: message ?? RemoteException.connectionTimeout);
+}
+
+class SendTimeout extends RemoteException {
+  const SendTimeout({String? message}) : super(message: message ?? RemoteException.sendTimeout);
+}
+
+class ReceiveTimeout extends RemoteException {
+  const ReceiveTimeout({String? message}) : super(message: message ?? RemoteException.receiveTimeout);
 }
 
 class SocketError extends RemoteException {

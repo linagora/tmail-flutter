@@ -47,6 +47,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_i
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/data/network/interceptors/timeout_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
@@ -155,6 +156,7 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   // Additional Getx dependencies mock specs
   MockSpec<NetworkConnectionController>(fallbackGenerators: fallbackGenerators),
   MockSpec<BeforeReconnectManager>(),
+  MockSpec<TimeoutInterceptors>(),
   MockSpec<RichTextMobileTabletController>(fallbackGenerators: fallbackGenerators),
 
   // Additional misc dependencies mock specs
@@ -196,6 +198,7 @@ void main() {
   final mockMailboxDashBoardController = MockMailboxDashBoardController();
   final mockNetworkConnectionController = MockNetworkConnectionController();
   final mockBeforeReconnectManager = MockBeforeReconnectManager();
+  final mockTimeoutInterceptors = MockTimeoutInterceptors();
   final mockRichTextMobileTabletController = MockRichTextMobileTabletController();
   final mockRichTextWebController = MockRichTextWebController();
 
@@ -239,6 +242,7 @@ void main() {
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
     Get.put<NetworkConnectionController>(mockNetworkConnectionController);
     Get.put<BeforeReconnectManager>(mockBeforeReconnectManager);
+    Get.put<TimeoutInterceptors>(mockTimeoutInterceptors);
     Get.put<RichTextMobileTabletController>(mockRichTextMobileTabletController);
 
     // Mock composer controller
@@ -278,7 +282,7 @@ void main() {
     composerController = null;
   });
   
-  group('ComposerController test:', () {
+  group('ComposerController::test:', () {
     group('hash draft email test:', () {
       const emailContent = 'some email content';
       const emailSubject = 'some email subject';
@@ -581,8 +585,10 @@ void main() {
             when(
               mockCreateNewAndSaveEmailToDraftsInteractor.execute(
                 createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')))
-              .thenAnswer((_) => Stream.value(
+                cancelToken: anyNamed('cancelToken'),
+                enableTimeout: anyNamed('enableTimeout'),
+              )
+            ).thenAnswer((_) => Stream.value(
                 Right(SaveEmailAsDraftsSuccess(EmailId(Id('123'))))));
 
             final savedEmailDraft = SavedEmailDraft(
@@ -611,7 +617,10 @@ void main() {
             await untilCalled(
               mockCreateNewAndSaveEmailToDraftsInteractor.execute(
                 createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')));
+                cancelToken: anyNamed('cancelToken'),
+                enableTimeout: anyNamed('enableTimeout'),
+              )
+            );
             
             // assert
             expect(composerController?.savedEmailDraftHash, savedEmailDraft.hashCode);
@@ -652,8 +661,10 @@ void main() {
             when(
               mockCreateNewAndSaveEmailToDraftsInteractor.execute(
                 createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')))
-              .thenAnswer((_) => Stream.value(
+                cancelToken: anyNamed('cancelToken'),
+                enableTimeout: anyNamed('enableTimeout'),
+              )
+            ).thenAnswer((_) => Stream.value(
                 Right(UpdateEmailDraftsSuccess(EmailId(Id('123'))))));
 
             final savedEmailDraft = SavedEmailDraft(
@@ -682,7 +693,10 @@ void main() {
             await untilCalled(
               mockCreateNewAndSaveEmailToDraftsInteractor.execute(
                 createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')));
+                cancelToken: anyNamed('cancelToken'),
+                enableTimeout: anyNamed('enableTimeout'),
+              )
+            );
             
             // assert
             expect(composerController?.savedEmailDraftHash, savedEmailDraft.hashCode);
@@ -1029,8 +1043,10 @@ void main() {
             when(
               mockCreateNewAndSaveEmailToDraftsInteractor.execute(
                 createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')))
-              .thenAnswer((_) => Stream.value(
+                cancelToken: anyNamed('cancelToken'),
+                enableTimeout: anyNamed('enableTimeout'),
+              )
+            ).thenAnswer((_) => Stream.value(
                 Right(SaveEmailAsDraftsSuccess(EmailId(Id('123'))))));
 
             final savedEmailDraft = SavedEmailDraft(
@@ -1059,7 +1075,10 @@ void main() {
             await untilCalled(
               mockCreateNewAndSaveEmailToDraftsInteractor.execute(
                 createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')));
+                cancelToken: anyNamed('cancelToken'),
+                enableTimeout: anyNamed('enableTimeout'),
+              )
+            );
             
             // assert
             expect(composerController?.savedEmailDraftHash, savedEmailDraft.hashCode);
@@ -1101,8 +1120,10 @@ void main() {
             when(
               mockCreateNewAndSaveEmailToDraftsInteractor.execute(
                 createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')))
-              .thenAnswer((_) => Stream.value(
+                cancelToken: anyNamed('cancelToken'),
+                enableTimeout: anyNamed('enableTimeout'),
+              )
+            ).thenAnswer((_) => Stream.value(
                 Right(UpdateEmailDraftsSuccess(EmailId(Id('123'))))));
 
             final savedEmailDraft = SavedEmailDraft(
@@ -1131,7 +1152,10 @@ void main() {
             await untilCalled(
               mockCreateNewAndSaveEmailToDraftsInteractor.execute(
                 createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')));
+                cancelToken: anyNamed('cancelToken'),
+                enableTimeout: anyNamed('enableTimeout'),
+              )
+            );
             
             // assert
             expect(composerController?.savedEmailDraftHash, savedEmailDraft.hashCode);
@@ -1453,6 +1477,24 @@ void main() {
           verifyNever(mockHtmlEditorApi.getText());
           expect(composerController?.savedEmailDraftHash, isNull);
         });
+      });
+    });
+
+    group('TimeoutInterceptors::resetTimeout::test', () {
+      test('SHOULD call `resetTimeout` WHEN `onClose` invoked', () async {
+        // Arrange
+        when(mockTimeoutInterceptors.resetTimeout()).thenReturn(null);
+
+        // Act
+        composerController?.onClose();
+
+        await untilCalled(mockTimeoutInterceptors.resetTimeout());
+
+        // Assert
+        verify(mockTimeoutInterceptors.resetTimeout()).called(1);
+        expect(mockTimeoutInterceptors.connectionTimeout, isNull);
+        expect(mockTimeoutInterceptors.sendTimeout, isNull);
+        expect(mockTimeoutInterceptors.receiveTimeout, isNull);
       });
     });
   });
