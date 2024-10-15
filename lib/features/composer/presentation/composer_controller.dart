@@ -34,14 +34,13 @@ import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_handler.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
+import 'package:tmail_ui_user/features/base/mixin/auto_complete_result_mixin.dart';
 import 'package:tmail_ui_user/features/base/state/base_ui_state.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/compose_email_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/generate_email_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/get_device_contact_suggestions_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/restore_email_inline_images_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
@@ -106,7 +105,9 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 
-class ComposerController extends BaseController with DragDropFileMixin implements BeforeReconnectHandler {
+class ComposerController extends BaseController
+    with DragDropFileMixin, AutoCompleteResultMixin
+    implements BeforeReconnectHandler {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final networkConnectionController = Get.find<NetworkConnectionController>();
@@ -1105,75 +1106,44 @@ class ComposerController extends BaseController with DragDropFileMixin implement
     }
   }
 
-  Future<List<EmailAddress>> getAutoCompleteSuggestion(String word) async {
-    log('ComposerController::getAutoCompleteSuggestion(): $word | $_contactSuggestionSource');
+  Future<List<EmailAddress>> getAutoCompleteSuggestion(String queryString) async {
+    log('ComposerController::getAutoCompleteSuggestion(): $queryString | $_contactSuggestionSource');
     _getAllAutoCompleteInteractor = getBinding<GetAllAutoCompleteInteractor>();
     _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
     _getDeviceContactSuggestionsInteractor = getBinding<GetDeviceContactSuggestionsInteractor>();
 
+    final autoCompletePattern = AutoCompletePattern(
+      word: queryString,
+      accountId: mailboxDashBoardController.accountId.value);
+
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
       if (_getAllAutoCompleteInteractor != null) {
         return await _getAllAutoCompleteInteractor!
-          .execute(AutoCompletePattern(word: word, accountId: mailboxDashBoardController.accountId.value))
-          .then((value) => value.fold(
-            (failure) => <EmailAddress>[],
-            (success) => _getAutoCompleteSuccess(success, word)
-          ));
+          .execute(autoCompletePattern)
+          .then((value) => handleAutoCompleteResultState(
+            resultState: value,
+            queryString: queryString,
+          )
+        );
       } else if (_getDeviceContactSuggestionsInteractor != null) {
         return await _getDeviceContactSuggestionsInteractor!
-          .execute(AutoCompletePattern(word: word, accountId: mailboxDashBoardController.accountId.value))
-          .then((value) => value.fold(
-            (failure) => <EmailAddress>[],
-            (success) => _getAutoCompleteSuccess(success, word)
-          ));
+          .execute(autoCompletePattern)
+          .then((value) => handleAutoCompleteResultState(
+            resultState: value,
+            queryString: queryString,
+          )
+        );
       } else {
         return <EmailAddress>[];
       }
     } else {
-      if (_getAutoCompleteInteractor == null) {
-        return <EmailAddress>[];
-      } else {
-        return await _getAutoCompleteInteractor!
-          .execute(AutoCompletePattern(word: word, accountId: mailboxDashBoardController.accountId.value))
-          .then((value) => value.fold(
-            (failure) => <EmailAddress>[],
-            (success) => _getAutoCompleteSuccess(success, word)
-          ));
-      }
-    }
-  }
-
-  List<EmailAddress> _getAutoCompleteSuccess(Success success, String word) {
-    if (success is GetAutoCompleteSuccess) {
-      if (success.listEmailAddress.isEmpty == true && GetUtils.isEmail(word)) {
-        final unknownEmailAddress = EmailAddress(word, word);
-        return <EmailAddress>[unknownEmailAddress];
-      }
-      if (GetUtils.isEmail(word)) {
-        bool isContainsTypedEmail = success.listEmailAddress.any((emailAddress) => emailAddress.email == word);
-        if (!isContainsTypedEmail) {
-          final unknownEmailAddress = EmailAddress(word, word);
-          success.listEmailAddress.insert(0, unknownEmailAddress);
-          return success.listEmailAddress;
-        }
-      }
-      return success.listEmailAddress;
-    } else if (success is GetDeviceContactSuggestionsSuccess) {
-      if (success.listEmailAddress.isEmpty == true && GetUtils.isEmail(word)) {
-        final unknownEmailAddress = EmailAddress(word, word);
-        return <EmailAddress>[unknownEmailAddress];
-      }
-      if (GetUtils.isEmail(word)) {
-        bool isContainsTypedEmail = success.listEmailAddress.any((emailAddress) => emailAddress.email == word);
-        if (!isContainsTypedEmail) {
-          final unknownEmailAddress = EmailAddress(word, word);
-          success.listEmailAddress.insert(0, unknownEmailAddress);
-          return success.listEmailAddress;
-        }
-      }
-      return success.listEmailAddress;
-    } else {
-      return <EmailAddress>[];
+      return await _getAutoCompleteInteractor
+        ?.execute(autoCompletePattern)
+        .then((value) => handleAutoCompleteResultState(
+          resultState: value,
+          queryString: queryString,
+        )
+      ) ?? <EmailAddress>[];
     }
   }
 
