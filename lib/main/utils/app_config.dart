@@ -15,6 +15,9 @@ class AppConfig {
   static const String iOSKeychainSharingGroupId = 'KUT463DS29.com.linagora.ios.teammail.shared';
   static const String iOSKeychainSharingService = 'com.linagora.ios.teammail.sessions';
 
+  static const Duration sendingMessageTimeout = Duration(minutes: 1);
+  static const Duration savingMessageTimeout = Duration(minutes: 1);
+
   static String get baseUrl => dotenv.get('SERVER_URL', fallback: '');
   static String get domainRedirectUrl => dotenv.get('DOMAIN_REDIRECT_URL', fallback: '');
   static String get webOidcClientId => dotenv.get('WEB_OIDC_CLIENT_ID', fallback: '');

@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/email/data/repository/email_repository_im
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/login/data/network/interceptors/timeout_interceptors.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -207,11 +208,13 @@ class ComposerBindings extends BaseBindings {
       Get.find<EmailRepository>(),
       Get.find<MailboxRepository>(),
       Get.find<ComposerRepository>(),
+      Get.find<TimeoutInterceptors>(),
     ));
     Get.lazyPut(() => CreateNewAndSaveEmailToDraftsInteractor(
       Get.find<EmailRepository>(),
       Get.find<MailboxRepository>(),
       Get.find<ComposerRepository>(),
+      Get.find<TimeoutInterceptors>(),
     ));
     Get.lazyPut(() => RestoreEmailInlineImagesInteractor(
       Get.find<ComposerCacheRepository>()));

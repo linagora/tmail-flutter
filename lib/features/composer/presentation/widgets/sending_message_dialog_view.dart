@@ -28,6 +28,7 @@ class SendingMessageDialogView extends StatefulWidget {
   final CreateNewAndSendEmailInteractor createNewAndSendEmailInteractor;
   final OnCancelSendingEmailAction? onCancelSendingEmailAction;
   final CancelToken? cancelToken;
+  final bool enableTimeout;
 
   const SendingMessageDialogView({
     super.key,
@@ -35,6 +36,7 @@ class SendingMessageDialogView extends StatefulWidget {
     required this.createNewAndSendEmailInteractor,
     this.onCancelSendingEmailAction,
     this.cancelToken,
+    this.enableTimeout = false,
   });
 
   @override
@@ -52,7 +54,8 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
     _streamSubscription = widget.createNewAndSendEmailInteractor
       .execute(
         createEmailRequest: widget.createEmailRequest,
-        cancelToken: widget.cancelToken
+        cancelToken: widget.cancelToken,
+        enableTimeout: widget.enableTimeout,
       )
       .listen(
         _handleDataStream,
@@ -81,6 +84,8 @@ class _SendingMessageDialogViewState extends State<SendingMessageDialogView> {
     logError('_SendingMessageDialogViewState::_handleErrorStream: Exception = $error');
     if (error is UnknownError && error.message is List<SendingEmailCanceledException>) {
       popBack(result: SendEmailFailure(exception: SendingEmailCanceledException()));
+    } else if (error is ConnectionTimeout || error is SendTimeout || error is ReceiveTimeout) {
+      popBack(result: SendEmailFailure(exception: SendingEmailTimeoutException()));
     } else {
       popBack(result: SendEmailFailure(exception: error));
     }
