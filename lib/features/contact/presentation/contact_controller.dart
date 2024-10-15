@@ -16,9 +16,8 @@ import 'package:model/autocomplete/auto_complete_pattern.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/mixin/auto_complete_result_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/contact_suggestion_source.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/get_device_contact_suggestions_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
@@ -28,8 +27,9 @@ import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
-class ContactController extends BaseController {
+class ContactController extends BaseController with AutoCompleteResultMixin {
 
   final TextEditingController textInputSearchController = TextEditingController();
   final FocusNode textInputSearchFocus = FocusNode();
@@ -113,14 +113,16 @@ class ContactController extends BaseController {
   }
 
   Future<void> _handleDeBounceTimeSearchContact(String value) async {
-    if (value.trim().isEmpty) {
+    final queryStringTrimmed = value.trim();
+
+    if (queryStringTrimmed.length < AppConfig.limitCharToStartSearch) {
       searchStatus.value = SearchStatus.INACTIVE;
       return;
     }
 
     searchStatus.value = SearchStatus.ACTIVE;
     searchViewState.value = Right(SearchingState());
-    searchQuery.value = SearchQuery(value);
+    searchQuery.value = SearchQuery(queryStringTrimmed);
     await _searchContactByNameOrEmail(searchQuery.value.value);
     searchViewState.value = Right(UIState.idle);
   }
@@ -150,46 +152,44 @@ class ContactController extends BaseController {
     searchedContactList.value = listContact;
   }
 
-  Future<List<EmailAddress>> _getAutoCompleteSuggestion(String query) async {
+  Future<List<EmailAddress>> _getAutoCompleteSuggestion(String queryString) async {
     _getAllAutoCompleteInteractor = getBinding<GetAllAutoCompleteInteractor>();
     _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
     _getDeviceContactSuggestionsInteractor = getBinding<GetDeviceContactSuggestionsInteractor>();
 
+    final autoCompletePattern = AutoCompletePattern(
+      word: queryString,
+      limit: 30,
+      accountId: _accountId);
+
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
       if (_getAllAutoCompleteInteractor != null) {
         return await _getAllAutoCompleteInteractor!
-          .execute(AutoCompletePattern(word: query, limit: 30, accountId: _accountId))
-          .then((value) => value.fold(
-            (failure) => <EmailAddress>[],
-            (success) => success is GetAutoCompleteSuccess
-              ? success.listEmailAddress
-              : <EmailAddress>[]
-          ));
+          .execute(autoCompletePattern)
+          .then((value) => handleAutoCompleteResultState(
+            resultState: value,
+            queryString: queryString,
+          )
+        );
       } else if (_getDeviceContactSuggestionsInteractor != null) {
         return await _getDeviceContactSuggestionsInteractor!
-          .execute(AutoCompletePattern(word: query, limit: 30, accountId: _accountId))
-          .then((value) => value.fold(
-            (failure) => <EmailAddress>[],
-            (success) => success is GetDeviceContactSuggestionsSuccess
-              ? success.listEmailAddress
-              : <EmailAddress>[]
-          ));
+          .execute(autoCompletePattern)
+          .then((value) => handleAutoCompleteResultState(
+            resultState: value,
+            queryString: queryString,
+          )
+        );
       } else {
         return <EmailAddress>[];
       }
     } else {
-      if (_getAutoCompleteInteractor == null) {
-        return <EmailAddress>[];
-      } else {
-        return await _getAutoCompleteInteractor!
-          .execute(AutoCompletePattern(word: query, limit: 30, accountId: _accountId))
-          .then((value) => value.fold(
-            (failure) => <EmailAddress>[],
-            (success) => success is GetAutoCompleteSuccess
-              ? success.listEmailAddress
-              : <EmailAddress>[]
-          ));
-      }
+      return await _getAutoCompleteInteractor
+        ?.execute(autoCompletePattern)
+        .then((value) => handleAutoCompleteResultState(
+          resultState: value,
+          queryString: queryString,
+        )
+      ) ?? <EmailAddress>[];
     }
   }
 
