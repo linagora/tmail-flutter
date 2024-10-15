@@ -1259,6 +1259,12 @@ class AppLocalizations {
         name: 'name');
   }
 
+  String get name_to_be_displayed {
+    return Intl.message(
+        'Name to be displayed to recipients',
+        name: 'name_to_be_displayed');
+  }
+
   String get reply_to {
     return Intl.message(
         'Reply to',
