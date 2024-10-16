@@ -129,6 +129,23 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                      ]
                    ),
                  )),
+                 Container(
+                   color: AppColor.colorBgMailbox,
+                   width: double.infinity,
+                   alignment: controller.responsiveUtils.isDesktop(context)
+                     ? AlignmentDirectional.centerStart
+                     : AlignmentDirectional.center,
+                   padding: const EdgeInsets.all(16),
+                   child: ApplicationVersionWidget(
+                     padding: EdgeInsets.zero,
+                     title: '${AppLocalizations.of(context).version.toLowerCase()} ',
+                     textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
+                       fontSize: 13,
+                       color: AppColor.colorTextBody,
+                       fontWeight: FontWeight.normal
+                     ),
+                   ),
+                 ),
                ]
            )
        ),

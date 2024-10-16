@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_view.dart';
+import 'package:tmail_ui_user/features/quotas/presentation/styles/quotas_view_styles.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
@@ -31,8 +32,15 @@ class MailboxView extends BaseMailboxView {
           backgroundColor: controller.responsiveUtils.isWebDesktop(context)
             ? AppColor.colorBgDesktop
             : Colors.white,
-          body: Column(children: [
-            if (!controller.responsiveUtils.isDesktop(context)) _buildLogoApp(context),
+          body: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            if (!controller.responsiveUtils.isDesktop(context))
+              ApplicationLogoWidthTextWidget(
+                margin: const EdgeInsetsDirectional.only(
+                  top: 16,
+                  bottom: 16,
+                  start: 16,
+                ),
+              ),
             if (!controller.responsiveUtils.isDesktop(context))
               const Divider(
                   color: AppColor.colorDividerMailbox,
@@ -50,24 +58,31 @@ class MailboxView extends BaseMailboxView {
                 child: _buildListMailbox(context),
               ),
             )),
-            const QuotasView(),
+            const QuotasView(
+              padding: EdgeInsetsDirectional.only(
+                start: QuotasViewStyles.padding,
+                top: QuotasViewStyles.padding,
+              ),
+            ),
+            Container(
+              color: AppColor.colorBgMailbox,
+              width: double.infinity,
+              alignment: controller.responsiveUtils.isDesktop(context)
+                ? AlignmentDirectional.centerStart
+                : AlignmentDirectional.center,
+              padding: const EdgeInsets.all(16),
+              child: ApplicationVersionWidget(
+                padding: EdgeInsets.zero,
+                title: '${AppLocalizations.of(context).version.toLowerCase()} ',
+                textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  fontSize: 13,
+                  color: AppColor.colorTextBody,
+                  fontWeight: FontWeight.normal
+                ),
+              ),
+            ),
           ]),
         )
-    );
-  }
-
-  Widget _buildLogoApp(BuildContext context) {
-    return Container(
-        color: Colors.white,
-        padding: EdgeInsetsDirectional.only(
-          top: controller.responsiveUtils.isDesktop(context) ? 25 : 16,
-          bottom: controller.responsiveUtils.isDesktop(context) ? 25 : 16,
-          start: controller.responsiveUtils.isDesktop(context) ? 32 : 16,
-        ),
-        child: Row(children: [
-          ApplicationLogoWidthTextWidget(),
-          const ApplicationVersionWidget()
-        ])
     );
   }
 

@@ -3,7 +3,6 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
-import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/navigation_bar_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_dashboard/app_grid_dashboard_icon.dart';
@@ -41,7 +40,7 @@ class NavigationBarWidget extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ApplicationLogoWidthTextWidget(onTapAction: onTapApplicationLogoAction),
-              const ApplicationVersionWidget()
+              const Spacer(),
             ],
           ),
         ),

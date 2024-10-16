@@ -8,7 +8,9 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class QuotasView extends GetWidget<QuotasController> {
 
-  const QuotasView({Key? key}) : super(key: key);
+  final EdgeInsetsGeometry? padding;
+
+  const QuotasView({Key? key, this.padding}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +19,7 @@ class QuotasView extends GetWidget<QuotasController> {
         final octetQuota = controller.octetsQuota.value!;
         return LayoutBuilder(builder: (context, constraints) {
           return Container(
-            padding: const EdgeInsetsDirectional.only(
+            padding: padding ?? const EdgeInsetsDirectional.only(
               start: QuotasViewStyles.padding,
               top: QuotasViewStyles.padding,
               bottom: QuotasViewStyles.bottomPadding
