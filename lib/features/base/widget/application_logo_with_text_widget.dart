@@ -8,8 +8,13 @@ class ApplicationLogoWidthTextWidget extends StatelessWidget {
   final ImagePaths _imagePaths = Get.find<ImagePaths>();
 
   final VoidCallback? onTapAction;
+  final EdgeInsetsGeometry? margin;
 
-  ApplicationLogoWidthTextWidget({super.key, this.onTapAction});
+  ApplicationLogoWidthTextWidget({
+    super.key,
+    this.onTapAction,
+    this.margin,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,6 +22,7 @@ class ApplicationLogoWidthTextWidget extends StatelessWidget {
       icon: _imagePaths.icLogoWithText,
       iconSize: 33,
       padding: EdgeInsets.zero,
+      margin: margin,
       backgroundColor: Colors.transparent,
       hoverColor: Colors.transparent,
       onTapActionCallback: onTapAction,
