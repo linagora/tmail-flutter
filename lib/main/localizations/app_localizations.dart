@@ -1259,10 +1259,10 @@ class AppLocalizations {
         name: 'name');
   }
 
-  String get name_to_be_displayed {
+  String get nameToBeDisplayed {
     return Intl.message(
         'Name to be displayed to recipients',
-        name: 'name_to_be_displayed');
+        name: 'nameToBeDisplayed');
   }
 
   String get reply_to {

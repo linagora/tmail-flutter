@@ -49,7 +49,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
         padding: const EdgeInsetsDirectional.symmetric(vertical: 12, horizontal: 24),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
           Obx(() => IdentityInputFieldBuilder(
-            AppLocalizations.of(context).name_to_be_displayed,
+            AppLocalizations.of(context).nameToBeDisplayed,
             controller.errorNameIdentity.value,
             AppLocalizations.of(context).required,
             editingController: controller.inputNameIdentityController,
