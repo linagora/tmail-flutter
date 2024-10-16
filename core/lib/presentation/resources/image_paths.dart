@@ -196,6 +196,7 @@ class ImagePaths {
   String get icEventCanceled => _getImagePath('ic_event_canceled.svg');
   String get icFormatQuote => _getImagePath('ic_format_quote.svg');
   String get icLogoWithText => _getImagePath('ic_logo_with_text.svg');
+  String get icLogoWithTextBeta => _getImagePath('ic_logo_with_text_beta.svg');
   String get icTMailLogo => _getImagePath('ic_tmail_logo.svg');
   String get icLoginGraphic => _getImagePath('ic_login_graphic.svg');
   String get icCancel => _getImagePath('ic_cancel.svg');

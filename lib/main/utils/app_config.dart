@@ -14,6 +14,7 @@ class AppConfig {
   static const String appFCMConfigurationPath = "configurations/env.fcm";
   static const String iOSKeychainSharingGroupId = 'KUT463DS29.com.linagora.ios.teammail.shared';
   static const String iOSKeychainSharingService = 'com.linagora.ios.teammail.sessions';
+  static const String saasPlatform = 'saas';
 
   static String get baseUrl => dotenv.get('SERVER_URL', fallback: '');
   static String get domainRedirectUrl => dotenv.get('DOMAIN_REDIRECT_URL', fallback: '');
@@ -61,4 +62,8 @@ class AppConfig {
 
     return forwardWarningMessage;
   }
+
+  static String get _platformEnv => dotenv.get('PLATFORM', fallback: saasPlatform);
+
+  static bool get isSaasPlatForm => _platformEnv == saasPlatform;
 }
