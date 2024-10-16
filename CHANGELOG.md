@@ -1,3 +1,27 @@
+## [0.13.3] - 2024-10-16
+### Fixed
+- \#3002 \[SEARCH\] More filters
+- \#3004 \[SEARCH\] Fix open close advanced search looses data
+- \#3005 \[SEARCH\] Easily clear From and To search result header
+- \#3006 \[SEARCH\] mail address handling in quick search bar
+- \#3007 \[SEARCH\] Support drag and drop between From & To field
+- \#3025 \[SEARCH\] Mark as read/unread/important/unimportant action refresh email view, reset selection in Search
+- \#3192 \[SEARCH\] Update highlight style as design
+- \[SEARCH\] Add suggestion for From/To dialog when input is new email address
+- \#3045 Hide compose button situationally on mobile
+- Show app version on login view
+- \#2983 Fix download EML with special character
+- Fix alignment receive time in email view
+- Remove space when subject is empty or null
+- Remove blink blink of next & previous button in Email View
+- Fix hyperlink iOS still show full link
+- Replace dart:ui to dart:ui\_web when platformViewRegistry in dart:ui is deprecated
+- \#3183 Clean up draft after email sent
+- \#3034 Prevent duplicate draft warning
+- \#3171 Fix duplicate signature button on Composer view changed
+- Simplified the prebuild script
+- Translation vi, ru, fr, de
+
 ## [0.13.2] - 2024-09-18
 ### Added
 - User guide
@@ -613,6 +637,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.13.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.13.3
 [0.11.4002]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.4002
 [0.11.4001]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.4001
 [0.11.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.3
