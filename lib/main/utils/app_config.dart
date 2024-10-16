@@ -63,7 +63,7 @@ class AppConfig {
     return forwardWarningMessage;
   }
 
-  static String get _platformEnv => dotenv.get('PLATFORM', fallback: saasPlatform);
+  static String get _platformEnv => dotenv.get('PLATFORM', fallback: 'other');
 
   static bool get isSaasPlatForm => _platformEnv == saasPlatform;
 }
