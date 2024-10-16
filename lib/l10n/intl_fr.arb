@@ -4222,7 +4222,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youAreOffline": "Vous êtes hors ligne. Il semble que vous n'êtes pas connecté.",
+  "youAreOffline": "Vous êtes hors ligne. Veuillez vérifier votre connexion.",
   "@youAreOffline": {
     "type": "text",
     "placeholders_order": [],
@@ -4236,6 +4236,12 @@
   },
   "tryAgain": "Veuillez réessayer",
   "@tryAgain": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "findEmails": "Trouver des messages",
+  "@findEmails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
