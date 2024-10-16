@@ -48,7 +48,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   A.ApplicationLogoWidthTextWidget.prototype = {
     build$1(context) {
       var _null = null,
-        value = $.$get$dotenv().maybeGet$2$fallback("PLATFORM", "saas"),
+        value = $.$get$dotenv().maybeGet$2$fallback("PLATFORM", "other"),
         t1 = value !== "saas" ? "assets/images/ic_logo_with_text_beta.svg" : "assets/images/ic_logo_with_text.svg";
       return B.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, C.Color_0, t1, _null, 33, _null, this.margin, 1 / 0, _null, this.onTapAction, C.EdgeInsets_0_0_0_0, _null);
     }
@@ -122,5 +122,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_2", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "fgZbluQYQfs2/Bg/lt9bnDK2l0w=");
+})($__dart_deferred_initializers__, "ZmKYcOo1CgUJDz+5/ZT3wa54lQM=");
 ;
