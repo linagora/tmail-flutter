@@ -8,4 +8,8 @@ class OIDCConstant {
   static const authResponseKey = "auth_info";
 
   static String get clientId => PlatformInfo.isWeb ? AppConfig.webOidcClientId : mobileOidcClientId;
+
+  static String get saasClientId => PlatformInfo.isMobile
+    ? mobileOidcClientId
+    : '';
 }
