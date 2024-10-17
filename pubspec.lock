@@ -1330,6 +1330,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.1"
+  loading_view:
+    dependency: transitive
+    description:
+      name: loading_view
+      sha256: "3d31c2c5293c2e3518b7330ffdc2fab5c83daaa9218cc45d4406c875f08f0795"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   logging:
     dependency: transitive
     description:
@@ -2016,6 +2024,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
+  tip_dialog:
+    dependency: "direct main"
+    description:
+      name: tip_dialog
+      sha256: edc1ebbb4b9f9575220c85206cf6986921c2b63d173744be0babac00c2e48bd0
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.0"
   typed_data:
     dependency: transitive
     description:
