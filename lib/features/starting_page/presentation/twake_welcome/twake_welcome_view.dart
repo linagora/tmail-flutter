@@ -6,6 +6,7 @@ import 'package:linagora_design_flutter/linagora_design_flutter.dart';
 import 'package:tmail_ui_user/features/starting_page/presentation/twake_welcome/twake_welcome_controller.dart';
 import 'package:tmail_ui_user/features/starting_page/presentation/twake_welcome/twake_welcome_view_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class TwakeWelcomeView extends GetWidget<TwakeWelcomeController> {
 
@@ -31,8 +32,13 @@ class TwakeWelcomeView extends GetWidget<TwakeWelcomeController> {
       hoverColor: Colors.transparent,
       highlightColor: Colors.transparent,
       overlayColor: WidgetStateProperty.all(Colors.transparent),
-      signInTitle: AppLocalizations.of(context).signIn.capitalizeFirst ?? '',
-      createTwakeIdTitle: AppLocalizations.of(context).createTwakeId,
+      signInTitle: AppConfig.isSaasPlatForm
+        ? AppLocalizations.of(context).signIn.capitalizeFirst ?? ''
+        : null,
+      onSignInOnTap: controller.onClickSignIn,
+      createTwakeIdTitle: AppConfig.isSaasPlatForm
+        ? AppLocalizations.of(context).createTwakeId
+        : null,
       useCompanyServerTitle: AppLocalizations.of(context).useCompanyServer,
       description: AppLocalizations.of(context).descriptionWelcomeTo,
       privacyPolicy: AppLocalizations.of(context).privacyPolicy,

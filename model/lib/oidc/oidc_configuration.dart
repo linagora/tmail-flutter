@@ -25,8 +25,6 @@ class OIDCConfiguration with EquatableMixin {
     }
   }
 
-  String get clientIdHash => clientId.hashCode.toString();
-
   @override
   List<Object?> get props => [
     authority,
