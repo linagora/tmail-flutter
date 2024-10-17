@@ -21,7 +21,7 @@ class ApplicationLogoWidthTextWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TMailButtonWidget.fromIcon(
-      icon: PlatformInfo.isWeb && !AppConfig.isSaasPlatForm
+      icon: PlatformInfo.isWeb && AppConfig.isSaasPlatForm
         ? _imagePaths.icLogoWithTextBeta
         : _imagePaths.icLogoWithText,
       iconSize: 33,

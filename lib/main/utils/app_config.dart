@@ -65,5 +65,5 @@ class AppConfig {
 
   static String get _platformEnv => dotenv.get('PLATFORM', fallback: 'other');
 
-  static bool get isSaasPlatForm => _platformEnv == saasPlatform;
+  static bool get isSaasPlatForm => _platformEnv.toLowerCase() == saasPlatform;
 }
