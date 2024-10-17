@@ -255,6 +255,8 @@ dependencies:
 
   web_socket_channel: 2.4.3
 
+  tip_dialog: 4.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -4259,4 +4259,11 @@ class AppLocalizations {
       name: 'useCompanyServer',
     );
   }
+
+  String get sigInSaasFailed {
+    return Intl.message(
+      'Login failed. Please check again.',
+      name: 'sigInSaasFailed',
+    );
+  }
 }
