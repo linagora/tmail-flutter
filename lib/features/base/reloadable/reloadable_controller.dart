@@ -36,7 +36,7 @@ abstract class ReloadableController extends BaseController {
       goToLogin();
     } else if (failure is GetSessionFailure) {
       logError('$runtimeType::handleFailureViewState():Failure = $failure');
-      _handleGetSessionFailure(failure.exception);
+      handleGetSessionFailure(failure.exception);
     }  else if (failure is UpdateAccountCacheFailure) {
       logError('$runtimeType::handleFailureViewState():Failure = $failure');
       _handleUpdateAccountCacheCompleted(
@@ -127,7 +127,7 @@ abstract class ReloadableController extends BaseController {
     consumeState(_getSessionInteractor.execute());
   }
 
-  void _handleGetSessionFailure(GetSessionFailure failure) {
+  void handleGetSessionFailure(GetSessionFailure failure) {
     if (failure.exception is! BadCredentialsException) {
       toastManager.showMessageFailure(failure);
     }

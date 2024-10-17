@@ -2,14 +2,13 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class PrivacyLinkWidget extends StatelessWidget {
-  static const linagoraPrivacy = 'https://www.linagora.com/en/legal/privacy';
-
   final String privacyUrlString;
 
-  const PrivacyLinkWidget({Key? key, this.privacyUrlString = linagoraPrivacy}) : super(key: key);
+  const PrivacyLinkWidget({Key? key, this.privacyUrlString = AppConfig.linagoraPrivacyUrl}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
