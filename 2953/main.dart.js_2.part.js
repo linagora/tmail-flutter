@@ -7,21 +7,27 @@
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var B, C,
   A = {
-    ApplicationLogoWidthTextWidget$(onTapAction) {
+    ApplicationLogoWidthTextWidget$(margin, onTapAction) {
       var t1;
       $.$get$Get();
       t1 = $.GetInstance__getInstance;
       if (t1 == null)
         t1 = $.GetInstance__getInstance = C.C_GetInstance;
-      return new A.ApplicationLogoWidthTextWidget(t1.find$1$1$tag(0, null, type$.ImagePaths), onTapAction, null);
+      return new A.ApplicationLogoWidthTextWidget(t1.find$1$1$tag(0, null, type$.ImagePaths), onTapAction, margin, null);
     },
-    ApplicationLogoWidthTextWidget: function ApplicationLogoWidthTextWidget(t0, t1, t2) {
-      this._application_logo_with_text_widget$_imagePaths = t0;
-      this.onTapAction = t1;
-      this.key = t2;
+    ApplicationLogoWidthTextWidget: function ApplicationLogoWidthTextWidget(t0, t1, t2, t3) {
+      var _ = this;
+      _._application_logo_with_text_widget$_imagePaths = t0;
+      _.onTapAction = t1;
+      _.margin = t2;
+      _.key = t3;
     },
-    ApplicationVersionWidget: function ApplicationVersionWidget(t0) {
-      this.key = t0;
+    ApplicationVersionWidget: function ApplicationVersionWidget(t0, t1, t2, t3) {
+      var _ = this;
+      _.padding = t0;
+      _.title = t1;
+      _.textStyle = t2;
+      _.key = t3;
     },
     _ApplicationVersionWidgetState: function _ApplicationVersionWidgetState(t0, t1) {
       var _ = this;
@@ -38,11 +44,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B = holdersList[0];
   C = holdersList[2];
   A = hunkHelpers.updateHolder(holdersList[9], A);
-  D = holdersList[11];
+  D = holdersList[12];
   A.ApplicationLogoWidthTextWidget.prototype = {
     build$1(context) {
-      var _null = null;
-      return B.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, C.Color_0, "assets/images/ic_logo_with_text.svg", _null, 33, _null, _null, 1 / 0, _null, this.onTapAction, C.EdgeInsets_0_0_0_0, _null);
+      var _null = null,
+        value = $.$get$dotenv().maybeGet$2$fallback("PLATFORM", "other"),
+        t1 = value !== "saas" ? "assets/images/ic_logo_with_text_beta.svg" : "assets/images/ic_logo_with_text.svg";
+      return B.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, C.Color_0, t1, _null, 33, _null, this.margin, 1 / 0, _null, this.onTapAction, C.EdgeInsets_0_0_0_0, _null);
     }
   };
   A.ApplicationVersionWidget.prototype = {
@@ -70,16 +78,24 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   var typesOffset = hunkHelpers.updateTypes([]);
   A._ApplicationVersionWidgetState_build_closure.prototype = {
     call$2(context, snapshot) {
-      var t2, _null = null,
+      var t2, t3, t4, _null = null,
         t1 = snapshot.data;
       if (t1 != null) {
         t2 = this.$this;
-        t2._widget.toString;
+        t3 = t2._widget;
+        t4 = t3.padding;
+        if (t4 == null)
+          t4 = C.EdgeInsets_0_8_0_0;
+        t3 = t3.title;
+        if (t3 == null)
+          t3 = "v.";
         t1 = B.S(t1);
-        t2._widget.toString;
-        t2 = B.Theme_of(context).textTheme.labelMedium;
-        t2 = t2 == null ? _null : t2.copyWith$3$color$fontSize$fontWeight(C.Color_4285364357, 13, C.FontWeight_4_500);
-        return new B.Padding(C.EdgeInsets_0_8_0_0, B.Text$("v." + t1, _null, _null, _null, _null, _null, _null, _null, _null, t2, C.TextAlign_2, _null, _null, _null, _null), _null);
+        t2 = t2._widget.textStyle;
+        if (t2 == null) {
+          t2 = B.Theme_of(context).textTheme.labelMedium;
+          t2 = t2 == null ? _null : t2.copyWith$3$color$fontSize$fontWeight(C.Color_4285364357, 13, C.FontWeight_4_500);
+        }
+        return new B.Padding(t4, B.Text$(t3 + t1, _null, _null, _null, _null, _null, _null, _null, _null, t2, C.TextAlign_2, _null, _null, _null, _null), _null);
       } else
         return C.SizedBox_0_0_null_null;
     },
@@ -99,7 +115,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     String: B.findType("String")
   };
   (function constants() {
-    D.ApplicationVersionWidget_null = new A.ApplicationVersionWidget(null);
     D.TextStyle_OkG0 = new B.TextStyle(true, C.Color_4278221567, null, null, null, null, 14, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
   })();
 };
@@ -107,5 +122,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_2", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "gHJXLEvEtnx5RhHKFrhiyV2y7o0=");
+})($__dart_deferred_initializers__, "ZmKYcOo1CgUJDz+5/ZT3wa54lQM=");
 ;
