@@ -1,13 +1,11 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
-import 'package:flutter/services.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:rich_text_composer/views/commons/logger.dart';
-import 'package:tmail_ui_user/features/login/domain/exceptions/login_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
@@ -51,13 +49,6 @@ class SignInSaasInteractor {
       );
 
       yield Right<Failure, Success>(SignInSaasSuccess(tokenOIDC, baseUri, oidcConfiguration));
-    } on PlatformException catch (e) {
-      logError('SignInSaasInteractor::execute():PlatformException ${e.message} - ${e.stacktrace}');
-      if (NoSuitableBrowserForOIDCException.verifyException(e)) {
-        yield Left<Failure, Success>(SignInSaasFailure(NoSuitableBrowserForOIDCException()));
-      } else {
-        yield Left<Failure, Success>(SignInSaasFailure(e));
-      }
     } catch (e) {
       logError('SignInSaasInteractor::execute():Exception = $e');
       yield Left<Failure, Success>(SignInSaasFailure(e));

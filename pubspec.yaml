@@ -253,6 +253,8 @@ dependencies:
 
   app_settings: 5.1.1
 
+  tip_dialog: 4.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
