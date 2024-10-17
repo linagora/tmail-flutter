@@ -1,3 +1,10 @@
+## [0.13.4] - 2024-10-17
+### Added
+- Configuration for deploy platform 
+
+### Fixed
+- Change logos to beta and move position of version label on web
+
 ## [0.13.3] - 2024-10-16
 ### Fixed
 - \#3002 \[SEARCH\] More filters
@@ -637,6 +644,7 @@
 - \#1512 remove plain text input for signature
 - \#1469 remove animation when navigating screen
 
+[0.13.4]: https://github.com/linagora/tmail-flutter/releases/tag/v0.13.4
 [0.13.3]: https://github.com/linagora/tmail-flutter/releases/tag/v0.13.3
 [0.11.4002]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.4002
 [0.11.4001]: https://github.com/linagora/tmail-flutter/releases/tag/v0.11.4001
