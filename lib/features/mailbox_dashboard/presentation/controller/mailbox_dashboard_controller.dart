@@ -574,7 +574,11 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     injectAutoCompleteBindings(session, currentAccountId);
     injectRuleFilterBindings(session, currentAccountId);
     injectVacationBindings(session, currentAccountId);
-    injectFCMBindings(session, currentAccountId);
+    if (PlatformInfo.isWeb) {
+      injectWebSocket(session, currentAccountId);
+    } else {
+      injectFCMBindings(session, currentAccountId);
+    }
 
     _getVacationResponse();
     spamReportController.getSpamReportStateAction();
