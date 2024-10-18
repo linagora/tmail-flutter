@@ -27,8 +27,7 @@ class TwakeWelcomeView extends GetWidget<TwakeWelcomeController> {
             padding: const EdgeInsetsDirectional.only(bottom: 16),
             child: SvgPicture.asset(
               controller.imagePaths.icLogoTwakeWelcome,
-              width: TwakeWelcomeViewStyle.logoWidth,
-              height: TwakeWelcomeViewStyle.logoHeight,
+              fit: BoxFit.fill,
             ),
           ),
           focusColor: Colors.transparent,
@@ -44,6 +43,7 @@ class TwakeWelcomeView extends GetWidget<TwakeWelcomeController> {
             : null,
           useCompanyServerTitle: AppLocalizations.of(context).useCompanyServer,
           description: AppLocalizations.of(context).descriptionWelcomeTo,
+          descriptionTextStyle: TwakeWelcomeViewStyle.descriptionTextStyle,
           privacyPolicy: AppLocalizations.of(context).privacyPolicy,
           descriptionPrivacyPolicy: AppLocalizations.of(context).byContinuingYouAreAgreeingToOur,
           onPrivacyPolicyOnTap: controller.onClickPrivacyPolicy,
