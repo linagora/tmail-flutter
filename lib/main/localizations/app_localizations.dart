@@ -4241,7 +4241,7 @@ class AppLocalizations {
 
   String get descriptionWelcomeTo {
     return Intl.message(
-      'End-to-end encryption, collaborative\n features for secure and efficient\n teamwork',
+      'The new Open Source standard for\n secure professional e-mail',
       name: 'descriptionWelcomeTo',
     );
   }
