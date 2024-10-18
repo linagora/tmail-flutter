@@ -220,6 +220,7 @@ class ImagePaths {
   String get icGoodSignature => _getImagePath('ic_good_signature.svg');
   String get icBadSignature => _getImagePath('ic_bad_signature.svg');
   String get icDeleteSelection => _getImagePath('ic_delete_selection.svg');
+  String get icLogoTwakeWelcome => _getImagePath('ic_logo_twake_welcome.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

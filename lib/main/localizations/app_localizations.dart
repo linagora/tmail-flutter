@@ -4219,4 +4219,32 @@ class AppLocalizations {
       'Find emails',
       name: 'findEmails');
   }
+
+  String get descriptionWelcomeTo {
+    return Intl.message(
+      'The new Open Source standard for\n secure professional e-mail',
+      name: 'descriptionWelcomeTo',
+    );
+  }
+
+  String get createTwakeId {
+    return Intl.message(
+      'Create Twake ID',
+      name: 'createTwakeId',
+    );
+  }
+
+  String get useCompanyServer {
+    return Intl.message(
+      'Use company server',
+      name: 'useCompanyServer',
+    );
+  }
+
+  String get sigInSaasFailed {
+    return Intl.message(
+      'Login failed. Please check again.',
+      name: 'sigInSaasFailed',
+    );
+  }
 }
