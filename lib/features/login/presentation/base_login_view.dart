@@ -40,13 +40,16 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
     return AutofillGroup(
       child: Padding(
         padding: const EdgeInsetsDirectional.symmetric(horizontal: 24),
-        child: Column(
-          children: [
-            buildUserNameInput(context),
-            const SizedBox(height: 24),
-            buildPasswordInput(context),
-            const SizedBox(height: 40),
-          ],
+        child: FocusTraversalGroup(
+          policy: WidgetOrderTraversalPolicy(),
+          child: Column(
+            children: [
+              buildUserNameInput(context),
+              const SizedBox(height: 24),
+              buildPasswordInput(context),
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
       ),
     );
