@@ -534,10 +534,11 @@ packages:
   flutter_typeahead:
     dependency: "direct main"
     description:
-      name: flutter_typeahead
-      sha256: ef2dd5a505d2d95a5b4c571c81ad2d6e7955f583dddec49064fec57acffd7a96
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: "fix/5.0.2-textfield-tab"
+      resolved-ref: e7d4cf334fce888a45e0b7ac7c178be33fd176a6
+      url: "https://github.com/linagora/flutter_typeahead.git"
+    source: git
     version: "5.0.2"
   flutter_web_plugins:
     dependency: transitive
