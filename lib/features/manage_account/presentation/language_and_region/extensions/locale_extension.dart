@@ -18,6 +18,8 @@ extension LocaleExtension on Locale {
         return AppLocalizations.of(context).languageArabic;
       case 'it':
         return AppLocalizations.of(context).languageItalian;
+      case 'de':
+        return AppLocalizations.of(context).languageGerman;
       default:
         return '';
     }
@@ -29,6 +31,8 @@ extension LocaleExtension on Locale {
         return 'Français';
       case 'en':
         return 'English';
+      case 'de':
+        return 'German';  
       case 'vi':
         return 'Tiếng Việt';
       case 'ru':
