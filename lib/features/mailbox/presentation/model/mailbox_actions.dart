@@ -24,7 +24,9 @@ enum MailboxActions {
   emptySpam,
   newSubfolder,
   confirmMailSpam,
-  recoverDeletedMessages;
+  recoverDeletedMessages,
+  allowSubaddressing,
+  disallowSubaddressing;
 }
 
 extension MailboxActionsExtension on MailboxActions {
@@ -74,6 +76,10 @@ extension MailboxActionsExtension on MailboxActions {
         return AppLocalizations.of(context).confirmAllEmailHereAreSpam;
       case MailboxActions.recoverDeletedMessages:
         return AppLocalizations.of(context).recoverDeletedMessages;
+      case MailboxActions.allowSubaddressing:
+        return AppLocalizations.of(context).allowSubaddressing;
+      case MailboxActions.disallowSubaddressing:
+        return AppLocalizations.of(context).disallowSubaddressing;
       default:
         return '';
     }
@@ -109,6 +115,10 @@ extension MailboxActionsExtension on MailboxActions {
         return imagePaths.icMarkAsRead;
       case MailboxActions.recoverDeletedMessages:
         return imagePaths.icRecoverDeletedMessages;
+      case MailboxActions.allowSubaddressing:
+        return imagePaths.icSubaddressingAllow;
+      case MailboxActions.disallowSubaddressing:
+        return imagePaths.icSubaddressingDisallow;
       default:
         return '';
     }
@@ -183,6 +193,8 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.emptySpam:
       case MailboxActions.confirmMailSpam:
       case MailboxActions.recoverDeletedMessages:
+      case MailboxActions.allowSubaddressing:
+      case MailboxActions.disallowSubaddressing:
         return ContextMenuItemState.activated;
       case MailboxActions.markAsRead:
         return mailbox.countUnReadEmailsAsString.isNotEmpty
