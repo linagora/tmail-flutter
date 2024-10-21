@@ -138,8 +138,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   Future<bool> removeEmailDrafts(
     Session session,
     AccountId accountId,
-    EmailId emailId,
-    {CancelToken? cancelToken}
+    EmailId emailId
   ) {
     throw UnimplementedError();
   }
@@ -149,7 +148,10 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     Session session,
     AccountId accountId,
     Email email,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      Duration? timeout
+    }
   ) {
     throw UnimplementedError();
   }
@@ -161,7 +163,8 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     EmailRequest emailRequest,
     {
       CreateNewMailboxRequest? mailboxRequest,
-      CancelToken? cancelToken
+      CancelToken? cancelToken,
+      Duration? timeout
     }
   ) {
     throw UnimplementedError();
@@ -199,7 +202,10 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     AccountId accountId,
     Email newEmail,
     EmailId oldEmailId,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      Duration? timeout
+    }
   ) {
     throw UnimplementedError();
   }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -32,7 +34,8 @@ class CreateNewAndSendEmailInteractor {
 
   Stream<dartz.Either<Failure, Success>> execute({
     required CreateEmailRequest createEmailRequest,
-    CancelToken? cancelToken
+    CancelToken? cancelToken,
+    Duration? timeout,
   }) async* {
     SendingEmailArguments? sendingEmailArguments;
     try {
@@ -45,41 +48,50 @@ class CreateNewAndSendEmailInteractor {
 
       sendingEmailArguments = await _createEmailObject(createEmailRequest);
 
-      if (sendingEmailArguments != null) {
-        yield dartz.Right<Failure, Success>(SendEmailLoading());
-
-        await _emailRepository.sendEmail(
-          sendingEmailArguments.session,
-          sendingEmailArguments.accountId,
-          sendingEmailArguments.emailRequest,
-          mailboxRequest: sendingEmailArguments.mailboxRequest,
-          cancelToken: cancelToken
-        );
-
-        if (sendingEmailArguments.emailRequest.emailIdDestroyed != null) {
-          await _deleteOldDraftsEmail(
-            session: sendingEmailArguments.session,
-            accountId: sendingEmailArguments.accountId,
-            draftEmailId: sendingEmailArguments.emailRequest.emailIdDestroyed!,
-            cancelToken: cancelToken
-          );
-        }
-
-        yield dartz.Right<Failure, Success>(
-          SendEmailSuccess(
-            currentMailboxState: listCurrentState?.value1,
-            currentEmailState: listCurrentState?.value2,
-            emailRequest: sendingEmailArguments.emailRequest
-          )
-        );
-      } else {
+      if (sendingEmailArguments == null) {
         yield dartz.Left<Failure, Success>(GenerateEmailFailure(CannotCreateEmailObjectException()));
+        return;
       }
+
+      yield dartz.Right<Failure, Success>(SendEmailLoading());
+
+      await _emailRepository.sendEmail(
+        sendingEmailArguments.session,
+        sendingEmailArguments.accountId,
+        sendingEmailArguments.emailRequest,
+        mailboxRequest: sendingEmailArguments.mailboxRequest,
+        cancelToken: cancelToken,
+        timeout: timeout,
+      );
+
+      if (sendingEmailArguments.emailRequest.emailIdDestroyed != null) {
+        await _deleteOldDraftsEmail(
+          session: sendingEmailArguments.session,
+          accountId: sendingEmailArguments.accountId,
+          draftEmailId: sendingEmailArguments.emailRequest.emailIdDestroyed!,
+        );
+      }
+
+      yield dartz.Right<Failure, Success>(
+        SendEmailSuccess(
+          currentMailboxState: listCurrentState?.value1,
+          currentEmailState: listCurrentState?.value2,
+          emailRequest: sendingEmailArguments.emailRequest
+        )
+      );
     } catch (e) {
       logError('CreateNewAndSendEmailInteractor::execute: Exception: $e');
       if (e is UnknownError && e.message is List<SendingEmailCanceledException>) {
         yield dartz.Left<Failure, Success>(SendEmailFailure(
           exception: SendingEmailCanceledException(),
+          session: sendingEmailArguments?.session,
+          accountId: sendingEmailArguments?.accountId,
+          emailRequest: sendingEmailArguments?.emailRequest,
+          mailboxRequest: sendingEmailArguments?.mailboxRequest,
+        ));
+      } else if (e is TimeoutException) {
+        yield dartz.Left<Failure, Success>(SendEmailFailure(
+          exception: SendingEmailTimeoutException(),
           session: sendingEmailArguments?.session,
           accountId: sendingEmailArguments?.accountId,
           emailRequest: sendingEmailArguments?.emailRequest,
@@ -132,14 +144,12 @@ class CreateNewAndSendEmailInteractor {
     required Session session,
     required AccountId accountId,
     required EmailId draftEmailId,
-    CancelToken? cancelToken
   }) async {
     try {
       await _emailRepository.deleteEmailPermanently(
         session,
         accountId,
         draftEmailId,
-        cancelToken: cancelToken
       );
     } catch (e) {
       logError('CreateNewAndSendEmailInteractor::_deleteOldDraftsEmail: Exception: $e');
