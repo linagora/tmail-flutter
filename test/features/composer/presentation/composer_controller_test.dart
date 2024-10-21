@@ -278,7 +278,7 @@ void main() {
     composerController = null;
   });
   
-  group('ComposerController test:', () {
+  group('ComposerController::test:', () {
     group('hash draft email test:', () {
       const emailContent = 'some email content';
       const emailSubject = 'some email subject';
@@ -581,8 +581,10 @@ void main() {
             when(
               mockCreateNewAndSaveEmailToDraftsInteractor.execute(
                 createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')))
-              .thenAnswer((_) => Stream.value(
+                cancelToken: anyNamed('cancelToken'),
+                timeout: anyNamed('timeout'),
+              )
+            ).thenAnswer((_) => Stream.value(
                 Right(SaveEmailAsDraftsSuccess(EmailId(Id('123'))))));
 
             final savedEmailDraft = SavedEmailDraft(
@@ -611,7 +613,10 @@ void main() {
             await untilCalled(
               mockCreateNewAndSaveEmailToDraftsInteractor.execute(
                 createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')));
+                cancelToken: anyNamed('cancelToken'),
+                timeout: anyNamed('timeout'),
+              )
+            );
             
             // assert
             expect(composerController?.savedEmailDraftHash, savedEmailDraft.hashCode);
@@ -652,8 +657,10 @@ void main() {
             when(
               mockCreateNewAndSaveEmailToDraftsInteractor.execute(
                 createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')))
-              .thenAnswer((_) => Stream.value(
+                cancelToken: anyNamed('cancelToken'),
+                timeout: anyNamed('timeout'),
+              )
+            ).thenAnswer((_) => Stream.value(
                 Right(UpdateEmailDraftsSuccess(EmailId(Id('123'))))));
 
             final savedEmailDraft = SavedEmailDraft(
@@ -682,7 +689,10 @@ void main() {
             await untilCalled(
               mockCreateNewAndSaveEmailToDraftsInteractor.execute(
                 createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')));
+                cancelToken: anyNamed('cancelToken'),
+                timeout: anyNamed('timeout'),
+              )
+            );
             
             // assert
             expect(composerController?.savedEmailDraftHash, savedEmailDraft.hashCode);
@@ -1029,8 +1039,10 @@ void main() {
             when(
               mockCreateNewAndSaveEmailToDraftsInteractor.execute(
                 createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')))
-              .thenAnswer((_) => Stream.value(
+                cancelToken: anyNamed('cancelToken'),
+                timeout: anyNamed('timeout'),
+              )
+            ).thenAnswer((_) => Stream.value(
                 Right(SaveEmailAsDraftsSuccess(EmailId(Id('123'))))));
 
             final savedEmailDraft = SavedEmailDraft(
@@ -1059,7 +1071,10 @@ void main() {
             await untilCalled(
               mockCreateNewAndSaveEmailToDraftsInteractor.execute(
                 createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')));
+                cancelToken: anyNamed('cancelToken'),
+                timeout: anyNamed('timeout'),
+              )
+            );
             
             // assert
             expect(composerController?.savedEmailDraftHash, savedEmailDraft.hashCode);
@@ -1101,8 +1116,10 @@ void main() {
             when(
               mockCreateNewAndSaveEmailToDraftsInteractor.execute(
                 createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')))
-              .thenAnswer((_) => Stream.value(
+                cancelToken: anyNamed('cancelToken'),
+                timeout: anyNamed('timeout'),
+              )
+            ).thenAnswer((_) => Stream.value(
                 Right(UpdateEmailDraftsSuccess(EmailId(Id('123'))))));
 
             final savedEmailDraft = SavedEmailDraft(
@@ -1131,7 +1148,10 @@ void main() {
             await untilCalled(
               mockCreateNewAndSaveEmailToDraftsInteractor.execute(
                 createEmailRequest: anyNamed('createEmailRequest'),
-                cancelToken: anyNamed('cancelToken')));
+                cancelToken: anyNamed('cancelToken'),
+                timeout: anyNamed('timeout'),
+              )
+            );
             
             // assert
             expect(composerController?.savedEmailDraftHash, savedEmailDraft.hashCode);

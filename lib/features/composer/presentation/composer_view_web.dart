@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/mobile_
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/toolbar_rich_text_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class ComposerView extends GetWidget<ComposerController> {
 
@@ -499,7 +500,10 @@ class ComposerView extends GetWidget<ComposerController> {
                               insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                               showCodeViewAction: controller.richTextWebController!.toggleCodeView,
                               deleteComposerAction: () => controller.handleClickDeleteComposer(context),
-                              saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
+                              saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(
+                                context: context,
+                                timeout: AppConfig.savingMessageTimeout
+                              ),
                               sendMessageAction: () => controller.handleClickSendButton(context),
                               requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
                             )),
@@ -769,7 +773,10 @@ class ComposerView extends GetWidget<ComposerController> {
                               insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                               showCodeViewAction: controller.richTextWebController!.toggleCodeView,
                               deleteComposerAction: () => controller.handleClickDeleteComposer(context),
-                              saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
+                              saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(
+                                context: context,
+                                timeout: AppConfig.savingMessageTimeout
+                              ),
                               sendMessageAction: () => controller.handleClickSendButton(context),
                               requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
                             )),
@@ -876,7 +883,10 @@ class ComposerView extends GetWidget<ComposerController> {
           padding: ComposerStyle.popupItemPadding,
           onCallbackAction: () {
             popBack();
-            controller.handleClickSaveAsDraftsButton(context);
+            controller.handleClickSaveAsDraftsButton(
+              context: context,
+              timeout: AppConfig.savingMessageTimeout
+            );
           }
         )
       ),

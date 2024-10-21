@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -32,6 +34,7 @@ class CreateNewAndSaveEmailToDraftsInteractor {
   Stream<dartz.Either<Failure, Success>> execute({
     required CreateEmailRequest createEmailRequest,
     CancelToken? cancelToken,
+    Duration? timeout,
   }) async* {
     try {
       yield dartz.Right<Failure, Success>(GenerateEmailLoading());
@@ -43,45 +46,47 @@ class CreateNewAndSaveEmailToDraftsInteractor {
 
       final emailCreated = await _createEmailObject(createEmailRequest);
 
-      if (emailCreated != null) {
-        if (createEmailRequest.draftsEmailId == null) {
-          yield dartz.Right<Failure, Success>(SaveEmailAsDraftsLoading());
-
-          final emailDraftSaved = await _emailRepository.saveEmailAsDrafts(
-            createEmailRequest.session,
-            createEmailRequest.accountId,
-            emailCreated,
-            cancelToken: cancelToken
-          );
-
-          yield dartz.Right<Failure, Success>(
-            SaveEmailAsDraftsSuccess(
-              emailDraftSaved.id!,
-              currentMailboxState: listCurrentState?.value1,
-              currentEmailState: listCurrentState?.value2
-            )
-          );
-        } else {
-          yield dartz.Right<Failure, Success>(UpdatingEmailDrafts());
-
-          final emailDraftSaved = await _emailRepository.updateEmailDrafts(
-            createEmailRequest.session,
-            createEmailRequest.accountId,
-            emailCreated,
-            createEmailRequest.draftsEmailId!,
-            cancelToken: cancelToken
-          );
-
-          yield dartz.Right<Failure, Success>(
-            UpdateEmailDraftsSuccess(
-              emailDraftSaved.id!,
-              currentMailboxState: listCurrentState?.value1,
-              currentEmailState: listCurrentState?.value2
-            )
-          );
-        }
-      } else {
+      if (emailCreated == null) {
         yield dartz.Left<Failure, Success>(GenerateEmailFailure(CannotCreateEmailObjectException()));
+        return;
+      }
+
+      if (createEmailRequest.draftsEmailId == null) {
+        yield dartz.Right<Failure, Success>(SaveEmailAsDraftsLoading());
+
+        final emailDraftSaved = await _emailRepository.saveEmailAsDrafts(
+          createEmailRequest.session,
+          createEmailRequest.accountId,
+          emailCreated,
+          cancelToken: cancelToken,
+          timeout: timeout,
+        );
+
+        yield dartz.Right<Failure, Success>(
+          SaveEmailAsDraftsSuccess(
+            emailDraftSaved.id!,
+            currentMailboxState: listCurrentState?.value1,
+            currentEmailState: listCurrentState?.value2
+          )
+        );
+      } else {
+        yield dartz.Right<Failure, Success>(UpdatingEmailDrafts());
+
+        final emailDraftSaved = await _emailRepository.updateEmailDrafts(
+          createEmailRequest.session,
+          createEmailRequest.accountId,
+          emailCreated,
+          createEmailRequest.draftsEmailId!,
+          cancelToken: cancelToken
+        );
+
+        yield dartz.Right<Failure, Success>(
+          UpdateEmailDraftsSuccess(
+            emailDraftSaved.id!,
+            currentMailboxState: listCurrentState?.value1,
+            currentEmailState: listCurrentState?.value2
+          )
+        );
       }
     } catch (e) {
       logError('CreateNewAndSaveEmailToDraftsInteractor::execute: Exception: $e');
@@ -91,6 +96,10 @@ class CreateNewAndSaveEmailToDraftsInteractor {
         } else {
           yield dartz.Left<Failure, Success>(UpdateEmailDraftsFailure(SavingEmailToDraftsCanceledException()));
         }
+      } else if (e is TimeoutException) {
+        yield dartz.Left<Failure, Success>(createEmailRequest.draftsEmailId == null
+          ? SaveEmailAsDraftsFailure(SavingEmailToDraftsTimeoutException())
+          : UpdateEmailDraftsFailure(SavingEmailToDraftsTimeoutException()));
       } else {
         if (createEmailRequest.draftsEmailId == null) {
           yield dartz.Left<Failure, Success>(SaveEmailAsDraftsFailure(e));
