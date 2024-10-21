@@ -32,7 +32,7 @@ extension LocaleExtension on Locale {
       case 'en':
         return 'English';
       case 'de':
-        return 'German';  
+        return 'Deutsch';  
       case 'vi':
         return 'Tiếng Việt';
       case 'ru':
