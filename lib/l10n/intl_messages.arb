@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-10-21T09:30:30.005573",
+  "@@last_modified": "2024-10-25T09:31:37.466558",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2524,7 +2524,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "openInNewTab": "Open in New Tab",
+  "openInNewTab": "Open in new tab",
   "@openInNewTab": {
     "type": "text",
     "placeholders_order": [],

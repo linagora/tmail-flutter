@@ -60,11 +60,11 @@ mixin MailboxWidgetMixin {
         MailboxActions.markAsRead,
       MailboxActions.move,
       MailboxActions.rename,
-      MailboxActions.delete,
       if (mailbox.isSubscribedMailbox)
         MailboxActions.disableMailbox
       else
-        MailboxActions.enableMailbox
+        MailboxActions.enableMailbox,
+      MailboxActions.delete
     ];
   }
 
