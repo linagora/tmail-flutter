@@ -44,6 +44,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_r
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/subaddressing_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
@@ -146,6 +147,7 @@ const fallbackGenerators = {
   MockSpec<MoveMailboxInteractor>(),
   MockSpec<SubscribeMailboxInteractor>(),
   MockSpec<SubscribeMultipleMailboxInteractor>(),
+  MockSpec<SubaddressingInteractor>(),
   MockSpec<CreateDefaultMailboxInteractor>(),
   MockSpec<TreeBuilder>(),
   MockSpec<VerifyNameInteractor>(),
@@ -248,6 +250,7 @@ void main() {
   final moveMailboxInteractor = MockMoveMailboxInteractor();
   final subscribeMailboxInteractor = MockSubscribeMailboxInteractor();
   final subscribeMultipleMailboxInteractor = MockSubscribeMultipleMailboxInteractor();
+  final subaddressingInteractor = MockSubaddressingInteractor();
   final createDefaultMailboxInteractor = MockCreateDefaultMailboxInteractor();
   final treeBuilder = MockTreeBuilder();
   final verifyNameInteractor = MockVerifyNameInteractor();
@@ -359,6 +362,7 @@ void main() {
         moveMailboxInteractor,
         subscribeMailboxInteractor,
         subscribeMultipleMailboxInteractor,
+        subaddressingInteractor,
         createDefaultMailboxInteractor,
         treeBuilder,
         verifyNameInteractor,
