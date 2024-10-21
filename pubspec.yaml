@@ -214,7 +214,12 @@ dependencies:
 
   workmanager: 0.5.1
 
-  flutter_typeahead: 5.0.2
+  # TODO update with official fix
+  # when https://github.com/AbdulRahmanAlHamali/flutter_typeahead/issues/607 is resolved
+  flutter_typeahead:
+    git:
+      url: https://github.com/linagora/flutter_typeahead.git
+      ref: fix/5.0.2-textfield-tab
 
   flutter_keyboard_visibility: 6.0.0
 
