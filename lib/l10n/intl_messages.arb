@@ -1590,6 +1590,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "languageGerman": "German",
+  "@languageGerman": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "messageDialogSendEmailUploadingAttachment": "Your message could not be sent because it uploading attachment",
   "@messageDialogSendEmailUploadingAttachment": {
     "type": "text",

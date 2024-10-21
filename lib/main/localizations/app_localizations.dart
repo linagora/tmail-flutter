@@ -1592,6 +1592,12 @@ class AppLocalizations {
         name: 'languageEnglish');
   }
 
+  String get languageGerman {
+    return Intl.message(
+        'German',
+        name: 'languageGerman');
+  }
+
   String get languageVietnamese {
     return Intl.message(
         'Vietnamese',

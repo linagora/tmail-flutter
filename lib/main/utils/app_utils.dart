@@ -72,6 +72,8 @@ class AppUtils {
       return const date_format.ArabicDateLocale();
     } else if (currentLanguageCode == LanguageCodeConstants.italian) {
       return const date_format.ItalianDateLocale();
+    } else if (currentLanguageCode == LanguageCodeConstants.german) {
+      return const date_format.GermanDateLocale();
     } else {
       return const date_format.EnglishDateLocale();
     }
