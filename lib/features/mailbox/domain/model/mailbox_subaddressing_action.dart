@@ -1,0 +1,4 @@
+enum MailboxSubaddressingAction {
+  allow,
+  disallow,
+}

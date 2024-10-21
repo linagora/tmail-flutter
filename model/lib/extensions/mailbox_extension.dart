@@ -32,6 +32,7 @@ extension MailboxExtension on Mailbox {
       myRights: myRights,
       isSubscribed: isSubscribed,
       namespace: namespace,
+      rights: rights
     );
   }
 
@@ -49,6 +50,7 @@ extension MailboxExtension on Mailbox {
       myRights: updatedProperties.contain(MailboxProperty.myRights) ? newMailbox.myRights : myRights,
       isSubscribed: updatedProperties.contain(MailboxProperty.isSubscribed) ? newMailbox.isSubscribed : isSubscribed,
       namespace: updatedProperties.contain(MailboxProperty.namespace) ? newMailbox.namespace : namespace,
+      rights: updatedProperties.contain(MailboxProperty.rights) ? newMailbox.rights : rights,
     );
   }
 
@@ -66,6 +68,7 @@ extension MailboxExtension on Mailbox {
         myRights: myRights,
         isSubscribed: isSubscribed,
         namespace: namespace,
+        rights: rights
     );
   }
 }

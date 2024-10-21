@@ -2,6 +2,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/namespace.dart';
 import 'package:model/mailbox/mailbox_state.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:model/mailbox/mailbox_constants.dart';
 import 'package:model/mailbox/select_mode.dart';
 
 extension PresentationMailboxExtension on PresentationMailbox {
@@ -48,6 +49,8 @@ extension PresentationMailboxExtension on PresentationMailbox {
   bool get isRecovered => role == PresentationMailbox.roleRecovered;
 
   bool get isSubscribedMailbox => isSubscribed != null && isSubscribed?.value == true;
+
+  bool get isSubaddressingAllowed => rights != null && rights?[anyoneIdentifier]?.contains(postingRight) == true;
 
   bool get allowedToDisplayCountOfUnreadEmails => !(isTrash || isSpam || isDrafts || isTemplates || isSent) && countUnreadEmails > 0;
 
@@ -100,6 +103,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
       state: state,
       namespace: namespace,
       displayName: displayName,
+      rights: rights
     );
   }
 
@@ -121,6 +125,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
       state: state,
       namespace: namespace,
       displayName: displayName,
+      rights: rights
     );
   }
 
@@ -142,6 +147,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
       state: newMailboxState,
       namespace: namespace,
       displayName: displayName,
+      rights: rights
     );
   }
 
@@ -159,6 +165,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
       myRights: myRights,
       isSubscribed: isSubscribed,
       namespace: namespace,
+      rights: rights
     );
   }
 
@@ -180,6 +187,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
       state: state,
       namespace: namespace,
       displayName: displayName,
+      rights: rights
     );
   }
 
@@ -201,6 +209,7 @@ extension PresentationMailboxExtension on PresentationMailbox {
       state: state,
       namespace: namespace,
       displayName: displayName,
+      rights: rights
     );
   }
 }
