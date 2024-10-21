@@ -2493,7 +2493,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "openInNewTab": "Open in New Tab",
+  "openInNewTab": "Open in new tab",
   "@openInNewTab": {
     "type": "text",
     "placeholders_order": [],

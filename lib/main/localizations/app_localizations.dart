@@ -2587,7 +2587,7 @@ class AppLocalizations {
 
   String get openInNewTab {
     return Intl.message(
-      'Open in New Tab',
+      'Open in new tab',
       name: 'openInNewTab',
     );
   }
