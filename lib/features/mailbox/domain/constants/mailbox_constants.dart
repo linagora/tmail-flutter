@@ -16,7 +16,8 @@ class MailboxConstants {
     MailboxProperty.unreadEmails,
     MailboxProperty.unreadThreads,
     MailboxProperty.myRights,
-    MailboxProperty.namespace
+    MailboxProperty.namespace,
+    MailboxProperty.rights
   });
 
   static final List<Role> defaultMailboxRoles = [

@@ -221,6 +221,8 @@ class ImagePaths {
   String get icBadSignature => _getImagePath('ic_bad_signature.svg');
   String get icDeleteSelection => _getImagePath('ic_delete_selection.svg');
   String get icLogoTwakeWelcome => _getImagePath('ic_logo_twake_welcome.svg');
+  String get icSubaddressingAllow => _getImagePath('ic_subaddressing_allow.svg');
+  String get icSubaddressingDisallow => _getImagePath('ic_subaddressing_disallow.svg');
   String get icHelp => _getImagePath('ic_help.svg');
 
   String _getImagePath(String imageName) {
