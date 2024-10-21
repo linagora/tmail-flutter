@@ -70,7 +70,8 @@ class EmailRepositoryImpl extends EmailRepository {
     EmailRequest emailRequest,
     {
       CreateNewMailboxRequest? mailboxRequest,
-      CancelToken? cancelToken
+      CancelToken? cancelToken,
+      Duration? timeout
     }
   ) {
     return emailDataSource[DataSourceType.network]!.sendEmail(
@@ -79,6 +80,7 @@ class EmailRepositoryImpl extends EmailRepository {
       emailRequest,
       mailboxRequest: mailboxRequest,
       cancelToken: cancelToken,
+      timeout: timeout,
     );
   }
 
@@ -155,13 +157,17 @@ class EmailRepositoryImpl extends EmailRepository {
     Session session,
     AccountId accountId,
     Email email,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      Duration? timeout
+    }
   ) {
     return emailDataSource[DataSourceType.network]!.saveEmailAsDrafts(
       session,
       accountId,
       email,
-      cancelToken: cancelToken
+      cancelToken: cancelToken,
+      timeout: timeout
     );
   }
 
@@ -169,14 +175,12 @@ class EmailRepositoryImpl extends EmailRepository {
   Future<bool> removeEmailDrafts(
     Session session,
     AccountId accountId,
-    EmailId emailId,
-    {CancelToken? cancelToken}
+    EmailId emailId
   ) {
     return emailDataSource[DataSourceType.network]!.removeEmailDrafts(
       session,
       accountId,
-      emailId,
-      cancelToken: cancelToken
+      emailId
     );
   }
 
@@ -186,14 +190,18 @@ class EmailRepositoryImpl extends EmailRepository {
     AccountId accountId,
     Email newEmail,
     EmailId oldEmailId,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      Duration? timeout
+    }
   ) {
     return emailDataSource[DataSourceType.network]!.updateEmailDrafts(
       session,
       accountId,
       newEmail,
       oldEmailId,
-      cancelToken: cancelToken
+      cancelToken: cancelToken,
+      timeout: timeout
     );
   }
 
@@ -227,13 +235,11 @@ class EmailRepositoryImpl extends EmailRepository {
     Session session,
     AccountId accountId,
     EmailId emailId,
-    {CancelToken? cancelToken}
   ) {
     return emailDataSource[DataSourceType.network]!.deleteEmailPermanently(
       session,
       accountId,
       emailId,
-      cancelToken: cancelToken
     );
   }
 

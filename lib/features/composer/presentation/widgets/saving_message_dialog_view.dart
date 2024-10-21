@@ -29,6 +29,7 @@ class SavingMessageDialogView extends StatefulWidget {
   final CreateNewAndSaveEmailToDraftsInteractor createNewAndSaveEmailToDraftsInteractor;
   final OnCancelSavingEmailToDraftsAction? onCancelSavingEmailToDraftsAction;
   final CancelToken? cancelToken;
+  final Duration? timeout;
 
   const SavingMessageDialogView({
     super.key,
@@ -36,6 +37,7 @@ class SavingMessageDialogView extends StatefulWidget {
     required this.createNewAndSaveEmailToDraftsInteractor,
     this.onCancelSavingEmailToDraftsAction,
     this.cancelToken,
+    this.timeout,
   });
 
   @override
@@ -53,7 +55,8 @@ class _SavingMessageDialogViewState extends State<SavingMessageDialogView> {
     _streamSubscription = widget.createNewAndSaveEmailToDraftsInteractor
       .execute(
         createEmailRequest: widget.createEmailRequest,
-        cancelToken: widget.cancelToken
+        cancelToken: widget.cancelToken,
+        timeout: widget.timeout
       )
       .listen(
         _handleDataStream,
@@ -84,6 +87,8 @@ class _SavingMessageDialogViewState extends State<SavingMessageDialogView> {
     logError('_SavingMessageDialogViewState::_handleErrorStream: Exception = $error');
     if (error is UnknownError && error.message is List<SavingEmailToDraftsCanceledException>) {
       popBack(result: SaveEmailAsDraftsFailure(SavingEmailToDraftsCanceledException()));
+    } else if (error is TimeoutException) {
+      popBack(result: SaveEmailAsDraftsFailure(SavingEmailToDraftsTimeoutException()));
     } else {
       popBack(result: SaveEmailAsDraftsFailure(error));
     }

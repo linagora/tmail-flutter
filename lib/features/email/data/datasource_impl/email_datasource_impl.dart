@@ -59,6 +59,7 @@ class EmailDataSourceImpl extends EmailDataSource {
     {
       CreateNewMailboxRequest? mailboxRequest,
       CancelToken? cancelToken,
+      Duration? timeout,
     }
   ) async {
     try {
@@ -67,7 +68,8 @@ class EmailDataSourceImpl extends EmailDataSource {
         accountId,
         emailRequest,
         mailboxRequest: mailboxRequest,
-        cancelToken: cancelToken
+        cancelToken: cancelToken,
+        timeout: timeout,
       );
     } catch (error, stackTrace) {
       return await _sendEmailExceptionThrower.throwException(error, stackTrace);
@@ -130,14 +132,18 @@ class EmailDataSourceImpl extends EmailDataSource {
     Session session,
     AccountId accountId,
     Email email,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      Duration? timeout
+    }
   ) {
     return Future.sync(() async {
       return await emailAPI.saveEmailAsDrafts(
         session,
         accountId,
         email,
-        cancelToken: cancelToken
+        cancelToken: cancelToken,
+        timeout: timeout
       );
     }).catchError(_exceptionThrower.throwException);
   }
@@ -146,15 +152,13 @@ class EmailDataSourceImpl extends EmailDataSource {
   Future<bool> removeEmailDrafts(
     Session session,
     AccountId accountId,
-    EmailId emailId,
-    {CancelToken? cancelToken}
+    EmailId emailId
   ) {
     return Future.sync(() async {
       return await emailAPI.removeEmailDrafts(
         session,
         accountId,
-        emailId,
-        cancelToken: cancelToken
+        emailId
       );
     }).catchError(_exceptionThrower.throwException);
   }
@@ -165,7 +169,10 @@ class EmailDataSourceImpl extends EmailDataSource {
     AccountId accountId,
     Email newEmail,
     EmailId oldEmailId,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      Duration? timeout
+    }
   ) {
     return Future.sync(() async {
       return await emailAPI.updateEmailDrafts(
@@ -173,7 +180,8 @@ class EmailDataSourceImpl extends EmailDataSource {
         accountId,
         newEmail,
         oldEmailId,
-        cancelToken: cancelToken
+        cancelToken: cancelToken,
+        timeout: timeout
       );
     }).catchError(_exceptionThrower.throwException);
   }
@@ -212,14 +220,12 @@ class EmailDataSourceImpl extends EmailDataSource {
     Session session,
     AccountId accountId,
     EmailId emailId,
-    {CancelToken? cancelToken}
   ) {
     return Future.sync(() async {
       return await emailAPI.deleteEmailPermanently(
         session,
         accountId,
         emailId,
-        cancelToken: cancelToken
       );
     }).catchError(_exceptionThrower.throwException);
   }

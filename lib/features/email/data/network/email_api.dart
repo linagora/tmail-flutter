@@ -128,6 +128,7 @@ class EmailAPI with HandleSetErrorMixin {
     {
       CreateNewMailboxRequest? mailboxRequest,
       CancelToken? cancelToken,
+      Duration? timeout,
     }
   ) async {
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
@@ -207,10 +208,14 @@ class EmailAPI with HandleSetErrorMixin {
     final capabilities = setEmailSubmissionMethod.requiredCapabilities
       .toCapabilitiesSupportTeamMailboxes(session, accountId);
 
-    final response = await (requestBuilder
+    final futureResponse = (requestBuilder
         ..usings(capabilities))
       .build()
       .execute(cancelToken: cancelToken);
+
+    final response = timeout != null
+      ? await futureResponse.timeout(timeout)
+      : await futureResponse;
 
     final setEmailResponse = response.parse<SetEmailResponse>(
       setEmailInvocation.methodCallId,
@@ -491,7 +496,10 @@ class EmailAPI with HandleSetErrorMixin {
     Session session,
     AccountId accountId,
     Email email,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      Duration? timeout,
+    }
   ) async {
     final idCreateMethod = Id(_uuid.v1());
     final setEmailMethod = SetEmailMethod(accountId)
@@ -504,10 +512,14 @@ class EmailAPI with HandleSetErrorMixin {
     final capabilities = setEmailMethod.requiredCapabilities
       .toCapabilitiesSupportTeamMailboxes(session, accountId);
 
-    final response = await (requestBuilder
+    final futureResponse = (requestBuilder
         ..usings(capabilities))
       .build()
       .execute(cancelToken: cancelToken);
+
+    final response = timeout != null
+      ? await futureResponse.timeout(timeout)
+      : await futureResponse;
 
     final setEmailResponse = response.parse<SetEmailResponse>(
       setEmailInvocation.methodCallId,
@@ -527,8 +539,7 @@ class EmailAPI with HandleSetErrorMixin {
   Future<bool> removeEmailDrafts(
     Session session,
     AccountId accountId,
-    EmailId emailId,
-    {CancelToken? cancelToken}
+    EmailId emailId
   ) async {
     final setEmailMethod = SetEmailMethod(accountId)
       ..addDestroy({emailId.id});
@@ -543,7 +554,7 @@ class EmailAPI with HandleSetErrorMixin {
     final response = await (requestBuilder
         ..usings(capabilities))
       .build()
-      .execute(cancelToken: cancelToken);
+      .execute();
 
     final setEmailResponse = response.parse<SetEmailResponse>(
         setEmailInvocation.methodCallId,
@@ -564,21 +575,24 @@ class EmailAPI with HandleSetErrorMixin {
     AccountId accountId,
     Email newEmail,
     EmailId oldEmailId,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      Duration? timeout,
+    }
   ) async {
     final emailCreated = await saveEmailAsDrafts(
       session,
       accountId,
       newEmail,
-      cancelToken: cancelToken
+      cancelToken: cancelToken,
+      timeout: timeout
     );
 
     try {
       await removeEmailDrafts(
         session,
         accountId,
-        oldEmailId,
-        cancelToken: cancelToken
+        oldEmailId
       );
     } catch (e) {
       logError('EmailAPI::updateEmailDrafts: Exception = $e');
@@ -623,7 +637,6 @@ class EmailAPI with HandleSetErrorMixin {
     Session session,
     AccountId accountId,
     EmailId emailId,
-    {CancelToken? cancelToken}
   ) async {
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
     final setEmailMethod = SetEmailMethod(accountId)
@@ -637,7 +650,7 @@ class EmailAPI with HandleSetErrorMixin {
     final response = await (requestBuilder
         ..usings(capabilities))
       .build()
-      .execute(cancelToken: cancelToken);
+      .execute();
 
     final setEmailResponse = response.parse<SetEmailResponse>(
         setEmailInvocation.methodCallId,

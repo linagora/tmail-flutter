@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-09-18T01:15:29.034686",
+  "@@last_modified": "2024-10-01T18:18:47.787144",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4020,6 +4020,24 @@
   },
   "findEmails": "Find emails",
   "@findEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "warningMessageWhenSendEmailTimeout": "The message sending time has exceeded the timeout of one minute. Do you want to resend?",
+  "@warningMessageWhenSendEmailTimeout": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "warningMessageWhenSaveEmailToDraftsTimeout": "The time it takes to save the message to the draft folder has exceeded the one minute timeout. Do you want to save it again?",
+  "@warningMessageWhenSaveEmailToDraftsTimeout": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveAgain": "Save again",
+  "@saveAgain": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
