@@ -17,7 +17,8 @@ extension MailboxExtension on Mailbox {
       unreadThreads: unreadThreads?.value.value.round(),
       myRights: myRights?.toMailboxRightsCache(),
       isSubscribed: isSubscribed?.value,
-      namespace: namespace?.value
+      namespace: namespace?.value,
+      rights: rights?.map((key, value) => MapEntry(key, value)),
     );
   }
 }

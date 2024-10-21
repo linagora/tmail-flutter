@@ -20,7 +20,8 @@ extension MailboxCacheExtension on MailboxCache {
         unreadThreads: unreadThreads != null ? UnreadThreads(UnsignedInt(unreadThreads!)) : null,
         myRights: myRights?.toMailboxRights(),
         isSubscribed: isSubscribed != null ? IsSubscribed(isSubscribed!) : null,
-        namespace: namespace != null ? Namespace(namespace!) : null
+        namespace: namespace != null ? Namespace(namespace!) : null,
+        rights: rights != null ? Map<String, List<String>?>.from(rights!) : null,
     );
   }
 }

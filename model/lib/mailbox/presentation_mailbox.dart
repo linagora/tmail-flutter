@@ -48,6 +48,7 @@ class PresentationMailbox with EquatableMixin {
   final MailboxState? state;
   final Namespace? namespace;
   final String? displayName;
+  final Map<String, List<String>?>? rights;
 
   PresentationMailbox(
     this.id,
@@ -67,6 +68,7 @@ class PresentationMailbox with EquatableMixin {
       this.state = MailboxState.activated,
       this.namespace,
       this.displayName,
+      this.rights
     }
   );
 
@@ -88,5 +90,6 @@ class PresentationMailbox with EquatableMixin {
     state,
     namespace,
     displayName,
+    rights
   ];
 }
