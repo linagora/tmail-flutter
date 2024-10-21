@@ -214,6 +214,8 @@ dependencies:
 
   workmanager: 0.5.1
 
+  # TODO update with official fix
+  # when https://github.com/AbdulRahmanAlHamali/flutter_typeahead/issues/607 is resolved
   flutter_typeahead:
     git:
       url: https://github.com/linagora/flutter_typeahead.git
