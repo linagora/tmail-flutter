@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:collection/collection.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter/material.dart' hide State;
+import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -26,20 +28,24 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/query/query_mailbox_method.da
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/set/set_mailbox_response.dart';
 import 'package:model/error_type_handler/set_method_error_handler_mixin.dart';
+import 'package:model/mailbox/mailbox_constants.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_method_exception.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_rights_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/list_mailbox_id_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/role_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/get_mailbox_by_role_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/jmap_mailbox_response.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subaddressing_action.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_right_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -399,6 +405,53 @@ class MailboxAPI with HandleSetErrorMixin {
 
     log('MailboxAPI::subscribeMultipleMailbox():listMailboxIdSubscribe: $listMailboxIdSubscribe');
     return listMailboxIdSubscribe ?? [];
+  }
+
+  List<String> _updateRightsForSubaddressing(MailboxSubaddressingAction action, List<String>? currentRights) {
+    final updatedRights = List<String>.from(currentRights ?? []);
+
+    if (action == MailboxSubaddressingAction.allow) {
+      updatedRights.addIf(!updatedRights.contains(postingRight), postingRight);
+    } else {
+      updatedRights.remove(postingRight);
+    }
+
+    return updatedRights;
+  }
+
+  @visibleForTesting
+  List<String> updateRightsForSubaddressing(MailboxSubaddressingAction action, List<String>? currentRights)
+      => _updateRightsForSubaddressing(action, currentRights);
+
+  Future<bool> handleMailboxRightRequest(Session session, AccountId accountId, MailboxRightRequest request) async {
+    final setMailboxMethod = SetMailboxMethod(accountId)
+      ..addUpdates({
+        request.mailboxId.id : PatchObject({
+          'sharedWith/$anyoneIdentifier': _updateRightsForSubaddressing(request.subaddressingAction, request.currentRights?[anyoneIdentifier])
+        })
+      });
+
+    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+
+    final setMailboxInvocation = requestBuilder.invocation(setMailboxMethod);
+
+    final capabilities = setMailboxMethod.requiredCapabilities
+        .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final response = await (requestBuilder
+        ..usings(capabilities))
+      .build()
+      .execute();
+
+    final setMailboxResponse = response.parse<SetMailboxResponse>(
+        setMailboxInvocation.methodCallId,
+        SetMailboxResponse.deserialize);
+
+    if (setMailboxResponse?.updated?.containsKey(request.mailboxId.id) ?? false) {
+      return true;
+    } else {
+      throw SetMailboxRightsException();
+    }
   }
 
   Future<List<Mailbox>> createDefaultMailbox(
