@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-09-18T01:15:29.034686",
+  "@@last_modified": "2024-10-21T09:30:30.005573",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1222,6 +1222,12 @@
   },
   "name": "Name",
   "@name": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "nameToBeDisplayed": "Name to be displayed to recipients",
+  "@nameToBeDisplayed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
