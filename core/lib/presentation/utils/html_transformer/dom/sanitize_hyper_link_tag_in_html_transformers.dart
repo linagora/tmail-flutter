@@ -18,6 +18,7 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
   }) async {
     final elements = document.querySelectorAll('a');
     await Future.wait(elements.map((element) async {
+      _sanitizeUrlResource(element);
       if (useTooltip) {
         _addToolTipWhenHoverLink(element);
       }
@@ -26,7 +27,7 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
     }));
   }
 
-  void _addToolTipWhenHoverLink(Element element) {
+  void _sanitizeUrlResource(Element element) {
     final url = element.attributes['href'] ?? '';
 
     final urlSanitized = _sanitizeUrl.process(url);
@@ -35,7 +36,10 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
     }
 
     element.attributes['href'] = urlSanitized;
+  }
 
+  void _addToolTipWhenHoverLink(Element element) {
+    final url = element.attributes['href'] ?? '';
     final text = element.text;
     final children = element.children;
     if (children.isEmpty && text.isNotEmpty) {
