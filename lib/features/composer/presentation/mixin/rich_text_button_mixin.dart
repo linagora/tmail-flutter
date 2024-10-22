@@ -242,14 +242,14 @@ mixin RichTextButtonMixin {
                 : DropdownMenuFontStatus.closed;
             richTextController.menuHeaderStyleStatus.value = newStatus;
           },
-          onChanged: (newStyle) => richTextController.applyHeaderStyle(newStyle)),
+          onChanged: richTextController.applyHeaderStyle),
       Container(
           width: 130,
           padding: const EdgeInsets.only(left: 4.0, right: 4.0),
           child: DropDownButtonWidget<FontNameType>(
               items: FontNameType.values,
               itemSelected: richTextController.selectedFontName.value,
-              onChanged: (newFont) => richTextController.applyNewFontStyle(newFont),
+              onChanged: richTextController.applyNewFontStyle,
               onMenuStateChange: (isOpen) {
                 final newStatus = isOpen
                     ? DropdownMenuFontStatus.open
@@ -325,7 +325,7 @@ mixin RichTextButtonMixin {
               .map((paragraph) => paragraph.buildButtonWidget(
                   context,
                   _imagePaths,
-                  (paragraph) => richTextController.applyParagraphType(paragraph)))
+                  richTextController.applyParagraphType))
               .toList(),
           padding: const EdgeInsets.symmetric(horizontal: 5),
           iconButton: buildWrapIconStyleText(
@@ -347,7 +347,7 @@ mixin RichTextButtonMixin {
               .map((orderType) => orderType.buildButtonWidget(
                   context,
                   _imagePaths,
-                  (orderType) => richTextController.applyOrderListType(orderType)))
+                  richTextController.applyOrderListType))
               .toList(),
           padding: const EdgeInsets.symmetric(horizontal: 5),
           iconButton: buildWrapIconStyleText(

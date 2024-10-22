@@ -1,10 +1,10 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
-import 'package:core/presentation/views/checkbox/labeled_checkbox.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/check_box_has_attachment_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/input_field_focus_manager.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -113,25 +113,12 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
         FocusNode? nextFocusNode,
       }
   ) {
-    return Obx(
-      () => KeyboardListener(
-        focusNode: FocusNode(),
-        onKeyEvent: (event) {
-          if (event is KeyDownEvent &&
-              event.logicalKey == LogicalKeyboardKey.tab) {
-            nextFocusNode?.requestFocus();
-          }
-        },
-        child: LabeledCheckbox(
-          label: AppLocalizations.of(context).hasAttachment,
-          focusNode: currentFocusNode,
-          contentPadding: EdgeInsets.zero,
-          value: controller.hasAttachment.value,
-          activeColor: AppColor.primaryColor,
-          onChanged: controller.onHasAttachmentCheckboxChanged,
-        ),
-      ),
-    );
+    return Obx(() => CheckBoxHasAttachmentWidget(
+      currentFocusNode: currentFocusNode,
+      nextFocusNode: nextFocusNode,
+      onChanged: controller.onHasAttachmentCheckboxChanged,
+      hasAttachmentValue: controller.hasAttachment.value,
+    ));
   }
 
   Widget _buildButton({
