@@ -106,6 +106,8 @@ class CachingManager {
     return Future.wait([
       _stateCacheClient.deleteItem(StateType.email.getTupleKeyStored(accountId, session.username)),
       _emailCacheClient.clearAllData(),
+      if (PlatformInfo.isMobile)
+        clearAllFileInStorage(),
     ], eagerError: true);
   }
 
@@ -113,6 +115,8 @@ class CachingManager {
     return Future.wait([
       _stateCacheClient.clearAllData(),
       _emailCacheClient.clearAllData(),
+      if (PlatformInfo.isMobile)
+        clearAllFileInStorage(),
     ], eagerError: true);
   }
 
