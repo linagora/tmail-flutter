@@ -25,6 +25,7 @@ class MailboxItemWidget extends StatefulWidget {
   final PresentationMailbox? mailboxNodeSelected;
   final MailboxActions? mailboxActions;
   final MailboxId? mailboxIdAlreadySelected;
+  final bool itemExcludeFromSemantics;
 
   final OnClickExpandMailboxNodeAction? onExpandFolderActionClick;
   final OnClickOpenMailboxNodeAction? onOpenMailboxFolderClick;
@@ -39,6 +40,7 @@ class MailboxItemWidget extends StatefulWidget {
     required this.mailboxNode,
     this.selectionMode = SelectMode.INACTIVE,
     this.mailboxDisplayed = MailboxDisplayed.mailbox,
+    this.itemExcludeFromSemantics = false,
     this.mailboxNodeSelected,
     this.mailboxActions,
     this.mailboxIdAlreadySelected,
@@ -70,6 +72,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
           return InkWell(
             onTap: () => widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
             onHover: (value) => setState(() => _isItemHovered = value),
+            excludeFromSemantics: widget.itemExcludeFromSemantics,
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.all(Radius.circular(MailboxItemWidgetStyles.borderRadius)),
@@ -111,6 +114,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
           return InkWell(
             onTap: () => widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
             onHover: (value) => setState(() => _isItemHovered = value),
+            excludeFromSemantics: widget.itemExcludeFromSemantics,
             child: Container(
               decoration: BoxDecoration(
                 borderRadius: const BorderRadius.all(Radius.circular(MailboxItemWidgetStyles.borderRadius)),
@@ -151,6 +155,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
               onTap: () => widget.selectionMode == SelectMode.ACTIVE
                 ? widget.onSelectMailboxFolderClick?.call(widget.mailboxNode)
                 : widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
+              excludeFromSemantics: widget.itemExcludeFromSemantics,
               borderRadius: const BorderRadius.all(Radius.circular(MailboxItemWidgetStyles.borderRadius)),
               child: Container(
                 decoration: BoxDecoration(
@@ -210,6 +215,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                 onTap: () => !_isSelectActionNoValid
                   ? widget.onOpenMailboxFolderClick?.call(widget.mailboxNode)
                   : null,
+                excludeFromSemantics: widget.itemExcludeFromSemantics,
                 customBorder: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
                 hoverColor: AppColor.colorMailboxHovered,
                 child: Container(

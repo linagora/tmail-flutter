@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -22,7 +23,9 @@ class ContactView extends GetWidget<ContactController> {
         backgroundColor: Colors.black38,
         body: PointerInterceptor(
           child: GestureDetector(
-            onTap: () => FocusScope.of(context).unfocus(),
+            onTap: PlatformInfo.isWeb
+              ? null
+              : FocusScope.of(context).unfocus,
             child: SafeArea(
               bottom: false,
               left: false,

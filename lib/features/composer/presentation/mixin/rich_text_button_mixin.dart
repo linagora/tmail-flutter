@@ -113,6 +113,7 @@ mixin RichTextButtonMixin {
     Color? color,
     String? tooltip,
     double opacity = 1.0,
+    bool excludeFromSemantics = false,
   }){
     final newColor = color == Colors.white
         ? AppColor.colorDefaultRichTextButton
@@ -123,6 +124,7 @@ mixin RichTextButtonMixin {
           message: tooltip,
           child: SvgPicture.asset(
             path,
+            excludeFromSemantics: excludeFromSemantics,
             colorFilter: newColor?.withOpacity(opacity).asFilter(),
             fit: BoxFit.fill))
       : SvgPicture.asset(
@@ -240,14 +242,14 @@ mixin RichTextButtonMixin {
                 : DropdownMenuFontStatus.closed;
             richTextController.menuHeaderStyleStatus.value = newStatus;
           },
-          onChanged: (newStyle) => richTextController.applyHeaderStyle(newStyle)),
+          onChanged: richTextController.applyHeaderStyle),
       Container(
           width: 130,
           padding: const EdgeInsets.only(left: 4.0, right: 4.0),
           child: DropDownButtonWidget<FontNameType>(
               items: FontNameType.values,
               itemSelected: richTextController.selectedFontName.value,
-              onChanged: (newFont) => richTextController.applyNewFontStyle(newFont),
+              onChanged: richTextController.applyNewFontStyle,
               onMenuStateChange: (isOpen) {
                 final newStatus = isOpen
                     ? DropdownMenuFontStatus.open
@@ -271,6 +273,7 @@ mixin RichTextButtonMixin {
               path: RichTextStyleType.textColor.getIcon(_imagePaths),
               color: richTextController.selectedTextColor.value,
               tooltip: RichTextStyleType.textColor.getTooltipButton(context),
+              excludeFromSemantics: true
             ),
             onTap: () => richTextController.applyRichTextStyle(context, RichTextStyleType.textColor)),
       ),
@@ -322,7 +325,7 @@ mixin RichTextButtonMixin {
               .map((paragraph) => paragraph.buildButtonWidget(
                   context,
                   _imagePaths,
-                  (paragraph) => richTextController.applyParagraphType(paragraph)))
+                  richTextController.applyParagraphType))
               .toList(),
           iconButton: buildWrapIconStyleText(
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
@@ -331,7 +334,8 @@ mixin RichTextButtonMixin {
               icon: buildIconWithTooltip(
                   path: richTextController.selectedParagraph.value.getIcon(_imagePaths),
                   color: AppColor.colorDefaultRichTextButton,
-                  tooltip: RichTextStyleType.paragraph.getTooltipButton(context))),
+                  tooltip: RichTextStyleType.paragraph.getTooltipButton(context),
+                  excludeFromSemantics: true)),
         ),
       ),
       Padding(
@@ -342,7 +346,7 @@ mixin RichTextButtonMixin {
               .map((orderType) => orderType.buildButtonWidget(
                   context,
                   _imagePaths,
-                  (orderType) => richTextController.applyOrderListType(orderType)))
+                  richTextController.applyOrderListType))
               .toList(),
           iconButton: buildWrapIconStyleText(
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
@@ -351,7 +355,8 @@ mixin RichTextButtonMixin {
               icon: buildIconWithTooltip(
                   path: richTextController.selectedOrderList.value.getIcon(_imagePaths),
                   color: AppColor.colorDefaultRichTextButton,
-                  tooltip: RichTextStyleType.orderList.getTooltipButton(context))),
+                  tooltip: RichTextStyleType.orderList.getTooltipButton(context),
+                  excludeFromSemantics: true)),
         ),
       )
     ];

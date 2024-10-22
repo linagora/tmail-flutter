@@ -258,6 +258,7 @@ mixin MailboxWidgetMixin {
     }
   ) {
     return PopupMenuItem(
+      enabled: false,
       padding: EdgeInsets.zero,
       child: AbsorbPointer(
         absorbing: !contextMenuItem.isActivated,

@@ -43,6 +43,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         portalFollower: PointerInterceptor(
           child: GestureDetector(
             behavior: HitTestBehavior.opaque,
+            excludeFromSemantics: true,
             onTap: _searchController.closeAdvanceSearch
           ),
         ),

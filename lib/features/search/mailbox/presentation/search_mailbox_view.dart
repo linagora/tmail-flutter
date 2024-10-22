@@ -34,32 +34,34 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: PlatformInfo.isWeb
-          ? PointerInterceptor(child: _buildSearchBody(context))
-          : SafeArea(child: _buildSearchBody(context)),
-      ),
+      body: PlatformInfo.isWeb
+        ? PointerInterceptor(child: _buildSearchBody(context))
+        : GestureDetector(
+            onTap: FocusScope.of(context).unfocus,
+            child: SafeArea(child: _buildSearchBody(context))),
     );
   }
 
   Widget _buildSearchBody(BuildContext context) {
-    return Container(
-      color: backgroundColor ?? Colors.white,
-      padding: const EdgeInsets.symmetric(horizontal: 4),
-      child: Column(children: [
-        Container(
-          color: Colors.transparent,
-          padding: SearchMailboxUtils.getPaddingAppBar(context, controller.responsiveUtils),
-          child: _buildSearchInputForm(context)
-        ),
-        if (!controller.responsiveUtils.isWebDesktop(context))
-          const Divider(color: AppColor.colorDividerComposer, height: 1),
-        _buildLoadingView(),
-        Expanded(
-          child: _buildMailboxListView(context)
-        )
-      ]),
+    return Semantics(
+      container: true,
+      child: Container(
+        color: backgroundColor ?? Colors.white,
+        padding: const EdgeInsets.symmetric(horizontal: 4),
+        child: Column(children: [
+          Container(
+            color: Colors.transparent,
+            padding: SearchMailboxUtils.getPaddingAppBar(context, controller.responsiveUtils),
+            child: _buildSearchInputForm(context)
+          ),
+          if (!controller.responsiveUtils.isWebDesktop(context))
+            const Divider(color: AppColor.colorDividerComposer, height: 1),
+          _buildLoadingView(),
+          Expanded(
+            child: _buildMailboxListView(context)
+          )
+        ]),
+      ),
     );
   }
 

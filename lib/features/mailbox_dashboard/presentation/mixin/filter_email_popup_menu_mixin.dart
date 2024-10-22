@@ -21,6 +21,7 @@ mixin FilterEmailPopupMenuMixin {
       if (!isSearchEmailRunning)
        ...[
          PopupMenuItem(
+           enabled: false,
            padding: EdgeInsets.zero,
            child: _filterEmailAction(
              context,
@@ -30,6 +31,7 @@ mixin FilterEmailPopupMenuMixin {
          const PopupMenuDivider(height: 0.5)
        ],
       PopupMenuItem(
+        enabled: false,
         padding: EdgeInsets.zero,
         child: _filterEmailAction(
           context,
@@ -38,6 +40,7 @@ mixin FilterEmailPopupMenuMixin {
           onCallBack)),
       const PopupMenuDivider(height: 0.5),
       PopupMenuItem(
+        enabled: false,
         padding: EdgeInsets.zero,
         child: _filterEmailAction(
           context,

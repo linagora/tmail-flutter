@@ -134,6 +134,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
   List<Widget> _buildEmailReceiveTimeTypeActionTiles(BuildContext context) {
     return EmailReceiveTimeType.values
       .map((receiveTime) => PopupMenuItem(
+        enabled: false,
         padding: EdgeInsets.zero,
         child: PopupItemNoIconWidget(
           receiveTime.getTitle(context),

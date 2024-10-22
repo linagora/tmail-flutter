@@ -424,6 +424,7 @@ class ComposerView extends GetWidget<ComposerController> {
   List<PopupMenuEntry> _createMoreOptionPopupItems(BuildContext context) {
     return [
       PopupMenuItem(
+        enabled: false,
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
           controller.imagePaths.icReadReceipt,
@@ -440,6 +441,7 @@ class ComposerView extends GetWidget<ComposerController> {
         )
       ),
       PopupMenuItem(
+        enabled: false,
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
           controller.imagePaths.icSaveToDraft,
@@ -454,6 +456,7 @@ class ComposerView extends GetWidget<ComposerController> {
         )
       ),
       PopupMenuItem(
+        enabled: false,
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
           controller.imagePaths.icDeleteMailbox,

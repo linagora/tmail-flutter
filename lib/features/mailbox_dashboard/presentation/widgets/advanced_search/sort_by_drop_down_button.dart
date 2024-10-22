@@ -32,31 +32,34 @@ class SortByDropDownButton extends StatelessWidget {
           items: EmailSortOrderType.values
             .map((sortType) => DropdownMenuItem<EmailSortOrderType>(
               value: sortType,
-              child: PointerInterceptor(
-                child: Container(
-                  color: Colors.transparent,
-                  height: SortByDropdownStyle.height,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          sortType.getTitle(context),
-                          style: sortType.getTextStyle(isInDropdown: true),
-                          maxLines: 1,
-                          softWrap: CommonTextStyle.defaultSoftWrap,
-                          overflow: CommonTextStyle.defaultTextOverFlow,
+              child: Semantics(
+                excludeSemantics: true,
+                child: PointerInterceptor(
+                  child: Container(
+                    color: Colors.transparent,
+                    height: SortByDropdownStyle.height,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            sortType.getTitle(context),
+                            style: sortType.getTextStyle(isInDropdown: true),
+                            maxLines: 1,
+                            softWrap: CommonTextStyle.defaultSoftWrap,
+                            overflow: CommonTextStyle.defaultTextOverFlow,
+                          ),
                         ),
-                      ),
-                      if (sortType == sortOrderSelected)
-                        SvgPicture.asset(
-                          imagePaths.icChecked,
-                          width: SortByDropdownStyle.checkedIconSize,
-                          height: SortByDropdownStyle.checkedIconSize,
-                          fit: BoxFit.fill,
-                        )
-                    ],
-                  ),
-                )
+                        if (sortType == sortOrderSelected)
+                          SvgPicture.asset(
+                            imagePaths.icChecked,
+                            width: SortByDropdownStyle.checkedIconSize,
+                            height: SortByDropdownStyle.checkedIconSize,
+                            fit: BoxFit.fill,
+                          )
+                      ],
+                    ),
+                  )
+                ),
               )
             )).toList(),
           value: sortOrderSelected,

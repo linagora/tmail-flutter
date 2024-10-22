@@ -28,36 +28,39 @@ class PopupItemNoIconWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PointerInterceptor(
-      child: InkWell(
-        onTap: onCallbackAction,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-          child: SizedBox(
-            width: maxWidth,
-            child: Row(children: [
-              Expanded(child: Text(
-                _nameAction,
-                style: const TextStyle(
-                  fontSize: 17,
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal
-                )
-              )),
-              if (isSelected && svgIconSelected != null)
-                ...[
-                  const SizedBox(width: 12),
-                  SvgPicture.asset(
-                    svgIconSelected!,
-                    width: 24,
-                    height: 24,
-                    fit: BoxFit.fill
-                  ),
-                ]
-            ]),
-          ),
+    return Semantics(
+      excludeSemantics: true,
+      child: PointerInterceptor(
+        child: InkWell(
+          onTap: onCallbackAction,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+            child: SizedBox(
+              width: maxWidth,
+              child: Row(children: [
+                Expanded(child: Text(
+                  _nameAction,
+                  style: const TextStyle(
+                    fontSize: 17,
+                    color: Colors.black,
+                    fontWeight: FontWeight.normal
+                  )
+                )),
+                if (isSelected && svgIconSelected != null)
+                  ...[
+                    const SizedBox(width: 12),
+                    SvgPicture.asset(
+                      svgIconSelected!,
+                      width: 24,
+                      height: 24,
+                      fit: BoxFit.fill
+                    ),
+                  ]
+              ]),
+            ),
+          )
         )
-      )
+      ),
     );
   }
 }
