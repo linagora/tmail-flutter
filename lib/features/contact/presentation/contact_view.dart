@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';

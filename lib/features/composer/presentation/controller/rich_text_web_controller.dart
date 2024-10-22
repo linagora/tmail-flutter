@@ -25,6 +25,7 @@ class RichTextWebController extends BaseRichTextController {
 
   static const List<int> fontSizeList = [10, 12, 14, 15, 16, 18, 24, 36, 48, 64];
   static const int fontSizeDefault = 16;
+  static const int _applyStyleDelayTimeMilliseconds = 500;
 
   final editorController = HtmlEditorController();
 
@@ -151,8 +152,8 @@ class RichTextWebController extends BaseRichTextController {
         openMenuSelectColor(
           context,
           selectedTextBackgroundColor.value,
-          onResetToDefault: () => applyBackgroundColor(Colors.white),
-          onSelectColor: applyBackgroundColor
+          onResetToDefault: () => _applyBackgroundColor(Colors.white),
+          onSelectColor: _applyBackgroundColor
         );
         break;
       default:
@@ -162,7 +163,7 @@ class RichTextWebController extends BaseRichTextController {
     }
   }
 
-  void _applyForegroundColor(Color? selectedColor) {
+  Future<void> _applyForegroundColor(Color? selectedColor) async {
     final newColor = selectedColor ?? Colors.black;
     final colorAsString = newColor.toHexTriplet();
     log('RichTextWebController::_applyForegroundColor():colorAsString: $colorAsString');
@@ -170,9 +171,10 @@ class RichTextWebController extends BaseRichTextController {
     editorController.execSummernoteAPI(
       RichTextStyleType.textColor.summernoteNameAPI,
       value: colorAsString);
+    await _requestEditorFocus();
   }
 
-  void applyBackgroundColor(Color? selectedColor) {
+  Future<void> _applyBackgroundColor(Color? selectedColor) async {
     final newColor = selectedColor ?? Colors.white;
     final colorAsString = newColor.toHexTriplet();
     log('RichTextWebController::_applyBackgroundColor():colorAsString: $colorAsString');
@@ -180,6 +182,7 @@ class RichTextWebController extends BaseRichTextController {
     editorController.execSummernoteAPI(
       RichTextStyleType.textBackgroundColor.summernoteNameAPI,
       value: colorAsString);
+    await _requestEditorFocus();
   }
 
   void _selectTextStyleType(RichTextStyleType textStyleType) {
@@ -197,17 +200,19 @@ class RichTextWebController extends BaseRichTextController {
     editorController.insertHtml("<div>${inlineImage.base64Uri ?? ''}</div><br>");
   }
 
-  void applyNewFontStyle(FontNameType? newFont) {
+  Future<void> applyNewFontStyle(FontNameType? newFont) async {
     final fontSelected = newFont ?? FontNameType.sansSerif;
     selectedFontName.value = fontSelected;
     editorController.execSummernoteAPI(
       RichTextStyleType.fontName.summernoteNameAPI,
       value: fontSelected.value);
+    await _requestEditorFocus();
   }
 
-  void applyNewFontSize(int? newSize) {
+  Future<void> applyNewFontSize(int? newSize) async {
     selectedFontSize.value = newSize ?? fontSizeDefault;
     editorController.setFontSize(newSize ?? fontSizeDefault);
+    await _requestEditorFocus();
   }
 
   bool get isMenuFontOpen => menuFontStatus.value == DropdownMenuFontStatus.open;
@@ -240,22 +245,23 @@ class RichTextWebController extends BaseRichTextController {
     editorController.toggleCodeView();
   }
 
-  void applyHeaderStyle(HeaderStyleType? newStyle) {
+  Future<void> applyHeaderStyle(HeaderStyleType? newStyle) async {
     final styleSelected = newStyle ?? HeaderStyleType.normal;
     if (styleSelected == HeaderStyleType.blockquote || styleSelected == HeaderStyleType.code) {
       editorController.execCommand(
         RichTextStyleType.headerStyle.commandAction,
         argument: styleSelected.styleValue);
-      editorController.setFocus();
     } else {
       editorController.execSummernoteAPI(styleSelected.summernoteNameAPI);
     }
+    await _requestEditorFocus();
   }
 
-  void applyParagraphType(ParagraphType newParagraph) {
+  Future<void> applyParagraphType(ParagraphType newParagraph) async {
     selectedParagraph.value = newParagraph;
     editorController.execSummernoteAPI(newParagraph.summernoteNameAPI);
     menuParagraphController.hideMenu();
+    await _requestEditorFocus();
   }
 
   void closeAllMenuPopup() {
@@ -273,10 +279,11 @@ class RichTextWebController extends BaseRichTextController {
     }
   }
 
-  void applyOrderListType(OrderListType newOrderList) {
+  Future<void> applyOrderListType(OrderListType newOrderList) async {
     selectedOrderList.value = newOrderList;
     editorController.execSummernoteAPI(newOrderList.summernoteNameAPI);
     menuOrderListController.hideMenu();
+    await _requestEditorFocus();
   }
 
   void insertImageAsBase64({required PlatformFile platformFile, int? maxWidth}) {
@@ -297,13 +304,18 @@ class RichTextWebController extends BaseRichTextController {
 
     formattingOptionsState.value = newState;
 
-    if (isFormattingOptionsEnabled) {
-      FocusManager.instance.primaryFocus?.unfocus();
-      editorController.setFocus();
-    }
+    FocusManager.instance.primaryFocus?.unfocus();
+    editorController.setFocus();
   }
 
   bool get isFormattingOptionsEnabled => formattingOptionsState.value == FormattingOptionsState.enabled;
+
+  Future<void> _requestEditorFocus() async {
+    await Future.delayed(
+      const Duration(milliseconds: _applyStyleDelayTimeMilliseconds)
+    );
+    editorController.setFocus();
+  }
 
   @override
   void onClose() {
