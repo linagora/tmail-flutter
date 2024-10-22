@@ -34,7 +34,7 @@ class WebSocketDatasourceImpl implements WebSocketDatasource {
     Session session,
     AccountId accountId,
   ) async* {
-    final broadcastChannel = BroadcastChannel(Constant.websocketBroadcastChannel);
+    final broadcastChannel = BroadcastChannel(Constant.wsServiceWorkerBroadcastChannel);
     try {
       _verifyWebSocketCapabilities(session, accountId);
       final webSocketTicket = await _webSocketApi.getWebSocketTicket(session, accountId);
@@ -55,6 +55,9 @@ class WebSocketDatasourceImpl implements WebSocketDatasource {
   void _verifyWebSocketCapabilities(Session session, AccountId accountId) {
     if (!CapabilityIdentifier.jmapWebSocket.isSupported(session, accountId)
       || !CapabilityIdentifier.jmapWebSocketTicket.isSupported(session, accountId)
+      || session.getCapabilityProperties<WebSocketCapability>(
+        accountId,
+        CapabilityIdentifier.jmapWebSocket)?.supportsPush != true
     ) {
       throw WebSocketPushNotSupportedException();
     }

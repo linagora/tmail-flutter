@@ -7,5 +7,5 @@ class Constant {
   static const octetStreamMimeType = 'application/octet-stream';
   static const pdfExtension = '.pdf';
   static const imageType = 'image';
-  static const websocketBroadcastChannel = 'background-message';
+  static const wsServiceWorkerBroadcastChannel = 'background-message';
 }
