@@ -9,7 +9,7 @@ Accepted
 ## Context
 
 - Currently Twake Mail web use Firebase Cloud Messaging to sync data on real time
-- JMAP already implement web socket push, which is more optimized for web
+- JMAP already implemented web socket push, which is more optimized for web
 
 ## Decision
 

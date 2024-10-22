@@ -23,8 +23,9 @@ import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/core/capability/websocket_capability.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:model/account/authentication_type.dart';
+import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
@@ -384,6 +385,10 @@ abstract class BaseController extends GetxController
           CapabilityIdentifier.jmapWebSocketTicket
         ]
       );
+      final wsCapability = session.getCapabilityProperties<WebSocketCapability>(
+        accountId,
+        CapabilityIdentifier.jmapWebSocket);
+      if (wsCapability?.supportsPush != true) return;
       WebSocketInteractorBindings().dependencies();
       WebSocketController.instance.initialize(accountId: accountId, session: session);
     } catch(e) {
