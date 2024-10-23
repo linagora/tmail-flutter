@@ -1714,6 +1714,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.27.7"
+  sanitize_html:
+    dependency: transitive
+    description:
+      path: sanitize_html
+      ref: twake-supported
+      resolved-ref: "5b9986c42cc86c7e565c941648f875f2e1d2f7bd"
+      url: "https://github.com/dab246/dart-neats.git"
+    source: git
+    version: "2.1.0"
   server_settings:
     dependency: "direct main"
     description:
