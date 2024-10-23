@@ -511,7 +511,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleLoginPressed$0();
     },
-    $signature: 7
+    $signature: 8
   };
   C.LoginView__buildMobileForm_closure.prototype = {
     call$0() {
@@ -608,7 +608,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return B.SizedBox_0_0_null_null;
       }
     },
-    $signature: 114
+    $signature: 109
   };
   C.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -795,5 +795,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "JKSx9lR+3ZfYAbrhKtBzbqbpLLw=");
+})($__dart_deferred_initializers__, "p2JOl1vGkbEwYGQFDW6bYxO9j4Y=");
 ;
