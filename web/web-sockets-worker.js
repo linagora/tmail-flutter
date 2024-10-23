@@ -11,7 +11,7 @@ function connect(url, ticket) {
     webSocket.send(
       JSON.stringify({
         "@type": "WebSocketPushEnable",
-        dataTypes: ["Mailbox", "Email", "EmailDelivery"],
+        dataTypes: ["Mailbox", "Email"],
       })
     );
     intervalId = setInterval(() => {

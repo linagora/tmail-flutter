@@ -32,11 +32,11 @@ class ConnectWebSocketInteractor {
   }
 
   Either<Failure, Success> _toStateChange(dynamic data) {
-    if (data is String) {
-      data = jsonDecode(data);
-    }
     StateChange? possibleStateChange;
     try {
+      if (data is String) {
+        data = jsonDecode(data);
+      }
       possibleStateChange = StateChange.fromJson(data);
       return Right(WebSocketPushStateReceived(possibleStateChange));
     } catch (e) {

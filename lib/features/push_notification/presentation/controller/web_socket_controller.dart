@@ -67,6 +67,7 @@ class WebSocketController extends PushBaseController {
   
   void _handleWebSocketPushStateReceived(WebSocketPushStateReceived success) {
     log('WebSocketController::_handleWebSocketPushStateReceived(): $success');
+    _retryRemained = 3;
     if (accountId == null || session == null) return;
     final stateChange = success.stateChange;
     if (stateChange == null) return;
