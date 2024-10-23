@@ -8,6 +8,8 @@ import 'package:tmail_ui_user/features/push_notification/domain/state/web_socket
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/connect_web_socket_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/push_base_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_extension.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class WebSocketController extends PushBaseController {
@@ -72,6 +74,8 @@ class WebSocketController extends PushBaseController {
     mappingTypeStateToAction(
       mapTypeState,
       accountId!,
+      emailChangeListener: EmailChangeListener.instance,
+      mailboxChangeListener: MailboxChangeListener.instance,
       session!.username,
       session: session);
   }

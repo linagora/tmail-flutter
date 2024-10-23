@@ -30,6 +30,8 @@ import 'package:tmail_ui_user/features/push_notification/presentation/bindings/f
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_token_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/push_base_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_extension.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
@@ -90,6 +92,8 @@ class FcmMessageController extends PushBaseController {
       mappingTypeStateToAction(
         mapTypeState,
         accountId!,
+        emailChangeListener: EmailChangeListener.instance,
+        mailboxChangeListener: MailboxChangeListener.instance,
         session!.username,
         session: session);
     }
@@ -235,6 +239,8 @@ class FcmMessageController extends PushBaseController {
       mapTypeState,
       accountId,
       userName,
+      emailChangeListener: EmailChangeListener.instance,
+      mailboxChangeListener: MailboxChangeListener.instance,
       isForeground: false,
       session: session);
   }

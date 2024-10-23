@@ -55,7 +55,9 @@ abstract class PushBaseController {
     AccountId accountId,
     UserName userName, {
     bool isForeground = true,
-    Session? session
+    Session? session,
+    required EmailChangeListener emailChangeListener,
+    required MailboxChangeListener mailboxChangeListener
   }) {
     log('PushBaseController::mappingTypeStateToAction():mapTypeState: $mapTypeState');
     final listTypeName = mapTypeState.keys
@@ -71,7 +73,7 @@ abstract class PushBaseController {
     log('PushBaseController::mappingTypeStateToAction():listEmailActions: $listEmailActions');
 
     if (listEmailActions.isNotEmpty) {
-       EmailChangeListener.instance.dispatchActions(listEmailActions);
+       emailChangeListener.dispatchActions(listEmailActions);
     }
 
     final listMailboxActions = listTypeName
@@ -83,7 +85,7 @@ abstract class PushBaseController {
     log('PushBaseController::mappingTypeStateToAction():listMailboxActions: $listEmailActions');
 
     if (listMailboxActions.isNotEmpty) {
-      MailboxChangeListener.instance.dispatchActions(listMailboxActions);
+      mailboxChangeListener.dispatchActions(listMailboxActions);
     }
   }
 

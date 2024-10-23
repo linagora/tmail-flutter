@@ -45,6 +45,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oi
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forwarding_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/exceptions/web_socket_exceptions.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/destroy_firebase_registration_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_stored_firebase_registration_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/destroy_firebase_registration_interactor.dart';
@@ -388,7 +389,9 @@ abstract class BaseController extends GetxController
       final wsCapability = session.getCapabilityProperties<WebSocketCapability>(
         accountId,
         CapabilityIdentifier.jmapWebSocket);
-      if (wsCapability?.supportsPush != true) return;
+      if (wsCapability?.supportsPush != true) {
+        throw WebSocketPushNotSupportedException();
+      }
       WebSocketInteractorBindings().dependencies();
       WebSocketController.instance.initialize(accountId: accountId, session: session);
     } catch(e) {
