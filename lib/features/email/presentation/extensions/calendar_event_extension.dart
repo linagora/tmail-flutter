@@ -356,6 +356,7 @@ extension CalendarEventExtension on CalendarEvent {
   }
 
   bool get isDisplayedEventReplyAction => method != null
+    && method != EventMethod.reply
     && organizer != null
     && participants?.isNotEmpty == true;
 }
