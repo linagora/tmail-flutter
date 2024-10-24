@@ -1,3 +1,7 @@
+## [0.13.5] - 2024-10-24
+### Fixed
+- Sanitize html 
+
 ## [0.13.4] - 2024-10-17
 ### Added
 - Configuration for deploy platform 
