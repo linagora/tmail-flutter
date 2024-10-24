@@ -3,6 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:date_format/date_format.dart' as date_format;
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_method.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 
 void main() {
@@ -71,6 +74,124 @@ void main() {
       );
 
       expect(formattedDateString, expectedFormattedDateString);
+    });
+  });
+
+  group('calendar_event_extension::isDisplayedEventReplyAction::test:', () {
+    CalendarEvent calendarEventFromEventMethod(EventMethod eventMethod) {
+      return CalendarEvent(
+        method: eventMethod,
+        organizer: CalendarOrganizer(),
+        participants: [CalendarAttendee()]
+      );
+    }
+
+    group('should return true', () {
+      test(
+        'when event method is request',
+      () {
+        // arrange
+        final calendarEvent = calendarEventFromEventMethod(EventMethod.request);
+        
+        // act
+        final result = calendarEvent.isDisplayedEventReplyAction;
+        
+        // assert
+        expect(result, true);
+      });
+
+      test(
+        'when event method is add',
+      () {
+        // arrange
+        final calendarEvent = calendarEventFromEventMethod(EventMethod.add);
+        
+        // act
+        final result = calendarEvent.isDisplayedEventReplyAction;
+        
+        // assert
+        expect(result, true);
+      });
+
+      test(
+        'when event method is counter',
+      () {
+        // arrange
+        final calendarEvent = calendarEventFromEventMethod(EventMethod.counter);
+        
+        // act
+        final result = calendarEvent.isDisplayedEventReplyAction;
+        
+        // assert
+        expect(result, true);
+      });
+    });
+
+    group('should return false', () {
+      test(
+        'when event method is publish',
+      () {
+        // arrange
+        final calendarEvent = calendarEventFromEventMethod(EventMethod.publish);
+        
+        // act
+        final result = calendarEvent.isDisplayedEventReplyAction;
+        
+        // assert
+        expect(result, false);
+      });
+
+      test(
+        'when event method is reply',
+      () {
+        // arrange
+        final calendarEvent = calendarEventFromEventMethod(EventMethod.reply);
+        
+        // act
+        final result = calendarEvent.isDisplayedEventReplyAction;
+        
+        // assert
+        expect(result, false);
+      });
+
+      test(
+        'when event method is cancel',
+      () {
+        // arrange
+        final calendarEvent = calendarEventFromEventMethod(EventMethod.cancel);
+        
+        // act
+        final result = calendarEvent.isDisplayedEventReplyAction;
+        
+        // assert
+        expect(result, false);
+      });
+
+      test(
+        'when event method is refresh',
+      () {
+        // arrange
+        final calendarEvent = calendarEventFromEventMethod(EventMethod.refresh);
+        
+        // act
+        final result = calendarEvent.isDisplayedEventReplyAction;
+        
+        // assert
+        expect(result, false);
+      });
+
+      test(
+        'when event method is declineCounter',
+      () {
+        // arrange
+        final calendarEvent = calendarEventFromEventMethod(EventMethod.declineCounter);
+        
+        // act
+        final result = calendarEvent.isDisplayedEventReplyAction;
+        
+        // assert
+        expect(result, false);
+      });
     });
   });
 }
