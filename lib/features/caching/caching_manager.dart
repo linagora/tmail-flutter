@@ -106,6 +106,7 @@ class CachingManager {
     return Future.wait([
       _stateCacheClient.deleteItem(StateType.email.getTupleKeyStored(accountId, session.username)),
       _emailCacheClient.clearAllData(),
+      if (PlatformInfo.isMobile) clearAllFileInStorage(),
     ], eagerError: true);
   }
 
@@ -113,11 +114,12 @@ class CachingManager {
     return Future.wait([
       _stateCacheClient.clearAllData(),
       _emailCacheClient.clearAllData(),
+      if (PlatformInfo.isMobile) clearAllFileInStorage(),
     ], eagerError: true);
   }
 
   Future<bool> storeCacheVersion(int newVersion) async {
-    log('CachingManager::storeCacheVersion()');
+    log('CachingManager::storeCacheVersion():newVersion = $newVersion');
     return _hiveCacheVersionClient.storeVersion(newVersion);
   }
 
