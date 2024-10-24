@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
+import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:html/parser.dart';
@@ -30,7 +31,9 @@ class HtmlAnalyzer {
       case EmailContentType.textPlain:
         final message = _htmlTransform.transformToTextPlain(
           content: emailContent.content,
-          transformConfiguration: transformConfiguration
+          transformConfiguration: TransformConfiguration.fromTextTransformers([
+            const SanitizeAutolinkHtmlTransformers()
+          ]),
         );
         return EmailContent(emailContent.type, message);
       default:
