@@ -643,11 +643,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: f55a1862c1486197ea6a79feac31776ebeddc66c
+      ref: "enhancement/web-socket-ticket-capability"
+      resolved-ref: "06b1288f8e501c38166ec1895d227d4f832e4144"
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
-    version: "0.2.2"
+    version: "0.2.3"
   js:
     dependency: transitive
     description:

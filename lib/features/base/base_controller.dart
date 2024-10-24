@@ -23,8 +23,9 @@ import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/core/capability/websocket_capability.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:model/account/authentication_type.dart';
+import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
@@ -44,14 +45,17 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oi
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forwarding_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/fcm_exception.dart';
+import 'package:tmail_ui_user/features/push_notification/domain/exceptions/web_socket_exceptions.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/destroy_firebase_registration_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/get_stored_firebase_registration_state.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/destroy_firebase_registration_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_stored_firebase_registration_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/bindings/web_socket_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/config/fcm_configuration.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_token_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/controller/web_socket_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_receiver.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
@@ -369,6 +373,29 @@ abstract class BaseController extends GetxController
       }
     } catch(e) {
       logError('$runtimeType::injectFCMBindings(): exception: $e');
+    }
+  }
+
+  void injectWebSocket(Session? session, AccountId? accountId) {
+    try {
+      requireCapability(
+        session!,
+        accountId!,
+        [
+          CapabilityIdentifier.jmapWebSocket,
+          CapabilityIdentifier.jmapWebSocketTicket
+        ]
+      );
+      final wsCapability = session.getCapabilityProperties<WebSocketCapability>(
+        accountId,
+        CapabilityIdentifier.jmapWebSocket);
+      if (wsCapability?.supportsPush != true) {
+        throw WebSocketPushNotSupportedException();
+      }
+      WebSocketInteractorBindings().dependencies();
+      WebSocketController.instance.initialize(accountId: accountId, session: session);
+    } catch(e) {
+      logError('$runtimeType::injectWebSocket(): exception: $e');
     }
   }
 

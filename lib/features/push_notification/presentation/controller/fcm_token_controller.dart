@@ -20,12 +20,12 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_sto
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/register_new_firebase_registration_token_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_firebase_registration_interator.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/update_firebase_registration_token_interactor.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_base_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/controller/push_base_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:uuid/uuid.dart';
 
-class FcmTokenController extends FcmBaseController {
+class FcmTokenController extends PushBaseController {
 
   FcmTokenController._internal();
 

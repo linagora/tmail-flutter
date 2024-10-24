@@ -1235,11 +1235,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: f55a1862c1486197ea6a79feac31776ebeddc66c
+      ref: "enhancement/web-socket-ticket-capability"
+      resolved-ref: "06b1288f8e501c38166ec1895d227d4f832e4144"
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
-    version: "0.2.2"
+    version: "0.2.3"
   js:
     dependency: transitive
     description:
@@ -2144,13 +2144,13 @@ packages:
     source: hosted
     version: "0.4.2"
   web_socket_channel:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: web_socket_channel
-      sha256: d88238e5eac9a42bb43ca4e721edba3c08c6354d4a53063afaa568516217621b
+      sha256: "939ab60734a4f8fa95feacb55804fa278de28bdeef38e616dc08e44a84adea23"
       url: "https://pub.dev"
     source: hosted
-    version: "2.4.0"
+    version: "2.4.3"
   win32:
     dependency: transitive
     description:
