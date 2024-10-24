@@ -75,6 +75,33 @@ void main() {
       }
     });
 
+    test('SHOULD remove all `on*` attributes for any tags', () {
+      const listOnEventAttributes = [
+        'mousedown', 'mouseenter', 'mouseleave', 'mousemove', 'mouseover',
+        'mouseout', 'mouseup', 'load', 'unload', 'loadstart', 'loadeddata',
+        'loadedmetadata', 'playing', 'show', 'error', 'message', 'focus',
+        'focusin', 'focusout', 'keydown', 'keypress', 'keyup', 'input', 'ended',
+        'drag', 'drop', 'dragstart', 'dragover', 'dragleave', 'dragend', 'dragenter',
+        'beforeunload', 'beforeprint', 'afterprint', 'blur', 'click', 'change',
+        'contextmenu', 'cut', 'copy', 'dblclick', 'abort', 'durationchange',
+        'progress', 'resize', 'reset', 'scroll', 'seeked', 'select', 'submit',
+        'toggle', 'volumechange', 'touchstart', 'touchmove', 'touchend', 'touchcancel'
+      ];
+
+      const listHTMLTags = [
+        'div', 'span', 'p', 'a', 'u', 'i', 'table'
+      ];
+
+      for (var tag in listHTMLTags) {
+        for (var event in listOnEventAttributes) {
+          final inputHtml = '<$tag on$event="javascript:alert(1)"></$tag>';
+          final result = transformer.process(inputHtml, htmlEscape);
+
+          expect(result, equals('<$tag></$tag>'));
+        }
+      }
+    });
+
     test('SHOULD remove attributes of IMG tag WHEN they are invalid', () {
       const inputHtml = '<img src="1" href="1" onerror="javascript:alert(1)">';
       final result = transformer.process(inputHtml, htmlEscape);
