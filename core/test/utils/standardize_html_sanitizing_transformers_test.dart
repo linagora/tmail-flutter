@@ -7,6 +7,74 @@ void main() {
     const transformer = StandardizeHtmlSanitizingTransformers();
     const htmlEscape = HtmlEscape();
 
+    test('SHOULD remove all `on*` attributes tag', () {
+      const listOnEventAttributes = [
+        'mousedown',
+        'mouseenter',
+        'mouseleave',
+        'mousemove',
+        'mouseover',
+        'mouseout',
+        'mouseup',
+        'load',
+        'unload',
+        'loadstart',
+        'loadeddata',
+        'loadedmetadata',
+        'playing',
+        'show',
+        'error',
+        'message',
+        'focus',
+        'focusin',
+        'focusout',
+        'keydown',
+        'keydpress',
+        'keydup',
+        'input',
+        'ended',
+        'drag',
+        'drop',
+        'dragstart',
+        'dragover',
+        'dragleave',
+        'dragend',
+        'dragenter',
+        'beforeunload',
+        'beforeprint',
+        'afterprint',
+        'blur',
+        'click',
+        'change',
+        'contextmenu',
+        'cut',
+        'copy',
+        'dblclick',
+        'abort',
+        'durationchange',
+        'progress',
+        'resize',
+        'reset',
+        'scroll',
+        'seeked',
+        'select',
+        'submit',
+        'toggle',
+        'volumechange',
+        'touchstart',
+        'touchmove',
+        'touchend',
+        'touchcancel'
+      ];
+
+      for (var i = 0; i < listOnEventAttributes.length; i++) {
+        final inputHtml = '<img src="1" href="1" on${listOnEventAttributes[i]}="javascript:alert(1)">';
+        final result = transformer.process(inputHtml, htmlEscape);
+
+        expect(result, equals('<img src="1">'));
+      }
+    });
+
     test('SHOULD remove attributes of IMG tag WHEN they are invalid', () {
       const inputHtml = '<img src="1" href="1" onerror="javascript:alert(1)">';
       final result = transformer.process(inputHtml, htmlEscape);
