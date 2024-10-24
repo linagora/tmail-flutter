@@ -104,7 +104,7 @@ class _PDFViewerState extends State<PDFViewer> {
     });
   }
 
-  bool isBrowserSupportedPrinting(BrowserName? browserName) => !(browserName == BrowserName.edge
+  bool isBrowserSupportedPrinting(BrowserName browserName) => !(browserName == BrowserName.edge
     || browserName == BrowserName.firefox
     || browserName == BrowserName.safari);
 
@@ -227,8 +227,8 @@ class _PDFViewerState extends State<PDFViewer> {
                             viewState.bytes,
                             widget.attachment.generateFileName()
                           ),
-                          printAction: isBrowserSupportedPrinting(browserName) ?
-                            () => widget.printAction?.call(viewState.bytes, widget.attachment.generateFileName())
+                          printAction: browserName != null && isBrowserSupportedPrinting(browserName)
+                            ? () => widget.printAction?.call(viewState.bytes, widget.attachment.generateFileName())
                             : null,
                         );
                       });
