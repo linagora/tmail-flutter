@@ -23,13 +23,12 @@ class MessageContentTransformer {
     Map<String, String>? mapUrlDownloadCID
   }) async {
     await Future.wait([
-      if (_configuration.domTransformers.isNotEmpty)
-        ..._configuration.domTransformers.map((domTransformer) async =>
-            domTransformer.process(
-              document: document,
-              dioClient: _dioClient,
-              mapUrlDownloadCID: mapUrlDownloadCID,
-            )
+      ..._configuration.domTransformers.map((domTransformer) async =>
+          domTransformer.process(
+            document: document,
+            dioClient: _dioClient,
+            mapUrlDownloadCID: mapUrlDownloadCID,
+          )
         )
     ]);
   }
@@ -38,24 +37,32 @@ class MessageContentTransformer {
     required String message,
     Map<String, String>? mapUrlDownloadCID
   }) async {
-    final document = parse(message);
-    await _transformDocument(
-      document: document,
-      mapUrlDownloadCID: mapUrlDownloadCID,
-    );
+    final newMessage = _configuration.textTransformers.isNotEmpty
+      ? _transformMessage(message)
+      : message;
+
+    final document = parse(newMessage);
+
+    if (_configuration.domTransformers.isNotEmpty) {
+      await _transformDocument(
+        document: document,
+        mapUrlDownloadCID: mapUrlDownloadCID,
+      );
+    }
+
     return document;
   }
 
   String _transformMessage(String message) {
-    if (_configuration.textTransformers.isNotEmpty) {
-      for (var transformer in _configuration.textTransformers) {
-        message = transformer.process(message, _htmlEscape);
-      }
+    for (var transformer in _configuration.textTransformers) {
+      message = transformer.process(message, _htmlEscape);
     }
     return message;
   }
 
   String toMessage(String message) {
-    return _transformMessage(message);
+    return _configuration.textTransformers.isNotEmpty
+      ? _transformMessage(message)
+      : message;
   }
 }

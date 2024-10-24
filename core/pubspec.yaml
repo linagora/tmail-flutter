@@ -34,6 +34,15 @@ dependencies:
       url: https://github.com/dab246/languagetool_textfield.git
       ref: twake-supported
 
+  # Sanitize_html is restricting Tags and Attributes. So some of our own tags and attributes (signature, public asset,...) will be lost when sanitizing html.
+  # TODO: We will change it when the PR in upstream repository will be merged
+  # https://github.com/google/dart-neats/pull/259
+  sanitize_html:
+    git:
+      url: https://github.com/linagora/dart-neats.git
+      ref: support_mail
+      path: sanitize_html
+
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.6
 

@@ -1,4 +1,3 @@
-import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 
 class SanitizeUrl {
@@ -24,7 +23,6 @@ class SanitizeUrl {
     } else {
       originalUrl = '';
     }
-    log('SanitizeUrl::process:originalUrl = $originalUrl');
     return originalUrl;
   }
 }

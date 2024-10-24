@@ -15,7 +15,7 @@ import 'package:core/presentation/utils/html_transformer/dom/remove_tooltip_link
 import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/dom/signature_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_html_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:core/utils/platform_info.dart';
 
 /// Contains the configuration for all transformations.
@@ -37,7 +37,9 @@ class TransformConfiguration {
 
   factory TransformConfiguration.fromDomTransformers(List<DomTransformer> domTransformers) => TransformConfiguration(domTransformers, []);
 
-  factory TransformConfiguration.empty() => const TransformConfiguration([], []);
+  factory TransformConfiguration.fromTextTransformers(
+    List<TextTransformer> textTransformers
+  ) => TransformConfiguration([], textTransformers);
 
   factory TransformConfiguration.forReplyForwardEmail() => TransformConfiguration.fromDomTransformers([
     if (PlatformInfo.isWeb)
@@ -46,10 +48,15 @@ class TransformConfiguration {
     const RemoveCollapsedSignatureButtonTransformer(),
   ]);
 
-  factory TransformConfiguration.forDraftsEmail() => TransformConfiguration.fromDomTransformers([const ImageTransformer()]);
-  factory TransformConfiguration.forEditDraftsEmail() => TransformConfiguration.fromDomTransformers([
-    ...TransformConfiguration.forDraftsEmail().domTransformers,
-    const HideDraftSignatureTransformer()]);
+  factory TransformConfiguration.forDraftsEmail() => TransformConfiguration.create(
+    customDomTransformers: [const ImageTransformer()]
+  );
+  factory TransformConfiguration.forEditDraftsEmail() => TransformConfiguration.create(
+    customDomTransformers: [
+      ...TransformConfiguration.forDraftsEmail().domTransformers,
+      const HideDraftSignatureTransformer()
+    ]
+  );
 
   factory TransformConfiguration.forPreviewEmailOnWeb() => TransformConfiguration.create(
     customDomTransformers: [
@@ -65,7 +72,9 @@ class TransformConfiguration {
 
   factory TransformConfiguration.forPreviewEmail() => TransformConfiguration.standardConfiguration;
 
-  factory TransformConfiguration.forRestoreEmail() => TransformConfiguration.fromDomTransformers([const ImageTransformer()]);
+  factory TransformConfiguration.forRestoreEmail() => TransformConfiguration.create(
+    customDomTransformers: [const ImageTransformer()]
+  );
 
   factory TransformConfiguration.forPrintEmail() => TransformConfiguration.fromDomTransformers([
     if (PlatformInfo.isWeb)
@@ -115,6 +124,6 @@ class TransformConfiguration {
   ];
 
   static const List<TextTransformer> standardTextTransformers = [
-    SanitizeAutolinkHtmlTransformers()
+    StandardizeHtmlSanitizingTransformers(),
   ];
 }
