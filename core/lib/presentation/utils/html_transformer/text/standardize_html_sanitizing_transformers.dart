@@ -9,21 +9,16 @@ class StandardizeHtmlSanitizingTransformers extends TextTransformer {
     'public-asset-id',
     'data-filename',
     'bgcolor',
+    'id',
+    'class',
   ];
 
   static const List<String> mailAllowedHtmlTags = [
     'font',
     'u',
-    'mcourbo@linagora.com',
     'center',
-  ];
-
-  static const List<String> mailAllowedHtmlClassNames = [
-    'tmail-signature',
-    'tmail-signature-blocked',
-    'tmail-signature-button',
-    'tmail-signature-content',
-    'tmail_signature_prefix',
+    'style',
+    'body',
   ];
 
   const StandardizeHtmlSanitizingTransformers();
@@ -34,6 +29,5 @@ class StandardizeHtmlSanitizingTransformers extends TextTransformer {
       inputHtml: text,
       allowAttributes: mailAllowedHtmlAttributes,
       allowTags: mailAllowedHtmlTags,
-      allowClassNames: mailAllowedHtmlClassNames,
     );
 }

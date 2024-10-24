@@ -34,7 +34,7 @@ void main() {
       const inputHtml = '<a href="javas\x06cript:javascript:alert(1)" id="fuzzelement1">test</a>';
       final result = transformer.process(inputHtml, htmlEscape);
 
-      expect(result, equals('<a>test</a>'));
+      expect(result, equals('<a id="fuzzelement1">test</a>'));
     });
 
     test('SHOULD persist value src attribute of IMG tag WHEN it is base64 string', () {

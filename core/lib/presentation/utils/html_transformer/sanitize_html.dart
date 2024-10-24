@@ -1,19 +1,20 @@
 import 'package:sanitize_html/sanitize_html.dart';
 
+import '../../../utils/app_logger.dart';
+
 class SanitizeHtml {
   String process({
     required String inputHtml,
     List<String>? allowAttributes,
     List<String>? allowTags,
-    List<String>? allowClassNames,
   }) {
+    log('SanitizeHtml::process:inputHtml = $inputHtml');
     final outputHtml = sanitizeHtml(
       inputHtml,
       allowAttributes: allowAttributes,
       allowTags: allowTags,
-      allowClassName: (className) =>
-        allowClassNames?.contains(className.toLowerCase()) == true
     );
+    log('SanitizeHtml::process:outputHtml = $outputHtml');
     return outputHtml;
   }
 }
