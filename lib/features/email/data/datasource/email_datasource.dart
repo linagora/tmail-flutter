@@ -39,7 +39,8 @@ abstract class EmailDataSource {
     EmailRequest emailRequest,
     {
       CreateNewMailboxRequest? mailboxRequest,
-      CancelToken? cancelToken
+      CancelToken? cancelToken,
+      Duration? timeout,
     }
   );
 
@@ -83,14 +84,16 @@ abstract class EmailDataSource {
     Session session,
     AccountId accountId,
     Email email,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      Duration? timeout
+    }
   );
 
   Future<bool> removeEmailDrafts(
     Session session,
     AccountId accountId,
-    EmailId emailId,
-    {CancelToken? cancelToken}
+    EmailId emailId
   );
 
   Future<Email> updateEmailDrafts(
@@ -98,7 +101,10 @@ abstract class EmailDataSource {
     AccountId accountId,
     Email newEmail,
     EmailId oldEmailId,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      Duration? timeout
+    }
   );
 
   Future<List<EmailId>> deleteMultipleEmailsPermanently(Session session, AccountId accountId, List<EmailId> emailIds);
@@ -107,7 +113,6 @@ abstract class EmailDataSource {
     Session session,
     AccountId accountId,
     EmailId emailId,
-    {CancelToken? cancelToken}
   );
 
   Future<void> storeDetailedNewEmail(Session session, AccountId accountId, DetailedEmail detailedEmail);

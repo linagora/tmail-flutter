@@ -41,7 +41,8 @@ abstract class EmailRepository {
     EmailRequest emailRequest,
     {
       CreateNewMailboxRequest? mailboxRequest,
-      CancelToken? cancelToken
+      CancelToken? cancelToken,
+      Duration? timeout,
     }
   );
 
@@ -91,14 +92,16 @@ abstract class EmailRepository {
     Session session,
     AccountId accountId,
     Email email,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      Duration? timeout
+    }
   );
 
   Future<bool> removeEmailDrafts(
     Session session,
     AccountId accountId,
-    EmailId emailId,
-    {CancelToken? cancelToken}
+    EmailId emailId
   );
 
   Future<Email> updateEmailDrafts(
@@ -106,7 +109,10 @@ abstract class EmailRepository {
     AccountId accountId,
     Email newEmail,
     EmailId oldEmailId,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      Duration? timeout
+    }
   );
 
   Future<List<EmailId>> deleteMultipleEmailsPermanently(Session session, AccountId accountId, List<EmailId> emailIds);
@@ -115,7 +121,6 @@ abstract class EmailRepository {
     Session session,
     AccountId accountId,
     EmailId emailId,
-    {CancelToken? cancelToken}
   );
 
   Future<jmap.State?> getEmailState(Session session, AccountId accountId);

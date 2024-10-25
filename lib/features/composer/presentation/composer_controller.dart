@@ -6,7 +6,6 @@ import 'package:collection/collection.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:desktop_drop/desktop_drop.dart';
-import 'package:dio/dio.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:filesize/filesize.dart';
@@ -104,6 +103,7 @@ import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class ComposerController extends BaseController
     with DragDropFileMixin, AutoCompleteResultMixin
@@ -915,7 +915,10 @@ class ComposerController extends BaseController
       showConfirmDialogAction(context,
         AppLocalizations.of(context).message_dialog_send_email_without_a_subject,
         AppLocalizations.of(context).send_anyway,
-        onConfirmAction: () => _handleSendMessages(context),
+        onConfirmAction: () => _handleSendMessages(
+          context: context,
+          timeout: AppConfig.sendingMessageTimeout
+        ),
         onCancelAction: popBack,
         autoPerformPopBack: false,
         title: AppLocalizations.of(context).empty_subject,
@@ -951,7 +954,10 @@ class ComposerController extends BaseController
       return;
     }
 
-    _handleSendMessages(context);
+    _handleSendMessages(
+      context: context,
+      timeout: AppConfig.sendingMessageTimeout
+    );
   }
 
   Future<String> _getContentInEditor() async {
@@ -965,7 +971,10 @@ class ComposerController extends BaseController
     }
   }
 
-  void _handleSendMessages(BuildContext context) async {
+  void _handleSendMessages({
+    required BuildContext context,
+    Duration? timeout,
+  }) async {
     if (composerArguments.value == null ||
         mailboxDashBoardController.sessionCurrent == null ||
         mailboxDashBoardController.accountId.value == null
@@ -981,10 +990,10 @@ class ComposerController extends BaseController
     }
 
     final emailContent = await _getContentInEditor();
-    final cancelToken = CancelToken();
+
     final resultState = await _showSendingMessageDialog(
       emailContent: emailContent,
-      cancelToken: cancelToken
+      timeout: timeout
     );
     log('ComposerController::_handleSendMessages: resultState = $resultState');
     if (resultState is SendEmailSuccess || mailboxDashBoardController.validateSendingEmailFailedWhenNetworkIsLostOnMobile(resultState)) {
@@ -992,6 +1001,11 @@ class ComposerController extends BaseController
       _closeComposerAction(result: resultState);
     } else if (resultState is SendEmailFailure && resultState.exception is SendingEmailCanceledException) {
       _sendButtonState = ButtonState.enabled;
+    } else if (resultState is SendEmailFailure
+      && resultState.exception is SendingEmailTimeoutException
+      && context.mounted
+    ) {
+      await _showWarningDialogWhenSendEmailTimeout(context);
     } else if ((resultState is SendEmailFailure || resultState is GenerateEmailFailure) && context.mounted) {
       await _showConfirmDialogWhenSendMessageFailure(
         context: context,
@@ -1004,7 +1018,7 @@ class ComposerController extends BaseController
 
   Future<dynamic> _showSendingMessageDialog({
     required String emailContent,
-    CancelToken? cancelToken
+    Duration? timeout,
   }) {
     final childWidget = PointerInterceptor(
       child: SendingMessageDialogView(
@@ -1033,8 +1047,7 @@ class ComposerController extends BaseController
           displayMode: screenDisplayMode.value
         ),
         createNewAndSendEmailInteractor: _createNewAndSendEmailInteractor,
-        onCancelSendingEmailAction: _handleCancelSendingMessage,
-        cancelToken: cancelToken,
+        timeout: timeout,
       ),
     );
 
@@ -1045,10 +1058,6 @@ class ComposerController extends BaseController
       barrierDismissible: false,
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
     );
-  }
-
-  void _handleCancelSendingMessage({CancelToken? cancelToken}) {
-    cancelToken?.cancel([SendingEmailCanceledException()]);
   }
 
   Future<void> _showConfirmDialogWhenSendMessageFailure({
@@ -1068,6 +1077,46 @@ class ComposerController extends BaseController
         _sendButtonState = ButtonState.enabled;
         popBack();
         _autoFocusFieldWhenLauncher();
+      },
+      onCancelAction: () {
+        _sendButtonState = ButtonState.enabled;
+        _closeComposerAction(closeOverlays: true);
+      },
+      icon: SvgPicture.asset(
+        imagePaths.icQuotasWarning,
+        width: 40,
+        height: 40,
+        colorFilter: AppColor.colorBackgroundQuotasWarning.asFilter(),
+      ),
+      messageStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 14,
+        color: AppColor.colorTextBody
+      ),
+      actionStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 17,
+        color: Colors.white
+      ),
+      cancelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 17,
+        color: Colors.black
+      )
+    );
+  }
+
+  Future<void> _showWarningDialogWhenSendEmailTimeout(context) async {
+    await showConfirmDialogAction(
+      context,
+      title: '',
+      AppLocalizations.of(context).warningMessageWhenSendEmailTimeout,
+      AppLocalizations.of(context).resend,
+      cancelTitle: AppLocalizations.of(context).closeAnyway,
+      alignCenter: true,
+      outsideDismissible: false,
+      autoPerformPopBack: false,
+      onConfirmAction: () {
+        _sendButtonState = ButtonState.enabled;
+        popBack();
+        _handleSendMessages(context: context);
       },
       onCancelAction: () {
         _sendButtonState = ButtonState.enabled;
@@ -1251,7 +1300,10 @@ class ComposerController extends BaseController
     _savedEmailDraftHash = await _hashDraftEmail();
   }
 
-  void handleClickSaveAsDraftsButton(BuildContext context) async {
+  void handleClickSaveAsDraftsButton({
+    required BuildContext context,
+    Duration? timeout,
+  }) async {
     if (_saveToDraftButtonState == ButtonState.disabled) {
       log('ComposerController::handleClickSaveAsDraftsButton: Saving to draft');
       return;
@@ -1270,11 +1322,10 @@ class ComposerController extends BaseController
     }
 
     final emailContent = await _getContentInEditor();
-    final cancelToken = CancelToken();
     final resultState = await _showSavingMessageToDraftsDialog(
       emailContent: emailContent,
       draftEmailId: _emailIdEditing,
-      cancelToken: cancelToken
+      timeout: timeout
     );
 
     if (resultState is SaveEmailAsDraftsSuccess) {
@@ -1290,6 +1341,22 @@ class ComposerController extends BaseController
     } else if ((resultState is SaveEmailAsDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException) ||
         (resultState is UpdateEmailDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException)) {
       _saveToDraftButtonState = ButtonState.enabled;
+    } else if (_validateDisplayWarningDialogSaveAsDraftTimeout(resultState)
+        && context.mounted
+    ) {
+      await _showWarningDialogWhenSaveMessageToDraftsTimeout(
+        context: context,
+        onConfirmAction: () {
+          _saveToDraftButtonState = ButtonState.enabled;
+          popBack();
+          handleClickSaveAsDraftsButton(context: context);
+        },
+        onCancelAction: () {
+          _saveToDraftButtonState = ButtonState.enabled;
+          popBack();
+          _autoFocusFieldWhenLauncher();
+        }
+      );
     } else if ((resultState is SaveEmailAsDraftsFailure ||
         resultState is UpdateEmailDraftsFailure ||
         resultState is GenerateEmailFailure) &&
@@ -1311,6 +1378,11 @@ class ComposerController extends BaseController
     } else {
       _saveToDraftButtonState = ButtonState.enabled;
     }
+  }
+
+  bool _validateDisplayWarningDialogSaveAsDraftTimeout(dynamic failure) {
+    return (failure is SaveEmailAsDraftsFailure && failure.exception is SavingEmailToDraftsTimeoutException)
+      || (failure is UpdateEmailDraftsFailure && failure.exception is SavingEmailToDraftsTimeoutException);
   }
 
   void _addAttachmentFromFileShare(List<SharedMediaFile> listSharedMediaFile) {
@@ -2113,7 +2185,10 @@ class ComposerController extends BaseController
       titleActionButtonMaxLines: 1,
       isArrangeActionButtonsVertical: true,
       usePopScope: true,
-      onConfirmAction: () => _handleSaveMessageToDraft(context),
+      onConfirmAction: () => _handleSaveMessageToDraft(
+        context: context,
+        timeout: AppConfig.savingMessageTimeout
+      ),
       onCancelAction: () {
         _closeComposerButtonState = ButtonState.enabled;
         _closeComposerAction(closeOverlays: true);
@@ -2196,7 +2271,10 @@ class ComposerController extends BaseController
     );
   }
 
-  void _handleSaveMessageToDraft(BuildContext context) async {
+  void _handleSaveMessageToDraft({
+    required BuildContext context,
+    Duration? timeout,
+  }) async {
     if (composerArguments.value == null ||
         mailboxDashBoardController.sessionCurrent == null ||
         mailboxDashBoardController.accountId.value == null ||
@@ -2213,11 +2291,10 @@ class ComposerController extends BaseController
     final emailContent = await _getContentInEditor();
     final draftEmailId = _getDraftEmailId();
     log('ComposerController::_handleSaveMessageToDraft: draftEmailId = $draftEmailId');
-    final cancelToken = CancelToken();
     final resultState = await _showSavingMessageToDraftsDialog(
       emailContent: emailContent,
       draftEmailId: draftEmailId,
-      cancelToken: cancelToken
+      timeout: timeout
     );
 
     if (resultState is SaveEmailAsDraftsSuccess || resultState is UpdateEmailDraftsSuccess) {
@@ -2226,6 +2303,10 @@ class ComposerController extends BaseController
     } else if ((resultState is SaveEmailAsDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException) ||
         (resultState is UpdateEmailDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException)) {
       _closeComposerButtonState = ButtonState.enabled;
+    } else if (_validateDisplayWarningDialogSaveAsDraftTimeout(resultState)
+        && context.mounted
+    ) {
+      await _showWarningDialogWhenSaveMessageToDraftsTimeout(context: context);
     } else if ((resultState is SaveEmailAsDraftsFailure ||
         resultState is UpdateEmailDraftsFailure ||
         resultState is GenerateEmailFailure) &&
@@ -2254,7 +2335,7 @@ class ComposerController extends BaseController
   Future<dynamic> _showSavingMessageToDraftsDialog({
     required String emailContent,
     EmailId? draftEmailId,
-    CancelToken? cancelToken,
+    Duration? timeout,
   }) {
     final childWidget = PointerInterceptor(
       child: SavingMessageDialogView(
@@ -2283,8 +2364,7 @@ class ComposerController extends BaseController
           displayMode: screenDisplayMode.value
         ),
         createNewAndSaveEmailToDraftsInteractor: _createNewAndSaveEmailToDraftsInteractor,
-        onCancelSavingEmailToDraftsAction: _handleCancelSavingMessageToDrafts,
-        cancelToken: cancelToken,
+        timeout: timeout
       ),
     );
     return Get.dialog(
@@ -2294,10 +2374,6 @@ class ComposerController extends BaseController
       barrierDismissible: false,
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
     );
-  }
-
-  void _handleCancelSavingMessageToDrafts({CancelToken? cancelToken}) {
-    cancelToken?.cancel([SavingEmailToDraftsCanceledException()]);
   }
 
   Future<void> _showConfirmDialogWhenSaveMessageToDraftsFailure({
@@ -2319,6 +2395,51 @@ class ComposerController extends BaseController
         _closeComposerButtonState = ButtonState.enabled;
         popBack();
         _autoFocusFieldWhenLauncher();
+      },
+      onCancelAction: onCancelAction ?? () {
+        _closeComposerButtonState = ButtonState.enabled;
+        _closeComposerAction(closeOverlays: true);
+      },
+      icon: SvgPicture.asset(
+        imagePaths.icQuotasWarning,
+        width: 40,
+        height: 40,
+        colorFilter: AppColor.colorBackgroundQuotasWarning.asFilter(),
+      ),
+      messageStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 14,
+        color: AppColor.colorTextBody
+      ),
+      actionStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 17,
+        color: Colors.white
+      ),
+      cancelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
+        fontSize: 17,
+        color: Colors.black
+      )
+    );
+  }
+
+  Future<void> _showWarningDialogWhenSaveMessageToDraftsTimeout({
+    required BuildContext context,
+    VoidCallback? onConfirmAction,
+    VoidCallback? onCancelAction,
+  }) async {
+    await showConfirmDialogAction(
+      context,
+      title: '',
+      AppLocalizations.of(context).warningMessageWhenSaveEmailToDraftsTimeout,
+      AppLocalizations.of(context).saveAgain,
+      cancelTitle: onConfirmAction != null
+        ? AppLocalizations.of(context).cancel
+        : AppLocalizations.of(context).closeAnyway,
+      alignCenter: true,
+      outsideDismissible: false,
+      autoPerformPopBack: false,
+      onConfirmAction: onConfirmAction ?? () {
+        _closeComposerButtonState = ButtonState.enabled;
+        _handleSaveMessageToDraft(context: context);
       },
       onCancelAction: onCancelAction ?? () {
         _closeComposerButtonState = ButtonState.enabled;

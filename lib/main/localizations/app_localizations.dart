@@ -4225,4 +4225,23 @@ class AppLocalizations {
       'Find emails',
       name: 'findEmails');
   }
+
+  String get warningMessageWhenSendEmailTimeout {
+    return Intl.message(
+      'The message sending time has exceeded the timeout of one minute. Do you want to resend?',
+      name: 'warningMessageWhenSendEmailTimeout');
+  }
+
+  String get warningMessageWhenSaveEmailToDraftsTimeout {
+    return Intl.message(
+      'The time it takes to save the message to the draft folder has exceeded the one minute timeout. Do you want to save it again?',
+      name: 'warningMessageWhenSaveEmailToDraftsTimeout');
+  }
+
+  String get saveAgain {
+    return Intl.message(
+      'Save again',
+      name: 'saveAgain',
+    );
+  }
 }

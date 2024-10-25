@@ -4029,5 +4029,23 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "warningMessageWhenSendEmailTimeout": "The message sending time has exceeded the timeout of one minute. Do you want to resend?",
+  "@warningMessageWhenSendEmailTimeout": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "warningMessageWhenSaveEmailToDraftsTimeout": "The time it takes to save the message to the draft folder has exceeded the one minute timeout. Do you want to save it again?",
+  "@warningMessageWhenSaveEmailToDraftsTimeout": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveAgain": "Save again",
+  "@saveAgain": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
