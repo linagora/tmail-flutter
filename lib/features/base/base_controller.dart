@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.da
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interactor_bindings.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
@@ -515,5 +516,13 @@ abstract class BaseController extends GetxController
     authorizationIsolateInterceptors.clear();
     authorizationInterceptors.clear();
     await cachingManager.closeHive();
+  }
+
+  int getMinInputLengthAutocomplete({
+    required Session session,
+    required AccountId accountId,
+  }) {
+    final minInputLength = session.getMinInputLengthAutocomplete(accountId);
+    return minInputLength?.value.toInt() ?? AppConfig.defaultMinInputLengthAutocomplete;
   }
 }

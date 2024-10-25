@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.d
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class AppConfig {
-  static const int limitCharToStartSearch = 3;
+  static const int defaultMinInputLengthAutocomplete = 3;
   static const int warningAttachmentFileSizeInMegabytes = 10;
 
   static const String appDashboardConfigurationPath = "configurations/app_dashboard.json";
