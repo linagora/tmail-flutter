@@ -39,6 +39,7 @@ class AutocompleteContactTextFieldWithTags extends StatefulWidget {
   final OnAddListContactCallbackAction? onAddContactCallback;
   final OnExceptionAddListContactCallbackAction? onExceptionCallback;
   final String internalDomain;
+  final int minInputLengthAutocomplete;
 
   const AutocompleteContactTextFieldWithTags({
     Key? key,
@@ -46,6 +47,7 @@ class AutocompleteContactTextFieldWithTags extends StatefulWidget {
     required this.internalDomain,
     this.controller,
     this.hasAddContactButton = false,
+    this.minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete,
     this.onSuggestionCallback,
     this.onAddContactCallback,
     this.onExceptionCallback,
@@ -206,7 +208,10 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
     }
 
     final teamMailSuggestion = List<SuggestionEmailAddress>.empty(growable: true);
-    if (processedQuery.isNotEmpty && widget.onSuggestionCallback != null) {
+    if (processedQuery.isNotEmpty
+        && processedQuery.length >= widget.minInputLengthAutocomplete
+        && widget.onSuggestionCallback != null
+    ) {
       final addedEmailAddresses = await widget.onSuggestionCallback!(processedQuery);
       final listSuggestionEmailAddress = addedEmailAddresses
         .map((emailAddress) => _toSuggestionEmailAddress(emailAddress, listEmailAddress))

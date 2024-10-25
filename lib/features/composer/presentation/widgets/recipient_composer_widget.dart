@@ -64,6 +64,7 @@ class RecipientComposerWidget extends StatefulWidget {
   final EdgeInsetsGeometry? margin;
   final OnEnableAllRecipientsInputAction? onEnableAllRecipientsInputAction;
   final bool isTestingForWeb;
+  final int minInputLengthAutocomplete;
 
   const RecipientComposerWidget({
     super.key,
@@ -71,6 +72,7 @@ class RecipientComposerWidget extends StatefulWidget {
     required this.listEmailAddress,
     required this.imagePaths,
     required this.maxWidth,
+    this.minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete,
     @visibleForTesting this.isTestingForWeb = false,
     this.ccState = PrefixRecipientState.disabled,
     this.bccState = PrefixRecipientState.disabled,
@@ -410,10 +412,13 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
     }
 
     final tmailSuggestion = List<SuggestionEmailAddress>.empty(growable: true);
-    if (processedQuery.length >= AppConfig.limitCharToStartSearch &&
+    if (processedQuery.length >= widget.minInputLengthAutocomplete &&
         widget.onSuggestionEmailAddress != null) {
       final listEmailAddress = await widget.onSuggestionEmailAddress!(processedQuery);
-      final listSuggestionEmailAddress =  listEmailAddress.map((emailAddress) => _toSuggestionEmailAddress(emailAddress, _currentListEmailAddress));
+      final listSuggestionEmailAddress = listEmailAddress
+        .map((emailAddress) => _toSuggestionEmailAddress(
+          emailAddress,
+          _currentListEmailAddress));
       tmailSuggestion.addAll(listSuggestionEmailAddress);
     }
 

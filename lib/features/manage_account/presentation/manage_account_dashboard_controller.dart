@@ -39,6 +39,7 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class ManageAccountDashBoardController extends ReloadableController with UserSettingPopupMenuMixin {
 
@@ -370,6 +371,15 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
         }
       )
     );
+  }
+
+  int get minInputLengthAutocomplete {
+    if (sessionCurrent == null || accountId.value == null) {
+      return AppConfig.defaultMinInputLengthAutocomplete;
+    }
+    return getMinInputLengthAutocomplete(
+      session: sessionCurrent!,
+      accountId: accountId.value!);
   }
 
   @override

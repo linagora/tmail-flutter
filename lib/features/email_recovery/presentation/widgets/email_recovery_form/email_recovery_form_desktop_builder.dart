@@ -75,6 +75,7 @@ class EmailRecoveryFormDesktopBuilder extends GetWidget<EmailRecoveryController>
                           listEmailAddress: controller.listRecipients,
                           responsiveUtils: controller.responsiveUtils,
                           expandMode: controller.recipientsExpandMode.value,
+                          minInputLengthAutocomplete: controller.minInputLengthAutocomplete,
                           textEditingController: controller.recipientsFieldInputController,
                           focusNode: controller.focusManager.recipientsFieldFocusNode,
                           nextFocusNode: controller.listSenders.length != 1
@@ -90,6 +91,7 @@ class EmailRecoveryFormDesktopBuilder extends GetWidget<EmailRecoveryController>
                           listEmailAddress: controller.listSenders,
                           responsiveUtils: controller.responsiveUtils,
                           expandMode: controller.senderExpandMode.value,
+                          minInputLengthAutocomplete: controller.minInputLengthAutocomplete,
                           textEditingController: controller.senderFieldInputController,
                           focusNode: controller.focusManager.senderFieldFocusNode,
                           nextFocusNode: controller.focusManager.attachmentCheckboxFocusNode,

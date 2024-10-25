@@ -45,12 +45,14 @@ class TextFieldAutocompleteEmailAddressWeb extends StatefulWidget {
   final OnRemoveDraggableEmailAddressAction? onRemoveDraggableEmailAddressAction;
   final TextEditingController? controller;
   final VoidCallback? onSearchAction;
+  final int minInputLengthAutocomplete;
 
   const TextFieldAutocompleteEmailAddressWeb({
     Key? key,
     required this.field,
     required this.listEmailAddress,
     this.expandMode = ExpandMode.EXPAND,
+    this.minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete,
     this.focusNode,
     this.keyTagEditor,
     this.nextFocusNode,
@@ -242,7 +244,7 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
     }
 
     final tmailSuggestion = List<SuggestionEmailAddress>.empty(growable: true);
-    if (processedQuery.length >= AppConfig.limitCharToStartSearch &&
+    if (processedQuery.length >= widget.minInputLengthAutocomplete &&
         widget.onSuggestionEmailAddress != null) {
       final listEmailAddress = await widget.onSuggestionEmailAddress!(processedQuery);
       final listSuggestionEmailAddress =  listEmailAddress.map((emailAddress) => _toSuggestionEmailAddress(emailAddress, _currentListEmailAddress));

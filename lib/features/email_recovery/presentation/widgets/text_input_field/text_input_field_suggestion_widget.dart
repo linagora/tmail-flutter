@@ -40,6 +40,7 @@ class TextInputFieldSuggestionWidget extends StatefulWidget {
   final OnDeleteTagAction? onDeleteTagAction;
   final TextEditingController? textEditingController;
   final VoidCallback? onCreateAction;
+  final int minInputLengthAutocomplete;
 
   const TextInputFieldSuggestionWidget({
     super.key,
@@ -47,6 +48,7 @@ class TextInputFieldSuggestionWidget extends StatefulWidget {
     required this.listEmailAddress,
     required this.responsiveUtils,
     this.expandMode = ExpandMode.EXPAND,
+    this.minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete,
     this.focusNode,
     this.keyTagEditor,
     this.nextFocusNode,
@@ -325,7 +327,7 @@ class _TextInputFieldSuggestionWidgetState extends State<TextInputFieldSuggestio
 
     final tmailSuggestion = List<SuggestionEmailAddress>.empty(growable: true);
     if (
-      processedQuery.length >= AppConfig.limitCharToStartSearch
+      processedQuery.length >= widget.minInputLengthAutocomplete
       && widget.onSuggestionEmailAddress != null
     ) {
       final listEmailAddress = await widget.onSuggestionEmailAddress!(processedQuery);

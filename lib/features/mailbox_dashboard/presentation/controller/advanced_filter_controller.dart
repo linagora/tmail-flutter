@@ -98,7 +98,6 @@ class AdvancedFilterController extends BaseController {
     _memorySearchFilter = searchFilter;
   }
 
-  @visibleForTesting
   MailboxDashBoardController get mailboxDashBoardController => _mailboxDashBoardController;
 
   void _updateMemorySearchFilter({

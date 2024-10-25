@@ -64,6 +64,8 @@ import 'package:tmail_ui_user/features/upload/domain/usecases/local_image_picker
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_state.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 
@@ -120,6 +122,9 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
 
   @override
   String get baseDownloadUrl => '';
+
+  @override
+  int get minInputLengthAutocomplete => AppConfig.defaultMinInputLengthAutocomplete;
 }
 
 @GenerateNiceMocks([
@@ -156,6 +161,7 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   MockSpec<NetworkConnectionController>(fallbackGenerators: fallbackGenerators),
   MockSpec<BeforeReconnectManager>(),
   MockSpec<RichTextMobileTabletController>(fallbackGenerators: fallbackGenerators),
+  MockSpec<CacheExceptionThrower>(),
 
   // Additional misc dependencies mock specs
   MockSpec<HtmlEditorApi>(),
@@ -198,6 +204,7 @@ void main() {
   final mockBeforeReconnectManager = MockBeforeReconnectManager();
   final mockRichTextMobileTabletController = MockRichTextMobileTabletController();
   final mockRichTextWebController = MockRichTextWebController();
+  final mockCacheExceptionThrower = MockCacheExceptionThrower();
 
   // Declaration misc dependencies
   late MockHtmlEditorApi mockHtmlEditorApi;
@@ -240,6 +247,7 @@ void main() {
     Get.put<NetworkConnectionController>(mockNetworkConnectionController);
     Get.put<BeforeReconnectManager>(mockBeforeReconnectManager);
     Get.put<RichTextMobileTabletController>(mockRichTextMobileTabletController);
+    Get.put<CacheExceptionThrower>(mockCacheExceptionThrower);
 
     // Mock composer controller
     mockLocalFilePickerInteractor = MockLocalFilePickerInteractor();
@@ -254,7 +262,7 @@ void main() {
     mockGetAlwaysReadReceiptSettingInteractor = MockGetAlwaysReadReceiptSettingInteractor();
     mockCreateNewAndSendEmailInteractor = MockCreateNewAndSendEmailInteractor();
     mockCreateNewAndSaveEmailToDraftsInteractor = MockCreateNewAndSaveEmailToDraftsInteractor();
-    
+
     composerController = ComposerController(
       mockLocalFilePickerInteractor,
       mockLocalImagePickerInteractor,
