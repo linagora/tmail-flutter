@@ -1,3 +1,11 @@
+## [0.11.4003-patch01] - 2024-10-25
+### Fixed
+- Standardize HTML sanitizing when preview email (https://github.com/linagora/twake-workplace-private/issues/204)
+
+## [0.11.4003] - 2024-06-04
+### Changed
+-  Switch runners to macos-latest
+
 ## [0.11.4002] - 2024-06-04
 ### Added
 - #2764 Add PDFViewer to view preview PDF in email
