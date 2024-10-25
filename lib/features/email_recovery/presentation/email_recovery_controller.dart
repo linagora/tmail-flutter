@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_r
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_time_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class EmailRecoveryController extends BaseController with DateRangePickerMixin {
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
@@ -85,6 +86,15 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
     }
     injectAutoCompleteBindings(_session, _accountId);
     super.onReady();
+  }
+
+  int get minInputLengthAutocomplete {
+    if (_session == null || _accountId == null) {
+      return AppConfig.defaultMinInputLengthAutocomplete;
+    }
+    return getMinInputLengthAutocomplete(
+      session: _session!,
+      accountId: _accountId!);
   }
 
   void _checkContactPermission() async {

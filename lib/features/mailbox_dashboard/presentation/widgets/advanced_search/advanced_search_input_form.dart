@@ -31,6 +31,9 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             field: AdvancedSearchFilterField.from,
             listEmailAddress: controller.listFromEmailAddress,
             expandMode: controller.fromAddressExpandMode.value,
+            minInputLengthAutocomplete: controller
+              .mailboxDashBoardController
+              .minInputLengthAutocomplete,
             controller: controller.fromEmailAddressController,
             focusNode: controller.focusManager.fromFieldFocusNode,
             nextFocusNode: controller.focusManager.toFieldFocusNode,
@@ -45,6 +48,9 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             field: AdvancedSearchFilterField.to,
             listEmailAddress: controller.listToEmailAddress,
             expandMode: controller.toAddressExpandMode.value,
+            minInputLengthAutocomplete: controller
+              .mailboxDashBoardController
+              .minInputLengthAutocomplete,
             controller: controller.toEmailAddressController,
             focusNode: controller.focusManager.toFieldFocusNode,
             nextFocusNode: controller.focusManager.subjectFieldFocusNode,

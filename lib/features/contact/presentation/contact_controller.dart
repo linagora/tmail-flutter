@@ -55,6 +55,8 @@ class ContactController extends BaseController with AutoCompleteResultMixin {
   VoidCallback? onDismissContactView;
   StreamSubscription<String>? _deBouncerTimeStreamSubscription;
 
+  late int _minInputLengthAutocomplete;
+
   @override
   void onInit() {
     super.onInit();
@@ -79,6 +81,7 @@ class ContactController extends BaseController with AutoCompleteResultMixin {
         textInputSearchFocus.requestFocus();
       }
     }
+    _minInputLengthAutocomplete = _fetchMinInputLengthAutocomplete();
     if (PlatformInfo.isMobile) {
       Future.delayed(
         const Duration(milliseconds: 500),
@@ -95,6 +98,7 @@ class ContactController extends BaseController with AutoCompleteResultMixin {
     textInputSearchController.dispose();
     _deBouncerTimeStreamSubscription?.cancel();
     _deBouncerTime.cancel();
+    _accountId = null;
     super.onClose();
   }
 
@@ -115,7 +119,7 @@ class ContactController extends BaseController with AutoCompleteResultMixin {
   Future<void> _handleDeBounceTimeSearchContact(String value) async {
     final queryStringTrimmed = value.trim();
 
-    if (queryStringTrimmed.length < AppConfig.limitCharToStartSearch) {
+    if (queryStringTrimmed.length < _minInputLengthAutocomplete) {
       searchStatus.value = SearchStatus.INACTIVE;
       return;
     }
@@ -234,5 +238,14 @@ class ContactController extends BaseController with AutoCompleteResultMixin {
     textInputSearchFocus.unfocus();
     FocusManager.instance.primaryFocus?.unfocus();
     searchStatus.value = SearchStatus.INACTIVE;
+  }
+
+  int _fetchMinInputLengthAutocomplete() {
+    if (contactArguments.value?.session == null || _accountId == null) {
+      return AppConfig.defaultMinInputLengthAutocomplete;
+    }
+    return getMinInputLengthAutocomplete(
+      session: contactArguments.value!.session,
+      accountId: _accountId!);
   }
 }

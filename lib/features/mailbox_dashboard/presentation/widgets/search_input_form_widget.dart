@@ -30,7 +30,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/qu
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/search_filter_button.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
   final _searchController = Get.find<search.SearchController>();
@@ -67,7 +66,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
           child: QuickSearchInputForm<PresentationEmail, EmailAddress, RecentSearch>(
             maxHeight: 52,
             suggestionsBoxVerticalOffset: 0.0,
-            minInputLengthAutocomplete: AppConfig.limitCharToStartSearch,
+            minInputLengthAutocomplete: _dashBoardController.minInputLengthAutocomplete,
             textFieldConfiguration: _createConfiguration(context),
             suggestionsBoxDecoration: const QuickSearchSuggestionsBoxDecoration(
               color: Colors.white,

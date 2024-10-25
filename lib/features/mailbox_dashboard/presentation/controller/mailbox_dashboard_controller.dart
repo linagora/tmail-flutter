@@ -160,6 +160,7 @@ import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -2556,6 +2557,10 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
       return <EmailAddress>[];
     }
 
+    if (query.length < minInputLengthAutocomplete) {
+      return <EmailAddress>[];
+    }
+
     final listEmailAddress = await _getAutoCompleteInteractor!
       .execute(AutoCompletePattern(word: query, accountId: accountId.value!, limit: 2))
       .then((value) => value.fold(
@@ -2906,6 +2911,15 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
 
   void clearAllSearchFilterApplied() {
     dispatchAction(ClearSearchFilterAppliedAction());
+  }
+
+  int get minInputLengthAutocomplete {
+    if (sessionCurrent == null || accountId.value == null) {
+      return AppConfig.defaultMinInputLengthAutocomplete;
+    }
+    return getMinInputLengthAutocomplete(
+      session: sessionCurrent!,
+      accountId: accountId.value!);
   }
 
   @override
