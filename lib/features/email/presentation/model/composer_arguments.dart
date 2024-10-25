@@ -30,6 +30,8 @@ class ComposerArguments extends RouterArguments {
   final List<Attachment>? inlineImages;
   final bool? hasRequestReadReceipt;
   final ScreenDisplayMode displayMode;
+  final List<EmailAddress>? cc;
+  final List<EmailAddress>? bcc;
 
   ComposerArguments({
     this.emailActionType = EmailActionType.compose,
@@ -49,7 +51,9 @@ class ComposerArguments extends RouterArguments {
     this.selectedIdentityId,
     this.inlineImages,
     this.hasRequestReadReceipt,
-    this.displayMode = ScreenDisplayMode.normal
+    this.displayMode = ScreenDisplayMode.normal,
+    this.cc,
+    this.bcc,
   });
 
   factory ComposerArguments.fromSendingEmail(SendingEmail sendingEmail) =>
@@ -76,13 +80,20 @@ class ComposerArguments extends RouterArguments {
       listEmailAddress: [emailAddress]
     );
 
-  factory ComposerArguments.fromMailtoUri({List<EmailAddress>? listEmailAddress, String? subject, String? body}) =>
-    ComposerArguments(
-      emailActionType: EmailActionType.composeFromMailtoUri,
-      listEmailAddress: listEmailAddress,
-      subject: subject,
-      body: body,
-    );
+  factory ComposerArguments.fromMailtoUri({
+    List<EmailAddress>? listEmailAddress,
+    String? subject,
+    String? body,
+    List<EmailAddress>? cc,
+    List<EmailAddress>? bcc
+  }) => ComposerArguments(
+    emailActionType: EmailActionType.composeFromMailtoUri,
+    listEmailAddress: listEmailAddress,
+    subject: subject,
+    body: body,
+    cc: cc,
+    bcc: bcc,
+  );
 
   factory ComposerArguments.editDraftEmail(PresentationEmail presentationEmail) =>
     ComposerArguments(
@@ -193,6 +204,8 @@ class ComposerArguments extends RouterArguments {
     inlineImages,
     hasRequestReadReceipt,
     displayMode,
+    cc,
+    bcc,
   ];
 
   ComposerArguments copyWith({
@@ -214,6 +227,8 @@ class ComposerArguments extends RouterArguments {
     List<Attachment>? inlineImages,
     bool? hasRequestReadReceipt,
     ScreenDisplayMode? displayMode,
+    List<EmailAddress>? cc,
+    List<EmailAddress>? bcc,
   }) {
     return ComposerArguments(
       emailActionType: emailActionType ?? this.emailActionType,
@@ -234,6 +249,8 @@ class ComposerArguments extends RouterArguments {
       inlineImages: inlineImages ?? this.inlineImages,
       hasRequestReadReceipt: hasRequestReadReceipt ?? this.hasRequestReadReceipt,
       displayMode: displayMode ?? this.displayMode,
+      cc: cc ?? this.cc,
+      bcc: bcc ?? this.bcc,
     );
   }
 }

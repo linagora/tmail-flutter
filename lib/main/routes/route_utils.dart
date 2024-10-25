@@ -25,8 +25,12 @@ abstract class RouteUtils {
   static const String paramMailtoAddress = 'mailtoAddress';
   static const String paramSubject = 'subject';
   static const String paramBody = 'body';
+  static const String paramTo = 'to';
+  static const String paramCc = 'cc';
+  static const String paramBcc = 'bcc';
 
-  static const String mailtoPrefix = 'mailto:';
+  static const String mailtoPrefix = 'mailto';
+  static const String uriPrefix = 'uri';
   static const String ADDRESS_SEPARATOR = ',';
   static const String INVALID_VALUE = 'invalid';
 
@@ -107,6 +111,8 @@ abstract class RouteUtils {
     final queryParam = parameters[paramQuery];
     final routeName = parameters[paramRouteName];
     final mailtoAddress = parameters[paramMailtoAddress];
+    final mailtoCc = parameters[paramCc];
+    final mailtoBcc = parameters[paramBcc];
     final subject = parameters[paramSubject];
     final body = parameters[paramBody];
 
@@ -116,18 +122,11 @@ abstract class RouteUtils {
     final dashboardType = DashboardType.values.firstWhereOrNull((type) => type.name == typeParam) ?? DashboardType.normal;
     final settingType = AccountMenuItem.values.firstWhereOrNull((type) => type.getAliasBrowser() == typeParam) ?? AccountMenuItem.none;
     List<EmailAddress>? listEmailAddress;
-    if (mailtoAddress is List<String>) {
-      listEmailAddress = mailtoAddress
-        .map((address) => EmailAddress(
-          null,
-          GetUtils.isEmail(address) ? address : INVALID_VALUE
-        ))
-        .toList();
-    } else if (mailtoAddress is String) {
-      listEmailAddress = [
-        EmailAddress(null, GetUtils.isEmail(mailtoAddress) ? mailtoAddress : INVALID_VALUE)
-      ];
-    }
+    List<EmailAddress>? cc;
+    List<EmailAddress>? bcc;
+    listEmailAddress = _emailAddressesFromMailtoAddress(mailtoAddress);
+    cc = _emailAddressesFromMailtoAddress(mailtoCc);
+    bcc = _emailAddressesFromMailtoAddress(mailtoBcc);
     log('RouteUtils::parsingRouteParametersToNavigationRouter:listEmailAddress = $listEmailAddress');
     return NavigationRouter(
       emailId: emailId,
@@ -136,10 +135,25 @@ abstract class RouteUtils {
       dashboardType: dashboardType,
       routeName: routeName,
       listEmailAddress: listEmailAddress,
+      cc: cc,
+      bcc: bcc,
       subject: subject,
       body: body,
       accountMenuItem: settingType,
     );
+  }
+
+  static List<EmailAddress>? _emailAddressesFromMailtoAddress(dynamic mailtoAddress) {
+    if (mailtoAddress is List<String>) {
+      return mailtoAddress
+        .map((address) => EmailAddress(null, address))
+        .toList();
+    } else if (mailtoAddress is String) {
+      return [
+        EmailAddress(null, mailtoAddress)
+      ];
+    }
+    return null;
   }
 
   static void replaceBrowserHistory({required String title, required Uri url}) {
@@ -152,37 +166,59 @@ abstract class RouteUtils {
     final mapMailto = <String, dynamic>{
       RouteUtils.paramRouteName: AppRoutes.mailtoURL,
     };
-    if (mailtoUri?.startsWith(mailtoPrefix) == true) {
-      final mailtoUrlDecoded = Uri.decodeFull(mailtoUri!);
-      log('RouteUtils::parseMapMailtoFromUri:mailtoUrlDecoded = $mailtoUrlDecoded');
-      final uri = Uri.tryParse(mailtoUrlDecoded);
-      if (uri == null) return mapMailto;
+    mailtoUri = mailtoUri == null ? null : Uri.decodeFull(mailtoUri); 
+    final parsedMailToUri = Uri.tryParse(mailtoUri ?? '');
 
-      final mailtoAddress = uri.path;
-      final mapQueryParam = uri.queryParameters;
-
-      if (mailtoAddress.contains(ADDRESS_SEPARATOR)) {
-        final listAddress = mailtoAddress.split(ADDRESS_SEPARATOR);
-        log('RouteUtils::parseMapMailtoFromUri:listAddress = $listAddress');
-        mapMailto[paramMailtoAddress] = listAddress;
-      } else {
-        log('RouteUtils::parseMapMailtoFromUri:mailtoAddress = $mailtoAddress');
-        mapMailto[paramMailtoAddress] = mailtoAddress;
-      }
-      if (mapQueryParam.containsKey(paramSubject)) {
-        mapMailto[paramSubject] = mapQueryParam[paramSubject];
-      }
-      if (mapQueryParam.containsKey(paramBody)) {
-        mapMailto[paramBody] = mapQueryParam[paramBody];
-      }
-    } else if (mailtoUri != null) {
-      final mailtoUrlDecoded = Uri.decodeFull(mailtoUri);
-      log('RouteUtils::parseMapMailtoFromUri:mailtoUrlDecoded = $mailtoUrlDecoded');
-      mapMailto[paramMailtoAddress] = mailtoUrlDecoded;
+    if (parsedMailToUri?.scheme == mailtoPrefix) {
+      final to = <String>{
+        ...?parsedMailToUri?.path.split(ADDRESS_SEPARATOR),
+        ...?parsedMailToUri?.queryParameters[paramTo]?.split(ADDRESS_SEPARATOR)
+      }.toList();
+      final cc = {
+        ...?parsedMailToUri?.queryParameters[paramCc]?.split(ADDRESS_SEPARATOR),
+      }.toList();
+      final bcc = {
+        ...?parsedMailToUri?.queryParameters[paramBcc]?.split(ADDRESS_SEPARATOR),
+      }.toList();
+      final subject = parsedMailToUri?.queryParameters[paramSubject];
+      final body = parsedMailToUri?.queryParameters[paramBody];
+      mapMailto[paramMailtoAddress] = to;
+      mapMailto[paramCc] = cc;
+      mapMailto[paramBcc] = bcc;
+      mapMailto[paramSubject] = subject;
+      mapMailto[paramBody] = body;
+    } else if (parsedMailToUri?.path == "/$mailtoPrefix" || parsedMailToUri?.path == "/$mailtoPrefix/") {
+      final to = {
+        ...?parsedMailToUri?.queryParameters[uriPrefix]?.split('$mailtoPrefix:').last.split(ADDRESS_SEPARATOR),
+        ...?parsedMailToUri?.queryParameters[paramTo]?.split(ADDRESS_SEPARATOR)
+      }.toList();
+      final cc = {
+        ...?parsedMailToUri?.queryParameters[paramCc]?.split(ADDRESS_SEPARATOR),
+      }.toList();
+      final bcc = {
+        ...?parsedMailToUri?.queryParameters[paramBcc]?.split(ADDRESS_SEPARATOR),
+      }.toList();
+      final subject = parsedMailToUri?.queryParameters[paramSubject];
+      final body = parsedMailToUri?.queryParameters[paramBody];
+      mapMailto[paramMailtoAddress] = to;
+      mapMailto[paramCc] = cc;
+      mapMailto[paramBcc] = bcc;
+      mapMailto[paramSubject] = subject;
+      mapMailto[paramBody] = body;
     } else {
-      mapMailto[paramMailtoAddress] = mailtoUri;
+      mapMailto[paramMailtoAddress] = mailtoUri?.split(ADDRESS_SEPARATOR);
     }
-    log('RouteUtils::parseMapMailtoFromUri:mapMailto: $mapMailto');
+
+    if (mapMailto[paramMailtoAddress]?.length == 1) {
+      mapMailto[paramMailtoAddress] = mapMailto[paramMailtoAddress].first;
+    }
+
+    log('RouteUtils::parseMapMailtoFromUri:paramMailtoAddress = ${mapMailto[paramMailtoAddress]}');
+    log('RouteUtils::parseMapMailtoFromUri:paramCc = ${mapMailto[paramCc]}');
+    log('RouteUtils::parseMapMailtoFromUri:paramBcc = ${mapMailto[paramBcc]}');
+    log('RouteUtils::parseMapMailtoFromUri:paramSubject = ${mapMailto[paramSubject]}');
+    log('RouteUtils::parseMapMailtoFromUri:paramBody = ${mapMailto[paramBody]}');
+
     return mapMailto;
   }
 
@@ -191,5 +227,13 @@ abstract class RouteUtils {
     final navigationRouter = parsingRouteParametersToNavigationRouter(mailtoMap);
     log('RouteUtils::generateNavigationRouterFromMailtoLink:navigationRouter: $navigationRouter');
     return navigationRouter;
+  }
+
+  static bool canOpenComposerFromNavigationRouter(NavigationRouter navigationRouter) {
+    return navigationRouter.listEmailAddress?.isNotEmpty == true
+      || navigationRouter.cc?.isNotEmpty == true
+      || navigationRouter.bcc?.isNotEmpty == true
+      || navigationRouter.subject?.isNotEmpty == true
+      || navigationRouter.body?.isNotEmpty == true;
   }
 }

@@ -1159,13 +1159,21 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   Future<void> openMailToLink(Uri? uri) async {
+    if (uri == null) return;
+    
+    final navigationRouter = RouteUtils.generateNavigationRouterFromMailtoLink(uri.toString());
     log('SingleEmailController::openMailToLink(): ${uri.toString()}');
-    String address = uri?.path ?? '';
-    log('SingleEmailController::openMailToLink(): address: $address');
-    if (address.isNotEmpty) {
-      final emailAddress = EmailAddress(null, address);
-      mailboxDashBoardController.goToComposer(ComposerArguments.fromEmailAddress(emailAddress));
-    }
+    if (!RouteUtils.canOpenComposerFromNavigationRouter(navigationRouter)) return;
+
+    mailboxDashBoardController.goToComposer(
+      ComposerArguments.fromMailtoUri(
+        listEmailAddress: navigationRouter.listEmailAddress,
+        cc: navigationRouter.cc,
+        bcc: navigationRouter.bcc,
+        subject: navigationRouter.subject,
+        body: navigationRouter.body
+      )
+    );
   }
 
   void deleteEmailPermanently(BuildContext context, PresentationEmail email) {

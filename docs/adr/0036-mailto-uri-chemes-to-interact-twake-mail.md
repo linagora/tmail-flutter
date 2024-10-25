@@ -18,13 +18,13 @@ Summary of URI schemes that can interact with Twake Mail:
 
    - `/mailto?uri=user@example.com`
    - `/mailto/?uri=mailto:user@example.com&subject=TwakeMail&body=HelloWorld`
-   - `/mailto/?uri=mailto:user1@example.com,user2@example.com,user3@example.com&subject=TwakeMail&body=HelloWorld`
+   - `/mailto/?uri=mailto:user1@example.com,user2@example.com,user3@example.com&to=user1@example.com,user2@example.com,user3@example.com&cc=user1@example.com,user2@example.com,user3@example.com&bcc=user1@example.com,user2@example.com,user3@example.com&subject=TwakeMail&body=HelloWorld`
 
 2. URI scheme encoded
 
    - `%2Fmailto%3Furi%3Duser%40example.com`
    - `%2Fmailto%2F%3Furi%3Dmailto%3Auser%40example.com%26subject%3DTwakeMail%26body%3DHelloWorld`
-   - `%2Fmailto%2F%3Furi%3Dmailto%3Auser1%40example.com%2Cuser2%40example.com%2Cuser3%40example.com%26subject%3DTwakeMail%26body%3DHelloWorld`
+   - `%2Fmailto%2F%3Furi%3Dmailto%3Auser1%40example.com%2Cuser2%40example.com%2Cuser3%40example.com%26to=user1%40example.com%2Cuser2%40example.com%2Cuser3%40example.com%26cc=user1%40example.com%2Cuser2%40example.com%2Cuser3%40example.com%26bcc=user1%40example.com%2Cuser2%40example.com%2Cuser3%40example.com%26subject%3DTwakeMail%26body%3DHelloWorld`
 
 ## Consequences
 
