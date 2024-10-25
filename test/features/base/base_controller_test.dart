@@ -1,3 +1,5 @@
+import 'package:contact/contact/model/autocomplete_capability.dart';
+import 'package:contact/contact/model/capability_contact.dart';
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -6,6 +8,12 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/application_manager.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/account/account.dart';
+import 'package:jmap_dart_client/jmap/core/capability/empty_capability.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:mockito/annotations.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -16,9 +24,11 @@ import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../fixtures/account_fixtures.dart';
 import 'base_controller_test.mocks.dart';
 
 class MockBaseController extends BaseController {
@@ -199,6 +209,123 @@ void main() {
       // assert
       expect(mockBaseController.isErrorViewStateEnable, true);
       expect(mockBaseController.isUrgentExceptionEnable, false);
+    });
+  });
+
+  group('BaseController::getMinInputLengthAutocomplete::test', () {
+    late MockBaseController mockBaseController;
+
+    setUp(() {
+      mockBaseController = MockBaseController();
+    });
+
+    test('SHOULD return session min input length WHEN AutocompleteCapability available', () {
+      // Arrange
+      const expectedMinInputLength = 5;
+      final session = Session(
+        {
+          tmailContactCapabilityIdentifier: AutocompleteCapability(
+            minInputLength: UnsignedInt(expectedMinInputLength)
+          )
+        },
+        {
+          AccountFixtures.aliceAccountId: Account(
+            AccountName('Alice'),
+            true,
+            false,
+            {
+              tmailContactCapabilityIdentifier: AutocompleteCapability(
+                minInputLength: UnsignedInt(expectedMinInputLength)
+              )
+            },
+          )
+        },
+        {},
+        UserName(''),
+        Uri(),
+        Uri(),
+        Uri(),
+        Uri(),
+        State(''));
+
+      // Act
+      final result = mockBaseController.getMinInputLengthAutocomplete(
+        session: session,
+        accountId: AccountFixtures.aliceAccountId,
+      );
+
+      // Assert
+      expect(result, expectedMinInputLength);
+    });
+
+    test('SHOULD return session min input length WHEN AutocompleteCapability available, but no minInputLength', () {
+      // Arrange
+      const expectedMinInputLength = AppConfig.defaultMinInputLengthAutocomplete;
+      final session = Session(
+        {
+          tmailContactCapabilityIdentifier: AutocompleteCapability()
+        },
+        {
+          AccountFixtures.aliceAccountId: Account(
+            AccountName('Alice'),
+            true,
+            false,
+            {
+              tmailContactCapabilityIdentifier: AutocompleteCapability()
+            },
+          )
+        },
+        {},
+        UserName(''),
+        Uri(),
+        Uri(),
+        Uri(),
+        Uri(),
+        State(''),
+      );
+
+      // Act
+      final result = mockBaseController.getMinInputLengthAutocomplete(
+        session: session,
+        accountId: AccountFixtures.aliceAccountId,
+      );
+
+      // Assert
+      expect(result, expectedMinInputLength);
+    });
+
+    test('SHOULD return default min input length WHEN AutocompleteCapability is not available', () {
+      // Arrange
+      final session = Session(
+        {
+          tmailContactCapabilityIdentifier: EmptyCapability()
+        },
+        {
+          AccountFixtures.aliceAccountId: Account(
+            AccountName('Alice'),
+            true,
+            false,
+            {
+              tmailContactCapabilityIdentifier: EmptyCapability()
+            },
+          )
+        },
+        {},
+        UserName(''),
+        Uri(),
+        Uri(),
+        Uri(),
+        Uri(),
+        State(''));
+
+      // Act
+      final result = mockBaseController.getMinInputLengthAutocomplete(
+        session: session,
+        accountId: AccountFixtures.aliceAccountId,
+      );
+
+      // Assert
+      expect(result, AppConfig.defaultMinInputLengthAutocomplete);
     });
   });
 }

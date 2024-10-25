@@ -1,12 +1,16 @@
 
 import 'dart:convert';
 
+import 'package:contact/contact/model/autocomplete_capability.dart';
+import 'package:contact/contact/model/capability_contact.dart';
 import 'package:core/presentation/extensions/uri_extension.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/converter/state_converter.dart';
 import 'package:jmap_dart_client/http/converter/user_name_converter.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/home/data/model/session_hive_obj.dart';
 import 'package:tmail_ui_user/features/home/domain/converter/session_account_converter.dart';
@@ -59,6 +63,20 @@ extension SessionExtensions on Session {
     } catch (e) {
       logError('SessionExtensions::internalDomain: Exception: $e');
       return '';
+    }
+  }
+
+  UnsignedInt? getMinInputLengthAutocomplete(AccountId accountId) {
+    try {
+      final autocompleteCapability = getCapabilityProperties<AutocompleteCapability>(
+        accountId,
+        tmailContactCapabilityIdentifier);
+      final minInputLength = autocompleteCapability?.minInputLength;
+      log('SessionExtensions::getMinInputLengthAutocomplete:minInputLength = $minInputLength');
+      return minInputLength;
+    } catch (e) {
+      logError('SessionExtensions::getMinInputLengthAutocomplete():[Exception] $e');
+      return null;
     }
   }
 }
