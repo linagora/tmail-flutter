@@ -629,6 +629,16 @@ class ComposerController extends BaseController
             isInitialRecipient.value = true;
             toAddressExpandMode.value = ExpandMode.COLLAPSE;
           }
+          if (arguments.cc?.isNotEmpty == true) {
+            listCcEmailAddress = arguments.cc!;
+            ccRecipientState.value = PrefixRecipientState.enabled;
+            ccAddressExpandMode.value = ExpandMode.COLLAPSE;
+          }
+          if (arguments.bcc?.isNotEmpty == true) {
+            bccRecipientState.value = PrefixRecipientState.enabled;
+            bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+            listBccEmailAddress = arguments.bcc!;
+          }
           _getEmailContentFromMailtoUri(arguments.body ?? '');
           _updateStatusEmailSendButton();
           break;
@@ -1726,10 +1736,15 @@ class ComposerController extends BaseController
     if (bccRecipientState.value == PrefixRecipientState.disabled) {
       bccRecipientState.value = PrefixRecipientState.enabled;
     }
-    listBccEmailAddress = listEmailAddress.toList();
+    if (composerArguments.value?.emailActionType == EmailActionType.composeFromMailtoUri) {
+      listBccEmailAddress = {...listEmailAddress, ...?composerArguments.value?.bcc}.toList();
+    } else {
+      listBccEmailAddress = listEmailAddress.toList();
+    }
     toAddressExpandMode.value = ExpandMode.COLLAPSE;
     ccAddressExpandMode.value = ExpandMode.COLLAPSE;
     bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+    bccAddressExpandMode.refresh();
     _updateStatusEmailSendButton();
   }
 
