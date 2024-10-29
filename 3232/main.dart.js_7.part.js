@@ -1047,6 +1047,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         case "it":
           A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
           return A.Intl__message("Italian", _null, "languageItalian", _null, _null);
+        case "de":
+          A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+          return A.Intl__message("German", _null, "languageGerman", _null, _null);
         default:
           return "";
       }
@@ -1057,6 +1060,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return "Fran\xe7ais";
         case "en":
           return "English";
+        case "de":
+          return "Deutsch";
         case "vi":
           return "Ti\u1ebfng Vi\u1ec7t";
         case "ru":
@@ -5843,5 +5848,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_7", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "2gg5FWbXeLNAcMGRP8roCkjZhss=");
+})($__dart_deferred_initializers__, "D7BK3IsDPwmTs6BWujBVk7e6bZo=");
 ;

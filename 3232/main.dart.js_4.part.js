@@ -402,6 +402,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     FrenchDateLocale: function FrenchDateLocale() {
     },
+    GermanDateLocale: function GermanDateLocale() {
+    },
     ItalianDateLocale: function ItalianDateLocale() {
     },
     RussianDateLocale: function RussianDateLocale() {
@@ -5142,6 +5144,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return D.C_ArabicDateLocale;
       else if (currentLanguageCode === "it")
         return D.C_ItalianDateLocale;
+      else if (currentLanguageCode === "de")
+        return D.C_GermanDateLocale;
       else
         return D.C_EnglishDateLocale;
     }
@@ -6042,6 +6046,26 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     get$daysLong() {
       return D.List_Ano;
+    }
+  };
+  B.GermanDateLocale.prototype = {
+    get$am() {
+      return "vormittags";
+    },
+    get$pm() {
+      return "nachmittags";
+    },
+    get$monthsShort() {
+      return D.List_GMA;
+    },
+    get$monthsLong() {
+      return C.List_7BT;
+    },
+    get$daysShort() {
+      return D.List_2bL;
+    },
+    get$daysLong() {
+      return D.List_FYo1;
     }
   };
   B.ItalianDateLocale.prototype = {
@@ -11780,7 +11804,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2._as(t1.get(_this)).toString;
       t3 = A.SvgPicture$asset("assets/images/ic_open_in_new_tab.svg", C.Alignment_0_0, A.ColorNullableExtension_asFilter(C.Color_4278221567), C.BoxFit_0, 24, _null, _null, 24);
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-      t4 = A.Intl__message("Open in New Tab", _null, "openInNewTab", _null, _null);
+      t4 = A.Intl__message("Open in new tab", _null, "openInNewTab", _null, _null);
       A.Expando__checkType(_this);
       t2._as(t1.get(_this)).toString;
       t5 = type$.MediaQuery;
@@ -11858,7 +11882,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       A._instanceType(_this)._eval$1("GetWidget.S")._as(t1._jsWeakMap.get(_this)).toString;
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-      return A.PopupMenuItem$(_this.popupItem$5$colorIcon$onCallbackAction$styleName("assets/images/ic_open_in_new_tab.svg", A.Intl__message("Open in New Tab", _null, "openInNewTab", _null, _null), C.Color_4278221567, new B.ThreadView__buildOpenInNewTabPopupMenuItem_closure(_this, email), C.TextStyle_69t6), true, 48, _null, C.EdgeInsets_0_0_0_0, _null, type$.dynamic);
+      return A.PopupMenuItem$(_this.popupItem$5$colorIcon$onCallbackAction$styleName("assets/images/ic_open_in_new_tab.svg", A.Intl__message("Open in new tab", _null, "openInNewTab", _null, _null), C.Color_4278221567, new B.ThreadView__buildOpenInNewTabPopupMenuItem_closure(_this, email), C.TextStyle_69t6), true, 48, _null, C.EdgeInsets_0_0_0_0, _null, type$.dynamic);
     },
     _buildArchiveMessagePopupMenuItem$2(context, email) {
       var _this = this, _null = null,
@@ -12289,7 +12313,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = type$.AppLocalizations;
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
       t4 = type$.JSArray_Widget;
-      t2 = A._setArrayType([F.buildSVGIconButton("assets/images/ic_open_in_new_tab.svg", C.Color_4288850611, t2, new B._EmailTileBuilderState__buildListActionButtonWhenHover_closure(_this), _null, C.EdgeInsets_5_5_5_5, A.Intl__message("Open in New Tab", _null, "openInNewTab", _null, _null))], t4);
+      t2 = A._setArrayType([F.buildSVGIconButton("assets/images/ic_open_in_new_tab.svg", C.Color_4288850611, t2, new B._EmailTileBuilderState__buildListActionButtonWhenHover_closure(_this), _null, C.EdgeInsets_5_5_5_5, A.Intl__message("Open in new tab", _null, "openInNewTab", _null, _null))], t4);
       if (!_this._widget.presentationEmail.get$isDraft()) {
         t5 = _this._widget.presentationEmail.get$hasRead() ? "assets/images/ic_unread.svg" : "assets/images/ic_read.svg";
         t6 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size._dx >= 1200 ? 18 : 16;
@@ -21025,7 +21049,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _mixin = hunkHelpers.mixin,
       _inheritMany = hunkHelpers.inheritMany,
       _inherit = hunkHelpers.inherit;
-    _inheritMany(A.Object, [B.ByteConverter, B.QuickSearchSuggestionsBoxDecoration, B.QuickSearchTextFieldConfiguration, B.SuggestionsBox, B.ArabicDateLocale, B.EnglishDateLocale, B.FrenchDateLocale, B.ItalianDateLocale, B.RussianDateLocale, B.VietnameseDateLocale, B.DropdownSearchData, B.Drag, B.MultiDragPointerState, B.DraggableDetails, B.FocusedMenuItem, B.WebScript, B._DraggableEmailAddress_Object_EquatableMixin, B.EditorViewMixin, B.FilterEmailPopupMenuMixin, B.BaseEmailItemTile]);
+    _inheritMany(A.Object, [B.ByteConverter, B.QuickSearchSuggestionsBoxDecoration, B.QuickSearchTextFieldConfiguration, B.SuggestionsBox, B.ArabicDateLocale, B.EnglishDateLocale, B.FrenchDateLocale, B.GermanDateLocale, B.ItalianDateLocale, B.RussianDateLocale, B.VietnameseDateLocale, B.DropdownSearchData, B.Drag, B.MultiDragPointerState, B.DraggableDetails, B.FocusedMenuItem, B.WebScript, B._DraggableEmailAddress_Object_EquatableMixin, B.EditorViewMixin, B.FilterEmailPopupMenuMixin, B.BaseEmailItemTile]);
     _inheritMany(A._Enum, [B.SizeUnit, B._DragEndKind]);
     _inheritMany(A.StatefulWidget, [B.ScrollingFloatingButtonAnimated, B.TypeAheadFieldQuickSearch, B.SuggestionsList, B.SelectionArea, B.Draggable, B.SelectableRegion, B.RecipientComposerWidget, B.AttachmentComposerWidget, B.WebEditorWidget, B.EventAttendeeDetailWidget, B.EmailReceiverWidget, B.TextFieldAutocompleteEmailAddressWeb, B.MailboxSearchedItemBuilder, B.EmailTileBuilder, B.ScrollToTopButtonWidget]);
     _inheritMany(A.State0, [B.__ScrollingFloatingButtonAnimatedState_State_SingleTickerProviderStateMixin, B.__TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver, B._SuggestionsListState_State_SingleTickerProviderStateMixin, B._SelectionAreaState, B._DraggableState, B._SelectableRegionState_State_TextSelectionDelegate, B._RecipientComposerWidgetState, B._AttachmentComposerWidgetState, B._WebEditorState, B._EventAttendeeDetailWidgetState, B._EmailReceiverWidgetState, B._TextFieldAutocompleteEmailAddressWebState, B._MailboxSearchedItemBuilderState, B.__EmailTileBuilderState_State_BaseEmailItemTile, B._ScrollToTopButtonWidgetState]);
@@ -21276,6 +21300,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.List_wOX = A._setArrayType(makeConstList(["Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di"]), type$.JSArray_String);
     D.List_Ano = A._setArrayType(makeConstList(["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]), type$.JSArray_String);
     D.C_FrenchDateLocale = new B.FrenchDateLocale();
+    D.List_GMA = A._setArrayType(makeConstList(["Jan.", "Feb.", "M\xe4rz", "Apr.", "Mai", "Jun.", "Jul.", "Aug.", "Sep.", "Okt.", "Nov.", "Dez."]), type$.JSArray_String);
+    D.List_2bL = A._setArrayType(makeConstList(["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]), type$.JSArray_String);
+    D.List_FYo1 = A._setArrayType(makeConstList(["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"]), type$.JSArray_String);
+    D.C_GermanDateLocale = new B.GermanDateLocale();
     D.List_ECL2 = A._setArrayType(makeConstList(["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"]), type$.JSArray_String);
     D.List_ewF = A._setArrayType(makeConstList(["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"]), type$.JSArray_String);
     D.List_OTw = A._setArrayType(makeConstList(["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]), type$.JSArray_String);
@@ -21551,5 +21579,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "EESt8aByMOnOWXOpMwxovgTV/E4=");
+})($__dart_deferred_initializers__, "V6xHR92kPgP2sz99JegvKE5LkAM=");
 ;
