@@ -4231,4 +4231,11 @@ class AppLocalizations {
       'Find emails',
       name: 'findEmails');
   }
+
+  String get thisFieldCannotContainOnlySpaces {
+    return Intl.message(
+      'This field cannot contain only spaces',
+      name: 'thisFieldCannotContainOnlySpaces',
+    );
+  }
 }

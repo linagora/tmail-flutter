@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-10-25T09:31:37.466558",
+  "@@last_modified": "2024-10-29T16:13:26.917296",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1566,6 +1566,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "languageGerman": "German",
+  "@languageGerman": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "languageVietnamese": "Vietnamese",
   "@languageVietnamese": {
     "type": "text",
@@ -1592,12 +1598,6 @@
   },
   "languageItalian": "Italian",
   "@languageItalian": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "languageGerman": "German",
-  "@languageGerman": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -4032,6 +4032,12 @@
   },
   "findEmails": "Find emails",
   "@findEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "thisFieldCannotContainOnlySpaces": "This field cannot contain only spaces",
+  "@thisFieldCannotContainOnlySpaces": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

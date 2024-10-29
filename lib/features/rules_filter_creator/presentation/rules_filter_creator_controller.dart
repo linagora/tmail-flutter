@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentat
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/name_with_space_only_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
@@ -311,7 +312,13 @@ class RulesFilterCreatorController extends BaseMailboxController {
   }
 
   String? _getErrorStringByInputValue(BuildContext context, String? inputValue) {
-    return verifyNameInteractor.execute(inputValue, [EmptyNameValidator()]).fold(
+    return verifyNameInteractor.execute(
+      inputValue,
+      [
+        EmptyNameValidator(),
+        NameWithSpaceOnlyValidator(),
+      ],
+    ).fold(
       (failure) {
           if (failure is VerifyNameFailure) {
             return failure.getMessageRulesFilter(context);
