@@ -15,7 +15,6 @@ class VacationControllerBindings extends Bindings {
     Get.put(VacationController(
       Get.find<GetAllVacationInteractor>(),
       Get.find<UpdateVacationInteractor>(),
-      Get.find<VerifyNameInteractor>(),
       Get.find<RichTextWebController>(tag: VacationUtils.vacationTagName),
     ));
   }
