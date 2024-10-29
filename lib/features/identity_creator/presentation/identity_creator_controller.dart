@@ -46,6 +46,7 @@ import 'package:tmail_ui_user/features/identity_creator/presentation/model/ident
 import 'package:tmail_ui_user/features/identity_creator/presentation/utils/identity_creator_constants.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/email_address_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/name_with_space_only_validator.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
@@ -126,7 +127,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
   }
 
   void updateNameIdentity(BuildContext context, String? value) {
-    _nameIdentity = value?.trim();
+    _nameIdentity = value;
     errorNameIdentity.value = _getErrorInputNameString(context);
   }
 
@@ -554,7 +555,10 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
   String? _getErrorInputNameString(BuildContext context) {
     return _verifyNameInteractor.execute(
         _nameIdentity,
-        [EmptyNameValidator()]
+        [
+          EmptyNameValidator(),
+          NameWithSpaceOnlyValidator(),
+        ],
     ).fold(
       (failure) {
           if (failure is VerifyNameFailure) {
@@ -573,8 +577,11 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
       return null;
     }
     return _verifyNameInteractor.execute(
-        emailAddress,
-        [EmailAddressValidator()]
+      emailAddress,
+      [
+        EmailAddressValidator(),
+        NameWithSpaceOnlyValidator(),
+      ],
     ).fold(
         (failure) {
           if (failure is VerifyNameFailure) {
