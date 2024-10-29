@@ -1,6 +1,7 @@
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/sanitize_url.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:html/dom.dart';
 
@@ -16,15 +17,22 @@ class SanitizeHyperLinkTagInHtmlTransformer extends DomTransformer {
     required DioClient dioClient,
     Map<String, String>? mapUrlDownloadCID,
   }) async {
-    final elements = document.querySelectorAll('a');
-    await Future.wait(elements.map((element) async {
-      _sanitizeUrlResource(element);
-      if (useTooltip) {
-        _addToolTipWhenHoverLink(element);
-      }
-      _addBlankForTargetProperty(element);
-      _addNoReferrerForRelProperty(element);
-    }));
+    try {
+      final elements = document.querySelectorAll('a');
+
+      if (elements.isEmpty) return;
+
+      await Future.wait(elements.map((element) async {
+        _sanitizeUrlResource(element);
+        if (useTooltip) {
+          _addToolTipWhenHoverLink(element);
+        }
+        _addBlankForTargetProperty(element);
+        _addNoReferrerForRelProperty(element);
+      }));
+    } catch (e) {
+      logError('$runtimeType::process:Exception = $e');
+    }
   }
 
   void _sanitizeUrlResource(Element element) {

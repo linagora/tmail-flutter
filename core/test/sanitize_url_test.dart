@@ -108,5 +108,17 @@ void main() {
         equals('http://linagora.com')
       );
     });
+
+    test('SHOULD returns original input WHEN get an exception', () {
+      // Arrange
+      const inputText = "%E0%A4%A";
+      const expectedOutput = inputText;
+
+      // Act
+      final result = sanitizeUrl.process(inputText);
+
+      // Assert
+      expect(result, expectedOutput);
+    });
   });
 }

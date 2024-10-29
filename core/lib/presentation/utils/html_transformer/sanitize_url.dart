@@ -1,3 +1,4 @@
+import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 
 class SanitizeUrl {
@@ -12,17 +13,20 @@ class SanitizeUrl {
   );
 
   String process(String inputText) {
-    var originalUrl = inputText;
-
-    originalUrl = Uri.decodeFull(originalUrl);
-
-    if (GetUtils.isURL(originalUrl)) {
-      if (!originalUrl.startsWith(_protocolIdentifierRegex)) {
-        originalUrl = (defaultToHttps ? "https://" : "http://") + originalUrl;
+    try {
+      log('SanitizeUrl::process:inputText = $inputText');
+      var originalUrl = Uri.decodeFull(inputText);
+      if (GetUtils.isURL(originalUrl)) {
+        originalUrl = !originalUrl.startsWith(_protocolIdentifierRegex)
+          ? (defaultToHttps ? "https://" : "http://") + originalUrl
+          : originalUrl;
+      } else {
+        originalUrl = '';
       }
-    } else {
-      originalUrl = '';
+      return originalUrl;
+    } catch (e) {
+      logError('SanitizeUrl::process:Exception = $e');
+      return inputText;
     }
-    return originalUrl;
   }
 }

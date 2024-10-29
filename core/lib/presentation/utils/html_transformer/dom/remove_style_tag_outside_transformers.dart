@@ -1,5 +1,6 @@
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:html/dom.dart';
 
 class RemoveStyleTagOutsideTransformer extends DomTransformer {
@@ -12,9 +13,16 @@ class RemoveStyleTagOutsideTransformer extends DomTransformer {
     required DioClient dioClient,
     Map<String, String>? mapUrlDownloadCID,
   }) async {
-    final styleElements = document.querySelectorAll('style');
-    await Future.wait(styleElements.map((element) async {
-      element.remove();
-    }));
+    try {
+      final styleElements = document.querySelectorAll('style');
+
+      if (styleElements.isEmpty) return;
+
+      await Future.wait(styleElements.map((element) async {
+        element.remove();
+      }));
+    } catch (e) {
+      logError('$runtimeType::process:Exception = $e');
+    }
   }
 }
