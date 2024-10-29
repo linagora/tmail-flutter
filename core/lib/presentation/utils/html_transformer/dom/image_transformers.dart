@@ -5,6 +5,7 @@ import 'package:core/data/network/dio_client.dart';
 import 'package:core/data/utils/compress_file_utils.dart';
 import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/presentation/utils/html_transformer/base/dom_transformer.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
@@ -20,41 +21,48 @@ class ImageTransformer extends DomTransformer {
     required DioClient dioClient,
     Map<String, String>? mapUrlDownloadCID,
   }) async {
-    final imageElements = document.querySelectorAll('img');
-    await Future.wait(imageElements.map((imageElement) async {
-      var exStyle = imageElement.attributes['style'];
-      if (exStyle != null) {
-        if (!exStyle.trim().endsWith(';')) {
-          exStyle = '$exStyle;';
-        }
-        if (!exStyle.contains('display')) {
-          exStyle = '$exStyle display:inline;';
-        }
-        if (!exStyle.contains('max-width')) {
-          exStyle = '$exStyle max-width:100%;';
-        }
-        imageElement.attributes['style'] = exStyle;
-      } else {
-        imageElement.attributes['style'] = 'display:inline;max-width:100%;';
-      }
-      final src = imageElement.attributes['src'];
+    try {
+      final imageElements = document.querySelectorAll('img');
 
-      if (src == null) return;
+      if (imageElements.isEmpty) return;
 
-      if (src.startsWith('cid:') && mapUrlDownloadCID != null) {
-        final imageBase64 = await _convertCidToBase64Image(
-          dioClient: dioClient,
-          mapUrlDownloadCID: mapUrlDownloadCID,
-          imageSource: src
-        );
-        imageElement.attributes['src'] = imageBase64 ?? src;
-        imageElement.attributes['id'] ??= src;
-      } else if (src.startsWith('https://') || src.startsWith('http://')) {
-        if (!imageElement.attributes.containsKey('loading')) {
-          imageElement.attributes['loading'] = 'lazy';
+      await Future.wait(imageElements.map((imageElement) async {
+        var exStyle = imageElement.attributes['style'];
+        if (exStyle != null) {
+          if (!exStyle.trim().endsWith(';')) {
+            exStyle = '$exStyle;';
+          }
+          if (!exStyle.contains('display')) {
+            exStyle = '$exStyle display:inline;';
+          }
+          if (!exStyle.contains('max-width')) {
+            exStyle = '$exStyle max-width:100%;';
+          }
+          imageElement.attributes['style'] = exStyle;
+        } else {
+          imageElement.attributes['style'] = 'display:inline;max-width:100%;';
         }
-      }
-    }));
+        final src = imageElement.attributes['src'];
+
+        if (src == null) return;
+
+        if (src.startsWith('cid:') && mapUrlDownloadCID != null) {
+          final imageBase64 = await _convertCidToBase64Image(
+            dioClient: dioClient,
+            mapUrlDownloadCID: mapUrlDownloadCID,
+            imageSource: src
+          );
+          imageElement.attributes['src'] = imageBase64 ?? src;
+          imageElement.attributes['id'] ??= src;
+        } else if (src.startsWith('https://') || src.startsWith('http://')) {
+          if (!imageElement.attributes.containsKey('loading')) {
+            imageElement.attributes['loading'] = 'lazy';
+          }
+        }
+      }));
+    } catch (e) {
+      logError('$runtimeType::process:Exception = $e');
+    }
   }
 
   Future<String?> _convertCidToBase64Image({
