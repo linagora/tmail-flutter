@@ -8,10 +8,6 @@ import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rich_text_composer/views/commons/constants.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/empty_name_validator.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/state/verify_name_view_state.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_creator/presentation/extensions/validator_failure_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
@@ -32,7 +28,6 @@ class VacationController extends BaseController {
 
   final GetAllVacationInteractor _getAllVacationInteractor;
   final UpdateVacationInteractor _updateVacationInteractor;
-  final VerifyNameInteractor _verifyNameInteractor;
   final RichTextWebController _richTextControllerForWeb;
 
   final vacationPresentation = VacationPresentation.initialize().obs;
@@ -53,7 +48,6 @@ class VacationController extends BaseController {
   VacationController(
     this._getAllVacationInteractor,
     this._updateVacationInteractor,
-    this._verifyNameInteractor,
     this._richTextControllerForWeb
   );
 
@@ -249,23 +243,6 @@ class VacationController extends BaseController {
     } else {
       updateVacationPresentation(endTimeOption: Some(timePicked));
     }
-  }
-
-  String? _getErrorStringByInputValue(BuildContext context, String? inputValue) {
-    return _verifyNameInteractor.execute(inputValue, [EmptyNameValidator()]).fold(
-      (failure) {
-        if (failure is VerifyNameFailure) {
-          return failure.getMessageVacation(context);
-        } else {
-          return null;
-        }
-      },
-      (success) => null
-    );
-  }
-
-  void updateMessageBody(BuildContext context, String? value) {
-    errorMessageBody.value = _getErrorStringByInputValue(context, value);
   }
 
   void saveVacation(BuildContext context) async {
