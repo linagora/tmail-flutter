@@ -191,6 +191,13 @@ class AppLocalizations {
     );
   }
 
+  String get reply_to_email_address_prefix {
+    return Intl.message(
+      'Reply to',
+      name: 'reply_to_email_address_prefix',
+    );
+  }
+
   String get cc_email_address_prefix {
     return Intl.message(
       'Cc',
