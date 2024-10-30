@@ -16,6 +16,7 @@ void main() {
         toRecipients: {EmailAddress('to name', 'to email')},
         ccRecipients: {EmailAddress('cc name', 'cc email')},
         bccRecipients: {EmailAddress('bcc name', 'bcc email')},
+        replyToRecipients: {EmailAddress('replyTo name', 'replyTo email')},
         identity: null,
         attachments: [],
         hasReadReceipt: false
@@ -37,7 +38,7 @@ void main() {
       // arrange
       const subject = 'subject';
       const content = 'content';
-      final recipent = EmailAddress('recipent name', 'recipent email');
+      final recipient = EmailAddress('recipient name', 'recipient email');
       final identity = Identity();
       final attachments = <Attachment>[];
       const hasReadReceipt = false;
@@ -45,9 +46,10 @@ void main() {
       final toSavedEmailDraft = SavedEmailDraft(
         subject: subject,
         content: content,
-        toRecipients: {recipent},
+        toRecipients: {recipient},
         ccRecipients: {},
         bccRecipients: {},
+        replyToRecipients: {},
         identity: identity,
         attachments: attachments,
         hasReadReceipt: hasReadReceipt
@@ -57,8 +59,9 @@ void main() {
         subject: subject,
         content: content,
         toRecipients: {},
-        ccRecipients: {recipent},
+        ccRecipients: {recipient},
         bccRecipients: {},
+        replyToRecipients: {},
         identity: identity,
         attachments: attachments,
         hasReadReceipt: hasReadReceipt
@@ -69,21 +72,36 @@ void main() {
         content: content,
         toRecipients: {},
         ccRecipients: {},
-        bccRecipients: {recipent},
+        bccRecipients: {recipient},
+        replyToRecipients: {},
         identity: identity,
         attachments: attachments,
         hasReadReceipt: hasReadReceipt
+      );
+
+      final replyToSavedEmailDraft = SavedEmailDraft(
+          subject: subject,
+          content: content,
+          toRecipients: {},
+          ccRecipients: {},
+          bccRecipients: {},
+          replyToRecipients: {recipient},
+          identity: identity,
+          attachments: attachments,
+          hasReadReceipt: hasReadReceipt
       );
       
       // act
       final toProps = toSavedEmailDraft.props;
       final ccProps = ccSavedEmailDraft.props;
       final bccProps = bccSavedEmailDraft.props;
-      
+      final replyToProps = replyToSavedEmailDraft.props;
+
       // assert
       expect(toProps.hashCode, isNot(ccProps.hashCode));
       expect(ccProps.hashCode, isNot(bccProps.hashCode));
-      expect(bccProps.hashCode, isNot(toProps.hashCode));
+      expect(bccProps.hashCode, isNot(replyToProps.hashCode));
+      expect(replyToProps.hashCode, isNot(toProps.hashCode));
     });
 
     test(
@@ -100,6 +118,7 @@ void main() {
           toRecipients: listToRecipients,
           ccRecipients: {EmailAddress('cc name', 'cc email')},
           bccRecipients: {EmailAddress('bcc name', 'bcc email')},
+          replyToRecipients: {EmailAddress('replyTo name', 'replyTo email')},
           identity: null,
           attachments: [],
           hasReadReceipt: false
@@ -125,6 +144,7 @@ void main() {
         toRecipients: {EmailAddress('to name', 'to email')},
         ccRecipients: {EmailAddress('cc name', 'cc email')},
         bccRecipients: {EmailAddress('bcc name', 'bcc email')},
+        replyToRecipients: {EmailAddress('replyTo name', 'replyTo email')},
         identity: null,
         attachments: [],
         hasReadReceipt: false
@@ -136,6 +156,7 @@ void main() {
         toRecipients: {EmailAddress('to name', 'to email')},
         ccRecipients: {EmailAddress('cc name', 'cc email')},
         bccRecipients: {EmailAddress('bcc name', 'bcc email')},
+        replyToRecipients: {EmailAddress('replyTo name', 'replyTo email')},
         identity: null,
         attachments: [],
         hasReadReceipt: false

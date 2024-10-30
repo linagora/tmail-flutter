@@ -19,6 +19,7 @@ void main() {
     toRecipients: {},
     ccRecipients: {},
     bccRecipients: {},
+    replyToRecipients: {},
   );
 
   group('create email request extension test:', () {
