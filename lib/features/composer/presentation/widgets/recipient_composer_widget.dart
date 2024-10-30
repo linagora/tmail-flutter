@@ -46,6 +46,7 @@ class RecipientComposerWidget extends StatefulWidget {
   final PrefixRecipientState fromState;
   final PrefixRecipientState ccState;
   final PrefixRecipientState bccState;
+  final PrefixRecipientState replyToState;
   final bool? isInitial;
   final FocusNode? focusNode;
   final FocusNode? focusNodeKeyboard;
@@ -76,6 +77,7 @@ class RecipientComposerWidget extends StatefulWidget {
     @visibleForTesting this.isTestingForWeb = false,
     this.ccState = PrefixRecipientState.disabled,
     this.bccState = PrefixRecipientState.disabled,
+    this.replyToState = PrefixRecipientState.disabled,
     this.fromState = PrefixRecipientState.disabled,
     this.isInitial,
     this.controller,
@@ -353,6 +355,16 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                     margin: RecipientComposerWidgetStyle.recipientMargin,
                     onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.bcc),
                   ),
+                if (widget.replyToState == PrefixRecipientState.disabled)
+                  TMailButtonWidget.fromText(
+                    key: Key('prefix_${widget.prefix.name}_recipient_reply_to_button'),
+                    text: AppLocalizations.of(context).reply_to_email_address_prefix,
+                    textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
+                    backgroundColor: Colors.transparent,
+                    padding: RecipientComposerWidgetStyle.prefixButtonPadding,
+                    margin: RecipientComposerWidgetStyle.recipientMargin,
+                    onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.replyTo),
+                  ),
               ]
             else if (PlatformInfo.isMobile)
               TMailButtonWidget.fromIcon(
@@ -395,7 +407,8 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
 
   bool get _isAllRecipientInputEnabled => widget.fromState == PrefixRecipientState.enabled
     && widget.ccState == PrefixRecipientState.enabled
-    && widget.bccState == PrefixRecipientState.enabled;
+    && widget.bccState == PrefixRecipientState.enabled
+    && widget.replyToState == PrefixRecipientState.enabled;
 
   List<EmailAddress> get _collapsedListEmailAddress => _isCollapse
     ? _currentListEmailAddress.sublist(0, 1)

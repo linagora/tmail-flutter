@@ -124,27 +124,27 @@ extension PresentationEmailExtension on PresentationEmail {
     return allEmailAddress.isNotEmpty ? allEmailAddress.join(', ') : '';
   }
 
-  Tuple3<List<EmailAddress>, List<EmailAddress>, List<EmailAddress>> generateRecipientsEmailAddressForComposer({
+  Tuple4<List<EmailAddress>, List<EmailAddress>, List<EmailAddress>, List<EmailAddress>> generateRecipientsEmailAddressForComposer({
     required EmailActionType emailActionType,
     Role? mailboxRole
   }) {
     switch(emailActionType) {
       case EmailActionType.reply:
         if (mailboxRole == PresentationMailbox.roleSent) {
-          return Tuple3(to.asList(), [], []);
+          return Tuple4(to.asList(), [], [], []);
         } else {
           final replyToAddress = replyTo.asList().isNotEmpty ? replyTo.asList() : from.asList();
-          return Tuple3(replyToAddress, [], []);
+          return Tuple4(replyToAddress, [], [], []);
         }
       case EmailActionType.replyAll:
         if (mailboxRole == PresentationMailbox.roleSent) {
-          return Tuple3(to.asList(), cc.asList(), bcc.asList());
+          return Tuple4(to.asList(), cc.asList(), bcc.asList(), []);
         } else {
           final senderReplyToAddress = replyTo.asList().isNotEmpty ? replyTo.asList() : from.asList();
-          return Tuple3(to.asList() + senderReplyToAddress, cc.asList(), bcc.asList());
+          return Tuple4(to.asList() + senderReplyToAddress, cc.asList(), bcc.asList(), []);
         }
       default:
-        return Tuple3(to.asList(), cc.asList(), bcc.asList());
+        return Tuple4(to.asList(), cc.asList(), bcc.asList(), replyTo.asList());
     }
   }
 

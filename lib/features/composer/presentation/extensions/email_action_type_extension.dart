@@ -75,6 +75,7 @@ extension EmailActionTypeExtension on EmailActionType {
         final toEmailAddress = presentationEmail.to.listEmailAddressToString(isFullEmailAddress: true);
         final ccEmailAddress = presentationEmail.cc.listEmailAddressToString(isFullEmailAddress: true);
         final bccEmailAddress = presentationEmail.bcc.listEmailAddressToString(isFullEmailAddress: true);
+        final replyToEmailAddress = presentationEmail.replyTo.listEmailAddressToString(isFullEmailAddress: true);
 
         if (subject.isNotEmpty) {
           headerQuoted = headerQuoted
@@ -111,6 +112,12 @@ extension EmailActionTypeExtension on EmailActionType {
             .append('${AppLocalizations.of(context).bcc_email_address_prefix}: ')
             .append(bccEmailAddress)
             .addNewLineTag();
+        }
+        if (replyToEmailAddress.isNotEmpty) {
+          headerQuoted = headerQuoted
+              .append('${AppLocalizations.of(context).reply_to_email_address_prefix}: ')
+              .append(replyToEmailAddress)
+              .addNewLineTag();
         }
 
         return headerQuoted;
