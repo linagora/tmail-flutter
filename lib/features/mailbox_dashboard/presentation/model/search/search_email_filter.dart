@@ -1,6 +1,7 @@
 import 'package:core/utils/option_param_mixin.dart';
 import 'package:dartz/dartz.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
@@ -107,35 +108,73 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
         : null,
       before: sortOrderType.isScrollByPosition()
         ? null
-        : emailReceiveTimeType.getBeforeDate(endDate, before)
+        : emailReceiveTimeType.getBeforeDate(endDate, before),
+      from: from.length == 1
+        ? from.first
+        : null,
+      notKeyword: notKeyword.length == 1
+        ? notKeyword.first
+        : null,
+      hasKeyword: hasKeyword.length == 1
+        ? hasKeyword.first
+        : null,
     );
 
     final listEmailCondition = {
       if (emailEmailFilterConditionShared.hasCondition)
         emailEmailFilterConditionShared,
       if (to.isNotEmpty)
-        LogicFilterOperator(
-            Operator.AND,
-            to.map((e) => EmailFilterCondition(to: e)).toSet()),
-      if (from.isNotEmpty)
-        LogicFilterOperator(
-            Operator.AND,
-            from.map((e) => EmailFilterCondition(from: e)).toSet()),
-      if (notKeyword.isNotEmpty)
-        LogicFilterOperator(
-          Operator.NOT,
-          notKeyword.map((e) => EmailFilterCondition(text: e)).toSet()),
-      if (hasKeyword.isNotEmpty)
+        ..._generateFilterFromToField(),
+      if (from.length > 1)
         LogicFilterOperator(
           Operator.AND,
-          hasKeyword.map((e) => EmailFilterCondition(hasKeyword: e)).toSet()),
+          from.map((e) => EmailFilterCondition(from: e)).toSet(),
+        ),
+      if (notKeyword.length > 1)
+        LogicFilterOperator(
+          Operator.NOT,
+          notKeyword.map((e) => EmailFilterCondition(text: e)).toSet(),
+        ),
+      if (hasKeyword.length > 1)
+        LogicFilterOperator(
+          Operator.AND,
+          hasKeyword.map((e) => EmailFilterCondition(hasKeyword: e)).toSet(),
+        ),
       if (moreFilterCondition != null && moreFilterCondition.hasCondition)
         moreFilterCondition
     };
 
-    return listEmailCondition.isNotEmpty
-      ? LogicFilterOperator(Operator.AND, listEmailCondition)
-      : null;
+    if (listEmailCondition.isEmpty) {
+      return null;
+    } else if (listEmailCondition.length == 1) {
+      return listEmailCondition.first;
+    } else {
+      return LogicFilterOperator(Operator.AND, listEmailCondition);
+    }
+  }
+
+  @visibleForTesting
+  List<Filter> generateFilterFromToField() => _generateFilterFromToField();
+
+  List<Filter> _generateFilterFromToField() {
+    if (to.length == 1) {
+      return [
+        _generateFilterFromAValueOfToField(to.first),
+      ];
+    }
+
+    return to.map(_generateFilterFromAValueOfToField).toList();
+  }
+
+  Filter _generateFilterFromAValueOfToField(String value) {
+    return LogicFilterOperator(
+      Operator.OR,
+      {
+        EmailFilterCondition(to: value),
+        EmailFilterCondition(cc: value),
+        EmailFilterCondition(bcc: value),
+      },
+    );
   }
 
   Set<String> getContactApplied(PrefixEmailAddress prefixEmailAddress) {
