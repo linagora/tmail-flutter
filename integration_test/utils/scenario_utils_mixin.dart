@@ -58,6 +58,7 @@ mixin ScenarioUtilsMixin {
           toRecipients: {EmailAddress(null, provisioningEmail.toEmail)},
           ccRecipients: {},
           bccRecipients: {},
+          replyToRecipients: {},
           outboxMailboxId: mailboxDashBoardController.outboxMailbox?.mailboxId,
           sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
           identity: identity,

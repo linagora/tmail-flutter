@@ -14,6 +14,8 @@ extension PrefixEmailAddressExtension on PrefixEmailAddress {
         return AppLocalizations.of(context).cc_email_address_prefix;
       case PrefixEmailAddress.bcc:
         return AppLocalizations.of(context).bcc_email_address_prefix;
+      case PrefixEmailAddress.replyTo:
+        return AppLocalizations.of(context).reply_to_email_address_prefix;
       case PrefixEmailAddress.from:
         return AppLocalizations.of(context).from_email_address_prefix;
     }
@@ -27,6 +29,8 @@ extension PrefixEmailAddressExtension on PrefixEmailAddress {
         return email.cc?.toList() ?? List.empty();
       case PrefixEmailAddress.bcc:
         return email.bcc?.toList() ?? List.empty();
+      case PrefixEmailAddress.replyTo:
+        return email.replyTo?.toList() ?? List.empty();
       case PrefixEmailAddress.from:
         return email.from?.toList() ?? List.empty();
     }

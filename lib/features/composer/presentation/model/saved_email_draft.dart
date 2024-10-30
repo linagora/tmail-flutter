@@ -9,6 +9,7 @@ class SavedEmailDraft with EquatableMixin {
   final Set<EmailAddress> toRecipients;
   final Set<EmailAddress> ccRecipients;
   final Set<EmailAddress> bccRecipients;
+  final Set<EmailAddress> replyToRecipients;
   final List<Attachment> attachments;
   final Identity? identity;
   final bool hasReadReceipt;
@@ -19,6 +20,7 @@ class SavedEmailDraft with EquatableMixin {
     required this.toRecipients,
     required this.ccRecipients,
     required this.bccRecipients,
+    required this.replyToRecipients,
     required this.attachments,
     required this.identity,
     required this.hasReadReceipt,
@@ -31,6 +33,7 @@ class SavedEmailDraft with EquatableMixin {
       toRecipients: {},
       ccRecipients: {},
       bccRecipients: {},
+      replyToRecipients: {},
       attachments: [],
       identity: null,
       hasReadReceipt: false,
@@ -45,6 +48,7 @@ class SavedEmailDraft with EquatableMixin {
     {0: toRecipients},
     {1: ccRecipients},
     {2: bccRecipients},
+    {3: replyToRecipients},
     attachments,
     identity,
     hasReadReceipt

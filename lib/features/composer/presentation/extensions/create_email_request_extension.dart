@@ -39,7 +39,9 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
   }
 
   Set<EmailAddress> createReplyToRecipients() {
-    if (identity?.replyTo?.isNotEmpty == true) {
+    if (replyToRecipients.isNotEmpty) {
+      return replyToRecipients.toSet();
+    } else if (identity?.replyTo?.isNotEmpty == true) {
       return identity!.replyTo!.toSet();
     } else {
       return { EmailAddress(null, session.getOwnEmailAddress()) };

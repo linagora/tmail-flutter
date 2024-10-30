@@ -47,6 +47,7 @@ void main() {
         toRecipients: {},
         ccRecipients: {},
         bccRecipients: {},
+        replyToRecipients: {},
         draftsEmailId: EmailId(Id('some-id'))
       );
       when(composerRepository.generateEmail(any, withIdentityHeader: anyNamed('withIdentityHeader')))
@@ -85,6 +86,7 @@ void main() {
         toRecipients: {},
         ccRecipients: {},
         bccRecipients: {},
+        replyToRecipients: {},
       );
       when(composerRepository.generateEmail(any, withIdentityHeader: anyNamed('withIdentityHeader')))
         .thenAnswer((_) async => Email());

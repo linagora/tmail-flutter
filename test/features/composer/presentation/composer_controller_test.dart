@@ -306,6 +306,7 @@ void main() {
       final toRecipient = EmailAddress('to', 'to@linagora.com');
       final ccRecipient = EmailAddress('cc', 'cc@linagora.com');
       final bccRecipient = EmailAddress('bcc', 'bcc@linagora.com');
+      final replyToRecipient = EmailAddress('replyTo', 'replyTo@linagora.com');
       final identity = Identity();
       final attachment = Attachment();
       const alwaysReadReceiptEnabled = true;
@@ -331,6 +332,7 @@ void main() {
           composerController?.listToEmailAddress = [toRecipient];
           composerController?.listCcEmailAddress = [ccRecipient];
           composerController?.listBccEmailAddress = [bccRecipient];
+          composerController?.listReplyToEmailAddress = [replyToRecipient];
           composerController?.identitySelected.value = identity;
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
           final state = GetAlwaysReadReceiptSettingSuccess(
@@ -342,6 +344,7 @@ void main() {
             toRecipients: {toRecipient},
             ccRecipients: {ccRecipient},
             bccRecipients: {bccRecipient},
+            replyToRecipients: {replyToRecipient},
             identity: identity,
             attachments: [attachment],
             hasReadReceipt: alwaysReadReceiptEnabled
@@ -370,6 +373,7 @@ void main() {
           composerController?.listToEmailAddress = [toRecipient];
           composerController?.listCcEmailAddress = [ccRecipient];
           composerController?.listBccEmailAddress = [bccRecipient];
+          composerController?.listReplyToEmailAddress = [replyToRecipient];
           composerController?.identitySelected.value = identity;
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
           final state = GetAlwaysReadReceiptSettingFailure(Exception());
@@ -380,6 +384,7 @@ void main() {
             toRecipients: {toRecipient},
             ccRecipients: {ccRecipient},
             bccRecipients: {bccRecipient},
+            replyToRecipients: {replyToRecipient},
             identity: identity,
             attachments: [attachment],
             hasReadReceipt: false
@@ -407,6 +412,7 @@ void main() {
           composerController?.listToEmailAddress = [toRecipient];
           composerController?.listCcEmailAddress = [ccRecipient];
           composerController?.listBccEmailAddress = [bccRecipient];
+          composerController?.listReplyToEmailAddress = [replyToRecipient];
           final selectedIdentity = Identity(id: IdentityId(Id('alice')));
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
           
@@ -421,6 +427,7 @@ void main() {
             toRecipients: {toRecipient},
             ccRecipients: {ccRecipient},
             bccRecipients: {bccRecipient},
+            replyToRecipients: {replyToRecipient},
             identity: selectedIdentity,
             attachments: [attachment],
             hasReadReceipt: false
@@ -451,6 +458,7 @@ void main() {
           composerController?.listToEmailAddress = [toRecipient];
           composerController?.listCcEmailAddress = [ccRecipient];
           composerController?.listBccEmailAddress = [bccRecipient];
+          composerController?.listReplyToEmailAddress = [replyToRecipient];
           when(mockMailboxDashBoardController.composerArguments).thenReturn(
             ComposerArguments(identities: [identity]));
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
@@ -461,6 +469,7 @@ void main() {
             toRecipients: {toRecipient},
             ccRecipients: {ccRecipient},
             bccRecipients: {bccRecipient},
+            replyToRecipients: {replyToRecipient},
             identity: identity,
             attachments: [attachment],
             hasReadReceipt: false
@@ -491,6 +500,7 @@ void main() {
           composerController?.listToEmailAddress = [toRecipient];
           composerController?.listCcEmailAddress = [ccRecipient];
           composerController?.listBccEmailAddress = [bccRecipient];
+          composerController?.listReplyToEmailAddress = [replyToRecipient];
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
 
           final selectedIdentity = Identity(
@@ -508,6 +518,7 @@ void main() {
             toRecipients: {toRecipient},
             ccRecipients: {ccRecipient},
             bccRecipients: {bccRecipient},
+            replyToRecipients: {replyToRecipient},
             identity: selectedIdentity,
             attachments: [attachment],
             hasReadReceipt: false
@@ -538,6 +549,7 @@ void main() {
           composerController?.listToEmailAddress = [toRecipient];
           composerController?.listCcEmailAddress = [ccRecipient];
           composerController?.listBccEmailAddress = [bccRecipient];
+          composerController?.listReplyToEmailAddress = [replyToRecipient];
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
 
           final identity = Identity(
@@ -555,6 +567,7 @@ void main() {
             toRecipients: {toRecipient},
             ccRecipients: {ccRecipient},
             bccRecipients: {bccRecipient},
+            replyToRecipients: {replyToRecipient},
             identity: identity,
             attachments: [attachment],
             hasReadReceipt: false
@@ -594,6 +607,7 @@ void main() {
             composerController?.listToEmailAddress = [toRecipient];
             composerController?.listCcEmailAddress = [ccRecipient];
             composerController?.listBccEmailAddress = [bccRecipient];
+            composerController?.listReplyToEmailAddress = [replyToRecipient];
             when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
 
             final selectedIdentity = Identity(id: IdentityId(Id('alice')));
@@ -612,6 +626,7 @@ void main() {
               toRecipients: {toRecipient},
               ccRecipients: {ccRecipient},
               bccRecipients: {bccRecipient},
+              replyToRecipients: {replyToRecipient},
               identity: selectedIdentity,
               attachments: [attachment],
               hasReadReceipt: false
@@ -665,6 +680,7 @@ void main() {
             composerController?.listToEmailAddress = [toRecipient];
             composerController?.listCcEmailAddress = [ccRecipient];
             composerController?.listBccEmailAddress = [bccRecipient];
+            composerController?.listReplyToEmailAddress = [replyToRecipient];
             when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
 
             final selectedIdentity = Identity(id: IdentityId(Id('alice')));
@@ -683,6 +699,7 @@ void main() {
               toRecipients: {toRecipient},
               ccRecipients: {ccRecipient},
               bccRecipients: {bccRecipient},
+              replyToRecipients: {replyToRecipient},
               identity: selectedIdentity,
               attachments: [attachment],
               hasReadReceipt: false
@@ -735,6 +752,7 @@ void main() {
           composerController?.listToEmailAddress = [toRecipient];
           composerController?.listCcEmailAddress = [ccRecipient];
           composerController?.listBccEmailAddress = [bccRecipient];
+          composerController?.listReplyToEmailAddress = [replyToRecipient];
           composerController?.identitySelected.value = identity;
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
 
@@ -748,6 +766,7 @@ void main() {
             toRecipients: {toRecipient},
             ccRecipients: {ccRecipient},
             bccRecipients: {bccRecipient},
+            replyToRecipients: {replyToRecipient},
             identity: identity,
             attachments: [attachment],
             hasReadReceipt: alwaysReadReceiptEnabled
@@ -776,6 +795,7 @@ void main() {
           composerController?.listToEmailAddress = [toRecipient];
           composerController?.listCcEmailAddress = [ccRecipient];
           composerController?.listBccEmailAddress = [bccRecipient];
+          composerController?.listReplyToEmailAddress = [replyToRecipient];
           composerController?.identitySelected.value = identity;
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
 
@@ -787,6 +807,7 @@ void main() {
             toRecipients: {toRecipient},
             ccRecipients: {ccRecipient},
             bccRecipients: {bccRecipient},
+            replyToRecipients: {replyToRecipient},
             identity: identity,
             attachments: [attachment],
             hasReadReceipt: false
@@ -823,6 +844,7 @@ void main() {
                 to: {toRecipient},
                 cc: {ccRecipient},
                 bcc: {bccRecipient},
+                replyTo: {replyToRecipient},
                 mailboxContain: PresentationMailbox(
                   MailboxId(Id('some-mailbox-id')),
                   role: PresentationMailbox.roleJunk)),
@@ -837,6 +859,7 @@ void main() {
             toRecipients: {toRecipient},
             ccRecipients: {ccRecipient},
             bccRecipients: {bccRecipient},
+            replyToRecipients: {replyToRecipient},
             identity: selectedIdentity,
             attachments: [attachment],
             hasReadReceipt: false
@@ -876,6 +899,7 @@ void main() {
                 to: {toRecipient},
                 cc: {ccRecipient},
                 bcc: {bccRecipient},
+                replyTo: {replyToRecipient},
                 mailboxContain: PresentationMailbox(
                   MailboxId(Id('some-mailbox-id')),
                   role: PresentationMailbox.roleJunk)),
@@ -889,6 +913,7 @@ void main() {
             toRecipients: {toRecipient},
             ccRecipients: {ccRecipient},
             bccRecipients: {bccRecipient},
+            replyToRecipients: {replyToRecipient},
             identity: identity,
             attachments: [attachment],
             hasReadReceipt: false
@@ -930,6 +955,7 @@ void main() {
                 to: {toRecipient},
                 cc: {ccRecipient},
                 bcc: {bccRecipient},
+                replyTo: {replyToRecipient},
                 mailboxContain: PresentationMailbox(
                   MailboxId(Id('some-mailbox-id')),
                   role: PresentationMailbox.roleJunk)),
@@ -946,6 +972,7 @@ void main() {
             toRecipients: {toRecipient},
             ccRecipients: {ccRecipient},
             bccRecipients: {bccRecipient},
+            replyToRecipients: {replyToRecipient},
             identity: selectedIdentity,
             attachments: [attachment],
             hasReadReceipt: false
@@ -987,6 +1014,7 @@ void main() {
                 to: {toRecipient},
                 cc: {ccRecipient},
                 bcc: {bccRecipient},
+                replyTo: {replyToRecipient},
                 mailboxContain: PresentationMailbox(
                   MailboxId(Id('some-mailbox-id')),
                   role: PresentationMailbox.roleJunk)),));
@@ -1002,6 +1030,7 @@ void main() {
             toRecipients: {toRecipient},
             ccRecipients: {ccRecipient},
             bccRecipients: {bccRecipient},
+            replyToRecipients: {replyToRecipient},
             identity: identity,
             attachments: [attachment],
             hasReadReceipt: false
@@ -1041,6 +1070,7 @@ void main() {
             composerController?.listToEmailAddress = [toRecipient];
             composerController?.listCcEmailAddress = [ccRecipient];
             composerController?.listBccEmailAddress = [bccRecipient];
+            composerController?.listReplyToEmailAddress = [replyToRecipient];
             final selectedIdentity = Identity(id: IdentityId(Id('alice')));
             composerController?.identitySelected.value = selectedIdentity;
             when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
@@ -1060,6 +1090,7 @@ void main() {
               toRecipients: {toRecipient},
               ccRecipients: {ccRecipient},
               bccRecipients: {bccRecipient},
+              replyToRecipients: {replyToRecipient},
               identity: selectedIdentity,
               attachments: [attachment],
               hasReadReceipt: false
@@ -1113,6 +1144,7 @@ void main() {
             composerController?.listToEmailAddress = [toRecipient];
             composerController?.listCcEmailAddress = [ccRecipient];
             composerController?.listBccEmailAddress = [bccRecipient];
+            composerController?.listReplyToEmailAddress = [replyToRecipient];
             final selectedIdentity = Identity(id: IdentityId(Id('alice')));
             composerController?.identitySelected.value = selectedIdentity;
             when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
@@ -1132,6 +1164,7 @@ void main() {
               toRecipients: {toRecipient},
               ccRecipients: {ccRecipient},
               bccRecipients: {bccRecipient},
+              replyToRecipients: {replyToRecipient},
               identity: selectedIdentity,
               attachments: [attachment],
               hasReadReceipt: false
@@ -1178,6 +1211,7 @@ void main() {
           composerController?.listToEmailAddress = [toRecipient];
           composerController?.listCcEmailAddress = [ccRecipient];
           composerController?.listBccEmailAddress = [bccRecipient];
+          composerController?.listReplyToEmailAddress = [replyToRecipient];
           composerController?.hasRequestReadReceipt.value = alwaysReadReceiptEnabled;
 
           const idenityId = 'some-identity-id';
@@ -1198,6 +1232,7 @@ void main() {
             toRecipients: {toRecipient},
             ccRecipients: {ccRecipient},
             bccRecipients: {bccRecipient},
+            replyToRecipients: {replyToRecipient},
             identity: identity,
             attachments: [attachment],
             hasReadReceipt: alwaysReadReceiptEnabled
@@ -1227,6 +1262,7 @@ void main() {
           composerController?.listToEmailAddress = [toRecipient];
           composerController?.listCcEmailAddress = [ccRecipient];
           composerController?.listBccEmailAddress = [bccRecipient];
+          composerController?.listReplyToEmailAddress = [replyToRecipient];
           composerController?.identitySelected.value = identity;
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
           composerController?.hasRequestReadReceipt.value = alwaysReadReceiptEnabled;
@@ -1237,6 +1273,7 @@ void main() {
             toRecipients: {toRecipient},
             ccRecipients: {ccRecipient},
             bccRecipients: {bccRecipient},
+            replyToRecipients: {replyToRecipient},
             identity: identity,
             attachments: [attachment],
             hasReadReceipt: alwaysReadReceiptEnabled

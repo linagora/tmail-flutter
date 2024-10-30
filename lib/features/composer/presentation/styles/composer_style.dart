@@ -156,10 +156,6 @@ class ComposerStyle {
   }
 
   static double getMaxHeightEmailAddressWidget(BuildContext context, BoxConstraints constraints, ResponsiveUtils responsiveUtils) {
-    if (responsiveUtils.isDesktop(context)) {
-      return constraints.maxHeight > 0 ? constraints.maxHeight * 0.3 : 150.0;
-    } else {
-      return constraints.maxHeight > 0 ? constraints.maxHeight * 0.4 : 150.0;
-    }
+    return constraints.maxHeight > 0 ? constraints.maxHeight * 0.4 : 150.0;
   }
 }
