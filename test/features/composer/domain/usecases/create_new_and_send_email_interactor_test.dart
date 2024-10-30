@@ -38,6 +38,7 @@ void main() {
         toRecipients: {},
         ccRecipients: {},
         bccRecipients: {},
+        replyToRecipients: {},
       );
       when(composerRepository.generateEmail(any, withIdentityHeader: anyNamed('withIdentityHeader')))
         .thenAnswer((_) async => Email());
