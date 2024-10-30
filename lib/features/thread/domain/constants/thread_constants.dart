@@ -28,20 +28,6 @@ class ThreadConstants {
     EmailProperty.mailboxIds,
   });
 
-  static final propertiesQuickSearch = Properties({
-    EmailProperty.id,
-    EmailProperty.blobId,
-    EmailProperty.subject,
-    EmailProperty.from,
-    EmailProperty.to,
-    EmailProperty.keywords,
-    EmailProperty.receivedAt,
-    EmailProperty.sentAt,
-    EmailProperty.preview,
-    EmailProperty.hasAttachment,
-    EmailProperty.mailboxIds,
-  });
-
   static final propertiesGetEmailContent = Properties({
     EmailProperty.bodyValues,
     EmailProperty.htmlBody,

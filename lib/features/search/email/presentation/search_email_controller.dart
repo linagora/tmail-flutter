@@ -349,7 +349,7 @@ class SearchEmailController extends BaseController
           limit: UnsignedInt(5),
           sort: searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
           filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
-          properties: ThreadConstants.propertiesQuickSearch)
+          properties: EmailUtils.getPropertiesForEmailGetMethod(session, accountId))
         .then((result) => result.fold(
             (failure) => <PresentationEmail>[],
             (success) => success is QuickSearchEmailSuccess
