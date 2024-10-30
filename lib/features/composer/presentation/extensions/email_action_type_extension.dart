@@ -75,10 +75,11 @@ extension EmailActionTypeExtension on EmailActionType {
 
         final subject = presentationEmail.subject?.escapeLtGtHtmlString() ?? '';
         final receivedAt = presentationEmail.receivedAt;
-        final fromEmailAddress = presentationEmail.from.toEscapeHtmlStringUseCommaSeparator();
-        final toEmailAddress = presentationEmail.to.toEscapeHtmlStringUseCommaSeparator();
-        final ccEmailAddress = presentationEmail.cc.toEscapeHtmlStringUseCommaSeparator();
-        final bccEmailAddress = presentationEmail.bcc.toEscapeHtmlStringUseCommaSeparator();
+        final fromEmailAddress = presentationEmail.from.listEmailAddressToString(isFullEmailAddress: true);
+        final toEmailAddress = presentationEmail.to.listEmailAddressToString(isFullEmailAddress: true);
+        final ccEmailAddress = presentationEmail.cc.listEmailAddressToString(isFullEmailAddress: true);
+        final bccEmailAddress = presentationEmail.bcc.listEmailAddressToString(isFullEmailAddress: true);
+        final replyToEmailAddress = presentationEmail.replyTo.listEmailAddressToString(isFullEmailAddress: true);
 
         if (subject.isNotEmpty) {
           headerQuoted = headerQuoted
@@ -115,6 +116,12 @@ extension EmailActionTypeExtension on EmailActionType {
             .append('${appLocalizations.bcc_email_address_prefix}: ')
             .append(bccEmailAddress)
             .addNewLineTag();
+        }
+        if (replyToEmailAddress.isNotEmpty) {
+          headerQuoted = headerQuoted
+              .append('${appLocalizations.reply_to_email_address_prefix}: ')
+              .append(replyToEmailAddress)
+              .addNewLineTag();
         }
 
         return headerQuoted;

@@ -23,6 +23,7 @@ class CreateEmailRequest with EquatableMixin {
   final Set<EmailAddress> toRecipients;
   final Set<EmailAddress> ccRecipients;
   final Set<EmailAddress> bccRecipients;
+  final Set<EmailAddress> replyToRecipients;
   final Identity? identity;
   final List<Attachment>? attachments;
   final Map<String, Attachment>? inlineAttachments;
@@ -47,6 +48,7 @@ class CreateEmailRequest with EquatableMixin {
     required this.toRecipients,
     required this.ccRecipients,
     required this.bccRecipients,
+    required this.replyToRecipients,
     this.hasRequestReadReceipt = true,
     this.identity,
     this.attachments,
@@ -74,6 +76,7 @@ class CreateEmailRequest with EquatableMixin {
     toRecipients,
     ccRecipients,
     bccRecipients,
+    replyToRecipients,
     identity,
     hasRequestReadReceipt,
     attachments,

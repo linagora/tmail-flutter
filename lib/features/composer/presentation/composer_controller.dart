@@ -123,11 +123,13 @@ class ComposerController extends BaseController
   final toAddressExpandMode = ExpandMode.EXPAND.obs;
   final ccAddressExpandMode = ExpandMode.EXPAND.obs;
   final bccAddressExpandMode = ExpandMode.EXPAND.obs;
+  final replyToAddressExpandMode = ExpandMode.EXPAND.obs;
   final emailContentsViewState = Rxn<Either<Failure, Success>>();
   final hasRequestReadReceipt = false.obs;
   final fromRecipientState = PrefixRecipientState.disabled.obs;
   final ccRecipientState = PrefixRecipientState.disabled.obs;
   final bccRecipientState = PrefixRecipientState.disabled.obs;
+  final replyToRecipientState = PrefixRecipientState.disabled.obs;
   final identitySelected = Rxn<Identity>();
   final listFromIdentities = RxList<Identity>();
   final isEmailChanged = Rx<bool>(false);
@@ -154,17 +156,20 @@ class ComposerController extends BaseController
   List<EmailAddress> listToEmailAddress = <EmailAddress>[];
   List<EmailAddress> listCcEmailAddress = <EmailAddress>[];
   List<EmailAddress> listBccEmailAddress = <EmailAddress>[];
+  List<EmailAddress> listReplyToEmailAddress = <EmailAddress>[];
   ContactSuggestionSource _contactSuggestionSource = ContactSuggestionSource.tMailContact;
 
   final subjectEmailInputController = TextEditingController();
   final toEmailAddressController = TextEditingController();
   final ccEmailAddressController = TextEditingController();
   final bccEmailAddressController = TextEditingController();
+  final replyToEmailAddressController = TextEditingController();
   final searchIdentitiesInputController = TextEditingController();
 
   final GlobalKey<TagsEditorState> keyToEmailTagEditor = GlobalKey<TagsEditorState>();
   final GlobalKey<TagsEditorState> keyCcEmailTagEditor = GlobalKey<TagsEditorState>();
   final GlobalKey<TagsEditorState> keyBccEmailTagEditor = GlobalKey<TagsEditorState>();
+  final GlobalKey<TagsEditorState> keyReplyToEmailTagEditor = GlobalKey<TagsEditorState>();
   final GlobalKey headerEditorMobileWidgetKey = GlobalKey();
   final GlobalKey<DropdownButton2State> identityDropdownKey = GlobalKey<DropdownButton2State>();
   final double defaultPaddingCoordinateYCursorEditor = 8;
@@ -173,10 +178,12 @@ class ComposerController extends BaseController
   FocusNode? toAddressFocusNode;
   FocusNode? ccAddressFocusNode;
   FocusNode? bccAddressFocusNode;
+  FocusNode? replyToAddressFocusNode;
   FocusNode? searchIdentitiesFocusNode;
   FocusNode? toAddressFocusNodeKeyboard;
   FocusNode? ccAddressFocusNodeKeyboard;
   FocusNode? bccAddressFocusNodeKeyboard;
+  FocusNode? replyToAddressFocusNodeKeyboard;
 
   StreamSubscription<html.Event>? _subscriptionOnDragEnter;
   StreamSubscription<html.Event>? _subscriptionOnDragOver;
@@ -302,18 +309,23 @@ class ComposerController extends BaseController
     ccAddressFocusNode = null;
     bccAddressFocusNode?.dispose();
     bccAddressFocusNode = null;
+    replyToAddressFocusNode?.dispose();
+    replyToAddressFocusNode = null;
     toAddressFocusNodeKeyboard?.dispose();
     toAddressFocusNodeKeyboard = null;
     ccAddressFocusNodeKeyboard?.dispose();
     ccAddressFocusNodeKeyboard = null;
     bccAddressFocusNodeKeyboard?.dispose();
     bccAddressFocusNodeKeyboard = null;
+    replyToAddressFocusNodeKeyboard?.dispose();
+    replyToAddressFocusNodeKeyboard = null;
     searchIdentitiesFocusNode?.dispose();
     searchIdentitiesFocusNode = null;
     subjectEmailInputController.dispose();
     toEmailAddressController.dispose();
     ccEmailAddressController.dispose();
     bccEmailAddressController.dispose();
+    replyToEmailAddressController.dispose();
     uploadInlineImageWorker.dispose();
     dashboardViewStateWorker.dispose();
     scrollController.dispose();
@@ -477,6 +489,7 @@ class ComposerController extends BaseController
       toRecipients: listToEmailAddress.toSet(),
       ccRecipients: listCcEmailAddress.toSet(),
       bccRecipients: listBccEmailAddress.toSet(),
+      replyToRecipients: listReplyToEmailAddress.toSet(),
       hasRequestReadReceipt: hasRequestReadReceipt.value,
       identity: identitySelected.value,
       attachments: uploadController.attachmentsUploaded,
@@ -504,16 +517,21 @@ class ComposerController extends BaseController
     if (bccEmailAddressController.text.isNotEmpty) {
       keyBccEmailTagEditor.currentState?.closeSuggestionBox();
     }
+    if (replyToEmailAddressController.text.isNotEmpty) {
+      keyReplyToEmailTagEditor.currentState?.closeSuggestionBox();
+    }
   }
 
   void createFocusNodeInput() {
     toAddressFocusNode = FocusNode();
     ccAddressFocusNode = FocusNode();
     bccAddressFocusNode = FocusNode();
+    replyToAddressFocusNode = FocusNode();
     searchIdentitiesFocusNode = FocusNode();
     toAddressFocusNodeKeyboard = FocusNode();
     ccAddressFocusNodeKeyboard = FocusNode();
     bccAddressFocusNodeKeyboard = FocusNode();
+    replyToAddressFocusNodeKeyboard = FocusNode();
 
     subjectEmailInputFocusNode = FocusNode(
       onKeyEvent: PlatformInfo.isWeb ? _subjectEmailInputOnKeyListener : null,
@@ -848,7 +866,7 @@ class ComposerController extends BaseController
     listCcEmailAddress = List.from(recipients.value2);
     listBccEmailAddress = List.from(recipients.value3);
 
-    if (listToEmailAddress.isNotEmpty || listCcEmailAddress.isNotEmpty || listBccEmailAddress.isNotEmpty) {
+    if (listToEmailAddress.isNotEmpty || listCcEmailAddress.isNotEmpty || listBccEmailAddress.isNotEmpty || listReplyToEmailAddress.isNotEmpty) {
       isInitialRecipient.value = true;
       toAddressExpandMode.value = ExpandMode.COLLAPSE;
     }
@@ -861,6 +879,11 @@ class ComposerController extends BaseController
     if (listBccEmailAddress.isNotEmpty) {
       bccRecipientState.value = PrefixRecipientState.enabled;
       bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+    }
+
+    if (listReplyToEmailAddress.isNotEmpty) {
+      replyToRecipientState.value = PrefixRecipientState.enabled;
+      replyToAddressExpandMode.value = ExpandMode.COLLAPSE;
     }
 
     _updateStatusEmailSendButton();
@@ -880,6 +903,9 @@ class ComposerController extends BaseController
       case PrefixEmailAddress.bcc:
         listBccEmailAddress = List.from(newListEmailAddress);
         break;
+      case PrefixEmailAddress.replyTo:
+        listReplyToEmailAddress = List.from(newListEmailAddress);
+        break;
       default:
         break;
     }
@@ -888,8 +914,9 @@ class ComposerController extends BaseController
 
   void _updateStatusEmailSendButton() {
     if (listToEmailAddress.isNotEmpty
+        || listCcEmailAddress.isNotEmpty
         || listBccEmailAddress.isNotEmpty
-        || listCcEmailAddress.isNotEmpty) {
+        || listReplyToEmailAddress.isNotEmpty) {
       isEnableEmailSendButton.value = true;
     } else {
       isEnableEmailSendButton.value = false;
@@ -907,7 +934,8 @@ class ComposerController extends BaseController
 
     if (toEmailAddressController.text.isNotEmpty
         || ccEmailAddressController.text.isNotEmpty
-        || bccEmailAddressController.text.isNotEmpty) {
+        || bccEmailAddressController.text.isNotEmpty
+        || replyToEmailAddressController.text.isNotEmpty) {
       _collapseAllRecipient();
       _autoCreateEmailTag();
     }
@@ -924,7 +952,7 @@ class ComposerController extends BaseController
       return;
     }
 
-    final allListEmailAddress = listToEmailAddress + listCcEmailAddress + listBccEmailAddress;
+    final allListEmailAddress = listToEmailAddress + listCcEmailAddress + listBccEmailAddress + listReplyToEmailAddress;
     final listEmailAddressInvalid = allListEmailAddress
         .where((emailAddress) => !EmailUtils.isEmailAddressValid(emailAddress.emailAddress))
         .toList();
@@ -936,6 +964,7 @@ class ComposerController extends BaseController
           toAddressExpandMode.value = ExpandMode.EXPAND;
           ccAddressExpandMode.value = ExpandMode.EXPAND;
           bccAddressExpandMode.value = ExpandMode.EXPAND;
+          replyToAddressExpandMode.value = ExpandMode.EXPAND;
         },
         showAsBottomSheet: true,
         title: AppLocalizations.of(context).sending_failed,
@@ -1055,6 +1084,7 @@ class ComposerController extends BaseController
           toRecipients: listToEmailAddress.toSet(),
           ccRecipients: listCcEmailAddress.toSet(),
           bccRecipients: listBccEmailAddress.toSet(),
+          replyToRecipients: listReplyToEmailAddress.toSet(),
           hasRequestReadReceipt: hasRequestReadReceipt.value,
           identity: identitySelected.value,
           attachments: uploadController.attachmentsUploaded,
@@ -1273,6 +1303,7 @@ class ComposerController extends BaseController
       toRecipients: listToEmailAddress.toSet(),
       ccRecipients: listCcEmailAddress.toSet(),
       bccRecipients: listBccEmailAddress.toSet(),
+      replyToRecipients: listReplyToEmailAddress.toSet(),
       identity: identitySelected.value,
       attachments: uploadController.attachmentsUploaded,
       hasReadReceipt: hasRequestReadReceipt.value,
@@ -1557,6 +1588,9 @@ class ComposerController extends BaseController
       case PrefixEmailAddress.bcc:
         bccRecipientState.value = PrefixRecipientState.enabled;
         break;
+      case PrefixEmailAddress.replyTo:
+        replyToRecipientState.value = PrefixRecipientState.enabled;
+        break;
       default:
         break;
     }
@@ -1575,6 +1609,11 @@ class ComposerController extends BaseController
         bccAddressFocusNode = FocusNode();
         bccEmailAddressController.clear();
         break;
+      case PrefixEmailAddress.replyTo:
+        replyToRecipientState.value = PrefixRecipientState.disabled;
+        replyToAddressFocusNode = FocusNode();
+        replyToEmailAddressController.clear();
+        break;
       default:
         break;
     }
@@ -1584,12 +1623,14 @@ class ComposerController extends BaseController
     toAddressExpandMode.value = ExpandMode.COLLAPSE;
     ccAddressExpandMode.value = ExpandMode.COLLAPSE;
     bccAddressExpandMode.value = ExpandMode.COLLAPSE;
+    replyToAddressExpandMode.value = ExpandMode.COLLAPSE;
   }
 
   void _autoCreateEmailTag() {
     final inputToEmail = toEmailAddressController.text;
     final inputCcEmail = ccEmailAddressController.text;
     final inputBccEmail = bccEmailAddressController.text;
+    final inputReplyToEmail = replyToEmailAddressController.text;
     log('ComposerController::_autoCreateEmailTag:inputToEmail = $inputToEmail | inputCcEmail = $inputCcEmail | inputBccEmail = $inputBccEmail');
     if (inputToEmail.trim().isNotEmpty) {
       _autoCreateEmailTagForRecipientField(
@@ -1614,6 +1655,9 @@ class ComposerController extends BaseController
         listEmailAddress: listBccEmailAddress,
         keyEmailTagEditor: keyBccEmailTagEditor,
       );
+    }
+    if (inputReplyToEmail.isNotEmpty) {
+      _autoCreateReplyToEmailTag(inputReplyToEmail);
     }
   }
 
@@ -1673,6 +1717,20 @@ class ComposerController extends BaseController
     }
   }
 
+  void _autoCreateReplyToEmailTag(String inputEmail) {
+    if (!_isDuplicatedRecipient(inputEmail, listReplyToEmailAddress)) {
+      final emailAddress = EmailAddress(null, inputEmail);
+      listReplyToEmailAddress.add(emailAddress);
+      isInitialRecipient.value = true;
+      isInitialRecipient.refresh();
+      _updateStatusEmailSendButton();
+    }
+    keyReplyToEmailTagEditor.currentState?.resetTextField();
+    Future.delayed(const Duration(milliseconds: 300), () {
+      keyReplyToEmailTagEditor.currentState?.closeSuggestionBox();
+    });
+  }
+
   void _closeSuggestionBox() {
     if (toEmailAddressController.text.isEmpty) {
       keyToEmailTagEditor.currentState?.closeSuggestionBox();
@@ -1682,6 +1740,9 @@ class ComposerController extends BaseController
     }
     if (bccEmailAddressController.text.isEmpty) {
       keyBccEmailTagEditor.currentState?.closeSuggestionBox();
+    }
+    if (replyToEmailAddressController.text.isEmpty) {
+      keyReplyToEmailTagEditor.currentState?.closeSuggestionBox();
     }
   }
 
@@ -1699,6 +1760,10 @@ class ComposerController extends BaseController
         bccAddressExpandMode.value = ExpandMode.EXPAND;
         bccAddressFocusNode?.requestFocus();
         break;
+      case PrefixEmailAddress.replyTo:
+        replyToAddressExpandMode.value = ExpandMode.EXPAND;
+        replyToAddressFocusNode?.requestFocus();
+        break;
       default:
         break;
     }
@@ -1715,6 +1780,9 @@ class ComposerController extends BaseController
           break;
         case PrefixEmailAddress.bcc:
           bccAddressExpandMode.value = ExpandMode.EXPAND;
+          break;
+        case PrefixEmailAddress.replyTo:
+          replyToAddressExpandMode.value = ExpandMode.EXPAND;
           break;
         default:
           break;
@@ -1761,6 +1829,13 @@ class ComposerController extends BaseController
               listEmailAddress: listBccEmailAddress,
               keyEmailTagEditor: keyBccEmailTagEditor,
             );
+          }
+          break;
+        case PrefixEmailAddress.replyTo:
+          replyToAddressExpandMode.value = ExpandMode.COLLAPSE;
+          final inputReplyToEmail = replyToEmailAddressController.text;
+          if (inputReplyToEmail.isNotEmpty) {
+            _autoCreateReplyToEmailTag(inputReplyToEmail);
           }
           break;
         default:
@@ -2000,12 +2075,14 @@ class ComposerController extends BaseController
       return toAddressFocusNode?.hasFocus == true ||
         ccAddressFocusNode?.hasFocus == true ||
         bccAddressFocusNode?.hasFocus == true ||
+        replyToAddressFocusNode?.hasFocus == true ||
         subjectEmailInputFocusNode?.hasFocus == true;
     } else if (PlatformInfo.isMobile) {
       final isEditorFocused = (await richTextMobileTabletController?.isEditorFocused) ?? false;
       return toAddressFocusNode?.hasFocus == true ||
         ccAddressFocusNode?.hasFocus == true ||
         bccAddressFocusNode?.hasFocus == true ||
+        replyToAddressFocusNode?.hasFocus == true ||
         subjectEmailInputFocusNode?.hasFocus == true ||
         isEditorFocused;
     }
@@ -2049,6 +2126,8 @@ class ComposerController extends BaseController
       return ccAddressFocusNode;
     } else if (bccRecipientState.value == PrefixRecipientState.enabled) {
       return bccAddressFocusNode;
+    } else if (replyToRecipientState.value == PrefixRecipientState.enabled) {
+      return replyToAddressFocusNode;
     } else {
       return subjectEmailInputFocusNode;
     }
@@ -2057,6 +2136,16 @@ class ComposerController extends BaseController
   FocusNode? getNextFocusOfCcEmailAddress() {
     if (bccRecipientState.value == PrefixRecipientState.enabled) {
       return bccAddressFocusNode;
+    } else if (replyToRecipientState.value == PrefixRecipientState.enabled) {
+      return replyToAddressFocusNode;
+    } else {
+      return subjectEmailInputFocusNode;
+    }
+  }
+
+  FocusNode? getNextFocusOfBccEmailAddress() {
+    if (replyToRecipientState.value == PrefixRecipientState.enabled) {
+      return replyToAddressFocusNode;
     } else {
       return subjectEmailInputFocusNode;
     }
@@ -2111,6 +2200,10 @@ class ComposerController extends BaseController
       case PrefixEmailAddress.bcc:
         listBccEmailAddress.remove(draggableEmailAddress.emailAddress);
         bccAddressExpandMode.value = ExpandMode.EXPAND;
+        break;
+      case PrefixEmailAddress.replyTo:
+        listReplyToEmailAddress.remove(draggableEmailAddress.emailAddress);
+        replyToAddressExpandMode.value = ExpandMode.EXPAND;
         break;
       default:
         break;
@@ -2377,6 +2470,7 @@ class ComposerController extends BaseController
           toRecipients: listToEmailAddress.toSet(),
           ccRecipients: listCcEmailAddress.toSet(),
           bccRecipients: listBccEmailAddress.toSet(),
+          replyToRecipients: listReplyToEmailAddress.toSet(),
           hasRequestReadReceipt: hasRequestReadReceipt.value,
           identity: identitySelected.value,
           attachments: uploadController.attachmentsUploaded,
@@ -2458,6 +2552,7 @@ class ComposerController extends BaseController
     fromRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
     ccRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
     bccRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
+    replyToRecipientState.value = isEnabled ? PrefixRecipientState.disabled : PrefixRecipientState.enabled;
   }
 
   void _handleGetEmailContentFailure(GetEmailContentFailure failure) {

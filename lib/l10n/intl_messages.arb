@@ -186,6 +186,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "reply_to_email_address_prefix": "Reply to",
+  "@reply_to_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "cc_email_address_prefix": "Cc",
   "@cc_email_address_prefix": {
     "type": "text",
