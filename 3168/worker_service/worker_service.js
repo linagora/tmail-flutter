@@ -24,16 +24,7 @@ function fetchServiceWorker() {
     // Wait for registration to finish before dropping the <script>tag.
     // Otherwise, the browser will load the script multiple times,
     // potentially different versions.
-    navigator.serviceWorker.register('web-sockets-worker.js').then(serviceWorkerRegistration => {
-      console.info('[TwakeMail] fetchServiceWorker(): Service worker web socket was registered.');
-    }).catch(error => {
-      console.error(
-        '[TwakeMail] fetchServiceWorker(): An error occurred while registering the service worker web socket.'
-        );
-      console.error(error);
-    });
-    var serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
-    navigator.serviceWorker.register(serviceWorkerUrl)
+    navigator.serviceWorker.register('web-sockets-worker.js')
       .then((reg) => {
         function waitForActivation(serviceWorker) {
           serviceWorker.addEventListener('statechange', () => {
@@ -47,12 +38,6 @@ function fetchServiceWorker() {
           // No active web worker and we have installed or are installing
           // one for the first time. Simply wait for it to activate.
           waitForActivation(reg.installing || reg.waiting);
-        } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
-          // When the app updates the serviceWorkerVersion changes, so we
-          // need to ask the service worker to update.
-          console.log('[TwakeMail] fetchServiceWorker(): New service worker available.');
-          reg.update();
-          waitForActivation(reg.installing);
         } else {
           // Existing service worker is still good.
           console.log('[TwakeMail] fetchServiceWorker(): Loading app from service worker.');

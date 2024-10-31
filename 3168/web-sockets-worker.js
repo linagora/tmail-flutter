@@ -1,3 +1,5 @@
+importScripts("flutter_service_worker.js?v=null");
+
 var webSocket;
 const broadcast = new BroadcastChannel("background-message");
 var intervalId;
