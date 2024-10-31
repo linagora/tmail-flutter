@@ -14,9 +14,22 @@ import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_emails_response.dart';
 
 abstract class ThreadDataSource {
   Future<EmailsResponse> getAllEmail(
+    Session session,
+    AccountId accountId,
+    {
+      UnsignedInt? limit,
+      int? position,
+      Set<Comparator>? sort,
+      Filter? filter,
+      Properties? properties
+    }
+  );
+
+  Future<SearchEmailsResponse> searchEmails(
     Session session,
     AccountId accountId,
     {
