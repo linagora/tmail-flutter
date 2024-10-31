@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-10-29T16:13:26.917296",
+  "@@last_modified": "2024-10-31T13:18:32.336494",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4042,7 +4042,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "descriptionWelcomeTo": "The new Open Source standard for secure professional e-mail",
+  "descriptionWelcomeTo": "The new Open Source standard for\n secure professional e-mail",
   "@descriptionWelcomeTo": {
     "type": "text",
     "placeholders_order": [],
@@ -4062,6 +4062,12 @@
   },
   "sigInSaasFailed": "Login failed. Please check again.",
   "@sigInSaasFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createTwakeIdFailed": "Create Twake Id failed. Please check again.",
+  "@createTwakeIdFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

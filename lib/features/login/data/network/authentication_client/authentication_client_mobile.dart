@@ -1,6 +1,7 @@
 
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:get/get.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/response/oidc_discovery_response.dart';
@@ -9,6 +10,7 @@ import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/authentication_token_extension.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/token_response_extension.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
+import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 
@@ -95,6 +97,32 @@ class AuthenticationClientMobile implements AuthenticationClientBase {
   @override
   Future<String> getAuthenticationInfo() {
     return Future.value('');
+  }
+
+  @override
+  Future<TokenOIDC> signInTwakeWorkplace(OIDCConfiguration oidcConfiguration) async {
+    final uri = await FlutterWebAuth2.authenticate(
+      url: oidcConfiguration.singInUrl,
+      callbackUrlScheme: OIDCConstant.twakeWorkplaceUrlScheme,
+      options: const FlutterWebAuth2Options(
+        intentFlags: ephemeralIntentFlags,
+      ),
+    );
+    log('AuthenticationClientMobile::signInTwakeWorkplace():Uri = $uri');
+    return TokenOIDC.fromUri(uri);
+  }
+
+  @override
+  Future<TokenOIDC> signUpTwakeWorkplace(OIDCConfiguration oidcConfiguration) async {
+    final uri = await FlutterWebAuth2.authenticate(
+      url: oidcConfiguration.signUpUrl,
+      callbackUrlScheme: OIDCConstant.twakeWorkplaceUrlScheme,
+      options: const FlutterWebAuth2Options(
+        intentFlags: ephemeralIntentFlags,
+      ),
+    );
+    log('AuthenticationClientMobile::signUpTwakeWorkplace():Uri = $uri');
+    return TokenOIDC.fromUri(uri);
   }
 }
 

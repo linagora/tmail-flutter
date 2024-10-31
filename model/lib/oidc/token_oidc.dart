@@ -2,6 +2,7 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:model/exceptions/token_oidc_exceptions.dart';
 import 'package:model/oidc/converter/token_id_converter.dart';
 import 'package:model/oidc/token_id.dart';
 
@@ -26,6 +27,38 @@ class TokenOIDC with EquatableMixin {
   factory TokenOIDC.fromJson(Map<String, dynamic> json) => _$TokenOIDCFromJson(json);
 
   Map<String, dynamic> toJson() => _$TokenOIDCToJson(this);
+
+  factory TokenOIDC.fromUri(String uriString) {
+    final uri = Uri.parse(uriString);
+    final queryParams = uri.queryParameters;
+
+    final accessToken = queryParams['access_token'];
+    if (accessToken == null || accessToken.isEmpty) {
+      throw AccessTokenIsNullException();
+    }
+
+    final refreshToken = queryParams['refresh_token'];
+    if (refreshToken == null || refreshToken.isEmpty) {
+      throw RefreshTokenIsNullException();
+    }
+
+    final idToken = queryParams['id_token'];
+    if (idToken == null || idToken.isEmpty) {
+      throw TokenIdIsNullException();
+    }
+
+    final expiresIn = queryParams['expires_in'];
+    if (expiresIn == null || expiresIn.isEmpty) {
+      throw ExpiresTimeIsNullException();
+    }
+
+    return TokenOIDC(
+      accessToken,
+      TokenId(idToken),
+      refreshToken,
+      expiredTime: DateTime.now().add(Duration(seconds: int.parse(expiresIn))),
+    );
+  }
 
   @override
   List<Object?> get props => [token, tokenId, expiredTime, refreshToken];

@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/oidc/oidc_configuration.dart';
+import 'package:model/oidc/token_oidc.dart';
 import 'package:tip_dialog/tip_dialog.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
@@ -11,8 +12,10 @@ import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.d
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
-import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_saas_state.dart';
-import 'package:tmail_ui_user/features/starting_page/domain/usecase/sign_in_saas_interactor.dart';
+import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_twake_workplace_state.dart';
+import 'package:tmail_ui_user/features/starting_page/domain/state/sign_up_twake_workplace_state.dart';
+import 'package:tmail_ui_user/features/starting_page/domain/usecase/sign_in_twake_workplace_interactor.dart';
+import 'package:tmail_ui_user/features/starting_page/domain/usecase/sign_up_twake_workplace_interactor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -22,9 +25,13 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class TwakeWelcomeController extends ReloadableController {
 
-  final SignInSaasInteractor _signInSaasInteractor;
+  final SignInTwakeWorkplaceInteractor _signInTwakeWorkplaceInteractor;
+  final SignUpTwakeWorkplaceInteractor _signUpTwakeWorkplaceInteractor;
 
-  TwakeWelcomeController(this._signInSaasInteractor);
+  TwakeWelcomeController(
+    this._signInTwakeWorkplaceInteractor,
+    this._signUpTwakeWorkplaceInteractor,
+  );
 
   void handleUseCompanyServer() {
     popAndPush(
@@ -40,22 +47,47 @@ class TwakeWelcomeController extends ReloadableController {
     TipDialogHelper.loading(AppLocalizations.of(context).loadingPleaseWait);
 
     if (AppConfig.saasServerUrl.isEmpty) {
-      consumeState(Stream.value(Left(SignInSaasFailure(CanNotFoundSaasServerUrl()))));
+      consumeState(Stream.value(Left(SignInTwakeWorkplaceFailure(CanNotFoundSaasServerUrl()))));
       return;
     }
 
     final baseUri = Uri.tryParse(AppConfig.saasServerUrl);
 
     if (baseUri == null) {
-      consumeState(Stream.value(Left(SignInSaasFailure(SaasServerUriIsNull()))));
+      consumeState(Stream.value(Left(SignInTwakeWorkplaceFailure(SaasServerUriIsNull()))));
       return;
     }
 
-    consumeState(_signInSaasInteractor.execute(
+    consumeState(_signInTwakeWorkplaceInteractor.execute(
       baseUri: baseUri,
       oidcConfiguration: OIDCConfiguration(
         authority: AppConfig.registrationUrl,
-        clientId: OIDCConstant.saasClientId,
+        clientId: OIDCConstant.clientId,
+        scopes: AppConfig.oidcScopes
+      )
+    ));
+  }
+
+  void onSignUpTwakeWorkplace(BuildContext context) {
+    TipDialogHelper.loading(AppLocalizations.of(context).loadingPleaseWait);
+
+    if (AppConfig.saasServerUrl.isEmpty) {
+      consumeState(Stream.value(Left(SignUpTwakeWorkplaceFailure(CanNotFoundSaasServerUrl()))));
+      return;
+    }
+
+    final baseUri = Uri.tryParse(AppConfig.saasServerUrl);
+
+    if (baseUri == null) {
+      consumeState(Stream.value(Left(SignUpTwakeWorkplaceFailure(SaasServerUriIsNull()))));
+      return;
+    }
+
+    consumeState(_signUpTwakeWorkplaceInteractor.execute(
+      baseUri: baseUri,
+      oidcConfiguration: OIDCConfiguration(
+        authority: AppConfig.registrationUrl,
+        clientId: OIDCConstant.clientId,
         scopes: AppConfig.oidcScopes
       )
     ));
@@ -63,8 +95,18 @@ class TwakeWelcomeController extends ReloadableController {
 
   @override
   void handleSuccessViewState(Success success) {
-    if (success is SignInSaasSuccess) {
-      _handleSignInSaasSuccess(success);
+    if (success is SignInTwakeWorkplaceSuccess) {
+      _synchronizeTokenAndGetSession(
+        baseUri: success.baseUri,
+        tokenOIDC: success.tokenOIDC,
+        oidcConfiguration: success.oidcConfiguration,
+      );
+    } else if (success is SignUpTwakeWorkplaceSuccess) {
+      _synchronizeTokenAndGetSession(
+        baseUri: success.baseUri,
+        tokenOIDC: success.tokenOIDC,
+        oidcConfiguration: success.oidcConfiguration,
+      );
     } else {
       super.handleSuccessViewState(success);
     }
@@ -72,8 +114,10 @@ class TwakeWelcomeController extends ReloadableController {
 
   @override
   void handleFailureViewState(Failure failure) {
-    if (failure is SignInSaasFailure) {
-      _handleSignInSaasFailure(failure);
+    if (failure is SignInTwakeWorkplaceFailure) {
+      _handleSignInTwakeWorkplaceFailure(failure);
+    } else if (failure is SignUpTwakeWorkplaceFailure) {
+      _handleSignUpTwakeWorkplaceFailure(failure);
     } else {
       super.handleFailureViewState(failure);
     }
@@ -95,19 +139,30 @@ class TwakeWelcomeController extends ReloadableController {
     toastManager.showMessageFailure(failure);
   }
 
-  void _handleSignInSaasSuccess(SignInSaasSuccess success) {
-    dynamicUrlInterceptors.setJmapUrl(success.baseUri.toString());
-    dynamicUrlInterceptors.changeBaseUrl(success.baseUri.toString());
+  void _synchronizeTokenAndGetSession({
+    required Uri baseUri,
+    required TokenOIDC tokenOIDC,
+    required OIDCConfiguration oidcConfiguration,
+  }) {
+    dynamicUrlInterceptors.setJmapUrl(baseUri.toString());
+    dynamicUrlInterceptors.changeBaseUrl(baseUri.toString());
     authorizationInterceptors.setTokenAndAuthorityOidc(
-      newToken: success.tokenOIDC,
-      newConfig: success.oidcConfiguration);
+      newToken: tokenOIDC,
+      newConfig: oidcConfiguration);
     authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
-      newToken: success.tokenOIDC,
-      newConfig: success.oidcConfiguration);
+      newToken: tokenOIDC,
+      newConfig: oidcConfiguration);
+
     getSessionAction();
   }
 
-  void _handleSignInSaasFailure(SignInSaasFailure failure) {
+  void _handleSignInTwakeWorkplaceFailure(SignInTwakeWorkplaceFailure failure) {
+    TipDialogHelper.dismiss();
+
+    toastManager.showMessageFailure(failure);
+  }
+
+  void _handleSignUpTwakeWorkplaceFailure(SignUpTwakeWorkplaceFailure failure) {
     TipDialogHelper.dismiss();
 
     toastManager.showMessageFailure(failure);

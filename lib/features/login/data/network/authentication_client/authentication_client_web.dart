@@ -106,6 +106,16 @@ class AuthenticationClientWeb implements AuthenticationClientBase {
       throw CanNotAuthenticationInfoOnWeb();
     }
   }
+
+  @override
+  Future<TokenOIDC> signUpTwakeWorkplace(OIDCConfiguration oidcConfiguration) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<TokenOIDC> signInTwakeWorkplace(OIDCConfiguration oidcConfiguration) {
+    throw UnimplementedError();
+  }
 }
 
 AuthenticationClientBase getAuthenticationClientImplementation({String? tag}) =>
