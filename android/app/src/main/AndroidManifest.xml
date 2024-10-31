@@ -98,6 +98,18 @@
             </intent-filter>
         </activity>
 
+       <activity
+           android:name="com.linusu.flutter_web_auth_2.CallbackActivity"
+           android:exported="true">
+           <intent-filter android:label="flutter_web_auth_2">
+               <action android:name="android.intent.action.VIEW" />
+               <category android:name="android.intent.category.DEFAULT" />
+               <category android:name="android.intent.category.BROWSABLE" />
+               <data android:scheme="twakemail.mobile"
+                   android:host="redirect" />
+           </intent-filter>
+       </activity>
+
        <provider android:authorities="${applicationId}.firebaseinitprovider"
            android:name="com.google.firebase.provider.FirebaseInitProvider"
            android:exported="false"

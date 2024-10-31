@@ -38,6 +38,7 @@ class TwakeWelcomeView extends GetWidget<TwakeWelcomeController> {
             ? AppLocalizations.of(context).signIn.capitalizeFirst ?? ''
             : null,
           onSignInOnTap: () => controller.onClickSignIn(context),
+          onCreateTwakeIdOnTap: () => controller.onSignUpTwakeWorkplace(context),
           createTwakeIdTitle: AppConfig.isSaasPlatForm
             ? AppLocalizations.of(context).createTwakeId
             : null,

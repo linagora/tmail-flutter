@@ -10,7 +10,12 @@ class SaasAuthenticationRepositoryImpl extends SaasAuthenticationRepository {
   SaasAuthenticationRepositoryImpl(this._saasAuthenticationDataSource);
 
   @override
-  Future<TokenOIDC> signIn(OIDCConfiguration oidcConfiguration) {
-    return _saasAuthenticationDataSource.signIn(oidcConfiguration);
+  Future<TokenOIDC> signInTwakeWorkplace(OIDCConfiguration oidcConfiguration) {
+    return _saasAuthenticationDataSource.signInTwakeWorkplace(oidcConfiguration);
+  }
+
+  @override
+  Future<TokenOIDC> signUpTwakeWorkplace(OIDCConfiguration oidcConfiguration) {
+    return _saasAuthenticationDataSource.signUpTwakeWorkplace(oidcConfiguration);
   }
 }

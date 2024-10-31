@@ -2,13 +2,15 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
-import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_saas_state.dart';
+import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_twake_workplace_state.dart';
+import 'package:tmail_ui_user/features/starting_page/domain/state/sign_up_twake_workplace_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
@@ -65,8 +67,20 @@ class ToastManager {
         && failure.emailActionType == EmailActionType.moveToSpam
         && failure.moveAction == MoveAction.moving) {
       message = AppLocalizations.of(currentContext!).markAsSpamFailed;
-    } else if (failure is SignInSaasFailure) {
-      message = AppLocalizations.of(currentContext!).sigInSaasFailed;
+    } else if (failure is SignInTwakeWorkplaceFailure) {
+      final exception = failure.exception;
+      if (exception is PlatformException && exception.message?.isNotEmpty == true) {
+        message = exception.message;
+      } else {
+        message = AppLocalizations.of(currentContext!).sigInSaasFailed;
+      }
+    } else if (failure is SignUpTwakeWorkplaceFailure) {
+      final exception = failure.exception;
+      if (exception is PlatformException && exception.message?.isNotEmpty == true) {
+        message = exception.message;
+      } else {
+        message = AppLocalizations.of(currentContext!).createTwakeIdFailed;
+      }
     }
 
     if (message?.isNotEmpty == true) {

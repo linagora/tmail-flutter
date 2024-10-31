@@ -5,20 +5,19 @@ import 'package:model/account/authentication_type.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
-import 'package:rich_text_composer/views/commons/logger.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/repository/saas_authentication_repository.dart';
-import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_saas_state.dart';
+import 'package:tmail_ui_user/features/starting_page/domain/state/sign_up_twake_workplace_state.dart';
 
-class SignInSaasInteractor {
+class SignUpTwakeWorkplaceInteractor {
   final SaasAuthenticationRepository _saasRepository;
   final AuthenticationOIDCRepository _authenticationOIDCRepository;
   final AccountRepository _accountRepository;
   final CredentialRepository _credentialRepository;
 
-  SignInSaasInteractor(
+  const SignUpTwakeWorkplaceInteractor(
     this._saasRepository,
     this._authenticationOIDCRepository,
     this._accountRepository,
@@ -30,9 +29,9 @@ class SignInSaasInteractor {
     required OIDCConfiguration oidcConfiguration
   }) async* {
     try {
-      yield Right<Failure, Success>(SignInSaasLoading());
+      yield Right<Failure, Success>(SignUpTwakeWorkplaceLoading());
 
-      final tokenOIDC = await _saasRepository.signIn(oidcConfiguration);
+      final tokenOIDC = await _saasRepository.signUpTwakeWorkplace(oidcConfiguration);
 
       await Future.wait([
         _credentialRepository.saveBaseUrl(baseUri),
@@ -48,10 +47,9 @@ class SignInSaasInteractor {
         )
       );
 
-      yield Right<Failure, Success>(SignInSaasSuccess(tokenOIDC, baseUri, oidcConfiguration));
+      yield Right<Failure, Success>(SignUpTwakeWorkplaceSuccess(tokenOIDC, baseUri, oidcConfiguration));
     } catch (e) {
-      logError('SignInSaasInteractor::execute():Exception = $e');
-      yield Left<Failure, Success>(SignInSaasFailure(e));
+      yield Left<Failure, Success>(SignUpTwakeWorkplaceFailure(e));
     }
   }
 }

@@ -4266,4 +4266,11 @@ class AppLocalizations {
       name: 'sigInSaasFailed',
     );
   }
+
+  String get createTwakeIdFailed {
+    return Intl.message(
+      'Create Twake Id failed. Please check again.',
+      name: 'createTwakeIdFailed',
+    );
+  }
 }
