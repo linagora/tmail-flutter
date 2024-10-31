@@ -2274,12 +2274,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A._setArrayType([], type$.JSArray_String);
     },
     CalendarEventExtension_get_isDisplayedEventReplyAction(_this) {
-      var t1;
-      if (_this.method != null)
-        if (_this.organizer != null) {
-          t1 = _this.participants;
-          t1 = (t1 == null ? null : t1.length !== 0) === true;
-        } else
+      var t1 = _this.method;
+      if (t1 != null)
+        if (t1 === C.EventMethod_1 || t1 === C.EventMethod_3 || t1 === C.EventMethod_6)
+          if (_this.organizer != null) {
+            t1 = _this.participants;
+            t1 = (t1 == null ? null : t1.length !== 0) === true;
+          } else
+            t1 = false;
+        else
           t1 = false;
       else
         t1 = false;
@@ -21579,5 +21582,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "x8Bp2zzLaGYQiQ38lnIGATKbd/M=");
+})($__dart_deferred_initializers__, "n6+hOAWuZFJge/xiaSyL/LLRxqI=");
 ;
