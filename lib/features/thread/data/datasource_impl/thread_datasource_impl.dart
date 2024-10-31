@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_emails_response.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class ThreadDataSourceImpl extends ThreadDataSource {
@@ -46,6 +47,30 @@ class ThreadDataSourceImpl extends ThreadDataSource {
   ) {
     return Future.sync(() async {
       return await threadAPI.getAllEmail(
+        session,
+        accountId,
+        limit: limit,
+        position: position,
+        sort: sort,
+        filter: filter,
+        properties: properties);
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<SearchEmailsResponse> searchEmails(
+    Session session,
+    AccountId accountId,
+    {
+      UnsignedInt? limit,
+      int? position,
+      Set<Comparator>? sort,
+      Filter? filter,
+      Properties? properties,
+    }
+  ) {
+    return Future.sync(() async {
+      return await threadAPI.searchEmails(
         session,
         accountId,
         limit: limit,

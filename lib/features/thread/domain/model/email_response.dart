@@ -7,7 +7,7 @@ class EmailsResponse with EquatableMixin {
   final List<Email>? emailList;
   final State? state;
 
-  EmailsResponse({
+  const EmailsResponse({
     this.emailList,
     this.state
   });

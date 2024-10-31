@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_email.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
 
 class ThreadRepositoryImpl extends ThreadRepository {
@@ -287,7 +288,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   @override
-  Future<List<Email>> searchEmails(
+  Future<List<SearchEmail>> searchEmails(
     Session session,
     AccountId accountId,
     {
@@ -298,7 +299,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       Properties? properties
     }
   ) async {
-    final emailResponse = await mapDataSource[DataSourceType.network]!.getAllEmail(
+    final searchEmailsResponse = await mapDataSource[DataSourceType.network]!.searchEmails(
       session,
       accountId,
       limit: limit,
@@ -307,7 +308,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       filter: filter,
       properties: properties);
 
-    return emailResponse.emailList ?? List.empty();
+    return searchEmailsResponse.toSearchEmails ?? [];
   }
 
   @override

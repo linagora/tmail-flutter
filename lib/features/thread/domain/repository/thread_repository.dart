@@ -13,6 +13,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_email.dart';
 
 abstract class ThreadRepository {
   Stream<EmailsResponse> getAllEmail(
@@ -41,7 +42,7 @@ abstract class ThreadRepository {
 
   Stream<EmailsResponse> loadMoreEmails(GetEmailRequest emailRequest);
 
-  Future<List<Email>> searchEmails(
+  Future<List<SearchEmail>> searchEmails(
     Session session,
     AccountId accountId,
     {
