@@ -49,7 +49,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     build$1(context) {
       var _null = null,
         value = $.$get$dotenv().maybeGet$2$fallback("PLATFORM", "other"),
-        t1 = value !== "saas" ? "assets/images/ic_logo_with_text_beta.svg" : "assets/images/ic_logo_with_text.svg";
+        t1 = value.toLowerCase() === "saas" ? "assets/images/ic_logo_with_text_beta.svg" : "assets/images/ic_logo_with_text.svg";
       return B.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, C.Color_0, t1, _null, 33, _null, this.margin, 1 / 0, _null, this.onTapAction, C.EdgeInsets_0_0_0_0, _null);
     }
   };
@@ -99,7 +99,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1814
+    $signature: 1815
   };
   (function inheritance() {
     var _inherit = hunkHelpers.inherit;
@@ -122,5 +122,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_2", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "ZmKYcOo1CgUJDz+5/ZT3wa54lQM=");
+})($__dart_deferred_initializers__, "pS6Cik57R35NTS3SVLXagq2RPnY=");
 ;
