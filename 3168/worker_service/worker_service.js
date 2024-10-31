@@ -4,7 +4,6 @@ const iosPlatform = 'iOS';
 const androidPlatform = 'android';
 const otherPlatform = 'other';
 const timeoutDuration = 4000;
-var serviceWorkerVersion = null;
 var scriptLoaded = false;
 
 function loadMainDartJs() {

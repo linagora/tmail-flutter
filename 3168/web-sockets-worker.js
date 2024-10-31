@@ -1,4 +1,4 @@
-importScripts("flutter_service_worker.js?v=null");
+importScripts('flutter_service_worker.js?v={{flutter_service_worker_version}}');
 
 var webSocket;
 const broadcast = new BroadcastChannel("background-message");
