@@ -112,7 +112,7 @@ dev_dependencies:
 
   build_runner: 2.3.3
 
-  mockito:  5.4.4
+  mockito: 5.4.4
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
@@ -153,7 +153,6 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
-
 
   # This section identifies your Flutter project as a module meant for
   # embedding in a native host app.  These identifiers should _not_ ordinarily
