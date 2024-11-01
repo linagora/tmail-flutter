@@ -64,7 +64,9 @@ extension PresentationEmailExtension on PresentationEmail {
       routeWeb: routeWeb,
       mailboxContain: mailboxContain,
       headerCalendarEvent: headerCalendarEvent
-    );
+    )
+      ..searchSnippetSubject = searchSnippetSubject
+      ..searchSnippetPreview = searchSnippetPreview;
   }
 
   PresentationEmail toSelectedEmail({required SelectMode selectMode}) {
@@ -88,7 +90,9 @@ extension PresentationEmailExtension on PresentationEmail {
       routeWeb: routeWeb,
       mailboxContain: mailboxContain,
       headerCalendarEvent: headerCalendarEvent
-    );
+    )
+      ..searchSnippetSubject = searchSnippetSubject
+      ..searchSnippetPreview = searchSnippetPreview;
   }
 
   Email toEmail() {
@@ -169,7 +173,9 @@ extension PresentationEmailExtension on PresentationEmail {
       routeWeb: routeWeb,
       mailboxContain: matchedMailbox,
       headerCalendarEvent: headerCalendarEvent
-    );
+    )
+      ..searchSnippetSubject = searchSnippetSubject
+      ..searchSnippetPreview = searchSnippetPreview;
   }
 
   PresentationMailbox? findMailboxContain(Map<MailboxId, PresentationMailbox> mapMailbox) {
@@ -206,7 +212,9 @@ extension PresentationEmailExtension on PresentationEmail {
       routeWeb: routeWeb,
       mailboxContain: mailboxContain,
       headerCalendarEvent: headerCalendarEvent
-    );
+    )
+      ..searchSnippetSubject = searchSnippetSubject
+      ..searchSnippetPreview = searchSnippetPreview;
   }
 
   PresentationEmail updateKeywords(Map<KeyWordIdentifier, bool>? newKeywords) {
@@ -230,7 +238,9 @@ extension PresentationEmailExtension on PresentationEmail {
       routeWeb: routeWeb,
       mailboxContain: mailboxContain,
       headerCalendarEvent: headerCalendarEvent
-    );
+    )
+      ..searchSnippetSubject = searchSnippetSubject
+      ..searchSnippetPreview = searchSnippetPreview;
   }
 
   PresentationEmail syncPresentationEmail({PresentationMailbox? mailboxContain, Uri? routeWeb}) {
@@ -254,7 +264,9 @@ extension PresentationEmailExtension on PresentationEmail {
       routeWeb: routeWeb,
       mailboxContain: mailboxContain,
       headerCalendarEvent: headerCalendarEvent
-    );
+    )
+      ..searchSnippetSubject = searchSnippetSubject
+      ..searchSnippetPreview = searchSnippetPreview;
   }
 
   bool isBelongToOneOfTheMailboxes(List<MailboxId> mailboxIdsSource) {

@@ -94,7 +94,11 @@ extension EmailExtension on Email {
     );
   }
 
-  PresentationEmail toPresentationEmail({SelectMode selectMode = SelectMode.INACTIVE}) {
+  PresentationEmail toPresentationEmail({
+    SelectMode selectMode = SelectMode.INACTIVE,
+    String? searchSnippetSubject,
+    String? searchSnippetPreview,
+  }) {
     return PresentationEmail(
       id: id,
       blobId: blobId,
@@ -114,7 +118,9 @@ extension EmailExtension on Email {
       selectMode: selectMode,
       emailHeader: headers?.toList(),
       headerCalendarEvent: headerCalendarEvent
-    );
+    )
+      ..searchSnippetSubject = searchSnippetSubject
+      ..searchSnippetPreview = searchSnippetPreview;
   }
 
   Email combineEmail(Email newEmail, Properties updatedProperties) {

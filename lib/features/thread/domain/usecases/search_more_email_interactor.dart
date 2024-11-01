@@ -44,7 +44,10 @@ class SearchMoreEmailInteractor {
 
       final presentationEmailList = emailList
         .where((email) => email.id != lastEmailId)
-        .map((email) => email.toPresentationEmail())
+        .map((email) => email.toPresentationEmail(
+          searchSnippetSubject: email.searchSnippetSubject,
+          searchSnippetPreview: email.searchSnippetPreview,
+        ))
         .toList();
 
       yield Right(SearchMoreEmailSuccess(presentationEmailList));
