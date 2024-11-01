@@ -47,7 +47,10 @@ class SearchEmailInteractor {
         properties: properties);
 
       final presentationEmailList = emailList
-        .map((email) => email.toPresentationEmail())
+        .map((email) => email.toPresentationEmail(
+          searchSnippetSubject: email.searchSnippetSubject,
+          searchSnippetPreview: email.searchSnippetPreview,
+        ))
         .toList();
 
       yield Right(SearchEmailSuccess(presentationEmailList));
