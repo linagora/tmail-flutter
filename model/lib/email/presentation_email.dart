@@ -18,8 +18,9 @@ import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/media_type_nullable_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
+import 'package:model/mixin/search_snippet_mixin.dart';
 
-class PresentationEmail with EquatableMixin {
+class PresentationEmail with EquatableMixin, SearchSnippetMixin {
 
   final EmailId? id;
   final Id? blobId;
@@ -172,5 +173,7 @@ class PresentationEmail with EquatableMixin {
     htmlBody,
     bodyValues,
     headerCalendarEvent,
+    searchSnippetSubject,
+    searchSnippetPreview,
   ];
 }
