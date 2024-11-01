@@ -51,6 +51,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
   SearchQuery? get searchQuery => searchEmailFilter.value.text;
 
   FocusNode searchFocus = FocusNode();
+  String currentSearchText = '';
 
   SearchController(
     this._quickSearchEmailInteractor,
@@ -89,6 +90,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     required AccountId accountId,
     required String query,
   }) async {
+    currentSearchText = query;
     return await _quickSearchEmailInteractor.execute(
       session,
       accountId,

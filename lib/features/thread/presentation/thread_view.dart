@@ -425,7 +425,8 @@ class ThreadView extends GetWidget<ThreadController>
   bool _handleScrollNotificationListener(ScrollNotification scrollInfo) {
     if (scrollInfo is ScrollEndNotification &&
         scrollInfo.metrics.pixels == scrollInfo.metrics.maxScrollExtent &&
-        !controller.loadingMoreStatus.value.isRunning
+        !controller.loadingMoreStatus.value.isRunning &&
+        scrollInfo.metrics.axisDirection == AxisDirection.down
     ) {
       controller.handleLoadMoreEmailsRequest();
     }
