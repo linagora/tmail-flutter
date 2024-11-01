@@ -291,4 +291,11 @@ extension PresentationEmailExtension on PresentationEmail {
       type: MediaType.parse(Constant.octetStreamMimeType)
     );
   }
+
+  String? _sanitizeSearchSnippet(String? searchSnippet) => searchSnippet
+    ?.replaceAll('\r', '')
+    .replaceAll('\n', '')
+    .replaceAll('\t', '');
+  String? get sanitizedSearchSnippetSubject => _sanitizeSearchSnippet(searchSnippetSubject);
+  String? get sanitizedSearchSnippetPreview => _sanitizeSearchSnippet(searchSnippetPreview);
 }

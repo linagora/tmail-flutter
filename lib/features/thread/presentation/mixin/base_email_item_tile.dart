@@ -122,6 +122,8 @@ mixin BaseEmailItemTile {
       return RichTextBuilder(
         textOrigin: email.getEmailTitle(),
         wordToStyle: query?.value ?? '',
+        preMarkedText: email.sanitizedSearchSnippetSubject,
+        ensureHighlightVisible: true,
         styleOrigin: TextStyle(
           fontSize: 13,
           color: buildTextColorForReadEmail(email),
@@ -155,6 +157,8 @@ mixin BaseEmailItemTile {
       return RichTextBuilder(
         textOrigin: email.getPartialContent(),
         wordToStyle: query?.value ?? '',
+        preMarkedText: email.sanitizedSearchSnippetPreview,
+        ensureHighlightVisible: true,
         styleOrigin: const TextStyle(
           fontSize: 13,
           color: AppColor.colorContentEmail,
