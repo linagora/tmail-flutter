@@ -1,75 +1,38 @@
 
-import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:model/email/email_content.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rxdart/rxdart.dart';
 
 class EmailReceiveManager {
+  BehaviorSubject<List<SharedMediaFile>> _pendingSharedFileInfo =
+    BehaviorSubject.seeded(List.empty(growable: true));
+  BehaviorSubject<List<SharedMediaFile>> get pendingSharedFileInfo =>
+    _pendingSharedFileInfo;
 
-  BehaviorSubject<EmailAddress?> _pendingEmailAddressInfo = BehaviorSubject.seeded(null);
-  BehaviorSubject<EmailAddress?> get pendingEmailAddressInfo => _pendingEmailAddressInfo;
+  Stream<List<SharedMediaFile>> get receivingFileSharingStream =>
+    ReceiveSharingIntent.instance.getMediaStream();
 
-  BehaviorSubject<EmailContent?> _pendingEmailContentInfo = BehaviorSubject.seeded(null);
-  BehaviorSubject<EmailContent?> get pendingEmailContentInfo => _pendingEmailContentInfo;
+  void registerReceivingFileSharingStreamWhileAppClosed() {
+    ReceiveSharingIntent.instance.getInitialMedia().then((value) {
+      setPendingFileInfo(value);
 
-  BehaviorSubject<List<SharedMediaFile>> _pendingFileInfo = BehaviorSubject.seeded(List.empty(growable: true));
-  BehaviorSubject<List<SharedMediaFile>> get pendingFileInfo => _pendingFileInfo;
-
-  Stream<Uri?> get receivingSharingStream {
-    return Rx.merge([
-      Stream.fromFuture(ReceiveSharingIntent.getInitialTextAsUri()),
-      ReceiveSharingIntent.getTextStreamAsUri()
-    ]);
-  }
-  Stream<List<SharedMediaFile>> get receivingFileSharingStream {
-    return Rx.merge([
-      Stream.fromFuture(ReceiveSharingIntent.getInitialMedia()),
-      ReceiveSharingIntent.getMediaStream()
-    ]);
-  }
-
-  void setPendingEmailAddress(EmailAddress emailAddress) async {
-    _clearPendingEmailAddress();
-    _pendingEmailAddressInfo.add(emailAddress);
-  }
-
-  void setPendingEmailContent(EmailContent emailContent) async {
-    _clearPendingEmailContent();
-    _pendingEmailContentInfo.add(emailContent);
-  }
-
-  void _clearPendingEmailContent() {
-    if (_pendingEmailContentInfo.isClosed) {
-      _pendingEmailContentInfo = BehaviorSubject.seeded(null);
-    } else {
-      _pendingEmailContentInfo.add(null);
-    }
-  }
-
-  void _clearPendingEmailAddress() {
-    if(_pendingEmailAddressInfo.isClosed) {
-      _pendingEmailAddressInfo = BehaviorSubject.seeded(null);
-    } else {
-      _pendingEmailAddressInfo.add(null);
-    }
+      ReceiveSharingIntent.instance.reset();
+    });
   }
 
   void closeEmailReceiveManagerStream() {
-    _pendingEmailAddressInfo.close();
-    _pendingEmailContentInfo.close();
-    _pendingFileInfo.close();
+    _pendingSharedFileInfo.close();
   }
 
-  void setPendingFileInfo(List<SharedMediaFile> list) async {
+  void setPendingFileInfo(List<SharedMediaFile> list) {
     _clearPendingFileInfo();
-    _pendingFileInfo.add(list);
+    _pendingSharedFileInfo.add(list);
   }
 
   void _clearPendingFileInfo() {
-    if(_pendingFileInfo.isClosed) {
-      _pendingFileInfo = BehaviorSubject.seeded(List.empty(growable: true));
+    if(_pendingSharedFileInfo.isClosed) {
+      _pendingSharedFileInfo = BehaviorSubject.seeded(List.empty(growable: true));
     } else {
-      _pendingFileInfo.add(List.empty(growable: true));
+      _pendingSharedFileInfo.add(List.empty(growable: true));
     }
   }
 }

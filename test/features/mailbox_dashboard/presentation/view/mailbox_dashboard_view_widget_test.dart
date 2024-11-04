@@ -306,9 +306,7 @@ void main() {
       Get.put<GetAllIdentitiesInteractor>(getAllIdentitiesInteractor);
       Get.put<RemoveComposerCacheOnWebInteractor>(removeComposerCacheOnWebInteractor);
 
-      when(emailReceiveManager.pendingEmailAddressInfo).thenAnswer((_) => BehaviorSubject.seeded(null));
-      when(emailReceiveManager.pendingEmailContentInfo).thenAnswer((_) => BehaviorSubject.seeded(null));
-      when(emailReceiveManager.pendingFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
+      when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
 
       searchController = SearchController(
         quickSearchEmailInteractor,

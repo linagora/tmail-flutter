@@ -1,12 +1,7 @@
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:model/email/email_content.dart';
-import 'package:model/email/email_content_type.dart';
-import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/cleanup_rule.dart';
@@ -45,7 +40,7 @@ class HomeController extends ReloadableController {
   void onInit() {
     if (PlatformInfo.isMobile) {
       _initFlutterDownloader();
-      _registerReceivingSharingIntent();
+      _registerReceivingFileSharing();
     }
     if (PlatformInfo.isIOS) {
       _registerNotificationClickOnIOS();
@@ -85,20 +80,8 @@ class HomeController extends ReloadableController {
     ], eagerError: true).then((_) => getAuthenticatedAccountAction());
   }
 
-  void _registerReceivingSharingIntent() {
-    _emailReceiveManager.receivingSharingStream.listen((uri) {
-      if (uri != null) {
-        if (GetUtils.isEmail(uri.path)) {
-          _emailReceiveManager.setPendingEmailAddress(EmailAddress(null, uri.path));
-        } else if (uri.scheme == "file") {
-          _emailReceiveManager.setPendingFileInfo([SharedMediaFile(uri.path, null, null, SharedMediaType.FILE)]);
-        } else {
-          _emailReceiveManager.setPendingEmailContent(EmailContent(EmailContentType.textPlain, Uri.decodeComponent(uri.path)));
-        }
-      }
-    });
-
-    _emailReceiveManager.receivingFileSharingStream.listen(_emailReceiveManager.setPendingFileInfo);
+  void _registerReceivingFileSharing() {
+    _emailReceiveManager.registerReceivingFileSharingStreamWhileAppClosed();
   }
 
   void _registerNotificationClickOnIOS() {
