@@ -44,7 +44,7 @@ void main() {
         });
       });
 
-      test('SHOULD generate multiple filters WHEN "to" has multiple items', () {
+      test('SHOULD generate multiple from filters which combine with OR operator WHEN "to" has multiple items', () {
         // Arrange
         searchEmailFilter = SearchEmailFilter(
           to: {'recipient1@example.com', 'recipient2@example.com'},
