@@ -25,6 +25,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:model/model.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
@@ -241,11 +242,8 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   ComposerArguments? composerArguments;
   List<Identity>? _identities;
   ScrollController? listSearchFilterScrollController;
-
-  late StreamSubscription _emailAddressStreamSubscription;
-  late StreamSubscription _emailContentStreamSubscription;
-  late StreamSubscription _fileReceiveManagerStreamSubscription;
-
+  StreamSubscription? _pendingSharedFileInfoSubscription;
+  StreamSubscription? _receivingFileSharingStreamSubscription;
   StreamSubscription? _currentEmailIdInNotificationIOSStreamSubscription;
 
   final StreamController<Either<Failure, Success>> _progressStateController =
@@ -288,6 +286,9 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
 
   @override
   void onInit() {
+    if (PlatformInfo.isMobile) {
+      _registerReceivingFileSharingStream();
+    }
     _registerStreamListener();
     BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.dashboard);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
@@ -301,9 +302,6 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     if (PlatformInfo.isWeb) {
       listSearchFilterScrollController = ScrollController();
     }
-    _registerPendingEmailAddress();
-    _registerPendingEmailContents();
-    _registerPendingFileInfo();
     if (PlatformInfo.isIOS) {
       _registerPendingCurrentEmailIdInNotification();
     }
@@ -454,31 +452,85 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     }
   }
 
-  void _registerPendingEmailAddress() {
-    _emailAddressStreamSubscription =
-      _emailReceiveManager.pendingEmailAddressInfo.stream.listen((emailAddress) {
-        if (emailAddress?.email?.isNotEmpty == true) {
-          goToComposer(ComposerArguments.fromEmailAddress(emailAddress!));
-        }
-      });
+  void _registerReceivingFileSharingStream() {
+    _receivingFileSharingStreamSubscription = _emailReceiveManager
+      .receivingFileSharingStream
+      .listen(
+        _emailReceiveManager.setPendingFileInfo,
+        onError: (err) {
+          logError('MailboxDashBoardController::_registerReceivingFileSharingStream::receivingFileSharingStream:Exception = $err');
+        },
+      );
+
+    _pendingSharedFileInfoSubscription = _emailReceiveManager
+      .pendingSharedFileInfo
+      .listen(
+        _handleReceivingFileSharing,
+        onError: (err) {
+          logError('MailboxDashBoardController::_registerReceivingFileSharingStream::pendingSharedFileInfo:Exception = $err');
+        },
+      );
   }
 
-  void _registerPendingEmailContents() {
-    _emailContentStreamSubscription =
-      _emailReceiveManager.pendingEmailContentInfo.stream.listen((emailContent) {
-        if (emailContent?.content.isNotEmpty == true) {
-          goToComposer(ComposerArguments.fromContentShared([emailContent!].asHtmlString));
-        }
-      });
-  }
+  void _handleReceivingFileSharing(List<SharedMediaFile> listSharedMediaFile) {
+    log('MailboxDashBoardController::_handleReceivingFileSharing: LIST_LENGTH = ${listSharedMediaFile.length}');
+    if (listSharedMediaFile.isEmpty) return;
 
-  void _registerPendingFileInfo() {
-    _fileReceiveManagerStreamSubscription =
-      _emailReceiveManager.pendingFileInfo.stream.listen((listFile) {
-        if (listFile.isNotEmpty) {
-          goToComposer(ComposerArguments.fromFileShared(listFile));
-        }
-      });
+    for (var file in listSharedMediaFile) {
+      log('MailboxDashBoardController::_handleReceivingFileSharing:SharedMediaFile = ${file.toMap()}');
+    }
+
+    if (listSharedMediaFile.length == 1) {
+      final sharedMediaFile = listSharedMediaFile.first;
+      if (sharedMediaFile.path.trim().isEmpty) return;
+
+      switch (sharedMediaFile.type) {
+        case SharedMediaType.image:
+        case SharedMediaType.video:
+        case SharedMediaType.file:
+          goToComposer(
+            ComposerArguments.fromFileShared([sharedMediaFile]),
+          );
+          break;
+        case SharedMediaType.text:
+          if (sharedMediaFile.mimeType == Constant.textVCardMimeType) {
+            goToComposer(
+              ComposerArguments.fromFileShared([sharedMediaFile]),
+            );
+          } else if (sharedMediaFile.mimeType == Constant.textPlainMimeType) {
+            goToComposer(
+              ComposerArguments.fromContentShared(sharedMediaFile.path.trim()),
+            );
+          }
+          break;
+        case SharedMediaType.url:
+          if (sharedMediaFile.path.startsWith(RouteUtils.mailtoPrefix)) {
+            final navigationRouter = RouteUtils.generateNavigationRouterFromMailtoLink(sharedMediaFile.path);
+            goToComposer(
+              ComposerArguments.fromMailtoUri(
+                listEmailAddress: navigationRouter.listEmailAddress,
+                subject: navigationRouter.subject,
+                body: navigationRouter.body,
+              ),
+            );
+          }
+          break;
+        case SharedMediaType.mailto:
+          if (EmailUtils.isEmailAddressValid(sharedMediaFile.path)) {
+            goToComposer(
+              ComposerArguments.fromEmailAddress(
+                EmailAddress(null, sharedMediaFile.path),
+              ),
+            );
+          }
+          break;
+      }
+      return;
+    }
+
+    goToComposer(
+      ComposerArguments.fromFileShared(listSharedMediaFile),
+    );
   }
 
   void _registerPendingCurrentEmailIdInNotification() {
@@ -2857,14 +2909,15 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     if (PlatformInfo.isWeb) {
       listSearchFilterScrollController?.dispose();
     }
-    _emailReceiveManager.closeEmailReceiveManagerStream();
     if (PlatformInfo.isIOS) {
       _iosNotificationManager?.dispose();
       _currentEmailIdInNotificationIOSStreamSubscription?.cancel();
     }
-    _emailAddressStreamSubscription.cancel();
-    _emailContentStreamSubscription.cancel();
-    _fileReceiveManagerStreamSubscription.cancel();
+    if (PlatformInfo.isMobile) {
+      _pendingSharedFileInfoSubscription?.cancel();
+      _receivingFileSharingStreamSubscription?.cancel();
+      _emailReceiveManager.closeEmailReceiveManagerStream();
+    }
     _progressStateController.close();
     _refreshActionEventController.close();
     _notificationManager.closeStream();

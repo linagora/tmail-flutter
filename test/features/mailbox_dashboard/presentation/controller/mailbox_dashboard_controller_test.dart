@@ -347,9 +347,7 @@ void main() {
     setUp(() {
       getEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
 
-      when(emailReceiveManager.pendingEmailAddressInfo).thenAnswer((_) => BehaviorSubject.seeded(null));
-      when(emailReceiveManager.pendingEmailContentInfo).thenAnswer((_) => BehaviorSubject.seeded(null));
-      when(emailReceiveManager.pendingFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
+      when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
 
       Get.put(mailboxDashboardController);
       mailboxDashboardController.onReady();

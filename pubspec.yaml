@@ -75,7 +75,7 @@ dependencies:
   receive_sharing_intent:
     git:
       url: https://github.com/linagora/receive_sharing_intent.git
-      ref: master
+      ref: main
 
   flutter_appauth_web:
     git:
