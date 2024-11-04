@@ -23,7 +23,7 @@ function fetchServiceWorker() {
     // Wait for registration to finish before dropping the <script>tag.
     // Otherwise, the browser will load the script multiple times,
     // potentially different versions.
-    navigator.serviceWorker.register('web-sockets-worker.js')
+    navigator.serviceWorker.register('flutter_service_worker.js?v={{flutter_service_worker_version}}')
       .then((reg) => {
         function waitForActivation(serviceWorker) {
           serviceWorker.addEventListener('statechange', () => {

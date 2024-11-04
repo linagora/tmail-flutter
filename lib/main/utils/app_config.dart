@@ -36,7 +36,6 @@ class AppConfig {
       return supportedOtherPlatform == 'supported';
     }
   }
-  static String get fcmVapidPublicKeyWeb => dotenv.get('FIREBASE_WEB_VAPID_PUBLIC_KEY', fallback: '');
   static List<String> get oidcScopes {
     try {
       final envScopes = dotenv.get('OIDC_SCOPES', fallback: '');

@@ -19,10 +19,8 @@ abstract class PushBaseController {
   Session? session;
   AccountId? accountId;
 
-  StreamSubscription<Either<Failure, Success>>? _stateStreamSubscription;
-
   void consumeState(Stream<Either<Failure, Success>> newStateStream) {
-    _stateStreamSubscription = newStateStream.listen(
+    newStateStream.listen(
       _handleStateStream,
       onError: handleErrorViewState,
     );
@@ -38,11 +36,6 @@ abstract class PushBaseController {
 
   void handleErrorViewState(Object error, StackTrace stackTrace) {
     logError('PushBaseController::handleErrorViewState():error: $error | stackTrace: $stackTrace');
-  }
-
-  void cancelStateStreamSubscription() {
-    _stateStreamSubscription?.cancel();
-    _stateStreamSubscription = null;
   }
 
   void initialize({AccountId? accountId, Session? session}) {
