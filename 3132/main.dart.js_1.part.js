@@ -50,6 +50,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.child = t1;
       this.key = t2;
     }, _AutofillGroupState_State_AutofillScopeMixin: function _AutofillGroupState_State_AutofillScopeMixin() {
+    }, _WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure: function _WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure(t0) {
+      this.node = t0;
+    }, WidgetOrderTraversalPolicy: function WidgetOrderTraversalPolicy(t0, t1) {
+      this.DirectionalFocusTraversalPolicyMixin__policyData = t0;
+      this.requestFocusCallback = t1;
+    }, _WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin: function _WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin() {
     }, RecentItemTileWidget: function RecentItemTileWidget(t0, t1, t2, t3) {
       var _ = this;
       _.item = t0;
@@ -249,6 +255,28 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     }
   };
   B._AutofillGroupState_State_AutofillScopeMixin.prototype = {};
+  B.WidgetOrderTraversalPolicy.prototype = {
+    sortDescendants$2(descendants, currentNode) {
+      return descendants;
+    }
+  };
+  B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin.prototype = {
+    invalidateScopeData$1(node) {
+      this.super$FocusTraversalPolicy$invalidateScopeData(node);
+      this.DirectionalFocusTraversalPolicyMixin__policyData.remove$1(0, node);
+    },
+    changedScope$2$node$oldScope(node, oldScope) {
+      var t1;
+      this.super$FocusTraversalPolicy$changedScope(node, oldScope);
+      t1 = this.DirectionalFocusTraversalPolicyMixin__policyData.$index(0, oldScope);
+      if (t1 != null) {
+        t1 = t1.history;
+        if (!!t1.fixed$length)
+          A.throwExpression(A.UnsupportedError$("removeWhere"));
+        C.JSArray_methods._removeWhere$2(t1, new B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure(node), true);
+      }
+    }
+  };
   B.RecentItemTileWidget.prototype = {
     build$1(context) {
       var _null = null;
@@ -270,7 +298,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.Container$(_null, A.ElevatedButton$(false, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_6nc1, _null, _null, _null, _null, _null), _null, _null, C.IconAlignment_0, D.ValueKey_loginSubmitForm, _null, _null, _null, new B.BaseLoginView_buildLoginButton_closure(_this, context), _null, t2), C.Clip_0, _null, _null, _null, _null, 48, _null, D.EdgeInsetsDirectional_24_0_24_16, _null, _null, _null, t1.size._dx);
     },
     buildInputCredentialForm$1(context) {
-      return new B.AutofillGroup(new A.Padding(C.EdgeInsetsDirectional_24_0_24_0, A.Column$(A._setArrayType([this.buildUserNameInput$1(context), C.SizedBox_null_24_null_null, this.buildPasswordInput$1(context), D.SizedBox_null_40_null_null], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), null), null);
+      return new B.AutofillGroup(new A.Padding(C.EdgeInsetsDirectional_24_0_24_0, A.FocusTraversalGroup$(A.Column$(A._setArrayType([this.buildUserNameInput$1(context), C.SizedBox_null_24_null_null, this.buildPasswordInput$1(context), D.SizedBox_null_40_null_null], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), new B.WidgetOrderTraversalPolicy(A.LinkedHashMap_LinkedHashMap$_empty(type$.FocusScopeNode, type$._DirectionalPolicyData), A.focus_traversal_FocusTraversalPolicy_defaultTraversalRequestFocusCallback$closure())), null), null);
     },
     buildUserNameInput$1(context) {
       var t2, t3, t4, t5, t6, t7, _this = this, _null = null, _s5_ = "email",
@@ -487,6 +515,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 1810
   };
+  B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure.prototype = {
+    call$1(entry) {
+      return entry.node === this.node;
+    },
+    $signature: 408
+  };
   B.BaseLoginView_buildLoginButton_closure.prototype = {
     call$0() {
       var t1 = this.$this,
@@ -511,7 +545,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return C.SizedBox_null_null_null_null;
     },
-    $signature: 541
+    $signature: 542
   };
   B.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(_) {
@@ -721,10 +755,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   (function inheritance() {
     var _mixin = hunkHelpers.mixin,
+      _mixinHard = hunkHelpers.mixinHard,
       _inherit = hunkHelpers.inherit,
       _inheritMany = hunkHelpers.inheritMany;
     _inherit(B._AutofillScopeTextInputConfiguration, A.TextInputConfiguration);
-    _inheritMany(A.Closure, [B._AutofillScopeTextInputConfiguration_toJson_closure, B.AutofillScopeMixin_attach_closure, B.AutofillGroupState_autofillClients_closure, B.BaseLoginView_buildUserNameInput_closure0, B.BaseLoginView_buildPasswordInput_closure, B.LoginView__buildLoadingProgress__closure, B.LoginView__buildLoadingProgress__closure0, B.LoginMessageWidget_build_closure, B.LoginMessageWidget_build_closure0, B.LoginMessageWidget_build_closure1, B.LoginMessageWidget_build_closure2]);
+    _inheritMany(A.Closure, [B._AutofillScopeTextInputConfiguration_toJson_closure, B.AutofillScopeMixin_attach_closure, B.AutofillGroupState_autofillClients_closure, B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure, B.BaseLoginView_buildUserNameInput_closure0, B.BaseLoginView_buildPasswordInput_closure, B.LoginView__buildLoadingProgress__closure, B.LoginView__buildLoadingProgress__closure0, B.LoginMessageWidget_build_closure, B.LoginMessageWidget_build_closure0, B.LoginMessageWidget_build_closure1, B.LoginMessageWidget_build_closure2]);
     _inherit(B.AutofillScopeMixin, A.Object);
     _inherit(B.AutofillContextAction, A._Enum);
     _inheritMany(A.StatefulWidget, [B.AutofillGroup, B.LoginTextInputBuilder]);
@@ -732,12 +767,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(B.AutofillGroupState, B._AutofillGroupState_State_AutofillScopeMixin);
     _inheritMany(A.Closure0Args, [B.AutofillGroupState_register_closure, B.BaseLoginView_buildLoginButton_closure, B.LoginView__buildMobileForm_closure, B.LoginView__buildMobileForm_closure0, B.LoginView__buildWebForm_closure, B.LoginView__buildWebForm_closure0, B.LoginView__buildLoadingProgress_closure, B.PrivacyLinkWidget_build_closure, B._LoginTextInputBuilderState_build_closure, B._LoginTextInputBuilderState_build__closure]);
     _inherit(B._AutofillScope, A.InheritedWidget);
+    _inherit(B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin, A.FocusTraversalPolicy);
+    _inherit(B.WidgetOrderTraversalPolicy, B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin);
     _inheritMany(A.StatelessWidget, [B.RecentItemTileWidget, B.PrivacyLinkWidget, B.LoginMessageWidget, B.TryAgainButton]);
     _inherit(B.BaseLoginView, A.GetWidget);
     _inherit(B.BaseLoginView_buildUserNameInput_closure, A.Closure2Args);
     _inherit(B.LoginView, B.BaseLoginView);
     _inherit(B.LoginInputDecorationBuilder, A.InputDecorationBuilder);
     _mixin(B._AutofillGroupState_State_AutofillScopeMixin, B.AutofillScopeMixin);
+    _mixinHard(B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin, A.DirectionalFocusTraversalPolicyMixin);
   })();
   A._Universe_addRules(init.typeUniverse, JSON.parse('{"_AutofillScopeTextInputConfiguration":{"TextInputConfiguration":[]},"AutofillGroup":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"AutofillGroupState":{"State0":["AutofillGroup"]},"_AutofillScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecentItemTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BaseLoginView":{"GetWidget":["LoginController"],"Widget":[],"DiagnosticableTree":[]},"LoginView":{"GetWidget":["LoginController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"LoginController"},"PrivacyLinkWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LoginMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LoginTextInputBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_LoginTextInputBuilderState":{"State0":["LoginTextInputBuilder"]},"TryAgainButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
   var type$ = (function rtii() {
@@ -745,6 +783,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     return {
       AppLocalizations: findType("AppLocalizations"),
       AutofillClient: findType("AutofillClient"),
+      FocusScopeNode: findType("FocusScopeNode"),
       ImagePaths: findType("ImagePaths"),
       JSArray_String: findType("JSArray<String>"),
       JSArray_Widget: findType("JSArray<Widget>"),
@@ -755,6 +794,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       String: findType("String"),
       ToastManager: findType("ToastManager"),
       ValueKey_String: findType("ValueKey<String>"),
+      _DirectionalPolicyData: findType("_DirectionalPolicyData"),
       void: findType("~")
     };
   })();
@@ -804,5 +844,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "TTKS5MPk2W7uZKNn2Z7SSwKZ/WI=");
+})($__dart_deferred_initializers__, "KKgbRO58N0QTL4Kb3V4JGg8ZDeI=");
 ;
