@@ -19,6 +19,7 @@ class StandardizeHtmlSanitizingTransformers extends TextTransformer {
     'center',
     'style',
     'body',
+    'section',
   ];
 
   const StandardizeHtmlSanitizingTransformers();
