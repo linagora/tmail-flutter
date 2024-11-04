@@ -1,7 +1,9 @@
 
-import 'package:core/data/constants/constant.dart';
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/broadcast_channel/broadcast_channel.dart';
+import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/websocket_capability.dart';
@@ -9,21 +11,19 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/push_notification/data/datasource/web_socket_datasource.dart';
-import 'package:tmail_ui_user/features/push_notification/data/model/connect_web_socket_message.dart';
+import 'package:tmail_ui_user/features/push_notification/data/model/web_socket_echo_request.dart';
+import 'package:tmail_ui_user/features/push_notification/data/model/web_socket_push_enable_request.dart';
 import 'package:tmail_ui_user/features/push_notification/data/network/web_socket_api.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/exceptions/web_socket_exceptions.dart';
-import 'package:tmail_ui_user/features/push_notification/domain/model/web_socket_action.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
-import 'package:universal_html/html.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class WebSocketDatasourceImpl implements WebSocketDatasource {
   final WebSocketApi _webSocketApi;
   final ExceptionThrower _exceptionThrower;
   
   const WebSocketDatasourceImpl(this._webSocketApi, this._exceptionThrower);
-
-  static const String _webSocketClosed = 'webSocketClosed';
 
   @override
   Stream getWebSocketChannel(Session session, AccountId accountId) {
@@ -36,20 +36,30 @@ class WebSocketDatasourceImpl implements WebSocketDatasource {
     Session session,
     AccountId accountId,
   ) async* {
-    final broadcastChannel = BroadcastChannel(Constant.wsServiceWorkerBroadcastChannel);
+    Timer? timer;
     try {
       _verifyWebSocketCapabilities(session, accountId);
       final webSocketTicket = await _webSocketApi.getWebSocketTicket(session, accountId);
       final webSocketUri = _getWebSocketUri(session, accountId);
-      window.navigator.serviceWorker?.controller?.postMessage(ConnectWebSocketMessage(
-        webSocketAction: WebSocketAction.connect,
-        webSocketUrl: webSocketUri.toString(),
-        webSocketTicket: webSocketTicket
-      ).toJson());
-      
-      yield* _webSocketListener(broadcastChannel);
+
+      final webSocketChannel = WebSocketChannel.connect(
+        Uri.parse('$webSocketUri?ticket=$webSocketTicket'),
+        protocols: ["jmap"],
+      );
+      await webSocketChannel.ready;
+      webSocketChannel.sink.add(jsonEncode(WebSocketPushEnableRequest.toJson(
+        dataTypes: [
+          TypeName.emailType,
+          TypeName.mailboxType,
+        ]
+      )));
+      timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+        webSocketChannel.sink.add(jsonEncode(WebSocketEchoRequest.toJson()));
+      });
+      yield* webSocketChannel.stream;
     } catch (e) {
       logError('RemoteWebSocketDatasourceImpl::getWebSocketChannel():error: $e');
+      timer?.cancel();
       rethrow;
     }
   }
@@ -76,15 +86,5 @@ class WebSocketDatasourceImpl implements WebSocketDatasource {
     if (webSocketUri == null) throw WebSocketUriUnavailableException();
 
     return webSocketUri;
-  }
-
-  Stream _webSocketListener(BroadcastChannel broadcastChannel) {
-    return broadcastChannel.onMessage.map((event) {
-      if (event.data == _webSocketClosed) {
-        throw WebSocketClosedException();
-      }
-
-      return event.data;
-    });
   }
 }
