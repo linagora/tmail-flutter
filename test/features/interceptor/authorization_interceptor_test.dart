@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:core/data/constants/constant.dart';
 import 'package:core/data/network/dio_client.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:mockito/annotations.dart';
@@ -76,6 +77,10 @@ void main() {
     dio.interceptors.add(authorizationInterceptors);
 
     dioAdapter = DioAdapter(dio: dio);
+
+    dotenv.testLoad(mergeWith: {
+      'PLATFORM': 'other'
+    });
   });
 
   group('AuthorizationInterceptor test', () {

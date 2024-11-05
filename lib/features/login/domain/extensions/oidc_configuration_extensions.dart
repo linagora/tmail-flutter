@@ -11,13 +11,13 @@ extension OidcConfigurationExtensions on OIDCConfiguration {
 
   String get redirectUrl {
     if (PlatformInfo.isWeb) {
-      if (AppConfig.domainRedirectUrl.endsWith('/')) {
-        return AppConfig.domainRedirectUrl + loginRedirectOidcWeb;
-      } else {
-        return '${AppConfig.domainRedirectUrl}/$loginRedirectOidcWeb';
-      }
+      return AppConfig.domainRedirectUrl.endsWith('/')
+        ? AppConfig.domainRedirectUrl + loginRedirectOidcWeb
+        : '${AppConfig.domainRedirectUrl}/$loginRedirectOidcWeb';
     } else {
-      return redirectOidcMobile;
+      return authority == AppConfig.saasRegistrationUrl
+        ? OIDCConstant.twakeWorkplaceRedirectUrl
+        : redirectOidcMobile;
     }
   }
 
@@ -29,11 +29,13 @@ extension OidcConfigurationExtensions on OIDCConfiguration {
         return '${AppConfig.domainRedirectUrl}/$logoutRedirectOidcWeb';
       }
     } else {
-      return redirectOidcMobile;
-    }
+      return authority == AppConfig.saasRegistrationUrl
+        ? OIDCConstant.twakeWorkplaceRedirectUrl
+        : redirectOidcMobile;
+  }
   }
 
-  String get singInUrl => ServicePath(authority)
+  String get signInTWPUrl => ServicePath(authority)
     .withQueryParameters([
       StringQueryParameter(
         OIDCConstant.postLoginRedirectUrlPathParams,
@@ -43,7 +45,7 @@ extension OidcConfigurationExtensions on OIDCConfiguration {
     ])
     .generateEndpointPath();
 
-  String get signUpUrl => ServicePath(authority)
+  String get signUpTWPUrl => ServicePath(authority)
     .withQueryParameters([
       StringQueryParameter(
         OIDCConstant.postRegisteredRedirectUrlPathParams,

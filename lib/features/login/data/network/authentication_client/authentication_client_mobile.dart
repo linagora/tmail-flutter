@@ -102,7 +102,7 @@ class AuthenticationClientMobile implements AuthenticationClientBase {
   @override
   Future<TokenOIDC> signInTwakeWorkplace(OIDCConfiguration oidcConfiguration) async {
     final uri = await FlutterWebAuth2.authenticate(
-      url: oidcConfiguration.singInUrl,
+      url: oidcConfiguration.signInTWPUrl,
       callbackUrlScheme: OIDCConstant.twakeWorkplaceUrlScheme,
       options: const FlutterWebAuth2Options(
         intentFlags: ephemeralIntentFlags,
@@ -115,7 +115,7 @@ class AuthenticationClientMobile implements AuthenticationClientBase {
   @override
   Future<TokenOIDC> signUpTwakeWorkplace(OIDCConfiguration oidcConfiguration) async {
     final uri = await FlutterWebAuth2.authenticate(
-      url: oidcConfiguration.signUpUrl,
+      url: oidcConfiguration.signUpTWPUrl,
       callbackUrlScheme: OIDCConstant.twakeWorkplaceUrlScheme,
       options: const FlutterWebAuth2Options(
         intentFlags: ephemeralIntentFlags,
