@@ -1,16 +1,16 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:jmap_dart_client/jmap/push/state_change.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class InitializingWebSocketPushChannel extends LoadingState {}
 
-class WebSocketPushStateReceived extends UIState {
-  final StateChange? stateChange;
+class WebSocketConnectionSuccess extends UIState {
+  final WebSocketChannel webSocketChannel;
 
-  WebSocketPushStateReceived(this.stateChange);
+  WebSocketConnectionSuccess(this.webSocketChannel);
 
   @override
-  List<Object?> get props => [stateChange];
+  List<Object?> get props => [webSocketChannel];
 }
 
 class WebSocketConnectionFailed extends FeatureFailure {
