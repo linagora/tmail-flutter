@@ -7,7 +7,6 @@ import 'package:tip_dialog/tip_dialog.dart';
 import 'package:tmail_ui_user/features/starting_page/presentation/twake_welcome/twake_welcome_controller.dart';
 import 'package:tmail_ui_user/features/starting_page/presentation/twake_welcome/twake_welcome_view_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class TwakeWelcomeView extends GetWidget<TwakeWelcomeController> {
 
@@ -34,14 +33,10 @@ class TwakeWelcomeView extends GetWidget<TwakeWelcomeController> {
           hoverColor: Colors.transparent,
           highlightColor: Colors.transparent,
           overlayColor: WidgetStateProperty.all(Colors.transparent),
-          signInTitle: AppConfig.isSaasPlatForm
-            ? AppLocalizations.of(context).signIn.capitalizeFirst ?? ''
-            : null,
+          signInTitle: AppLocalizations.of(context).signIn.capitalizeFirst ?? '',
           onSignInOnTap: () => controller.onClickSignIn(context),
           onCreateTwakeIdOnTap: () => controller.onSignUpTwakeWorkplace(context),
-          createTwakeIdTitle: AppConfig.isSaasPlatForm
-            ? AppLocalizations.of(context).createTwakeId
-            : null,
+          createTwakeIdTitle: AppLocalizations.of(context).createTwakeId,
           useCompanyServerTitle: AppLocalizations.of(context).useCompanyServer,
           description: AppLocalizations.of(context).descriptionWelcomeTo,
           descriptionTextStyle: TwakeWelcomeViewStyle.descriptionTextStyle,
