@@ -1,18 +1,18 @@
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:tmail_ui_user/features/push_notification/data/model/web_socket_request.dart';
 
-class WebSocketEchoRequest {
+class WebSocketEchoRequest extends WebSocketRequest {
   static const String type = 'Request';
   static const String id = 'R1';
-  static CapabilityIdentifier using = CapabilityIdentifier.jmapCore;
+  static final CapabilityIdentifier usingCapability = CapabilityIdentifier.jmapCore;
   static const String method = 'Core/echo';
 
-  const WebSocketEchoRequest._();
-
-  static Map<String, dynamic> toJson() {
+  @override
+  Map<String, dynamic> toJson() {
     return {
       '@type': type,
       'id': id,
-      'using': [using.value.toString()],
+      'using': [usingCapability.value.toString()],
       'methodCalls': [[method, {}, 'c0']],
     };
   }

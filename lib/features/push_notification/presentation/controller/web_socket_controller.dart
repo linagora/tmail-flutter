@@ -84,6 +84,9 @@ class WebSocketController extends PushBaseController {
   }
 
   void _handleWebSocketConnectionRetry() {
+    _webSocketSubscription?.cancel();
+    _webSocketChannel = null;
+    _webSocketPingTimer?.cancel();
     if (_retryRemained > 0) {
       _retryRemained--;
       _connectWebSocket(accountId, session);
@@ -98,7 +101,7 @@ class WebSocketController extends PushBaseController {
 
   void _pingWebSocket() {
     _webSocketPingTimer = Timer.periodic(const Duration(seconds: 10), (_) {
-      _webSocketChannel?.sink.add(jsonEncode(WebSocketEchoRequest.toJson()));
+      _webSocketChannel?.sink.add(jsonEncode(WebSocketEchoRequest().toJson()));
     });
   }
 
@@ -132,7 +135,7 @@ class WebSocketController extends PushBaseController {
       },
       onDone: () {
         log('WebSocketController::_listenToWebSocket():onDone');
-        handleFailureViewState(WebSocketConnectionFailed(exception: null));
+        _handleWebSocketConnectionRetry();
       },
     );
   }
