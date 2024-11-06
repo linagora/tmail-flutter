@@ -144,30 +144,16 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                   )),
                   const SizedBox(height: 24),
                   _buildListRuleFilterConditionList(context, RuleFilterConditionScreenType.desktop),
-                  Container(
-                    padding: const EdgeInsets.only(top: 8),
-                    child: InkWell(
-                      onTap: controller.tapAddCondition,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          SvgPicture.asset(
-                            controller.imagePaths.icAddNewFolder,
-                            fit: BoxFit.fill,
-                          ),
-                          const SizedBox(width: 15,),
-                          Text(
-                            AppLocalizations.of(context).addCondition,
-                            maxLines: 1,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 17,
-                              color: AppColor.primaryColor
-                            )
-                          )
-                        ],
-                      ),
-                    ),
+                  TMailButtonWidget(
+                    icon: controller.imagePaths.icAddNewFolder,
+                    text: AppLocalizations.of(context).addCondition,
+                    maxLines: RuleFilterActionStyles.maxLines,
+                    iconSpace: 15,
+                    textStyle: RuleFilterActionStyles.buttonTextStyle,
+                    margin: const EdgeInsets.only(top: 8),
+                    backgroundColor: Colors.transparent,
+                    mainAxisSize: MainAxisSize.min,
+                    onTapActionCallback: controller.tapAddCondition,
                   ),
                   const SizedBox(height: 24),
                   Text(AppLocalizations.of(context).actionTitleRulesFilter,
@@ -201,26 +187,16 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                   }),
                   Obx(() {
                     if (controller.isShowAddAction.value == true) {
-                      return Container(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: InkWell(
-                          onTap: controller.tapAddAction,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SvgPicture.asset(
-                                controller.imagePaths.icAddNewFolder,
-                                fit: BoxFit.fill,
-                              ),
-                              const SizedBox(width: 15,),
-                              Text(
-                                AppLocalizations.of(context).addAction,
-                                maxLines: RuleFilterActionStyles.maxLines,
-                                style: RuleFilterActionStyles.addActionButtonTextStyle
-                              )
-                            ],
-                          ),
-                        ),
+                      return TMailButtonWidget(
+                        icon: controller.imagePaths.icAddNewFolder,
+                        text: AppLocalizations.of(context).addAction,
+                        maxLines: RuleFilterActionStyles.maxLines,
+                        iconSpace: 15,
+                        textStyle: RuleFilterActionStyles.buttonTextStyle,
+                        margin: const EdgeInsets.only(top: 8),
+                        backgroundColor: Colors.transparent,
+                        mainAxisSize: MainAxisSize.min,
+                        onTapActionCallback: controller.tapAddAction,
                       );
                     } else {
                       return const SizedBox.shrink();
@@ -305,30 +281,16 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                       )),
                       const SizedBox(height: 24),
                       _buildListRuleFilterConditionList(context, RuleFilterConditionScreenType.tablet),
-                      Container(
-                        padding: const EdgeInsets.only(top: 8),
-                        child: InkWell(
-                          onTap: controller.tapAddCondition,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              SvgPicture.asset(
-                                controller.imagePaths.icAddNewFolder,
-                                fit: BoxFit.fill,
-                              ),
-                              const SizedBox(width: 15,),
-                              Text(
-                                AppLocalizations.of(context).addCondition,
-                                maxLines: 1,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  color: AppColor.primaryColor
-                                )
-                              )
-                            ],
-                          ),
-                        ),
+                      TMailButtonWidget(
+                        icon: controller.imagePaths.icAddNewFolder,
+                        text: AppLocalizations.of(context).addCondition,
+                        maxLines: RuleFilterActionStyles.maxLines,
+                        iconSpace: 15,
+                        textStyle: RuleFilterActionStyles.buttonTextStyle,
+                        margin: const EdgeInsets.only(top: 8),
+                        backgroundColor: Colors.transparent,
+                        mainAxisSize: MainAxisSize.min,
+                        onTapActionCallback: controller.tapAddCondition,
                       ),
                       const SizedBox(height: 24),
                       Text(AppLocalizations.of(context).actionTitleRulesFilter,
@@ -362,26 +324,16 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                       }),
                       Obx(() {
                         if (controller.isShowAddAction.value == true) {
-                          return Container(
-                            padding: const EdgeInsets.only(top: 8),
-                            child: InkWell(
-                              onTap: controller.tapAddAction,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  SvgPicture.asset(
-                                    controller.imagePaths.icAddNewFolder,
-                                    fit: BoxFit.fill,
-                                  ),
-                                  const SizedBox(width: 15,),
-                                  Text(
-                                    AppLocalizations.of(context).addAction,
-                                    maxLines: RuleFilterActionStyles.maxLines,
-                                    style: RuleFilterActionStyles.addActionButtonTextStyle
-                                  )
-                                ],
-                              ),
-                            ),
+                          return TMailButtonWidget(
+                            icon: controller.imagePaths.icAddNewFolder,
+                            text: AppLocalizations.of(context).addAction,
+                            maxLines: RuleFilterActionStyles.maxLines,
+                            iconSpace: 15,
+                            textStyle: RuleFilterActionStyles.buttonTextStyle,
+                            margin: const EdgeInsets.only(top: 8),
+                            backgroundColor: Colors.transparent,
+                            mainAxisSize: MainAxisSize.min,
+                            onTapActionCallback: controller.tapAddAction,
                           );
                         } else {
                           return const SizedBox.shrink();
@@ -449,7 +401,6 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
               child: Padding(
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Obx(() => RulesFilterInputField(
                         hintText: AppLocalizations.of(context).rulesNameHintTextInput,
@@ -476,44 +427,35 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                       )),
                       const SizedBox(height: 24),
                       _buildListRuleFilterConditionList(context, RuleFilterConditionScreenType.mobile),
-                      Container(
-                        padding: const EdgeInsets.only(top: 12),
-                        child: InkWell(
-                          onTap: controller.tapAddCondition,
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              SvgPicture.asset(
-                                controller.imagePaths.icAddNewFolder,
-                                fit: BoxFit.fill,
-                              ),
-                              const SizedBox(width: 15,),
-                              Text(
-                                AppLocalizations.of(context).addCondition,
-                                maxLines: 1,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 17,
-                                  color: AppColor.primaryColor
-                                )
-                              )
-                            ],
-                          ),
-                        ),
+                      TMailButtonWidget(
+                        icon: controller.imagePaths.icAddNewFolder,
+                        text: AppLocalizations.of(context).addCondition,
+                        maxLines: RuleFilterActionStyles.maxLines,
+                        iconSpace: 15,
+                        textStyle: RuleFilterActionStyles.buttonTextStyle,
+                        margin: const EdgeInsets.only(top: 8),
+                        backgroundColor: Colors.transparent,
+                        mainAxisSize: MainAxisSize.min,
+                        onTapActionCallback: controller.tapAddCondition,
                       ),
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 12),
                         child: Divider(),
                       ),
-                      Text(AppLocalizations.of(context).actionTitleRulesFilter,
+                      Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: Text(
+                          AppLocalizations.of(context).actionTitleRulesFilter,
                           overflow: CommonTextStyle.defaultTextOverFlow,
                           softWrap: CommonTextStyle.defaultSoftWrap,
                           maxLines: 1,
                           style: const TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 16,
-                              color: Colors.black)),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Colors.black,
+                          )
+                        ),
+                      ),
                       const SizedBox(height: 24),
                       Obx(() {
                         return RuleFilterActionListWidget(
@@ -545,27 +487,16 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                       }),
                       Obx(() {
                         if (controller.isShowAddAction.value == true) {
-                          return Container(
-                            padding: const EdgeInsets.only(top: 12),
-                            child: InkWell(
-                              onTap: controller.tapAddAction,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  SvgPicture.asset(
-                                    controller.imagePaths.icAddNewFolder,
-                                    fit: BoxFit.fill,
-                                  ),
-                                  const SizedBox(width: 15,),
-                                  Text(
-                                    AppLocalizations.of(context).addAction,
-                                    maxLines: RuleFilterActionStyles.maxLines,
-                                    style: RuleFilterActionStyles.addActionButtonTextStyle
-                                  )
-                                ],
-                              ),
-                            ),
+                          return TMailButtonWidget(
+                            icon: controller.imagePaths.icAddNewFolder,
+                            text: AppLocalizations.of(context).addAction,
+                            maxLines: RuleFilterActionStyles.maxLines,
+                            iconSpace: 15,
+                            textStyle: RuleFilterActionStyles.buttonTextStyle,
+                            margin: const EdgeInsets.only(top: 8),
+                            backgroundColor: Colors.transparent,
+                            mainAxisSize: MainAxisSize.min,
+                            onTapActionCallback: controller.tapAddAction,
                           );
                         } else {
                           return const SizedBox.shrink();

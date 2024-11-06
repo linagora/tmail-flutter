@@ -15,7 +15,7 @@ class RuleFilterActionStyles {
     color: color,
   );
   static const double itemDistance = 12.0;
-  static const TextStyle addActionButtonTextStyle = TextStyle(
+  static const TextStyle buttonTextStyle = TextStyle(
     fontWeight: FontWeight.w500,
     fontSize: 17.0,
     color: AppColor.primaryColor,
