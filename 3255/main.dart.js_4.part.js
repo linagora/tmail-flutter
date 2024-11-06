@@ -3354,21 +3354,22 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.emailAddress = t0;
       this.key = t1;
     },
-    EmailQuickSearchItemTileWidget$(_presentationEmail, _presentationMailbox, contentPadding) {
+    EmailQuickSearchItemTileWidget$(_presentationEmail, _presentationMailbox, contentPadding, query) {
       var t1;
       $.$get$Get();
       t1 = $.GetInstance__getInstance;
       if (t1 == null)
         t1 = $.GetInstance__getInstance = C.C_GetInstance;
-      return new B.EmailQuickSearchItemTileWidget(t1.find$1$1$tag(0, null, type$.ImagePaths), _presentationEmail, _presentationMailbox, contentPadding, null);
+      return new B.EmailQuickSearchItemTileWidget(t1.find$1$1$tag(0, null, type$.ImagePaths), _presentationEmail, _presentationMailbox, contentPadding, query, null);
     },
-    EmailQuickSearchItemTileWidget: function EmailQuickSearchItemTileWidget(t0, t1, t2, t3, t4) {
+    EmailQuickSearchItemTileWidget: function EmailQuickSearchItemTileWidget(t0, t1, t2, t3, t4, t5) {
       var _ = this;
       _.imagePath = t0;
       _._presentationEmail = t1;
       _._email_quick_search_item_tile_widget$_presentationMailbox = t2;
       _.contentPadding = t3;
-      _.key = t4;
+      _.query = t4;
+      _.key = t5;
     },
     EmailQuickSearchItemTileWidget_build_closure: function EmailQuickSearchItemTileWidget_build_closure(t0) {
       this.$this = t0;
@@ -18576,7 +18577,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.EmailQuickSearchItemTileWidget_build_closure.prototype = {
     call$2(context, constraints) {
-      var t1, t2, t3, t4, t5, _null = null,
+      var t1, t2, t3, t4, t5, t6, t7, t8, _null = null,
         maxWidthItem = constraints.maxWidth;
       A.log("EmailQuickSearchItemTileWidget::build(): maxWidthItem: " + A.S(maxWidthItem), C.Level_3);
       t1 = this.$this;
@@ -18585,12 +18586,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = C.EdgeInsetsDirectional_12_12_12_12;
       t3 = t1._presentationEmail;
       t4 = A.SvgPicture$asset(t3.get$hasStarred() ? "assets/images/ic_star.svg" : "assets/images/ic_unstar.svg", C.Alignment_0_0, _null, C.BoxFit_0, 18, _null, _null, 18);
-      t5 = type$.JSArray_Widget;
-      t1 = A._setArrayType([A.Container$(_null, A.Text$(t1._getInformationSender$0(), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_69t1, _null, _null, _null, _null, _null), C.Clip_0, _null, new A.BoxConstraints(0, maxWidthItem / 3, 0, 1 / 0), _null, _null, _null, _null, _null, _null, _null, _null, _null), E.SizedBox_16_null_null_null, A.Expanded$(A.Text$(t3.getEmailTitle$0(), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_69t23, _null, _null, _null, _null, _null), 1)], t5);
+      t5 = t1._getInformationSender$0();
+      t1 = t1.query.value;
+      t6 = t1;
+      t6 = A.Container$(_null, B.RichTextBuilder$(false, _null, C.TextStyle_69t1, A.TextStyle$(_null, C.Color_4294956864, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, C.FontWeight_5_600, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), t5, t6), C.Clip_0, _null, new A.BoxConstraints(0, maxWidthItem / 3, 0, 1 / 0), _null, _null, _null, _null, _null, _null, _null, _null, _null);
+      t5 = t3.getEmailTitle$0();
+      t7 = t1;
+      t8 = type$.JSArray_Widget;
+      t7 = A._setArrayType([t6, E.SizedBox_16_null_null_null, A.Expanded$(B.RichTextBuilder$(true, B.PresentationEmailExtension__sanitizeSearchSnippet(t3, t3.SearchSnippetMixin_searchSnippetSubject), C.TextStyle_69t23, A.TextStyle$(_null, C.Color_4294956864, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, 13, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), t5, t7), 1)], t8);
       if (t3.hasAttachment === true)
-        t1.push(new A.Padding(C.EdgeInsets_8_0_8_0, A.SvgPicture$asset("assets/images/ic_attachment.svg", C.Alignment_0_0, _null, C.BoxFit_0, 14, _null, _null, 14), _null));
-      t1.push(A.Text$(B.PresentationEmailExtension_getReceivedAt(t3, context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale._rawToString$1("-"), _null), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_69t23, C.TextAlign_1, _null, _null, _null, _null));
-      return new A.Padding(t2, A.Row$(A._setArrayType([new A.Padding(C.EdgeInsets_0_2_0_0, t4, _null), C.SizedBox_8_null_null_null, A.Expanded$(A.Column$(A._setArrayType([A.Row$(t1, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_2, C.MainAxisSize_1, _null), D.SizedBox_null_3_null_null, A.Text$(t3.getPartialContent$0(), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_yql, _null, _null, _null, _null, _null)], t5), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1)], t5), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_2, C.MainAxisSize_1, _null), _null);
+        t7.push(new A.Padding(C.EdgeInsets_8_0_8_0, A.SvgPicture$asset("assets/images/ic_attachment.svg", C.Alignment_0_0, _null, C.BoxFit_0, 14, _null, _null, 14), _null));
+      t7.push(A.Text$(B.PresentationEmailExtension_getReceivedAt(t3, context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale._rawToString$1("-"), _null), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_69t23, C.TextAlign_1, _null, _null, _null, _null));
+      t5 = A.Row$(t7, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_2, C.MainAxisSize_1, _null);
+      t6 = t3.getPartialContent$0();
+      return new A.Padding(t2, A.Row$(A._setArrayType([new A.Padding(C.EdgeInsets_0_2_0_0, t4, _null), C.SizedBox_8_null_null_null, A.Expanded$(A.Column$(A._setArrayType([t5, D.SizedBox_null_3_null_null, B.RichTextBuilder$(true, B.PresentationEmailExtension__sanitizeSearchSnippet(t3, t3.SearchSnippetMixin_searchSnippetPreview), C.TextStyle_yql, A.TextStyle$(_null, C.Color_4294956864, C.Color_4285364357, _null, _null, _null, _null, _null, _null, _null, _null, 13, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), t6, t1)], t8), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1)], t8), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_2, C.MainAxisSize_1, _null), _null);
     },
     $signature: 1785
   };
@@ -18711,7 +18720,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchInputFormWidget_build__closure3.prototype = {
     call$2(context, email) {
-      return B.EmailQuickSearchItemTileWidget$(email, this.$this._search_input_form_widget$_dashBoardController.selectedMailbox.get$value(0), null);
+      var t1 = this.$this;
+      return B.EmailQuickSearchItemTileWidget$(email, t1._search_input_form_widget$_dashBoardController.selectedMailbox.get$value(0), null, new A.SearchQuery(C.JSString_methods.trim$0(t1._searchController.searchInputController._change_notifier$_value.text)));
     },
     $signature: typesOffset + 69
   };
@@ -19321,7 +19331,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchEmailView__buildListSuggestionSearch_closure.prototype = {
     call$2(context, index) {
-      var t5, t6, _null = null,
+      var t5, t6, t7, _null = null,
         t1 = this.listSuggestionSearch,
         t2 = J.$index$asx(t1.get$value(0), index),
         t3 = this.$this,
@@ -19331,7 +19341,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5 = A._instanceType(t3)._eval$1("GetWidget.S");
       t6 = t5._as(t4.get(t3)).EmailActionController_mailboxDashBoardController.selectedMailbox.get$value(0);
       A.Expando__checkType(t3);
-      return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, B.EmailQuickSearchItemTileWidget$(t2, t6, B.SearchEmailViewStyle_getSearchSuggestionListPadding(context, t5._as(t4.get(t3)).EmailActionController_responsiveUtils)), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.SearchEmailView__buildListSuggestionSearch__closure(t3, t1, index, context), _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
+      t7 = C.JSString_methods.trim$0(t5._as(t4.get(t3)).textInputSearchController._change_notifier$_value.text);
+      A.Expando__checkType(t3);
+      return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, B.EmailQuickSearchItemTileWidget$(t2, t6, B.SearchEmailViewStyle_getSearchSuggestionListPadding(context, t5._as(t4.get(t3)).EmailActionController_responsiveUtils), new A.SearchQuery(t7)), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.SearchEmailView__buildListSuggestionSearch__closure(t3, t1, index, context), _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
     },
     $signature: 249
   };
@@ -21740,5 +21752,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "nuXpmf//qURgoK/WO9/bWEuzKYU=");
+})($__dart_deferred_initializers__, "vBVKgF/3Xw56z0qByOuVxX6mwbI=");
 ;
