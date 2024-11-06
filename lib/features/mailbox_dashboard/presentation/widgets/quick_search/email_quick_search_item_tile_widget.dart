@@ -7,6 +7,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 
 class EmailQuickSearchItemTileWidget extends StatelessWidget {
 
@@ -15,12 +16,14 @@ class EmailQuickSearchItemTileWidget extends StatelessWidget {
   final PresentationEmail _presentationEmail;
   final PresentationMailbox? _presentationMailbox;
   final EdgeInsetsGeometry? contentPadding;
+  final SearchQuery? searchQuery;
 
   EmailQuickSearchItemTileWidget(
       this._presentationEmail,
       this._presentationMailbox, {
       Key? key,
       this.contentPadding,
+      this.searchQuery,
   }) : super(key: key);
 
   @override
@@ -46,54 +49,78 @@ class EmailQuickSearchItemTileWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                     Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                       Container(
-                         constraints: BoxConstraints(maxWidth: maxWidthItem / 3),
-                         child: Text(_getInformationSender(),
-                             maxLines: 1,
-                             overflow: CommonTextStyle.defaultTextOverFlow,
-                             softWrap: CommonTextStyle.defaultSoftWrap,
-                             style: const TextStyle(
-                                 fontSize: 15,
-                                 fontWeight: FontWeight.w600,
-                                 color: Colors.black)),
-                       ),
-                       const SizedBox(width: 16),
-                       Expanded(
-                         child: Text(_presentationEmail.getEmailTitle(),
-                             maxLines: 1,
-                             overflow: CommonTextStyle.defaultTextOverFlow,
-                             softWrap: CommonTextStyle.defaultSoftWrap,
-                             style: const TextStyle(
-                                 fontSize: 13,
-                                 fontWeight: FontWeight.normal,
-                                 color: Colors.black)),
-                       ),
-                       if (_presentationEmail.hasAttachment == true)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                          child: SvgPicture.asset(imagePath.icAttachment, width: 14, height: 14, fit: BoxFit.fill),
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                      Container(
+                        constraints: BoxConstraints(maxWidth: maxWidthItem / 3),
+                        child: RichTextBuilder(
+                          textOrigin: _getInformationSender(),
+                          wordToStyle: searchQuery?.value ?? '',
+                          styleOrigin: const TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                          ),
+                          styleWord: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.black,
+                            backgroundColor: Colors.amberAccent[200],
+                          ),
                         ),
-                       Text(_presentationEmail.getReceivedAt(Localizations.localeOf(context).toLanguageTag()),
-                           textAlign: TextAlign.right,
-                           maxLines: 1,
-                           overflow: CommonTextStyle.defaultTextOverFlow,
-                           softWrap: CommonTextStyle.defaultSoftWrap,
-                           style: const TextStyle(
-                               fontSize: 13,
-                               fontWeight: FontWeight.normal,
-                               color: Colors.black))
-                     ]),
-                    const SizedBox(height: 3),
-                    Text(_presentationEmail.getPartialContent(),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: RichTextBuilder(
+                          textOrigin: _presentationEmail.getEmailTitle(),
+                          wordToStyle: searchQuery?.value ?? '',
+                          preMarkedText: _presentationEmail.sanitizedSearchSnippetSubject,
+                          ensureHighlightVisible: true,
+                          styleOrigin: const TextStyle(
+                            fontSize: 13,
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal
+                          ),
+                          styleWord: TextStyle(
+                            fontSize: 13,
+                            backgroundColor: Colors.amberAccent[200],
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal
+                          )
+                        ),
+                      ),
+                      if (_presentationEmail.hasAttachment == true)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
+                        child: SvgPicture.asset(imagePath.icAttachment, width: 14, height: 14, fit: BoxFit.fill),
+                      ),
+                      Text(_presentationEmail.getReceivedAt(Localizations.localeOf(context).toLanguageTag()),
+                        textAlign: TextAlign.right,
                         maxLines: 1,
                         overflow: CommonTextStyle.defaultTextOverFlow,
                         softWrap: CommonTextStyle.defaultSoftWrap,
                         style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.normal,
-                            color: AppColor.colorContentEmail))
-                    ]
+                          fontSize: 13,
+                          fontWeight: FontWeight.normal,
+                          color: Colors.black))
+                    ]),
+                    const SizedBox(height: 3),
+                    RichTextBuilder(
+                      textOrigin: _presentationEmail.getPartialContent(),
+                      wordToStyle: searchQuery?.value ?? '',
+                      preMarkedText: _presentationEmail.sanitizedSearchSnippetPreview,
+                      ensureHighlightVisible: true,
+                      styleOrigin: const TextStyle(
+                        fontSize: 13,
+                        color: AppColor.colorContentEmail,
+                        fontWeight: FontWeight.normal
+                      ),
+                      styleWord: TextStyle(
+                        fontSize: 13,
+                        color: AppColor.colorContentEmail,
+                        backgroundColor: Colors.amberAccent[200],
+                      )
+                    ),
+                  ]
                 ),
               ),
             ],
