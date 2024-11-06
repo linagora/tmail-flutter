@@ -6046,13 +6046,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return new A.LayoutBuilder(new B._RichTextBuilderState_build_closure(_this, text), _null);
     },
     _rich_text_builder$_getSpans$4$styleOrigin$styleWord$text$word(styleOrigin, styleWord, text, word) {
-      var startIndex, endIndex, spanText, _null = null,
-        spans = A._setArrayType([], type$.JSArray_InlineSpan),
-        t1 = text.length,
-        t2 = word.length,
-        t3 = this.firstHighlightKey,
-        spanBoundary = 0,
-        firstHighlightKeyed = false;
+      var spans, t2, t3, spanBoundary, firstHighlightKeyed, startIndex, endIndex, spanText, _null = null,
+        t1 = word.length;
+      if (t1 === 0)
+        return A._setArrayType([A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, styleOrigin, text)], type$.JSArray_InlineSpan);
+      spans = A._setArrayType([], type$.JSArray_InlineSpan);
+      t2 = text.length;
+      t3 = this.firstHighlightKey;
+      spanBoundary = 0;
+      firstHighlightKeyed = false;
       do {
         startIndex = C.JSString_methods.indexOf$2(text.toLowerCase(), word.toLowerCase(), spanBoundary);
         if (startIndex === -1) {
@@ -6061,14 +6063,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
         if (startIndex > spanBoundary)
           spans.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, styleOrigin, C.JSString_methods.substring$2(text, spanBoundary, startIndex)));
-        endIndex = startIndex + t2;
+        endIndex = startIndex + t1;
         spanText = C.JSString_methods.substring$2(text, startIndex, endIndex);
         if (!firstHighlightKeyed) {
           spans.push(new A.WidgetSpan(A.SizedBox$shrink(t3), C.PlaceholderAlignment_4, _null, _null));
           firstHighlightKeyed = true;
         }
         spans.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, styleWord, spanText));
-        if (endIndex < t1) {
+        if (endIndex < t2) {
           spanBoundary = endIndex;
           continue;
         } else
@@ -21738,5 +21740,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "z00opwXtaUgAO1hovzTKjIaPLnQ=");
+})($__dart_deferred_initializers__, "nuXpmf//qURgoK/WO9/bWEuzKYU=");
 ;
