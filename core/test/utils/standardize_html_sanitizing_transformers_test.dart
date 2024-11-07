@@ -89,7 +89,7 @@ void main() {
       ];
 
       const listHTMLTags = [
-        'div', 'span', 'p', 'a', 'u', 'i', 'table'
+        'div', 'span', 'p', 'a', 'u', 'i', 'table', 'section'
       ];
 
       for (var tag in listHTMLTags) {
