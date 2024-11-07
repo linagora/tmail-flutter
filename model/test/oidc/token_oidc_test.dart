@@ -20,24 +20,6 @@ void main() {
       expect(() => TokenOIDC.fromUri(uriString), throwsA(isA<AccessTokenIsNullException>()));
     });
 
-    test('throws RefreshTokenIsNullException if refresh_token is missing', () {
-      const uriString = 'https://example.com/callback?access_token=valid_access&id_token=valid_id&expires_in=3600';
-
-      expect(() => TokenOIDC.fromUri(uriString), throwsA(isA<RefreshTokenIsNullException>()));
-    });
-
-    test('throws TokenIdIsNullException if id_token is missing', () {
-      const uriString = 'https://example.com/callback?access_token=valid_access&refresh_token=valid_refresh&expires_in=3600';
-
-      expect(() => TokenOIDC.fromUri(uriString), throwsA(isA<TokenIdIsNullException>()));
-    });
-
-    test('throws ExpiresTimeIsNullException if expires_in is missing', () {
-      const uriString = 'https://example.com/callback?access_token=valid_access&refresh_token=valid_refresh&id_token=valid_id';
-
-      expect(() => TokenOIDC.fromUri(uriString), throwsA(isA<ExpiresTimeIsNullException>()));
-    });
-
     test('throws FormatException on invalid URL format', () {
       const uriString = '::Not valid URI::';
 

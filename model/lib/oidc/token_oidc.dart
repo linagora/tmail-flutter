@@ -37,26 +37,19 @@ class TokenOIDC with EquatableMixin {
       throw AccessTokenIsNullException();
     }
 
-    final refreshToken = queryParams['refresh_token'];
-    if (refreshToken == null || refreshToken.isEmpty) {
-      throw RefreshTokenIsNullException();
-    }
-
-    final idToken = queryParams['id_token'];
-    if (idToken == null || idToken.isEmpty) {
-      throw TokenIdIsNullException();
-    }
-
+    final refreshToken = queryParams['refresh_token'] ?? '';
+    final idToken = queryParams['id_token'] ?? '';
     final expiresIn = queryParams['expires_in'];
-    if (expiresIn == null || expiresIn.isEmpty) {
-      throw ExpiresTimeIsNullException();
-    }
+
+    final expiredTime = expiresIn == null
+      ? null
+      : DateTime.now().add(Duration(seconds: int.parse(expiresIn)));
 
     return TokenOIDC(
       accessToken,
       TokenId(idToken),
       refreshToken,
-      expiredTime: DateTime.now().add(Duration(seconds: int.parse(expiresIn))),
+      expiredTime: expiredTime,
     );
   }
 

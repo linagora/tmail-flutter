@@ -14,6 +14,7 @@ import 'package:model/account/password.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/response/oidc_response.dart';
+import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
@@ -49,6 +50,8 @@ import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_m
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
+import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_twake_workplace_state.dart';
+import 'package:tmail_ui_user/features/starting_page/domain/usecase/sign_in_twake_workplace_interactor.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -70,6 +73,7 @@ class LoginController extends ReloadableController {
   final SaveLoginUsernameOnMobileInteractor _saveLoginUsernameOnMobileInteractor;
   final GetAllRecentLoginUsernameOnMobileInteractor _getAllRecentLoginUsernameOnMobileInteractor;
   final DNSLookupToGetJmapUrlInteractor _dnsLookupToGetJmapUrlInteractor;
+  final SignInTwakeWorkplaceInteractor _signInTwakeWorkplaceInteractor;
 
   final TextEditingController urlInputController = TextEditingController();
   final TextEditingController usernameInputController = TextEditingController();
@@ -99,6 +103,7 @@ class LoginController extends ReloadableController {
     this._saveLoginUsernameOnMobileInteractor,
     this._getAllRecentLoginUsernameOnMobileInteractor,
     this._dnsLookupToGetJmapUrlInteractor,
+    this._signInTwakeWorkplaceInteractor,
   );
 
   @override
@@ -130,7 +135,8 @@ class LoginController extends ReloadableController {
       _handleCheckOIDCIsAvailableFailure(failure);
     } else if (failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCIsAvailableFailure ||
-        failure is GetOIDCConfigurationFailure
+        failure is GetOIDCConfigurationFailure ||
+        failure is SignInTwakeWorkplaceFailure
     ) {
       _handleCommonOIDCFailure();
     } else if (failure is GetTokenOIDCFailure) {
@@ -168,6 +174,12 @@ class LoginController extends ReloadableController {
       _loginSuccessAction(success);
     } else if (success is DNSLookupToGetJmapUrlSuccess) {
       _handleDNSLookupToGetJmapUrlSuccess(success);
+    } else if (success is SignInTwakeWorkplaceSuccess) {
+      _synchronizeTokenAndGetSession(
+        baseUri: success.baseUri,
+        tokenOIDC: success.tokenOIDC,
+        oidcConfiguration: success.oidcConfiguration,
+      );
     } else {
       super.handleSuccessViewState(success);
     }
@@ -180,7 +192,9 @@ class LoginController extends ReloadableController {
       _handleCheckOIDCIsAvailableFailure(failure);
     } else if (failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCConfigurationFailure ||
-        failure is GetOIDCIsAvailableFailure) {
+        failure is GetOIDCIsAvailableFailure ||
+        failure is SignInTwakeWorkplaceFailure
+    ) {
       _handleCommonOIDCFailure();
     } else if (failure is GetTokenOIDCFailure) {
       _handleNoSuitableBrowserOIDC(failure)
@@ -326,9 +340,39 @@ class LoginController extends ReloadableController {
   void _getOIDCConfigurationSuccess(GetOIDCConfigurationSuccess success) {
     if (PlatformInfo.isWeb) {
       _authenticateOidcOnBrowserAction(success.oidcConfiguration);
+    } else if (success.oidcConfiguration.authority == AppConfig.saasRegistrationUrl) {
+      _getTokenOIDCOnSaaSPlatform(success.oidcConfiguration);
     } else {
       _getTokenOIDCAction(success.oidcConfiguration);
     }
+  }
+
+  void _getTokenOIDCOnSaaSPlatform(OIDCConfiguration oidcConfiguration) {
+    if (_currentBaseUrl != null) {
+      consumeState(_signInTwakeWorkplaceInteractor.execute(
+        baseUri: _currentBaseUrl!,
+        oidcConfiguration: oidcConfiguration,
+      ));
+    } else {
+      dispatchState(Left(GetTokenOIDCFailure(CanNotFoundBaseUrl())));
+    }
+  }
+
+  void _synchronizeTokenAndGetSession({
+    required Uri baseUri,
+    required TokenOIDC tokenOIDC,
+    required OIDCConfiguration oidcConfiguration,
+  }) {
+    dynamicUrlInterceptors.setJmapUrl(baseUri.toString());
+    dynamicUrlInterceptors.changeBaseUrl(baseUri.toString());
+    authorizationInterceptors.setTokenAndAuthorityOidc(
+      newToken: tokenOIDC,
+      newConfig: oidcConfiguration);
+    authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
+      newToken: tokenOIDC,
+      newConfig: oidcConfiguration);
+
+    getSessionAction();
   }
 
   void _getTokenOIDCAction(OIDCConfiguration config) {
@@ -357,15 +401,11 @@ class LoginController extends ReloadableController {
   }
 
   void _getTokenOIDCSuccess(GetTokenOIDCSuccess success) {
-    dynamicUrlInterceptors.setJmapUrl(_currentBaseUrl?.toString());
-    dynamicUrlInterceptors.changeBaseUrl(_currentBaseUrl?.toString());
-    authorizationInterceptors.setTokenAndAuthorityOidc(
-        newToken: success.tokenOIDC,
-        newConfig: success.configuration);
-    authorizationIsolateInterceptors.setTokenAndAuthorityOidc(
-        newToken: success.tokenOIDC,
-        newConfig: success.configuration);
-    getSessionAction();
+    _synchronizeTokenAndGetSession(
+      baseUri: _currentBaseUrl!,
+      tokenOIDC: success.tokenOIDC,
+      oidcConfiguration: success.configuration,
+    );
   }
 
   void _loginSuccessAction(AuthenticationUserSuccess success) {

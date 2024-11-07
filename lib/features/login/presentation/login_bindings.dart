@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/caching/clients/recent_login_username_cac
 import 'package:tmail_ui_user/features/login/data/datasource/login_datasource.dart';
 import 'package:tmail_ui_user/features/login/data/datasource_impl/hive_login_datasource_impl.dart';
 import 'package:tmail_ui_user/features/login/data/datasource_impl/login_datasource_impl.dart';
+import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/data/network/dns_service.dart';
 import 'package:tmail_ui_user/features/login/data/repository/login_repository_impl.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
@@ -26,6 +27,11 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_inte
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
+import 'package:tmail_ui_user/features/starting_page/data/datasource/saas_authentication_datasource.dart';
+import 'package:tmail_ui_user/features/starting_page/data/datasource_impl/saas_authentication_datasource_impl.dart';
+import 'package:tmail_ui_user/features/starting_page/data/repository/saas_authentication_repository_impl.dart';
+import 'package:tmail_ui_user/features/starting_page/domain/repository/saas_authentication_repository.dart';
+import 'package:tmail_ui_user/features/starting_page/domain/usecase/sign_in_twake_workplace_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
@@ -47,12 +53,15 @@ class LoginBindings extends BaseBindings {
       Get.find<SaveLoginUsernameOnMobileInteractor>(),
       Get.find<GetAllRecentLoginUsernameOnMobileInteractor>(),
       Get.find<DNSLookupToGetJmapUrlInteractor>(),
+      Get.find<SignInTwakeWorkplaceInteractor>(),
     ));
   }
 
   @override
   void bindingsDataSource() {
     Get.lazyPut<LoginDataSource>(() => Get.find<LoginDataSourceImpl>());
+    Get.lazyPut<SaasAuthenticationDataSource>(
+      () => Get.find<SaasAuthenticationDataSourceImpl>());
   }
 
   @override
@@ -64,6 +73,10 @@ class LoginBindings extends BaseBindings {
     ));
     Get.lazyPut(() => LoginDataSourceImpl(
       Get.find<DNSService>(),
+      Get.find<RemoteExceptionThrower>(),
+    ));
+    Get.lazyPut(() => SaasAuthenticationDataSourceImpl(
+      Get.find<AuthenticationClientBase>(),
       Get.find<RemoteExceptionThrower>(),
     ));
   }
@@ -98,11 +111,19 @@ class LoginBindings extends BaseBindings {
     Get.lazyPut(() => SaveLoginUsernameOnMobileInteractor(Get.find<LoginRepository>(),));
     Get.lazyPut(() => GetAllRecentLoginUsernameOnMobileInteractor(Get.find<LoginRepository>()));
     Get.lazyPut(() => DNSLookupToGetJmapUrlInteractor(Get.find<LoginRepository>()));
+    Get.lazyPut(() => SignInTwakeWorkplaceInteractor(
+      Get.find<SaasAuthenticationRepository>(),
+      Get.find<AuthenticationOIDCRepository>(),
+      Get.find<AccountRepository>(),
+      Get.find<CredentialRepository>(),
+    ));
   }
 
   @override
   void bindingsRepository() {
     Get.lazyPut<LoginRepository>(() => Get.find<LoginRepositoryImpl>());
+    Get.lazyPut<SaasAuthenticationRepository>(
+      () => Get.find<SaasAuthenticationRepositoryImpl>());
   }
 
   @override
@@ -113,5 +134,7 @@ class LoginBindings extends BaseBindings {
         DataSourceType.network: Get.find<LoginDataSource>(),
       }
     ));
+    Get.lazyPut(() => SaasAuthenticationRepositoryImpl(
+      Get.find<SaasAuthenticationDataSource>()));
   }
 }
