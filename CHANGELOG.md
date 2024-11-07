@@ -1,3 +1,7 @@
+## [0.13.6] - 2024-11-07
+### Fixed
+- Remove app grid in mobile
+
 ## [0.13.5] - 2024-10-24
 ### Fixed
 - Sanitize html 
