@@ -99,7 +99,20 @@
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
   <script>
-    loadLanguageResources().finally(initialWorkerService);
+    {{flutter_js}}
+    {{flutter_build_config}}
+    
+    loadLanguageResources().finally(initialTmailApp);
+
+    _flutter.loader.load({
+      serviceWorkerSettings: {
+        serviceWorkerVersion: {{flutter_service_worker_version}},
+      },
+      onEntrypointLoaded: async function(engineInitializer) {
+        const appRunner = await engineInitializer.initializeEngine();
+        await appRunner.runApp();
+      }
+    });
   </script>
   <script src="https://unpkg.com/pica/dist/pica.min.js" ></script> 
 </body>
