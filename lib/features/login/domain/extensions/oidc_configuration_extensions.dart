@@ -15,7 +15,7 @@ extension OidcConfigurationExtensions on OIDCConfiguration {
         ? AppConfig.domainRedirectUrl + loginRedirectOidcWeb
         : '${AppConfig.domainRedirectUrl}/$loginRedirectOidcWeb';
     } else {
-      return authority == AppConfig.saasRegistrationUrl
+      return _isSaasAuthority(authority)
         ? OIDCConstant.twakeWorkplaceRedirectUrl
         : redirectOidcMobile;
     }
@@ -29,11 +29,14 @@ extension OidcConfigurationExtensions on OIDCConfiguration {
         return '${AppConfig.domainRedirectUrl}/$logoutRedirectOidcWeb';
       }
     } else {
-      return authority == AppConfig.saasRegistrationUrl
+      return _isSaasAuthority(authority)
         ? OIDCConstant.twakeWorkplaceRedirectUrl
         : redirectOidcMobile;
+    }
   }
-  }
+
+  bool _isSaasAuthority(String authority) =>
+    authority == AppConfig.saasRegistrationUrl;
 
   String get signInTWPUrl => ServicePath(authority)
     .withQueryParameters([

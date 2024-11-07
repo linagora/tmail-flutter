@@ -46,11 +46,6 @@ class TwakeWelcomeController extends ReloadableController {
   void onClickSignIn(BuildContext context) {
     TipDialogHelper.loading(AppLocalizations.of(context).loadingPleaseWait);
 
-    if (AppConfig.saasJmapServerUrl.isEmpty) {
-      consumeState(Stream.value(Left(SignInTwakeWorkplaceFailure(CanNotFoundSaasServerUrl()))));
-      return;
-    }
-
     final baseUri = Uri.tryParse(AppConfig.saasJmapServerUrl);
 
     if (baseUri == null) {
@@ -70,11 +65,6 @@ class TwakeWelcomeController extends ReloadableController {
 
   void onSignUpTwakeWorkplace(BuildContext context) {
     TipDialogHelper.loading(AppLocalizations.of(context).loadingPleaseWait);
-
-    if (AppConfig.saasJmapServerUrl.isEmpty) {
-      consumeState(Stream.value(Left(SignUpTwakeWorkplaceFailure(CanNotFoundSaasServerUrl()))));
-      return;
-    }
 
     final baseUri = Uri.tryParse(AppConfig.saasJmapServerUrl);
 
