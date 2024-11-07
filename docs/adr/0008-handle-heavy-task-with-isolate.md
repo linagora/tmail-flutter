@@ -36,7 +36,7 @@ isolateManager.execute(
 - Communicate between two isolates
 To see a visual representation of this process, take a look at the image below:
 
-[communicate_between_two_isolate](../images/handle_task_with_isolate.png);
+<img src="../images/handle_task_with_isolate.png" alt="communicate_between_two_isolate">
 
 ## Consequences
 
@@ -45,4 +45,4 @@ To see a visual representation of this process, take a look at the image below:
 
 ## Reference
 
-- [worker_manager](https://pub.dev/packages/worker_manager)
+- <img src="../images/handle_task_with_isolate.png" alt="worker_manager">
