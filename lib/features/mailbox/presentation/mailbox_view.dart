@@ -192,7 +192,7 @@ class MailboxView extends BaseMailboxView {
           );
         }),
         Obx(() => MailboxLoadingBarWidget(viewState: controller.viewState.value)),
-        AppConfig.appGridDashboardAvailable
+        AppConfig.appGridDashboardAvailable && !PlatformInfo.isMobile
           ? buildAppGridDashboard(context, controller.responsiveUtils, controller.imagePaths, controller)
           : const SizedBox.shrink(),
         const SizedBox(height: 8),
