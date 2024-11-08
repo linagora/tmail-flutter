@@ -6067,10 +6067,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         endIndex = startIndex + t1;
         spanText = C.JSString_methods.substring$2(text, startIndex, endIndex);
         if (!firstHighlightKeyed) {
-          spans.push(new A.WidgetSpan(A.SizedBox$shrink(t3), C.PlaceholderAlignment_4, _null, _null));
+          spans.push(new A.WidgetSpan(A.Text$(spanText, t3, _null, _null, _null, _null, _null, _null, _null, styleWord, _null, _null, _null, _null, _null), C.PlaceholderAlignment_4, _null, _null));
           firstHighlightKeyed = true;
-        }
-        spans.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, styleWord, spanText));
+        } else
+          spans.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, styleWord, spanText));
         if (endIndex < t2) {
           spanBoundary = endIndex;
           continue;
@@ -6106,13 +6106,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t4 = _this._widget.styleOrigin;
           spans.push(new A.TextSpan(t3, _null, _null, C.C__DeferringMouseCursor, _null, _null, _null, _null, _null, t4));
         }
-        if (!firstHighlightKeyed) {
-          spans.push(new A.WidgetSpan(new A.SizedBox(0, 0, _null, t1), C.PlaceholderAlignment_4, _null, _null));
-          firstHighlightKeyed = true;
-        }
         markedText = C.JSString_methods.substring$2(processingText, t2, endIndex);
-        t2 = _this._widget.styleWord;
-        spans.push(new A.TextSpan(markedText, _null, _null, C.C__DeferringMouseCursor, _null, _null, _null, _null, _null, t2));
+        t2 = _this._widget;
+        if (!firstHighlightKeyed) {
+          spans.push(new A.WidgetSpan(new A.Text(markedText, _null, t2.styleWord, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t1), C.PlaceholderAlignment_4, _null, _null));
+          firstHighlightKeyed = true;
+        } else {
+          t2 = t2.styleWord;
+          spans.push(new A.TextSpan(markedText, _null, _null, C.C__DeferringMouseCursor, _null, _null, _null, _null, _null, t2));
+        }
         processingText = C.JSString_methods.substring$1(processingText, endIndex + 7);
       }
       return spans;
@@ -21752,5 +21754,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "Z2oSqCB60IYgqpgcyqhDt/aM6ZQ=");
+})($__dart_deferred_initializers__, "lt+V0Vo6wur/I5wXVJDjLqv6KeQ=");
 ;
