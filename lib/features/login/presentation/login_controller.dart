@@ -471,6 +471,8 @@ class LoginController extends ReloadableController {
 
   void invokeDNSLookupToGetJmapUrl() {
     log('LoginController::invokeDNSLookupToGetJmapUrl:_username $_username');
+    FocusManager.instance.primaryFocus?.unfocus();
+
     if (_username == null) {
       consumeState(Stream.value(Left(AuthenticationUserFailure(CanNotFoundUserName()))));
     } else {
