@@ -16,8 +16,8 @@ class AppConfig {
   static const String iOSKeychainSharingService = 'com.linagora.ios.teammail.sessions';
   static const String saasPlatform = 'saas';
   static const String linagoraPrivacyUrl = 'https://www.linagora.com/en/legal/privacy';
-  static const String saasRegistrationUrl = 'https://sign-up.stg.lin-saas.com';
-  static const String saasJmapServerUrl = 'https://jmap.stg.lin-saas.com';
+  static const String saasRegistrationUrl = 'https://sign-up.twake.app';
+  static const String saasJmapServerUrl = 'https://jmap.twake.app';
 
   static String get baseUrl => dotenv.get('SERVER_URL', fallback: '');
   static String get domainRedirectUrl => dotenv.get('DOMAIN_REDIRECT_URL', fallback: '');
