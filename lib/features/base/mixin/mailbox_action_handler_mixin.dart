@@ -106,6 +106,7 @@ mixin MailboxActionHandlerMixin {
             ..onCancelButtonAction(AppLocalizations.of(context).cancel, popBack))
           .build()
         ),
+        barrierDismissible: false,
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }
@@ -166,6 +167,7 @@ mixin MailboxActionHandlerMixin {
           })
           ..onCancelButtonAction(AppLocalizations.of(context).cancel, popBack)
         ).build()),
+        barrierDismissible: false,
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }

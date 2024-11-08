@@ -211,6 +211,7 @@ class EmailAddressBottomSheetBuilder {
       shape: _shape(),
       isScrollControlled: true,
       enableDrag: false,
+      isDismissible: false,
       backgroundColor: Colors.transparent
     );
   }

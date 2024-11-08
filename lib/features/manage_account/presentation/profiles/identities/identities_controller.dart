@@ -251,6 +251,7 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
         imagePaths: imagePaths,
         onDeleteIdentityAction: () => _dereferencePublicAssets(identity),
       ),
+      barrierDismissible: false,
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
     );
   }
@@ -329,6 +330,7 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
             ..onCloseButtonAction(() => popBack())
             ..onConfirmButtonAction('${AppLocalizations.of(currentContext!).got_it}!', () => popBack()))
           .build(),
+        barrierDismissible: false,
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }

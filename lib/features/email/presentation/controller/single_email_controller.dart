@@ -1449,6 +1449,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             onQuickCreatingRuleEmailDialogAction: (emailAddress) => quickCreatingRule(context, emailAddress)
           )
         ),
+        barrierDismissible: false,
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }
@@ -1503,6 +1504,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
           .build()
         ),
+        barrierDismissible: false,
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }

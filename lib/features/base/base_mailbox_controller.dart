@@ -453,6 +453,7 @@ abstract class BaseMailboxController extends BaseController {
           ..onConfirmButtonAction(AppLocalizations.of(context).delete, () => onDeleteMailboxAction(presentationMailbox))
           ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack())
         ).build()),
+        barrierDismissible: false,
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }

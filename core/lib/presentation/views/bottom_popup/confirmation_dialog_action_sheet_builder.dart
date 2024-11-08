@@ -54,6 +54,7 @@ class ConfirmationDialogActionSheetBuilder {
     return await showCupertinoModalPopup(
       context: _context,
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      barrierDismissible: false,
       builder: (context) => PointerInterceptor(child: CupertinoActionSheet(
         actions: [
           if (_messageText != null && _messageText!.isNotEmpty)

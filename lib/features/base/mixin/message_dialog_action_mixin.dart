@@ -21,7 +21,7 @@ mixin MessageDialogActionMixin {
         bool hasCancelButton = true,
         bool showAsBottomSheet = false,
         bool alignCenter = false,
-        bool outsideDismissible = true,
+        bool outsideDismissible = false,
         bool autoPerformPopBack = true,
         bool usePopScope = false,
         List<TextSpan>? listTextSpan,
