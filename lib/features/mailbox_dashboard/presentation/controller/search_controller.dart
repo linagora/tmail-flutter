@@ -234,6 +234,10 @@ class SearchController extends BaseController with DateRangePickerMixin {
   }
 
   void clearTextSearch() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    if (isAdvancedSearchViewOpen.isTrue) {
+      closeAdvanceSearch();
+    }
     searchInputController.clear();
     searchFocus.requestFocus();
   }
