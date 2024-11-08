@@ -1,3 +1,21 @@
+## [0.14.0] - 2024-11-09
+### Added
+- #2387 TWP Registration from mobile 
+- #3157 Web socket to replace FCM in web app
+- #2953 Mobile integration test with Patrol 
+
+### Fixed
+- #3244 `To` filter should apply also for `cc` `bcc`
+- #3243 some tags still be in sanitizing
+- #3178 Only Space in Name verification for Identity, Rule Filter, Vacation
+- 3D links not work on mobile
+- Focus problem in `tab` in Basic Auth login form
+- #3225 Print button blink blink
+- #3222 Hide reply calendar event action button
+- #3247 Cc is lost if open email from Quick search result
+- #3200 Update option menu for personal folders
+- Support German
+
 ## [0.13.6] - 2024-11-07
 ### Fixed
 - Remove app grid in mobile
