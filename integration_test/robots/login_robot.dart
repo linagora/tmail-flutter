@@ -14,7 +14,7 @@ class LoginRobot extends CoreRobot {
   Future<void> expectWelcomeViewVisible() => ensureViewVisible($(TwakeWelcomeView));
 
   Future<void> tapOnUseCompanyServer() async {
-    await $.pump(const Duration(seconds: 1));
+    await $.pumpAndSettle();
     await $(AppLocalizations().useCompanyServer).tap();
   }
 
