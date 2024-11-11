@@ -1,3 +1,4 @@
+import 'package:core/presentation/views/search/search_bar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
@@ -15,4 +16,8 @@ class ThreadRobot extends CoreRobot {
   }
 
   Future<void> expectComposerViewVisible() => ensureViewVisible($(ComposerView));
+
+  Future<void> tapOnSearchField() async {
+    await $(ThreadView).$(SearchBarView).tap();
+  }
 }
