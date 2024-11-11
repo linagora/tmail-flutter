@@ -24,6 +24,9 @@ class LoginWithBasicAuthScenario extends BaseScenario with ScenarioUtilsMixin {
     final loginRobot = LoginRobot($);
     final threadRobot = ThreadRobot($);
 
+    await loginRobot.expectWelcomeViewVisible();
+    await loginRobot.tapOnUseCompanyServer();
+
     await loginRobot.expectLoginViewVisible();
     await loginRobot.enterEmail(username);
     await loginRobot.enterHostUrl(hostUrl);
