@@ -3,11 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/login_text_input_builder.dart';
+import 'package:tmail_ui_user/features/starting_page/presentation/twake_welcome/twake_welcome_view.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
 
 class LoginRobot extends CoreRobot {
   LoginRobot(super.$);
+
+  Future<void> expectWelcomeViewVisible() => ensureViewVisible($(TwakeWelcomeView));
+
+  Future<void> tapOnUseCompanyServer() async {
+    await $.pump(const Duration(seconds: 1));
+    await $(AppLocalizations().useCompanyServer).tap();
+  }
 
   Future<void> expectLoginViewVisible() => ensureViewVisible($(LoginView));
 
