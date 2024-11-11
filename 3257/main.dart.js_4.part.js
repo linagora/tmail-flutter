@@ -10933,7 +10933,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _this = this,
         t1 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
-      return new A.NotificationListener(new B.SearchEmailView__buildListEmailBody_closure(_this), A.ListView$separated(A._instanceType(_this)._eval$1("GetWidget.S")._as(t1._jsWeakMap.get(_this)).resultSearchScrollController, new B.SearchEmailView__buildListEmailBody_closure0(_this, listPresentationEmail), J.get$length$asx(listPresentationEmail.get$value(0)), D.PageStorageKey_K6o, C.ScrollViewKeyboardDismissBehavior_0, null, C.AlwaysScrollableScrollPhysics_null, null, false, C.Axis_1, new B.SearchEmailView__buildListEmailBody_closure1(_this, listPresentationEmail), false), null, type$.NotificationListener_ScrollNotification);
+      return new A.NotificationListener(new B.SearchEmailView__buildListEmailBody_closure(_this), A.ListView$separated(A._instanceType(_this)._eval$1("GetWidget.S")._as(t1._jsWeakMap.get(_this)).resultSearchScrollController, new B.SearchEmailView__buildListEmailBody_closure0(_this, listPresentationEmail), J.get$length$asx(listPresentationEmail.get$value(0)), D.PageStorageKey_K6o, C.ScrollViewKeyboardDismissBehavior_0, null, C.AlwaysScrollableScrollPhysics_null, null, false, C.Axis_1, new B.SearchEmailView__buildListEmailBody_closure1(_this, listPresentationEmail), false), D.ValueKey_swd, type$.NotificationListener_ScrollNotification);
     },
     _markAsEmailSpamOrUnSpamAction$2(context, email) {
       var t2, t3, t4, t5, t6, _this = this, _null = null,
@@ -21558,6 +21558,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.ValueKey_smime_signature_status_icon = new A.ValueKey("smime_signature_status_icon", type$.ValueKey_String);
     D.ValueKey_sort_filter_context_menu = new A.ValueKey("sort_filter_context_menu", type$.ValueKey_String);
     D.ValueKey_suggestion_search_list_view = new A.ValueKey("suggestion_search_list_view", type$.ValueKey_String);
+    D.ValueKey_swd = new A.ValueKey("search_email_list_notification_listener", type$.ValueKey_String);
     D.ValueKey_web_app_bar_thread_widget = new A.ValueKey("web_app_bar_thread_widget", type$.ValueKey_String);
     D.VerticalDivider_Drw0 = new A.VerticalDivider(null, null, null, null, null, null);
     D.VerticalDivider_Drw = new A.VerticalDivider(1, null, null, null, null, null);
@@ -21586,5 +21587,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "XdiklNAnp9KTtcp/E+RTEd2IOfI=");
+})($__dart_deferred_initializers__, "pBbCtaX2NWuHARuHf6frNf3vcS4=");
 ;
