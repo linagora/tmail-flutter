@@ -3357,13 +3357,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.emailAddress = t0;
       this.key = t1;
     },
-    EmailQuickSearchItemTileWidget$(_presentationEmail, _presentationMailbox, contentPadding, query) {
+    EmailQuickSearchItemTileWidget$(_presentationEmail, _presentationMailbox, contentPadding, searchQuery) {
       var t1;
       $.$get$Get();
       t1 = $.GetInstance__getInstance;
       if (t1 == null)
         t1 = $.GetInstance__getInstance = C.C_GetInstance;
-      return new B.EmailQuickSearchItemTileWidget(t1.find$1$1$tag(0, null, type$.ImagePaths), _presentationEmail, _presentationMailbox, contentPadding, query, null);
+      return new B.EmailQuickSearchItemTileWidget(t1.find$1$1$tag(0, null, type$.ImagePaths), _presentationEmail, _presentationMailbox, contentPadding, searchQuery, null);
     },
     EmailQuickSearchItemTileWidget: function EmailQuickSearchItemTileWidget(t0, t1, t2, t3, t4, t5) {
       var _ = this;
@@ -3371,7 +3371,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._presentationEmail = t1;
       _._email_quick_search_item_tile_widget$_presentationMailbox = t2;
       _.contentPadding = t3;
-      _.query = t4;
+      _.searchQuery = t4;
       _.key = t5;
     },
     EmailQuickSearchItemTileWidget_build_closure: function EmailQuickSearchItemTileWidget_build_closure(t0) {
@@ -18598,7 +18598,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = t1._presentationEmail;
       t4 = A.SvgPicture$asset(t3.get$hasStarred() ? "assets/images/ic_star.svg" : "assets/images/ic_unstar.svg", C.Alignment_0_0, _null, C.BoxFit_0, 18, _null, _null, 18);
       t5 = t1._getInformationSender$0();
-      t1 = t1.query.value;
+      t1 = t1.searchQuery.value;
       t6 = t1;
       t6 = A.Container$(_null, B.RichTextBuilder$(false, _null, C.TextStyle_69t1, A.TextStyle$(_null, C.Color_4294956864, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, C.FontWeight_5_600, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), t5, t6), C.Clip_0, _null, new A.BoxConstraints(0, maxWidthItem / 3, 0, 1 / 0), _null, _null, _null, _null, _null, _null, _null, _null, _null);
       t5 = t3.getEmailTitle$0();
@@ -21762,5 +21762,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "2wc+4v2iZhu0LpqKVvEJO86YPII=");
+})($__dart_deferred_initializers__, "8vYrA0YVGRfraO7NFIUvK20KzIQ=");
 ;
