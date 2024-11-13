@@ -6070,7 +6070,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         endIndex = startIndex + t1;
         spanText = C.JSString_methods.substring$2(text, startIndex, endIndex);
         if (!firstHighlightKeyed) {
-          spans.push(new A.WidgetSpan(A.Text$(spanText, t3, _null, _null, _null, _null, _null, _null, _null, styleWord, _null, _null, _null, _null, _null), C.PlaceholderAlignment_4, _null, _null));
+          spans.push(new A.WidgetSpan(A.Text$(spanText, t3, _null, _null, _null, _null, _null, _null, _null, styleWord, _null, _null, _null, _null, _null), C.PlaceholderAlignment_5, _null, _null));
           firstHighlightKeyed = true;
         } else
           spans.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, styleWord, spanText));
@@ -6112,7 +6112,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         markedText = C.JSString_methods.substring$2(processingText, t2, endIndex);
         t2 = _this._widget;
         if (!firstHighlightKeyed) {
-          spans.push(new A.WidgetSpan(new A.Text(markedText, _null, t2.styleWord, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t1), C.PlaceholderAlignment_4, _null, _null));
+          spans.push(new A.WidgetSpan(new A.Text(markedText, _null, t2.styleWord, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t1), C.PlaceholderAlignment_5, _null, _null));
           firstHighlightKeyed = true;
         } else {
           t2 = t2.styleWord;
@@ -11729,17 +11729,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return new A.NotificationListener(_this.get$_handleScrollNotificationListener(), A.Focus$(true, _null, A.ListView$separated(t2._as(t1.get(_this)).listEmailController, new B.ThreadView__buildListEmailBody_closure(_this, listPresentationEmail), J.get$length$asx(listPresentationEmail.get$value(0)) + 2, D.PageStorageKey_M4E, C.ScrollViewKeyboardDismissBehavior_0, _null, C.AlwaysScrollableScrollPhysics_null, _null, false, C.Axis_1, new B.ThreadView__buildListEmailBody_closure0(_this, listPresentationEmail), false), _null, _null, _null, t3, true, _null, _null, _null, t4, _null, _null), _null, type$.NotificationListener_ScrollNotification);
     },
     _handleScrollNotificationListener$1(scrollInfo) {
-      var t1, t2, _this = this;
+      var t1, t2, t3, _this = this;
       if (scrollInfo instanceof A.ScrollEndNotification) {
         t1 = scrollInfo.metrics;
         t2 = t1._scroll_metrics$_pixels;
         t2.toString;
-        t1 = t1._maxScrollExtent;
-        t1.toString;
-        if (t2 === t1) {
-          t1 = $.$get$GetWidget__cache();
+        t3 = t1._maxScrollExtent;
+        t3.toString;
+        if (t2 === t3) {
+          t2 = $.$get$GetWidget__cache();
           A.Expando__checkType(_this);
-          t1 = A._instanceType(_this)._eval$1("GetWidget.S")._as(t1._jsWeakMap.get(_this)).loadingMoreStatus.get$value(0) !== C.LoadingMoreStatus_1;
+          t1 = A._instanceType(_this)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(_this)).loadingMoreStatus.get$value(0) !== C.LoadingMoreStatus_1 && t1.axisDirection === C.AxisDirection_2;
         } else
           t1 = false;
       } else
@@ -21762,5 +21762,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "8vYrA0YVGRfraO7NFIUvK20KzIQ=");
+})($__dart_deferred_initializers__, "v0OsfwvUU5p+ex/2IyHtbl7DVL4=");
 ;
