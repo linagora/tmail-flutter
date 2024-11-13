@@ -6104,7 +6104,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           spans.push(new A.TextSpan(processingText, _null, _null, C.C__DeferringMouseCursor, _null, _null, _null, _null, _null, t1));
           return spans;
         }
-        if (startIndex !== 0) {
+        if (startIndex > 0) {
           t3 = C.JSString_methods.substring$2(processingText, 0, startIndex);
           t4 = _this._widget.styleOrigin;
           spans.push(new A.TextSpan(t3, _null, _null, C.C__DeferringMouseCursor, _null, _null, _null, _null, _null, t4));
@@ -21762,5 +21762,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "v0OsfwvUU5p+ex/2IyHtbl7DVL4=");
+})($__dart_deferred_initializers__, "cXbailR6SKRdBo8C5v1863iix+U=");
 ;
