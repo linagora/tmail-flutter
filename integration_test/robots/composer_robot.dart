@@ -50,10 +50,6 @@ class ComposerRobot extends CoreRobot {
       .tap();
   }
 
-  Future<void> expectSendEmailSuccessToast() async {
-    expect($('Message has been sent successfully'), findsOneWidget);
-  }
-
   Future<void> grantContactPermission() async {
     if (await $.native.isPermissionDialogVisible(timeout: const Duration(seconds: 5))) {
       await $.native.grantPermissionWhenInUse();

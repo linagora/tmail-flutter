@@ -1,9 +1,9 @@
 import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/login_text_input_builder.dart';
-import 'package:tmail_ui_user/features/starting_page/presentation/twake_welcome/twake_welcome_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
@@ -11,14 +11,16 @@ import '../base/core_robot.dart';
 class LoginRobot extends CoreRobot {
   LoginRobot(super.$);
 
-  Future<void> expectWelcomeViewVisible() => ensureViewVisible($(TwakeWelcomeView));
+  Future<void> grantNotificationPermission(NativeAutomator nativeAutomator) async {
+    if (await nativeAutomator.isPermissionDialogVisible(timeout: const Duration(seconds: 5))) {
+      await nativeAutomator.grantPermissionWhenInUse();
+    }
+  }
 
   Future<void> tapOnUseCompanyServer() async {
     await $.pumpAndSettle();
     await $(AppLocalizations().useCompanyServer).tap();
   }
-
-  Future<void> expectLoginViewVisible() => ensureViewVisible($(LoginView));
 
   Future<void> enterEmail(String email) async {
     final finder = $(LoginView).$(TextField);
