@@ -15,21 +15,25 @@ enum EmailSortOrderType {
   subjectDescending;
 
   String getTitle(BuildContext context) {
+    return getTitleByAppLocalizations(AppLocalizations.of(context));
+  }
+
+  String getTitleByAppLocalizations(AppLocalizations appLocalizations) {
     switch (this) {
       case EmailSortOrderType.mostRecent:
-        return AppLocalizations.of(context).mostRecent;
+        return appLocalizations.mostRecent;
       case EmailSortOrderType.oldest:
-        return AppLocalizations.of(context).oldest;
+        return appLocalizations.oldest;
       case EmailSortOrderType.relevance:
-        return AppLocalizations.of(context).relevance;
+        return appLocalizations.relevance;
       case EmailSortOrderType.senderAscending:
-        return AppLocalizations.of(context).senderAscending;
+        return appLocalizations.senderAscending;
       case EmailSortOrderType.senderDescending:
-        return AppLocalizations.of(context).senderDescending;
+        return appLocalizations.senderDescending;
       case EmailSortOrderType.subjectAscending:
-        return AppLocalizations.of(context).subjectAscending;
+        return appLocalizations.subjectAscending;
       case EmailSortOrderType.subjectDescending:
-        return AppLocalizations.of(context).subjectDescending;
+        return appLocalizations.subjectDescending;
     }
   }
 

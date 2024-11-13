@@ -40,8 +40,8 @@ done
 export BOB="bob"
 export ALICE="alice"
 export DOMAIN="example.com"
-docker exec tmail-backend james-cli AddUser "$BOB@$DOMAIN" "$BOB"
-docker exec tmail-backend james-cli AddUser "$ALICE@$DOMAIN" "$ALICE"
+
+docker exec tmail-backend ./root/conf/integration_test/search_email_with_sort_order/provisioning.sh
 
 cd ..
 

@@ -1,9 +1,11 @@
+import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
+import 'package:tmail_ui_user/features/starting_page/presentation/twake_welcome/twake_welcome_view.dart';
+import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
+
 import '../base/base_scenario.dart';
 import '../robots/login_robot.dart';
-import '../robots/thread_robot.dart';
-import '../utils/scenario_utils_mixin.dart';
 
-class LoginWithBasicAuthScenario extends BaseScenario with ScenarioUtilsMixin {
+class LoginWithBasicAuthScenario extends BaseScenario {
   const LoginWithBasicAuthScenario(
     super.$, 
     {
@@ -22,12 +24,12 @@ class LoginWithBasicAuthScenario extends BaseScenario with ScenarioUtilsMixin {
   @override
   Future<void> execute() async {
     final loginRobot = LoginRobot($);
-    final threadRobot = ThreadRobot($);
 
-    await loginRobot.expectWelcomeViewVisible();
+    await _expectWelcomeViewVisible();
+
     await loginRobot.tapOnUseCompanyServer();
+    await _expectLoginViewVisible();
 
-    await loginRobot.expectLoginViewVisible();
     await loginRobot.enterEmail(username);
     await loginRobot.enterHostUrl(hostUrl);
 
@@ -35,8 +37,14 @@ class LoginWithBasicAuthScenario extends BaseScenario with ScenarioUtilsMixin {
     await loginRobot.enterBasicAuthPassword(password);
     await loginRobot.loginBasicAuth();
 
-    await grantNotificationPermission($.native);
+    await loginRobot.grantNotificationPermission($.native);
 
-    await threadRobot.expectThreadViewVisible();
+    await _expectThreadViewVisible();
   }
+
+  Future<void> _expectWelcomeViewVisible() => expectViewVisible($(TwakeWelcomeView));
+
+  Future<void> _expectLoginViewVisible() => expectViewVisible($(LoginView));
+
+  Future<void> _expectThreadViewVisible() => expectViewVisible($(ThreadView));
 }

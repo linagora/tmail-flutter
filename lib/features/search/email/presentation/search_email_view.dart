@@ -137,6 +137,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               onTap: () => controller.closeSearchView(context: context)
           ),
           Expanded(child: TextFieldBuilder(
+            key: const Key('search_email_text_field'),
             onTextChange: controller.onTextSearchChange,
             textInputAction: TextInputAction.search,
             controller: controller.textInputSearchController,
@@ -190,6 +191,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               ),
               scrollController: controller.listSearchFilterScrollController,
               child: ListView(
+                key: const Key('search_filter_list_view'),
                 scrollDirection: Axis.horizontal,
                 shrinkWrap: true,
                 controller: controller.listSearchFilterScrollController,
@@ -375,7 +377,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         context,
         controller.emailSortOrderType.value,
         controller.selectSortOrderQuickSearchFilter
-      )
+      ),
+      key: const Key('sort_filter_context_menu')
     );
   }
 
@@ -562,6 +565,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
       List<PresentationEmail> listSuggestionSearch
   ) {
     return ListView.builder(
+        key: const Key('suggestion_search_list_view'),
         shrinkWrap: true,
         primary: false,
         itemCount: listSuggestionSearch.length,
@@ -618,6 +622,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
 
   Widget _buildListEmailBody(BuildContext context, List<PresentationEmail> listPresentationEmail) {
     return NotificationListener<ScrollNotification>(
+        key: const Key('search_email_list_notification_listener'),
         onNotification: (ScrollNotification scrollInfo) {
           if (scrollInfo is ScrollEndNotification
               && controller.searchMoreState != SearchMoreState.waiting

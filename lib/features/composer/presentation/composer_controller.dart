@@ -955,12 +955,15 @@ class ComposerController extends BaseController
   }
 
   Future<String> _getContentInEditor() async {
-    final htmlTextEditor = PlatformInfo.isWeb
-      ? _textEditorWeb
-      : await htmlEditorApi?.getText();
-    if (htmlTextEditor?.isNotEmpty == true) {
-      return htmlTextEditor!.removeEditorStartTag();
-    } else {
+    try {
+      final htmlTextEditor = PlatformInfo.isWeb
+        ? _textEditorWeb
+        : await htmlEditorApi?.getText();
+      return htmlTextEditor?.isNotEmpty == true
+        ? htmlTextEditor!.removeEditorStartTag()
+        : '';
+    } catch (e) {
+      logError('ComposerController::_getContentInEditor:Exception = $e');
       return '';
     }
   }

@@ -9,8 +9,15 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 mixin PopupContextMenuActionMixin {
 
-  void openContextMenuAction(BuildContext context, List<Widget> actionTiles, {Widget? cancelButton}) async {
-    await (CupertinoActionSheetBuilder(context)
+  void openContextMenuAction(
+    BuildContext context,
+    List<Widget> actionTiles,
+    {
+      Widget? cancelButton,
+      Key? key,
+    }
+  ) async {
+    await (CupertinoActionSheetBuilder(context, key: key)
         ..addTiles(actionTiles)
         ..addCancelButton(cancelButton ?? buildCancelButton(context)))
       .show();
