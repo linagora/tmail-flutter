@@ -18721,7 +18721,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.SearchInputFormWidget_build__closure3.prototype = {
     call$2(context, email) {
       var t1 = this.$this;
-      return B.EmailQuickSearchItemTileWidget$(email, t1._search_input_form_widget$_dashBoardController.selectedMailbox.get$value(0), null, new A.SearchQuery(C.JSString_methods.trim$0(t1._searchController.searchInputController._change_notifier$_value.text)));
+      return B.EmailQuickSearchItemTileWidget$(email, t1._search_input_form_widget$_dashBoardController.selectedMailbox.get$value(0), null, new A.SearchQuery(C.JSString_methods.trim$0(t1._searchController.currentSearchText)));
     },
     $signature: typesOffset + 68
   };
@@ -19341,7 +19341,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5 = A._instanceType(t3)._eval$1("GetWidget.S");
       t6 = t5._as(t4.get(t3)).EmailActionController_mailboxDashBoardController.selectedMailbox.get$value(0);
       A.Expando__checkType(t3);
-      t7 = C.JSString_methods.trim$0(t5._as(t4.get(t3)).textInputSearchController._change_notifier$_value.text);
+      t7 = J.trim$0$s(t5._as(t4.get(t3)).currentSearchText.get$value(0));
       A.Expando__checkType(t3);
       return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, B.EmailQuickSearchItemTileWidget$(t2, t6, B.SearchEmailViewStyle_getSearchSuggestionListPadding(context, t5._as(t4.get(t3)).EmailActionController_responsiveUtils), new A.SearchQuery(t7)), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.SearchEmailView__buildListSuggestionSearch__closure(t3, t1, index, context), _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
     },
@@ -21752,5 +21752,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "Wrb5a01xKstMd0JDA7to7iZAeJU=");
+})($__dart_deferred_initializers__, "gO7ibKOLiBB0z5mKan+M1nIstdg=");
 ;
