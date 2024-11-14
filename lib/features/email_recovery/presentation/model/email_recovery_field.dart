@@ -28,7 +28,7 @@ enum EmailRecoveryField {
   String getHintText(BuildContext context) {
     switch (this) {
       case EmailRecoveryField.deletionDate:
-        return AppLocalizations.of(context).last1Year;
+        return AppLocalizations.of(context).last7Days;
       case EmailRecoveryField.receptionDate:
         return AppLocalizations.of(context).allTime;
       case EmailRecoveryField.subject:
@@ -40,16 +40,20 @@ enum EmailRecoveryField {
     }
   }
 
-  List<EmailRecoveryTimeType> getSupportedTimeTypes() {
+  List<EmailRecoveryTimeType> getSupportedTimeTypes(DateTime restorationHorizon) {
     switch (this) {
       case EmailRecoveryField.deletionDate:
-        return [
-          EmailRecoveryTimeType.last1Year,
+        final supportedTypes = [
           EmailRecoveryTimeType.last7Days,
+          EmailRecoveryTimeType.last15Days,
           EmailRecoveryTimeType.last30Days,
           EmailRecoveryTimeType.last6Months,
-          EmailRecoveryTimeType.customRange,
-        ];
+          EmailRecoveryTimeType.last1Year,
+        ].where((type) => restorationHorizon
+                                .subtract(const Duration(seconds: 2)) // to allow "15 days" if restorationHorizon is exactly 15
+                                .isBefore(type.toOldestUTCDate()!.value)).toList();
+
+        return [...supportedTypes, EmailRecoveryTimeType.customRange];
       case EmailRecoveryField.receptionDate:
         return [
           EmailRecoveryTimeType.allTime,
