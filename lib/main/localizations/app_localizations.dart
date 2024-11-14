@@ -1374,6 +1374,12 @@ class AppLocalizations {
         name: 'last7Days');
   }
 
+  String get last15Days {
+    return Intl.message(
+        'Last 15 days',
+        name: 'last15Days');
+  }
+
   String get fromMe {
     return Intl.message(
         'From me',
@@ -3675,6 +3681,14 @@ class AppLocalizations {
     return Intl.message(
       'Recover deleted messages',
       name: 'recoverDeletedMessages',
+    );
+  }
+
+  String recoverDeletedMessagesBannerContent(String period) {
+    return Intl.message(
+      'You can recover messages deleted during the past $period',
+      name: 'recoverDeletedMessagesBannerContent',
+      args: [period]
     );
   }
 
