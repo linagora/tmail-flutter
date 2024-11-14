@@ -1368,6 +1368,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "last15Days": "Last 15 days",
+  "@last15Days": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "fromMe": "From me",
   "@fromMe": {
     "type": "text",
@@ -3597,6 +3603,16 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "recoverDeletedMessagesBannerContent": "You can recover messages deleted during the past {period}",
+  "@recoverDeletedMessagesBannerContent": {
+    "type": "text",
+    "placeholders_order": [
+      "period"
+    ],
+    "placeholders": {
+      "period": {}
+    }
   },
   "deletionDate": "Deletion date",
   "@deletionDate": {

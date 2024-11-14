@@ -22,7 +22,7 @@ mixin DateRangePickerMixin {
       last7daysTitle: AppLocalizations.of(context).last7Days,
       last30daysTitle: AppLocalizations.of(context).last30Days,
       last6monthsTitle: AppLocalizations.of(context).last6Months,
-      lastYearTitle: AppLocalizations.of(context).lastYears,
+      lastYearTitle: AppLocalizations.of(context).last1Year,
       initStartDate: initStartDate,
       initEndDate: initEndDate,
       autoClose: false,
