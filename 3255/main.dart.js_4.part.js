@@ -6044,7 +6044,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (!t1.ensureHighlightVisible)
         return text;
       _this.get$richTextWidthDebouncer().set$value(0, A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx);
-      return A.SingleChildScrollView$(text, _null, _null, _null, D.NeverScrollableScrollPhysics_null, _null, C.Axis_0);
+      return A.SingleChildScrollView$(text, _null, D.PageStorageKey_rich_text_builder, _null, D.NeverScrollableScrollPhysics_null, _null, C.Axis_0);
     },
     _rich_text_builder$_getSpans$4$styleOrigin$styleWord$text$word(styleOrigin, styleWord, text, word) {
       var spans, t2, t3, spanBoundary, firstHighlightKeyed, startIndex, endIndex, spanText, _null = null,
@@ -17318,14 +17318,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t2 = t2._jsWeakMap;
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
-      $label0$0: {
-        if (C.DashboardRoutes_0 === t3._as(t2.get(t1)).dashboardRoute.get$value(0)) {
-          t4 = 0;
-          break $label0$0;
-        }
-        t4 = 1;
-        break $label0$0;
-      }
+      t4 = t3._as(t2.get(t1)).dashboardRoute.get$value(0) === C.DashboardRoutes_1 ? 1 : 0;
       t5 = A._setArrayType([t1._buildThreadViewForWebDesktop$1(this.context)], type$.JSArray_Widget);
       A.Expando__checkType(t1);
       if (t3._as(t2.get(t1)).dashboardRoute.get$value(0) === C.DashboardRoutes_1)
@@ -17338,7 +17331,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.MailboxDashBoardView_build_closure8.prototype = {
     call$0() {
-      var t3, t4, t5, t6, _null = null,
+      var t3, t4, t5, t6, t7, _null = null,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -17346,10 +17339,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       t4 = t3._as(t2.get(t1)).dashboardRoute.get$value(0) === C.DashboardRoutes_2 ? 0 : 1;
       t5 = type$.JSArray_Widget;
-      t6 = A._setArrayType([new B.SearchEmailView(_null)], t5);
+      t6 = A._setArrayType([], t5);
+      if (A.getBinding(_null, type$.SearchEmailController) != null)
+        t6.push(new B.SearchEmailView(_null));
+      else
+        t6.push(C.SizedBox_0_0_null_null);
       A.Expando__checkType(t1);
-      t2 = t3._as(t2.get(t1)).searchController;
-      if (t2.simpleSearchIsActivated.get$value(0) || t2.advancedSearchIsActivated.get$value(0))
+      t7 = t3._as(t2.get(t1)).searchController;
+      if (t7.simpleSearchIsActivated.get$value(0) || t7.advancedSearchIsActivated.get$value(0)) {
+        A.Expando__checkType(t1);
+        t2 = t3._as(t2.get(t1)).dashboardRoute.get$value(0) === C.DashboardRoutes_1;
+      } else
+        t2 = false;
+      if (t2)
         t6.push(D.EmailView_null);
       else
         t6.push(t1._buildScaffoldHaveDrawer$1$body(A.Row$(A._setArrayType([new A.SizedBox(375, _null, B.ThreadView$(), _null), D.VerticalDivider_Drw, D.Expanded_0EQ], t5), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null)));
@@ -17359,24 +17361,29 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.MailboxDashBoardView_build_closure7.prototype = {
     call$0() {
-      var _1_0,
+      var t3, t4, t5,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      _1_0 = A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).dashboardRoute.get$value(0);
-      $label1$1: {
-        if (C.DashboardRoutes_1 === _1_0) {
-          t2 = 1;
-          break $label1$1;
-        }
-        if (C.DashboardRoutes_2 === _1_0) {
-          t2 = 2;
-          break $label1$1;
-        }
-        t2 = 0;
-        break $label1$1;
+      t2 = t2._jsWeakMap;
+      t3 = A._instanceType(t1)._eval$1("GetWidget.S");
+      t4 = t3._as(t2.get(t1)).dashboardRoute.get$value(0) === C.DashboardRoutes_2 ? 0 : 1;
+      t5 = A._setArrayType([], type$.JSArray_Widget);
+      if (A.getBinding(null, type$.SearchEmailController) != null)
+        t5.push(new B.SearchEmailView(null));
+      else
+        t5.push(C.SizedBox_0_0_null_null);
+      A.Expando__checkType(t1);
+      if (t3._as(t2.get(t1)).dashboardRoute.get$value(0) === C.DashboardRoutes_0)
+        t5.push(t1._buildScaffoldHaveDrawer$1$body(B.ThreadView$()));
+      else {
+        A.Expando__checkType(t1);
+        if (t3._as(t2.get(t1)).dashboardRoute.get$value(0) === C.DashboardRoutes_1)
+          t5.push(D.EmailView_null);
+        else
+          t5.push(C.SizedBox_0_0_null_null);
       }
-      return A.IndexedStack$(C.AlignmentDirectional_m1_m1, A._setArrayType([t1._buildScaffoldHaveDrawer$1$body(B.ThreadView$()), D.EmailView_null, new B.SearchEmailView(null)], type$.JSArray_Widget), t2);
+      return A.IndexedStack$(C.AlignmentDirectional_m1_m1, t5, t4);
     },
     $signature: 348
   };
@@ -21385,6 +21392,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       ResponsiveUtils: findType("ResponsiveUtils"),
       RestorableProperty_nullable_Object: findType("RestorableProperty<Object?>"),
       SearchController: findType("SearchController"),
+      SearchEmailController: findType("SearchEmailController"),
       Selectable: findType("Selectable"),
       SingleEmailController: findType("SingleEmailController"),
       Some_SearchQuery: findType("Some<SearchQuery>"),
@@ -21611,6 +21619,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Padding_spY = new A.Padding(E.EdgeInsets_0_5_0_5, D.VerticalDivider_EqE, null);
     D.PageStorageKey_K6o = new A.PageStorageKey("list_presentation_email_in_search_view", type$.PageStorageKey_String);
     D.PageStorageKey_M4E = new A.PageStorageKey("list_presentation_email_in_threads", type$.PageStorageKey_String);
+    D.PageStorageKey_rich_text_builder = new A.PageStorageKey("rich_text_builder", type$.PageStorageKey_String);
     D.HtmlElementView_ato = new A.HtmlElementView("Browser__WebContextMenuViewType__", null, null, null);
     D.Positioned_qdM = new A.Positioned(0, 0, 0, 0, null, null, D.HtmlElementView_ato, null);
     D.QuickSearchSuggestionsBoxDecoration_7K0 = new B.QuickSearchSuggestionsBoxDecoration(C.Color_4294967295, C.BorderRadius_ww80);
@@ -21766,5 +21775,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "ZrV/qJGXVHL3DrFaUYO0Qgm0z9k=");
+})($__dart_deferred_initializers__, "LQFk70xsz5jALMsM1Yy9UnM2nxE=");
 ;
