@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_r
 import 'package:tmail_ui_user/features/email_recovery/presentation/styles/email_recovery_form_styles.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/check_box_has_attachment_widget.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/date_selection_field/date_selection_field_mobile_widget.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/limits_banner.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/list_button_widget.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/text_input_field/text_input_field_suggestion_widget.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/text_input_field/text_input_field_widget.dart';
@@ -41,6 +42,10 @@ class EmailRecoveryFormMobileBuilder extends GetWidget<EmailRecoveryController> 
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      LimitsBanner(
+                        bannerContent: AppLocalizations.of(context).recoverDeletedMessagesBannerContent(controller.getRestorationHorizonAsString()),
+                      ),
+                      const SizedBox(height: 16.0),
                       Obx(() => DateSelectionFieldMobileWidget(
                         field: EmailRecoveryField.deletionDate,
                         recoveryTimeSelected: controller.deletionDateFieldSelected.value,
