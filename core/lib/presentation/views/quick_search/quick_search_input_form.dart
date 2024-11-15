@@ -71,7 +71,7 @@ class QuickSearchInputForm<T, P, R> extends FormField<String> {
         bool hideOnEmpty = false,
         bool hideOnError = false,
         bool hideSuggestionsOnKeyboardHide = true,
-        bool keepSuggestionsOnLoading = true,
+        bool keepSuggestionsOnLoading = false,
         bool keepSuggestionsOnSuggestionSelected = false,
         bool autoFlipDirection = false,
         bool hideKeyboard = false,
@@ -89,6 +89,7 @@ class QuickSearchInputForm<T, P, R> extends FormField<String> {
         BoxDecoration? decoration,
         double? maxHeight,
         bool isDirectionRTL = false,
+        int? minInputLengthAutocomplete,
         ItemBuilder<P>? contactItemBuilder,
         SuggestionsCallback<P>? contactSuggestionsCallback,
         SuggestionSelectionCallback<P>? onContactSuggestionSelected,
@@ -156,6 +157,7 @@ class QuickSearchInputForm<T, P, R> extends FormField<String> {
               decoration: decoration,
               maxHeight: maxHeight,
               isDirectionRTL: isDirectionRTL,
+              minInputLengthAutocomplete: minInputLengthAutocomplete,
               contactItemBuilder: contactItemBuilder,
               contactSuggestionsCallback: contactSuggestionsCallback,
               onContactSuggestionSelected: onContactSuggestionSelected,
@@ -533,6 +535,8 @@ class TypeAheadFieldQuickSearch<T, P, R> extends StatefulWidget {
   final SuggestionsCallback<P>? contactSuggestionsCallback;
   ///  On listen select contact
   final SuggestionSelectionCallback<P>? onContactSuggestionSelected;
+  /// Min input length to start autocomplete
+  final int? minInputLengthAutocomplete;
 
   /// Creates a [TypeAheadFieldQuickSearch]
   const TypeAheadFieldQuickSearch(
@@ -558,7 +562,7 @@ class TypeAheadFieldQuickSearch<T, P, R> extends StatefulWidget {
         this.hideOnEmpty = false,
         this.hideOnError = false,
         this.hideSuggestionsOnKeyboardHide = true,
-        this.keepSuggestionsOnLoading = true,
+        this.keepSuggestionsOnLoading = false,
         this.keepSuggestionsOnSuggestionSelected = false,
         this.autoFlipDirection = false,
         this.hideKeyboard = false,
@@ -576,6 +580,7 @@ class TypeAheadFieldQuickSearch<T, P, R> extends StatefulWidget {
         this.decoration,
         this.maxHeight,
         this.isDirectionRTL = false,
+        this.minInputLengthAutocomplete,
         this.contactItemBuilder,
         this.contactSuggestionsCallback,
         this.onContactSuggestionSelected,
@@ -771,6 +776,7 @@ class _TypeAheadFieldQuickSearchState<T, P, R> extends State<TypeAheadFieldQuick
         listActionPadding: widget.listActionPadding,
         hideSuggestionsBox: widget.hideSuggestionsBox,
         isDirectionRTL: widget.isDirectionRTL,
+        minInputLengthAutocomplete: widget.minInputLengthAutocomplete,
         contactSuggestionBuilder: widget.contactItemBuilder,
         contactSuggestionCallback: widget.contactSuggestionsCallback,
         onContactSuggestionSelected: (P selection) {
@@ -941,6 +947,7 @@ class SuggestionsList<T, P, R> extends StatefulWidget {
   final EdgeInsets? listActionPadding;
   final bool hideSuggestionsBox;
   final bool isDirectionRTL;
+  final int? minInputLengthAutocomplete;
   final ItemBuilder<P>? contactSuggestionBuilder;
   final SuggestionsCallback<P>? contactSuggestionCallback;
   final SuggestionSelectionCallback<P>? onContactSuggestionSelected;
@@ -979,6 +986,7 @@ class SuggestionsList<T, P, R> extends StatefulWidget {
     this.listActionPadding,
     this.hideSuggestionsBox = false,
     this.isDirectionRTL = false,
+    this.minInputLengthAutocomplete,
     this.contactSuggestionBuilder,
     this.contactSuggestionCallback,
     this.onContactSuggestionSelected,
@@ -1006,47 +1014,76 @@ class SuggestionsListState<T, P, R> extends State<SuggestionsList<T, P, R>>
     _controllerListener = () async {
       // If we came here because of a change in selected text, not because of
       // actual change in text
-      if (widget.controller!.text == _lastTextValue) return;
+      final queryString = widget.controller!.text.trim();
 
-      _lastTextValue = widget.controller!.text;
+      if (queryString == _lastTextValue) return;
+
+      _lastTextValue = queryString;
 
       _debounceTimer?.cancel();
-      if (widget.controller!.text.length <= widget.minCharsForSuggestions!) {
-        if (mounted) {
-          Iterable<R>? recentItems;
-          try {
-            if (widget.fetchRecentActionCallback != null) {
-              recentItems = await widget.fetchRecentActionCallback!(widget.controller!.text);
-            }
-          } catch (e) {
-            logError('SuggestionsListState::SuggestionsListState(): $e');
-          }
 
-          setState(() {
-            _isLoading = false;
-            _suggestions = null;
-            _contacts = null;
-            _recentItems = recentItems;
-            _suggestionsValid = true;
-          });
-        }
-        return;
-      } else {
-        _debounceTimer = Timer(widget.debounceDuration!, () async {
-          if (_debounceTimer!.isActive) return;
-          if (_isLoading!) {
-            _isQueued = true;
-            return;
-          }
+      if (queryString.length <= widget.minCharsForSuggestions!) {
+        if (!mounted) return;
 
-          await invalidateSuggestions();
-          while (_isQueued!) {
-            _isQueued = false;
-            await invalidateSuggestions();
-          }
+        final recentItems = await _getListRecent(queryString);
+
+        setState(() {
+          _isLoading = false;
+          _suggestions = null;
+          _contacts = null;
+          _recentItems = recentItems;
+          _suggestionsValid = true;
         });
+      } else {
+        _debounceTimer = Timer(
+          widget.debounceDuration!,
+          _handleDebounceTimeListener,
+        );
       }
     };
+  }
+
+  Future<Iterable<R>?> _getListRecent(String queryString) async {
+    try {
+      return widget.fetchRecentActionCallback?.call(queryString);
+    } catch (e) {
+      logError('SuggestionsListState::_getRecent:Exception = $e');
+      return null;
+    }
+  }
+
+  Future<Iterable<P>?> _getListContact(String queryString) async {
+    try {
+      return widget.contactSuggestionCallback?.call(queryString);
+    } catch (e) {
+      logError('SuggestionsListState::_getListContact:Exception = $e');
+      return null;
+    }
+  }
+
+  Future<Iterable<T>?> _getListSuggestion(String queryString) async {
+    try {
+      return widget.suggestionsCallback?.call(queryString);
+    } catch (e) {
+      logError('SuggestionsListState::_getListSuggestion:Exception = $e');
+      return null;
+    }
+  }
+
+  Future<void> _handleDebounceTimeListener() async {
+    if (_debounceTimer!.isActive) return;
+
+    if (_isLoading!) {
+      _isQueued = true;
+      return;
+    }
+
+    await invalidateSuggestions();
+
+    while (_isQueued!) {
+      _isQueued = false;
+      await invalidateSuggestions();
+    }
   }
 
   @override
@@ -1091,49 +1128,61 @@ class SuggestionsListState<T, P, R> extends State<SuggestionsList<T, P, R>>
 
   Future<void> _getSuggestions() async {
     if (_suggestionsValid || widget.hideSuggestionsBox) return;
+
+    if (!mounted) return;
+
     _suggestionsValid = true;
 
-    if (mounted) {
+    final queryString = widget.controller!.text.trim();
+
+    if (queryString.isEmpty) {
+      final recentItems = await _getListRecent(queryString);
+
       setState(() {
-        _animationController!.forward(from: 1.0);
-
-        _isLoading = true;
+        _animationController!.forward(from: widget.animationStart);
+        _isLoading = false;
+        _suggestions = null;
+        _recentItems = recentItems;
+        _contacts = null;
       });
-
-      Iterable<T>? suggestions;
-      Iterable<R>? recentItems;
-      Iterable<P>? contacts;
-      Object? error;
-
-      try {
-        suggestions = await widget.suggestionsCallback!(widget.controller!.text);
-        if (widget.fetchRecentActionCallback != null) {
-          recentItems = await widget.fetchRecentActionCallback!(widget.controller!.text);
-        }
-        if (widget.contactSuggestionCallback != null) {
-          contacts = await widget.contactSuggestionCallback!(widget.controller!.text);
-        }
-      } catch (e) {
-        error = e;
-      }
-
-      if (mounted) {
-        // if it wasn't removed in the meantime
-        setState(() {
-          double? animationStart = widget.animationStart;
-          // allow suggestionsCallback to return null and not throw error here
-          if (error != null || suggestions?.isEmpty == true) {
-            animationStart = 1.0;
-          }
-          _animationController!.forward(from: animationStart);
-
-          _isLoading = false;
-          _suggestions = suggestions;
-          _recentItems = recentItems;
-          _contacts = contacts;
-        });
-      }
+      return;
     }
+
+    setState(() {
+      _animationController!.forward(from: 1.0);
+      _isLoading = true;
+    });
+
+    Iterable<T>? suggestions;
+    Iterable<R>? recentItems;
+    Iterable<P>? contacts;
+
+    final tupleListItems = await Future.wait([
+      _getListSuggestion(queryString),
+      if (queryString.length >= (widget.minInputLengthAutocomplete ?? 0))
+        _getListContact(queryString),
+    ]);
+
+    if (tupleListItems.isEmpty ||
+        tupleListItems.every((item) => item == null || item.isEmpty)) {
+      recentItems = await _getListRecent(queryString);
+    } else {
+      suggestions = tupleListItems[0] as Iterable<T>?;
+      contacts = tupleListItems.length == 2
+        ? tupleListItems[1] as Iterable<P>?
+        : null;
+    }
+
+    setState(() {
+      final animationStart = suggestions?.isNotEmpty == true
+        ? widget.animationStart
+        : 1.0;
+      _animationController!.forward(from: animationStart);
+      _isLoading = false;
+      _suggestions = suggestions;
+      _recentItems = recentItems;
+      _contacts = contacts;
+    });
   }
 
   @override
@@ -1217,9 +1266,9 @@ class SuggestionsListState<T, P, R> extends State<SuggestionsList<T, P, R>>
       reverse: widget.suggestionsBox!.direction == AxisDirection.down ? false : true, // reverses the list to start at the bottom
       children: [
         if (listActionWidget != null) listActionWidget,
-        if (loadingWidget != null) loadingWidget,
         if (widget.buttonShowAllResult != null && widget.controller?.text.isNotEmpty == true)
           widget.buttonShowAllResult!(context, widget.controller?.text, this),
+        if (loadingWidget != null) loadingWidget,
         if (listItemContactWidget.isNotEmpty)
           ... listItemContactWidget,
         if (listItemContactWidget.isNotEmpty && listItemSuggestionWidget.isNotEmpty)
@@ -1255,16 +1304,16 @@ class SuggestionsListState<T, P, R> extends State<SuggestionsList<T, P, R>>
       reverse: widget.suggestionsBox!.direction == AxisDirection.down ? false : true, // reverses the list to start at the bottom
       children: [
         if (listActionWidget != null) listActionWidget,
-        if (loadingWidget != null) loadingWidget,
         if (widget.buttonShowAllResult != null && widget.controller?.text.isNotEmpty == true)
           widget.buttonShowAllResult!(context, widget.controller?.text, this),
         if (_recentItems?.isNotEmpty == true && widget.itemRecentBuilder != null && widget.titleHeaderRecent != null)
           widget.titleHeaderRecent!,
         if (listItemRecent.isNotEmpty)
-          ... [
-            ... listItemRecent,
-            const SizedBox(height: 16)
-          ],
+          ... listItemRecent,
+        if (loadingWidget != null)
+          loadingWidget
+        else
+          const SizedBox(height: 16)
       ],
     );
 
