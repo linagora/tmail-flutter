@@ -6030,6 +6030,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       text = A.Text$rich(t2, _null, 1, C.TextOverflow_2, _null, _null, t1.styleOrigin, _null, _null, _null, _null, _null);
       if (!t1.ensureHighlightVisible)
         return text;
+      if (t1.preMarkedText == null) {
+        t2 = t1.wordToStyle;
+        t1 = t2.length !== 0 && !C.JSString_methods.contains$1(t1.textOrigin.toLowerCase(), t2.toLowerCase());
+      } else
+        t1 = false;
+      if (t1)
+        return text;
       $.WidgetsBinding__instance.SchedulerBinding__postFrameCallbacks.push(new B._RichTextBuilderState_build_closure(_this));
       return A.SingleChildScrollView$(text, _null, _null, _null, D.NeverScrollableScrollPhysics_null, _null, C.Axis_0);
     },
@@ -21736,5 +21743,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "NXl4a17L/aJSUH1o+22G4FvIax8=");
+})($__dart_deferred_initializers__, "NxrlGXhxPi9XBCjNoSXk5rOK1SA=");
 ;
