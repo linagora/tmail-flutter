@@ -20,6 +20,9 @@ void main() {
     "Abc.123@example.com",
     "user+mailbox/department=shipping@example.com",
     "user+mailbox@example.com",
+    "user+folder@james.apache.org",
+    "user+my folder@domain.com",
+    "user+Dossier d'été@domain.com",
     "\"Abc@def\"@example.com",
     "\"Fred Bloggs\"@example.com",
     "\"Joe.\\Blow\"@example.com",
@@ -56,6 +59,10 @@ void main() {
     "server-dev@#123.apache.org",
     "server-dev@[127.0.1.1.1]",
     "server-dev@[127.0.1.-1]",
+    "user+@domain.com",
+    "user+ @domain.com",
+    "user+#folder@domain.com",
+    "user+test-_.!~*'() @domain.com",
     "\"a..b\"@domain.com", // jakarta.mail is unable to handle this so we better reject it
     "server-dev\\.@james.apache.org", // jakarta.mail is unable to handle this so we better reject it
     "a..b@domain.com",
@@ -165,5 +172,46 @@ void main() {
       final mailAddress = MailAddress.validateAddress(GOOD_ADDRESS);
       expect(mailAddress.toString(), equals(GOOD_ADDRESS));
     });
+
+    test('MailAddress.encodeLocalPartDetails() should work with characters to encode', () {
+      final mailAddress = MailAddress.validateAddress("user+my folder@domain.com");
+      expect(mailAddress.asEncodedString(), equals("user+my%20folder@domain.com"));
+    });
+
+    test('MailAddress.encodeLocalPartDetails() should work with many characters to encode', () {
+      final mailAddress = MailAddress.validateAddress("user+Dossier d'été@domain.com");
+      expect(mailAddress.asEncodedString(), equals("user+Dossier%20d%27%C3%A9t%C3%A9@domain.com"));
+    });
+
+    test('MailAddress.encodeLocalPartDetails() should encode the rights characters', () {
+      final mailAddress = MailAddress.validateAddress("user+test-_.!~'() @domain.com");
+      expect(mailAddress.asEncodedString(), equals("user+test-_.%21~%27%28%29%20@domain.com"));
+    });
+
+    test('getLocalPartDetails() should work', () {
+      final mailAddress = MailAddress.validateAddress("user+details@domain.com");
+      expect(mailAddress.getLocalPartDetails(), equals("details"));
+    });
+
+    test('getLocalPartWithoutDetails() should work', () {
+      final mailAddress = MailAddress.validateAddress("user+details@domain.com");
+      expect(mailAddress.getLocalPartWithoutDetails(), equals("user"));
+    });
+
+    test('stripDetails() should work', () {
+      final mailAddress = MailAddress.validateAddress("user+details@domain.com");
+      expect(mailAddress.stripDetails().asString(), equals("user@domain.com"));
+    });
+
+    test('stripDetails() should work with encoded local part', () {
+      final mailAddress = MailAddress.validateAddress("user+Dossier%20d%27%C3%A9t%C3%A9@domain.com");
+      expect(mailAddress.stripDetails().asString(), equals("user@domain.com"));
+    });
+
+    test('stripDetails() should work when local part needs encoding', () {
+      final mailAddress = MailAddress.validateAddress("user+super folder@domain.com");
+      expect(mailAddress.stripDetails().asString(), equals("user@domain.com"));
+    });
+
   });
 }
