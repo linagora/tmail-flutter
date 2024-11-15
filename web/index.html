@@ -101,6 +101,8 @@
   <script>
     {{flutter_js}}
     {{flutter_build_config}}
+    
+    loadLanguageResources().finally(initialTmailApp);
 
     _flutter.loader.load({
       serviceWorkerSettings: {
@@ -109,7 +111,6 @@
       onEntrypointLoaded: async function(engineInitializer) {
         const appRunner = await engineInitializer.initializeEngine();
         await appRunner.runApp();
-        loadLanguageResources().finally(initialTmailApp);
       }
     });
   </script>
