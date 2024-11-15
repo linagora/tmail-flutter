@@ -19394,9 +19394,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t1 = scrollInfo.metrics;
           t2 = t1._scroll_metrics$_pixels;
           t2.toString;
-          t1 = t1._maxScrollExtent;
-          t1.toString;
-          t1 = t2 === t1;
+          t3 = t1._maxScrollExtent;
+          t3.toString;
+          t1 = t2 === t3 && t1.axisDirection === C.AxisDirection_2;
         } else
           t1 = false;
       } else
@@ -21753,5 +21753,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "agEerGwQqmAIF51mDLwonEbTU7o=");
+})($__dart_deferred_initializers__, "DHY3rF7AJTxzjOjIAvsotbc2W4E=");
 ;
