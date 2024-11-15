@@ -404,6 +404,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _RichTextBuilderState: function _RichTextBuilderState(t0, t1, t2) {
       var _ = this;
       _.firstHighlightKey = t0;
+      _.firstHighlightKeyed = false;
       _.___RichTextBuilderState_richTextWidthDebouncer_FI = $;
       _.AutomaticKeepAliveClientMixin__keepAliveHandle = t1;
       _._widget = null;
@@ -6009,8 +6010,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return value;
     },
     scrollDebounceListener$0() {
-      var t2, scrollable, renderBox,
-        t1 = this.firstHighlightKey;
+      var t1, t2, scrollable, renderBox;
+      if (!this.firstHighlightKeyed)
+        return;
+      t1 = this.firstHighlightKey;
       if ($.WidgetsBinding__instance.WidgetsBinding__buildOwner._globalKeyRegistry.$index(0, t1) == null)
         return;
       t2 = $.WidgetsBinding__instance.WidgetsBinding__buildOwner._globalKeyRegistry.$index(0, t1);
@@ -6044,10 +6047,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (!t1.ensureHighlightVisible)
         return text;
       _this.get$richTextWidthDebouncer().set$value(0, A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx);
-      return A.SingleChildScrollView$(text, _null, D.PageStorageKey_rich_text_builder, _null, D.NeverScrollableScrollPhysics_null, _null, C.Axis_0);
+      return A.SingleChildScrollView$(text, _null, _null, _null, D.NeverScrollableScrollPhysics_null, _null, C.Axis_0);
     },
     _rich_text_builder$_getSpans$4$styleOrigin$styleWord$text$word(styleOrigin, styleWord, text, word) {
-      var spans, t2, t3, spanBoundary, firstHighlightKeyed, startIndex, endIndex, spanText, _null = null,
+      var spans, t2, t3, spanBoundary, startIndex, endIndex, spanText, _null = null,
         t1 = word.length;
       if (t1 === 0)
         return A._setArrayType([A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, styleOrigin, text)], type$.JSArray_InlineSpan);
@@ -6055,7 +6058,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = text.length;
       t3 = this.firstHighlightKey;
       spanBoundary = 0;
-      firstHighlightKeyed = false;
       do {
         startIndex = C.JSString_methods.indexOf$2(text.toLowerCase(), word.toLowerCase(), spanBoundary);
         if (startIndex === -1) {
@@ -6066,9 +6068,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           spans.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, styleOrigin, C.JSString_methods.substring$2(text, spanBoundary, startIndex)));
         endIndex = startIndex + t1;
         spanText = C.JSString_methods.substring$2(text, startIndex, endIndex);
-        if (!firstHighlightKeyed) {
+        if (!this.firstHighlightKeyed) {
           spans.push(new A.WidgetSpan(A.Text$(spanText, t3, _null, _null, _null, _null, _null, _null, _null, styleWord, _null, _null, _null, _null, _null), C.PlaceholderAlignment_5, _null, _null));
-          firstHighlightKeyed = true;
+          this.firstHighlightKeyed = true;
         } else
           spans.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, styleWord, spanText));
         if (endIndex < t2) {
@@ -6083,8 +6085,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var startIndex, t2, endIndex, t3, t4, markedText, _this = this, _null = null,
         spans = A._setArrayType([], type$.JSArray_InlineSpan),
         processingText = _this._widget.preMarkedText,
-        t1 = _this.firstHighlightKey,
-        firstHighlightKeyed = false;
+        t1 = _this.firstHighlightKey;
       while (true) {
         if (!(processingText != null && processingText.length !== 0))
           break;
@@ -6107,12 +6108,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           spans.push(new A.TextSpan(t3, _null, _null, C.C__DeferringMouseCursor, _null, _null, _null, _null, _null, t4));
         }
         markedText = C.JSString_methods.substring$2(processingText, t2, endIndex);
-        t2 = _this._widget;
-        if (!firstHighlightKeyed) {
-          spans.push(new A.WidgetSpan(new A.Text(markedText, _null, t2.styleWord, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t1), C.PlaceholderAlignment_5, _null, _null));
-          firstHighlightKeyed = true;
+        t2 = _this.firstHighlightKeyed;
+        t3 = _this._widget;
+        if (!t2) {
+          spans.push(new A.WidgetSpan(new A.Text(markedText, _null, t3.styleWord, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t1), C.PlaceholderAlignment_5, _null, _null));
+          _this.firstHighlightKeyed = true;
         } else {
-          t2 = t2.styleWord;
+          t2 = t3.styleWord;
           spans.push(new A.TextSpan(markedText, _null, _null, C.C__DeferringMouseCursor, _null, _null, _null, _null, _null, t2));
         }
         processingText = C.JSString_methods.substring$1(processingText, endIndex + 7);
@@ -21596,7 +21598,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Padding_spY = new A.Padding(E.EdgeInsets_0_5_0_5, D.VerticalDivider_EqE, null);
     D.PageStorageKey_K6o = new A.PageStorageKey("list_presentation_email_in_search_view", type$.PageStorageKey_String);
     D.PageStorageKey_M4E = new A.PageStorageKey("list_presentation_email_in_threads", type$.PageStorageKey_String);
-    D.PageStorageKey_rich_text_builder = new A.PageStorageKey("rich_text_builder", type$.PageStorageKey_String);
     D.HtmlElementView_ato = new A.HtmlElementView("Browser__WebContextMenuViewType__", null, null, null);
     D.Positioned_qdM = new A.Positioned(0, 0, 0, 0, null, null, D.HtmlElementView_ato, null);
     D.QuickSearchSuggestionsBoxDecoration_7K0 = new B.QuickSearchSuggestionsBoxDecoration(C.Color_4294967295, C.BorderRadius_ww80);
@@ -21752,5 +21753,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "gO7ibKOLiBB0z5mKan+M1nIstdg=");
+})($__dart_deferred_initializers__, "agEerGwQqmAIF51mDLwonEbTU7o=");
 ;
