@@ -77,7 +77,8 @@ class EmailUtils {
 
   static bool isEmailAddressValid(String address) {
     try {
-      return GetUtils.isEmail(address) && MailAddress.validateAddress(address).asString().isNotEmpty;
+      MailAddress mailAddress = MailAddress.validateAddress(address);
+      return GetUtils.isEmail(mailAddress.stripDetails().asString()) && mailAddress.asString().isNotEmpty;
     } catch(e) {
       logError('EmailUtils::isEmailAddressValid: Exception = $e');
       return false;

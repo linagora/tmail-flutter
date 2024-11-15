@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:core/domain/exceptions/address_exception.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/mail/domain.dart';
@@ -23,7 +24,14 @@ class MailAddress with EquatableMixin {
   final String localPart;
   final Domain domain;
 
+  static const String subaddressingLocalPartDelimiter = '+';
+
   MailAddress({required this.localPart, required this.domain});
+
+  MailAddress.fromParts({required String localPartWithoutDetails, required String localPartDetails, required this.domain}) : localPart =
+      localPartDetails.isEmpty
+        ? localPartWithoutDetails
+        : '$localPartWithoutDetails$subaddressingLocalPartDelimiter$localPartDetails';
 
   factory MailAddress.validateAddress(String address) {
     log('MailAddress::validate: Address = $address');
@@ -135,6 +143,89 @@ class MailAddress with EquatableMixin {
 
   String getLocalPart() {
     return localPart;
+  }
+
+  String? getLocalPartDetails() {
+    int separatorPosition = localPart.indexOf(subaddressingLocalPartDelimiter);
+    if (separatorPosition <= 0) {
+      return null;
+    }
+    return localPart.substring(separatorPosition + subaddressingLocalPartDelimiter.length);
+  }
+
+  String getLocalPartWithoutDetails() {
+    int separatorPosition = localPart.indexOf(subaddressingLocalPartDelimiter);
+    if (separatorPosition <= 0) {
+      return localPart;
+    }
+    return localPart.substring(0, separatorPosition);
+  }
+
+  MailAddress stripDetails() {
+    return MailAddress(localPart: getLocalPartWithoutDetails(), domain: domain);
+  }
+
+  // cannot use Uri.encodeComponent because it is meant to be compliant with RFC2396
+  // eg `-_.!~*'()` are not encoded, but we want `!*'()` to be
+  static final _needsNoEncoding = RegExp(r'^[a-zA-Z0-9._~-]+$');
+
+  // this table is adapted from `_unreserved2396Table` found at
+  // https://github.com/dart-lang/sdk/blob/58f9beb6d4ec9e93430454bb96c0b8f068d0b0bc/sdk/lib/core/uri.dart#L3382
+  static const _customUnreservedTable = <int>[
+    //                     LSB            MSB
+    //                      |              |
+    0x0000, // 0x00 - 0x0f  0000000000000000
+    0x0000, // 0x10 - 0x1f  0000000000000000
+    //                                   -.
+    0x6000, // 0x20 - 0x2f  0000000000000110
+    //                      0123456789
+    0x03ff, // 0x30 - 0x3f  1111111111000000
+    //                       ABCDEFGHIJKLMNO
+    0xfffe, // 0x40 - 0x4f  0111111111111111
+    //                      PQRSTUVWXYZ    _
+    0x87ff, // 0x50 - 0x5f  1111111111100001
+    //                       abcdefghijklmno
+    0xfffe, // 0x60 - 0x6f  0111111111111111
+    //                      pqrstuvwxyz   ~
+    0x47ff, // 0x70 - 0x7f  1111111111100010
+  ];
+
+  // this method is adapted from `_uriEncode()` found at:
+  // https://github.com/dart-lang/sdk/blob/bb8db16297e6b9994b08ecae6ee1dd45a0be587e/sdk/lib/_internal/wasm/lib/uri_patch.dart#L49
+  static String customUriEncode(String text) {
+    if (_needsNoEncoding.hasMatch(text)) {
+      return text;
+    }
+
+    // Encode the string into bytes then generate an ASCII only string
+    // by percent encoding selected bytes.
+    StringBuffer result = StringBuffer('');
+    var bytes = utf8.encode(text);
+    for (int byte in bytes) {
+      if (byte < 128 &&
+      ((_customUnreservedTable[byte >> 4] & (1 << (byte & 0x0f))) != 0)) {
+        result.writeCharCode(byte);
+      } else {
+        const String hexDigits = '0123456789ABCDEF';
+        result.write('%');
+        result.write(hexDigits[(byte >> 4) & 0x0f]);
+        result.write(hexDigits[byte & 0x0f]);
+      }
+    }
+    return result.toString();
+  }
+
+  String asEncodedString() {
+    String? localPartDetails = getLocalPartDetails();
+    if(localPartDetails == null) {
+      return asString();
+    } else {
+      return MailAddress.fromParts(
+          localPartWithoutDetails: getLocalPartWithoutDetails(),
+          localPartDetails: customUriEncode(localPartDetails),
+          domain: domain
+        ).asString();
+    }
   }
 
   @override
@@ -323,6 +414,10 @@ class MailAddress with EquatableMixin {
         lpSB.write('.');
         pos++;
         lastCharDot = true;
+      } else if (postChar == subaddressingLocalPartDelimiter) {
+        // Start of local part details, jump to the `@`
+        lpSB.write(subaddressingLocalPartDelimiter);
+        pos = _parseLocalPartDetails(lpSB, address, pos+1);
       } else if (postChar == '@') {
         // End of local-part
         break;
@@ -413,6 +508,39 @@ class MailAddress with EquatableMixin {
         pos++;
       }
     }
+    return pos;
+  }
+
+  static int _parseLocalPartDetails(StringBuffer localPartSB, String address, int pos) {
+    StringBuffer localPartDetailsSB = StringBuffer();
+
+    while (true) {
+      if (pos >= address.length) {
+        break;
+      }
+      var postChar = address[pos];
+      if (postChar == '@') {
+        // End of local-part-details
+        break;
+      } else {
+        localPartDetailsSB.write(postChar);
+        pos++;
+      }
+    }
+
+    String localPartDetails = localPartDetailsSB.toString();
+    if (localPartDetails.isEmpty || localPartDetails.trim().isEmpty) {
+      throw AddressException("target mailbox name should not be empty");
+    }
+    if (localPartDetails.startsWith('#')) {
+      throw AddressException("target mailbox name should not start with #");
+    }
+    final forbiddenChars = RegExp(r'[*\r\n]');
+    if (forbiddenChars.hasMatch(localPartDetails)) {
+      throw AddressException("target mailbox name should not contain special characters");
+    }
+
+    localPartSB.write(localPartDetails);
     return pos;
   }
 

@@ -8,6 +8,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/mail/mail_address.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,6 +18,7 @@ import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/mail_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
@@ -220,7 +222,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                             return RecipientSuggestionItemWidget(
                               imagePaths: widget.imagePaths,
                               suggestionState: suggestionEmailAddress.state,
-                              emailAddress: suggestionEmailAddress.emailAddress,
+                              emailAddress: MailAddress.validateAddress(suggestionEmailAddress.emailAddress.emailAddress).asEmailAddress(),
                               suggestionValid: suggestionValid,
                               highlight: highlight,
                               onSelectedAction: (emailAddress) {
@@ -304,7 +306,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                         return RecipientSuggestionItemWidget(
                           imagePaths: widget.imagePaths,
                           suggestionState: suggestionEmailAddress.state,
-                          emailAddress: suggestionEmailAddress.emailAddress,
+                          emailAddress: MailAddress.validateAddress(suggestionEmailAddress.emailAddress.emailAddress).asEmailAddress(),
                           suggestionValid: suggestionValid,
                           highlight: highlight,
                           onSelectedAction: (emailAddress) {
@@ -505,8 +507,9 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
     SuggestionEmailAddress suggestionEmailAddress,
     StateSetter stateSetter
   ) {
-    if (!_isDuplicatedRecipient(suggestionEmailAddress.emailAddress.emailAddress)) {
-      stateSetter(() => _currentListEmailAddress.add(suggestionEmailAddress.emailAddress));
+    MailAddress mailAddress = MailAddress.validateAddress(suggestionEmailAddress.emailAddress.emailAddress);
+    if (!_isDuplicatedRecipient(mailAddress.asEncodedString())) {
+      stateSetter(() => _currentListEmailAddress.add(mailAddress.asEmailAddress()));
       _updateListEmailAddressAction();
     }
   }
@@ -515,9 +518,9 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
     String value,
     StateSetter stateSetter
   ) {
-    final textTrim = value.trim();
-    if (!_isDuplicatedRecipient(textTrim)) {
-      stateSetter(() => _currentListEmailAddress.add(EmailAddress(null, textTrim)));
+    MailAddress mailAddress = MailAddress.validateAddress(value.trim());
+    if (!_isDuplicatedRecipient(mailAddress.asEncodedString())) {
+      stateSetter(() => _currentListEmailAddress.add(mailAddress.asEmailAddress()));
       _updateListEmailAddressAction();
     }
   }
@@ -526,9 +529,9 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
     String value,
     StateSetter stateSetter
   ) {
-    final textTrim = value.trim();
-    if (!_isDuplicatedRecipient(textTrim)) {
-      stateSetter(() => _currentListEmailAddress.add(EmailAddress(null, textTrim)));
+    MailAddress mailAddress = MailAddress.validateAddress(value.trim());
+    if (!_isDuplicatedRecipient(mailAddress.asEncodedString())) {
+      stateSetter(() => _currentListEmailAddress.add(mailAddress.asEmailAddress()));
       _updateListEmailAddressAction();
     }
     _gapBetweenTagChangedAndFindSuggestion = Timer(
