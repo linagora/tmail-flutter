@@ -1,5 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/views/quick_search/quick_search_input_form.dart';
+import 'package:core/presentation/views/quick_search/quick_search_action_define.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';

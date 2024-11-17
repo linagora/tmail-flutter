@@ -233,6 +233,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.10.1"
+  debounce_throttle:
+    dependency: "direct main"
+    description:
+      name: debounce_throttle
+      sha256: c95cf47afda975fc507794a52040a16756fb2f31ad3027d4e691c41862ff5692
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   device_info_plus:
     dependency: "direct main"
     description:
@@ -970,6 +978,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.4"
+  simple_observable:
+    dependency: transitive
+    description:
+      name: simple_observable
+      sha256: b392795c48f8b5f301b4c8f73e15f56e38fe70f42278c649d8325e859a783301
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   sky_engine:
     dependency: transitive
     description: flutter
