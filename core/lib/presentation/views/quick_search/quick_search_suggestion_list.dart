@@ -109,7 +109,7 @@ class QuickSearchSuggestionListState<T, P, R>
 
   Future<Iterable<R>?> _getListRecent(String queryString) async {
     try {
-      return widget.fetchRecentActionCallback?.call(queryString);
+      return await widget.fetchRecentActionCallback?.call(queryString);
     } catch (e) {
       logError('SuggestionsListState::_getRecent:Exception = $e');
       return null;
@@ -118,7 +118,7 @@ class QuickSearchSuggestionListState<T, P, R>
 
   Future<Iterable<P>?> _getListContact(String queryString) async {
     try {
-      return widget.contactSuggestionCallback?.call(queryString);
+      return await widget.contactSuggestionCallback?.call(queryString);
     } catch (e) {
       logError('SuggestionsListState::_getListContact:Exception = $e');
       return null;
@@ -127,7 +127,7 @@ class QuickSearchSuggestionListState<T, P, R>
 
   Future<Iterable<T>?> _getListSuggestion(String queryString) async {
     try {
-      return widget.suggestionsCallback?.call(queryString);
+      return await widget.suggestionsCallback?.call(queryString);
     } catch (e) {
       logError('SuggestionsListState::_getListSuggestion:Exception = $e');
       return null;
@@ -160,7 +160,7 @@ class QuickSearchSuggestionListState<T, P, R>
     }
   }
 
-  Future<void> _textInputControllerListener() async {
+  void _textInputControllerListener() {
     // If we came here because of a change in selected text, not because of
     // actual change in text
     final queryString = widget.controller!.text.trim();
