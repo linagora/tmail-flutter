@@ -1,3 +1,4 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
@@ -37,6 +38,9 @@ class TwakeWelcomeBindings extends BaseBindings {
       Get.find<AccountRepository>(),
       Get.find<CredentialRepository>(),
     ));
+    if (PlatformInfo.isMobile) {
+
+    }
   }
 
   @override
