@@ -1,9 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:tmail_ui_user/features/home/domain/usecases/auto_sign_in_via_deep_link_interactor.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
 
+class MockAutoSignInViaDeepLinkInteractor extends Mock implements AutoSignInViaDeepLinkInteractor {}
+
 void main() {
-  final deepLinkManager = DeepLinksManager();
+  final mockAutoSignInViaDeepLinkInteractor = MockAutoSignInViaDeepLinkInteractor();
+  final deepLinkManager = DeepLinksManager(mockAutoSignInViaDeepLinkInteractor);
 
   group('DeepLinksManager::parseDeepLink::test', () {
     test('Valid deep link with multiple query parameters', () {
