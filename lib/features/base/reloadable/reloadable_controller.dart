@@ -29,9 +29,7 @@ abstract class ReloadableController extends BaseController {
 
   @override
   void handleFailureViewState(Failure failure) {
-    if (failure is GetCredentialFailure ||
-        failure is GetStoredTokenOidcFailure ||
-        failure is GetAuthenticatedAccountFailure) {
+    if (isNotSignedIn(failure)) {
       logError('$runtimeType::handleFailureViewState():Failure = $failure');
       goToLogin();
     } else if (failure is GetSessionFailure) {
@@ -153,5 +151,11 @@ abstract class ReloadableController extends BaseController {
       session: session,
       baseUrl: baseUrl
     ));
+  }
+
+  bool isNotSignedIn(Failure failure) {
+    return failure is GetCredentialFailure ||
+      failure is GetStoredTokenOidcFailure ||
+      failure is GetAuthenticatedAccountFailure;
   }
 }
