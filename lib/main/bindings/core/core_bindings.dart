@@ -15,6 +15,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
+import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
@@ -71,6 +72,9 @@ class CoreBindings extends Bindings {
     Get.put(BeforeReconnectManager());
     if (PlatformInfo.isIOS) {
       Get.put(IOSNotificationManager());
+    }
+    if (PlatformInfo.isMobile) {
+      Get.put(DeepLinksManager());
     }
   }
 
