@@ -202,6 +202,7 @@ class ComposerController extends BaseController
   SignatureStatus _identityContentOnOpenPolicy = SignatureStatus.editedAvailable;
   int? _savedEmailDraftHash;
   bool _restoringSignatureButton = false;
+  GlobalKey? responsiveContainerKey;
   
   @visibleForTesting
   bool get restoringSignatureButton => _restoringSignatureButton;
@@ -232,6 +233,7 @@ class ComposerController extends BaseController
   void onInit() {
     super.onInit();
     if (PlatformInfo.isWeb) {
+      responsiveContainerKey = GlobalKey();
       richTextWebController = getBinding<RichTextWebController>();
     } else {
       richTextMobileTabletController = getBinding<RichTextMobileTabletController>();
@@ -276,6 +278,7 @@ class ComposerController extends BaseController
       richTextMobileTabletController = null;
     }
     _identityContentOnOpenPolicy = SignatureStatus.editedAvailable;
+    responsiveContainerKey = null;
     super.onClose();
   }
 
@@ -1493,6 +1496,9 @@ class ComposerController extends BaseController
   }
 
   void displayScreenTypeComposerAction(ScreenDisplayMode displayMode) async {
+    if (screenDisplayMode.value == ScreenDisplayMode.minimize) {
+      _isEmailBodyLoaded = false;
+    }
     if (richTextWebController != null && screenDisplayMode.value != ScreenDisplayMode.minimize) {
       final textCurrent = await richTextWebController!.editorController.getText();
       richTextWebController!.editorController.setText(textCurrent);
@@ -2185,6 +2191,12 @@ class ComposerController extends BaseController
   }
 
   void handleOnDragEnterHtmlEditorWeb(List<dynamic>? types) {
+    if (types.validateFilesTransfer) {
+      mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.active;
+    }
+  }
+
+  void handleOnDragOverHtmlEditorWeb(List<dynamic>? types) {
     if (types.validateFilesTransfer) {
       mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.active;
     }
