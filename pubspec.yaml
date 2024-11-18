@@ -252,6 +252,8 @@ dependencies:
 
   flutter_web_auth_2: 3.1.1
 
+  app_links: 6.3.2
+
   duration: 4.0.3
 
 dev_dependencies:
