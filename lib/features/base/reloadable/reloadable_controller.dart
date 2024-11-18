@@ -29,9 +29,7 @@ abstract class ReloadableController extends BaseController {
 
   @override
   void handleFailureViewState(Failure failure) {
-    if (failure is GetCredentialFailure ||
-        failure is GetStoredTokenOidcFailure ||
-        failure is GetAuthenticatedAccountFailure) {
+    if (isNotSignedIn(failure)) {
       logError('$runtimeType::handleFailureViewState():Failure = $failure');
       goToLogin();
     } else if (failure is GetSessionFailure) {
@@ -82,7 +80,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   void _handleGetCredentialSuccess(GetCredentialViewState success) {
-    _setDataToInterceptors(
+    setDataToInterceptors(
       baseUrl: success.baseUrl.toString(),
       userName: success.userName,
       password: success.password);
@@ -90,7 +88,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   void _handleGetStoredTokenOidcSuccess(GetStoredTokenOidcSuccess success) {
-    _setDataToInterceptors(
+    setDataToInterceptors(
       baseUrl: success.baseUrl.toString(),
       tokenOIDC: success.tokenOidc,
       oidcConfiguration: success.oidcConfiguration);
@@ -102,7 +100,7 @@ abstract class ReloadableController extends BaseController {
     handleReloaded(session);
   }
 
-  void _setDataToInterceptors({
+  void setDataToInterceptors({
     required String baseUrl,
     UserName? userName,
     Password? password,
@@ -153,5 +151,11 @@ abstract class ReloadableController extends BaseController {
       session: session,
       baseUrl: baseUrl
     ));
+  }
+
+  bool isNotSignedIn(Failure failure) {
+    return failure is GetCredentialFailure ||
+      failure is GetStoredTokenOidcFailure ||
+      failure is GetAuthenticatedAccountFailure;
   }
 }
