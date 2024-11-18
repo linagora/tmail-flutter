@@ -4315,13 +4315,6 @@ class AppLocalizations {
     );
   }
 
-  String get tokenInvalid {
-    return Intl.message(
-      'Token invalid',
-      name: 'tokenInvalid',
-    );
-  }
-
   String get getHelpOrReportABug {
     return Intl.message(
       'Get help or report a bug',
