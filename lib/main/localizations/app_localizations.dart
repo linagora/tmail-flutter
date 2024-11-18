@@ -4366,11 +4366,4 @@ class AppLocalizations {
       name: 'doYouWantToLogoutOf',
     );
   }
-
-  String get tokenInvalid {
-    return Intl.message(
-      'Token invalid',
-      name: 'tokenInvalid',
-    );
-  }
 }
