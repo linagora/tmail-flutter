@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
@@ -19,6 +20,8 @@ import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_lo
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -104,9 +107,9 @@ class HomeController extends ReloadableController {
     _deepLinksManager = getBinding<DeepLinksManager>();
   }
 
-  Future<void> _handleDeepLinks() async {
+  Future<void> _handleDeepLinksNotSignedIn() async {
     final deepLinkData = await _deepLinksManager?.getDeepLinkData();
-    log('HomeController::_handleDeepLinks:DeepLinkData = $deepLinkData');
+    log('HomeController::_handleDeepLinksNotSignedIn:DeepLinkData = $deepLinkData');
     if (deepLinkData == null) {
       goToLogin();
       return;
@@ -137,12 +140,55 @@ class HomeController extends ReloadableController {
     }
   }
 
+  Future<void> _handleDeepLinksSignedIn(Success success) async {
+    String? username;
+    if (success is GetCredentialViewState) {
+      username = success.personalAccount.userName?.value;
+    } else if (success is GetStoredTokenOidcSuccess) {
+      username = success.personalAccount.userName?.value;
+    }
+
+    final deepLinkData = await _deepLinksManager?.getDeepLinkData();
+    log('HomeController::_handleDeepLinksSignedIn:DeepLinkData = $deepLinkData');
+    if (deepLinkData == null) {
+      super.handleSuccessViewState(success);
+      return;
+    }
+
+    if (deepLinkData.path == AppConfig.openAppHostDeepLink) {
+      if (deepLinkData.username?.isNotEmpty != true) {
+        _continueUsingTheApp(success);
+        return;
+      }
+
+      if (deepLinkData.username == username) {
+        _continueUsingTheApp(success);
+      }
+    }
+
+    super.handleSuccessViewState(success);
+  }
+
+  void _continueUsingTheApp(Success success) {
+    super.handleSuccessViewState(success);
+  }
+
   @override
   void handleFailureViewState(Failure failure) {
     if (PlatformInfo.isMobile && isNotSignedIn(failure)) {
-      _handleDeepLinks();
+      _handleDeepLinksNotSignedIn();
     } else {
       super.handleFailureViewState(failure);
+    }
+  }
+
+  @override
+  void handleSuccessViewState(Success success) {
+    if (PlatformInfo.isMobile &&
+        (success is GetCredentialViewState || success is GetStoredTokenOidcSuccess)) {
+      _handleDeepLinksSignedIn(success);
+    } else {
+      super.handleSuccessViewState(success);
     }
   }
 }
