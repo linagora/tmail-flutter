@@ -138,8 +138,14 @@ class QuickSearchSuggestionListState<T, P, R>
     log('QuickSearchSuggestionListState::_handleDebounceTimeListener:queryString = $queryString | minCharsForSuggestions = ${widget.minCharsForSuggestions}');
     if (!mounted) return;
 
+    if (_isLoading == true) return;
+
     if (widget.minCharsForSuggestions != null &&
         queryString.length <= widget.minCharsForSuggestions!) {
+      setState(() {
+        _isLoading = true;
+      });
+
       final recentItems = await _getListRecent(queryString);
 
       setState(() {
@@ -219,6 +225,11 @@ class QuickSearchSuggestionListState<T, P, R>
 
     final queryString = widget.controller!.text.trim();
 
+    setState(() {
+      _animationController!.forward(from: 1.0);
+      _isLoading = true;
+    });
+
     if (queryString.isEmpty) {
       final recentItems = await _getListRecent(queryString);
 
@@ -231,11 +242,6 @@ class QuickSearchSuggestionListState<T, P, R>
       });
       return;
     }
-
-    setState(() {
-      _animationController!.forward(from: 1.0);
-      _isLoading = true;
-    });
 
     Iterable<T>? suggestions;
     Iterable<R>? recentItems;
