@@ -4135,5 +4135,29 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "logoutConfirmation": "Logout Confirmation",
+  "@logoutConfirmation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yesLogout": "Yes, Log out",
+  "@yesLogout": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "doYouWantToLogoutOf": "Do you want to log out of",
+  "@doYouWantToLogoutOf": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "tokenInvalid": "Token invalid",
+  "@tokenInvalid": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

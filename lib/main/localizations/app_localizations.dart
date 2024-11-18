@@ -4345,4 +4345,32 @@ class AppLocalizations {
       name: 'createTwakeIdFailed',
     );
   }
+
+  String get logoutConfirmation {
+    return Intl.message(
+      'Logout Confirmation',
+      name: 'logoutConfirmation',
+    );
+  }
+
+  String get yesLogout {
+    return Intl.message(
+      'Yes, Log out',
+      name: 'yesLogout',
+    );
+  }
+
+  String get doYouWantToLogoutOf {
+    return Intl.message(
+      'Do you want to log out of',
+      name: 'doYouWantToLogoutOf',
+    );
+  }
+
+  String get tokenInvalid {
+    return Intl.message(
+      'Token invalid',
+      name: 'tokenInvalid',
+    );
+  }
 }

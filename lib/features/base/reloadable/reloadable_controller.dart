@@ -23,7 +23,7 @@ import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 
 abstract class ReloadableController extends BaseController {
-  final GetSessionInteractor _getSessionInteractor = Get.find<GetSessionInteractor>();
+  final GetSessionInteractor getSessionInteractor = Get.find<GetSessionInteractor>();
   final GetAuthenticatedAccountInteractor _getAuthenticatedAccountInteractor = Get.find<GetAuthenticatedAccountInteractor>();
   final UpdateAccountCacheInteractor _updateAccountCacheInteractor = Get.find<UpdateAccountCacheInteractor>();
 
@@ -35,7 +35,7 @@ abstract class ReloadableController extends BaseController {
     } else if (failure is GetSessionFailure) {
       logError('$runtimeType::handleFailureViewState():Failure = $failure');
       handleGetSessionFailure(failure.exception);
-    }  else if (failure is UpdateAccountCacheFailure) {
+    } else if (failure is UpdateAccountCacheFailure) {
       logError('$runtimeType::handleFailureViewState():Failure = $failure');
       _handleUpdateAccountCacheCompleted(
         session: failure.session,
@@ -122,7 +122,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   void getSessionAction() {
-    consumeState(_getSessionInteractor.execute());
+    consumeState(getSessionInteractor.execute());
   }
 
   void handleGetSessionFailure(GetSessionFailure failure) {
