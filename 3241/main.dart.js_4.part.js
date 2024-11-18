@@ -9565,7 +9565,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       t1 = t1._jsWeakMap;
       t2 = A._instanceType(_this)._eval$1("GetWidget.S");
-      mailboxPath = t2._as(t1.get(_this)).findNodePath$1(presentationMailbox.id);
+      mailboxPath = t2._as(t1.get(_this)).findNodePathWithSeparator$2(presentationMailbox.id, "/");
       if (mailboxPath == null) {
         t3 = presentationMailbox.name;
         mailboxPath = t3 == null ? null : t3.name;
@@ -21734,5 +21734,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "W55ISM5uHDVje27xX4CmX5tRGUE=");
+})($__dart_deferred_initializers__, "PtrYOrlpG/PLinvyP3ROzeUiQ4E=");
 ;
