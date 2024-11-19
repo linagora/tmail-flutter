@@ -4,6 +4,7 @@ import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
@@ -94,7 +95,9 @@ class _TMailAppState extends State<TMailApp> {
       unknownRoute: AppPages.unknownRoutePage,
       defaultTransition: Transition.noTransition,
       initialRoute: AppRoutes.home,
-      getPages: AppPages.pages);
+      getPages: AppPages.pages,
+      builder: FlutterSmartDialog.init(),
+    );
   }
 
   @override
