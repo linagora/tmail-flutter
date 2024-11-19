@@ -64,13 +64,13 @@ class TwakeWelcomeController extends ReloadableController {
     if (deepLinkData == null) return;
 
     if (currentContext != null) {
-      TipDialogHelper.loading(AppLocalizations.of(currentContext!).loadingPleaseWait);
+      SmartDialog.showLoading(msg: AppLocalizations.of(currentContext!).loadingPleaseWait);
     }
 
     _deepLinksManager?.handleDeepLinksWhenAppOnForegroundNotSignedIn(
       deepLinkData: deepLinkData,
       onSuccessCallback: _handleAutoSignInViaDeepLinkSuccess,
-      onFailureCallback: TipDialogHelper.dismiss
+      onFailureCallback: SmartDialog.dismiss,
     );
   }
 
