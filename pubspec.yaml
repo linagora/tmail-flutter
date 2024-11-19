@@ -247,13 +247,13 @@ dependencies:
 
   web_socket_channel: 2.4.3
 
-  flutter_smart_dialog: 4.9.8+5
-
   flutter_web_auth_2: 3.1.1
 
   app_links: 6.3.2
 
   duration: 4.0.3
+
+  flutter_smart_dialog: 4.9.8+5
 
 dev_dependencies:
   flutter_test:
