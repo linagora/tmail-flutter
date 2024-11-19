@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/presentation/extensions/url_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -7,6 +9,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
@@ -16,6 +19,7 @@ import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/response/oidc_response.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
+import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
@@ -52,6 +56,9 @@ import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_twake_workplace_state.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/usecase/sign_in_twake_workplace_interactor.dart';
+import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
+import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -89,6 +96,9 @@ class LoginController extends ReloadableController {
   Password? _password;
   Uri? _baseUri;
 
+  DeepLinksManager? _deepLinksManager;
+  StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
+
   LoginController(
     this._authenticationInteractor,
     this._checkOIDCIsAvailableInteractor,
@@ -105,6 +115,14 @@ class LoginController extends ReloadableController {
     this._dnsLookupToGetJmapUrlInteractor,
     this._signInTwakeWorkplaceInteractor,
   );
+
+  @override
+  void onInit() {
+    super.onInit();
+    if (PlatformInfo.isMobile) {
+      _registerDeepLinks();
+    }
+  }
 
   @override
   void onReady() {
@@ -208,9 +226,48 @@ class LoginController extends ReloadableController {
 
   @override
   void handleReloaded(Session session) {
+    SmartDialog.dismiss();
+
     popAndPush(
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
-      arguments: session
+      arguments: session,
+    );
+  }
+
+  @override
+  void handleGetSessionFailure(GetSessionFailure failure) {
+    SmartDialog.dismiss();
+    super.handleGetSessionFailure(failure);
+  }
+
+  void _registerDeepLinks() {
+    _deepLinksManager = getBinding<DeepLinksManager>();
+    _deepLinksManager?.clearPendingDeepLinkData();
+    _deepLinkDataStreamSubscription = _deepLinksManager
+        ?.pendingDeepLinkData.stream
+        .listen(_handlePendingDeepLinkDataStream);
+  }
+
+  void _handlePendingDeepLinkDataStream(DeepLinkData? deepLinkData) {
+    log('LoginController::_handlePendingDeepLinkDataStream:DeepLinkData = $deepLinkData');
+    if (deepLinkData == null) return;
+
+    if (currentContext != null) {
+      SmartDialog.showLoading(msg: AppLocalizations.of(currentContext!).loadingPleaseWait);
+    }
+
+    _deepLinksManager?.handleDeepLinksWhenAppOnForegroundNotSignedIn(
+      deepLinkData: deepLinkData,
+      onSuccessCallback: _handleAutoSignInViaDeepLinkSuccess,
+      onFailureCallback: SmartDialog.dismiss,
+    );
+  }
+
+  void _handleAutoSignInViaDeepLinkSuccess(AutoSignInViaDeepLinkSuccess success) {
+    _synchronizeTokenAndGetSession(
+      baseUri: success.baseUri,
+      tokenOIDC: success.tokenOIDC,
+      oidcConfiguration: success.oidcConfiguration,
     );
   }
 
@@ -570,6 +627,9 @@ class LoginController extends ReloadableController {
     urlInputController.dispose();
     usernameInputController.dispose();
     passwordInputController.dispose();
+    if (PlatformInfo.isMobile) {
+      _deepLinkDataStreamSubscription?.cancel();
+    }
     super.onClose();
   }
 }
