@@ -4,6 +4,9 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/quick_search/quick_search_input_form.dart';
+import 'package:core/presentation/views/quick_search/quick_search_suggestion_box_decoration.dart';
+import 'package:core/presentation/views/quick_search/quick_search_suggestion_list.dart';
+import 'package:core/presentation/views/quick_search/quick_search_text_field_configuration.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +29,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/qu
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/search_filter_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
   final _searchController = Get.find<search.SearchController>();
@@ -62,6 +66,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
           child: QuickSearchInputForm<PresentationEmail, EmailAddress, RecentSearch>(
             maxHeight: 52,
             suggestionsBoxVerticalOffset: 0.0,
+            minInputLengthAutocomplete: AppConfig.limitCharToStartSearch,
             textFieldConfiguration: _createConfiguration(context),
             suggestionsBoxDecoration: const QuickSearchSuggestionsBoxDecoration(
               color: Colors.white,
@@ -232,7 +237,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
   Widget buildListButtonForQuickSearchForm(
     BuildContext context,
     QuickSearchFilter searchFilter,
-    SuggestionsListState suggestionsListState
+    QuickSearchSuggestionListState suggestionsListState
   ) {
     return Obx(() {
       final isSelected = searchFilter.isApplied(_searchController.listFilterOnSuggestionForm);

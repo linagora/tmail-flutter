@@ -98,6 +98,8 @@ dependencies:
 
   flutter_charset_detector: 3.0.0
 
+  debounce_throttle: 2.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
