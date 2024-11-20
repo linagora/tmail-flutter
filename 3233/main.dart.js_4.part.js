@@ -385,13 +385,32 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     __TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver: function __TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver() {
     },
-    RichTextBuilder: function RichTextBuilder(t0, t1, t2, t3, t4) {
+    RichTextBuilder$(ensureHighlightVisible, preMarkedText, styleOrigin, styleWord, textOrigin, wordToStyle) {
+      return new B.RichTextBuilder(textOrigin, wordToStyle, styleOrigin, styleWord, preMarkedText, ensureHighlightVisible, null);
+    },
+    RichTextBuilder: function RichTextBuilder(t0, t1, t2, t3, t4, t5, t6) {
       var _ = this;
       _.textOrigin = t0;
       _.wordToStyle = t1;
       _.styleOrigin = t2;
       _.styleWord = t3;
-      _.key = t4;
+      _.preMarkedText = t4;
+      _.ensureHighlightVisible = t5;
+      _.key = t6;
+    },
+    _RichTextBuilderState: function _RichTextBuilderState(t0, t1, t2) {
+      var _ = this;
+      _.firstHighlightKey = t0;
+      _.firstHighlightKeyed = false;
+      _.AutomaticKeepAliveClientMixin__keepAliveHandle = t1;
+      _._widget = null;
+      _._debugLifecycleState = t2;
+      _._framework$_element = null;
+    },
+    _RichTextBuilderState_build_closure: function _RichTextBuilderState_build_closure(t0) {
+      this.$this = t0;
+    },
+    __RichTextBuilderState_State_AutomaticKeepAliveClientMixin: function __RichTextBuilderState_State_AutomaticKeepAliveClientMixin() {
     },
     ArabicDateLocale: function ArabicDateLocale() {
     },
@@ -3333,21 +3352,22 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.emailAddress = t0;
       this.key = t1;
     },
-    EmailQuickSearchItemTileWidget$(_presentationEmail, _presentationMailbox, contentPadding) {
+    EmailQuickSearchItemTileWidget$(_presentationEmail, _presentationMailbox, contentPadding, searchQuery) {
       var t1;
       $.$get$Get();
       t1 = $.GetInstance__getInstance;
       if (t1 == null)
         t1 = $.GetInstance__getInstance = C.C_GetInstance;
-      return new B.EmailQuickSearchItemTileWidget(t1.find$1$1$tag(0, null, type$.ImagePaths), _presentationEmail, _presentationMailbox, contentPadding, null);
+      return new B.EmailQuickSearchItemTileWidget(t1.find$1$1$tag(0, null, type$.ImagePaths), _presentationEmail, _presentationMailbox, contentPadding, searchQuery, null);
     },
-    EmailQuickSearchItemTileWidget: function EmailQuickSearchItemTileWidget(t0, t1, t2, t3, t4) {
+    EmailQuickSearchItemTileWidget: function EmailQuickSearchItemTileWidget(t0, t1, t2, t3, t4, t5) {
       var _ = this;
       _.imagePath = t0;
       _._presentationEmail = t1;
       _._email_quick_search_item_tile_widget$_presentationMailbox = t2;
       _.contentPadding = t3;
-      _.key = t4;
+      _.searchQuery = t4;
+      _.key = t5;
     },
     EmailQuickSearchItemTileWidget_build_closure: function EmailQuickSearchItemTileWidget_build_closure(t0) {
       this.$this = t0;
@@ -4603,6 +4623,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     PresentationEmailExtension_recipientsName(_this) {
       var allEmailAddress = C.JSArray_methods.$add(C.JSArray_methods.$add(A.SetEmailAddressExtension_emailAddressToListString(_this.to, C.ExpandMode_1, false, 1), A.SetEmailAddressExtension_emailAddressToListString(_this.cc, C.ExpandMode_1, false, 1)), A.SetEmailAddressExtension_emailAddressToListString(_this.bcc, C.ExpandMode_1, false, 1));
       return allEmailAddress.length !== 0 ? C.JSArray_methods.join$1(allEmailAddress, ", ") : "";
+    },
+    PresentationEmailExtension__sanitizeSearchSnippet(_this, searchSnippet) {
+      var t1;
+      if (searchSnippet == null)
+        t1 = null;
+      else {
+        t1 = A.stringReplaceAllUnchecked(searchSnippet, "\r", "");
+        t1 = A.stringReplaceAllUnchecked(t1, "\n", "");
+        t1 = A.stringReplaceAllUnchecked(t1, "\t", "");
+      }
+      return t1;
     },
     PresentationMailboxExtension_get_isOutbox(_this) {
       var t1 = _this.name;
@@ -6230,17 +6261,63 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.__TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver.prototype = {};
   B.RichTextBuilder.prototype = {
+    createState$0() {
+      return new B._RichTextBuilderState(new A.LabeledGlobalKey(null, type$.LabeledGlobalKey_State_StatefulWidget), null, C._StateLifecycle_0);
+    }
+  };
+  B._RichTextBuilderState.prototype = {
+    scrollDebounceListener$0() {
+      var t1, t2, scrollable, renderBox;
+      if (!this.firstHighlightKeyed)
+        return;
+      t1 = this.firstHighlightKey;
+      if ($.WidgetsBinding__instance.WidgetsBinding__buildOwner._globalKeyRegistry.$index(0, t1) == null)
+        return;
+      t2 = $.WidgetsBinding__instance.WidgetsBinding__buildOwner._globalKeyRegistry.$index(0, t1);
+      t2.toString;
+      scrollable = A.Scrollable_maybeOf(t2, C.Axis_0);
+      renderBox = type$.nullable_RenderBox._as($.WidgetsBinding__instance.WidgetsBinding__buildOwner._globalKeyRegistry.$index(0, t1).get$renderObject());
+      if (renderBox != null)
+        if (scrollable != null)
+          scrollable._scrollable$_position.ensureVisible$4$alignment$curve$duration(renderBox, 0.5, C.Cubic_WKj0, C.Duration_300000);
+    },
     build$1(context) {
-      var _this = this, _null = null,
-        t1 = _this.styleOrigin;
-      return A.Text$rich(A.TextSpan$(_this._rich_text_builder$_getSpans$4$styleOrigin$styleWord$text$word(t1, _this.styleWord, _this.textOrigin, _this.wordToStyle), _null, _null, _null, _null, _null, _null, _null, t1, _null), _null, 1, C.TextOverflow_2, _null, _null, t1, _null, _null, _null, _null, _null);
+      var t1, t2, t3, t4, text, _this = this, _null = null;
+      _this.super$AutomaticKeepAliveClientMixin$build(context);
+      t1 = _this._widget;
+      t2 = t1.styleOrigin;
+      if (t1.preMarkedText != null)
+        t1 = _this._getSpansFromPreMarkedText$0();
+      else {
+        t3 = t1.textOrigin;
+        t4 = t1.wordToStyle;
+        t4 = _this._rich_text_builder$_getSpans$4$styleOrigin$styleWord$text$word(t2, t1.styleWord, t3, t4);
+        t1 = t4;
+      }
+      t2 = A.TextSpan$(t1, _null, _null, _null, _null, _null, _null, _null, t2, _null);
+      t1 = _this._widget;
+      text = A.Text$rich(t2, _null, 1, C.TextOverflow_2, _null, _null, t1.styleOrigin, _null, _null, _null, _null, _null);
+      if (!t1.ensureHighlightVisible)
+        return text;
+      if (t1.preMarkedText == null) {
+        t2 = t1.wordToStyle;
+        t1 = t2.length !== 0 && !C.JSString_methods.contains$1(t1.textOrigin.toLowerCase(), t2.toLowerCase());
+      } else
+        t1 = false;
+      if (t1)
+        return text;
+      $.WidgetsBinding__instance.SchedulerBinding__postFrameCallbacks.push(new B._RichTextBuilderState_build_closure(_this));
+      return A.SingleChildScrollView$(text, _null, D.PageStorageKey_rich_text_builder, _null, D.NeverScrollableScrollPhysics_null, _null, C.Axis_0);
     },
     _rich_text_builder$_getSpans$4$styleOrigin$styleWord$text$word(styleOrigin, styleWord, text, word) {
-      var startIndex, endIndex, _null = null,
-        spans = A._setArrayType([], type$.JSArray_TextSpan),
-        t1 = text.length,
-        t2 = word.length,
-        spanBoundary = 0;
+      var spans, t2, t3, spanBoundary, startIndex, endIndex, spanText, _null = null,
+        t1 = word.length;
+      if (t1 === 0)
+        return A._setArrayType([A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, styleOrigin, text)], type$.JSArray_InlineSpan);
+      spans = A._setArrayType([], type$.JSArray_InlineSpan);
+      t2 = text.length;
+      t3 = this.firstHighlightKey;
+      spanBoundary = 0;
       do {
         startIndex = C.JSString_methods.indexOf$2(text.toLowerCase(), word.toLowerCase(), spanBoundary);
         if (startIndex === -1) {
@@ -6249,15 +6326,79 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
         if (startIndex > spanBoundary)
           spans.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, styleOrigin, C.JSString_methods.substring$2(text, spanBoundary, startIndex)));
-        endIndex = startIndex + t2;
-        spans.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, styleWord, C.JSString_methods.substring$2(text, startIndex, endIndex)));
-        if (endIndex < t1) {
+        endIndex = startIndex + t1;
+        spanText = C.JSString_methods.substring$2(text, startIndex, endIndex);
+        if (!this.firstHighlightKeyed) {
+          spans.push(new A.WidgetSpan(A.Text$(spanText, t3, _null, _null, _null, _null, _null, _null, _null, styleWord, _null, _null, _null, _null, _null), C.PlaceholderAlignment_5, _null, _null));
+          this.firstHighlightKeyed = true;
+        } else
+          spans.push(A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, styleWord, spanText));
+        if (endIndex < t2) {
           spanBoundary = endIndex;
           continue;
         } else
           break;
       } while (true);
       return spans;
+    },
+    _getSpansFromPreMarkedText$0() {
+      var startIndex, t2, endIndex, t3, t4, markedText, _this = this, _null = null,
+        spans = A._setArrayType([], type$.JSArray_InlineSpan),
+        processingText = _this._widget.preMarkedText,
+        t1 = _this.firstHighlightKey;
+      while (true) {
+        if (!(processingText != null && processingText.length !== 0))
+          break;
+        startIndex = J.indexOf$1$asx(processingText, "<mark>");
+        if (startIndex === -1) {
+          t1 = _this._widget.styleOrigin;
+          spans.push(new A.TextSpan(processingText, _null, _null, C.C__DeferringMouseCursor, _null, _null, _null, _null, _null, t1));
+          return spans;
+        }
+        t2 = startIndex + 6;
+        endIndex = C.JSString_methods.indexOf$2(processingText, "</mark>", t2);
+        if (endIndex === -1) {
+          t1 = _this._widget.styleOrigin;
+          spans.push(new A.TextSpan(processingText, _null, _null, C.C__DeferringMouseCursor, _null, _null, _null, _null, _null, t1));
+          return spans;
+        }
+        if (startIndex > 0) {
+          t3 = C.JSString_methods.substring$2(processingText, 0, startIndex);
+          t4 = _this._widget.styleOrigin;
+          spans.push(new A.TextSpan(t3, _null, _null, C.C__DeferringMouseCursor, _null, _null, _null, _null, _null, t4));
+        }
+        markedText = C.JSString_methods.substring$2(processingText, t2, endIndex);
+        t2 = _this.firstHighlightKeyed;
+        t3 = _this._widget;
+        if (!t2) {
+          spans.push(new A.WidgetSpan(new A.Text(markedText, _null, t3.styleWord, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t1), C.PlaceholderAlignment_5, _null, _null));
+          _this.firstHighlightKeyed = true;
+        } else {
+          t2 = t3.styleWord;
+          spans.push(new A.TextSpan(markedText, _null, _null, C.C__DeferringMouseCursor, _null, _null, _null, _null, _null, t2));
+        }
+        processingText = C.JSString_methods.substring$1(processingText, endIndex + 7);
+      }
+      return spans;
+    },
+    get$wantKeepAlive() {
+      return this._widget.ensureHighlightVisible;
+    }
+  };
+  B.__RichTextBuilderState_State_AutomaticKeepAliveClientMixin.prototype = {
+    initState$0() {
+      this.super$State$initState();
+      if (this._widget.ensureHighlightVisible)
+        this._ensureKeepAlive$0();
+    },
+    deactivate$0() {
+      var t1 = this.AutomaticKeepAliveClientMixin__keepAliveHandle;
+      if (t1 != null) {
+        t1.notifyListeners$0();
+        t1.super$ChangeNotifier$dispose();
+        this.AutomaticKeepAliveClientMixin__keepAliveHandle = null;
+      }
+      this.super$State$deactivate();
     }
   };
   B.ArabicDateLocale.prototype = {
@@ -11647,7 +11788,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = email.get$hasRead() ? C.Color_4285364357 : C.Color_4278190080;
         t3 = A.TextStyle$(_null, _null, t3, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, !email.get$hasRead() ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null);
         t4 = email.get$hasRead() ? C.Color_4285364357 : C.Color_4278190080;
-        return new B.RichTextBuilder(t1, t2, t3, A.TextStyle$(_null, C.Color_4294956864, t4, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, !email.get$hasRead() ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null);
+        return B.RichTextBuilder$(false, _null, t3, A.TextStyle$(_null, C.Color_4294956864, t4, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, !email.get$hasRead() ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), t1, t2);
       } else {
         t1 = this.informationSender$2(email, mailbox);
         t2 = email.get$hasRead() ? C.Color_4285364357 : C.Color_4278190080;
@@ -11655,16 +11796,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
     },
     buildEmailTitle$4(context, email, isSearchEmailRunning, query) {
-      var t1, t2, t3, t4, _null = null;
+      var t1, t2, t3, t4, t5, _null = null;
       if (this.isSearchEnabled$2(isSearchEmailRunning, query)) {
         t1 = email.getEmailTitle$0();
         t2 = query == null ? _null : query.value;
         if (t2 == null)
           t2 = "";
-        t3 = email.get$hasRead() ? C.Color_4285364357 : C.Color_4278190080;
-        t3 = A.TextStyle$(_null, _null, t3, _null, _null, _null, _null, _null, _null, _null, _null, 13, _null, _null, !email.get$hasRead() ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null);
+        t3 = B.PresentationEmailExtension__sanitizeSearchSnippet(email, email.SearchSnippetMixin_searchSnippetSubject);
         t4 = email.get$hasRead() ? C.Color_4285364357 : C.Color_4278190080;
-        return new B.RichTextBuilder(t1, t2, t3, A.TextStyle$(_null, C.Color_4294956864, t4, _null, _null, _null, _null, _null, _null, _null, _null, 13, _null, _null, !email.get$hasRead() ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null);
+        t4 = A.TextStyle$(_null, _null, t4, _null, _null, _null, _null, _null, _null, _null, _null, 13, _null, _null, !email.get$hasRead() ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null);
+        t5 = email.get$hasRead() ? C.Color_4285364357 : C.Color_4278190080;
+        return B.RichTextBuilder$(true, t3, t4, A.TextStyle$(_null, C.Color_4294956864, t5, _null, _null, _null, _null, _null, _null, _null, _null, 13, _null, _null, !email.get$hasRead() ? C.FontWeight_5_600 : C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), t1, t2);
       } else {
         t1 = email.getEmailTitle$0();
         t2 = email.get$hasRead() ? C.Color_4285364357 : C.Color_4278190080;
@@ -11678,7 +11820,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = query == null ? _null : query.value;
         if (t2 == null)
           t2 = "";
-        return new B.RichTextBuilder(t1, t2, C.TextStyle_yql, A.TextStyle$(_null, C.Color_4294956864, C.Color_4285364357, _null, _null, _null, _null, _null, _null, _null, _null, 13, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null);
+        return B.RichTextBuilder$(true, B.PresentationEmailExtension__sanitizeSearchSnippet(email, email.SearchSnippetMixin_searchSnippetPreview), C.TextStyle_yql, A.TextStyle$(_null, C.Color_4294956864, C.Color_4285364357, _null, _null, _null, _null, _null, _null, _null, _null, 13, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), t1, t2);
       } else
         return A.TextOverflowBuilder$(email.getPartialContent$0(), C.TextStyle_yql);
     },
@@ -11850,17 +11992,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return new A.NotificationListener(_this.get$_handleScrollNotificationListener(), A.Focus$(true, _null, A.ListView$separated(t2._as(t1.get(_this)).listEmailController, new B.ThreadView__buildListEmailBody_closure(_this, listPresentationEmail), J.get$length$asx(listPresentationEmail.get$value(0)) + 2, D.PageStorageKey_M4E, C.ScrollViewKeyboardDismissBehavior_0, _null, C.AlwaysScrollableScrollPhysics_null, _null, false, C.Axis_1, new B.ThreadView__buildListEmailBody_closure0(_this, listPresentationEmail), false), _null, _null, _null, t3, true, _null, _null, _null, t4, _null, _null), _null, type$.NotificationListener_ScrollNotification);
     },
     _handleScrollNotificationListener$1(scrollInfo) {
-      var t1, t2, _this = this;
+      var t1, t2, t3, _this = this;
       if (scrollInfo instanceof A.ScrollEndNotification) {
         t1 = scrollInfo.metrics;
         t2 = t1._scroll_metrics$_pixels;
         t2.toString;
-        t1 = t1._maxScrollExtent;
-        t1.toString;
-        if (t2 === t1) {
-          t1 = $.$get$GetWidget__cache();
+        t3 = t1._maxScrollExtent;
+        t3.toString;
+        if (t2 === t3) {
+          t2 = $.$get$GetWidget__cache();
           A.Expando__checkType(_this);
-          t1 = A._instanceType(_this)._eval$1("GetWidget.S")._as(t1._jsWeakMap.get(_this)).loadingMoreStatus.get$value(0) !== C.LoadingMoreStatus_1;
+          t1 = A._instanceType(_this)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(_this)).loadingMoreStatus.get$value(0) !== C.LoadingMoreStatus_1 && t1.axisDirection === C.AxisDirection_2;
         } else
           t1 = false;
       } else
@@ -12904,7 +13046,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       widget.toString;
       return A.Transform$rotate(t1 * 3 * 3.141592653589793 / 180, widget);
     },
-    $signature: 1674
+    $signature: 1681
   };
   B.QuickSearchInputForm_closure.prototype = {
     call$1(field) {
@@ -12940,7 +13082,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         this._box_0.rootMediaQuery = type$.MediaQuery._as(element.get$widget());
       return true;
     },
-    $signature: 62
+    $signature: 63
   };
   B.QuickSearchSuggestionListState__handleDebounceTimeListener_closure.prototype = {
     call$0() {
@@ -12983,7 +13125,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(item) {
       return item == null || J.get$isEmpty$asx(item);
     },
-    $signature: 1675
+    $signature: 1682
   };
   B.QuickSearchSuggestionListState__getSuggestions_closure2.prototype = {
     call$0() {
@@ -13009,7 +13151,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, C.BorderRadius_ww82, true, t2.call$3(t3, action, t1), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.QuickSearchSuggestionListState__buildListActionWidget__closure(t1, action), _null, _null, _null, _null, _null, _null, _null), C.Clip_0, _null, 0, _null, _null, _null, _null, _null, C.MaterialType_4);
       return new A.Padding(D.EdgeInsetsDirectional_0_0_8_8, t1, _null);
     },
-    $signature: 1676
+    $signature: 1683
   };
   B.QuickSearchSuggestionListState__buildListActionWidget__closure.prototype = {
     call$0() {
@@ -13130,7 +13272,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(timer) {
       this.$this._suggestionsBox.resize$0(0);
     },
-    $signature: 172
+    $signature: 165
   };
   B._TypeAheadFieldQuickSearchState__initOverlayEntry_closure.prototype = {
     call$1(context) {
@@ -13162,7 +13304,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Positioned$(_null, A.CompositedTransformFollower$(A.TextFieldTapRegion$(t2 ? suggestionsList : A.FractionalTranslation$(suggestionsList, true, C.Offset_0_m1), _null, _null), C.Alignment_m1_m1, t1._layerLink, new A.Offset(0, t3), false, C.Alignment_m1_m1), _null, _null, _null, _null, _null, w);
     },
-    $signature: 585
+    $signature: 448
   };
   B._TypeAheadFieldQuickSearchState__initOverlayEntry__closure.prototype = {
     call$1(selection) {
@@ -13206,17 +13348,23 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 0
   };
+  B._RichTextBuilderState_build_closure.prototype = {
+    call$1(_) {
+      this.$this.scrollDebounceListener$0();
+    },
+    $signature: 10
+  };
   B.MultiDragGestureRecognizer_acceptGesture_closure.prototype = {
     call$1(initialPosition) {
       return this.$this._multidrag$_startDrag$2(initialPosition, this.pointer);
     },
-    $signature: 1677
+    $signature: 1684
   };
   B.MultiDragGestureRecognizer__startDrag_closure.prototype = {
     call$0() {
       return this.$this.onStart.call$1(this.initialPosition);
     },
-    $signature: 1678
+    $signature: 1685
   };
   B.PlatformSelectableRegionContextMenu__register_closure.prototype = {
     call$2(element, $event) {
@@ -13243,7 +13391,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 1679
+    $signature: 1686
   };
   B.PlatformSelectableRegionContextMenu__registerWebSelectionCallback_closure.prototype = {
     call$1(viewId) {
@@ -13263,7 +13411,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       htmlElement.addEventListener("mousedown", type$.JavaScriptFunction._as(A.allowInterop(new B.PlatformSelectableRegionContextMenu__registerWebSelectionCallback__closure(this.callback, htmlElement))));
       return htmlElement;
     },
-    $signature: 1680
+    $signature: 1687
   };
   B.PlatformSelectableRegionContextMenu__registerWebSelectionCallback__closure.prototype = {
     call$1($event) {
@@ -13271,7 +13419,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return;
       this.callback.call$2(this.htmlElement, $event);
     },
-    $signature: 361
+    $signature: 382
   };
   B._DraggableState__startDrag_closure.prototype = {
     call$0() {
@@ -13303,7 +13451,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (!wasAccepted && t1._widget.onDraggableCanceled != null)
         t1._widget.onDraggableCanceled.call$2(velocity, offset);
     },
-    $signature: 1681
+    $signature: 1688
   };
   B._DraggableState__startDrag__closure.prototype = {
     call$0() {
@@ -13320,7 +13468,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._enteredTargets.push(target);
       return target.didEnter$1(t1);
     },
-    $signature: 1682
+    $signature: 1689
   };
   B._DragAvatar_updateDrag_closure0.prototype = {
     call$0() {
@@ -13332,7 +13480,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$0() {
       return A.TapGestureRecognizer$(this.$this, null);
     },
-    $signature: 330
+    $signature: 306
   };
   B.SelectableRegionState_initState_closure0.prototype = {
     call$1(instance) {
@@ -13340,7 +13488,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       instance.onTapUp = new B.SelectableRegionState_initState__closure(t1);
       instance.onSecondaryTapDown = t1.get$_handleRightClickDown();
     },
-    $signature: 305
+    $signature: 302
   };
   B.SelectableRegionState_initState__closure.prototype = {
     call$1(details) {
@@ -13360,13 +13508,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2._selectEndTo$1$offset(t1);
       }
     },
-    $signature: 57
+    $signature: 56
   };
   B.SelectableRegionState__initMouseGestureRecognizer_closure.prototype = {
     call$0() {
       return A.TapAndPanGestureRecognizer$(this.$this, A.LinkedHashSet_LinkedHashSet$_literal([C.PointerDeviceKind_1], type$.PointerDeviceKind));
     },
-    $signature: 630
+    $signature: 427
   };
   B.SelectableRegionState__initMouseGestureRecognizer_closure0.prototype = {
     call$1(instance) {
@@ -13379,7 +13527,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       instance.onCancel = t1.get$_clearSelection();
       instance.dragStartBehavior = C.DragStartBehavior_0;
     },
-    $signature: 624
+    $signature: 428
   };
   B.SelectableRegionState__initTouchGestureRecognizer_closure.prototype = {
     call$0() {
@@ -13521,13 +13669,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(selectable) {
       return !this.selectableSet.contains$1(0, selectable);
     },
-    $signature: 229
+    $signature: 223
   };
   B._SelectableRegionContainerDelegate_didChangeSelectables_closure0.prototype = {
     call$1(selectable) {
       return !this.selectableSet.contains$1(0, selectable);
     },
-    $signature: 229
+    $signature: 223
   };
   B.buildTextSpanChildren_closure.prototype = {
     call$0() {
@@ -13541,13 +13689,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1 == null ? null : t1.value;
       return t1 == null ? 0 : t1;
     },
-    $signature: 1683
+    $signature: 1690
   };
   B.ListAttachmentExtension_get_totalSize_closure0.prototype = {
     call$2(sum, size) {
       return sum + size;
     },
-    $signature: 613
+    $signature: 633
   };
   B.ListPresentationEmailExtension_get_isAllEmailRead_closure.prototype = {
     call$1(email) {
@@ -13565,19 +13713,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(email) {
       return A.PresentationEmailExtension_findMailboxContain(email, this.mapMailbox);
     },
-    $signature: 334
+    $signature: 340
   };
   B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure0.prototype = {
     call$1(mailbox) {
       return J.$eq$(mailbox.role, $.$get$PresentationMailbox_roleTrash());
     },
-    $signature: 115
+    $signature: 110
   };
   B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure1.prototype = {
     call$1(mailbox) {
       return J.$eq$(mailbox.role, $.$get$PresentationMailbox_roleDrafts());
     },
-    $signature: 115
+    $signature: 110
   };
   B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure2.prototype = {
     call$1(mailbox) {
@@ -13585,25 +13733,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = J.getInterceptor$(t1);
       return t2.$eq(t1, $.$get$PresentationMailbox_roleSpam()) || t2.$eq(t1, $.$get$PresentationMailbox_roleJunk());
     },
-    $signature: 115
+    $signature: 110
   };
   B.ListPresentationEmailExtension_isAllCanSpamAndMove_closure.prototype = {
     call$1(email) {
       return A.PresentationEmailExtension_findMailboxContain(email, this.mapMailbox);
     },
-    $signature: 334
+    $signature: 340
   };
   B.ListPresentationEmailExtension_isAllCanSpamAndMove_closure0.prototype = {
     call$1(mailbox) {
       return !J.$eq$(mailbox.role, $.$get$PresentationMailbox_roleDrafts());
     },
-    $signature: 115
+    $signature: 110
   };
   B.ListPresentationEmailExtension_isAllSpam_closure.prototype = {
     call$1(email) {
       return A.PresentationEmailExtension_findMailboxContain(email, this.mapMailbox);
     },
-    $signature: 334
+    $signature: 340
   };
   B.ListPresentationEmailExtension_isAllSpam_closure0.prototype = {
     call$1(mailbox) {
@@ -13611,7 +13759,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = J.getInterceptor$(t1);
       return t2.$eq(t1, $.$get$PresentationMailbox_roleSpam()) || t2.$eq(t1, $.$get$PresentationMailbox_roleJunk());
     },
-    $signature: 115
+    $signature: 110
   };
   B.ListPresentationEmailExtension_isAllBelongToTheSameMailbox_closure.prototype = {
     call$1(email) {
@@ -13637,7 +13785,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return null;
     },
-    $signature: 1686
+    $signature: 1693
   };
   B.HyperLinkWidget_build_closure.prototype = {
     call$0() {
@@ -13663,7 +13811,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A.GestureDetector$(_null, A.Column$(A._setArrayType([new A.Obx(new B.ComposerView_build__closure4(t1, context, constraints), _null), new A.ConstrainedBox(new A.BoxConstraints(0, 1 / 0, 0, t4), t5, _null), new B.SubjectComposerWidget(t6, t7, t3._as(t2.get(t1)).get$setSubjectEmail(), E.EdgeInsetsDirectional_16_0_0_0, C.EdgeInsetsDirectional_0_0_16_0, _null), A.Expanded$(new A.LayoutBuilder(new B.ComposerView_build__closure5(t1, constraints), _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.ComposerView_build__closure6(t1, context), _null, _null, _null, _null, _null, _null, _null, false, C.Offset_7BT);
     },
-    $signature: 328
+    $signature: 341
   };
   B.ComposerView_build__closure6.prototype = {
     call$0() {
@@ -13746,7 +13894,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = this.context;
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).openPopupMenuAction$4$radius(t3, position, t1._createMoreOptionPopupItems$1(t3), 8);
     },
-    $signature: 1688
+    $signature: 1695
   };
   B.ComposerView_build__closure3.prototype = {
     call$0() {
@@ -13888,7 +14036,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Column$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
     },
-    $signature: 258
+    $signature: 230
   };
   B.ComposerView_build___closure18.prototype = {
     call$0() {
@@ -13906,7 +14054,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = type$.JSArray_Widget;
       return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([A.Column$(A._setArrayType([A.Expanded$(new A.Padding(C.EdgeInsetsDirectional_12_0_12_0, new A.Obx(new B.ComposerView_build___closure7(t1, this.constraints, context, constraintsEditor), _null), _null), 1), new A.Obx(new B.ComposerView_build___closure8(t1), _null), new A.Obx(new B.ComposerView_build___closure9(t1), _null)], t2), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), new A.Align(C.AlignmentDirectional_0_m1, _null, _null, new A.Obx(new B.ComposerView_build___closure10(t1), _null), _null), new A.Obx(new B.ComposerView_build___closure11(t1, constraintsEditor), _null), new A.Obx(new B.ComposerView_build___closure12(t1, constraintsEditor, context), _null)], t2), _null);
     },
-    $signature: 152
+    $signature: 162
   };
   B.ComposerView_build___closure7.prototype = {
     call$0() {
@@ -13951,7 +14099,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleOnPasteImageSuccessAction$3$context$listFileUpload$maxWidth(this.context, listFileUpload, this.constraintsEditor.maxWidth);
     },
-    $signature: 236
+    $signature: 249
   };
   B.ComposerView_build____closure11.prototype = {
     call$3(listFileUpload, base64, uploadError) {
@@ -13960,7 +14108,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleOnPasteImageFailureAction$4$base64$context$listFileUpload$uploadError(base64, this.context, listFileUpload, uploadError);
     },
-    $signature: 239
+    $signature: 256
   };
   B.ComposerView_build___closure8.prototype = {
     call$0() {
@@ -14067,7 +14215,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).onLocalFileDropZoneListener$3$context$details$maxWidth(this.context, details, this.constraintsEditor.maxWidth);
     },
-    $signature: 237
+    $signature: 231
   };
   B.ComposerView_build_closure.prototype = {
     call$0() {
@@ -14110,7 +14258,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A.GestureDetector$(_null, A.Column$(A._setArrayType([new A.Obx(new B.ComposerView_build___closure20(t1, context, constraints), _null), new A.ConstrainedBox(new A.BoxConstraints(0, 1 / 0, 0, t4), t5, _null), new B.SubjectComposerWidget(t6, t7, t3._as(t2.get(t1)).get$setSubjectEmail(), D.EdgeInsetsDirectional_24_0_0_0, D.EdgeInsetsDirectional_0_0_24_0, _null), A.Expanded$(new A.LayoutBuilder(new B.ComposerView_build___closure21(t1, constraints), _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.ComposerView_build___closure22(t1, context), _null, _null, _null, _null, _null, _null, _null, false, C.Offset_7BT);
     },
-    $signature: 328
+    $signature: 341
   };
   B.ComposerView_build___closure22.prototype = {
     call$0() {
@@ -14289,7 +14437,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Column$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
     },
-    $signature: 258
+    $signature: 230
   };
   B.ComposerView_build___closure21.prototype = {
     call$2(context, constraintsEditor) {
@@ -14299,7 +14447,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = type$.JSArray_Widget;
       return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([A.Column$(A._setArrayType([A.Expanded$(A.Container$(_null, A.Column$(A._setArrayType([A.Expanded$(new A.Padding(D.EdgeInsetsDirectional_20_0_20_0, new A.Obx(new B.ComposerView_build____closure13(t1, t2, context, constraintsEditor), _null), _null), 1), new A.Obx(new B.ComposerView_build____closure14(t1), _null), new A.Obx(new B.ComposerView_build____closure15(t1), _null)], t3), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_0, _null, _null, D.BoxDecoration_omC, _null, _null, _null, _null, _null, _null, _null, _null), 1), new A.Obx(new B.ComposerView_build____closure16(t1, context, t2), _null)], t3), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), new A.Align(C.AlignmentDirectional_0_m1, _null, _null, new A.Obx(new B.ComposerView_build____closure17(t1), _null), _null), new A.Obx(new B.ComposerView_build____closure18(t1, constraintsEditor), _null), new A.Obx(new B.ComposerView_build____closure19(t1, constraintsEditor, context), _null)], t3), _null);
     },
-    $signature: 152
+    $signature: 162
   };
   B.ComposerView_build____closure13.prototype = {
     call$0() {
@@ -14346,7 +14494,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleOnPasteImageSuccessAction$3$context$listFileUpload$maxWidth(this.context, listFileUpload, this.constraintsEditor.maxWidth);
     },
-    $signature: 236
+    $signature: 249
   };
   B.ComposerView_build_____closure7.prototype = {
     call$3(listFileUpload, base64, uploadError) {
@@ -14355,7 +14503,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleOnPasteImageFailureAction$4$base64$context$listFileUpload$uploadError(base64, this.context, listFileUpload, uploadError);
     },
-    $signature: 239
+    $signature: 256
   };
   B.ComposerView_build____closure14.prototype = {
     call$0() {
@@ -14541,7 +14689,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).onLocalFileDropZoneListener$3$context$details$maxWidth(this.context, details, this.constraintsEditor.maxWidth);
     },
-    $signature: 237
+    $signature: 231
   };
   B.ComposerView_build__closure7.prototype = {
     call$0() {
@@ -14570,7 +14718,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A.GestureDetector$(_null, A.Column$(A._setArrayType([new A.Obx(new B.ComposerView_build__closure0(t1, context, constraints), _null), new A.ConstrainedBox(new A.BoxConstraints(0, 1 / 0, 0, t4), t5, _null), new B.SubjectComposerWidget(t6, t7, t3._as(t2.get(t1)).get$setSubjectEmail(), D.EdgeInsetsDirectional_24_0_0_0, D.EdgeInsetsDirectional_0_0_24_0, _null), A.Expanded$(new A.LayoutBuilder(new B.ComposerView_build__closure1(t1, constraints), _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.ComposerView_build__closure2(t1, context), _null, _null, _null, _null, _null, _null, _null, false, C.Offset_7BT);
     },
-    $signature: 328
+    $signature: 341
   };
   B.ComposerView_build__closure2.prototype = {
     call$0() {
@@ -14743,7 +14891,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Column$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
     },
-    $signature: 258
+    $signature: 230
   };
   B.ComposerView_build__closure1.prototype = {
     call$2(context, constraintsBody) {
@@ -14753,7 +14901,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = type$.JSArray_Widget;
       return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([A.Column$(A._setArrayType([A.Expanded$(A.Container$(_null, A.Column$(A._setArrayType([A.Expanded$(new A.Padding(D.EdgeInsetsDirectional_20_0_20_0, new A.Obx(new B.ComposerView_build___closure(t1, t2, context, constraintsBody), _null), _null), 1), new A.Obx(new B.ComposerView_build___closure0(t1), _null), new A.Obx(new B.ComposerView_build___closure1(t1), _null)], t3), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_0, _null, _null, D.BoxDecoration_omC, _null, _null, _null, _null, _null, _null, _null, _null), 1), new A.Obx(new B.ComposerView_build___closure2(t1, context, t2), _null)], t3), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), new A.Align(C.AlignmentDirectional_0_m1, _null, _null, new A.Obx(new B.ComposerView_build___closure3(t1), _null), _null), new A.Obx(new B.ComposerView_build___closure4(t1, constraintsBody), _null), new A.Obx(new B.ComposerView_build___closure5(t1, constraintsBody, context), _null)], t3), _null);
     },
-    $signature: 152
+    $signature: 162
   };
   B.ComposerView_build___closure.prototype = {
     call$0() {
@@ -14798,7 +14946,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleOnPasteImageSuccessAction$3$context$listFileUpload$maxWidth(this.context, listFileUpload, this.constraintsBody.maxWidth);
     },
-    $signature: 236
+    $signature: 249
   };
   B.ComposerView_build____closure7.prototype = {
     call$3(listFileUpload, base64, uploadError) {
@@ -14807,7 +14955,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleOnPasteImageFailureAction$4$base64$context$listFileUpload$uploadError(base64, this.context, listFileUpload, uploadError);
     },
-    $signature: 239
+    $signature: 256
   };
   B.ComposerView_build___closure0.prototype = {
     call$0() {
@@ -14993,7 +15141,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).onLocalFileDropZoneListener$3$context$details$maxWidth(this.context, details, this.constraintsBody.maxWidth);
     },
-    $signature: 237
+    $signature: 231
   };
   B.ComposerView__createMoreOptionPopupItems_closure.prototype = {
     call$0() {
@@ -15054,25 +15202,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, constraints) {
       return A.PointerInterceptor$(this.$this.childBuilder.call$2(context, constraints));
     },
-    $signature: 259
+    $signature: 238
   };
   B.DesktopResponsiveContainerView_build_closure0.prototype = {
     call$2(context, constraints) {
       return A.PointerInterceptor$(this.$this.childBuilder.call$2(context, constraints));
     },
-    $signature: 259
+    $signature: 238
   };
   B.MobileResponsiveContainerView_build_closure.prototype = {
     call$2(context, constraints) {
       return A.PointerInterceptor$(this.$this.childBuilder.call$2(context, constraints));
     },
-    $signature: 259
+    $signature: 238
   };
   B.TabletResponsiveContainerView_build_closure.prototype = {
     call$2(context, constraints) {
       return A.PointerInterceptor$(this.$this.childBuilder.call$2(context, constraints));
     },
-    $signature: 259
+    $signature: 238
   };
   B.WebEditorView_build_closure.prototype = {
     call$1(failure) {
@@ -15108,7 +15256,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return B.WebEditorWidget$(t2, t3, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onInitialContentLoadComplete, t1.onMouseDown, t1.onPasteImageFailureAction, t1.onPasteImageSuccessAction, null, t1.width);
       }
     },
-    $signature: 51
+    $signature: 52
   };
   B.WebEditorView_build_closure1.prototype = {
     call$1(failure) {
@@ -15152,7 +15300,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return B.WebEditorWidget$(t3, t2, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onInitialContentLoadComplete, t1.onMouseDown, t1.onPasteImageFailureAction, t1.onPasteImageSuccessAction, null, t1.width);
       }
     },
-    $signature: 51
+    $signature: 52
   };
   B.AttachmentHeaderComposerWidget_build_closure0.prototype = {
     call$0() {
@@ -15181,7 +15329,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       return t1._viewStateToUI$1(t1.viewState);
     },
-    $signature: 100
+    $signature: 98
   };
   B.InsertImageLoadingBarWidget_build_closure0.prototype = {
     call$1(success) {
@@ -15191,13 +15339,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return t1._viewStateToUI$1(t1.viewState);
     },
-    $signature: 51
+    $signature: 52
   };
   B.InsertImageLoadingBarWidget__viewStateToUI_closure.prototype = {
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 42
+    $signature: 41
   };
   B.InsertImageLoadingBarWidget__viewStateToUI_closure0.prototype = {
     call$1(success) {
@@ -15206,7 +15354,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 51
+    $signature: 52
   };
   B._RecipientComposerWidgetState_build_closure0.prototype = {
     call$1($focus) {
@@ -15221,7 +15369,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       return A.DragTarget$(new B._RecipientComposerWidgetState_build__closure(t1, stateSetter), new B._RecipientComposerWidgetState_build__closure0(t1, stateSetter), new B._RecipientComposerWidgetState_build__closure1(t1, stateSetter), new B._RecipientComposerWidgetState_build__closure2(t1, stateSetter), type$.DraggableEmailAddress);
     },
-    $signature: 1691
+    $signature: 1698
   };
   B._RecipientComposerWidgetState_build__closure.prototype = {
     call$3(context, candidateData, rejectedData) {
@@ -15272,7 +15420,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B._RecipientComposerWidgetState_build___closure7.prototype = {
     call$1(_) {
     },
-    $signature: 77
+    $signature: 79
   };
   B._RecipientComposerWidgetState_build___closure3.prototype = {
     call$0() {
@@ -15332,7 +15480,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.resetTextField$0();
       t1.closeSuggestionBox$0();
     },
-    $signature: 260
+    $signature: 248
   };
   B._RecipientComposerWidgetState_build_____closure.prototype = {
     call$0() {
@@ -15346,7 +15494,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(draggableEmailAddress) {
       return this.$this._recipient_composer_widget$_handleAcceptDraggableEmailAddressAction$2(draggableEmailAddress.data, this.stateSetter);
     },
-    $signature: 261
+    $signature: 251
   };
   B._RecipientComposerWidgetState_build__closure1.prototype = {
     call$1(draggableEmailAddress) {
@@ -15354,7 +15502,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t1._recipient_composer_widget$_isDragging)
         this.stateSetter.call$1(new B._RecipientComposerWidgetState_build___closure0(t1));
     },
-    $signature: 620
+    $signature: 634
   };
   B._RecipientComposerWidgetState_build___closure0.prototype = {
     call$0() {
@@ -15368,7 +15516,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (!t1._recipient_composer_widget$_isDragging)
         this.stateSetter.call$1(new B._RecipientComposerWidgetState_build___closure(t1));
     },
-    $signature: 261
+    $signature: 251
   };
   B._RecipientComposerWidgetState_build___closure.prototype = {
     call$0() {
@@ -15410,7 +15558,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(emailAddress) {
       return emailAddress.email;
     },
-    $signature: 139
+    $signature: 136
   };
   B._RecipientComposerWidgetState__matchedSuggestionEmailAddress_closure.prototype = {
     call$1(addedMail) {
@@ -15419,7 +15567,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = "";
       return C.JSString_methods.contains$1(t1, this.query);
     },
-    $signature: 47
+    $signature: 48
   };
   B._RecipientComposerWidgetState__matchedSuggestionEmailAddress_closure0.prototype = {
     call$1(emailAddress) {
@@ -15550,14 +15698,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       return new A.SizedBox(t1.width, t1.height, new A.Padding(C.EdgeInsetsDirectional_8_8_8_60, A.DottedBorder$(C.BorderType_1, A.Container$(C.AlignmentDirectional_0_0, A.Column$(A._setArrayType([t3, C.SizedBox_null_20_null_null, A.Text$(A.Intl__message("Drop file here to attach them", _null, "dropFileHereToAttachThem", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_69t5, _null, _null, _null, _null, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1), C.Clip_2, _null, _null, new A.ShapeDecoration(t2, _null, _null, _null, C.RoundedRectangleBorder_NYu3), _null, _null, _null, _null, C.EdgeInsets_20_20_20_20, _null, _null, _null), C.Color_4282819327, C.List_6_3, C.Radius_16_16, 2), _null), _null);
     },
-    $signature: 1695
+    $signature: 1702
   };
   B.AttachmentDropZoneWidget_build_closure0.prototype = {
     call$1(details) {
       var t1 = this.$this.onAttachmentDropZoneListener.call$1(details.data);
       return t1;
     },
-    $signature: 1696
+    $signature: 1703
   };
   B.DesktopAppBarComposerWidget_build_closure.prototype = {
     call$0() {
@@ -15597,7 +15745,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t5.push(A.Text$(t2, _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_8aB1, _null, _null, _null, _null, _null));
       return A.DropdownMenuItem$(A.PointerInterceptor$(A.Container$(_null, A.Row$(A._setArrayType([t1, C.SizedBox_12_null_null_null, A.Expanded$(A.Column$(t5, C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_1, C.VerticalDirection_1), 1)], t4), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_0, _null, _null, _null, _null, _null, _null, C.EdgeInsets_0_12_0_12, _null, _null, _null)), item, type$.Identity);
     },
-    $signature: 1697
+    $signature: 1704
   };
   B.MinimizeComposerWidget_build_closure.prototype = {
     call$0() {
@@ -15621,7 +15769,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t1.evaluateJavascriptWeb$1(D.Record2_wQ8._0);
         }
     },
-    $signature: 382
+    $signature: 466
   };
   B._WebEditorState_build_closure.prototype = {
     call$3(context, height, _) {
@@ -15640,7 +15788,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t9 = t3.onEditorTextSizeChanged;
       return A.HtmlEditor$(A.Callbacks$(t5, t7, t5, t5, t8, t3.onDragEnter, new B._WebEditorState_build__closure(), t6, t3.onPasteImageSuccessAction, t3.onPasteImageFailureAction, new B._WebEditorState_build__closure0(t1), t3.onInitialContentLoadComplete, new B._WebEditorState_build__closure1(t1, context), new B._WebEditorState_build__closure2(t1), t9), t2, t4, C.HtmlToolbarOptions_List_empty_ToolbarType_3, new A.ValueKey("web_editor_" + A.S(height), type$.ValueKey_String), new A.OtherOptions(height));
     },
-    $signature: 1698
+    $signature: 1705
   };
   B._WebEditorState_build__closure0.prototype = {
     call$0() {
@@ -15674,7 +15822,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B._WebEditorState_build__closure.prototype = {
     call$1(_) {
     },
-    $signature: 212
+    $signature: 255
   };
   B.EmailView_build_closure.prototype = {
     call$0() {
@@ -15800,7 +15948,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleEmailAction$3(this.context, email, action);
     },
-    $signature: 621
+    $signature: 635
   };
   B.EmailView_build___closure2.prototype = {
     call$2(presentationEmail, position) {
@@ -15857,7 +16005,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return _null;
     },
-    $signature: 326
+    $signature: 346
   };
   B.EmailView_build__closure0.prototype = {
     call$0() {
@@ -15904,7 +16052,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, constraints) {
       return new A.Obx(new B.EmailView_build___closure(this.$this, constraints, this.currentEmail, context), null);
     },
-    $signature: 623
+    $signature: 636
   };
   B.EmailView_build___closure.prototype = {
     call$0() {
@@ -15972,7 +16120,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleEmailAction$3(this.context, presentationEmail, actionType);
     },
-    $signature: 621
+    $signature: 635
   };
   B.EmailView__buildEmailMessage_closure0.prototype = {
     call$0() {
@@ -16029,7 +16177,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).downloadAttachmentForWeb$1(attachment);
       return null;
     },
-    $signature: 125
+    $signature: 123
   };
   B.EmailView__buildEmailMessage__closure3.prototype = {
     call$1(attachment) {
@@ -16038,7 +16186,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleViewAttachmentAction$2(this.context, attachment);
     },
-    $signature: 125
+    $signature: 123
   };
   B.EmailView__buildEmailMessage__closure4.prototype = {
     call$0() {
@@ -16098,7 +16246,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.toString;
       return t1.onCalendarEventReplyAction$2(eventActionType, t2);
     },
-    $signature: 1702
+    $signature: 1709
   };
   B.EmailView__buildEmailMessage_closure4.prototype = {
     call$0() {
@@ -16143,7 +16291,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, constraints) {
       return new A.Obx(new B.EmailView__buildEmailMessage___closure(this.$this, constraints, this.allEmailContents, context), null);
     },
-    $signature: 623
+    $signature: 636
   };
   B.EmailView__buildEmailMessage___closure.prototype = {
     call$0() {
@@ -16169,7 +16317,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t6.push(A.PointerInterceptor$(new A.SizedBox(t2, t1, _null, _null)));
       return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, t6, _null);
     },
-    $signature: 1703
+    $signature: 1710
   };
   B.EmailView__emailActionMoreActionTile_closure.prototype = {
     call$1(action) {
@@ -16193,7 +16341,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.onCupertinoActionSheetActionClick = new B.EmailView__emailActionMoreActionTile__closure(t1, t5, action);
       return t2.build$0();
     },
-    $signature: 1704
+    $signature: 1711
   };
   B.EmailView__emailActionMoreActionTile__closure.prototype = {
     call$1(presentationEmail) {
@@ -16204,7 +16352,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleEmailAction$3(this.context, presentationEmail, this.action);
     },
-    $signature: 188
+    $signature: 199
   };
   B.EmailView__popupMenuEmailActionTile_closure.prototype = {
     call$1(action) {
@@ -16215,7 +16363,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = this.context;
       return A.PopupMenuItem$(A.PopupItemWidget$(B.EmailActionTypeExtension_getIcon(action, A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).imagePaths), B.EmailActionTypeExtension_getTitle(action, t3), C.Color_4278221567, _null, _null, new B.EmailView__popupMenuEmailActionTile__closure(t1, t3, this.presentationEmail, action), C.EdgeInsetsDirectional_12_0_0_0, _null, C.TextStyle_69t6), true, 48, new A.ValueKey(action._core$_name + "_action", type$.ValueKey_String), C.EdgeInsets_0_0_0_0, _null, type$.dynamic);
     },
-    $signature: 1706
+    $signature: 1713
   };
   B.EmailView__popupMenuEmailActionTile__closure.prototype = {
     call$0() {
@@ -16233,7 +16381,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = attendee.mailto;
       return t1 != null && C.JSArray_methods.contains$1(this.listEmailAddressSender, t1.mailAddress.value);
     },
-    $signature: 625
+    $signature: 637
   };
   B.CalendarEventExtension_get_videoConferences_closure.prototype = {
     call$1(link) {
@@ -16253,7 +16401,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1 == null ? null : t1.mailAddress;
       return !J.$eq$(t1, this.organizer.mailto);
     },
-    $signature: 625
+    $signature: 637
   };
   B.AttachmentItemWidget_build_closure.prototype = {
     call$0() {
@@ -16281,7 +16429,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = A.Text$(A.filesize(t2 == null ? _null : t2.value, 2), _null, _null, 1, _null, _null, _null, _null, _null, C.TextStyle_8aB5, _null, _null, _null, _null, _null);
       return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, A.Container$(_null, A.Row$(A._setArrayType([t6, C.SizedBox_8_null_null_null, t7, C.SizedBox_8_null_null_null, t2, A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_download_attachment.svg", _null, 22, _null, _null, 1 / 0, _null, isLoading ? _null : new B.AttachmentItemWidget_build__closure0(t1), C.EdgeInsets_5_5_5_5, _null)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(_null, _null, t4, C.BorderRadius_ww83, _null, _null, _null, C.BoxShape_0), _null, _null, _null, _null, C.EdgeInsetsDirectional_8_5_8_5, _null, _null, t5), C.RoundedRectangleBorder_NYu5, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t3, _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
     },
-    $signature: 353
+    $signature: 268
   };
   B.AttachmentItemWidget_build__closure.prototype = {
     call$0() {
@@ -16311,7 +16459,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A.InheritedModel_inheritFrom(t3, C._MediaQueryAspect_0, t7).data.size.get$shortestSide() < 600 && A.InheritedModel_inheritFrom(t3, _null, t7).data.get$orientation(0) === C.Orientation_0 ? 1 / 0 : _null;
       return A.AbsorbPointer$(t2 == null, A.TMailButtonWidget$(t5, A.Border_Border$all(t1._getButtonBorderColor$1(action), 1), 10, _null, false, _null, _null, C.TextDirection_1, _null, _null, 8, _null, C.MainAxisSize_1, _null, 1 / 0, _null, 1 / 0, 80, _null, _null, t1._getCallbackFunction$1(action), C.EdgeInsetsDirectional_12_8_12_8, t4, C.TextAlign_2, t6, _null, _null, _null, _null, false, t3));
     },
-    $signature: 1708
+    $signature: 1715
   };
   B.CalendarEventActionButtonWidget__getCallbackFunction_closure.prototype = {
     call$0() {
@@ -16402,7 +16550,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4.push(A.PointerInterceptor$(new A.SizedBox(t1, t2, _null, _null)));
       return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, t4, _null);
     },
-    $signature: 152
+    $signature: 162
   };
   B.EventLinkDetailWidget_build_closure.prototype = {
     call$1(link) {
@@ -16418,7 +16566,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else if (element instanceof A.EmailElement)
         this.$this.onOpenComposerAction.call$1(element.emailAddress);
     },
-    $signature: 1709
+    $signature: 1716
   };
   B.EmailActionCupertinoActionSheetActionBuilder_build_closure.prototype = {
     call$0() {
@@ -16434,7 +16582,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       return new B.DraggableAttachmentItemWidget(attachment, t1.onDragStarted, t1.onDragEnd, t1.downloadAttachmentAction, t1.viewAttachmentAction, null);
     },
-    $signature: 1710
+    $signature: 1717
   };
   B._EmailReceiverWidgetState_build_closure.prototype = {
     call$0() {
@@ -16473,7 +16621,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = t3 == null ? _null : t3.copyWith$2$color$fontSize(C.Color_4278190080, 16);
       return A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_0, 20, _null, _null, 1 / 0, _null, 1 / 0, 0, new B._EmailReceiverWidgetState__buildRecipientsTag__closure(t2, emailAddress), new B._EmailReceiverWidgetState__buildRecipientsTag__closure0(t2, emailAddress), C.EdgeInsetsDirectional_8_5_8_5, t1, _null, t3, _null, _null);
     },
-    $signature: 1711
+    $signature: 1718
   };
   B._EmailReceiverWidgetState__buildRecipientsTag__closure0.prototype = {
     call$0() {
@@ -16502,7 +16650,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.openEmailAddressDetailAction.call$2(this.context, t1.emailAddress);
       return t1;
     },
-    $signature: 83
+    $signature: 87
   };
   B.EmailSenderBuilder_build_closure.prototype = {
     call$0() {
@@ -16519,7 +16667,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.openEmailAddressDetailAction.call$2(this.context, t1.emailAddress);
       return t1;
     },
-    $signature: 83
+    $signature: 87
   };
   B.EmailSenderBuilder_build_closure1.prototype = {
     call$0() {
@@ -16581,7 +16729,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.push(A.Row$(t1, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null));
       return A.Container$(_null, A.Row$(t2, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, D.BoxDecoration_qbf, _null, 52, _null, _null, D.EdgeInsetsDirectional_16_0_16_0, _null, _null, _null);
     },
-    $signature: 178
+    $signature: 188
   };
   B.EmailViewAppBarWidget_build__closure.prototype = {
     call$0() {
@@ -16651,7 +16799,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.onMoreActionClick.call$2(t1.presentationEmail, position);
       return t1;
     },
-    $signature: 190
+    $signature: 186
   };
   B.EmailViewBottomBarWidget_build_closure.prototype = {
     call$0() {
@@ -16736,7 +16884,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 42
+    $signature: 41
   };
   B.EmailViewLoadingBarWidget_build_closure0.prototype = {
     call$1(success) {
@@ -16745,7 +16893,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 51
+    $signature: 52
   };
   B.InformationSenderAndReceiverBuilder_build_closure.prototype = {
     call$2(context, constraints) {
@@ -16782,7 +16930,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3.push(new B.EmailReceiverWidget(t5, constraints.maxWidth, t4.maxBodyHeight, t4.openEmailAddressDetailAction, _null));
       return A.Transform$(_null, A.Column$(t3, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null, t1, true);
     },
-    $signature: 1712
+    $signature: 1719
   };
   B.InformationSenderAndReceiverBuilder_build__closure.prototype = {
     call$0() {
@@ -16910,7 +17058,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = false;
       return t2 ? new A.Align(C.Alignment_0_m1, _null, _null, A.InkWell$(false, _null, true, A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, 40, _null, _null, _null, _null, _null, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.MailboxView__buildListMailbox__closure1(t1), _null, new B.MailboxView__buildListMailbox__closure2(), _null, _null, _null, _null, _null, _null, _null), _null) : C.SizedBox_0_0_null_null;
     },
-    $signature: 113
+    $signature: 117
   };
   B.MailboxView__buildListMailbox__closure2.prototype = {
     call$0() {
@@ -16952,7 +17100,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = false;
       return t2 ? new A.Align(C.Alignment_0_1, _null, _null, A.InkWell$(false, _null, true, A.Container$(_null, _null, C.Clip_0, _null, _null, _null, _null, 40, _null, _null, _null, _null, _null, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.MailboxView__buildListMailbox__closure(t1), _null, new B.MailboxView__buildListMailbox__closure0(), _null, _null, _null, _null, _null, _null, _null), _null) : C.SizedBox_0_0_null_null;
     },
-    $signature: 113
+    $signature: 117
   };
   B.MailboxView__buildListMailbox__closure0.prototype = {
     call$0() {
@@ -16988,7 +17136,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return new A.Obx(new B.MailboxView__buildListChildTileWidget__closure0(t1, mailboxNode, t2), null);
     },
-    $signature: 321
+    $signature: 276
   };
   B.MailboxView__buildListChildTileWidget__closure.prototype = {
     call$0() {
@@ -17003,7 +17151,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A.MailboxItemWidget$(null, C.MailboxDisplayed_0, null, this.mailboxNode, t4, t1.get$_handleDragItemAccepted(), new B.MailboxView__buildListChildTileWidget___closure2(t1, t5), new B.MailboxView__buildListChildTileWidget___closure3(t1), new B.MailboxView__buildListChildTileWidget___closure4(t1, t5), new B.MailboxView__buildListChildTileWidget___closure5(t1, t5), t3._as(t2.get(t1)).get$selectMailboxNode());
     },
-    $signature: 627
+    $signature: 638
   };
   B.MailboxView__buildListChildTileWidget___closure5.prototype = {
     call$1(mailboxNode) {
@@ -17015,7 +17163,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._openMailboxEventController.add$1(0, new A.OpenMailboxViewEvent(this.context, t2));
       return null;
     },
-    $signature: 48
+    $signature: 46
   };
   B.MailboxView__buildListChildTileWidget___closure3.prototype = {
     call$1(mailboxNode) {
@@ -17029,7 +17177,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return t4.toggleMailboxFolder$2(mailboxNode, t3._as(t2.get(t1)).mailboxListScrollController);
     },
-    $signature: 48
+    $signature: 46
   };
   B.MailboxView__buildListChildTileWidget___closure4.prototype = {
     call$2(position, mailboxNode) {
@@ -17046,7 +17194,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t1.openMailboxMenuActionOnWeb$6(this.context, t4, t5, position, t6, t3._as(t2.get(t1)));
     },
-    $signature: 628
+    $signature: 639
   };
   B.MailboxView__buildListChildTileWidget___closure2.prototype = {
     call$1(mailboxNode) {
@@ -17055,7 +17203,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).emptyMailboxAction$2(this.context, mailboxNode.item);
     },
-    $signature: 48
+    $signature: 46
   };
   B.MailboxView__buildListChildTileWidget__closure0.prototype = {
     call$0() {
@@ -17070,7 +17218,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A.MailboxItemWidget$(null, C.MailboxDisplayed_0, null, this.mailboxNode, t4, t1.get$_handleDragItemAccepted(), new B.MailboxView__buildListChildTileWidget___closure(t1, t5), null, new B.MailboxView__buildListChildTileWidget___closure0(t1, t5), new B.MailboxView__buildListChildTileWidget___closure1(t1, t5), t3._as(t2.get(t1)).get$selectMailboxNode());
     },
-    $signature: 627
+    $signature: 638
   };
   B.MailboxView__buildListChildTileWidget___closure1.prototype = {
     call$1(mailboxNode) {
@@ -17082,7 +17230,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._openMailboxEventController.add$1(0, new A.OpenMailboxViewEvent(this.context, t2));
       return null;
     },
-    $signature: 48
+    $signature: 46
   };
   B.MailboxView__buildListChildTileWidget___closure0.prototype = {
     call$2(position, mailboxNode) {
@@ -17099,7 +17247,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t1.openMailboxMenuActionOnWeb$6(this.context, t4, t5, position, t6, t3._as(t2.get(t1)));
     },
-    $signature: 628
+    $signature: 639
   };
   B.MailboxView__buildListChildTileWidget___closure.prototype = {
     call$1(mailboxNode) {
@@ -17108,13 +17256,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).emptyMailboxAction$2(this.context, mailboxNode.item);
     },
-    $signature: 48
+    $signature: 46
   };
   B.MailboxLoadingBarWidget_build_closure.prototype = {
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 42
+    $signature: 41
   };
   B.MailboxLoadingBarWidget_build_closure0.prototype = {
     call$1(success) {
@@ -17123,7 +17271,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 63
+    $signature: 67
   };
   B.MailboxDashBoardView_build_closure6.prototype = {
     call$0() {
@@ -17181,7 +17329,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleClickAvatarAction$2(this.context, position);
     },
-    $signature: 190
+    $signature: 186
   };
   B.MailboxDashBoardView_build_closure0.prototype = {
     call$0() {
@@ -17193,7 +17341,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return B.MailboxView$();
     },
-    $signature: 1716
+    $signature: 1723
   };
   B.MailboxDashBoardView_build_closure1.prototype = {
     call$0() {
@@ -17397,7 +17545,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return new A.Padding(E.EdgeInsets_16_12_16_12, t1._buildListButtonTopBar$1(this.context), _null);
     },
-    $signature: 629
+    $signature: 640
   };
   B.MailboxDashBoardView__buildThreadViewForWebDesktop__closure0.prototype = {
     call$0() {
@@ -17423,7 +17571,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.dashBoardAction.set$value(0, t2);
       return null;
     },
-    $signature: 1718
+    $signature: 1725
   };
   B.MailboxDashBoardView__buildListButtonTopBar_closure.prototype = {
     call$0() {
@@ -17443,7 +17591,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return A.TMailButtonWidget_TMailButtonWidget$fromIcon(t4, 10, _null, "assets/images/ic_refresh.svg", _null, 16, D.ValueKey_7Re, _null, 1 / 0, _null, t3._as(t2.get(t1)).get$refreshMailboxAction(), _null, _null);
       }
     },
-    $signature: 480
+    $signature: 534
   };
   B.MailboxDashBoardView__buildListButtonTopBar_closure0.prototype = {
     call$0() {
@@ -17471,7 +17619,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return new A.Padding(E.EdgeInsetsDirectional_16_0_0_0, A.Tooltip$(F.ElevatedButton_ElevatedButton$icon(t1, A.Text$(A.Intl__message(_s32_, _null, _s27_, _null, _null), _null, _null, 1, C.TextOverflow_2, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), t7, A.ElevatedButton_styleFrom(_null, _null, A.Color$fromARGB(153, 235, 237, 240), _null, _null, _null, 0, _null, _null, C.Color_4285034102, D.Size_sBE, _null, C.EdgeInsetsDirectional_12_8_12_8, C.Color_0, D.RoundedRectangleBorder_NYu12, _null, _null, D.TextStyle_5Ry3, _null)), _null, t6), _null);
       }
     },
-    $signature: 113
+    $signature: 117
   };
   B.MailboxDashBoardView__buildListButtonTopBar_closure1.prototype = {
     call$0() {
@@ -17576,7 +17724,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return new A.Padding(E.EdgeInsetsDirectional_16_0_0_0, new B.FilterMessageButton(filterMessageCurrent, filterMessageCurrent !== C.FilterMessageOption_0, t3._as(t2.get(t1)).imagePaths, t1.get$_onSelectFilterMessageOptionAction(), new B.MailboxDashBoardView__buildListButtonTopBar__closure0(t1), null), null);
       }
     },
-    $signature: 113
+    $signature: 117
   };
   B.MailboxDashBoardView__buildListButtonTopBar__closure0.prototype = {
     call$1(_) {
@@ -17589,7 +17737,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.dashBoardAction.set$value(0, t2);
       return null;
     },
-    $signature: 345
+    $signature: 331
   };
   B.MailboxDashBoardView__buildListButtonTopBar_closure3.prototype = {
     call$0() {
@@ -17649,7 +17797,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.log(string$.Mailbo + A.getRuntimeTypeOfDartObject(t2).toString$0(0), C.Level_3);
       t1.dashBoardAction.set$value(0, t2);
     },
-    $signature: 1719
+    $signature: 1726
   };
   B.MailboxDashBoardView__buildDownloadTaskStateWidget_closure.prototype = {
     call$0() {
@@ -17663,13 +17811,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 113
+    $signature: 117
   };
   B.MailboxDashBoardView__buildDownloadTaskStateWidget__closure0.prototype = {
     call$2(context, index) {
       return D.Padding_spY;
     },
-    $signature: 193
+    $signature: 189
   };
   B.MailboxDashBoardView__buildDownloadTaskStateWidget__closure.prototype = {
     call$2(context, index) {
@@ -17747,7 +17895,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 113
+    $signature: 117
   };
   B.MailboxDashBoardView__buildQuickSearchFilterButton_closure.prototype = {
     call$0() {
@@ -17797,7 +17945,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A._instanceType(t2)._eval$1("GetWidget.S")._as(t3._jsWeakMap.get(t2)).toString;
       return A.PopupMenuItem$(B.PopupItemNoIconWidget$(t1, _this.receiveTimeSelected === receiveTime, 320, new B.MailboxDashBoardView_popupMenuEmailReceiveTimeType__closure(_this.onCallBack, receiveTime), "assets/images/ic_filter_selected.svg"), true, 48, null, C.EdgeInsets_0_0_0_0, null, type$.dynamic);
     },
-    $signature: 319
+    $signature: 349
   };
   B.MailboxDashBoardView_popupMenuEmailReceiveTimeType__closure.prototype = {
     call$0() {
@@ -17818,7 +17966,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A._instanceType(t2)._eval$1("GetWidget.S")._as(t3._jsWeakMap.get(t2)).toString;
       return A.PopupMenuItem$(B.PopupItemNoIconWidget$(t1, _this.sortOrderSelected === sortType, 332, new B.MailboxDashBoardView_popupMenuEmailSortOrderType__closure(_this.onCallBack, sortType), "assets/images/ic_filter_selected.svg"), true, 48, null, C.EdgeInsets_0_0_0_0, null, type$.dynamic);
     },
-    $signature: 631
+    $signature: 641
   };
   B.MailboxDashBoardView_popupMenuEmailSortOrderType__closure.prototype = {
     call$0() {
@@ -17834,7 +17982,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).selectReceiveTimeQuickSearchFilter$2(this.context, receiveTime);
     },
-    $signature: 160
+    $signature: 138
   };
   B.MailboxDashBoardView__buildComposerButton_closure.prototype = {
     call$0() {
@@ -17908,14 +18056,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t3);
       return A.KeyboardListener$(false, A.LabeledCheckbox$(C.Color_4278221567, C.EdgeInsets_0_0_0_0, _this.currentFocusNode, t2, t5._as(t4.get(t3)).get$onHasAttachmentCheckboxChanged(), t6), t1, new B.AdvancedSearchFilterFormBottomView__buildCheckboxHasAttachment__closure(_this.nextFocusNode));
     },
-    $signature: 1723
+    $signature: 1730
   };
   B.AdvancedSearchFilterFormBottomView__buildCheckboxHasAttachment__closure.prototype = {
     call$1($event) {
       if ($event instanceof A.KeyDownEvent && $event.logicalKey.$eq(0, C.LogicalKeyboardKey_4294967305))
         this.nextFocusNode.requestFocus$0();
     },
-    $signature: 120
+    $signature: 119
   };
   B.AdvancedSearchFilterFormBottomView__buildButton_closure.prototype = {
     call$1($event) {
@@ -17926,7 +18074,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t1.requestFocus$0();
       }
     },
-    $signature: 120
+    $signature: 119
   };
   B.AdvancedSearchFilterOverlay_build_closure.prototype = {
     call$0() {
@@ -18074,7 +18222,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t3);
       return A.PopupMenuItem$(B.PopupItemNoIconWidget$(t2, t5._as(t4.get(t3)).receiveTimeType.get$value(0) === receiveTime, 320, new B.AdvancedSearchInputForm__buildEmailReceiveTimeTypeActionTiles__closure(t3, t1, receiveTime), "assets/images/ic_filter_selected.svg"), true, 48, null, C.EdgeInsets_0_0_0_0, null, type$.dynamic);
     },
-    $signature: 319
+    $signature: 349
   };
   B.AdvancedSearchInputForm__buildEmailReceiveTimeTypeActionTiles__closure.prototype = {
     call$0() {
@@ -18110,7 +18258,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).updateReceiveDateSearchFilter$2(this.context, receiveTime);
     },
-    $signature: 160
+    $signature: 138
   };
   B.AdvancedSearchInputForm__buildFilterField_closure0.prototype = {
     call$0() {
@@ -18153,7 +18301,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).updateReceiveDateSearchFilter$2(this.context, receiveTime);
     },
-    $signature: 160
+    $signature: 138
   };
   B.AdvancedSearchInputForm__buildTextFieldFilterForWeb_closure0.prototype = {
     call$0() {
@@ -18180,7 +18328,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t1.requestFocus$0();
       }
     },
-    $signature: 120
+    $signature: 119
   };
   B.AdvancedSearchInputForm__buildTextField_closure.prototype = {
     call$1(value) {
@@ -18242,14 +18390,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.push(A.SvgPicture$asset("assets/images/ic_checked.svg", C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, _null, 20));
       return A.DropdownMenuItem$(A.PointerInterceptor$(A.Container$(_null, A.Row$(t1, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_0, _null, _null, _null, 44, _null, _null, _null, _null, _null, _null)), item, type$.EmailReceiveTimeType);
     },
-    $signature: 1724
+    $signature: 1731
   };
   B.DateDropDownButton_build_closure0.prototype = {
     call$1(value) {
       if (value != null)
         this.$this.onReceiveTimeSelected.call$1(value);
     },
-    $signature: 1725
+    $signature: 1732
   };
   B.IconOpenAdvancedSearchWidget_build_closure.prototype = {
     call$0() {
@@ -18264,7 +18412,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t7 = t6.searchController;
       return new A.Padding(new A.EdgeInsets(t4, 0, t3, 0), A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_filter_advanced.svg", C.Alignment_0_0, t7.isAdvancedSearchViewOpen.get$value(0) || t7.advancedSearchIsActivated.get$value(0) ? A.ColorNullableExtension_asFilter(C.Color_4278221567) : A.ColorNullableExtension_asFilter(C.Color_4288258733), C.BoxFit_1, 16, _null, _null, 16), new A.EdgeInsets(t2, 0, t5, 0), _null, _null, 40, new B.IconOpenAdvancedSearchWidget_build__closure(t6, t1), 15, _null), _null);
     },
-    $signature: 629
+    $signature: 640
   };
   B.IconOpenAdvancedSearchWidget_build__closure.prototype = {
     call$0() {
@@ -18286,7 +18434,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.push(A.SvgPicture$asset("assets/images/ic_checked.svg", C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, _null, 20));
       return A.DropdownMenuItem$(A.PointerInterceptor$(A.Container$(_null, A.Row$(t1, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_0, _null, _null, _null, 44, _null, _null, _null, _null, _null, _null)), sortType, type$.EmailSortOrderType);
     },
-    $signature: 1726
+    $signature: 1733
   };
   B._TextFieldAutocompleteEmailAddressWebState_build_closure.prototype = {
     call$2(context, constraints) {
@@ -18294,20 +18442,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = this.$this;
       return A.Row$(A._setArrayType([new A.SizedBox(112, _null, A.Text$(t1._widget.field.getTitle$1(context), _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_ehp, _null, _null, _null, _null, _null), _null), C.SizedBox_8_null_null_null, A.Expanded$(new A.StatefulBuilder(new B._TextFieldAutocompleteEmailAddressWebState_build__closure(t1, constraints), _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     },
-    $signature: 318
+    $signature: 351
   };
   B._TextFieldAutocompleteEmailAddressWebState_build__closure.prototype = {
     call$2(context, setState) {
       var t1 = this.$this;
       return A.DragTarget$(new B._TextFieldAutocompleteEmailAddressWebState_build___closure(t1, context, this.constraints, setState), new B._TextFieldAutocompleteEmailAddressWebState_build___closure0(t1, setState), new B._TextFieldAutocompleteEmailAddressWebState_build___closure1(t1, setState), new B._TextFieldAutocompleteEmailAddressWebState_build___closure2(t1, setState), type$.DraggableEmailAddress);
     },
-    $signature: 1728
+    $signature: 1735
   };
   B._TextFieldAutocompleteEmailAddressWebState_build___closure0.prototype = {
     call$1(draggableEmailAddress) {
       return this.$this._handleAcceptDraggableEmailAddressAction$2(draggableEmailAddress.data, this.setState);
     },
-    $signature: 261
+    $signature: 251
   };
   B._TextFieldAutocompleteEmailAddressWebState_build___closure1.prototype = {
     call$1(draggableEmailAddress) {
@@ -18315,7 +18463,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t1._isDragging)
         this.setState.call$1(new B._TextFieldAutocompleteEmailAddressWebState_build____closure0(t1));
     },
-    $signature: 620
+    $signature: 634
   };
   B._TextFieldAutocompleteEmailAddressWebState_build____closure0.prototype = {
     call$0() {
@@ -18329,7 +18477,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (!t1._isDragging)
         this.setState.call$1(new B._TextFieldAutocompleteEmailAddressWebState_build____closure(t1));
     },
-    $signature: 261
+    $signature: 251
   };
   B._TextFieldAutocompleteEmailAddressWebState_build____closure.prototype = {
     call$0() {
@@ -18356,7 +18504,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t9 = _this.setState;
       return A.TagEditor$(false, false, false, _null, 10, 1, t5, C.Color_4278221567, C.Duration_150000, true, t8, true, t1.get$_findSuggestions(), _null, t6, C.Color_4278221567, t4, t2, C.TextInputType_5_null_null, t3, 40, new B._TextFieldAutocompleteEmailAddressWebState_build____closure1(t1, t9), new B._TextFieldAutocompleteEmailAddressWebState_build____closure2(t1, t9), _null, new B._TextFieldAutocompleteEmailAddressWebState_build____closure3(t1), new B._TextFieldAutocompleteEmailAddressWebState_build____closure4(t1, t9), new B._TextFieldAutocompleteEmailAddressWebState_build____closure5(t1, t9), new B._TextFieldAutocompleteEmailAddressWebState_build____closure6(t1, t9), _null, t7, true, t1._getSuggestionBoxWidth$1(_this.constraints.maxWidth), new B._TextFieldAutocompleteEmailAddressWebState_build____closure7(t1, t9), _null, _null, C.Color_4294967295, 20, 350, 20, new B._TextFieldAutocompleteEmailAddressWebState_build____closure8(t1, t9), 4, C.TextInputAction_2, C.TextStyle_69t3, true, type$.SuggestionEmailAddress_2);
     },
-    $signature: 1729
+    $signature: 1736
   };
   B._TextFieldAutocompleteEmailAddressWebState_build____closure2.prototype = {
     call$1(focused) {
@@ -18374,7 +18522,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(item) {
       return this.$this.get$_handleSelectOptionAction().call$2(item, this.setState);
     },
-    $signature: 469
+    $signature: 527
   };
   B._TextFieldAutocompleteEmailAddressWebState_build____closure5.prototype = {
     call$1(value) {
@@ -18436,7 +18584,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.resetTextField$0();
       t1.closeSuggestionBox$0();
     },
-    $signature: 260
+    $signature: 248
   };
   B._TextFieldAutocompleteEmailAddressWebState_build______closure.prototype = {
     call$0() {
@@ -18457,7 +18605,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           break $label0$0;
         }
     },
-    $signature: 470
+    $signature: 528
   };
   B._TextFieldAutocompleteEmailAddressWebState__findSuggestions_closure.prototype = {
     call$1(emailAddress) {
@@ -18466,13 +18614,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 === $ && A.throwUnnamedLateFieldNI();
       return t1._toSuggestionEmailAddress$2(emailAddress, t2);
     },
-    $signature: 235
+    $signature: 212
   };
   B._TextFieldAutocompleteEmailAddressWebState__isDuplicated_closure.prototype = {
     call$1(emailAddress) {
       return emailAddress.email;
     },
-    $signature: 139
+    $signature: 136
   };
   B._TextFieldAutocompleteEmailAddressWebState__matchedSuggestionEmailAddress_closure.prototype = {
     call$1(addedMail) {
@@ -18481,13 +18629,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = "";
       return C.JSString_methods.contains$1(t1, this.query);
     },
-    $signature: 47
+    $signature: 48
   };
   B._TextFieldAutocompleteEmailAddressWebState__matchedSuggestionEmailAddress_closure0.prototype = {
     call$1(emailAddress) {
       return new A.SuggestionEmailAddress(emailAddress, C.SuggestionEmailState_1);
     },
-    $signature: 235
+    $signature: 212
   };
   B._TextFieldAutocompleteEmailAddressWebState__handleFocusTagAction_closure.prototype = {
     call$0() {
@@ -18553,7 +18701,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 42
+    $signature: 41
   };
   B.MarkMailboxAsReadLoadingBanner_build_closure0.prototype = {
     call$1(success) {
@@ -18564,11 +18712,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 63
+    $signature: 67
   };
   B.EmailQuickSearchItemTileWidget_build_closure.prototype = {
     call$2(context, constraints) {
-      var t1, t2, t3, t4, t5, _null = null,
+      var t1, t2, t3, t4, t5, t6, t7, t8, _null = null,
         maxWidthItem = constraints.maxWidth;
       A.log("EmailQuickSearchItemTileWidget::build(): maxWidthItem: " + A.S(maxWidthItem), C.Level_3);
       t1 = this.$this;
@@ -18577,14 +18725,22 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = C.EdgeInsetsDirectional_12_12_12_12;
       t3 = t1._presentationEmail;
       t4 = A.SvgPicture$asset(t3.get$hasStarred() ? "assets/images/ic_star.svg" : "assets/images/ic_unstar.svg", C.Alignment_0_0, _null, C.BoxFit_0, 18, _null, _null, 18);
-      t5 = type$.JSArray_Widget;
-      t1 = A._setArrayType([A.Container$(_null, A.Text$(t1._getInformationSender$0(), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_69t1, _null, _null, _null, _null, _null), C.Clip_0, _null, new A.BoxConstraints(0, maxWidthItem / 3, 0, 1 / 0), _null, _null, _null, _null, _null, _null, _null, _null, _null), E.SizedBox_16_null_null_null, A.Expanded$(A.Text$(t3.getEmailTitle$0(), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_69t22, _null, _null, _null, _null, _null), 1)], t5);
+      t5 = t1._getInformationSender$0();
+      t1 = t1.searchQuery.value;
+      t6 = t1;
+      t6 = A.Container$(_null, B.RichTextBuilder$(false, _null, C.TextStyle_69t1, A.TextStyle$(_null, C.Color_4294956864, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, C.FontWeight_5_600, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), t5, t6), C.Clip_0, _null, new A.BoxConstraints(0, maxWidthItem / 3, 0, 1 / 0), _null, _null, _null, _null, _null, _null, _null, _null, _null);
+      t5 = t3.getEmailTitle$0();
+      t7 = t1;
+      t8 = type$.JSArray_Widget;
+      t7 = A._setArrayType([t6, E.SizedBox_16_null_null_null, A.Expanded$(B.RichTextBuilder$(true, B.PresentationEmailExtension__sanitizeSearchSnippet(t3, t3.SearchSnippetMixin_searchSnippetSubject), C.TextStyle_69t22, A.TextStyle$(_null, C.Color_4294956864, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, 13, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), t5, t7), 1)], t8);
       if (t3.hasAttachment === true)
-        t1.push(new A.Padding(C.EdgeInsets_8_0_8_0, A.SvgPicture$asset("assets/images/ic_attachment.svg", C.Alignment_0_0, _null, C.BoxFit_0, 14, _null, _null, 14), _null));
-      t1.push(A.Text$(B.PresentationEmailExtension_getReceivedAt(t3, context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale._rawToString$1("-"), _null), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_69t22, C.TextAlign_1, _null, _null, _null, _null));
-      return new A.Padding(t2, A.Row$(A._setArrayType([new A.Padding(C.EdgeInsets_0_2_0_0, t4, _null), C.SizedBox_8_null_null_null, A.Expanded$(A.Column$(A._setArrayType([A.Row$(t1, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_2, C.MainAxisSize_1, _null), D.SizedBox_null_3_null_null, A.Text$(t3.getPartialContent$0(), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_yql, _null, _null, _null, _null, _null)], t5), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1)], t5), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_2, C.MainAxisSize_1, _null), _null);
+        t7.push(new A.Padding(C.EdgeInsets_8_0_8_0, A.SvgPicture$asset("assets/images/ic_attachment.svg", C.Alignment_0_0, _null, C.BoxFit_0, 14, _null, _null, 14), _null));
+      t7.push(A.Text$(B.PresentationEmailExtension_getReceivedAt(t3, context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale._rawToString$1("-"), _null), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, C.TextStyle_69t22, C.TextAlign_1, _null, _null, _null, _null));
+      t5 = A.Row$(t7, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_2, C.MainAxisSize_1, _null);
+      t6 = t3.getPartialContent$0();
+      return new A.Padding(t2, A.Row$(A._setArrayType([new A.Padding(C.EdgeInsets_0_2_0_0, t4, _null), C.SizedBox_8_null_null_null, A.Expanded$(A.Column$(A._setArrayType([t5, D.SizedBox_null_3_null_null, B.RichTextBuilder$(true, B.PresentationEmailExtension__sanitizeSearchSnippet(t3, t3.SearchSnippetMixin_searchSnippetPreview), C.TextStyle_yql, A.TextStyle$(_null, C.Color_4294956864, C.Color_4285364357, _null, _null, _null, _null, _null, _null, _null, _null, 13, _null, _null, _null, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), t6, t1)], t8), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), 1)], t8), C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_2, C.MainAxisSize_1, _null), _null);
     },
-    $signature: 1730
+    $signature: 1737
   };
   B.FilterMessageButton_build_closure.prototype = {
     call$0() {
@@ -18638,20 +18794,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchInputFormWidget_build_closure.prototype = {
     call$0() {
-      var t6, t7, _null = null,
+      var t6, t7, t8, t9, _null = null,
         t1 = this.$this,
         t2 = t1._searchController,
         t3 = t2.isAdvancedSearchViewOpen,
         t4 = t3.get$value(0),
         t5 = A.PointerInterceptor$(A.GestureDetector$(C.HitTestBehavior_1, _null, C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t2.get$closeAdvanceSearch(), _null, _null, _null, _null, _null, _null, _null, false, C.Offset_7BT));
       t3 = t3.get$value(0);
-      t6 = this.context;
-      t7 = t1._createConfiguration$1(t6);
-      A.Localizations_of(t6, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       t6 = t1._search_input_form_widget$_dashBoardController;
-      return A.PortalTarget$(C.C_Filled, A.PortalTarget$(E.Aligned_wEo, B.QuickSearchInputForm$(new B.SearchInputFormWidget_build__closure(t1), new B.SearchInputFormWidget_build__closure0(t1), new B.SearchInputFormWidget_build__closure1(t1), new B.SearchInputFormWidget_build__closure2(), t6.get$getContactSuggestion(), C.Duration_300000, t2.get$getAllRecentSearchAction(), new B.SearchInputFormWidget_build__closure3(t1), new B.SearchInputFormWidget_build__closure4(), D.List_LB7, D.EdgeInsets_12_12_12_6, new B.SearchInputFormWidget_build__closure5(t1), 52, 3, t1.get$_invokeSelectContactSuggestion(), t1.get$_invokeSelectRecentItem(), t1.get$_invokeSelectSuggestionItem(), D.QuickSearchSuggestionsBoxDecoration_7K0, 0, t6.get$quickSearchEmails(), t7, new A.Padding(D.EdgeInsets_12_12_12_8, A.Text$(A.Intl__message("Recent", _null, "recent", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_5Ry2, _null, _null, _null, _null, _null), _null), type$.PresentationEmail, type$.EmailAddress, type$.RecentSearch), D.AdvancedSearchFilterOverlay_null, t3), t5, t4);
+      t7 = t6.get$minInputLengthAutocomplete();
+      t8 = this.context;
+      t9 = t1._createConfiguration$1(t8);
+      A.Localizations_of(t8, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+      return A.PortalTarget$(C.C_Filled, A.PortalTarget$(E.Aligned_wEo, B.QuickSearchInputForm$(new B.SearchInputFormWidget_build__closure(t1), new B.SearchInputFormWidget_build__closure0(t1), new B.SearchInputFormWidget_build__closure1(t1), new B.SearchInputFormWidget_build__closure2(), t6.get$getContactSuggestion(), C.Duration_300000, t2.get$getAllRecentSearchAction(), new B.SearchInputFormWidget_build__closure3(t1), new B.SearchInputFormWidget_build__closure4(), D.List_LB7, D.EdgeInsets_12_12_12_6, new B.SearchInputFormWidget_build__closure5(t1), 52, t7, t1.get$_invokeSelectContactSuggestion(), t1.get$_invokeSelectRecentItem(), t1.get$_invokeSelectSuggestionItem(), D.QuickSearchSuggestionsBoxDecoration_7K0, 0, t6.get$quickSearchEmails(), t9, new A.Padding(D.EdgeInsets_12_12_12_8, A.Text$(A.Intl__message("Recent", _null, "recent", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_5Ry2, _null, _null, _null, _null, _null), _null), type$.PresentationEmail, type$.EmailAddress, type$.RecentSearch), D.AdvancedSearchFilterOverlay_null, t3), t5, t4);
     },
-    $signature: 315
+    $signature: 352
   };
   B.SearchInputFormWidget_build__closure.prototype = {
     call$3(context, filterAction, suggestionsListState) {
@@ -18693,7 +18850,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return new A.Padding(D.EdgeInsets_0_0_0_16, C.Center_Gxp, null);
     },
-    $signature: 1732
+    $signature: 1739
   };
   B.SearchInputFormWidget_build__closure4.prototype = {
     call$2(context, recent) {
@@ -18703,7 +18860,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchInputFormWidget_build__closure3.prototype = {
     call$2(context, email) {
-      return B.EmailQuickSearchItemTileWidget$(email, this.$this._search_input_form_widget$_dashBoardController.selectedMailbox.get$value(0), null);
+      var t1 = this.$this;
+      return B.EmailQuickSearchItemTileWidget$(email, t1._search_input_form_widget$_dashBoardController.selectedMailbox.get$value(0), null, new A.SearchQuery(C.JSString_methods.trim$0(t1._searchController.currentSearchText)));
     },
     $signature: typesOffset + 70
   };
@@ -18749,7 +18907,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.remove$1(t1, searchFilter);
       this.suggestionsListState.invalidateSuggestions$0();
     },
-    $signature: 1733
+    $signature: 1740
   };
   B.TopBarThreadSelection_build_closure.prototype = {
     call$0() {
@@ -18832,7 +18990,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 95
+    $signature: 84
   };
   B.QuotasView_build__closure.prototype = {
     call$2(context, constraints) {
@@ -18858,7 +19016,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t6 = this.octetQuota;
       return A.Container$(C.AlignmentDirectional_m1_0, A.Column$(A._setArrayType([A.Row$(A._setArrayType([t2, C.SizedBox_12_null_null_null, A.Text$(A.Intl__message("Storage", _null, "storageQuotas", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_8aB1, _null, _null, _null, _null, _null)], t3), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.SizedBox_null_8_null_null, new A.SizedBox(t1._getProgressBarMaxWith$1(constraints.maxWidth), _null, A.LinearProgressIndicator$(C.Color_4293388524, C.BorderRadius_ww8, B.QuotasExtensions_getQuotasStateProgressBarColor(t6), 3, B.QuotasExtensions_get_usedStoragePercent(t6)), _null), C.SizedBox_null_8_null_null, A.Text$(B.QuotasExtensions_getQuotasStateTitle(t6, context), _null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, B.QuotasExtensions_getQuotasStateTitleColor(t6), _null, _null, _null, _null, _null, _null, _null, _null, 13, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null, _null, _null)], t3), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1), C.Clip_0, _null, _null, new A.BoxDecoration(t4, _null, D.Border_Lxv, _null, _null, _null, _null, C.BoxShape_0), _null, _null, _null, t5, D.EdgeInsetsDirectional_16_16_0_0, _null, _null, _null);
     },
-    $signature: 178
+    $signature: 188
   };
   B.QuotasBannerWidget_build_closure.prototype = {
     call$0() {
@@ -19169,7 +19327,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).onDeleteSearchFilterAction$2(this.context, searchFilter);
     },
-    $signature: 538
+    $signature: 576
   };
   B.SearchEmailView__openPopupMenuDateFilter_closure.prototype = {
     call$1(receiveTime) {
@@ -19178,7 +19336,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).selectReceiveTimeQuickSearchFilter$2(this.context, receiveTime);
     },
-    $signature: 160
+    $signature: 138
   };
   B.SearchEmailView__openContextMenuDateFilter_closure.prototype = {
     call$1(receiveTime) {
@@ -19187,13 +19345,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).selectReceiveTimeQuickSearchFilter$2(this.context, receiveTime);
     },
-    $signature: 160
+    $signature: 138
   };
   B.SearchEmailView__popupMenuEmailReceiveTimeType_closure.prototype = {
     call$1(timeType) {
       return A.PopupMenuItem$(new B.EmailReceiveTimeActionTileWidget(this.receiveTimeSelected, timeType, this.onCallBack, null), true, 48, null, C.EdgeInsets_0_0_0_0, null, type$.dynamic);
     },
-    $signature: 319
+    $signature: 349
   };
   B.SearchEmailView__emailReceiveTimeCupertinoActionTile_closure.prototype = {
     call$1(timeType) {
@@ -19217,14 +19375,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.onCupertinoActionSheetActionClick = new B.SearchEmailView__emailReceiveTimeCupertinoActionTile__closure(_this.onCallBack);
       return t2.build$0();
     },
-    $signature: 1734
+    $signature: 1741
   };
   B.SearchEmailView__emailReceiveTimeCupertinoActionTile__closure.prototype = {
     call$1(timeType) {
       var t1 = this.onCallBack.call$1(timeType);
       return t1;
     },
-    $signature: 160
+    $signature: 138
   };
   B.SearchEmailView__popupMenuEmailSortOrderType_closure.prototype = {
     call$1(sortType) {
@@ -19233,7 +19391,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A.PopupMenuItem$(new B.EmailSortByActionTitleWidget(sortType, A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_imagePaths, this.sortTypeSelected, this.onCallBack, null), true, 48, null, C.EdgeInsets_0_0_0_0, null, type$.dynamic);
     },
-    $signature: 631
+    $signature: 641
   };
   B.SearchEmailView__emailSortOrderCupertinoActionTitle_closure.prototype = {
     call$1(sortType) {
@@ -19259,14 +19417,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.onCupertinoActionSheetActionClick = new B.SearchEmailView__emailSortOrderCupertinoActionTitle__closure(_this.onCallBack, t1);
       return t2.build$0();
     },
-    $signature: 1735
+    $signature: 1742
   };
   B.SearchEmailView__emailSortOrderCupertinoActionTitle__closure.prototype = {
     call$1(sortType) {
       var t1 = this.onCallBack.call$2(this.context, sortType);
       return t1;
     },
-    $signature: 537
+    $signature: 575
   };
   B.SearchEmailView__buildShowAllResultSearchButton_closure.prototype = {
     call$0() {
@@ -19298,7 +19456,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, B.RecentSearchItemTileWidget$(recentSearch, B.SearchEmailViewStyle_getListRecentSearchPadding(context, A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_responsiveUtils)), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.SearchEmailView__buildListRecentSearch__closure(t1, context, recentSearch), _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
     },
-    $signature: 216
+    $signature: 261
   };
   B.SearchEmailView__buildListRecentSearch__closure.prototype = {
     call$0() {
@@ -19315,7 +19473,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchEmailView__buildListSuggestionSearch_closure.prototype = {
     call$2(context, index) {
-      var t5, t6, _null = null,
+      var t5, t6, t7, _null = null,
         t1 = this.listSuggestionSearch,
         t2 = J.$index$asx(t1.get$value(0), index),
         t3 = this.$this,
@@ -19325,9 +19483,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5 = A._instanceType(t3)._eval$1("GetWidget.S");
       t6 = t5._as(t4.get(t3)).EmailActionController_mailboxDashBoardController.selectedMailbox.get$value(0);
       A.Expando__checkType(t3);
-      return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, B.EmailQuickSearchItemTileWidget$(t2, t6, B.SearchEmailViewStyle_getSearchSuggestionListPadding(context, t5._as(t4.get(t3)).EmailActionController_responsiveUtils)), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.SearchEmailView__buildListSuggestionSearch__closure(t3, t1, index, context), _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
+      t7 = J.trim$0$s(t5._as(t4.get(t3)).currentSearchText.get$value(0));
+      A.Expando__checkType(t3);
+      return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, B.EmailQuickSearchItemTileWidget$(t2, t6, B.SearchEmailViewStyle_getSearchSuggestionListPadding(context, t5._as(t4.get(t3)).EmailActionController_responsiveUtils), new A.SearchQuery(t7)), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.SearchEmailView__buildListSuggestionSearch__closure(t3, t1, index, context), _null, _null, _null, _null, _null, _null, _null), C.Clip_0, C.Color_0, 0, _null, _null, _null, _null, _null, C.MaterialType_0);
     },
-    $signature: 216
+    $signature: 261
   };
   B.SearchEmailView__buildListSuggestionSearch__closure.prototype = {
     call$0() {
@@ -19350,7 +19510,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         emailAddress = J.$index$asx(this.listContactSuggestionSearch.get$value(0), index);
       return A.Material$(C.Duration_200000, true, _null, A.InkWell$(false, _null, true, new B.ContactQuickSearchItem(emailAddress, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.SearchEmailView__buildListContactSuggestionSearch__closure(this.$this, context, emailAddress), _null, _null, _null, _null, _null, _null, _null), C.Clip_0, _null, 0, _null, _null, _null, _null, _null, C.MaterialType_4);
     },
-    $signature: 216
+    $signature: 261
   };
   B.SearchEmailView__buildListContactSuggestionSearch__closure.prototype = {
     call$0() {
@@ -19374,9 +19534,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t1 = scrollInfo.metrics;
           t2 = t1._scroll_metrics$_pixels;
           t2.toString;
-          t1 = t1._maxScrollExtent;
-          t1.toString;
-          t1 = t2 === t1;
+          t3 = t1._maxScrollExtent;
+          t3.toString;
+          t1 = t2 === t3 && t1.axisDirection === C.AxisDirection_2;
         } else
           t1 = false;
       } else
@@ -19429,13 +19589,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return false;
     },
-    $signature: 82
+    $signature: 76
   };
   B.SearchEmailView__buildListEmailBody_closure0.prototype = {
     call$2(context, index) {
       return new A.Obx(new B.SearchEmailView__buildListEmailBody__closure(this.$this, J.$index$asx(this.listPresentationEmail.get$value(0), index), context), null);
     },
-    $signature: 226
+    $signature: 262
   };
   B.SearchEmailView__buildListEmailBody__closure.prototype = {
     call$0() {
@@ -19466,7 +19626,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).pressEmailAction$4$mailboxContain(this.context, action, email, this.currentPresentationEmail.mailboxContain);
     },
-    $signature: 451
+    $signature: 516
   };
   B.SearchEmailView__buildListEmailBody___closure0.prototype = {
     call$2(email, position) {
@@ -19486,7 +19646,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3._as(t2.get(t1)).openPopupMenuAction$3(t4, position, A._setArrayType([A.PopupMenuItem$(t1._markAsEmailSpamOrUnSpamAction$2(t4, email), true, 48, null, C.EdgeInsets_8_0_8_0, null, type$.dynamic)], type$.JSArray_PopupMenuEntry_dynamic));
       }
     },
-    $signature: 326
+    $signature: 346
   };
   B.SearchEmailView__buildListEmailBody_closure1.prototype = {
     call$2(context, index) {
@@ -19504,7 +19664,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = false;
       return new A.Padding(t4, A.Divider$(t1 ? _null : C.Color_4294967295, _null, _null, _null), _null);
     },
-    $signature: 193
+    $signature: 189
   };
   B.SearchEmailView__markAsEmailSpamOrUnSpamAction_closure.prototype = {
     call$1(email) {
@@ -19524,7 +19684,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t2 === true ? C.EmailActionType_21 : C.EmailActionType_20;
       return t1.pressEmailAction$3(this.context, t2, email);
     },
-    $signature: 188
+    $signature: 199
   };
   B.SearchEmailView__buildLoadingViewLoadMore_closure.prototype = {
     call$0() {
@@ -19539,13 +19699,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 42
+    $signature: 41
   };
   B.SearchEmailView__buildLoadingViewLoadMore__closure0.prototype = {
     call$1(success) {
       return success instanceof A.SearchingMoreState ? new A.Padding(D.EdgeInsets_0_0_0_16, C.Center_Gxp, null) : C.SizedBox_0_0_null_null;
     },
-    $signature: 63
+    $signature: 67
   };
   B.AppBarSelectionMode_build_closure.prototype = {
     call$0() {
@@ -19640,7 +19800,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = this.$this;
       return t1._suggestionViewStateToUI$1(t1.suggestionViewState);
     },
-    $signature: 100
+    $signature: 98
   };
   B.EmptySearchEmailWidget_build_closure0.prototype = {
     call$1(success) {
@@ -19652,7 +19812,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return t1._suggestionViewStateToUI$1(t1.suggestionViewState);
       }
     },
-    $signature: 51
+    $signature: 52
   };
   B.EmptySearchEmailWidget__suggestionViewStateToUI_closure.prototype = {
     call$1(failure) {
@@ -19667,14 +19827,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return B.EmptyEmailsWidget$(false, this.$this.isNetworkConnectionAvailable, true, D.ValueKey_empty_search_email_view, null);
     },
-    $signature: 51
+    $signature: 52
   };
   B.SearchEmailLoadingBarWidget_build_closure.prototype = {
     call$1(failure) {
       var t1 = this.$this;
       return t1._search_email_loading_bar_widget$_suggestionViewStateToUI$1(t1.suggestionViewState);
     },
-    $signature: 100
+    $signature: 98
   };
   B.SearchEmailLoadingBarWidget_build_closure0.prototype = {
     call$1(success) {
@@ -19686,13 +19846,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return t1._search_email_loading_bar_widget$_suggestionViewStateToUI$1(t1.suggestionViewState);
       }
     },
-    $signature: 51
+    $signature: 52
   };
   B.SearchEmailLoadingBarWidget__suggestionViewStateToUI_closure.prototype = {
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 42
+    $signature: 41
   };
   B.SearchEmailLoadingBarWidget__suggestionViewStateToUI_closure0.prototype = {
     call$1(success) {
@@ -19701,7 +19861,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 63
+    $signature: 67
   };
   B.SearchMailboxView_build_closure.prototype = {
     call$0() {
@@ -19722,7 +19882,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 42
+    $signature: 41
   };
   B.SearchMailboxView__buildLoadingView__closure0.prototype = {
     call$1(success) {
@@ -19731,7 +19891,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 63
+    $signature: 67
   };
   B.SearchMailboxView__buildSearchInputForm_closure.prototype = {
     call$0() {
@@ -19773,7 +19933,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 113
+    $signature: 117
   };
   B.SearchMailboxView__buildTextFieldSearchInput_closure.prototype = {
     call$1(text) {
@@ -19804,13 +19964,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A.ListView$builder(null, new B.SearchMailboxView__buildMailboxListView__closure(t1), J.get$length$asx(t3._as(t2.get(t1)).listMailboxSearched.get$value(0)), null, C.ValueKey_list_mailbox_searched, t4, null, false, C.Axis_1, true);
     },
-    $signature: 164
+    $signature: 190
   };
   B.SearchMailboxView__buildMailboxListView__closure.prototype = {
     call$2(context, index) {
       return new A.LayoutBuilder(new B.SearchMailboxView__buildMailboxListView___closure(this.$this, index), null);
     },
-    $signature: 1736
+    $signature: 1743
   };
   B.SearchMailboxView__buildMailboxListView___closure.prototype = {
     call$2(context, constraints) {
@@ -19848,13 +20008,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.closeSearchView$1(t2);
       return null;
     },
-    $signature: 189
+    $signature: 191
   };
   B.SearchMailboxView__buildMailboxListView____closure0.prototype = {
     call$2(position, mailbox) {
       return this.$this._openMailboxMenuAction$3$position(this.context, mailbox, position);
     },
-    $signature: 1737
+    $signature: 1744
   };
   B.SearchMailboxView__listPopupMenuItemAction_closure.prototype = {
     call$1(action) {
@@ -19866,14 +20026,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$3(_, __, ___) {
       return this.$this._buildMailboxItem$1(this.context);
     },
-    $signature: 1738
+    $signature: 1745
   };
   B._MailboxSearchedItemBuilderState_build_closure0.prototype = {
     call$1(emails) {
       var t1 = this.$this._widget;
       t1.onDragEmailToMailboxAccepted.call$2(emails.data, t1._mailbox_searched_item_builder$_presentationMailbox);
     },
-    $signature: 520
+    $signature: 562
   };
   B._MailboxSearchedItemBuilderState__buildMailboxItem_closure.prototype = {
     call$1(value) {
@@ -19940,7 +20100,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = this.context;
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).openContextMenuAction$2(t3, t1._filterMessagesCupertinoActionTile$2(t3, filterOption));
     },
-    $signature: 345
+    $signature: 331
   };
   B.ThreadView_build__closure2.prototype = {
     call$2(filterOption, position) {
@@ -19955,7 +20115,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return t4.openPopupMenuAction$3(t5, position, t1.popupMenuFilterEmailActionTile$3(t5, filterOption, t3._as(t2.get(t1)).get$filterMessagesAction()));
     },
-    $signature: 1739
+    $signature: 1746
   };
   B.ThreadView_build_closure0.prototype = {
     call$0() {
@@ -20106,7 +20266,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A.Visibility$(t1._buildResultListEmail$2(this.context, t3._as(t2.get(t1)).EmailActionController_mailboxDashBoardController.emailsInCurrentMailbox), !t4);
     },
-    $signature: 1740
+    $signature: 1747
   };
   B.ThreadView__buildListButtonSelectionForMobile_closure.prototype = {
     call$0() {
@@ -20198,7 +20358,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t6.onCupertinoActionSheetActionClick = t3._as(t2.get(t1)).get$filterMessagesAction();
       return t6.build$0();
     },
-    $signature: 1741
+    $signature: 1748
   };
   B.ThreadView__buildResultListEmail_closure.prototype = {
     call$0() {
@@ -20260,7 +20420,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       return new A.Obx(new B.ThreadView__buildListEmailBody__closure(this.$this, index, this.listPresentationEmail, context), null);
     },
-    $signature: 226
+    $signature: 262
   };
   B.ThreadView__buildListEmailBody__closure.prototype = {
     call$0() {
@@ -20299,7 +20459,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = false;
       return new A.Padding(t4, A.Divider$(t1 ? _null : C.Color_4294967295, _null, _null, _null), _null);
     },
-    $signature: 193
+    $signature: 189
   };
   B.ThreadView__buildEmailItemDraggable_closure2.prototype = {
     call$1(_) {
@@ -20367,7 +20527,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController._isDraggingMailbox.set$value(0, false);
       return null;
     },
-    $signature: 1742
+    $signature: 1749
   };
   B.ThreadView__buildEmailItemNotDraggable_closure0.prototype = {
     call$1(direction) {
@@ -20376,7 +20536,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).swipeEmailAction$3(this.context, this.presentationEmail, direction);
     },
-    $signature: 1743
+    $signature: 1750
   };
   B.ThreadView__buildEmailItemNotDraggable_closure.prototype = {
     call$2(email, position) {
@@ -20433,7 +20593,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return _null;
     },
-    $signature: 326
+    $signature: 346
   };
   B.ThreadView__buildFeedBackWidget_closure.prototype = {
     call$0() {
@@ -20445,7 +20605,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = J.get$length$asx(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).listEmailDrag.get$value(0));
       return A.Text$(A.Intl__message("Move " + t1 + " conversation", _null, "moveConversation", A._setArrayType([t1], type$.JSArray_Object), _null), _null, _null, 1, C.TextOverflow_0, _null, _null, _null, _null, D.TextStyle_mtF6, _null, _null, _null, _null, _null);
     },
-    $signature: 154
+    $signature: 160
   };
   B.ThreadView__buildEmptyEmail_closure.prototype = {
     call$0() {
@@ -20460,7 +20620,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 42
+    $signature: 41
   };
   B.ThreadView__buildEmptyEmail__closure0.prototype = {
     call$1(success) {
@@ -20494,7 +20654,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return B.EmptyEmailsWidget$(t6 !== C.FilterMessageOption_0, !t4, t5, D.ValueKey_empty_thread_view, t3._as(t2.get(t1)).get$goToCreateEmailRuleView());
       }
     },
-    $signature: 51
+    $signature: 52
   };
   B.ThreadView__markAsEmailSpamOrUnSpamContextMenuItemAction_closure.prototype = {
     call$1(email) {
@@ -20513,7 +20673,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return t1.handleEmailActionType$3$mailboxContain(t3 === true ? C.EmailActionType_21 : C.EmailActionType_20, email, t2);
     },
-    $signature: 188
+    $signature: 199
   };
   B.ThreadView__openInNewTabContextMenuItemAction_closure.prototype = {
     call$1(email) {
@@ -20525,7 +20685,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
       A.AppUtils_launchLink(J.toString$0$(email.routeWeb));
     },
-    $signature: 188
+    $signature: 199
   };
   B.ThreadView__archiveMessageContextMenuItemAction_closure.prototype = {
     call$1(email) {
@@ -20535,7 +20695,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController.archiveMessage$2(this.context, email);
       return null;
     },
-    $signature: 188
+    $signature: 199
   };
   B.ThreadView__buildMarkAsSpamPopupMenuItem_closure.prototype = {
     call$0() {
@@ -20593,7 +20753,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 42
+    $signature: 41
   };
   B.ThreadView__buildMarkAsMailboxReadLoading__closure0.prototype = {
     call$1(success) {
@@ -20628,7 +20788,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 63
+    $signature: 67
   };
   B.DefaultWebAppBarThreadWidget_build_closure.prototype = {
     call$2(context, constraints) {
@@ -20645,7 +20805,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
       return A.Container$(_null, A.Row$(A._setArrayType([t4, t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_filter.svg", t6, _null, D.ValueKey_filter_message_button, _null, 80, new B.DefaultWebAppBarThreadWidget_build__closure(t1), new B.DefaultWebAppBarThreadWidget_build__closure0(t1), _null, A.Intl__message("Filter messages", _null, "filter_messages", _null, _null))], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_4294967295, C.BoxConstraints_86y0, _null, _null, _null, _null, _null, t2, _null, _null, _null);
     },
-    $signature: 178
+    $signature: 188
   };
   B.DefaultWebAppBarThreadWidget_build__closure0.prototype = {
     call$0() {
@@ -20661,7 +20821,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = t1.onPopupMenuFilterEmailAction;
       return t2 == null ? null : t2.call$2(t1.filterOption, position);
     },
-    $signature: 190
+    $signature: 186
   };
   B.SelectionWebAppBarThreadWidget_build_closure.prototype = {
     call$0() {
@@ -20829,7 +20989,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$3(context, value, child) {
       return this.$this._email_tile_web_builder$_buildAvatarIcon$2$context$isHovered(context, value);
     },
-    $signature: 230
+    $signature: 221
   };
   B._EmailTileBuilderState_build_closure4.prototype = {
     call$3(context, value, child) {
@@ -20846,7 +21006,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return A.Row$(t2, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
       }
     },
-    $signature: 230
+    $signature: 221
   };
   B._EmailTileBuilderState_build_closure5.prototype = {
     call$3(context, value, child) {
@@ -20858,7 +21018,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 230
+    $signature: 221
   };
   B._EmailTileBuilderState_build_closure14.prototype = {
     call$0() {
@@ -20881,7 +21041,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = t1 ? "assets/images/ic_checkbox_selected.svg" : "assets/images/ic_checkbox_unselected.svg";
       return A.SvgPicture$asset(t2, C.Alignment_0_0, new A.EngineColorFilter(isHovered || t1 ? C.Color_4278221567 : C.Color_4289640386, C.BlendMode_5, null, C.ColorFilterType_0), C.BoxFit_1, 20, null, null, 20);
     },
-    $signature: 1745
+    $signature: 1752
   };
   B._EmailTileBuilderState_build_closure9.prototype = {
     call$0() {
@@ -20931,7 +21091,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return A.Row$(t2, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
       }
     },
-    $signature: 230
+    $signature: 221
   };
   B._EmailTileBuilderState__buildListActionButtonWhenHover_closure.prototype = {
     call$0() {
@@ -21019,7 +21179,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.push(A.Expanded$(A.Container$(_null, t2.buildEmailPartialContent$4(context, t3.presentationEmail, t3.isSearchEmailRunning, t3.searchQuery), C.Clip_0, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), 1));
       return A.Row$(t1, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     },
-    $signature: 318
+    $signature: 351
   };
   B.FilterMessageCupertinoActionSheetActionBuilder_build_closure.prototype = {
     call$0() {
@@ -21097,7 +21257,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(failure) {
       return C.SizedBox_0_0_null_null;
     },
-    $signature: 42
+    $signature: 41
   };
   B.ThreadViewLoadingBarWidget_build_closure0.prototype = {
     call$1(success) {
@@ -21106,19 +21266,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 63
+    $signature: 67
   };
   B.ListUploadFileStateExtension_get_totalSize_closure.prototype = {
     call$1(file) {
       return file.get$fileSize();
     },
-    $signature: 1746
+    $signature: 1753
   };
   B.ListUploadFileStateExtension_get_totalSize_closure0.prototype = {
     call$2(sum, size) {
       return sum + size;
     },
-    $signature: 613
+    $signature: 633
   };
   (function aliases() {
     var _ = B.__ScrollingFloatingButtonAnimatedState_State_SingleTickerProviderStateMixin.prototype;
@@ -21205,20 +21365,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _inherit = hunkHelpers.inherit;
     _inheritMany(A.Object, [B.ByteConverter, B.QuickSearchSuggestionsBox, B.QuickSearchSuggestionsBoxDecoration, B.QuickSearchTextFieldConfiguration, B.ArabicDateLocale, B.EnglishDateLocale, B.FrenchDateLocale, B.GermanDateLocale, B.ItalianDateLocale, B.RussianDateLocale, B.VietnameseDateLocale, B.DropdownSearchData, B.Drag, B.MultiDragPointerState, B.DraggableDetails, B.FocusedMenuItem, B.WebScript, B._DraggableEmailAddress_Object_EquatableMixin, B.EditorViewMixin, B.FilterEmailPopupMenuMixin, B.BaseEmailItemTile]);
     _inheritMany(A._Enum, [B.SizeUnit, B._DragEndKind]);
-    _inheritMany(A.StatefulWidget, [B.ScrollingFloatingButtonAnimated, B.QuickSearchSuggestionList, B.TypeAheadFieldQuickSearch, B.SelectionArea, B.Draggable, B.SelectableRegion, B.RecipientComposerWidget, B.AttachmentComposerWidget, B.WebEditorWidget, B.EventAttendeeDetailWidget, B.EmailReceiverWidget, B.TextFieldAutocompleteEmailAddressWeb, B.MailboxSearchedItemBuilder, B.EmailTileBuilder, B.ScrollToTopButtonWidget]);
-    _inheritMany(A.State0, [B.__ScrollingFloatingButtonAnimatedState_State_SingleTickerProviderStateMixin, B._QuickSearchSuggestionListState_State_SingleTickerProviderStateMixin, B.__TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver, B._SelectionAreaState, B._DraggableState, B._SelectableRegionState_State_TextSelectionDelegate, B._RecipientComposerWidgetState, B._AttachmentComposerWidgetState, B._WebEditorState, B._EventAttendeeDetailWidgetState, B._EmailReceiverWidgetState, B._TextFieldAutocompleteEmailAddressWebState, B._MailboxSearchedItemBuilderState, B.__EmailTileBuilderState_State_BaseEmailItemTile, B._ScrollToTopButtonWidgetState]);
+    _inheritMany(A.StatefulWidget, [B.ScrollingFloatingButtonAnimated, B.QuickSearchSuggestionList, B.TypeAheadFieldQuickSearch, B.RichTextBuilder, B.SelectionArea, B.Draggable, B.SelectableRegion, B.RecipientComposerWidget, B.AttachmentComposerWidget, B.WebEditorWidget, B.EventAttendeeDetailWidget, B.EmailReceiverWidget, B.TextFieldAutocompleteEmailAddressWeb, B.MailboxSearchedItemBuilder, B.EmailTileBuilder, B.ScrollToTopButtonWidget]);
+    _inheritMany(A.State0, [B.__ScrollingFloatingButtonAnimatedState_State_SingleTickerProviderStateMixin, B._QuickSearchSuggestionListState_State_SingleTickerProviderStateMixin, B.__TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver, B.__RichTextBuilderState_State_AutomaticKeepAliveClientMixin, B._SelectionAreaState, B._DraggableState, B._SelectableRegionState_State_TextSelectionDelegate, B._RecipientComposerWidgetState, B._AttachmentComposerWidgetState, B._WebEditorState, B._EventAttendeeDetailWidgetState, B._EmailReceiverWidgetState, B._TextFieldAutocompleteEmailAddressWebState, B._MailboxSearchedItemBuilderState, B.__EmailTileBuilderState_State_BaseEmailItemTile, B._ScrollToTopButtonWidgetState]);
     _inherit(B._ScrollingFloatingButtonAnimatedState, B.__ScrollingFloatingButtonAnimatedState_State_SingleTickerProviderStateMixin);
     _inheritMany(A.Closure0Args, [B._ScrollingFloatingButtonAnimatedState_dispose_closure, B._ScrollingFloatingButtonAnimatedState__handleScroll_closure, B._ScrollingFloatingButtonAnimatedState__handleScroll__closure, B._ScrollingFloatingButtonAnimatedState__handleScroll__closure0, B.QuickSearchSuggestionListState__handleDebounceTimeListener_closure, B.QuickSearchSuggestionListState__handleDebounceTimeListener_closure0, B.QuickSearchSuggestionListState__getSuggestions_closure, B.QuickSearchSuggestionListState__getSuggestions_closure0, B.QuickSearchSuggestionListState__getSuggestions_closure2, B.QuickSearchSuggestionListState__buildListActionWidget__closure, B.QuickSearchSuggestionListState__buildListViewRecentWidget__closure, B.QuickSearchSuggestionListState__buildListViewSuggestionWidget__closure, B.QuickSearchSuggestionListState__buildListViewContactWidget__closure, B._TypeAheadFieldQuickSearchState_initState_closure, B._TypeAheadFieldQuickSearchState_initState__closure0, B._TypeAheadFieldQuickSearchState_initState__closure, B._TypeAheadFieldQuickSearchState__updateTextDirection_closure, B.MultiDragGestureRecognizer__startDrag_closure, B._DraggableState__startDrag_closure, B._DraggableState__startDrag__closure, B._DragAvatar_updateDrag_closure0, B.SelectableRegionState_initState_closure, B.SelectableRegionState__initMouseGestureRecognizer_closure, B.SelectableRegionState__initTouchGestureRecognizer_closure, B.SelectableRegionState_contextMenuButtonItems_closure, B.SelectableRegionState_contextMenuButtonItems_closure0, B.SelectableRegionState_contextMenuButtonItems_closure1, B.SelectableRegionState__textProcessingActionButtonItems_closure, B.buildTextSpanChildren_closure, B.HyperLinkWidget_build_closure, B.ComposerView_build__closure6, B.ComposerView_build__closure4, B.ComposerView_build___closure13, B.ComposerView_build___closure14, B.ComposerView_build___closure15, B.ComposerView_build___closure16, B.ComposerView_build__closure3, B.ComposerView_build___closure18, B.ComposerView_build___closure7, B.ComposerView_build___closure8, B.ComposerView_build___closure9, B.ComposerView_build___closure10, B.ComposerView_build___closure11, B.ComposerView_build___closure12, B.ComposerView_build_closure, B.ComposerView_build___closure22, B.ComposerView_build___closure20, B.ComposerView_build____closure20, B.ComposerView_build___closure19, B.ComposerView_build____closure13, B.ComposerView_build____closure14, B.ComposerView_build____closure15, B.ComposerView_build____closure16, B.ComposerView_build_____closure0, B.ComposerView_build_____closure2, B.ComposerView_build_____closure1, B.ComposerView_build_____closure4, B.ComposerView_build_____closure5, B.ComposerView_build_____closure3, B.ComposerView_build____closure17, B.ComposerView_build____closure18, B.ComposerView_build____closure19, B.ComposerView_build__closure7, B.ComposerView_build__closure2, B.ComposerView_build__closure0, B.ComposerView_build___closure6, B.ComposerView_build__closure, B.ComposerView_build___closure, B.ComposerView_build___closure0, B.ComposerView_build___closure1, B.ComposerView_build___closure2, B.ComposerView_build____closure0, B.ComposerView_build____closure2, B.ComposerView_build____closure1, B.ComposerView_build____closure4, B.ComposerView_build____closure5, B.ComposerView_build____closure3, B.ComposerView_build___closure3, B.ComposerView_build___closure4, B.ComposerView_build___closure5, B.ComposerView__createMoreOptionPopupItems_closure, B.ComposerView__createMoreOptionPopupItems_closure0, B.ComposerView__createMoreOptionPopupItems_closure1, B.ComposerView__createMoreOptionPopupItems_closure2, B.AttachmentHeaderComposerWidget_build_closure0, B.AttachmentHeaderComposerWidget_build_closure, B.AttachmentItemComposerWidget_build_closure, B._RecipientComposerWidgetState_build___closure1, B._RecipientComposerWidgetState_build___closure3, B._RecipientComposerWidgetState_build_____closure, B._RecipientComposerWidgetState_build___closure0, B._RecipientComposerWidgetState_build___closure, B._RecipientComposerWidgetState_build_closure1, B._RecipientComposerWidgetState_build_closure2, B._RecipientComposerWidgetState_build_closure3, B._RecipientComposerWidgetState__handleFocusTagAction_closure, B._RecipientComposerWidgetState__handleDeleteTagAction_closure, B._RecipientComposerWidgetState__handleSelectOptionAction_closure, B._RecipientComposerWidgetState__handleSubmitTagAction_closure, B._RecipientComposerWidgetState__handleOnTagChangeAction_closure, B._RecipientComposerWidgetState__handleAcceptDraggableEmailAddressAction_closure, B._RecipientComposerWidgetState__handleAcceptDraggableEmailAddressAction_closure0, B._RecipientComposerWidgetState__handleAcceptDraggableEmailAddressAction_closure1, B.RecipientSuggestionItemWidget_build_closure, B.RecipientTagItemWidget_build_closure, B.RecipientTagItemWidget_build_closure0, B._AttachmentComposerWidgetState_build__closure, B.DesktopAppBarComposerWidget_build_closure, B.DesktopAppBarComposerWidget_build_closure0, B.MinimizeComposerWidget_build_closure, B.MinimizeComposerWidget_build_closure0, B._WebEditorState_build__closure0, B._WebEditorState_build__closure1, B._WebEditorState_build__closure2, B.EmailView_build_closure, B.EmailView_build__closure, B.EmailView_build___closure0, B.EmailView_build__closure0, B.EmailView_build___closure, B.EmailView_build____closure, B.EmailView__buildEmailMessage_closure, B.EmailView__buildEmailMessage_closure0, B.EmailView__buildEmailMessage_closure1, B.EmailView__buildEmailMessage__closure4, B.EmailView__buildEmailMessage_closure2, B.EmailView__buildEmailMessage_closure3, B.EmailView__buildEmailMessage_closure4, B.EmailView__buildEmailMessage_closure5, B.EmailView__buildEmailMessage___closure, B.EmailView__popupMenuEmailActionTile__closure, B.AttachmentItemWidget_build_closure, B.AttachmentItemWidget_build__closure, B.AttachmentItemWidget_build__closure0, B.CalendarEventActionButtonWidget__getCallbackFunction_closure, B.CalendarEventActionButtonWidget__getCallbackFunction_closure0, B.CalendarEventActionButtonWidget__getCallbackFunction_closure1, B.CalendarEventInformationWidget_build_closure, B.CalendarEventInformationWidget_build_closure0, B._EventAttendeeDetailWidgetState_build_closure0, B._EventAttendeeDetailWidgetState_build__closure0, B._EventAttendeeDetailWidgetState_build_closure1, B._EventAttendeeDetailWidgetState_build__closure, B.EmailActionCupertinoActionSheetActionBuilder_build_closure, B._EmailReceiverWidgetState_build_closure, B._EmailReceiverWidgetState_build__closure0, B._EmailReceiverWidgetState_build_closure0, B._EmailReceiverWidgetState_build__closure, B._EmailReceiverWidgetState__buildRecipientsTag__closure0, B._EmailReceiverWidgetState__buildRecipientsTag__closure, B.EmailSenderBuilder_build_closure0, B.EmailSenderBuilder_build_closure, B.EmailSenderBuilder_build_closure2, B.EmailSenderBuilder_build_closure1, B.EmailViewAppBarWidget_build__closure, B.EmailViewAppBarWidget_build__closure0, B.EmailViewAppBarWidget_build__closure3, B.EmailViewAppBarWidget_build___closure, B.EmailViewAppBarWidget_build__closure1, B.EmailViewAppBarWidget_build__closure2, B.EmailViewBottomBarWidget_build_closure, B.EmailViewBottomBarWidget_build__closure1, B.EmailViewBottomBarWidget_build_closure0, B.EmailViewBottomBarWidget_build__closure0, B.EmailViewBottomBarWidget_build_closure1, B.EmailViewBottomBarWidget_build__closure, B.EmailViewBottomBarWidget_build_closure2, B.InformationSenderAndReceiverBuilder_build__closure, B.MailboxView__buildListMailbox_closure, B.MailboxView__buildListMailbox_closure0, B.MailboxView__buildListMailbox_closure1, B.MailboxView__buildListMailbox_closure2, B.MailboxView__buildListMailbox_closure3, B.MailboxView__buildListMailbox_closure4, B.MailboxView__buildListMailbox_closure5, B.MailboxView__buildListMailbox_closure6, B.MailboxView__buildListMailbox__closure2, B.MailboxView__buildListMailbox_closure7, B.MailboxView__buildListMailbox__closure0, B.MailboxView__buildListChildTileWidget__closure, B.MailboxView__buildListChildTileWidget__closure0, B.MailboxDashBoardView_build_closure6, B.MailboxDashBoardView_build_closure, B.MailboxDashBoardView_build_closure0, B.MailboxDashBoardView_build_closure1, B.MailboxDashBoardView_build_closure2, B.MailboxDashBoardView_build_closure3, B.MailboxDashBoardView_build_closure4, B.MailboxDashBoardView_build__closure, B.MailboxDashBoardView_build_closure5, B.MailboxDashBoardView_build_closure8, B.MailboxDashBoardView_build_closure7, B.MailboxDashBoardView_build_closure9, B.MailboxDashBoardView_build_closure10, B.MailboxDashBoardView__buildThreadViewForWebDesktop_closure, B.MailboxDashBoardView__buildThreadViewForWebDesktop__closure0, B.MailboxDashBoardView__buildListButtonTopBar_closure, B.MailboxDashBoardView__buildListButtonTopBar_closure0, B.MailboxDashBoardView__buildListButtonTopBar_closure1, B.MailboxDashBoardView__buildListButtonTopBar__closure1, B.MailboxDashBoardView__buildListButtonTopBar_closure2, B.MailboxDashBoardView__buildListButtonTopBar_closure3, B.MailboxDashBoardView__buildListButtonTopBar__closure, B.MailboxDashBoardView__buildListButtonTopBar_closure4, B.MailboxDashBoardView__buildDownloadTaskStateWidget_closure, B.MailboxDashBoardView__buildVacationNotificationMessage_closure, B.MailboxDashBoardView__buildListButtonQuickSearchFilter_closure, B.MailboxDashBoardView__buildQuickSearchFilterButton_closure, B.MailboxDashBoardView_popupMenuEmailReceiveTimeType__closure, B.MailboxDashBoardView_popupMenuEmailSortOrderType__closure, B.MailboxDashBoardView__buildComposerButton_closure, B.FilterEmailPopupMenuMixin__filterEmailAction_closure, B.AdvancedSearchFilterFormBottomView__buildListButton_closure, B.AdvancedSearchFilterFormBottomView__buildListButton_closure0, B.AdvancedSearchFilterFormBottomView__buildListButton_closure1, B.AdvancedSearchFilterFormBottomView__buildListButton_closure2, B.AdvancedSearchFilterFormBottomView__buildCheckboxHasAttachment_closure, B.AdvancedSearchFilterOverlay_build_closure, B.AdvancedSearchInputForm_build_closure5, B.AdvancedSearchInputForm_build_closure6, B.AdvancedSearchInputForm_build_closure2, B.AdvancedSearchInputForm_build_closure3, B.AdvancedSearchInputForm_build_closure4, B.AdvancedSearchInputForm__buildEmailReceiveTimeTypeActionTiles__closure, B.AdvancedSearchInputForm__buildFilterField_closure, B.AdvancedSearchInputForm__buildFilterField_closure0, B.AdvancedSearchInputForm__buildTextFieldFilterForWeb_closure, B.AdvancedSearchInputForm__buildTextFieldFilterForWeb_closure0, B.AutoCompleteSuggestionItemWidgetWeb_build_closure, B.AutoCompleteTagItemWidgetWeb_build_closure0, B.AutoCompleteTagItemWidgetWeb_build_closure, B.AutoCompleteTagItemWidgetWeb_build_closure1, B.IconOpenAdvancedSearchWidget_build_closure, B.IconOpenAdvancedSearchWidget_build__closure, B._TextFieldAutocompleteEmailAddressWebState_build____closure0, B._TextFieldAutocompleteEmailAddressWebState_build____closure, B._TextFieldAutocompleteEmailAddressWebState_build____closure1, B._TextFieldAutocompleteEmailAddressWebState_build______closure, B._TextFieldAutocompleteEmailAddressWebState__handleFocusTagAction_closure, B._TextFieldAutocompleteEmailAddressWebState__handleDeleteTagAction_closure, B._TextFieldAutocompleteEmailAddressWebState__handleSelectOptionAction_closure, B._TextFieldAutocompleteEmailAddressWebState__handleSubmitTagAction_closure, B._TextFieldAutocompleteEmailAddressWebState__handleOnTagChangeAction_closure, B._TextFieldAutocompleteEmailAddressWebState__handleAcceptDraggableEmailAddressAction_closure, B._TextFieldAutocompleteEmailAddressWebState__handleAcceptDraggableEmailAddressAction_closure0, B._TextFieldAutocompleteEmailAddressWebState__handleAcceptDraggableEmailAddressAction_closure1, B.FilterMessageButton_build_closure, B.SearchFilterButton_build_closure, B.SearchFilterButton_build_closure0, B.SearchInputFormWidget_build_closure, B.SearchInputFormWidget__buildShowAllResultButton_closure, B.SearchInputFormWidget__createConfiguration_closure, B.SearchInputFormWidget_buildListButtonForQuickSearchForm_closure, B.TopBarThreadSelection_build_closure, B.TopBarThreadSelection_build_closure0, B.TopBarThreadSelection_build_closure1, B.TopBarThreadSelection_build_closure2, B.TopBarThreadSelection_build_closure3, B.QuotasView_build_closure, B.QuotasBannerWidget_build_closure, B.SearchEmailView_build_closure3, B.SearchEmailView_build_closure0, B.SearchEmailView_build_closure1, B.SearchEmailView_build_closure2, B.SearchEmailView_build__closure, B.SearchEmailView__buildSearchInputForm_closure, B.SearchEmailView__buildSearchInputForm_closure1, B.SearchEmailView__buildSearchInputForm__closure, B.SearchEmailView__buildListSearchFilterAction_closure, B.SearchEmailView__buildListSearchFilterAction__closure, B.SearchEmailView__buildSearchFilterButton_closure, B.SearchEmailView__buildShowAllResultSearchButton_closure, B.SearchEmailView__buildListRecentSearch__closure, B.SearchEmailView__buildListSuggestionSearch__closure, B.SearchEmailView__buildListContactSuggestionSearch__closure, B.SearchEmailView__buildListEmailBody__closure, B.SearchEmailView__buildLoadingViewLoadMore_closure, B.AppBarSelectionMode_build_closure, B.AppBarSelectionMode_build_closure0, B.AppBarSelectionMode_build_closure1, B.AppBarSelectionMode_build_closure2, B.AppBarSelectionMode_build_closure3, B.EmailReceiveTimeActionTileWidget_build_closure, B.EmailReceiveTimeCupertinoActionSheetActionBuilder_build_closure, B.EmailSortByActionTitleWidget_build_closure, B.EmailSortByCupertinoActionSheetActionBuilder_build_closure, B.SearchMailboxView_build_closure, B.SearchMailboxView__buildLoadingView_closure, B.SearchMailboxView__buildSearchInputForm_closure, B.SearchMailboxView__buildSearchInputForm_closure0, B.SearchMailboxView__buildSearchInputForm_closure1, B.SearchMailboxView__buildMailboxListView_closure, B._MailboxSearchedItemBuilderState__buildMailboxItem__closure, B.ThreadView_build_closure, B.ThreadView_build_closure0, B.ThreadView_build_closure1, B.ThreadView_build_closure2, B.ThreadView_build__closure0, B.ThreadView_build_closure3, B.ThreadView_build__closure, B.ThreadView_build_closure4, B.ThreadView_build_closure5, B.ThreadView__buildListButtonSelectionForMobile_closure, B.ThreadView__buildFloatingButtonCompose_closure, B.ThreadView__buildFloatingButtonCompose__closure, B.ThreadView__buildResultListEmail_closure, B.ThreadView__buildResultListEmail_closure0, B.ThreadView__buildListEmailBody__closure, B.ThreadView__buildEmailItemDraggable_closure0, B.ThreadView__buildFeedBackWidget_closure, B.ThreadView__buildEmptyEmail_closure, B.ThreadView__buildMarkAsSpamPopupMenuItem_closure, B.ThreadView__buildOpenInNewTabPopupMenuItem_closure, B.ThreadView__buildArchiveMessagePopupMenuItem_closure, B.ThreadView__buildMarkAsMailboxReadLoading_closure, B.DefaultWebAppBarThreadWidget_build__closure0, B.SelectionWebAppBarThreadWidget_build_closure, B.SelectionWebAppBarThreadWidget_build_closure0, B.SelectionWebAppBarThreadWidget_build_closure1, B.SelectionWebAppBarThreadWidget_build_closure2, B.SelectionWebAppBarThreadWidget_build_closure3, B.BottomBarThreadSelectionWidget_build_closure, B.BottomBarThreadSelectionWidget_build_closure0, B.BottomBarThreadSelectionWidget_build_closure1, B.BottomBarThreadSelectionWidget_build_closure2, B.BottomBarThreadSelectionWidget_build_closure3, B._EmailTileBuilderState_build_closure1, B._EmailTileBuilderState_build_closure0, B._EmailTileBuilderState_build_closure, B._EmailTileBuilderState_build_closure7, B._EmailTileBuilderState_build_closure3, B._EmailTileBuilderState_build_closure14, B._EmailTileBuilderState_build_closure9, B._EmailTileBuilderState_build_closure10, B._EmailTileBuilderState_build_closure11, B._EmailTileBuilderState__buildListActionButtonWhenHover_closure, B._EmailTileBuilderState__buildListActionButtonWhenHover_closure0, B._EmailTileBuilderState__buildListActionButtonWhenHover_closure1, B._EmailTileBuilderState__buildListActionButtonWhenHover_closure2, B.FilterMessageCupertinoActionSheetActionBuilder_build_closure, B._ScrollToTopButtonWidgetState__handleScroll_closure, B._ScrollToTopButtonWidgetState__handleScroll_closure0, B.SpamReportBannerWebWidget_build_closure, B.SpamReportBannerWebWidget_build__closure, B.SpamReportBannerWidget_build_closure, B.SpamReportBannerWidget_build__closure]);
     _inheritMany(A.Closure2Args, [B._ScrollingFloatingButtonAnimatedState_build_closure, B.PlatformSelectableRegionContextMenu__register_closure, B.ListAttachmentExtension_get_totalSize_closure0, B.ComposerView_build_closure0, B.ComposerView_build__closure5, B.ComposerView_build__closure8, B.ComposerView_build___closure21, B.ComposerView_build_closure1, B.ComposerView_build__closure1, B.DesktopResponsiveContainerView_build_closure, B.DesktopResponsiveContainerView_build_closure0, B.MobileResponsiveContainerView_build_closure, B.TabletResponsiveContainerView_build_closure, B._RecipientComposerWidgetState_build_closure, B._RecipientComposerWidgetState_build___closure9, B.EmailView_build___closure1, B.EmailView_build___closure2, B.EmailView_build__closure1, B.EmailView__buildEmailMessage__closure5, B.EmailView__buildEmailMessage__closure, B.EventBodyContentWidget_build_closure, B._EmailReceiverWidgetState__buildRecipientsTag_closure, B.EmailViewAppBarWidget_build_closure, B.InformationSenderAndReceiverBuilder_build_closure, B.MailboxView__buildListChildTileWidget___closure4, B.MailboxView__buildListChildTileWidget___closure0, B.MailboxDashBoardView__buildThreadViewForWebDesktop__closure, B.MailboxDashBoardView__buildDownloadTaskStateWidget__closure0, B.MailboxDashBoardView__buildDownloadTaskStateWidget__closure, B._TextFieldAutocompleteEmailAddressWebState_build_closure, B._TextFieldAutocompleteEmailAddressWebState_build__closure, B._TextFieldAutocompleteEmailAddressWebState_build____closure8, B.EmailQuickSearchItemTileWidget_build_closure, B.SearchInputFormWidget_build__closure4, B.SearchInputFormWidget_build__closure3, B.SearchInputFormWidget_build__closure2, B.QuotasView_build__closure, B.SearchEmailView__buildListRecentSearch_closure, B.SearchEmailView__buildListSuggestionSearch_closure, B.SearchEmailView__buildListContactSuggestionSearch_closure, B.SearchEmailView__buildListEmailBody_closure0, B.SearchEmailView__buildListEmailBody___closure, B.SearchEmailView__buildListEmailBody___closure0, B.SearchEmailView__buildListEmailBody_closure1, B.SearchMailboxView__buildMailboxListView__closure, B.SearchMailboxView__buildMailboxListView___closure, B.SearchMailboxView__buildMailboxListView____closure0, B.ThreadView_build__closure2, B.ThreadView__buildListEmailBody_closure, B.ThreadView__buildListEmailBody_closure0, B.ThreadView__buildEmailItemDraggable_closure1, B.ThreadView__buildEmailItemNotDraggable_closure, B.DefaultWebAppBarThreadWidget_build_closure, B._EmailTileBuilderState__buildSubjectAndContent_closure, B.ListUploadFileStateExtension_get_totalSize_closure0]);
     _inherit(B.QuickSearchInputForm, A.FormField);
-    _inheritMany(A.Closure, [B.QuickSearchInputForm_closure, B.QuickSearchInputForm__closure, B.QuickSearchSuggestionsBox__findRootMediaQuery_closure, B.QuickSearchSuggestionListState__getSuggestions_closure1, B.QuickSearchSuggestionListState__buildListActionWidget_closure, B.QuickSearchSuggestionListState__buildListViewRecentWidget_closure, B.QuickSearchSuggestionListState__buildListViewSuggestionWidget_closure, B.QuickSearchSuggestionListState__buildListViewContactWidget_closure, B._TypeAheadFieldQuickSearchState_initState_closure0, B._TypeAheadFieldQuickSearchState_initState_closure1, B._TypeAheadFieldQuickSearchState__scrollResizeListener_closure, B._TypeAheadFieldQuickSearchState__initOverlayEntry_closure, B._TypeAheadFieldQuickSearchState__initOverlayEntry__closure, B._TypeAheadFieldQuickSearchState__initOverlayEntry__closure0, B._TypeAheadFieldQuickSearchState__initOverlayEntry__closure1, B.MultiDragGestureRecognizer_acceptGesture_closure, B.PlatformSelectableRegionContextMenu__registerWebSelectionCallback_closure, B.PlatformSelectableRegionContextMenu__registerWebSelectionCallback__closure, B._DraggableState__startDrag_closure0, B._DraggableState__startDrag_closure1, B._DragAvatar_updateDrag_closure, B.SelectableRegionState_initState_closure0, B.SelectableRegionState_initState__closure, B.SelectableRegionState__initMouseGestureRecognizer_closure0, B.SelectableRegionState__initTouchGestureRecognizer_closure0, B.SelectableRegionState__triggerSelectionEndEdgeUpdate_closure, B.SelectableRegionState__onAnyDragEnd_closure, B.SelectableRegionState__triggerSelectionStartEdgeUpdate_closure, B._SelectableRegionContainerDelegate_didChangeSelectables_closure, B._SelectableRegionContainerDelegate_didChangeSelectables_closure0, B.ListAttachmentExtension_get_totalSize_closure, B.ListPresentationEmailExtension_get_isAllEmailRead_closure, B.ListPresentationEmailExtension_get_isAllEmailStarred_closure, B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure, B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure0, B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure1, B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure2, B.ListPresentationEmailExtension_isAllCanSpamAndMove_closure, B.ListPresentationEmailExtension_isAllCanSpamAndMove_closure0, B.ListPresentationEmailExtension_isAllSpam_closure, B.ListPresentationEmailExtension_isAllSpam_closure0, B.ListPresentationEmailExtension_isAllBelongToTheSameMailbox_closure, B.ListPresentationEmailExtension_listEmailCanSpam_closure, B.ComposerView_build___closure17, B.ComposerView_build____closure12, B.ComposerView_build____closure11, B.ComposerView_build____closure10, B.ComposerView_build____closure9, B.ComposerView_build_____closure8, B.ComposerView_build_____closure7, B.ComposerView_build_____closure6, B.ComposerView_build_____closure, B.ComposerView_build____closure8, B.ComposerView_build____closure7, B.ComposerView_build____closure6, B.ComposerView_build____closure, B.FromComposerDropDownWidgetStyle_menuIemStyleData_closure, B.WebEditorView_build_closure, B.WebEditorView_build_closure0, B.WebEditorView_build_closure1, B.WebEditorView_build_closure2, B.InsertImageLoadingBarWidget_build_closure, B.InsertImageLoadingBarWidget_build_closure0, B.InsertImageLoadingBarWidget__viewStateToUI_closure, B.InsertImageLoadingBarWidget__viewStateToUI_closure0, B._RecipientComposerWidgetState_build_closure0, B._RecipientComposerWidgetState_build__closure, B._RecipientComposerWidgetState_build___closure2, B._RecipientComposerWidgetState_build___closure4, B._RecipientComposerWidgetState_build___closure5, B._RecipientComposerWidgetState_build___closure7, B._RecipientComposerWidgetState_build____closure, B._RecipientComposerWidgetState_build___closure6, B._RecipientComposerWidgetState_build___closure8, B._RecipientComposerWidgetState_build____closure0, B._RecipientComposerWidgetState_build__closure0, B._RecipientComposerWidgetState_build__closure1, B._RecipientComposerWidgetState_build__closure2, B._RecipientComposerWidgetState__findSuggestions_closure, B._RecipientComposerWidgetState__isDuplicatedRecipient_closure, B._RecipientComposerWidgetState__matchedSuggestionEmailAddress_closure, B._RecipientComposerWidgetState__matchedSuggestionEmailAddress_closure0, B._AttachmentComposerWidgetState_build_closure, B._AttachmentComposerWidgetState_build_closure0, B.AttachmentDropZoneWidget_build_closure, B.AttachmentDropZoneWidget_build_closure0, B.FromComposerDropDownWidget_build_closure, B._WebEditorState_initState_closure, B._WebEditorState_build_closure, B._WebEditorState_build__closure, B.EmailView__buildEmailMessage__closure1, B.EmailView__buildEmailMessage__closure2, B.EmailView__buildEmailMessage__closure3, B.EmailView__buildEmailMessage__closure0, B.EmailView__emailActionMoreActionTile_closure, B.EmailView__emailActionMoreActionTile__closure, B.EmailView__popupMenuEmailActionTile_closure, B.CalendarEventExtension_findAttendeeHasUpdatedStatus_closure, B.CalendarEventExtension_get_videoConferences_closure, B.CalendarEventExtension_get_videoConferences_closure0, B.ListAttendeeExtension_withoutOrganizer_closure, B.CalendarEventActionButtonWidget_build_closure, B._EventAttendeeDetailWidgetState_build_closure, B.EventLinkDetailWidget_build_closure, B.EventLocationInformationWidget_build_closure, B.EmailAttachmentsWidget_build_closure, B.EmailViewAppBarWidget_build__closure4, B.EmailViewLoadingBarWidget_build_closure, B.EmailViewLoadingBarWidget_build_closure0, B.MailboxView__buildListMailbox__closure1, B.MailboxView__buildListMailbox__closure, B.MailboxView__buildListChildTileWidget_closure, B.MailboxView__buildListChildTileWidget___closure5, B.MailboxView__buildListChildTileWidget___closure3, B.MailboxView__buildListChildTileWidget___closure2, B.MailboxView__buildListChildTileWidget___closure1, B.MailboxView__buildListChildTileWidget___closure, B.MailboxLoadingBarWidget_build_closure, B.MailboxLoadingBarWidget_build_closure0, B.MailboxDashBoardView_build__closure0, B.MailboxDashBoardView__buildListButtonTopBar__closure0, B.MailboxDashBoardView__onSelectFilterMessageOptionAction_closure, B.MailboxDashBoardView_popupMenuEmailReceiveTimeType_closure, B.MailboxDashBoardView_popupMenuEmailSortOrderType_closure, B.MailboxDashBoardView__openPopupMenuDateFilter_closure, B.AdvancedSearchFilterFormBottomView__buildCheckboxHasAttachment__closure, B.AdvancedSearchFilterFormBottomView__buildButton_closure, B.AdvancedSearchInputForm_build_closure, B.AdvancedSearchInputForm_build_closure0, B.AdvancedSearchInputForm_build_closure1, B.AdvancedSearchInputForm__buildEmailReceiveTimeTypeActionTiles_closure, B.AdvancedSearchInputForm__buildFilterField__closure, B.AdvancedSearchInputForm__buildTextFieldFilterForWeb__closure, B.AdvancedSearchInputForm__buildTextField_closure0, B.AdvancedSearchInputForm__buildTextField_closure, B.DateDropDownButton_build_closure, B.DateDropDownButton_build_closure0, B.SortByDropDownButton_build_closure, B._TextFieldAutocompleteEmailAddressWebState_build___closure0, B._TextFieldAutocompleteEmailAddressWebState_build___closure1, B._TextFieldAutocompleteEmailAddressWebState_build___closure2, B._TextFieldAutocompleteEmailAddressWebState_build___closure, B._TextFieldAutocompleteEmailAddressWebState_build____closure2, B._TextFieldAutocompleteEmailAddressWebState_build____closure4, B._TextFieldAutocompleteEmailAddressWebState_build____closure5, B._TextFieldAutocompleteEmailAddressWebState_build_____closure, B._TextFieldAutocompleteEmailAddressWebState_build____closure6, B._TextFieldAutocompleteEmailAddressWebState_build____closure7, B._TextFieldAutocompleteEmailAddressWebState_build_____closure0, B._TextFieldAutocompleteEmailAddressWebState_build____closure3, B._TextFieldAutocompleteEmailAddressWebState__findSuggestions_closure, B._TextFieldAutocompleteEmailAddressWebState__isDuplicated_closure, B._TextFieldAutocompleteEmailAddressWebState__matchedSuggestionEmailAddress_closure, B._TextFieldAutocompleteEmailAddressWebState__matchedSuggestionEmailAddress_closure0, B.MarkMailboxAsReadLoadingBanner_build_closure, B.MarkMailboxAsReadLoadingBanner_build_closure0, B.FilterMessageButton_build_closure0, B.FilterMessageButton_build_closure1, B.SearchFilterButton_build_closure1, B.SearchFilterButton_build_closure2, B.SearchInputFormWidget_build__closure, B.SearchInputFormWidget_build__closure0, B.SearchInputFormWidget_build__closure1, B.SearchInputFormWidget_build__closure5, B.SearchInputFormWidget__createConfiguration_closure0, B.SearchInputFormWidget_buildListButtonForQuickSearchForm__closure, B.SearchEmailView_build_closure, B.SearchEmailView__buildSearchInputForm_closure0, B.SearchEmailView__buildSearchFilterButton__closure, B.SearchEmailView__openPopupMenuDateFilter_closure, B.SearchEmailView__openContextMenuDateFilter_closure, B.SearchEmailView__popupMenuEmailReceiveTimeType_closure, B.SearchEmailView__emailReceiveTimeCupertinoActionTile_closure, B.SearchEmailView__emailReceiveTimeCupertinoActionTile__closure, B.SearchEmailView__popupMenuEmailSortOrderType_closure, B.SearchEmailView__emailSortOrderCupertinoActionTitle_closure, B.SearchEmailView__emailSortOrderCupertinoActionTitle__closure, B.SearchEmailView__buildListEmailBody_closure, B.SearchEmailView__markAsEmailSpamOrUnSpamAction_closure, B.SearchEmailView__buildLoadingViewLoadMore__closure, B.SearchEmailView__buildLoadingViewLoadMore__closure0, B.EmptySearchEmailWidget_build_closure, B.EmptySearchEmailWidget_build_closure0, B.EmptySearchEmailWidget__suggestionViewStateToUI_closure, B.EmptySearchEmailWidget__suggestionViewStateToUI_closure0, B.SearchEmailLoadingBarWidget_build_closure, B.SearchEmailLoadingBarWidget_build_closure0, B.SearchEmailLoadingBarWidget__suggestionViewStateToUI_closure, B.SearchEmailLoadingBarWidget__suggestionViewStateToUI_closure0, B.SearchMailboxView__buildLoadingView__closure, B.SearchMailboxView__buildLoadingView__closure0, B.SearchMailboxView__buildTextFieldSearchInput_closure, B.SearchMailboxView__buildMailboxListView____closure, B.SearchMailboxView__listPopupMenuItemAction_closure, B._MailboxSearchedItemBuilderState_build_closure, B._MailboxSearchedItemBuilderState_build_closure0, B._MailboxSearchedItemBuilderState__buildMailboxItem_closure, B._MailboxSearchedItemBuilderState__buildMenuIcon_closure, B.ThreadView_build__closure1, B.ThreadView__filterMessagesCupertinoActionTile_closure, B.ThreadView__buildEmailItemDraggable_closure2, B.ThreadView__buildEmailItemDraggable_closure3, B.ThreadView__buildEmailItemDraggable_closure, B.ThreadView__buildEmailItemNotDraggable_closure0, B.ThreadView__buildEmptyEmail__closure, B.ThreadView__buildEmptyEmail__closure0, B.ThreadView__markAsEmailSpamOrUnSpamContextMenuItemAction_closure, B.ThreadView__openInNewTabContextMenuItemAction_closure, B.ThreadView__archiveMessageContextMenuItemAction_closure, B.ThreadView__buildMarkAsMailboxReadLoading__closure, B.ThreadView__buildMarkAsMailboxReadLoading__closure0, B.DefaultWebAppBarThreadWidget_build__closure, B._EmailTileBuilderState_build_closure6, B._EmailTileBuilderState_build_closure2, B._EmailTileBuilderState_build_closure4, B._EmailTileBuilderState_build_closure5, B._EmailTileBuilderState_build_closure13, B._EmailTileBuilderState_build_closure8, B._EmailTileBuilderState_build_closure12, B._EmailTileBuilderState__buildListActionButtonWhenHover_closure3, B.ThreadViewLoadingBarWidget_build_closure, B.ThreadViewLoadingBarWidget_build_closure0, B.ListUploadFileStateExtension_get_totalSize_closure]);
+    _inheritMany(A.Closure, [B.QuickSearchInputForm_closure, B.QuickSearchInputForm__closure, B.QuickSearchSuggestionsBox__findRootMediaQuery_closure, B.QuickSearchSuggestionListState__getSuggestions_closure1, B.QuickSearchSuggestionListState__buildListActionWidget_closure, B.QuickSearchSuggestionListState__buildListViewRecentWidget_closure, B.QuickSearchSuggestionListState__buildListViewSuggestionWidget_closure, B.QuickSearchSuggestionListState__buildListViewContactWidget_closure, B._TypeAheadFieldQuickSearchState_initState_closure0, B._TypeAheadFieldQuickSearchState_initState_closure1, B._TypeAheadFieldQuickSearchState__scrollResizeListener_closure, B._TypeAheadFieldQuickSearchState__initOverlayEntry_closure, B._TypeAheadFieldQuickSearchState__initOverlayEntry__closure, B._TypeAheadFieldQuickSearchState__initOverlayEntry__closure0, B._TypeAheadFieldQuickSearchState__initOverlayEntry__closure1, B._RichTextBuilderState_build_closure, B.MultiDragGestureRecognizer_acceptGesture_closure, B.PlatformSelectableRegionContextMenu__registerWebSelectionCallback_closure, B.PlatformSelectableRegionContextMenu__registerWebSelectionCallback__closure, B._DraggableState__startDrag_closure0, B._DraggableState__startDrag_closure1, B._DragAvatar_updateDrag_closure, B.SelectableRegionState_initState_closure0, B.SelectableRegionState_initState__closure, B.SelectableRegionState__initMouseGestureRecognizer_closure0, B.SelectableRegionState__initTouchGestureRecognizer_closure0, B.SelectableRegionState__triggerSelectionEndEdgeUpdate_closure, B.SelectableRegionState__onAnyDragEnd_closure, B.SelectableRegionState__triggerSelectionStartEdgeUpdate_closure, B._SelectableRegionContainerDelegate_didChangeSelectables_closure, B._SelectableRegionContainerDelegate_didChangeSelectables_closure0, B.ListAttachmentExtension_get_totalSize_closure, B.ListPresentationEmailExtension_get_isAllEmailRead_closure, B.ListPresentationEmailExtension_get_isAllEmailStarred_closure, B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure, B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure0, B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure1, B.ListPresentationEmailExtension_isAllCanDeletePermanently_closure2, B.ListPresentationEmailExtension_isAllCanSpamAndMove_closure, B.ListPresentationEmailExtension_isAllCanSpamAndMove_closure0, B.ListPresentationEmailExtension_isAllSpam_closure, B.ListPresentationEmailExtension_isAllSpam_closure0, B.ListPresentationEmailExtension_isAllBelongToTheSameMailbox_closure, B.ListPresentationEmailExtension_listEmailCanSpam_closure, B.ComposerView_build___closure17, B.ComposerView_build____closure12, B.ComposerView_build____closure11, B.ComposerView_build____closure10, B.ComposerView_build____closure9, B.ComposerView_build_____closure8, B.ComposerView_build_____closure7, B.ComposerView_build_____closure6, B.ComposerView_build_____closure, B.ComposerView_build____closure8, B.ComposerView_build____closure7, B.ComposerView_build____closure6, B.ComposerView_build____closure, B.FromComposerDropDownWidgetStyle_menuIemStyleData_closure, B.WebEditorView_build_closure, B.WebEditorView_build_closure0, B.WebEditorView_build_closure1, B.WebEditorView_build_closure2, B.InsertImageLoadingBarWidget_build_closure, B.InsertImageLoadingBarWidget_build_closure0, B.InsertImageLoadingBarWidget__viewStateToUI_closure, B.InsertImageLoadingBarWidget__viewStateToUI_closure0, B._RecipientComposerWidgetState_build_closure0, B._RecipientComposerWidgetState_build__closure, B._RecipientComposerWidgetState_build___closure2, B._RecipientComposerWidgetState_build___closure4, B._RecipientComposerWidgetState_build___closure5, B._RecipientComposerWidgetState_build___closure7, B._RecipientComposerWidgetState_build____closure, B._RecipientComposerWidgetState_build___closure6, B._RecipientComposerWidgetState_build___closure8, B._RecipientComposerWidgetState_build____closure0, B._RecipientComposerWidgetState_build__closure0, B._RecipientComposerWidgetState_build__closure1, B._RecipientComposerWidgetState_build__closure2, B._RecipientComposerWidgetState__findSuggestions_closure, B._RecipientComposerWidgetState__isDuplicatedRecipient_closure, B._RecipientComposerWidgetState__matchedSuggestionEmailAddress_closure, B._RecipientComposerWidgetState__matchedSuggestionEmailAddress_closure0, B._AttachmentComposerWidgetState_build_closure, B._AttachmentComposerWidgetState_build_closure0, B.AttachmentDropZoneWidget_build_closure, B.AttachmentDropZoneWidget_build_closure0, B.FromComposerDropDownWidget_build_closure, B._WebEditorState_initState_closure, B._WebEditorState_build_closure, B._WebEditorState_build__closure, B.EmailView__buildEmailMessage__closure1, B.EmailView__buildEmailMessage__closure2, B.EmailView__buildEmailMessage__closure3, B.EmailView__buildEmailMessage__closure0, B.EmailView__emailActionMoreActionTile_closure, B.EmailView__emailActionMoreActionTile__closure, B.EmailView__popupMenuEmailActionTile_closure, B.CalendarEventExtension_findAttendeeHasUpdatedStatus_closure, B.CalendarEventExtension_get_videoConferences_closure, B.CalendarEventExtension_get_videoConferences_closure0, B.ListAttendeeExtension_withoutOrganizer_closure, B.CalendarEventActionButtonWidget_build_closure, B._EventAttendeeDetailWidgetState_build_closure, B.EventLinkDetailWidget_build_closure, B.EventLocationInformationWidget_build_closure, B.EmailAttachmentsWidget_build_closure, B.EmailViewAppBarWidget_build__closure4, B.EmailViewLoadingBarWidget_build_closure, B.EmailViewLoadingBarWidget_build_closure0, B.MailboxView__buildListMailbox__closure1, B.MailboxView__buildListMailbox__closure, B.MailboxView__buildListChildTileWidget_closure, B.MailboxView__buildListChildTileWidget___closure5, B.MailboxView__buildListChildTileWidget___closure3, B.MailboxView__buildListChildTileWidget___closure2, B.MailboxView__buildListChildTileWidget___closure1, B.MailboxView__buildListChildTileWidget___closure, B.MailboxLoadingBarWidget_build_closure, B.MailboxLoadingBarWidget_build_closure0, B.MailboxDashBoardView_build__closure0, B.MailboxDashBoardView__buildListButtonTopBar__closure0, B.MailboxDashBoardView__onSelectFilterMessageOptionAction_closure, B.MailboxDashBoardView_popupMenuEmailReceiveTimeType_closure, B.MailboxDashBoardView_popupMenuEmailSortOrderType_closure, B.MailboxDashBoardView__openPopupMenuDateFilter_closure, B.AdvancedSearchFilterFormBottomView__buildCheckboxHasAttachment__closure, B.AdvancedSearchFilterFormBottomView__buildButton_closure, B.AdvancedSearchInputForm_build_closure, B.AdvancedSearchInputForm_build_closure0, B.AdvancedSearchInputForm_build_closure1, B.AdvancedSearchInputForm__buildEmailReceiveTimeTypeActionTiles_closure, B.AdvancedSearchInputForm__buildFilterField__closure, B.AdvancedSearchInputForm__buildTextFieldFilterForWeb__closure, B.AdvancedSearchInputForm__buildTextField_closure0, B.AdvancedSearchInputForm__buildTextField_closure, B.DateDropDownButton_build_closure, B.DateDropDownButton_build_closure0, B.SortByDropDownButton_build_closure, B._TextFieldAutocompleteEmailAddressWebState_build___closure0, B._TextFieldAutocompleteEmailAddressWebState_build___closure1, B._TextFieldAutocompleteEmailAddressWebState_build___closure2, B._TextFieldAutocompleteEmailAddressWebState_build___closure, B._TextFieldAutocompleteEmailAddressWebState_build____closure2, B._TextFieldAutocompleteEmailAddressWebState_build____closure4, B._TextFieldAutocompleteEmailAddressWebState_build____closure5, B._TextFieldAutocompleteEmailAddressWebState_build_____closure, B._TextFieldAutocompleteEmailAddressWebState_build____closure6, B._TextFieldAutocompleteEmailAddressWebState_build____closure7, B._TextFieldAutocompleteEmailAddressWebState_build_____closure0, B._TextFieldAutocompleteEmailAddressWebState_build____closure3, B._TextFieldAutocompleteEmailAddressWebState__findSuggestions_closure, B._TextFieldAutocompleteEmailAddressWebState__isDuplicated_closure, B._TextFieldAutocompleteEmailAddressWebState__matchedSuggestionEmailAddress_closure, B._TextFieldAutocompleteEmailAddressWebState__matchedSuggestionEmailAddress_closure0, B.MarkMailboxAsReadLoadingBanner_build_closure, B.MarkMailboxAsReadLoadingBanner_build_closure0, B.FilterMessageButton_build_closure0, B.FilterMessageButton_build_closure1, B.SearchFilterButton_build_closure1, B.SearchFilterButton_build_closure2, B.SearchInputFormWidget_build__closure, B.SearchInputFormWidget_build__closure0, B.SearchInputFormWidget_build__closure1, B.SearchInputFormWidget_build__closure5, B.SearchInputFormWidget__createConfiguration_closure0, B.SearchInputFormWidget_buildListButtonForQuickSearchForm__closure, B.SearchEmailView_build_closure, B.SearchEmailView__buildSearchInputForm_closure0, B.SearchEmailView__buildSearchFilterButton__closure, B.SearchEmailView__openPopupMenuDateFilter_closure, B.SearchEmailView__openContextMenuDateFilter_closure, B.SearchEmailView__popupMenuEmailReceiveTimeType_closure, B.SearchEmailView__emailReceiveTimeCupertinoActionTile_closure, B.SearchEmailView__emailReceiveTimeCupertinoActionTile__closure, B.SearchEmailView__popupMenuEmailSortOrderType_closure, B.SearchEmailView__emailSortOrderCupertinoActionTitle_closure, B.SearchEmailView__emailSortOrderCupertinoActionTitle__closure, B.SearchEmailView__buildListEmailBody_closure, B.SearchEmailView__markAsEmailSpamOrUnSpamAction_closure, B.SearchEmailView__buildLoadingViewLoadMore__closure, B.SearchEmailView__buildLoadingViewLoadMore__closure0, B.EmptySearchEmailWidget_build_closure, B.EmptySearchEmailWidget_build_closure0, B.EmptySearchEmailWidget__suggestionViewStateToUI_closure, B.EmptySearchEmailWidget__suggestionViewStateToUI_closure0, B.SearchEmailLoadingBarWidget_build_closure, B.SearchEmailLoadingBarWidget_build_closure0, B.SearchEmailLoadingBarWidget__suggestionViewStateToUI_closure, B.SearchEmailLoadingBarWidget__suggestionViewStateToUI_closure0, B.SearchMailboxView__buildLoadingView__closure, B.SearchMailboxView__buildLoadingView__closure0, B.SearchMailboxView__buildTextFieldSearchInput_closure, B.SearchMailboxView__buildMailboxListView____closure, B.SearchMailboxView__listPopupMenuItemAction_closure, B._MailboxSearchedItemBuilderState_build_closure, B._MailboxSearchedItemBuilderState_build_closure0, B._MailboxSearchedItemBuilderState__buildMailboxItem_closure, B._MailboxSearchedItemBuilderState__buildMenuIcon_closure, B.ThreadView_build__closure1, B.ThreadView__filterMessagesCupertinoActionTile_closure, B.ThreadView__buildEmailItemDraggable_closure2, B.ThreadView__buildEmailItemDraggable_closure3, B.ThreadView__buildEmailItemDraggable_closure, B.ThreadView__buildEmailItemNotDraggable_closure0, B.ThreadView__buildEmptyEmail__closure, B.ThreadView__buildEmptyEmail__closure0, B.ThreadView__markAsEmailSpamOrUnSpamContextMenuItemAction_closure, B.ThreadView__openInNewTabContextMenuItemAction_closure, B.ThreadView__archiveMessageContextMenuItemAction_closure, B.ThreadView__buildMarkAsMailboxReadLoading__closure, B.ThreadView__buildMarkAsMailboxReadLoading__closure0, B.DefaultWebAppBarThreadWidget_build__closure, B._EmailTileBuilderState_build_closure6, B._EmailTileBuilderState_build_closure2, B._EmailTileBuilderState_build_closure4, B._EmailTileBuilderState_build_closure5, B._EmailTileBuilderState_build_closure13, B._EmailTileBuilderState_build_closure8, B._EmailTileBuilderState_build_closure12, B._EmailTileBuilderState__buildListActionButtonWhenHover_closure3, B.ThreadViewLoadingBarWidget_build_closure, B.ThreadViewLoadingBarWidget_build_closure0, B.ListUploadFileStateExtension_get_totalSize_closure]);
     _inherit(B._QuickSearchInputFormFormFieldState, A.FormFieldState);
     _inherit(B.QuickSearchSuggestionListState, B._QuickSearchSuggestionListState_State_SingleTickerProviderStateMixin);
     _inherit(B._TypeAheadFieldQuickSearchState, B.__TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver);
-    _inheritMany(A.StatelessWidget, [B.RichTextBuilder, B.Drawer, B.PlatformSelectableRegionContextMenu, B.Linkify, B.ComposeFloatingButton, B.EmailAvatarBuilder, B.HyperLinkWidget, B.PopupItemNoIconWidget, B.DesktopResponsiveContainerView, B.MobileResponsiveContainerView, B.TabletResponsiveContainerView, B._WebEditorView_StatelessWidget_EditorViewMixin, B.AttachmentHeaderComposerWidget, B._AttachmentItemComposerWidget_StatelessWidget_AppLoaderMixin, B.AttachmentProgressLoadingComposerWidget, B.DraggableRecipientTagWidget, B.InsertImageLoadingBarWidget, B.FromComposerMobileWidget, B.RecipientSuggestionItemWidget, B.RecipientTagItemWidget, B.SubjectComposerWidget, B.TitleComposerWidget, B.AttachmentDropZoneWidget, B.BottomBarComposerWidget, B.DesktopAppBarComposerWidget, B.FromComposerDropDownWidget, B.MinimizeComposerWidget, B.MobileResponsiveAppBarComposerWidget, B.AttachmentItemWidget, B.AttendeeWidget, B.CalendarDateIconWidget, B.CalendarEventActionBannerWidget, B.CalendarEventActionButtonWidget, B.CalendarEventDetailWidget, B.CalendarEventInformationWidget, B.EventBodyContentWidget, B.EventLinkDetailWidget, B.EventLocationInformationWidget, B.EventTimeInformationWidget, B.EventTitleWidget, B.HideAllAttendeesButtonWidget, B.OrganizerWidget, B.SeeAllAttendeesButtonWidget, B.DraggableAttachmentItemWidget, B.EmailAttachmentsWidget, B.EmailSenderBuilder, B.EmailSubjectWidget, B.EmailViewAppBarWidget, B.EmailViewBackButton, B.EmailViewBottomBarWidget, B.EmailViewEmptyWidget, B.EmailViewLoadingBarWidget, B.FeedbackDraggableAttachmentItemWidget, B.InformationSenderAndReceiverBuilder, B.MailUnsubscribedBanner, B.PrefixRecipientWidget, B.ReceivedTimeBuilder, B.MailboxLoadingBarWidget, B.AdvancedSearchFilterOverlay, B.AutoCompleteSuggestionItemWidgetWeb, B.AutoCompleteTagItemWidgetWeb, B.AvatarSuggestionItemWidget, B.AvatarTagItemWidget, B.DateDropDownButton, B.IconOpenAdvancedSearchWidget, B.SortByDropDownButton, B.DownloadTaskItemWidget, B._MarkMailboxAsReadLoadingBanner_StatelessWidget_AppLoaderMixin, B.ContactQuickSearchItem, B.EmailQuickSearchItemTileWidget, B.RecentSearchItemTileWidget, B.RecoverDeletedMessageLoadingBannerWidget, B.FilterMessageButton, B.SearchFilterButton, B._SearchInputFormWidget_StatelessWidget_AppLoaderMixin, B.TopBarThreadSelection, B.QuotasBannerWidget, B.AppBarSelectionMode, B.EmailReceiveTimeActionTileWidget, B.EmailSortByActionTitleWidget, B.EmptySearchEmailWidget, B._SearchEmailLoadingBarWidget_StatelessWidget_AppLoaderMixin, B.AppBarThreadWidget, B.DefaultWebAppBarThreadWidget, B.SelectionWebAppBarThreadWidget, B.WebAppBarThreadWidget, B.BannerDeleteAllSpamEmailsWidget, B.BannerEmptyTrashWidget, B.BottomBarThreadSelectionWidget, B.EmptyEmailsWidget, B.SpamReportBannerButtonWidget, B.SpamReportBannerLabelWidget, B.SpamReportBannerWebWidget, B.SpamReportBannerWidget, B.ThreadViewLoadingBarWidget]);
+    _inherit(B._RichTextBuilderState, B.__RichTextBuilderState_State_AutomaticKeepAliveClientMixin);
     _inherit(B.MultiDragGestureRecognizer, A.GestureRecognizer);
     _inheritMany(B.MultiDragPointerState, [B._ImmediatePointerState, B._HorizontalPointerState, B._VerticalPointerState]);
     _inheritMany(B.MultiDragGestureRecognizer, [B.ImmediateMultiDragGestureRecognizer, B.HorizontalMultiDragGestureRecognizer, B.VerticalMultiDragGestureRecognizer]);
+    _inheritMany(A.StatelessWidget, [B.Drawer, B.PlatformSelectableRegionContextMenu, B.Linkify, B.ComposeFloatingButton, B.EmailAvatarBuilder, B.HyperLinkWidget, B.PopupItemNoIconWidget, B.DesktopResponsiveContainerView, B.MobileResponsiveContainerView, B.TabletResponsiveContainerView, B._WebEditorView_StatelessWidget_EditorViewMixin, B.AttachmentHeaderComposerWidget, B._AttachmentItemComposerWidget_StatelessWidget_AppLoaderMixin, B.AttachmentProgressLoadingComposerWidget, B.DraggableRecipientTagWidget, B.InsertImageLoadingBarWidget, B.FromComposerMobileWidget, B.RecipientSuggestionItemWidget, B.RecipientTagItemWidget, B.SubjectComposerWidget, B.TitleComposerWidget, B.AttachmentDropZoneWidget, B.BottomBarComposerWidget, B.DesktopAppBarComposerWidget, B.FromComposerDropDownWidget, B.MinimizeComposerWidget, B.MobileResponsiveAppBarComposerWidget, B.AttachmentItemWidget, B.AttendeeWidget, B.CalendarDateIconWidget, B.CalendarEventActionBannerWidget, B.CalendarEventActionButtonWidget, B.CalendarEventDetailWidget, B.CalendarEventInformationWidget, B.EventBodyContentWidget, B.EventLinkDetailWidget, B.EventLocationInformationWidget, B.EventTimeInformationWidget, B.EventTitleWidget, B.HideAllAttendeesButtonWidget, B.OrganizerWidget, B.SeeAllAttendeesButtonWidget, B.DraggableAttachmentItemWidget, B.EmailAttachmentsWidget, B.EmailSenderBuilder, B.EmailSubjectWidget, B.EmailViewAppBarWidget, B.EmailViewBackButton, B.EmailViewBottomBarWidget, B.EmailViewEmptyWidget, B.EmailViewLoadingBarWidget, B.FeedbackDraggableAttachmentItemWidget, B.InformationSenderAndReceiverBuilder, B.MailUnsubscribedBanner, B.PrefixRecipientWidget, B.ReceivedTimeBuilder, B.MailboxLoadingBarWidget, B.AdvancedSearchFilterOverlay, B.AutoCompleteSuggestionItemWidgetWeb, B.AutoCompleteTagItemWidgetWeb, B.AvatarSuggestionItemWidget, B.AvatarTagItemWidget, B.DateDropDownButton, B.IconOpenAdvancedSearchWidget, B.SortByDropDownButton, B.DownloadTaskItemWidget, B._MarkMailboxAsReadLoadingBanner_StatelessWidget_AppLoaderMixin, B.ContactQuickSearchItem, B.EmailQuickSearchItemTileWidget, B.RecentSearchItemTileWidget, B.RecoverDeletedMessageLoadingBannerWidget, B.FilterMessageButton, B.SearchFilterButton, B._SearchInputFormWidget_StatelessWidget_AppLoaderMixin, B.TopBarThreadSelection, B.QuotasBannerWidget, B.AppBarSelectionMode, B.EmailReceiveTimeActionTileWidget, B.EmailSortByActionTitleWidget, B.EmptySearchEmailWidget, B._SearchEmailLoadingBarWidget_StatelessWidget_AppLoaderMixin, B.AppBarThreadWidget, B.DefaultWebAppBarThreadWidget, B.SelectionWebAppBarThreadWidget, B.WebAppBarThreadWidget, B.BannerDeleteAllSpamEmailsWidget, B.BannerEmptyTrashWidget, B.BottomBarThreadSelectionWidget, B.EmptyEmailsWidget, B.SpamReportBannerButtonWidget, B.SpamReportBannerLabelWidget, B.SpamReportBannerWebWidget, B.SpamReportBannerWidget, B.ThreadViewLoadingBarWidget]);
     _inherit(B._DrawerDefaultsM3, A.DrawerThemeData);
     _inheritMany(A.SelectionEvent, [B.SelectAllSelectionEvent, B.SelectWordSelectionEvent, B.GranularlyExtendSelectionEvent, B.DirectionallyExtendSelectionEvent]);
     _inherit(B._DragAvatar, B.Drag);
@@ -21254,6 +21415,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _mixinHard(B.__ScrollingFloatingButtonAnimatedState_State_SingleTickerProviderStateMixin, A.SingleTickerProviderStateMixin);
     _mixinHard(B._QuickSearchSuggestionListState_State_SingleTickerProviderStateMixin, A.SingleTickerProviderStateMixin);
     _mixin(B.__TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver, A.WidgetsBindingObserver);
+    _mixinHard(B.__RichTextBuilderState_State_AutomaticKeepAliveClientMixin, A.AutomaticKeepAliveClientMixin);
     _mixin(B._SelectableRegionState_State_TextSelectionDelegate, A.TextSelectionDelegate);
     _mixin(B._DraggableEmailAddress_Object_EquatableMixin, A.EquatableMixin);
     _mixin(B._WebEditorView_StatelessWidget_EditorViewMixin, B.EditorViewMixin);
@@ -21274,7 +21436,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _mixin(B._ThreadView_GetWidget_AppLoaderMixin_FilterEmailPopupMenuMixin_PopupMenuWidgetMixin, F.PopupMenuWidgetMixin);
     _mixin(B.__EmailTileBuilderState_State_BaseEmailItemTile, B.BaseEmailItemTile);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"ScrollingFloatingButtonAnimated":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ScrollingFloatingButtonAnimatedState":{"State0":["ScrollingFloatingButtonAnimated"]},"QuickSearchInputForm":{"FormField":["String"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[],"FormField.T":"String"},"_QuickSearchInputFormFormFieldState":{"FormFieldState":["String"],"State0":["FormField<String>"]},"QuickSearchSuggestionList":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"QuickSearchSuggestionListState":{"State0":["QuickSearchSuggestionList<1,2,3>"]},"TypeAheadFieldQuickSearch":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_TypeAheadFieldQuickSearchState":{"State0":["TypeAheadFieldQuickSearch<1,2,3>"],"WidgetsBindingObserver":[]},"RichTextBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_ImmediatePointerState":{"MultiDragPointerState":[]},"ImmediateMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_HorizontalPointerState":{"MultiDragPointerState":[]},"HorizontalMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_VerticalPointerState":{"MultiDragPointerState":[]},"VerticalMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"Drawer":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SelectionArea":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SelectionAreaState":{"State0":["SelectionArea"]},"PlatformSelectableRegionContextMenu":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Draggable":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_DraggableState":{"State0":["Draggable<1>"]},"NeverScrollableScrollPhysics":{"ScrollPhysics":[]},"SelectableRegion":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"SelectableRegionState":{"State0":["SelectableRegion"]},"_NonOverrideAction":{"ContextAction":["1"],"Action":["1"]},"_SelectAllAction0":{"ContextAction":["SelectAllTextIntent"],"Action":["SelectAllTextIntent"],"Action.T":"SelectAllTextIntent","ContextAction.T":"SelectAllTextIntent"},"_CopySelectionAction0":{"ContextAction":["CopySelectionTextIntent"],"Action":["CopySelectionTextIntent"],"Action.T":"CopySelectionTextIntent","ContextAction.T":"CopySelectionTextIntent"},"_GranularlyExtendSelectionAction":{"ContextAction":["1"],"Action":["1"],"Action.T":"1","ContextAction.T":"1"},"_GranularlyExtendCaretSelectionAction":{"ContextAction":["1"],"Action":["1"],"Action.T":"1","ContextAction.T":"1"},"_DirectionallyExtendCaretSelectionAction":{"ContextAction":["1"],"Action":["1"],"Action.T":"1","ContextAction.T":"1"},"_SelectableRegionContainerDelegate":{"Listenable":[]},"Linkify":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ComposeFloatingButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailAvatarBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"HyperLinkWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PopupItemNoIconWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ComposerView":{"GetWidget":["ComposerController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ComposerController"},"DraggableEmailAddress":{"EquatableMixin":[]},"DesktopResponsiveContainerView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MobileResponsiveContainerView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TabletResponsiveContainerView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"WebEditorView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentHeaderComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentItemComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentProgressLoadingComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DraggableRecipientTagWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"InsertImageLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FromComposerMobileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecipientComposerWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RecipientComposerWidgetState":{"State0":["RecipientComposerWidget"]},"RecipientSuggestionItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecipientTagItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SubjectComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TitleComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentComposerWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AttachmentComposerWidgetState":{"State0":["AttachmentComposerWidget"]},"AttachmentDropZoneWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BottomBarComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DesktopAppBarComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FromComposerDropDownWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MinimizeComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MobileResponsiveAppBarComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"WebEditorWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_WebEditorState":{"State0":["WebEditorWidget"]},"EmailView":{"GetWidget":["SingleEmailController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SingleEmailController"},"AttachmentItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttendeeWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarDateIconWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarEventActionBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarEventActionButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarEventDetailWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarEventInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventAttendeeDetailWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_EventAttendeeDetailWidgetState":{"State0":["EventAttendeeDetailWidget"]},"EventBodyContentWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventLinkDetailWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventLocationInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventTimeInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventTitleWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"HideAllAttendeesButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"OrganizerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SeeAllAttendeesButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DraggableAttachmentItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailAttachmentsWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailReceiverWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_EmailReceiverWidgetState":{"State0":["EmailReceiverWidget"]},"EmailSenderBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailSubjectWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewAppBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewBackButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewBottomBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewEmptyWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FeedbackDraggableAttachmentItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"InformationSenderAndReceiverBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MailUnsubscribedBanner":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PrefixRecipientWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ReceivedTimeBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BaseMailboxView":{"GetWidget":["MailboxController"],"Widget":[],"DiagnosticableTree":[]},"MailboxView":{"GetWidget":["MailboxController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxController"},"MailboxLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FilterMessageAction":{"UIAction":[],"EquatableMixin":[]},"HandleEmailActionTypeAction":{"UIAction":[],"EquatableMixin":[]},"OpenEmailDetailedFromSuggestionQuickSearchAction":{"UIAction":[],"EquatableMixin":[]},"BaseMailboxDashBoardView":{"GetWidget":["MailboxDashBoardController"],"Widget":[],"DiagnosticableTree":[]},"MailboxDashBoardView":{"GetWidget":["MailboxDashBoardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxDashBoardController"},"AdvancedSearchFilterFormBottomView":{"GetWidget":["AdvancedFilterController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"AdvancedFilterController"},"AdvancedSearchFilterOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AdvancedSearchInputForm":{"GetWidget":["AdvancedFilterController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"AdvancedFilterController"},"AutoCompleteSuggestionItemWidgetWeb":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AutoCompleteTagItemWidgetWeb":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AvatarSuggestionItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AvatarTagItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DateDropDownButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IconOpenAdvancedSearchWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SortByDropDownButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TextFieldAutocompleteEmailAddressWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_TextFieldAutocompleteEmailAddressWebState":{"State0":["TextFieldAutocompleteEmailAddressWeb"]},"DownloadTaskItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MarkMailboxAsReadLoadingBanner":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ContactQuickSearchItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailQuickSearchItemTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecentSearchItemTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecoverDeletedMessageLoadingBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FilterMessageButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchFilterButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchInputFormWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TopBarThreadSelection":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"QuotasView":{"GetWidget":["QuotasController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"QuotasController"},"QuotasBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchEmailView":{"GetWidget":["SearchEmailController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SearchEmailController"},"AppBarSelectionMode":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailReceiveTimeActionTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailSortByActionTitleWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmptySearchEmailWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchEmailLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchMailboxView":{"GetWidget":["SearchMailboxController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SearchMailboxController"},"MailboxSearchedItemBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_MailboxSearchedItemBuilderState":{"State0":["MailboxSearchedItemBuilder"]},"ThreadView":{"GetWidget":["ThreadController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ThreadController"},"AppBarThreadWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DefaultWebAppBarThreadWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SelectionWebAppBarThreadWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"WebAppBarThreadWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BannerDeleteAllSpamEmailsWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BannerEmptyTrashWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BottomBarThreadSelectionWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailTileBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_EmailTileBuilderState":{"State0":["EmailTileBuilder"]},"EmptyEmailsWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ScrollToTopButtonWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ScrollToTopButtonWidgetState":{"State0":["ScrollToTopButtonWidget"]},"SpamReportBannerButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SpamReportBannerLabelWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SpamReportBannerWebWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SpamReportBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ThreadViewLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"ScrollingFloatingButtonAnimated":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ScrollingFloatingButtonAnimatedState":{"State0":["ScrollingFloatingButtonAnimated"]},"QuickSearchInputForm":{"FormField":["String"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[],"FormField.T":"String"},"_QuickSearchInputFormFormFieldState":{"FormFieldState":["String"],"State0":["FormField<String>"]},"QuickSearchSuggestionList":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"QuickSearchSuggestionListState":{"State0":["QuickSearchSuggestionList<1,2,3>"]},"TypeAheadFieldQuickSearch":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_TypeAheadFieldQuickSearchState":{"State0":["TypeAheadFieldQuickSearch<1,2,3>"],"WidgetsBindingObserver":[]},"RichTextBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RichTextBuilderState":{"State0":["RichTextBuilder"]},"MultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_ImmediatePointerState":{"MultiDragPointerState":[]},"ImmediateMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_HorizontalPointerState":{"MultiDragPointerState":[]},"HorizontalMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_VerticalPointerState":{"MultiDragPointerState":[]},"VerticalMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"Drawer":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SelectionArea":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SelectionAreaState":{"State0":["SelectionArea"]},"PlatformSelectableRegionContextMenu":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Draggable":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_DraggableState":{"State0":["Draggable<1>"]},"NeverScrollableScrollPhysics":{"ScrollPhysics":[]},"SelectableRegion":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"SelectableRegionState":{"State0":["SelectableRegion"]},"_NonOverrideAction":{"ContextAction":["1"],"Action":["1"]},"_SelectAllAction0":{"ContextAction":["SelectAllTextIntent"],"Action":["SelectAllTextIntent"],"Action.T":"SelectAllTextIntent","ContextAction.T":"SelectAllTextIntent"},"_CopySelectionAction0":{"ContextAction":["CopySelectionTextIntent"],"Action":["CopySelectionTextIntent"],"Action.T":"CopySelectionTextIntent","ContextAction.T":"CopySelectionTextIntent"},"_GranularlyExtendSelectionAction":{"ContextAction":["1"],"Action":["1"],"Action.T":"1","ContextAction.T":"1"},"_GranularlyExtendCaretSelectionAction":{"ContextAction":["1"],"Action":["1"],"Action.T":"1","ContextAction.T":"1"},"_DirectionallyExtendCaretSelectionAction":{"ContextAction":["1"],"Action":["1"],"Action.T":"1","ContextAction.T":"1"},"_SelectableRegionContainerDelegate":{"Listenable":[]},"Linkify":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ComposeFloatingButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailAvatarBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"HyperLinkWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PopupItemNoIconWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ComposerView":{"GetWidget":["ComposerController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ComposerController"},"DraggableEmailAddress":{"EquatableMixin":[]},"DesktopResponsiveContainerView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MobileResponsiveContainerView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TabletResponsiveContainerView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"WebEditorView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentHeaderComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentItemComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentProgressLoadingComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DraggableRecipientTagWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"InsertImageLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FromComposerMobileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecipientComposerWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RecipientComposerWidgetState":{"State0":["RecipientComposerWidget"]},"RecipientSuggestionItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecipientTagItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SubjectComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TitleComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentComposerWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AttachmentComposerWidgetState":{"State0":["AttachmentComposerWidget"]},"AttachmentDropZoneWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BottomBarComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DesktopAppBarComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FromComposerDropDownWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MinimizeComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MobileResponsiveAppBarComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"WebEditorWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_WebEditorState":{"State0":["WebEditorWidget"]},"EmailView":{"GetWidget":["SingleEmailController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SingleEmailController"},"AttachmentItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttendeeWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarDateIconWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarEventActionBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarEventActionButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarEventDetailWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarEventInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventAttendeeDetailWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_EventAttendeeDetailWidgetState":{"State0":["EventAttendeeDetailWidget"]},"EventBodyContentWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventLinkDetailWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventLocationInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventTimeInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventTitleWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"HideAllAttendeesButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"OrganizerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SeeAllAttendeesButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DraggableAttachmentItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailAttachmentsWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailReceiverWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_EmailReceiverWidgetState":{"State0":["EmailReceiverWidget"]},"EmailSenderBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailSubjectWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewAppBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewBackButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewBottomBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewEmptyWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FeedbackDraggableAttachmentItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"InformationSenderAndReceiverBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MailUnsubscribedBanner":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PrefixRecipientWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ReceivedTimeBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BaseMailboxView":{"GetWidget":["MailboxController"],"Widget":[],"DiagnosticableTree":[]},"MailboxView":{"GetWidget":["MailboxController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxController"},"MailboxLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FilterMessageAction":{"UIAction":[],"EquatableMixin":[]},"HandleEmailActionTypeAction":{"UIAction":[],"EquatableMixin":[]},"OpenEmailDetailedFromSuggestionQuickSearchAction":{"UIAction":[],"EquatableMixin":[]},"BaseMailboxDashBoardView":{"GetWidget":["MailboxDashBoardController"],"Widget":[],"DiagnosticableTree":[]},"MailboxDashBoardView":{"GetWidget":["MailboxDashBoardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxDashBoardController"},"AdvancedSearchFilterFormBottomView":{"GetWidget":["AdvancedFilterController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"AdvancedFilterController"},"AdvancedSearchFilterOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AdvancedSearchInputForm":{"GetWidget":["AdvancedFilterController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"AdvancedFilterController"},"AutoCompleteSuggestionItemWidgetWeb":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AutoCompleteTagItemWidgetWeb":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AvatarSuggestionItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AvatarTagItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DateDropDownButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IconOpenAdvancedSearchWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SortByDropDownButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TextFieldAutocompleteEmailAddressWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_TextFieldAutocompleteEmailAddressWebState":{"State0":["TextFieldAutocompleteEmailAddressWeb"]},"DownloadTaskItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MarkMailboxAsReadLoadingBanner":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ContactQuickSearchItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailQuickSearchItemTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecentSearchItemTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecoverDeletedMessageLoadingBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FilterMessageButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchFilterButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchInputFormWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TopBarThreadSelection":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"QuotasView":{"GetWidget":["QuotasController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"QuotasController"},"QuotasBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchEmailView":{"GetWidget":["SearchEmailController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SearchEmailController"},"AppBarSelectionMode":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailReceiveTimeActionTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailSortByActionTitleWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmptySearchEmailWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchEmailLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchMailboxView":{"GetWidget":["SearchMailboxController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SearchMailboxController"},"MailboxSearchedItemBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_MailboxSearchedItemBuilderState":{"State0":["MailboxSearchedItemBuilder"]},"ThreadView":{"GetWidget":["ThreadController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ThreadController"},"AppBarThreadWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DefaultWebAppBarThreadWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SelectionWebAppBarThreadWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"WebAppBarThreadWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BannerDeleteAllSpamEmailsWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BannerEmptyTrashWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BottomBarThreadSelectionWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailTileBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_EmailTileBuilderState":{"State0":["EmailTileBuilder"]},"EmptyEmailsWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ScrollToTopButtonWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ScrollToTopButtonWidgetState":{"State0":["ScrollToTopButtonWidget"]},"SpamReportBannerButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SpamReportBannerLabelWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SpamReportBannerWebWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SpamReportBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ThreadViewLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
   A._Universe_addErasedTypes(init.typeUniverse, JSON.parse('{"_QuickSearchSuggestionListState_State_SingleTickerProviderStateMixin":3,"__TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver":3,"_NonOverrideAction":1}'));
   var string$ = {
     Mailbo: "MailboxDashBoardController::dispatchAction(): ",
@@ -21316,12 +21478,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       JSArray_SuggestionEmailAddress: findType("JSArray<SuggestionEmailAddress0>"),
       JSArray_SuggestionEmailAddress_2: findType("JSArray<SuggestionEmailAddress>"),
       JSArray_TextSelectionPoint: findType("JSArray<TextSelectionPoint>"),
-      JSArray_TextSpan: findType("JSArray<TextSpan>"),
       JSArray_WebScript: findType("JSArray<WebScript>"),
       JSArray_Widget: findType("JSArray<Widget>"),
       JSArray__DragTargetState_Object: findType("JSArray<_DragTargetState<Object>>"),
       JSArray_of_void_Function_Action_Intent: findType("JSArray<~(Action<Intent>)>"),
       JavaScriptFunction: findType("JavaScriptFunction"),
+      LabeledGlobalKey_State_StatefulWidget: findType("LabeledGlobalKey<State0<StatefulWidget>>"),
       List_PresentationEmail: findType("List<PresentationEmail>"),
       List_SuggestionEmailAddress: findType("List<SuggestionEmailAddress0>"),
       List_SuggestionEmailAddress_2: findType("List<SuggestionEmailAddress>"),
@@ -21580,6 +21742,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Padding_spY = new A.Padding(E.EdgeInsets_0_5_0_5, D.VerticalDivider_EqE, null);
     D.PageStorageKey_K6o = new A.PageStorageKey("list_presentation_email_in_search_view", type$.PageStorageKey_String);
     D.PageStorageKey_M4E = new A.PageStorageKey("list_presentation_email_in_threads", type$.PageStorageKey_String);
+    D.PageStorageKey_rich_text_builder = new A.PageStorageKey("rich_text_builder", type$.PageStorageKey_String);
     D.HtmlElementView_ato = new A.HtmlElementView("Browser__WebContextMenuViewType__", null, null, null);
     D.Positioned_qdM = new A.Positioned(0, 0, 0, 0, null, null, D.HtmlElementView_ato, null);
     D.QuickSearchSuggestionsBoxDecoration_7K0 = new B.QuickSearchSuggestionsBoxDecoration(C.Color_4294967295, C.BorderRadius_ww80);
@@ -21740,5 +21903,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "cDnDTAaikOIPa+GJiI3JOIwB6dQ=");
+})($__dart_deferred_initializers__, "C/JZYJv3w9pFv3mF+ZZRr/JNn+4=");
 ;
