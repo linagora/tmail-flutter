@@ -1,3 +1,17 @@
+## [0.14.2] - 2024-11-20
+### Added
+- #3010 Highlight search result with SearchSnippet method
+- Translate vi, ru, fr
+
+### Fixed
+- #3253 Fix body content is lost
+- Close keyboard when login in iOS
+- #3250 Fix share file from external app to Twake Mail
+- #2528 Sorting email by order ids list of Email/query
+- #3221 handle mailto with additional cc and bcc
+- #3276 Fix debouncer in Quick Search web app
+- #3256 Fix cache config for static file in web app
+
 ## [0.14.1] - 2024-11-13
 ### Changed
 - Integrate with TWP production
