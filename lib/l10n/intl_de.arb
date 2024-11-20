@@ -4110,5 +4110,53 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "descriptionWelcomeTo": "Der neue Open-Source-Standard für\nsichere professionelle E-Mails",
+  "@descriptionWelcomeTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createTwakeIdFailed": "Erstellen der Twake-ID fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.",
+  "@createTwakeIdFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createTwakeId": "Twake-ID erstellen",
+  "@createTwakeId": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageGerman": "Deutsch",
+  "@languageGerman": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "useCompanyServer": "Firmenserver verwenden",
+  "@useCompanyServer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "nameToBeDisplayed": "Name, der den Empfängern angezeigt wird",
+  "@nameToBeDisplayed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "thisFieldCannotContainOnlySpaces": "Dieses Feld darf nicht nur Leerzeichen enthalten",
+  "@thisFieldCannotContainOnlySpaces": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sigInSaasFailed": "Anmeldung fehlgeschlagen. Bitte überprüfen Sie Ihre Eingaben.",
+  "@sigInSaasFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
