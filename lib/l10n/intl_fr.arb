@@ -4281,5 +4281,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "sigInSaasFailed": "Échec de la connexion. Veuillez réessayer.",
+  "@sigInSaasFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createTwakeIdFailed": "Échec de la création d'un Twake ID. Veuillez réessayer.",
+  "@createTwakeIdFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
