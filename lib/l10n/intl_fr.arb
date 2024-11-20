@@ -4245,5 +4245,41 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "useCompanyServer": "Utiliser le serveur de l'organisation",
+  "@useCompanyServer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageGerman": "Allemand",
+  "@languageGerman": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "nameToBeDisplayed": "Nom à afficher aux destinataires",
+  "@nameToBeDisplayed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createTwakeId": "Créer un Twake ID",
+  "@createTwakeId": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "descriptionWelcomeTo": "La nouvelle référence Open Source pour \n la messagerie sécurisée professionnelle",
+  "@descriptionWelcomeTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "thisFieldCannotContainOnlySpaces": "Ce champ ne peut pas contenir uniquement des espaces",
+  "@thisFieldCannotContainOnlySpaces": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
