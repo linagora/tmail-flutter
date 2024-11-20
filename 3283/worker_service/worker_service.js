@@ -3,66 +3,10 @@ const iosStore = 'https://apps.apple.com/app/twake-mail/id1587086189';
 const iosPlatform = 'iOS';
 const androidPlatform = 'android';
 const otherPlatform = 'other';
-const timeoutDuration = 4000;
-var scriptLoaded = false;
-
-function loadMainDartJs() {
-  if (scriptLoaded) {
-    return;
-  }
-  scriptLoaded = true;
-  var scriptTag = document.createElement('script');
-  scriptTag.src = 'main.dart.js';
-  scriptTag.type = 'application/javascript';
-  document.body.append(scriptTag);
-}
-
-function fetchServiceWorker() {
-  if ('serviceWorker' in navigator) {
-    // Service workers are supported. Use them.
-    // Wait for registration to finish before dropping the <script>tag.
-    // Otherwise, the browser will load the script multiple times,
-    // potentially different versions.
-    navigator.serviceWorker.register('flutter_service_worker.js?v={{flutter_service_worker_version}}')
-      .then((reg) => {
-        function waitForActivation(serviceWorker) {
-          serviceWorker.addEventListener('statechange', () => {
-            if (serviceWorker.state == 'activated') {
-              console.log('[TwakeMail] fetchServiceWorker(): Installed new service worker.');
-              loadMainDartJs();
-            }
-          });
-        }
-        if (!reg.active && (reg.installing || reg.waiting)) {
-          // No active web worker and we have installed or are installing
-          // one for the first time. Simply wait for it to activate.
-          waitForActivation(reg.installing || reg.waiting);
-        } else {
-          // Existing service worker is still good.
-          console.log('[TwakeMail] fetchServiceWorker(): Loading app from service worker.');
-          loadMainDartJs();
-        }
-      });
-    // If service worker doesn't succeed in a reasonable amount of time,
-    // fallback to plaint <script> tag.
-    setTimeout(() => {
-      if (!scriptLoaded) {
-        console.warn(
-          '[TwakeMail] fetchServiceWorker(): Failed to load app from service worker. Falling back to plain <script> tag.',
-        );
-        loadMainDartJs();
-      }
-    }, timeoutDuration);
-  } else {
-    // Service workers not supported. Just drop the <script> tag.
-    loadMainDartJs();
-  }
-}
 
 function handleContinueTwakeMailOnWeb() {
   console.info('[TwakeMail] handleContinueTwakeMailOnWeb(): Continue on web.');
   closeSmartBanner();
-  fetchServiceWorker();
 }
 
 function getPlatform() {
@@ -86,7 +30,7 @@ function handleOpenTwakeMailApp() {
   }
 }
 
-function initialWorkerService() {
+function initialTmailApp() {
   const os = getPlatform();
   const originInUrl = window.location;
 
@@ -94,7 +38,6 @@ function initialWorkerService() {
 
   //   For desktop, we don't show the open on app popup
   if (os === otherPlatform || typeof window === 'undefined') {
-    fetchServiceWorker();
     return;
   }
 
