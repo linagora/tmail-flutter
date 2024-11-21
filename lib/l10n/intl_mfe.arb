@@ -47,19 +47,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "loginInputUrlMessage": "",
+  "loginInputUrlMessage": "Pou login ek gagn akse ou mesaz konekte ar ou server JMAP",
   "@loginInputUrlMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "next": "",
+  "next": "Prosenn",
   "@next": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "loginInputCredentialMessage": "",
+  "loginInputCredentialMessage": "Met ou linformation pou idantifikasion",
   "@loginInputCredentialMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -71,67 +71,67 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "jmapStandard": "",
+  "jmapStandard": "Standar JMAP",
   "@jmapStandard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "encryptedMailbox": "",
+  "encryptedMailbox": "Mailbox ki ankripte",
   "@encryptedMailbox": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requiredUrl": "",
+  "requiredUrl": "Ladres server neseser",
   "@requiredUrl": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "jmapBasedMailSolution": "",
+  "jmapBasedMailSolution": "Solision team mail kolaboratif baze lor JMAP",
   "@jmapBasedMailSolution": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "search_folder": "",
+  "search_folder": "Dosie resers",
   "@search_folder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reply_all": "",
+  "reply_all": "Reponn tou",
   "@reply_all": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_mail_selected": "",
+  "no_mail_selected": "Pena okenn email ki finn swazir",
   "@no_mail_selected": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "bcc_email_address_prefix": "",
+  "bcc_email_address_prefix": "Bcc",
   "@bcc_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_email_being_sent": "",
+  "your_email_being_sent": "Ou email pe ale...",
   "@your_email_being_sent": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "prefix_forward_email": "",
+  "prefix_forward_email": "Fwd:",
   "@prefix_forward_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "header_email_quoted": "",
+  "header_email_quoted": "Lor {DatekiFinnAvoye}, depi {LadresEmail}",
   "@header_email_quoted": {
     "type": "text",
     "placeholders_order": [
@@ -143,37 +143,37 @@
       "emailAddress": {}
     }
   },
-  "prefix_reply_email": "",
+  "prefix_reply_email": "Re:",
   "@prefix_reply_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "an_error_occurred": "",
+  "an_error_occurred": "Erer! Enn erer finn arive. Silvouple sey ankor apre.",
   "@an_error_occurred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_read": "",
+  "mark_as_read": "Mark kouma finn lir",
   "@mark_as_read": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_trash": "",
+  "move_to_trash": "Bouz dan poubel",
   "@move_to_trash": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "user_cancel_download_file": "",
+  "user_cancel_download_file": "Itilizater finn kennsel telesarzman fisie",
   "@user_cancel_download_file": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_multiple_item_as_read": "",
+  "marked_multiple_item_as_read": "Finn mark {count} item kouma fini lir",
   "@marked_multiple_item_as_read": {
     "type": "text",
     "placeholders_order": [
@@ -183,19 +183,19 @@
       "count": {}
     }
   },
-  "preparing_to_export": "",
+  "preparing_to_export": "Pe prepar pou exporte",
   "@preparing_to_export": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_starred": "",
+  "mark_as_starred": "Mark kouma zetwal",
   "@mark_as_starred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_multiple_item_as_unread": "",
+  "marked_multiple_item_as_unread": "Finn mark {count} item kouma pa finn lir",
   "@marked_multiple_item_as_unread": {
     "type": "text",
     "placeholders_order": [
@@ -205,13 +205,13 @@
       "count": {}
     }
   },
-  "attachment_download_failed": "",
+  "attachment_download_failed": "Telesarz latasman finn fel",
   "@attachment_download_failed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "downloading_file": "",
+  "downloading_file": "Pe telesarz {fileName}",
   "@downloading_file": {
     "type": "text",
     "placeholders_order": [
@@ -221,13 +221,13 @@
       "fileName": {}
     }
   },
-  "cancel": "",
+  "cancel": "Kennsel",
   "@cancel": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "count_email_selected": "",
+  "count_email_selected": "{count} finn swazir",
   "@count_email_selected": {
     "type": "text",
     "placeholders_order": [
@@ -237,13 +237,13 @@
       "count": {}
     }
   },
-  "you_need_to_grant_files_permission_to_download_attachments": "",
+  "you_need_to_grant_files_permission_to_download_attachments": "Ou bizin donn permision fisie pou telesarz bann atasman",
   "@you_need_to_grant_files_permission_to_download_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_unstar_multiple_item": "",
+  "marked_unstar_multiple_item": "Item ki finn marke san zetwal {count}",
   "@marked_unstar_multiple_item": {
     "type": "text",
     "placeholders_order": [
@@ -253,127 +253,127 @@
       "count": {}
     }
   },
-  "pick_attachments": "",
+  "pick_attachments": "Swazir bann atasman",
   "@pick_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "can_not_upload_this_file_as_attachments": "",
+  "can_not_upload_this_file_as_attachments": "Pa kapav upload sa fisie-la kouma bann atasman",
   "@can_not_upload_this_file_as_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachments_uploaded_successfully": "",
+  "attachments_uploaded_successfully": "Bann atasman finn upload avek sikse",
   "@attachments_uploaded_successfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "browse": "",
+  "browse": "mesaz (zenere) (mesaz)",
   "@browse": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "flag": "",
+  "flag": "Pavion",
   "@flag": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "edit": "",
+  "edit": "Modifie",
   "@edit": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_emails_matching_your_search": "",
+  "no_emails_matching_your_search": "Okenn email pa pe koresponn avek ou resers",
   "@no_emails_matching_your_search": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "results": "",
+  "results": "Rezilta",
   "@results": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "prefix_suggestion_search": "",
+  "prefix_suggestion_search": "Rod",
   "@prefix_suggestion_search": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "spam": "",
+  "spam": "Spam",
   "@spam": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "read": "",
+  "read": "Lir",
   "@read": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "search_mail": "",
+  "search_mail": "Rod mail",
   "@search_mail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_search_emails": "",
+  "hint_search_emails": "Rod bann email ek bann fisie",
   "@hint_search_emails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move": "",
+  "move": "Bouze",
   "@move": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "compose": "",
+  "compose": "Konpoze",
   "@compose": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete": "",
+  "delete": "Efase",
   "@delete": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "folders": "",
+  "folders": "Dosie",
   "@folders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unread": "",
+  "unread": "Pa finn lir",
   "@unread": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sign_out": "",
+  "sign_out": "Dekonekte",
   "@sign_out": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "the_feature_is_under_development": "",
+  "the_feature_is_under_development": "Sa fonksionalite-la pe devlope.",
   "@the_feature_is_under_development": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_message_toast": "",
+  "marked_message_toast": "Ou finn mark bann mesaz kouma \"{action}\"",
   "@marked_message_toast": {
     "type": "text",
     "placeholders_order": [
@@ -383,187 +383,187 @@
       "action": {}
     }
   },
-  "skip": "",
+  "skip": "Sote",
   "@skip": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteFoldersFailure": "",
+  "deleteFoldersFailure": "Pa finn kapav efas bann dosie",
   "@deleteFoldersFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteFolders": "",
+  "deleteFolders": "Efas bann dosie",
   "@deleteFolders": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "this_field_cannot_be_blank": "",
+  "this_field_cannot_be_blank": "Sa linformation-la pa kapav vid",
   "@this_field_cannot_be_blank": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "renameFolderFailure": "",
+  "renameFolderFailure": "Pa finn kapav re-nom dosie",
   "@renameFolderFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "there_is_already_folder_with_the_same_name": "",
+  "there_is_already_folder_with_the_same_name": "Ena deza enn dosie avek mem nom",
   "@there_is_already_folder_with_the_same_name": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email_address_is_not_in_the_correct_format": "",
+  "email_address_is_not_in_the_correct_format": "Ladres email pa dan bon format",
   "@email_address_is_not_in_the_correct_format": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "copy_email_address": "",
+  "copy_email_address": "Kopie ladres email",
   "@copy_email_address": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "renameFolder": "",
+  "renameFolder": "Renom dosie-la",
   "@renameFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "preparing_to_save": "",
+  "preparing_to_save": "Prepar pou anrezistre",
   "@preparing_to_save": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hide": "",
+  "hide": "Kasiet",
   "@hide": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_message": "",
+  "new_message": "Nouvo mesaz",
   "@new_message": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "fullscreen": "",
+  "fullscreen": "Lekran antie",
   "@fullscreen": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "close": "",
+  "close": "Ferme",
   "@close": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "compose_email": "",
+  "compose_email": "Konpoz email",
   "@compose_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email_address_copied_to_clipboard": "",
+  "email_address_copied_to_clipboard": "Ladres email finn kopie lor clipboard",
   "@email_address_copied_to_clipboard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "send": "",
+  "send": "Anvwaye",
   "@send": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "minimize": "",
+  "minimize": "Minimize",
   "@minimize": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "showAll": "",
+  "showAll": "Montre tou",
   "@showAll": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachments": "",
+  "attachments": "Bann atasman",
   "@attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_compose_email": "",
+  "hint_compose_email": "Koumans konpoz enn let...",
   "@hint_compose_email": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "back": "",
+  "back": "Deryer",
   "@back": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "notSelected": "",
+  "notSelected": "Pa finn selekte",
   "@notSelected": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "add_recipients": "",
+  "add_recipients": "Azout destinater",
   "@add_recipients": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attach_file": "",
+  "attach_file": "Atas fisie-la",
   "@attach_file": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "selected": "",
+  "selected": "Finn swazir",
   "@selected": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "more": "",
+  "more": "Ankor",
   "@more": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "save_to_drafts": "",
+  "save_to_drafts": "Anrezistre dan draft",
   "@save_to_drafts": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_download_has_started": "",
+  "your_download_has_started": "Ou telesarzman finn koumanse",
   "@your_download_has_started": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "fix_email_addresses": "",
+  "fix_email_addresses": "Koriz bann ladres email",
   "@fix_email_addresses": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_subject": "",
+  "empty_subject": "Size vid",
   "@empty_subject": {
     "type": "text",
     "placeholders_order": [],
@@ -2133,7 +2133,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "newFolder": "",
+  "newFolder": "Nouvo dosie",
   "@newFolder": {
     "type": "text",
     "placeholders_order": [],
@@ -2145,7 +2145,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createNewFolderFailure": "",
+  "createNewFolderFailure": "Kreasion enn nouvo dosie pa finn reysi",
   "@createNewFolderFailure": {
     "type": "text",
     "placeholders_order": [],
@@ -2157,13 +2157,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "filter_messages": "",
+  "filter_messages": "Filtre bann mesaz",
   "@filter_messages": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "filter_message_toast": "",
+  "filter_message_toast": "Ou finn filtre bann mesaz par \"{filterOption}\"",
   "@filter_message_toast": {
     "type": "text",
     "placeholders_order": [
@@ -2173,7 +2173,7 @@
       "filterOption": {}
     }
   },
-  "message_has_been_sent_successfully": "",
+  "message_has_been_sent_successfully": "Mesaz-la finn avoye avek sikse",
   "@message_has_been_sent_successfully": {
     "type": "text",
     "placeholders_order": [],
@@ -2217,7 +2217,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "nameOfFolderIsRequired": "",
+  "nameOfFolderIsRequired": "Nom dosie-la neseser",
   "@nameOfFolderIsRequired": {
     "type": "text",
     "placeholders_order": [],
@@ -2229,19 +2229,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "with_attachments": "",
+  "with_attachments": "Avek bann atasman",
   "@with_attachments": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "starred": "",
+  "starred": "Avek zetwal",
   "@starred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "rename": "",
+  "rename": "Renom",
   "@rename": {
     "type": "text",
     "placeholders_order": [],
@@ -2271,7 +2271,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "done": "",
+  "done": "Fini fer",
   "@done": {
     "type": "text",
     "placeholders_order": [],
@@ -2289,7 +2289,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "this_folder_name_is_already_taken": "",
+  "this_folder_name_is_already_taken": "Sa nom dosie-la finn deza servi",
   "@this_folder_name_is_already_taken": {
     "type": "text",
     "placeholders_order": [],
@@ -2347,7 +2347,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "app_name": "",
+  "app_name": "Twake Mail",
   "@app_name": {
     "type": "text",
     "placeholders_order": [],
@@ -2471,7 +2471,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleHeaderAttachment": "",
+  "titleHeaderAttachment": "{count} Atasman ({totalSize}):",
   "@titleHeaderAttachment": {
     "type": "text",
     "placeholders_order": [
@@ -2489,7 +2489,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subject_email": "",
+  "subject_email": "Size",
   "@subject_email": {
     "type": "text",
     "placeholders_order": [],
@@ -2501,19 +2501,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintInputCreateNewFolder": "",
+  "hintInputCreateNewFolder": "Met nom dosie-la",
   "@hintInputCreateNewFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_without_recipient": "",
+  "message_dialog_send_email_without_recipient": "Ou email bizin ena omwin enn destinater",
   "@message_dialog_send_email_without_recipient": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "disable_filter_message_toast": "",
+  "disable_filter_message_toast": "Ou finn dezaktiv bann mesaz filtre",
   "@disable_filter_message_toast": {
     "type": "text",
     "placeholders_order": [],
@@ -2567,7 +2567,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_all_as_read": "",
+  "mark_all_as_read": "Mark tou kouma fini lir",
   "@mark_all_as_read": {
     "type": "text",
     "placeholders_order": [],
@@ -2603,7 +2603,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_star_multiple_item": "",
+  "marked_star_multiple_item": "Item ki finn marke avek zetwal {count}",
   "@marked_star_multiple_item": {
     "type": "text",
     "placeholders_order": [
@@ -2625,7 +2625,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "select_all": "",
+  "select_all": "Seleksionn tou",
   "@select_all": {
     "type": "text",
     "placeholders_order": [],
@@ -2637,7 +2637,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "manageEmailAsATeam": "",
+  "manageEmailAsATeam": "zer email kouma enn likip",
   "@manageEmailAsATeam": {
     "type": "text",
     "placeholders_order": [],
@@ -2673,7 +2673,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unknownError": "",
+  "unknownError": "Erer inkoni finn arive, sey ankor",
   "@unknownError": {
     "type": "text",
     "placeholders_order": [],
@@ -2685,7 +2685,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "folderNameCannotContainSpecialCharacters": "",
+  "folderNameCannotContainSpecialCharacters": "Nom dosie pa kapav kontenir bann karakter spesial",
   "@folderNameCannotContainSpecialCharacters": {
     "type": "text",
     "placeholders_order": [],
@@ -2721,7 +2721,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "discard": "",
+  "discard": "Met enn kote",
   "@discard": {
     "type": "text",
     "placeholders_order": [],
@@ -2733,7 +2733,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintSearchFolders": "",
+  "hintSearchFolders": "Rod bann dosie",
   "@hintSearchFolders": {
     "type": "text",
     "placeholders_order": [],
@@ -2763,7 +2763,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "drafts_saved": "",
+  "drafts_saved": "Brouyon finn anrezistre",
   "@drafts_saved": {
     "type": "text",
     "placeholders_order": [],
@@ -2857,7 +2857,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "from_email_address_prefix": "",
+  "from_email_address_prefix": "Depi",
   "@from_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
@@ -2939,7 +2939,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "to_email_address_prefix": "",
+  "to_email_address_prefix": "Ziska",
   "@to_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
@@ -2975,7 +2975,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_text_email_address": "",
+  "hint_text_email_address": "Nom ou ladres email",
   "@hint_text_email_address": {
     "type": "text",
     "placeholders_order": [],
@@ -3071,7 +3071,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unread_email_notification": "",
+  "unread_email_notification": "Nouvo",
   "@unread_email_notification": {
     "type": "text",
     "placeholders_order": [],
@@ -3143,7 +3143,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "movedToFolder": "",
+  "movedToFolder": "Finn bouz ver {destinationMailboxPath}",
   "@movedToFolder": {
     "type": "text",
     "placeholders_order": [
@@ -3159,7 +3159,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_folder_is_created": "",
+  "new_folder_is_created": "{nameMailbox} finn kree",
   "@new_folder_is_created": {
     "type": "text",
     "placeholders_order": [
@@ -3187,7 +3187,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "multipleIntegrations": "",
+  "multipleIntegrations": "Plizier integrasion",
   "@multipleIntegrations": {
     "type": "text",
     "placeholders_order": [],
@@ -3245,13 +3245,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attach_file_prepare_text": "",
+  "attach_file_prepare_text": "Pe prepar pou atas fisie...",
   "@attach_file_prepare_text": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_without_a_subject": "",
+  "message_dialog_send_email_without_a_subject": "Eski ou sir ou pou avoy bann mesaz san enn size?",
   "@message_dialog_send_email_without_a_subject": {
     "type": "text",
     "placeholders_order": [],
@@ -3281,7 +3281,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cc_email_address_prefix": "",
+  "cc_email_address_prefix": "Cc",
   "@cc_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
@@ -3347,7 +3347,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "send_anyway": "",
+  "send_anyway": "Avoye kanmem",
   "@send_anyway": {
     "type": "text",
     "placeholders_order": [],
@@ -3419,7 +3419,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "personalFolders": "",
+  "personalFolders": "Dosie personel",
   "@personalFolders": {
     "type": "text",
     "placeholders_order": [],
@@ -3523,7 +3523,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "with_unread": "",
+  "with_unread": "Avek seki pa finn lir",
   "@with_unread": {
     "type": "text",
     "placeholders_order": [],
@@ -3541,7 +3541,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_content_email_composer": "",
+  "hint_content_email_composer": "Koumans ekrir ou email isi",
   "@hint_content_email_composer": {
     "type": "text",
     "placeholders_order": [],
@@ -3565,7 +3565,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "moved_to_trash": "",
+  "moved_to_trash": "Finn bouz dan poubel",
   "@moved_to_trash": {
     "type": "text",
     "placeholders_order": [],
@@ -3595,7 +3595,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "undo": "",
+  "undo": "Refer",
   "@undo": {
     "type": "text",
     "placeholders_order": [],
@@ -3607,13 +3607,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "expand": "",
+  "expand": "Ogmante",
   "@expand": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reply": "",
+  "reply": "Reponn",
   "@reply": {
     "type": "text",
     "placeholders_order": [],
@@ -3631,7 +3631,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "collapse": "",
+  "collapse": "Redwir",
   "@collapse": {
     "type": "text",
     "placeholders_order": [],
@@ -3643,7 +3643,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forward": "",
+  "forward": "Avoy li",
   "@forward": {
     "type": "text",
     "placeholders_order": [],
@@ -3655,7 +3655,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "deleteFoldersSuccessfully": "",
+  "deleteFoldersSuccessfully": "Efas bann dosie avek sikse",
   "@deleteFoldersSuccessfully": {
     "type": "text",
     "placeholders_order": [],
@@ -3681,7 +3681,7 @@
       "count": {}
     }
   },
-  "new_folder": "",
+  "new_folder": "Nouvo dosie",
   "@new_folder": {
     "type": "text",
     "placeholders_order": [],
@@ -3733,7 +3733,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "signIn": "",
+  "signIn": "Ou Idantifikasion",
   "@signIn": {
     "type": "text",
     "placeholders_order": [],
@@ -3751,7 +3751,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "search_emails": "",
+  "search_emails": "Rod bann email",
   "@search_emails": {
     "type": "text",
     "placeholders_order": [],
@@ -3787,7 +3787,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_confirmation_dialog_delete_folder": "",
+  "message_confirmation_dialog_delete_folder": "Dosie \"{nameMailbox}\" ek tou bann sou-dosie ek mesaz ki li ena pou efase ek pa pou kapav rekipere. Eski ou anvi kontinie efase?",
   "@message_confirmation_dialog_delete_folder": {
     "type": "text",
     "placeholders_order": [
@@ -3809,7 +3809,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "with_starred": "",
+  "with_starred": "Avek zetwal",
   "@with_starred": {
     "type": "text",
     "placeholders_order": [],
@@ -3827,7 +3827,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_spam": "",
+  "move_to_spam": "Bouz ver spam",
   "@move_to_spam": {
     "type": "text",
     "placeholders_order": [],
@@ -3863,13 +3863,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "not_starred": "",
+  "not_starred": "Pa finn met zetwal",
   "@not_starred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sending_failed": "",
+  "sending_failed": "Pa finn kapav anvwaye",
   "@sending_failed": {
     "type": "text",
     "placeholders_order": [],
@@ -3881,7 +3881,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_unread": "",
+  "mark_as_unread": "Mark kouma pa finn lir",
   "@mark_as_unread": {
     "type": "text",
     "placeholders_order": [],
@@ -3905,7 +3905,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "select": "",
+  "select": "Swazir",
   "@select": {
     "type": "text",
     "placeholders_order": [],
@@ -3929,7 +3929,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "photos_and_videos": "",
+  "photos_and_videos": "Bann foto ek bann video",
   "@photos_and_videos": {
     "type": "text",
     "placeholders_order": [],
@@ -3947,7 +3947,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "show": "",
+  "show": "Montre",
   "@show": {
     "type": "text",
     "placeholders_order": [],
@@ -3965,7 +3965,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_with_email_address_invalid": "",
+  "message_dialog_send_email_with_email_address_invalid": "Verifie si bann ladres email korek e esey ankor",
   "@message_dialog_send_email_with_email_address_invalid": {
     "type": "text",
     "placeholders_order": [],
