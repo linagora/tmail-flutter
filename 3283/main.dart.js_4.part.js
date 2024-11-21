@@ -1460,10 +1460,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.onTap = t4;
       _.key = t5;
     },
-    RecipientComposerWidget$(bccState, ccState, controller, expandMode, focusNode, focusNodeKeyboard, fromState, imagePaths, isInitial, keyTagEditor, listEmailAddress, margin, maxWidth, nextFocusNode, onAddEmailAddressTypeAction, onDeleteEmailAddressTypeAction, onFocusEmailAddressChangeAction, onFocusNextAddressAction, onRemoveDraggableEmailAddressAction, onShowFullListEmailAddressAction, onSuggestionEmailAddress, onUpdateListEmailAddressAction, padding, prefix) {
-      return new B.RecipientComposerWidget(prefix, listEmailAddress, imagePaths, maxWidth, expandMode, fromState, ccState, bccState, focusNode, focusNodeKeyboard, keyTagEditor, nextFocusNode, controller, onUpdateListEmailAddressAction, onSuggestionEmailAddress, onAddEmailAddressTypeAction, onShowFullListEmailAddressAction, onFocusEmailAddressChangeAction, onRemoveDraggableEmailAddressAction, onFocusNextAddressAction, padding, margin, null);
+    RecipientComposerWidget$(bccState, ccState, controller, expandMode, focusNode, focusNodeKeyboard, fromState, imagePaths, isInitial, keyTagEditor, listEmailAddress, margin, maxWidth, minInputLengthAutocomplete, nextFocusNode, onAddEmailAddressTypeAction, onDeleteEmailAddressTypeAction, onFocusEmailAddressChangeAction, onFocusNextAddressAction, onRemoveDraggableEmailAddressAction, onShowFullListEmailAddressAction, onSuggestionEmailAddress, onUpdateListEmailAddressAction, padding, prefix) {
+      return new B.RecipientComposerWidget(prefix, listEmailAddress, imagePaths, maxWidth, expandMode, fromState, ccState, bccState, focusNode, focusNodeKeyboard, keyTagEditor, nextFocusNode, controller, onUpdateListEmailAddressAction, onSuggestionEmailAddress, onAddEmailAddressTypeAction, onShowFullListEmailAddressAction, onFocusEmailAddressChangeAction, onRemoveDraggableEmailAddressAction, onFocusNextAddressAction, padding, margin, minInputLengthAutocomplete, null);
     },
-    RecipientComposerWidget: function RecipientComposerWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22) {
+    RecipientComposerWidget: function RecipientComposerWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23) {
       var _ = this;
       _.prefix = t0;
       _.listEmailAddress = t1;
@@ -1487,7 +1487,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.onFocusNextAddressAction = t19;
       _.padding = t20;
       _.margin = t21;
-      _.key = t22;
+      _.minInputLengthAutocomplete = t22;
+      _.key = t23;
     },
     _RecipientComposerWidgetState: function _RecipientComposerWidgetState(t0) {
       var _ = this;
@@ -3188,10 +3189,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.$this = t0;
       this.context = t1;
     },
-    TextFieldAutocompleteEmailAddressWeb$(controller, expandMode, field, focusNode, keyTagEditor, listEmailAddress, nextFocusNode, onRemoveDraggableEmailAddressAction, onSearchAction, onShowFullListEmailAddressAction, onSuggestionEmailAddress, onUpdateListEmailAddressAction) {
-      return new B.TextFieldAutocompleteEmailAddressWeb(field, listEmailAddress, expandMode, focusNode, keyTagEditor, nextFocusNode, onSuggestionEmailAddress, onUpdateListEmailAddressAction, onShowFullListEmailAddressAction, onRemoveDraggableEmailAddressAction, controller, onSearchAction, null);
+    TextFieldAutocompleteEmailAddressWeb$(controller, expandMode, field, focusNode, keyTagEditor, listEmailAddress, minInputLengthAutocomplete, nextFocusNode, onRemoveDraggableEmailAddressAction, onSearchAction, onShowFullListEmailAddressAction, onSuggestionEmailAddress, onUpdateListEmailAddressAction) {
+      return new B.TextFieldAutocompleteEmailAddressWeb(field, listEmailAddress, expandMode, focusNode, keyTagEditor, nextFocusNode, onSuggestionEmailAddress, onUpdateListEmailAddressAction, onShowFullListEmailAddressAction, onRemoveDraggableEmailAddressAction, controller, onSearchAction, minInputLengthAutocomplete, null);
     },
-    TextFieldAutocompleteEmailAddressWeb: function TextFieldAutocompleteEmailAddressWeb(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) {
+    TextFieldAutocompleteEmailAddressWeb: function TextFieldAutocompleteEmailAddressWeb(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13) {
       var _ = this;
       _.field = t0;
       _.listEmailAddress = t1;
@@ -3205,7 +3206,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.onRemoveDraggableEmailAddressAction = t9;
       _.controller = t10;
       _.onSearchAction = t11;
-      _.key = t12;
+      _.minInputLengthAutocomplete = t12;
+      _.key = t13;
     },
     _TextFieldAutocompleteEmailAddressWebState: function _TextFieldAutocompleteEmailAddressWebState(t0) {
       var _ = this;
@@ -8485,7 +8487,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _findSuggestions$body$_RecipientComposerWidgetState(query) {
       var $async$goto = 0,
         $async$completer = A._makeAsyncAwaitCompleter(type$.List_SuggestionEmailAddress),
-        $async$returnValue, $async$self = this, processedQuery, t2, tmailSuggestion, currentTextOnTextField, t1, $async$temp1, $async$temp2, $async$temp3;
+        $async$returnValue, $async$self = this, processedQuery, t2, tmailSuggestion, t3, t4, currentTextOnTextField, t1, $async$temp1, $async$temp2, $async$temp3;
       var $async$_recipient_composer_widget$_findSuggestions$1 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
         if ($async$errorCode === 1)
           return A._asyncRethrow($async$result, $async$completer);
@@ -8511,10 +8513,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               }
               t2 = type$.SuggestionEmailAddress;
               tmailSuggestion = J.JSArray_JSArray$growable(0, t2);
-              t1 = t1 >= 3;
-              if (t1)
-                $async$self._widget.toString;
-              $async$goto = t1 ? 3 : 4;
+              t3 = $async$self._widget;
+              t4 = t3.minInputLengthAutocomplete;
+              $async$goto = t1 >= t4 ? 3 : 4;
               break;
             case 3:
               // then
@@ -8522,7 +8523,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               $async$temp2 = tmailSuggestion;
               $async$temp3 = J;
               $async$goto = 5;
-              return A._asyncAwait($async$self._widget.onSuggestionEmailAddress.call$1(processedQuery), $async$_recipient_composer_widget$_findSuggestions$1);
+              return A._asyncAwait(t3.onSuggestionEmailAddress.call$1(processedQuery), $async$_recipient_composer_widget$_findSuggestions$1);
             case 5:
               // returning from await.
               $async$temp1.addAll$1($async$temp2, $async$temp3.map$1$1$ax($async$result, new B._RecipientComposerWidgetState__findSuggestions_closure($async$self), t2));
@@ -10594,7 +10595,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _findSuggestions$body$_TextFieldAutocompleteEmailAddressWebState(query) {
       var $async$goto = 0,
         $async$completer = A._makeAsyncAwaitCompleter(type$.List_SuggestionEmailAddress_2),
-        $async$returnValue, $async$self = this, processedQuery, t2, tmailSuggestion, currentTextOnTextField, t1, $async$temp1, $async$temp2, $async$temp3;
+        $async$returnValue, $async$self = this, processedQuery, t2, tmailSuggestion, t3, t4, currentTextOnTextField, t1, $async$temp1, $async$temp2, $async$temp3;
       var $async$_text_field_autocomplete_email_address_web$_findSuggestions$1 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
         if ($async$errorCode === 1)
           return A._asyncRethrow($async$result, $async$completer);
@@ -10620,10 +10621,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               }
               t2 = type$.SuggestionEmailAddress_2;
               tmailSuggestion = J.JSArray_JSArray$growable(0, t2);
-              t1 = t1 >= 3;
-              if (t1)
-                $async$self._widget.toString;
-              $async$goto = t1 ? 3 : 4;
+              t3 = $async$self._widget;
+              t4 = t3.minInputLengthAutocomplete;
+              $async$goto = t1 >= t4 ? 3 : 4;
               break;
             case 3:
               // then
@@ -10631,7 +10631,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               $async$temp2 = tmailSuggestion;
               $async$temp3 = J;
               $async$goto = 5;
-              return A._asyncAwait($async$self._widget.onSuggestionEmailAddress.call$1(processedQuery), $async$_text_field_autocomplete_email_address_web$_findSuggestions$1);
+              return A._asyncAwait(t3.onSuggestionEmailAddress.call$1(processedQuery), $async$_text_field_autocomplete_email_address_web$_findSuggestions$1);
             case 5:
               // returning from await.
               $async$temp1.addAll$1($async$temp2, $async$temp3.map$1$1$ax($async$result, new B._TextFieldAutocompleteEmailAddressWebState__findSuggestions_closure($async$self), t2));
@@ -13898,7 +13898,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ComposerView_build__closure3.prototype = {
     call$0() {
-      var t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, _null = null,
+      var t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, _null = null,
         t1 = A._setArrayType([], type$.JSArray_Widget),
         t2 = this.$this,
         t3 = $.$get$GetWidget__cache();
@@ -13925,39 +13925,41 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t6 = t4._as(t3.get(t2)).imagePaths;
       t7 = this.constraints.maxWidth;
       A.Expando__checkType(t2);
-      t8 = t4._as(t3.get(t2)).fromRecipientState.get$value(0);
+      t8 = t4._as(t3.get(t2)).mailboxDashBoardController.get$minInputLengthAutocomplete();
       A.Expando__checkType(t2);
-      t9 = t4._as(t3.get(t2)).ccRecipientState.get$value(0);
+      t9 = t4._as(t3.get(t2)).fromRecipientState.get$value(0);
       A.Expando__checkType(t2);
-      t10 = t4._as(t3.get(t2)).bccRecipientState.get$value(0);
+      t10 = t4._as(t3.get(t2)).ccRecipientState.get$value(0);
       A.Expando__checkType(t2);
-      t11 = t4._as(t3.get(t2)).toAddressExpandMode.get$value(0);
+      t11 = t4._as(t3.get(t2)).bccRecipientState.get$value(0);
       A.Expando__checkType(t2);
-      t12 = t4._as(t3.get(t2)).toEmailAddressController;
+      t12 = t4._as(t3.get(t2)).toAddressExpandMode.get$value(0);
       A.Expando__checkType(t2);
-      t13 = t4._as(t3.get(t2)).toAddressFocusNode;
+      t13 = t4._as(t3.get(t2)).toEmailAddressController;
       A.Expando__checkType(t2);
-      t14 = t4._as(t3.get(t2)).toAddressFocusNodeKeyboard;
+      t14 = t4._as(t3.get(t2)).toAddressFocusNode;
       A.Expando__checkType(t2);
-      t15 = t4._as(t3.get(t2)).keyToEmailTagEditor;
+      t15 = t4._as(t3.get(t2)).toAddressFocusNodeKeyboard;
       A.Expando__checkType(t2);
-      t16 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
+      t16 = t4._as(t3.get(t2)).keyToEmailTagEditor;
       A.Expando__checkType(t2);
-      t17 = t4._as(t3.get(t2)).getNextFocusOfToEmailAddress$0();
+      t17 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
       A.Expando__checkType(t2);
-      t18 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
+      t18 = t4._as(t3.get(t2)).getNextFocusOfToEmailAddress$0();
       A.Expando__checkType(t2);
-      t19 = t4._as(t3.get(t2)).get$showFullEmailAddress();
+      t19 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
       A.Expando__checkType(t2);
-      t20 = t4._as(t3.get(t2)).get$addEmailAddressType();
+      t20 = t4._as(t3.get(t2)).get$showFullEmailAddress();
       A.Expando__checkType(t2);
-      t21 = t4._as(t3.get(t2)).get$updateListEmailAddress();
+      t21 = t4._as(t3.get(t2)).get$addEmailAddressType();
       A.Expando__checkType(t2);
-      t22 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
+      t22 = t4._as(t3.get(t2)).get$updateListEmailAddress();
       A.Expando__checkType(t2);
-      t23 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+      t23 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
       A.Expando__checkType(t2);
-      t1.push(B.RecipientComposerWidget$(t10, t9, t12, t11, t13, t14, t8, t6, t16, t15, t5, E.EdgeInsetsDirectional_16_0_0_0, t7, t17, t20, _null, t18, t23, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t19, t22, t21, C.EdgeInsetsDirectional_0_0_16_0, C.PrefixEmailAddress_1));
+      t24 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+      A.Expando__checkType(t2);
+      t1.push(B.RecipientComposerWidget$(t11, t10, t13, t12, t14, t15, t9, t6, t17, t16, t5, E.EdgeInsetsDirectional_16_0_0_0, t7, t8, t18, t21, _null, t19, t24, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t20, t23, t22, C.EdgeInsetsDirectional_0_0_16_0, C.PrefixEmailAddress_1));
       A.Expando__checkType(t2);
       if (t4._as(t3.get(t2)).ccRecipientState.get$value(0) === C.PrefixRecipientState_0) {
         A.Expando__checkType(t2);
@@ -13965,33 +13967,35 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Expando__checkType(t2);
         t6 = t4._as(t3.get(t2)).imagePaths;
         A.Expando__checkType(t2);
-        t8 = t4._as(t3.get(t2)).ccAddressExpandMode.get$value(0);
+        t8 = t4._as(t3.get(t2)).mailboxDashBoardController.get$minInputLengthAutocomplete();
         A.Expando__checkType(t2);
-        t9 = t4._as(t3.get(t2)).ccEmailAddressController;
+        t9 = t4._as(t3.get(t2)).ccAddressExpandMode.get$value(0);
         A.Expando__checkType(t2);
-        t10 = t4._as(t3.get(t2)).ccAddressFocusNode;
+        t10 = t4._as(t3.get(t2)).ccEmailAddressController;
         A.Expando__checkType(t2);
-        t11 = t4._as(t3.get(t2)).ccAddressFocusNodeKeyboard;
+        t11 = t4._as(t3.get(t2)).ccAddressFocusNode;
         A.Expando__checkType(t2);
-        t12 = t4._as(t3.get(t2)).keyCcEmailTagEditor;
+        t12 = t4._as(t3.get(t2)).ccAddressFocusNodeKeyboard;
         A.Expando__checkType(t2);
-        t13 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
+        t13 = t4._as(t3.get(t2)).keyCcEmailTagEditor;
         A.Expando__checkType(t2);
-        t14 = t4._as(t3.get(t2)).getNextFocusOfCcEmailAddress$0();
+        t14 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
         A.Expando__checkType(t2);
-        t15 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
+        t15 = t4._as(t3.get(t2)).getNextFocusOfCcEmailAddress$0();
         A.Expando__checkType(t2);
-        t16 = t4._as(t3.get(t2)).get$showFullEmailAddress();
+        t16 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
         A.Expando__checkType(t2);
-        t17 = t4._as(t3.get(t2)).get$deleteEmailAddressType();
+        t17 = t4._as(t3.get(t2)).get$showFullEmailAddress();
         A.Expando__checkType(t2);
-        t18 = t4._as(t3.get(t2)).get$updateListEmailAddress();
+        t18 = t4._as(t3.get(t2)).get$deleteEmailAddressType();
         A.Expando__checkType(t2);
-        t19 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
+        t19 = t4._as(t3.get(t2)).get$updateListEmailAddress();
         A.Expando__checkType(t2);
-        t20 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+        t20 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
         A.Expando__checkType(t2);
-        t1.push(B.RecipientComposerWidget$(C.PrefixRecipientState_1, C.PrefixRecipientState_1, t9, t8, t10, t11, C.PrefixRecipientState_1, t6, t13, t12, t5, E.EdgeInsetsDirectional_16_0_0_0, t7, t14, _null, t17, t15, t20, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t16, t19, t18, C.EdgeInsetsDirectional_0_0_16_0, C.PrefixEmailAddress_2));
+        t21 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+        A.Expando__checkType(t2);
+        t1.push(B.RecipientComposerWidget$(C.PrefixRecipientState_1, C.PrefixRecipientState_1, t10, t9, t11, t12, C.PrefixRecipientState_1, t6, t14, t13, t5, E.EdgeInsetsDirectional_16_0_0_0, t7, t8, t15, _null, t18, t16, t21, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t17, t20, t19, C.EdgeInsetsDirectional_0_0_16_0, C.PrefixEmailAddress_2));
       }
       A.Expando__checkType(t2);
       if (t4._as(t3.get(t2)).bccRecipientState.get$value(0) === C.PrefixRecipientState_0) {
@@ -14000,33 +14004,35 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Expando__checkType(t2);
         t6 = t4._as(t3.get(t2)).imagePaths;
         A.Expando__checkType(t2);
-        t8 = t4._as(t3.get(t2)).bccAddressExpandMode.get$value(0);
+        t8 = t4._as(t3.get(t2)).mailboxDashBoardController.get$minInputLengthAutocomplete();
         A.Expando__checkType(t2);
-        t9 = t4._as(t3.get(t2)).bccEmailAddressController;
+        t9 = t4._as(t3.get(t2)).bccAddressExpandMode.get$value(0);
         A.Expando__checkType(t2);
-        t10 = t4._as(t3.get(t2)).bccAddressFocusNode;
+        t10 = t4._as(t3.get(t2)).bccEmailAddressController;
         A.Expando__checkType(t2);
-        t11 = t4._as(t3.get(t2)).bccAddressFocusNodeKeyboard;
+        t11 = t4._as(t3.get(t2)).bccAddressFocusNode;
         A.Expando__checkType(t2);
-        t12 = t4._as(t3.get(t2)).keyBccEmailTagEditor;
+        t12 = t4._as(t3.get(t2)).bccAddressFocusNodeKeyboard;
         A.Expando__checkType(t2);
-        t13 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
+        t13 = t4._as(t3.get(t2)).keyBccEmailTagEditor;
         A.Expando__checkType(t2);
-        t14 = t4._as(t3.get(t2)).subjectEmailInputFocusNode;
+        t14 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
         A.Expando__checkType(t2);
-        t15 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
+        t15 = t4._as(t3.get(t2)).subjectEmailInputFocusNode;
         A.Expando__checkType(t2);
-        t16 = t4._as(t3.get(t2)).get$showFullEmailAddress();
+        t16 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
         A.Expando__checkType(t2);
-        t17 = t4._as(t3.get(t2)).get$deleteEmailAddressType();
+        t17 = t4._as(t3.get(t2)).get$showFullEmailAddress();
         A.Expando__checkType(t2);
-        t18 = t4._as(t3.get(t2)).get$updateListEmailAddress();
+        t18 = t4._as(t3.get(t2)).get$deleteEmailAddressType();
         A.Expando__checkType(t2);
-        t19 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
+        t19 = t4._as(t3.get(t2)).get$updateListEmailAddress();
         A.Expando__checkType(t2);
-        t20 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+        t20 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
         A.Expando__checkType(t2);
-        t1.push(B.RecipientComposerWidget$(C.PrefixRecipientState_1, C.PrefixRecipientState_1, t9, t8, t10, t11, C.PrefixRecipientState_1, t6, t13, t12, t5, E.EdgeInsetsDirectional_16_0_0_0, t7, t14, _null, t17, t15, t20, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t16, t19, t18, C.EdgeInsetsDirectional_0_0_16_0, C.PrefixEmailAddress_3));
+        t21 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+        A.Expando__checkType(t2);
+        t1.push(B.RecipientComposerWidget$(C.PrefixRecipientState_1, C.PrefixRecipientState_1, t10, t9, t11, t12, C.PrefixRecipientState_1, t6, t14, t13, t5, E.EdgeInsetsDirectional_16_0_0_0, t7, t8, t15, _null, t18, t16, t21, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t17, t20, t19, C.EdgeInsetsDirectional_0_0_16_0, C.PrefixEmailAddress_3));
       }
       return A.Column$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
     },
@@ -14295,7 +14301,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ComposerView_build___closure19.prototype = {
     call$0() {
-      var t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23,
+      var t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24,
         t1 = A._setArrayType([], type$.JSArray_Widget),
         t2 = this.$this,
         t3 = $.$get$GetWidget__cache();
@@ -14320,39 +14326,41 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t6 = t4._as(t3.get(t2)).imagePaths;
       t7 = this.constraints.maxWidth;
       A.Expando__checkType(t2);
-      t8 = t4._as(t3.get(t2)).fromRecipientState.get$value(0);
+      t8 = t4._as(t3.get(t2)).mailboxDashBoardController.get$minInputLengthAutocomplete();
       A.Expando__checkType(t2);
-      t9 = t4._as(t3.get(t2)).ccRecipientState.get$value(0);
+      t9 = t4._as(t3.get(t2)).fromRecipientState.get$value(0);
       A.Expando__checkType(t2);
-      t10 = t4._as(t3.get(t2)).bccRecipientState.get$value(0);
+      t10 = t4._as(t3.get(t2)).ccRecipientState.get$value(0);
       A.Expando__checkType(t2);
-      t11 = t4._as(t3.get(t2)).toAddressExpandMode.get$value(0);
+      t11 = t4._as(t3.get(t2)).bccRecipientState.get$value(0);
       A.Expando__checkType(t2);
-      t12 = t4._as(t3.get(t2)).toEmailAddressController;
+      t12 = t4._as(t3.get(t2)).toAddressExpandMode.get$value(0);
       A.Expando__checkType(t2);
-      t13 = t4._as(t3.get(t2)).toAddressFocusNode;
+      t13 = t4._as(t3.get(t2)).toEmailAddressController;
       A.Expando__checkType(t2);
-      t14 = t4._as(t3.get(t2)).toAddressFocusNodeKeyboard;
+      t14 = t4._as(t3.get(t2)).toAddressFocusNode;
       A.Expando__checkType(t2);
-      t15 = t4._as(t3.get(t2)).keyToEmailTagEditor;
+      t15 = t4._as(t3.get(t2)).toAddressFocusNodeKeyboard;
       A.Expando__checkType(t2);
-      t16 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
+      t16 = t4._as(t3.get(t2)).keyToEmailTagEditor;
       A.Expando__checkType(t2);
-      t17 = t4._as(t3.get(t2)).getNextFocusOfToEmailAddress$0();
+      t17 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
       A.Expando__checkType(t2);
-      t18 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
+      t18 = t4._as(t3.get(t2)).getNextFocusOfToEmailAddress$0();
       A.Expando__checkType(t2);
-      t19 = t4._as(t3.get(t2)).get$showFullEmailAddress();
+      t19 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
       A.Expando__checkType(t2);
-      t20 = t4._as(t3.get(t2)).get$addEmailAddressType();
+      t20 = t4._as(t3.get(t2)).get$showFullEmailAddress();
       A.Expando__checkType(t2);
-      t21 = t4._as(t3.get(t2)).get$updateListEmailAddress();
+      t21 = t4._as(t3.get(t2)).get$addEmailAddressType();
       A.Expando__checkType(t2);
-      t22 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
+      t22 = t4._as(t3.get(t2)).get$updateListEmailAddress();
       A.Expando__checkType(t2);
-      t23 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+      t23 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
       A.Expando__checkType(t2);
-      t1.push(B.RecipientComposerWidget$(t10, t9, t12, t11, t13, t14, t8, t6, t16, t15, t5, D.EdgeInsetsDirectional_24_0_0_0, t7, t17, t20, null, t18, t23, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t19, t22, t21, D.EdgeInsetsDirectional_0_0_24_0, C.PrefixEmailAddress_1));
+      t24 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+      A.Expando__checkType(t2);
+      t1.push(B.RecipientComposerWidget$(t11, t10, t13, t12, t14, t15, t9, t6, t17, t16, t5, D.EdgeInsetsDirectional_24_0_0_0, t7, t8, t18, t21, null, t19, t24, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t20, t23, t22, D.EdgeInsetsDirectional_0_0_24_0, C.PrefixEmailAddress_1));
       A.Expando__checkType(t2);
       if (t4._as(t3.get(t2)).ccRecipientState.get$value(0) === C.PrefixRecipientState_0) {
         A.Expando__checkType(t2);
@@ -14360,33 +14368,35 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Expando__checkType(t2);
         t6 = t4._as(t3.get(t2)).imagePaths;
         A.Expando__checkType(t2);
-        t8 = t4._as(t3.get(t2)).ccAddressExpandMode.get$value(0);
+        t8 = t4._as(t3.get(t2)).mailboxDashBoardController.get$minInputLengthAutocomplete();
         A.Expando__checkType(t2);
-        t9 = t4._as(t3.get(t2)).ccEmailAddressController;
+        t9 = t4._as(t3.get(t2)).ccAddressExpandMode.get$value(0);
         A.Expando__checkType(t2);
-        t10 = t4._as(t3.get(t2)).ccAddressFocusNode;
+        t10 = t4._as(t3.get(t2)).ccEmailAddressController;
         A.Expando__checkType(t2);
-        t11 = t4._as(t3.get(t2)).ccAddressFocusNodeKeyboard;
+        t11 = t4._as(t3.get(t2)).ccAddressFocusNode;
         A.Expando__checkType(t2);
-        t12 = t4._as(t3.get(t2)).keyCcEmailTagEditor;
+        t12 = t4._as(t3.get(t2)).ccAddressFocusNodeKeyboard;
         A.Expando__checkType(t2);
-        t13 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
+        t13 = t4._as(t3.get(t2)).keyCcEmailTagEditor;
         A.Expando__checkType(t2);
-        t14 = t4._as(t3.get(t2)).getNextFocusOfCcEmailAddress$0();
+        t14 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
         A.Expando__checkType(t2);
-        t15 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
+        t15 = t4._as(t3.get(t2)).getNextFocusOfCcEmailAddress$0();
         A.Expando__checkType(t2);
-        t16 = t4._as(t3.get(t2)).get$showFullEmailAddress();
+        t16 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
         A.Expando__checkType(t2);
-        t17 = t4._as(t3.get(t2)).get$deleteEmailAddressType();
+        t17 = t4._as(t3.get(t2)).get$showFullEmailAddress();
         A.Expando__checkType(t2);
-        t18 = t4._as(t3.get(t2)).get$updateListEmailAddress();
+        t18 = t4._as(t3.get(t2)).get$deleteEmailAddressType();
         A.Expando__checkType(t2);
-        t19 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
+        t19 = t4._as(t3.get(t2)).get$updateListEmailAddress();
         A.Expando__checkType(t2);
-        t20 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+        t20 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
         A.Expando__checkType(t2);
-        t1.push(B.RecipientComposerWidget$(C.PrefixRecipientState_1, C.PrefixRecipientState_1, t9, t8, t10, t11, C.PrefixRecipientState_1, t6, t13, t12, t5, D.EdgeInsetsDirectional_24_0_0_0, t7, t14, null, t17, t15, t20, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t16, t19, t18, D.EdgeInsetsDirectional_0_0_24_0, C.PrefixEmailAddress_2));
+        t21 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+        A.Expando__checkType(t2);
+        t1.push(B.RecipientComposerWidget$(C.PrefixRecipientState_1, C.PrefixRecipientState_1, t10, t9, t11, t12, C.PrefixRecipientState_1, t6, t14, t13, t5, D.EdgeInsetsDirectional_24_0_0_0, t7, t8, t15, null, t18, t16, t21, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t17, t20, t19, D.EdgeInsetsDirectional_0_0_24_0, C.PrefixEmailAddress_2));
       }
       A.Expando__checkType(t2);
       if (t4._as(t3.get(t2)).bccRecipientState.get$value(0) === C.PrefixRecipientState_0) {
@@ -14395,33 +14405,35 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Expando__checkType(t2);
         t6 = t4._as(t3.get(t2)).imagePaths;
         A.Expando__checkType(t2);
-        t8 = t4._as(t3.get(t2)).bccAddressExpandMode.get$value(0);
+        t8 = t4._as(t3.get(t2)).mailboxDashBoardController.get$minInputLengthAutocomplete();
         A.Expando__checkType(t2);
-        t9 = t4._as(t3.get(t2)).bccEmailAddressController;
+        t9 = t4._as(t3.get(t2)).bccAddressExpandMode.get$value(0);
         A.Expando__checkType(t2);
-        t10 = t4._as(t3.get(t2)).bccAddressFocusNode;
+        t10 = t4._as(t3.get(t2)).bccEmailAddressController;
         A.Expando__checkType(t2);
-        t11 = t4._as(t3.get(t2)).bccAddressFocusNodeKeyboard;
+        t11 = t4._as(t3.get(t2)).bccAddressFocusNode;
         A.Expando__checkType(t2);
-        t12 = t4._as(t3.get(t2)).keyBccEmailTagEditor;
+        t12 = t4._as(t3.get(t2)).bccAddressFocusNodeKeyboard;
         A.Expando__checkType(t2);
-        t13 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
+        t13 = t4._as(t3.get(t2)).keyBccEmailTagEditor;
         A.Expando__checkType(t2);
-        t14 = t4._as(t3.get(t2)).subjectEmailInputFocusNode;
+        t14 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
         A.Expando__checkType(t2);
-        t15 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
+        t15 = t4._as(t3.get(t2)).subjectEmailInputFocusNode;
         A.Expando__checkType(t2);
-        t16 = t4._as(t3.get(t2)).get$showFullEmailAddress();
+        t16 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
         A.Expando__checkType(t2);
-        t17 = t4._as(t3.get(t2)).get$deleteEmailAddressType();
+        t17 = t4._as(t3.get(t2)).get$showFullEmailAddress();
         A.Expando__checkType(t2);
-        t18 = t4._as(t3.get(t2)).get$updateListEmailAddress();
+        t18 = t4._as(t3.get(t2)).get$deleteEmailAddressType();
         A.Expando__checkType(t2);
-        t19 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
+        t19 = t4._as(t3.get(t2)).get$updateListEmailAddress();
         A.Expando__checkType(t2);
-        t20 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+        t20 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
         A.Expando__checkType(t2);
-        t1.push(B.RecipientComposerWidget$(C.PrefixRecipientState_1, C.PrefixRecipientState_1, t9, t8, t10, t11, C.PrefixRecipientState_1, t6, t13, t12, t5, D.EdgeInsetsDirectional_24_0_0_0, t7, t14, null, t17, t15, t20, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t16, t19, t18, D.EdgeInsetsDirectional_0_0_24_0, C.PrefixEmailAddress_3));
+        t21 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+        A.Expando__checkType(t2);
+        t1.push(B.RecipientComposerWidget$(C.PrefixRecipientState_1, C.PrefixRecipientState_1, t10, t9, t11, t12, C.PrefixRecipientState_1, t6, t14, t13, t5, D.EdgeInsetsDirectional_24_0_0_0, t7, t8, t15, null, t18, t16, t21, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t17, t20, t19, D.EdgeInsetsDirectional_0_0_24_0, C.PrefixEmailAddress_3));
       }
       return A.Column$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
     },
@@ -14743,7 +14755,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ComposerView_build__closure.prototype = {
     call$0() {
-      var t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23,
+      var t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24,
         t1 = A._setArrayType([], type$.JSArray_Widget),
         t2 = this.$this,
         t3 = $.$get$GetWidget__cache();
@@ -14768,39 +14780,41 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t6 = t4._as(t3.get(t2)).imagePaths;
       t7 = this.constraints.maxWidth;
       A.Expando__checkType(t2);
-      t8 = t4._as(t3.get(t2)).fromRecipientState.get$value(0);
+      t8 = t4._as(t3.get(t2)).mailboxDashBoardController.get$minInputLengthAutocomplete();
       A.Expando__checkType(t2);
-      t9 = t4._as(t3.get(t2)).ccRecipientState.get$value(0);
+      t9 = t4._as(t3.get(t2)).fromRecipientState.get$value(0);
       A.Expando__checkType(t2);
-      t10 = t4._as(t3.get(t2)).bccRecipientState.get$value(0);
+      t10 = t4._as(t3.get(t2)).ccRecipientState.get$value(0);
       A.Expando__checkType(t2);
-      t11 = t4._as(t3.get(t2)).toAddressExpandMode.get$value(0);
+      t11 = t4._as(t3.get(t2)).bccRecipientState.get$value(0);
       A.Expando__checkType(t2);
-      t12 = t4._as(t3.get(t2)).toEmailAddressController;
+      t12 = t4._as(t3.get(t2)).toAddressExpandMode.get$value(0);
       A.Expando__checkType(t2);
-      t13 = t4._as(t3.get(t2)).toAddressFocusNode;
+      t13 = t4._as(t3.get(t2)).toEmailAddressController;
       A.Expando__checkType(t2);
-      t14 = t4._as(t3.get(t2)).toAddressFocusNodeKeyboard;
+      t14 = t4._as(t3.get(t2)).toAddressFocusNode;
       A.Expando__checkType(t2);
-      t15 = t4._as(t3.get(t2)).keyToEmailTagEditor;
+      t15 = t4._as(t3.get(t2)).toAddressFocusNodeKeyboard;
       A.Expando__checkType(t2);
-      t16 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
+      t16 = t4._as(t3.get(t2)).keyToEmailTagEditor;
       A.Expando__checkType(t2);
-      t17 = t4._as(t3.get(t2)).getNextFocusOfToEmailAddress$0();
+      t17 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
       A.Expando__checkType(t2);
-      t18 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
+      t18 = t4._as(t3.get(t2)).getNextFocusOfToEmailAddress$0();
       A.Expando__checkType(t2);
-      t19 = t4._as(t3.get(t2)).get$showFullEmailAddress();
+      t19 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
       A.Expando__checkType(t2);
-      t20 = t4._as(t3.get(t2)).get$addEmailAddressType();
+      t20 = t4._as(t3.get(t2)).get$showFullEmailAddress();
       A.Expando__checkType(t2);
-      t21 = t4._as(t3.get(t2)).get$updateListEmailAddress();
+      t21 = t4._as(t3.get(t2)).get$addEmailAddressType();
       A.Expando__checkType(t2);
-      t22 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
+      t22 = t4._as(t3.get(t2)).get$updateListEmailAddress();
       A.Expando__checkType(t2);
-      t23 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+      t23 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
       A.Expando__checkType(t2);
-      t1.push(B.RecipientComposerWidget$(t10, t9, t12, t11, t13, t14, t8, t6, t16, t15, t5, D.EdgeInsetsDirectional_24_0_0_0, t7, t17, t20, null, t18, t23, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t19, t22, t21, D.EdgeInsetsDirectional_0_0_24_0, C.PrefixEmailAddress_1));
+      t24 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+      A.Expando__checkType(t2);
+      t1.push(B.RecipientComposerWidget$(t11, t10, t13, t12, t14, t15, t9, t6, t17, t16, t5, D.EdgeInsetsDirectional_24_0_0_0, t7, t8, t18, t21, null, t19, t24, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t20, t23, t22, D.EdgeInsetsDirectional_0_0_24_0, C.PrefixEmailAddress_1));
       A.Expando__checkType(t2);
       if (t4._as(t3.get(t2)).ccRecipientState.get$value(0) === C.PrefixRecipientState_0) {
         A.Expando__checkType(t2);
@@ -14808,33 +14822,35 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Expando__checkType(t2);
         t6 = t4._as(t3.get(t2)).imagePaths;
         A.Expando__checkType(t2);
-        t8 = t4._as(t3.get(t2)).ccAddressExpandMode.get$value(0);
+        t8 = t4._as(t3.get(t2)).mailboxDashBoardController.get$minInputLengthAutocomplete();
         A.Expando__checkType(t2);
-        t9 = t4._as(t3.get(t2)).ccEmailAddressController;
+        t9 = t4._as(t3.get(t2)).ccAddressExpandMode.get$value(0);
         A.Expando__checkType(t2);
-        t10 = t4._as(t3.get(t2)).ccAddressFocusNode;
+        t10 = t4._as(t3.get(t2)).ccEmailAddressController;
         A.Expando__checkType(t2);
-        t11 = t4._as(t3.get(t2)).ccAddressFocusNodeKeyboard;
+        t11 = t4._as(t3.get(t2)).ccAddressFocusNode;
         A.Expando__checkType(t2);
-        t12 = t4._as(t3.get(t2)).keyCcEmailTagEditor;
+        t12 = t4._as(t3.get(t2)).ccAddressFocusNodeKeyboard;
         A.Expando__checkType(t2);
-        t13 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
+        t13 = t4._as(t3.get(t2)).keyCcEmailTagEditor;
         A.Expando__checkType(t2);
-        t14 = t4._as(t3.get(t2)).getNextFocusOfCcEmailAddress$0();
+        t14 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
         A.Expando__checkType(t2);
-        t15 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
+        t15 = t4._as(t3.get(t2)).getNextFocusOfCcEmailAddress$0();
         A.Expando__checkType(t2);
-        t16 = t4._as(t3.get(t2)).get$showFullEmailAddress();
+        t16 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
         A.Expando__checkType(t2);
-        t17 = t4._as(t3.get(t2)).get$deleteEmailAddressType();
+        t17 = t4._as(t3.get(t2)).get$showFullEmailAddress();
         A.Expando__checkType(t2);
-        t18 = t4._as(t3.get(t2)).get$updateListEmailAddress();
+        t18 = t4._as(t3.get(t2)).get$deleteEmailAddressType();
         A.Expando__checkType(t2);
-        t19 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
+        t19 = t4._as(t3.get(t2)).get$updateListEmailAddress();
         A.Expando__checkType(t2);
-        t20 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+        t20 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
         A.Expando__checkType(t2);
-        t1.push(B.RecipientComposerWidget$(C.PrefixRecipientState_1, C.PrefixRecipientState_1, t9, t8, t10, t11, C.PrefixRecipientState_1, t6, t13, t12, t5, D.EdgeInsetsDirectional_24_0_0_0, t7, t14, null, t17, t15, t20, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t16, t19, t18, D.EdgeInsetsDirectional_0_0_24_0, C.PrefixEmailAddress_2));
+        t21 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+        A.Expando__checkType(t2);
+        t1.push(B.RecipientComposerWidget$(C.PrefixRecipientState_1, C.PrefixRecipientState_1, t10, t9, t11, t12, C.PrefixRecipientState_1, t6, t14, t13, t5, D.EdgeInsetsDirectional_24_0_0_0, t7, t8, t15, null, t18, t16, t21, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t17, t20, t19, D.EdgeInsetsDirectional_0_0_24_0, C.PrefixEmailAddress_2));
       }
       A.Expando__checkType(t2);
       if (t4._as(t3.get(t2)).bccRecipientState.get$value(0) === C.PrefixRecipientState_0) {
@@ -14843,33 +14859,35 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Expando__checkType(t2);
         t6 = t4._as(t3.get(t2)).imagePaths;
         A.Expando__checkType(t2);
-        t8 = t4._as(t3.get(t2)).bccAddressExpandMode.get$value(0);
+        t8 = t4._as(t3.get(t2)).mailboxDashBoardController.get$minInputLengthAutocomplete();
         A.Expando__checkType(t2);
-        t9 = t4._as(t3.get(t2)).bccEmailAddressController;
+        t9 = t4._as(t3.get(t2)).bccAddressExpandMode.get$value(0);
         A.Expando__checkType(t2);
-        t10 = t4._as(t3.get(t2)).bccAddressFocusNode;
+        t10 = t4._as(t3.get(t2)).bccEmailAddressController;
         A.Expando__checkType(t2);
-        t11 = t4._as(t3.get(t2)).bccAddressFocusNodeKeyboard;
+        t11 = t4._as(t3.get(t2)).bccAddressFocusNode;
         A.Expando__checkType(t2);
-        t12 = t4._as(t3.get(t2)).keyBccEmailTagEditor;
+        t12 = t4._as(t3.get(t2)).bccAddressFocusNodeKeyboard;
         A.Expando__checkType(t2);
-        t13 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
+        t13 = t4._as(t3.get(t2)).keyBccEmailTagEditor;
         A.Expando__checkType(t2);
-        t14 = t4._as(t3.get(t2)).subjectEmailInputFocusNode;
+        t14 = t4._as(t3.get(t2)).isInitialRecipient.get$value(0);
         A.Expando__checkType(t2);
-        t15 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
+        t15 = t4._as(t3.get(t2)).subjectEmailInputFocusNode;
         A.Expando__checkType(t2);
-        t16 = t4._as(t3.get(t2)).get$showFullEmailAddress();
+        t16 = t4._as(t3.get(t2)).get$onEmailAddressFocusChange();
         A.Expando__checkType(t2);
-        t17 = t4._as(t3.get(t2)).get$deleteEmailAddressType();
+        t17 = t4._as(t3.get(t2)).get$showFullEmailAddress();
         A.Expando__checkType(t2);
-        t18 = t4._as(t3.get(t2)).get$updateListEmailAddress();
+        t18 = t4._as(t3.get(t2)).get$deleteEmailAddressType();
         A.Expando__checkType(t2);
-        t19 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
+        t19 = t4._as(t3.get(t2)).get$updateListEmailAddress();
         A.Expando__checkType(t2);
-        t20 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+        t20 = t4._as(t3.get(t2)).get$getAutoCompleteSuggestion();
         A.Expando__checkType(t2);
-        t1.push(B.RecipientComposerWidget$(C.PrefixRecipientState_1, C.PrefixRecipientState_1, t9, t8, t10, t11, C.PrefixRecipientState_1, t6, t13, t12, t5, D.EdgeInsetsDirectional_24_0_0_0, t7, t14, null, t17, t15, t20, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t16, t19, t18, D.EdgeInsetsDirectional_0_0_24_0, C.PrefixEmailAddress_3));
+        t21 = t4._as(t3.get(t2)).get$handleFocusNextAddressAction();
+        A.Expando__checkType(t2);
+        t1.push(B.RecipientComposerWidget$(C.PrefixRecipientState_1, C.PrefixRecipientState_1, t10, t9, t11, t12, C.PrefixRecipientState_1, t6, t14, t13, t5, D.EdgeInsetsDirectional_24_0_0_0, t7, t8, t15, null, t18, t16, t21, t4._as(t3.get(t2)).get$removeDraggableEmailAddress(), t17, t20, t19, D.EdgeInsetsDirectional_0_0_24_0, C.PrefixEmailAddress_3));
       }
       return A.Column$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
     },
@@ -18067,7 +18085,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.AdvancedSearchInputForm_build_closure5.prototype = {
     call$0() {
-      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13,
+      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -18077,31 +18095,33 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t5 = t3._as(t2.get(t1)).fromAddressExpandMode.get$value(0);
       A.Expando__checkType(t1);
-      t6 = t3._as(t2.get(t1)).fromEmailAddressController;
+      t6 = t3._as(t2.get(t1))._advanced_filter_controller$_mailboxDashBoardController.get$minInputLengthAutocomplete();
       A.Expando__checkType(t1);
-      t7 = t3._as(t2.get(t1)).focusManager.__InputFieldFocusManager_fromFieldFocusNode_A;
-      t7 === $ && A.throwUnnamedLateFieldNI();
+      t7 = t3._as(t2.get(t1)).fromEmailAddressController;
       A.Expando__checkType(t1);
-      t8 = t3._as(t2.get(t1)).focusManager.__InputFieldFocusManager_toFieldFocusNode_A;
+      t8 = t3._as(t2.get(t1)).focusManager.__InputFieldFocusManager_fromFieldFocusNode_A;
       t8 === $ && A.throwUnnamedLateFieldNI();
       A.Expando__checkType(t1);
-      t9 = t3._as(t2.get(t1)).keyFromEmailTagEditor;
+      t9 = t3._as(t2.get(t1)).focusManager.__InputFieldFocusManager_toFieldFocusNode_A;
+      t9 === $ && A.throwUnnamedLateFieldNI();
       A.Expando__checkType(t1);
-      t10 = t3._as(t2.get(t1)).get$showFullEmailAddress();
+      t10 = t3._as(t2.get(t1)).keyFromEmailTagEditor;
       A.Expando__checkType(t1);
-      t11 = t3._as(t2.get(t1)).get$updateListEmailAddress();
+      t11 = t3._as(t2.get(t1)).get$showFullEmailAddress();
       A.Expando__checkType(t1);
-      t12 = t3._as(t2.get(t1)).get$getAutoCompleteSuggestion();
+      t12 = t3._as(t2.get(t1)).get$updateListEmailAddress();
       A.Expando__checkType(t1);
-      t13 = t3._as(t2.get(t1)).get$onSearchAction();
+      t13 = t3._as(t2.get(t1)).get$getAutoCompleteSuggestion();
       A.Expando__checkType(t1);
-      return B.TextFieldAutocompleteEmailAddressWeb$(t6, t5, C.AdvancedSearchFilterField_0, t7, t9, t4, t8, t3._as(t2.get(t1)).get$removeDraggableEmailAddress(), t13, t10, t12, t11);
+      t14 = t3._as(t2.get(t1)).get$onSearchAction();
+      A.Expando__checkType(t1);
+      return B.TextFieldAutocompleteEmailAddressWeb$(t7, t5, C.AdvancedSearchFilterField_0, t8, t10, t4, t6, t9, t3._as(t2.get(t1)).get$removeDraggableEmailAddress(), t14, t11, t13, t12);
     },
     $signature: typesOffset + 18
   };
   B.AdvancedSearchInputForm_build_closure6.prototype = {
     call$0() {
-      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13,
+      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -18111,25 +18131,27 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t5 = t3._as(t2.get(t1)).toAddressExpandMode.get$value(0);
       A.Expando__checkType(t1);
-      t6 = t3._as(t2.get(t1)).toEmailAddressController;
+      t6 = t3._as(t2.get(t1))._advanced_filter_controller$_mailboxDashBoardController.get$minInputLengthAutocomplete();
       A.Expando__checkType(t1);
-      t7 = t3._as(t2.get(t1)).focusManager.__InputFieldFocusManager_toFieldFocusNode_A;
-      t7 === $ && A.throwUnnamedLateFieldNI();
+      t7 = t3._as(t2.get(t1)).toEmailAddressController;
       A.Expando__checkType(t1);
-      t8 = t3._as(t2.get(t1)).focusManager._input_field_focus_manager$__InputFieldFocusManager_subjectFieldFocusNode_A;
+      t8 = t3._as(t2.get(t1)).focusManager.__InputFieldFocusManager_toFieldFocusNode_A;
       t8 === $ && A.throwUnnamedLateFieldNI();
       A.Expando__checkType(t1);
-      t9 = t3._as(t2.get(t1)).keyToEmailTagEditor;
+      t9 = t3._as(t2.get(t1)).focusManager._input_field_focus_manager$__InputFieldFocusManager_subjectFieldFocusNode_A;
+      t9 === $ && A.throwUnnamedLateFieldNI();
       A.Expando__checkType(t1);
-      t10 = t3._as(t2.get(t1)).get$showFullEmailAddress();
+      t10 = t3._as(t2.get(t1)).keyToEmailTagEditor;
       A.Expando__checkType(t1);
-      t11 = t3._as(t2.get(t1)).get$updateListEmailAddress();
+      t11 = t3._as(t2.get(t1)).get$showFullEmailAddress();
       A.Expando__checkType(t1);
-      t12 = t3._as(t2.get(t1)).get$getAutoCompleteSuggestion();
+      t12 = t3._as(t2.get(t1)).get$updateListEmailAddress();
       A.Expando__checkType(t1);
-      t13 = t3._as(t2.get(t1)).get$onSearchAction();
+      t13 = t3._as(t2.get(t1)).get$getAutoCompleteSuggestion();
       A.Expando__checkType(t1);
-      return B.TextFieldAutocompleteEmailAddressWeb$(t6, t5, C.AdvancedSearchFilterField_1, t7, t9, t4, t8, t3._as(t2.get(t1)).get$removeDraggableEmailAddress(), t13, t10, t12, t11);
+      t14 = t3._as(t2.get(t1)).get$onSearchAction();
+      A.Expando__checkType(t1);
+      return B.TextFieldAutocompleteEmailAddressWeb$(t7, t5, C.AdvancedSearchFilterField_1, t8, t10, t4, t6, t9, t3._as(t2.get(t1)).get$removeDraggableEmailAddress(), t14, t11, t13, t12);
     },
     $signature: typesOffset + 18
   };
@@ -18772,18 +18794,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchInputFormWidget_build_closure.prototype = {
     call$0() {
-      var t6, t7, _null = null,
+      var t6, t7, t8, t9, _null = null,
         t1 = this.$this,
         t2 = t1._searchController,
         t3 = t2.isAdvancedSearchViewOpen,
         t4 = t3.get$value(0),
         t5 = A.PointerInterceptor$(A.GestureDetector$(C.HitTestBehavior_1, _null, C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t2.get$closeAdvanceSearch(), _null, _null, _null, _null, _null, _null, _null, false, C.Offset_7BT));
       t3 = t3.get$value(0);
-      t6 = this.context;
-      t7 = t1._createConfiguration$1(t6);
-      A.Localizations_of(t6, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       t6 = t1._search_input_form_widget$_dashBoardController;
-      return A.PortalTarget$(C.C_Filled, A.PortalTarget$(E.Aligned_wEo, B.QuickSearchInputForm$(new B.SearchInputFormWidget_build__closure(t1), new B.SearchInputFormWidget_build__closure0(t1), new B.SearchInputFormWidget_build__closure1(t1), new B.SearchInputFormWidget_build__closure2(), t6.get$getContactSuggestion(), C.Duration_300000, t2.get$getAllRecentSearchAction(), new B.SearchInputFormWidget_build__closure3(t1), new B.SearchInputFormWidget_build__closure4(), D.List_LB7, D.EdgeInsets_12_12_12_6, new B.SearchInputFormWidget_build__closure5(t1), 52, 3, t1.get$_invokeSelectContactSuggestion(), t1.get$_invokeSelectRecentItem(), t1.get$_invokeSelectSuggestionItem(), D.QuickSearchSuggestionsBoxDecoration_7K0, 0, t6.get$quickSearchEmails(), t7, new A.Padding(D.EdgeInsets_12_12_12_8, A.Text$(A.Intl__message("Recent", _null, "recent", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_5Ry2, _null, _null, _null, _null, _null), _null), type$.PresentationEmail, type$.EmailAddress, type$.RecentSearch), D.AdvancedSearchFilterOverlay_null, t3), t5, t4);
+      t7 = t6.get$minInputLengthAutocomplete();
+      t8 = this.context;
+      t9 = t1._createConfiguration$1(t8);
+      A.Localizations_of(t8, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+      return A.PortalTarget$(C.C_Filled, A.PortalTarget$(E.Aligned_wEo, B.QuickSearchInputForm$(new B.SearchInputFormWidget_build__closure(t1), new B.SearchInputFormWidget_build__closure0(t1), new B.SearchInputFormWidget_build__closure1(t1), new B.SearchInputFormWidget_build__closure2(), t6.get$getContactSuggestion(), C.Duration_300000, t2.get$getAllRecentSearchAction(), new B.SearchInputFormWidget_build__closure3(t1), new B.SearchInputFormWidget_build__closure4(), D.List_LB7, D.EdgeInsets_12_12_12_6, new B.SearchInputFormWidget_build__closure5(t1), 52, t7, t1.get$_invokeSelectContactSuggestion(), t1.get$_invokeSelectRecentItem(), t1.get$_invokeSelectSuggestionItem(), D.QuickSearchSuggestionsBoxDecoration_7K0, 0, t6.get$quickSearchEmails(), t9, new A.Padding(D.EdgeInsets_12_12_12_8, A.Text$(A.Intl__message("Recent", _null, "recent", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_5Ry2, _null, _null, _null, _null, _null), _null), type$.PresentationEmail, type$.EmailAddress, type$.RecentSearch), D.AdvancedSearchFilterOverlay_null, t3), t5, t4);
     },
     $signature: 352
   };
@@ -21880,5 +21903,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "LF03eg5mEwPNtlOAM3uuIYzx2OY=");
+})($__dart_deferred_initializers__, "Otdbv2l4kNuP9Pvnq7wd7AdsfCk=");
 ;

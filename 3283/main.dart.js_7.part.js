@@ -323,7 +323,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _ForwardView_GetWidget_AppLoaderMixin: function _ForwardView_GetWidget_AppLoaderMixin() {
     },
-    AutocompleteContactTextFieldWithTags: function AutocompleteContactTextFieldWithTags(t0, t1, t2, t3, t4, t5, t6, t7) {
+    AutocompleteContactTextFieldWithTags: function AutocompleteContactTextFieldWithTags(t0, t1, t2, t3, t4, t5, t6, t7, t8) {
       var _ = this;
       _.listEmailAddress = t0;
       _.controller = t1;
@@ -332,7 +332,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.onAddContactCallback = t4;
       _.onExceptionCallback = t5;
       _.internalDomain = t6;
-      _.key = t7;
+      _.minInputLengthAutocomplete = t7;
+      _.key = t8;
     },
     _AutocompleteContactTextFieldWithTagsState: function _AutocompleteContactTextFieldWithTagsState(t0, t1, t2, t3) {
       var _ = this;
@@ -2082,7 +2083,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return new A.Obx(new C.ForwardView__buildLoadingView_closure(this), null);
     },
     _buildAddRecipientsFormWidget$1(context) {
-      var t2, t3, t4, t5, _this = this,
+      var t2, t3, t4, t5, t6, _this = this,
         t1 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
       t1 = t1._jsWeakMap;
@@ -2095,12 +2096,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t4 == null)
         t4 = "";
       A.Expando__checkType(_this);
-      t5 = t2._as(t1.get(_this)).__ForwardController_recipientController_A;
-      t5 === $ && A.throwUnnamedLateFieldNI();
+      t5 = t2._as(t1.get(_this)).accountDashBoardController.get$minInputLengthAutocomplete();
+      A.Expando__checkType(_this);
+      t6 = t2._as(t1.get(_this)).__ForwardController_recipientController_A;
+      t6 === $ && A.throwUnnamedLateFieldNI();
       A.Expando__checkType(_this);
       t1 = t2._as(t1.get(_this)).__ForwardController_recipientController_A;
       t1 === $ && A.throwUnnamedLateFieldNI();
-      return new C.AutocompleteContactTextFieldWithTags(t3.listRecipients, t5.inputRecipientController, true, t1.get$getAutoCompleteSuggestion(), new C.ForwardView__buildAddRecipientsFormWidget_closure(_this, context), new C.ForwardView__buildAddRecipientsFormWidget_closure0(_this, context), t4, null);
+      return new C.AutocompleteContactTextFieldWithTags(t3.listRecipients, t6.inputRecipientController, true, t1.get$getAutoCompleteSuggestion(), new C.ForwardView__buildAddRecipientsFormWidget_closure(_this, context), new C.ForwardView__buildAddRecipientsFormWidget_closure0(_this, context), t4, t5, null);
     }
   };
   C._ForwardView_GetWidget_AppLoaderMixin.prototype = {};
@@ -2151,7 +2154,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _findSuggestions$body$_AutocompleteContactTextFieldWithTagsState(query) {
       var $async$goto = 0,
         $async$completer = A._makeAsyncAwaitCompleter(type$.List_SuggestionEmailAddress),
-        $async$returnValue, $async$self = this, t1, teamMailSuggestion, t2, addedEmailAddresses, currentTextOnTextField, processedQuery;
+        $async$returnValue, $async$self = this, t2, teamMailSuggestion, currentTextOnTextField, processedQuery, t1, $async$temp1;
       var $async$_autocomplete_contact_text_field_with_tags$_findSuggestions$1 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
         if ($async$errorCode === 1)
           return A._asyncRethrow($async$result, $async$completer);
@@ -2160,22 +2163,29 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
             case 0:
               // Function start
               processedQuery = B.JSString_methods.trim$0(query);
-              if (processedQuery.length === 0) {
+              t1 = processedQuery.length;
+              if (t1 === 0) {
                 $async$returnValue = A._setArrayType([], type$.JSArray_SuggestionEmailAddress);
                 // goto return
                 $async$goto = 1;
                 break;
               }
-              t1 = type$.SuggestionEmailAddress;
-              teamMailSuggestion = J.JSArray_JSArray$growable(0, t1);
-              t2 = $async$self._widget;
-              $async$goto = 3;
-              return A._asyncAwait(t2.onSuggestionCallback.call$1(processedQuery), $async$_autocomplete_contact_text_field_with_tags$_findSuggestions$1);
+              t2 = type$.SuggestionEmailAddress;
+              teamMailSuggestion = J.JSArray_JSArray$growable(0, t2);
+              t1 = t1 >= $async$self._widget.minInputLengthAutocomplete;
+              $async$goto = t1 ? 3 : 4;
+              break;
             case 3:
+              // then
+              $async$temp1 = J;
+              $async$goto = 5;
+              return A._asyncAwait($async$self._widget.onSuggestionCallback.call$1(processedQuery), $async$_autocomplete_contact_text_field_with_tags$_findSuggestions$1);
+            case 5:
               // returning from await.
-              addedEmailAddresses = $async$result;
-              t1 = J.map$1$1$ax(addedEmailAddresses, new C._AutocompleteContactTextFieldWithTagsState__findSuggestions_closure($async$self), t1);
+              t1 = $async$temp1.map$1$1$ax($async$result, new C._AutocompleteContactTextFieldWithTagsState__findSuggestions_closure($async$self), t2);
               B.JSArray_methods.addAll$1(teamMailSuggestion, A.List_List$of(t1, true, t1.$ti._eval$1("ListIterable.E")));
+            case 4:
+              // join
               t1 = $async$self.___AutocompleteContactTextFieldWithTagsState_listEmailAddress_A;
               t1 === $ && A.throwUnnamedLateFieldNI();
               B.JSArray_methods.addAll$1(teamMailSuggestion, $async$self._autocomplete_contact_text_field_with_tags$_matchedSuggestionEmailAddress$2(processedQuery, t1));
@@ -5848,5 +5858,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_7", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "F3yg7ziGjxsZoeDDxFfJh1xT8ug=");
+})($__dart_deferred_initializers__, "F5BNopDGY+cGv78iDSx9IHdQYdE=");
 ;
