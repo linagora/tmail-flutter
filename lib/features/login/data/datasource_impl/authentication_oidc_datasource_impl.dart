@@ -74,9 +74,9 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   }
 
   @override
-  Future<void> persistAuthorityOidc(String authority) {
+  Future<void> persistOidcConfiguration(OIDCConfiguration oidcConfiguration) {
     return Future.sync(() async {
-      return await _oidcConfigurationCacheManager.persistAuthorityOidc(authority);
+      return await _oidcConfigurationCacheManager.persistOidcConfiguration(oidcConfiguration);
     }).catchError(_cacheExceptionThrower.throwException);
   }
 
@@ -106,9 +106,9 @@ class AuthenticationOIDCDataSourceImpl extends AuthenticationOIDCDataSource {
   }
 
   @override
-  Future<void> deleteAuthorityOidc() {
+  Future<void> deleteOidcConfiguration() {
     return Future.sync(() async {
-      return await _oidcConfigurationCacheManager.deleteAuthorityOidc();
+      return await _oidcConfigurationCacheManager.deleteOidcConfiguration();
     }).catchError(_exceptionThrower.throwException);
   }
 

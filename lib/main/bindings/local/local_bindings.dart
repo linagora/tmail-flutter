@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/caching/clients/firebase_registration_cac
 import 'package:tmail_ui_user/features/caching/clients/hive_cache_version_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/new_email_hive_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/oidc_configuration_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/opened_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_login_url_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_login_username_cache_client.dart';
@@ -70,7 +71,8 @@ class LocalBindings extends Bindings {
     Get.put(EncryptionKeyCacheManager(Get.find<EncryptionKeyCacheClient>()));
     Get.put(AuthenticationInfoCacheClient());
     Get.put(AuthenticationInfoCacheManager(Get.find<AuthenticationInfoCacheClient>()));
-    Get.put(OidcConfigurationCacheManager(Get.find<SharedPreferences>()));
+    Get.put(OidcConfigurationCacheClient());
+    Get.put(OidcConfigurationCacheManager(Get.find<SharedPreferences>(), Get.find<OidcConfigurationCacheClient>()));
     Get.put(LanguageCacheManager(Get.find<SharedPreferences>()));
     Get.put(RecentLoginUrlCacheClient());
     Get.put(RecentLoginUrlCacheManager((Get.find<RecentLoginUrlCacheClient>())));

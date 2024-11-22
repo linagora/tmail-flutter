@@ -32,7 +32,7 @@ class AutoSignInViaDeepLinkInteractor {
       await Future.wait([
         _credentialRepository.saveBaseUrl(baseUri),
         _authenticationOIDCRepository.persistTokenOIDC(tokenOIDC),
-        _authenticationOIDCRepository.persistAuthorityOidc(oidcConfiguration.authority),
+        _authenticationOIDCRepository.persistOidcConfiguration(oidcConfiguration),
       ]);
 
       await _accountRepository.setCurrentAccount(

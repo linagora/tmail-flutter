@@ -4346,24 +4346,24 @@ class AppLocalizations {
     );
   }
 
-  String get logoutConfirmation {
+  String get switchAccountConfirmation {
     return Intl.message(
-      'Logout Confirmation',
-      name: 'logoutConfirmation',
+      'Switch Account Confirmation',
+      name: 'switchAccountConfirmation',
     );
   }
 
-  String get yesLogout {
+  String get youAreCurrentlyLoggedInWith {
     return Intl.message(
-      'Yes, Log out',
-      name: 'yesLogout',
+      'You are currently logged in with',
+      name: 'youAreCurrentlyLoggedInWith',
     );
   }
 
-  String get doYouWantToLogoutOf {
+  String get doYouWantToLogOutAndSwitchTo {
     return Intl.message(
-      'Do you want to log out of',
-      name: 'doYouWantToLogoutOf',
+      'Do you want to log out and switch to',
+      name: 'doYouWantToLogOutAndSwitchTo',
     );
   }
 }

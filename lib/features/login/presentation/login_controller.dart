@@ -58,6 +58,7 @@ import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_twake_
 import 'package:tmail_ui_user/features/starting_page/domain/usecase/sign_in_twake_workplace_interactor.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
+import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -163,6 +164,7 @@ class LoginController extends ReloadableController {
     } else if (failure is GetAuthenticatedAccountFailure) {
       _checkOIDCIsAvailable();
     } else if (failure is GetSessionFailure) {
+      SmartDialog.dismiss();
       clearAllData();
     } else if (failure is DNSLookupToGetJmapUrlFailure) {
       _username = null;
@@ -218,6 +220,7 @@ class LoginController extends ReloadableController {
       _handleNoSuitableBrowserOIDC(failure)
         .map((stillFailed) => _handleCommonOIDCFailure());
     } else if (failure is GetSessionFailure) {
+      SmartDialog.dismiss();
       clearAllData();
     } else {
       super.handleUrgentException(failure: failure, exception: exception);
@@ -234,12 +237,6 @@ class LoginController extends ReloadableController {
     );
   }
 
-  @override
-  void handleGetSessionFailure(GetSessionFailure failure) {
-    SmartDialog.dismiss();
-    super.handleGetSessionFailure(failure);
-  }
-
   void _registerDeepLinks() {
     _deepLinksManager = getBinding<DeepLinksManager>();
     _deepLinksManager?.clearPendingDeepLinkData();
@@ -250,16 +247,21 @@ class LoginController extends ReloadableController {
 
   void _handlePendingDeepLinkDataStream(DeepLinkData? deepLinkData) {
     log('LoginController::_handlePendingDeepLinkDataStream:DeepLinkData = $deepLinkData');
-    if (deepLinkData == null) return;
-
-    if (currentContext != null) {
-      SmartDialog.showLoading(msg: AppLocalizations.of(currentContext!).loadingPleaseWait);
-    }
-
-    _deepLinksManager?.handleDeepLinksWhenAppOnForegroundNotSignedIn(
+    _deepLinksManager?.handleDeepLinksWhenAppRunning(
       deepLinkData: deepLinkData,
-      onSuccessCallback: _handleAutoSignInViaDeepLinkSuccess,
-      onFailureCallback: SmartDialog.dismiss,
+      onSuccessCallback: (deepLinkData) {
+        if (deepLinkData is! OpenAppDeepLinkData) return;
+
+        if (currentContext != null) {
+          SmartDialog.showLoading(msg: AppLocalizations.of(currentContext!).loadingPleaseWait);
+        }
+
+        _deepLinksManager?.autoSignInViaDeepLink(
+          openAppDeepLinkData: deepLinkData,
+          onAutoSignInSuccessCallback: _handleAutoSignInViaDeepLinkSuccess,
+          onFailureCallback: SmartDialog.dismiss,
+        );
+      },
     );
   }
 

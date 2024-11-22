@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/starting_page/domain/usecase/sign_in_twak
 import 'package:tmail_ui_user/features/starting_page/domain/usecase/sign_up_twake_workplace_interactor.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
+import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -61,16 +62,21 @@ class TwakeWelcomeController extends ReloadableController {
 
   void _handlePendingDeepLinkDataStream(DeepLinkData? deepLinkData) {
     log('TwakeWelcomeController::_handlePendingDeepLinkDataStream:DeepLinkData = $deepLinkData');
-    if (deepLinkData == null) return;
-
-    if (currentContext != null) {
-      SmartDialog.showLoading(msg: AppLocalizations.of(currentContext!).loadingPleaseWait);
-    }
-
-    _deepLinksManager?.handleDeepLinksWhenAppOnForegroundNotSignedIn(
+    _deepLinksManager?.handleDeepLinksWhenAppRunning(
       deepLinkData: deepLinkData,
-      onSuccessCallback: _handleAutoSignInViaDeepLinkSuccess,
-      onFailureCallback: SmartDialog.dismiss,
+      onSuccessCallback: (deepLinkData) {
+        if (deepLinkData is! OpenAppDeepLinkData) return;
+
+        if (currentContext != null) {
+          SmartDialog.showLoading(msg: AppLocalizations.of(currentContext!).loadingPleaseWait);
+        }
+
+        _deepLinksManager?.autoSignInViaDeepLink(
+          openAppDeepLinkData: deepLinkData,
+          onAutoSignInSuccessCallback: _handleAutoSignInViaDeepLinkSuccess,
+          onFailureCallback: SmartDialog.dismiss,
+        );
+      },
     );
   }
 
@@ -107,7 +113,8 @@ class TwakeWelcomeController extends ReloadableController {
       oidcConfiguration: OIDCConfiguration(
         authority: AppConfig.saasRegistrationUrl,
         clientId: OIDCConstant.clientId,
-        scopes: AppConfig.oidcScopes
+        scopes: AppConfig.oidcScopes,
+        isTWP: true,
       )
     ));
   }
@@ -127,7 +134,8 @@ class TwakeWelcomeController extends ReloadableController {
       oidcConfiguration: OIDCConfiguration(
         authority: AppConfig.saasRegistrationUrl,
         clientId: OIDCConstant.clientId,
-        scopes: AppConfig.oidcScopes
+        scopes: AppConfig.oidcScopes,
+        isTWP: true,
       )
     ));
   }
@@ -176,6 +184,12 @@ class TwakeWelcomeController extends ReloadableController {
     SmartDialog.dismiss();
 
     toastManager.showMessageFailure(failure);
+  }
+
+  @override
+  void handleUrgentExceptionOnMobile({Failure? failure, Exception? exception}) {
+    SmartDialog.dismiss();
+    super.handleUrgentExceptionOnMobile(failure: failure, exception: exception);
   }
 
   void _synchronizeTokenAndGetSession({

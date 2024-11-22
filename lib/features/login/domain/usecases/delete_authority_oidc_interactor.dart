@@ -17,7 +17,7 @@ class DeleteAuthorityOidcInteractor {
     try {
       await Future.wait([
         _credentialRepository.removeBaseUrl(),
-        _authenticationOIDCRepository.deleteAuthorityOidc(),
+        _authenticationOIDCRepository.deleteOidcConfiguration(),
         _authenticationOIDCRepository.deleteTokenOIDC(),
       ]);
       return Right(DeleteAuthorityOidcSuccess());

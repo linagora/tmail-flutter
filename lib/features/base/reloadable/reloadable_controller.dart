@@ -34,7 +34,7 @@ abstract class ReloadableController extends BaseController {
       goToLogin();
     } else if (failure is GetSessionFailure) {
       logError('$runtimeType::handleFailureViewState():Failure = $failure');
-      handleGetSessionFailure(failure.exception);
+      handleGetSessionFailure(failure);
     } else if (failure is UpdateAccountCacheFailure) {
       logError('$runtimeType::handleFailureViewState():Failure = $failure');
       _handleUpdateAccountCacheCompleted(

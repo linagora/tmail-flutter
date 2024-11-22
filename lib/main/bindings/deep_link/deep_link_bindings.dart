@@ -15,6 +15,6 @@ class DeepLinkBindings extends Bindings {
       Get.find<AccountRepository>(),
       Get.find<CredentialRepository>(),
     ));
-    Get.put(DeepLinksManager(Get.find<AutoSignInViaDeepLinkInteractor>()));
+    Get.put(DeepLinksManager());
   }
 }
