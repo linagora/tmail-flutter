@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'app_logger.dart';
+import 'package:core/utils/app_logger.dart';
 
 class StringConvert {
   static const String separatorPattern = r'[ ,;]+';
@@ -12,6 +12,15 @@ class StringConvert {
 
   static String writeNullToEmpty(String? text) {
     return text ?? '';
+  }
+
+  static String decodeBase64ToString(String text) {
+    try {
+      return utf8.decode(base64Decode(text));
+    } catch (e) {
+      logError('StringConvert::decodeBase64ToString:Exception = $e');
+      return text;
+    }
   }
 
   static List<String> extractStrings(String input) {

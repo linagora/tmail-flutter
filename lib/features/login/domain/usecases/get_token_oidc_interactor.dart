@@ -35,7 +35,7 @@ class GetTokenOIDCInteractor {
       await Future.wait([
         _credentialRepository.saveBaseUrl(baseUrl),
         authenticationOIDCRepository.persistTokenOIDC(tokenOIDC),
-        authenticationOIDCRepository.persistAuthorityOidc(config.authority),
+        authenticationOIDCRepository.persistOidcConfiguration(config),
       ]);
 
       await _accountRepository.setCurrentAccount(
