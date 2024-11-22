@@ -52,6 +52,7 @@ export 'utils/broadcast_channel/broadcast_channel.dart';
 export 'utils/list_utils.dart';
 export 'utils/mail/domain.dart';
 export 'utils/mail/mail_address.dart';
+export 'utils/application_manager.dart';
 export 'utils/preview_eml_file_utils.dart';
 
 // Views
