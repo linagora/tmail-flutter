@@ -1,0 +1,5 @@
+
+enum DeepLinkActionType {
+  openApp,
+  unknown;
+}

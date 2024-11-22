@@ -1,19 +1,7 @@
 import 'dart:async';
-
+import 'package:core/core.dart';
+import 'package:flutter/services.dart' as services;
 import 'package:contact/contact/model/capability_contact.dart';
-import 'package:core/data/network/config/dynamic_url_interceptors.dart';
-import 'package:core/domain/exceptions/platform_exception.dart';
-import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/resources/image_paths.dart';
-import 'package:core/presentation/state/failure.dart';
-import 'package:core/presentation/state/success.dart';
-import 'package:core/presentation/utils/app_toast.dart';
-import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/views/toast/tmail_toast.dart';
-import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/application_manager.dart';
-import 'package:core/utils/fps_manager.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:fcm/model/firebase_capability.dart';
 import 'package:fcm/model/firebase_registration_id.dart';
@@ -34,7 +22,9 @@ import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixi
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/mdn_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
+import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
@@ -216,6 +206,8 @@ abstract class BaseController extends GetxController
     clearDataAndGoToLoginPage();
   }
 
+  void onCancelReconnectWhenSessionExpired() {}
+
   void _handleConnectionErrorException() {
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastErrorMessage(
@@ -254,7 +246,9 @@ abstract class BaseController extends GetxController
         outsideDismissible: false,
         titleActionButtonMaxLines: 1,
         icon: SvgPicture.asset(imagePaths.icTMailLogo, width: 64, height: 64),
-        onConfirmAction: _executeBeforeReconnectAndLogOut);
+        onConfirmAction: _executeBeforeReconnectAndLogOut,
+        onCancelAction: onCancelReconnectWhenSessionExpired
+      );
     } else if (PlatformInfo.isMobile) {
       if (currentContext == null) {
         clearDataAndGoToLoginPage();
@@ -270,7 +264,9 @@ abstract class BaseController extends GetxController
         outsideDismissible: false,
         titleActionButtonMaxLines: 1,
         icon: SvgPicture.asset(imagePaths.icTMailLogo, width: 64, height: 64),
-        onConfirmAction: clearDataAndGoToLoginPage);
+        onConfirmAction: clearDataAndGoToLoginPage,
+        onCancelAction: onCancelReconnectWhenSessionExpired
+      );
     }
   }
 
@@ -476,20 +472,22 @@ abstract class BaseController extends GetxController
     required Session session,
     required AccountId accountId,
     required Function onSuccessCallback,
-    required Function onFailureCallback,
+    required Function({Object? exception}) onFailureCallback,
   }) async {
     try {
       _isFcmEnabled = _isFcmActivated(session, accountId);
 
       if (isAuthenticatedWithOidc) {
         final logoutViewState = await logoutOidcInteractor.execute().last;
-
-        logoutViewState.fold(
-          (failure) => onFailureCallback(),
-          (success) async {
-            if (success is LogoutOidcSuccess) {
+        logoutViewState.foldSuccess<LogoutOidcSuccess>(
+          onSuccess: (success) async {
+            await _handleDeleteFCMAndClearData();
+            onSuccessCallback();
+          },
+          onFailure: (failure) async {
+            if (failure is LogoutOidcFailure && _validateUserCancelledLogoutOidcFlow(failure.exception))  {
               await _handleDeleteFCMAndClearData();
-              onSuccessCallback();
+              onFailureCallback(exception: UserCancelledLogoutOIDCFlowException());
             } else {
               onFailureCallback();
             }
@@ -505,6 +503,11 @@ abstract class BaseController extends GetxController
     }
   }
 
+  bool _validateUserCancelledLogoutOidcFlow(dynamic exception) {
+   return exception is services.PlatformException &&
+      exception.code == OIDCConstant.endSessionFailedCode;
+  }
+
   Future<void> _handleDeleteFCMAndClearData() async {
     await Future.wait([
       if (_isFcmEnabled)
@@ -518,14 +521,12 @@ abstract class BaseController extends GetxController
       _getStoredFirebaseRegistrationInteractor = getBinding<GetStoredFirebaseRegistrationInteractor>();
       final fcmRegistration = await _getStoredFirebaseRegistrationInteractor?.execute().last;
 
-      fcmRegistration?.fold(
-        (failure) => null,
-        (success) async {
-          if (success is GetStoredFirebaseRegistrationSuccess) {
-            _destroyFirebaseRegistrationInteractor = getBinding<DestroyFirebaseRegistrationInteractor>();
-            await _destroyFirebaseRegistrationInteractor?.execute(success.firebaseRegistration.id!).last;
-          }
+      fcmRegistration?.foldSuccess<GetStoredFirebaseRegistrationSuccess>(
+        onSuccess: (success) async {
+          _destroyFirebaseRegistrationInteractor = getBinding<DestroyFirebaseRegistrationInteractor>();
+          await _destroyFirebaseRegistrationInteractor?.execute(success.firebaseRegistration.id!).last;
         },
+        onFailure: (failure) {},
       );
     } catch (e) {
       logError('BaseController::_handleDeleteFCMRegistration:Exception = $e');

@@ -12,6 +12,7 @@ struct KeychainSharingSession: Codable {
     let tokenEndpoint: String?
     let oidcScopes: [String]?
     let mailboxIdsBlockNotification: [String]?
+    let isTWP: Bool?
 }
 
 extension KeychainSharingSession {
@@ -27,7 +28,8 @@ extension KeychainSharingSession {
             basicAuth: self.basicAuth,
             tokenEndpoint: self.tokenEndpoint,
             oidcScopes: self.oidcScopes,
-            mailboxIdsBlockNotification: self.mailboxIdsBlockNotification
+            mailboxIdsBlockNotification: self.mailboxIdsBlockNotification,
+            isTWP: self.isTWP
         )
     }
 
@@ -48,7 +50,8 @@ extension KeychainSharingSession {
             basicAuth: self.basicAuth,
             tokenEndpoint: self.tokenEndpoint,
             oidcScopes: self.oidcScopes,
-            mailboxIdsBlockNotification: self.mailboxIdsBlockNotification
+            mailboxIdsBlockNotification: self.mailboxIdsBlockNotification,
+            isTWP: self.isTWP
         )
     }
     

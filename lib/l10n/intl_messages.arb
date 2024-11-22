@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-12-05T18:34:48.830922",
+  "@@last_modified": "2024-12-09T13:59:58.460897",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4172,6 +4172,24 @@
   },
   "messageConfirmationLogout": "Do you want to log out of",
   "@messageConfirmationLogout": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "switchAccountConfirmation": "Switch Account Confirmation",
+  "@switchAccountConfirmation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youAreCurrentlyLoggedInWith": "You are currently logged in with",
+  "@youAreCurrentlyLoggedInWith": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "doYouWantToLogOutAndSwitchTo": "Do you want to log out and switch to",
+  "@doYouWantToLogOutAndSwitchTo": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
