@@ -5,6 +5,7 @@ class TokenRefreshManager {
     private let MOBIE_CLIENT_ID = "teammail-mobile"
     private let MOBIE_REDIRECT_URL = "teammail.mobile://oauthredirect"
     private let OIDC_SCOPES = ["openid", "profile", "email", "offline_access"]
+    private let TWP_MOBIE_REDIRECT_URL = "twakemail.mobile://redirect"
 
     private let GRANT_TYPE = "grant_type"
     private let REFRESH_TOKEN = "refresh_token"
@@ -15,11 +16,13 @@ class TokenRefreshManager {
     let refreshToken: String
     let tokenEndpoint: String
     let scopes: [String]?
+    let isTWP: Bool?
 
-    init(refreshToken: String, tokenEndpoint: String, scopes: [String]?) {
+    init(refreshToken: String, tokenEndpoint: String, scopes: [String]?, isTWP: Bool?) {
         self.refreshToken = refreshToken
         self.tokenEndpoint = tokenEndpoint
         self.scopes = scopes
+        self.isTWP = isTWP
     }
 
     private func getScopes() -> String {
@@ -27,6 +30,14 @@ class TokenRefreshManager {
             return scopes.joined(separator: " ")
         }
         return OIDC_SCOPES.joined(separator: " ")
+    }
+    
+    private func getRedirectUrl() -> String {
+        if (isTWP == true) {
+            return TWP_MOBIE_REDIRECT_URL
+        } else {
+            return MOBIE_REDIRECT_URL
+        }
     }
 
     func handleRefreshAccessToken(
@@ -41,7 +52,7 @@ class TokenRefreshManager {
         let params = [
             CLIENT_ID: MOBIE_CLIENT_ID,
             GRANT_TYPE: REFRESH_TOKEN,
-            REDIRECT_URI: MOBIE_REDIRECT_URL,
+            REDIRECT_URI: getRedirectUrl(),
             REFRESH_TOKEN: refreshToken,
             SCOPES: getScopes(),
         ]

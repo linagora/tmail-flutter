@@ -8,6 +8,7 @@ import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -72,9 +73,12 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/store_session_interactor.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/state/get_identity_cache_on_web_state.dart';
 import 'package:tmail_ui_user/features/identity_creator/domain/usecase/get_identity_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.dart';
+import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
@@ -152,6 +156,9 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_e
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
+import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
+import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -246,6 +253,8 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   StreamSubscription? _pendingSharedFileInfoSubscription;
   StreamSubscription? _receivingFileSharingStreamSubscription;
   StreamSubscription? _currentEmailIdInNotificationIOSStreamSubscription;
+  DeepLinksManager? _deepLinksManager;
+  StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
 
   final StreamController<Either<Failure, Success>> _progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -289,6 +298,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   void onInit() {
     if (PlatformInfo.isMobile) {
       _registerReceivingFileSharingStream();
+      _registerDeepLinks();
     }
     _registerStreamListener();
     BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.dashboard);
@@ -438,6 +448,8 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
 
   @override
   void handleUrgentExceptionOnMobile({Failure? failure, Exception? exception}) {
+    SmartDialog.dismiss();
+
     if (failure is SendEmailFailure && exception is NoNetworkError) {
       _storeSendingEmailInCaseOfSendingFailureInMobile(failure);
     } else {
@@ -531,6 +543,71 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
 
     goToComposer(
       ComposerArguments.fromFileShared(listSharedMediaFile),
+    );
+  }
+
+  void _registerDeepLinks() {
+    _deepLinksManager = getBinding<DeepLinksManager>();
+    _deepLinksManager?.clearPendingDeepLinkData();
+    _deepLinkDataStreamSubscription = _deepLinksManager
+        ?.pendingDeepLinkData.stream
+        .listen(_handlePendingDeepLinkDataStream);
+  }
+
+  void _handlePendingDeepLinkDataStream(DeepLinkData? deepLinkData) {
+    log('MailboxDashBoardController::_handlePendingDeepLinkDataStream:DeepLinkData = $deepLinkData');
+    _deepLinksManager?.handleDeepLinksWhenAppRunning(
+      deepLinkData: deepLinkData,
+      onSuccessCallback: (deepLinkData) {
+        if (deepLinkData is! OpenAppDeepLinkData) return;
+
+        _deepLinksManager?.handleOpenAppDeepLinks(
+          openAppDeepLinkData: deepLinkData,
+          isSignedIn: true,
+          username: sessionCurrent?.username,
+          onConfirmLogoutCallback: _handleLogOutAndSignInNewAccount,
+        );
+      },
+    );
+  }
+
+  void _handleLogOutAndSignInNewAccount(OpenAppDeepLinkData openAppDeepLinkData) {
+    if (sessionCurrent == null || accountId.value == null) return;
+
+    if (currentContext != null) {
+      SmartDialog.showLoading(msg: AppLocalizations.of(currentContext!).loadingPleaseWait);
+    }
+
+    logoutToSignInNewAccount(
+      session: sessionCurrent!,
+      accountId: accountId.value!,
+      onFailureCallback: ({exception}) {
+        if (exception is UserCancelledLogoutOIDCFlowException) {
+          _deepLinksManager?.autoSignInViaDeepLink(
+            openAppDeepLinkData: openAppDeepLinkData,
+            onFailureCallback: SmartDialog.dismiss,
+            onAutoSignInSuccessCallback: _handleAutoSignInViaDeepLinkSuccess,
+          );
+        } else {
+          SmartDialog.dismiss();
+        }
+      },
+      onSuccessCallback: () => _deepLinksManager?.autoSignInViaDeepLink(
+        openAppDeepLinkData: openAppDeepLinkData,
+        onFailureCallback: SmartDialog.dismiss,
+        onAutoSignInSuccessCallback: _handleAutoSignInViaDeepLinkSuccess,
+      ),
+    );
+  }
+
+  void _handleAutoSignInViaDeepLinkSuccess(AutoSignInViaDeepLinkSuccess success) {
+    SmartDialog.dismiss();
+
+    pushAndPopAll(
+      AppRoutes.home,
+      arguments: LoginNavigateArguments.autoSignIn(
+        autoSignInViaDeepLinkSuccess: success,
+      ),
     );
   }
 
@@ -1473,6 +1550,8 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   @override
   void handleReloaded(Session session) {
     log('MailboxDashBoardController::handleReloaded():');
+    SmartDialog.dismiss();
+
     _getRouteParameters();
     _setUpComponentsFromSession(session);
     if (PlatformInfo.isWeb) {
@@ -2940,6 +3019,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
       _pendingSharedFileInfoSubscription?.cancel();
       _receivingFileSharingStreamSubscription?.cancel();
       _emailReceiveManager.closeEmailReceiveManagerStream();
+      _deepLinkDataStreamSubscription?.cancel();
     }
     _progressStateController.close();
     _refreshActionEventController.close();

@@ -22,7 +22,6 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
     return _oidcDataSource.getOIDCConfiguration(oidcResponse);
   }
 
-
   @override
   Future<OIDCDiscoveryResponse> discoverOIDC(OIDCConfiguration oidcConfiguration) {
     return _oidcDataSource.discoverOIDC(oidcConfiguration);
@@ -49,8 +48,8 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
   }
 
   @override
-  Future<void> persistAuthorityOidc(String authority) {
-    return _oidcDataSource.persistAuthorityOidc(authority);
+  Future<void> persistOidcConfiguration(OIDCConfiguration oidcConfiguration) {
+    return _oidcDataSource.persistOidcConfiguration(oidcConfiguration);
   }
 
   @override
@@ -75,8 +74,8 @@ class AuthenticationOIDCRepositoryImpl extends AuthenticationOIDCRepository {
   }
 
   @override
-  Future<void> deleteAuthorityOidc() {
-    return _oidcDataSource.deleteAuthorityOidc();
+  Future<void> deleteOidcConfiguration() {
+    return _oidcDataSource.deleteOidcConfiguration();
   }
 
   @override

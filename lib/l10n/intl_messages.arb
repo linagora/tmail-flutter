@@ -4111,5 +4111,23 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "switchAccountConfirmation": "Switch Account Confirmation",
+  "@switchAccountConfirmation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youAreCurrentlyLoggedInWith": "You are currently logged in with",
+  "@youAreCurrentlyLoggedInWith": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "doYouWantToLogOutAndSwitchTo": "Do you want to log out and switch to",
+  "@doYouWantToLogOutAndSwitchTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
