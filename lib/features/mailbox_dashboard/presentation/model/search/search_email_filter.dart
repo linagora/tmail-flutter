@@ -127,7 +127,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
         ..._generateFilterFromToField(),
       if (from.length > 1)
         LogicFilterOperator(
-          Operator.AND,
+          Operator.OR,
           from.map((e) => EmailFilterCondition(from: e)).toSet(),
         ),
       if (notKeyword.length > 1)
