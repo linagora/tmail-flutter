@@ -38,4 +38,13 @@ extension SetEmailAddressExtension on Set<EmailAddress>? {
 
 extension ListEmailAddressExtension on List<EmailAddress> {
   Set<String> asSetAddress() => map((emailAddress) => emailAddress.emailAddress).toSet();
+
+  List<EmailAddress> removeInvalidEmails(String username) {
+    final Set<String> seenEmails = {};
+    return where((email) {
+      if (email.emailAddress.isEmpty) return false;
+      if (email.emailAddress == username) return false;
+      return seenEmails.add(email.emailAddress);
+    }).toList();
+  }
 }
