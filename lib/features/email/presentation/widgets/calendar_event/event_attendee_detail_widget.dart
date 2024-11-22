@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/hide_all_attendees_button_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/organizer_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/see_all_attendees_button_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_sender_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class EventAttendeeDetailWidget extends StatefulWidget {
@@ -17,11 +18,13 @@ class EventAttendeeDetailWidget extends StatefulWidget {
 
   final List<CalendarAttendee> attendees;
   final CalendarOrganizer? organizer;
+  final OnOpenEmailAddressDetailAction? openEmailAddressDetailAction;
 
   const EventAttendeeDetailWidget({
     super.key,
     required this.attendees,
-    required this.organizer
+    required this.organizer,
+    this.openEmailAddressDetailAction,
   });
 
   @override
@@ -61,10 +64,17 @@ class _EventAttendeeDetailWidgetState extends State<EventAttendeeDetailWidget> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (widget.organizer != null)
-              OrganizerWidget(organizer: widget.organizer!),
+              OrganizerWidget(
+                organizer: widget.organizer!,
+                openEmailAddressDetailAction: widget.openEmailAddressDetailAction
+              ),
             if (_attendeesDisplayed.isNotEmpty)
               ..._attendeesDisplayed
-                  .map((attendee) => AttendeeWidget(attendee: attendee, listAttendees: _attendeesDisplayed))
+                  .map((attendee) => AttendeeWidget(
+                    attendee: attendee,
+                    listAttendees: _attendeesDisplayed,
+                    openEmailAddressDetailAction: widget.openEmailAddressDetailAction
+                  ))
                   .toList(),
             if (!_isShowAllAttendee)
               Padding(
