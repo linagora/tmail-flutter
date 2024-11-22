@@ -52,11 +52,14 @@ class OIDCHttpClient {
     if (oidcResponse.links.isEmpty) {
       throw CanNotFoundOIDCAuthority();
     }
-    log('OIDCHttpClient::getOIDCConfiguration(): href: ${oidcResponse.links[0].href}');
+    final authority = oidcResponse.links[0].href.toString();
+    final isTWP = authority == AppConfig.saasRegistrationUrl;
+    log('OIDCHttpClient::getOIDCConfiguration():authority: $authority');
     return OIDCConfiguration(
-      authority: oidcResponse.links[0].href.toString(),
+      authority: authority,
       clientId: OIDCConstant.clientId,
-      scopes: AppConfig.oidcScopes
+      scopes: AppConfig.oidcScopes,
+      isTWP: isTWP,
     );
   }
 
