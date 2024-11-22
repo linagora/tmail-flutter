@@ -68,6 +68,7 @@ void main() {
         apiUrl: 'https://jmap.domain.com/oidc/jmap',
         tokenEndpoint: 'https://jmap.domain.com/oidc/jmap',
         oidcScopes: ['email'],
+        isTWP: true,
         emailState: 'ae08b34da40b48f30ec0b94',
         tokenOIDC: TokenOIDC(
           'ae08b34da40b48f30ec0b94',
@@ -88,6 +89,7 @@ void main() {
       expect(keychainSession?.emailState, equals('ae08b34da40b48f30ec0b94'));
       expect(keychainSession?.tokenEndpoint, equals('https://jmap.domain.com/oidc/jmap',));
       expect(keychainSession?.oidcScopes, equals(['email']));
+      expect(keychainSession?.isTWP, isTrue);
     });
   });
 }

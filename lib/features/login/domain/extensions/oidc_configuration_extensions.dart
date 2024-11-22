@@ -4,6 +4,7 @@ import 'package:core/data/network/config/service_path.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:tmail_ui_user/features/login/data/extensions/service_path_extension.dart';
+import 'package:tmail_ui_user/features/login/data/model/oidc_configuration_cache.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
@@ -12,31 +13,28 @@ extension OidcConfigurationExtensions on OIDCConfiguration {
   String get redirectUrl {
     if (PlatformInfo.isWeb) {
       return AppConfig.domainRedirectUrl.endsWith('/')
-        ? AppConfig.domainRedirectUrl + loginRedirectOidcWeb
-        : '${AppConfig.domainRedirectUrl}/$loginRedirectOidcWeb';
+        ? AppConfig.domainRedirectUrl + OIDCConstant.loginRedirectOidcWeb
+        : '${AppConfig.domainRedirectUrl}/${OIDCConstant.loginRedirectOidcWeb}';
     } else {
-      return _isSaasAuthority(authority)
+      return isTWP
         ? OIDCConstant.twakeWorkplaceRedirectUrl
-        : redirectOidcMobile;
+        : OIDCConstant.redirectOidcMobile;
     }
   }
 
   String get logoutRedirectUrl {
     if (PlatformInfo.isWeb) {
       if (AppConfig.domainRedirectUrl.endsWith('/')) {
-        return AppConfig.domainRedirectUrl + logoutRedirectOidcWeb;
+        return AppConfig.domainRedirectUrl + OIDCConstant.logoutRedirectOidcWeb;
       } else {
-        return '${AppConfig.domainRedirectUrl}/$logoutRedirectOidcWeb';
+        return '${AppConfig.domainRedirectUrl}/${OIDCConstant.logoutRedirectOidcWeb}';
       }
     } else {
-      return _isSaasAuthority(authority)
+      return isTWP
         ? OIDCConstant.twakeWorkplaceRedirectUrl
-        : redirectOidcMobile;
+        : OIDCConstant.redirectOidcMobile;
     }
   }
-
-  bool _isSaasAuthority(String authority) =>
-    authority == AppConfig.saasRegistrationUrl;
 
   String get signInTWPUrl => ServicePath(authority)
     .withQueryParameters([
@@ -57,4 +55,8 @@ extension OidcConfigurationExtensions on OIDCConfiguration {
       StringQueryParameter('app', OIDCConstant.appParameter),
     ])
     .generateEndpointPath();
+
+  OidcConfigurationCache toOidcConfigurationCache() {
+    return OidcConfigurationCache(authority, isTWP);
+  }
 }
