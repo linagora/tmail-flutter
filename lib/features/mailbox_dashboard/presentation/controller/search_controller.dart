@@ -150,10 +150,15 @@ class SearchController extends BaseController with DateRangePickerMixin {
       }
     }
 
+    final listHasKeyword = listFilterOnSuggestionForm.contains(QuickSearchFilter.starred)
+      ? {KeyWordIdentifier.emailFlagged.value}
+      : null;
+
     updateFilterEmail(
       emailReceiveTimeTypeOption: Some(receiveTime),
       hasAttachmentOption: Some(hasAttachment),
-      fromOption: Some(listFromAddress)
+      fromOption: Some(listFromAddress),
+      hasKeywordOption: optionOf(listHasKeyword),
     );
 
     clearFilterSuggestion();
