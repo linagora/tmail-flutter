@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_location_information_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_time_information_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_title_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_sender_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
@@ -30,6 +31,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
   final bool calendarEventReplying;
   final PresentationEmail? presentationEmail;
   final OnMailtoAttendeesAction? onMailtoAttendeesAction;
+  final OnOpenEmailAddressDetailAction? openEmailAddressDetailAction;
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
@@ -42,6 +44,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
     this.onOpenComposerAction,
     this.presentationEmail,
     this.onMailtoAttendeesAction,
+    this.openEmailAddressDetailAction,
   });
 
   @override
@@ -130,6 +133,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                         child: EventAttendeeDetailWidget(
                           attendees: calendarEvent.participants ?? [],
                           organizer: calendarEvent.organizer,
+                          openEmailAddressDetailAction: openEmailAddressDetailAction,
                         ),
                       ),
                     if (calendarEvent.isDisplayedEventReplyAction)
@@ -215,6 +219,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                           child: EventAttendeeDetailWidget(
                             attendees: calendarEvent.participants ?? [],
                             organizer: calendarEvent.organizer,
+                            openEmailAddressDetailAction: openEmailAddressDetailAction,
                           ),
                         ),
                       if (calendarEvent.isDisplayedEventReplyAction)
