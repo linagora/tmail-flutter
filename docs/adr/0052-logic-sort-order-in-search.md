@@ -79,7 +79,7 @@ Accepted
 
 Brief the logic flows when click `Sort Order` in search:
 
-- To sort by `Subject`, `Sender` or `Relevance` we will have to use the `position` property and ignore `before` and `after` in `conditions` of `filter`
+- To sort by `Subject`, `Sender` or `Relevance` we will have to use the `position` property of `filter`
 
 ```json
 {
