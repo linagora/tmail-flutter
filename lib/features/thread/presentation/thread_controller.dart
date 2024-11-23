@@ -949,7 +949,10 @@ class ThreadController extends BaseController with EmailActionController {
 
       searchController.updateFilterEmail(
         positionOption: option(_searchEmailFilter.sortOrderType.isScrollByPosition(), 0),
-        beforeOption: const None());
+        beforeOption: !_searchEmailFilter.sortOrderType.isScrollByPosition()
+          ? const None()
+          : null,
+      );
 
       searchController.activateSimpleSearch();
 
@@ -1023,10 +1026,7 @@ class ThreadController extends BaseController with EmailActionController {
       if (_searchEmailFilter.sortOrderType.isScrollByPosition()) {
         final nextPosition = mailboxDashBoardController.emailsInCurrentMailbox.length;
         log('ThreadController::_searchMoreEmails:nextPosition: $nextPosition');
-        searchController.updateFilterEmail(
-          positionOption: Some(nextPosition),
-          beforeOption: const None()
-        );
+        searchController.updateFilterEmail(positionOption: Some(nextPosition));
       } else if (_searchEmailFilter.sortOrderType == EmailSortOrderType.oldest) {
         searchController.updateFilterEmail(startDateOption: optionOf(lastEmail?.receivedAt));
       } else {
