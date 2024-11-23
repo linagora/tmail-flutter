@@ -99,16 +99,12 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
         ? text?.value.trim()
         : null,
       inMailbox: mailbox?.mailboxId,
-      after: sortOrderType.isScrollByPosition()
-        ? null
-        : emailReceiveTimeType.getAfterDate(startDate),
+      after: emailReceiveTimeType.getAfterDate(startDate),
       hasAttachment: !hasAttachment ? null : hasAttachment,
       subject: subject?.trim().isNotEmpty == true
         ? subject?.trim()
         : null,
-      before: sortOrderType.isScrollByPosition()
-        ? null
-        : emailReceiveTimeType.getBeforeDate(endDate, before),
+      before: emailReceiveTimeType.getBeforeDate(endDate, before),
       from: from.length == 1
         ? from.first
         : null,

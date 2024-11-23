@@ -219,7 +219,9 @@ class SearchEmailController extends BaseController
       currentSearchText.value = value;
       _updateSimpleSearchFilter(
         textOption: option(value.isNotEmpty, SearchQuery(value)),
-        beforeOption: const None(),
+        beforeOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
+          ? const None()
+          : null,
         positionOption: option(searchEmailFilter.value.sortOrderType.isScrollByPosition(), 0)
       );
       if (value.isNotEmpty && session != null && accountId != null) {
@@ -296,7 +298,9 @@ class SearchEmailController extends BaseController
           ? UnsignedInt(listResultSearch.length)
           : ThreadConstants.defaultLimit;
       _updateSimpleSearchFilter(
-        beforeOption: const None(),
+        beforeOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
+          ? const None()
+          : null,
         positionOption: option(searchEmailFilter.value.sortOrderType.isScrollByPosition(), 0)
       );
       consumeState(_refreshChangesSearchEmailInteractor.execute(
@@ -390,7 +394,9 @@ class SearchEmailController extends BaseController
 
     _updateSimpleSearchFilter(
       positionOption: option(searchEmailFilter.value.sortOrderType.isScrollByPosition(), 0),
-      beforeOption: const None(),
+      beforeOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
+        ? const None()
+        : null,
     );
 
     consumeState(_searchEmailInteractor.execute(
