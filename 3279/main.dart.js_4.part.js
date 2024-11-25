@@ -1343,10 +1343,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     TabletResponsiveContainerView_build_closure: function TabletResponsiveContainerView_build_closure(t0) {
       this.$this = t0;
     },
-    WebEditorView$($arguments, contentViewState, currentWebContent, editorController, height, key, onChangeContent, onDragEnter, onEditorSettings, onEditorTextSizeChanged, onFocus, onInitial, onInitialContentLoadComplete, onMouseDown, onPasteImageFailureAction, onPasteImageSuccessAction, width) {
-      return new B.WebEditorView(editorController, $arguments, contentViewState, currentWebContent, onInitial, onChangeContent, onFocus, onMouseDown, onEditorSettings, onEditorTextSizeChanged, width, height, onDragEnter, onPasteImageSuccessAction, onPasteImageFailureAction, onInitialContentLoadComplete, key);
+    WebEditorView$($arguments, contentViewState, currentWebContent, editorController, height, key, onChangeContent, onDragEnter, onDragOver, onEditorSettings, onEditorTextSizeChanged, onFocus, onInitial, onInitialContentLoadComplete, onMouseDown, onPasteImageFailureAction, onPasteImageSuccessAction, width) {
+      return new B.WebEditorView(editorController, $arguments, contentViewState, currentWebContent, onInitial, onChangeContent, onFocus, onMouseDown, onEditorSettings, onEditorTextSizeChanged, width, height, onDragEnter, onDragOver, onPasteImageSuccessAction, onPasteImageFailureAction, onInitialContentLoadComplete, key);
     },
-    WebEditorView: function WebEditorView(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) {
+    WebEditorView: function WebEditorView(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) {
       var _ = this;
       _.editorController = t0;
       _.$arguments = t1;
@@ -1361,10 +1361,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.width = t10;
       _.height = t11;
       _.onDragEnter = t12;
-      _.onPasteImageSuccessAction = t13;
-      _.onPasteImageFailureAction = t14;
-      _.onInitialContentLoadComplete = t15;
-      _.key = t16;
+      _.onDragOver = t13;
+      _.onPasteImageSuccessAction = t14;
+      _.onPasteImageFailureAction = t15;
+      _.onInitialContentLoadComplete = t16;
+      _.key = t17;
     },
     WebEditorView_build_closure: function WebEditorView_build_closure(t0, t1) {
       this.$this = t0;
@@ -1802,10 +1803,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._mobile_responsive_app_bar_composer_widget$_imagePaths = t9;
       _.key = t10;
     },
-    WebEditorWidget$($content, direction, editorController, height, onChangeContent, onDragEnter, onEditorSettings, onEditorTextSizeChanged, onFocus, onInitial, onInitialContentLoadComplete, onMouseDown, onPasteImageFailureAction, onPasteImageSuccessAction, onUnFocus, width) {
-      return new B.WebEditorWidget($content, direction, editorController, onInitial, onChangeContent, onFocus, onUnFocus, onMouseDown, onEditorSettings, onEditorTextSizeChanged, width, height, onDragEnter, onPasteImageSuccessAction, onPasteImageFailureAction, onInitialContentLoadComplete, null);
+    WebEditorWidget$($content, direction, editorController, height, onChangeContent, onDragEnter, onDragOver, onEditorSettings, onEditorTextSizeChanged, onFocus, onInitial, onInitialContentLoadComplete, onMouseDown, onPasteImageFailureAction, onPasteImageSuccessAction, onUnFocus, width) {
+      return new B.WebEditorWidget($content, direction, editorController, onInitial, onChangeContent, onFocus, onUnFocus, onMouseDown, onEditorSettings, onEditorTextSizeChanged, width, height, onDragEnter, onDragOver, onPasteImageSuccessAction, onPasteImageFailureAction, onInitialContentLoadComplete, null);
     },
-    WebEditorWidget: function WebEditorWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16) {
+    WebEditorWidget: function WebEditorWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17) {
       var _ = this;
       _.content = t0;
       _.direction = t1;
@@ -1820,10 +1821,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.width = t10;
       _.height = t11;
       _.onDragEnter = t12;
-      _.onPasteImageSuccessAction = t13;
-      _.onPasteImageFailureAction = t14;
-      _.onInitialContentLoadComplete = t15;
-      _.key = t16;
+      _.onDragOver = t13;
+      _.onPasteImageSuccessAction = t14;
+      _.onPasteImageFailureAction = t15;
+      _.onInitialContentLoadComplete = t16;
+      _.key = t17;
     },
     _WebEditorState: function _WebEditorState(t0, t1) {
       var _ = this;
@@ -8282,7 +8284,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t2 = A.Directionality_maybeOf(context);
           if (t2 == null)
             t2 = C.TextDirection_1;
-          return B.WebEditorWidget$(t1, t2, _this.editorController, _this.height, _this.onChangeContent, _this.onDragEnter, _this.onEditorSettings, _this.onEditorTextSizeChanged, _this.onFocus, _this.onInitial, _this.onInitialContentLoadComplete, _this.onMouseDown, _this.onPasteImageFailureAction, _this.onPasteImageSuccessAction, null, _this.width);
+          return B.WebEditorWidget$(t1, t2, _this.editorController, _this.height, _this.onChangeContent, _this.onDragEnter, _this.onDragOver, _this.onEditorSettings, _this.onEditorTextSizeChanged, _this.onFocus, _this.onInitial, _this.onInitialContentLoadComplete, _this.onMouseDown, _this.onPasteImageFailureAction, _this.onPasteImageSuccessAction, null, _this.width);
         case 9:
         case 10:
         case 11:
@@ -8307,7 +8309,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t2 = A.Directionality_maybeOf(context);
           if (t2 == null)
             t2 = C.TextDirection_1;
-          return B.WebEditorWidget$(t1, t2, _this.editorController, _this.height, _this.onChangeContent, _this.onDragEnter, _this.onEditorSettings, _this.onEditorTextSizeChanged, _this.onFocus, _this.onInitial, _this.onInitialContentLoadComplete, _this.onMouseDown, _this.onPasteImageFailureAction, _this.onPasteImageSuccessAction, null, _this.width);
+          return B.WebEditorWidget$(t1, t2, _this.editorController, _this.height, _this.onChangeContent, _this.onDragEnter, _this.onDragOver, _this.onEditorSettings, _this.onEditorTextSizeChanged, _this.onFocus, _this.onInitial, _this.onInitialContentLoadComplete, _this.onMouseDown, _this.onPasteImageFailureAction, _this.onPasteImageSuccessAction, null, _this.width);
       }
     }
   };
@@ -13669,13 +13671,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(selectable) {
       return !this.selectableSet.contains$1(0, selectable);
     },
-    $signature: 223
+    $signature: 229
   };
   B._SelectableRegionContainerDelegate_didChangeSelectables_closure0.prototype = {
     call$1(selectable) {
       return !this.selectableSet.contains$1(0, selectable);
     },
-    $signature: 223
+    $signature: 229
   };
   B.buildTextSpanChildren_closure.prototype = {
     call$0() {
@@ -14036,7 +14038,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Column$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
     },
-    $signature: 230
+    $signature: 231
   };
   B.ComposerView_build___closure18.prototype = {
     call$0() {
@@ -14058,7 +14060,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ComposerView_build___closure7.prototype = {
     call$0() {
-      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, _this = this,
+      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, _this = this,
         t1 = _this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -14088,9 +14090,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t15 = _this.constraints;
       A.Expando__checkType(t1);
       t16 = t3._as(t2.get(t1)).get$handleOnDragEnterHtmlEditorWeb();
-      t17 = _this.context;
       A.Expando__checkType(t1);
-      return B.WebEditorView$(t6, t7, t8, t5, t15.maxHeight, t4, t10, t16, t13, t14, t11, t9, t3._as(t2.get(t1)).get$restoreCollapsibleButton(), t12, new B.ComposerView_build____closure11(t1, t17), new B.ComposerView_build____closure12(t1, t17, _this.constraintsEditor), t15.maxWidth);
+      t17 = t3._as(t2.get(t1)).get$handleOnDragOverHtmlEditorWeb();
+      t18 = _this.context;
+      A.Expando__checkType(t1);
+      return B.WebEditorView$(t6, t7, t8, t5, t15.maxHeight, t4, t10, t16, t17, t13, t14, t11, t9, t3._as(t2.get(t1)).get$restoreCollapsibleButton(), t12, new B.ComposerView_build____closure11(t1, t18), new B.ComposerView_build____closure12(t1, t18, _this.constraintsEditor), t15.maxWidth);
     },
     $signature: typesOffset + 2
   };
@@ -14101,7 +14105,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleOnPasteImageSuccessAction$3$context$listFileUpload$maxWidth(this.context, listFileUpload, this.constraintsEditor.maxWidth);
     },
-    $signature: 249
+    $signature: 255
   };
   B.ComposerView_build____closure11.prototype = {
     call$3(listFileUpload, base64, uploadError) {
@@ -14217,7 +14221,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).onLocalFileDropZoneListener$3$context$details$maxWidth(this.context, details, this.constraintsEditor.maxWidth);
     },
-    $signature: 231
+    $signature: 233
   };
   B.ComposerView_build_closure.prototype = {
     call$0() {
@@ -14439,7 +14443,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Column$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
     },
-    $signature: 230
+    $signature: 231
   };
   B.ComposerView_build___closure21.prototype = {
     call$2(context, constraintsEditor) {
@@ -14453,7 +14457,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ComposerView_build____closure13.prototype = {
     call$0() {
-      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, _this = this,
+      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, _this = this,
         t1 = _this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -14485,9 +14489,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t15 = _this.constraints;
       A.Expando__checkType(t1);
       t16 = t3._as(t2.get(t1)).get$handleOnDragEnterHtmlEditorWeb();
-      t17 = _this.context;
       A.Expando__checkType(t1);
-      return B.WebEditorView$(t6, t7, t8, t5, t15.maxHeight, t4, t10, t16, t13, t14, t11, t9, t3._as(t2.get(t1)).get$restoreCollapsibleButton(), t12, new B.ComposerView_build_____closure7(t1, t17), new B.ComposerView_build_____closure8(t1, t17, _this.constraintsEditor), t15.maxWidth);
+      t17 = t3._as(t2.get(t1)).get$handleOnDragOverHtmlEditorWeb();
+      t18 = _this.context;
+      A.Expando__checkType(t1);
+      return B.WebEditorView$(t6, t7, t8, t5, t15.maxHeight, t4, t10, t16, t17, t13, t14, t11, t9, t3._as(t2.get(t1)).get$restoreCollapsibleButton(), t12, new B.ComposerView_build_____closure7(t1, t18), new B.ComposerView_build_____closure8(t1, t18, _this.constraintsEditor), t15.maxWidth);
     },
     $signature: typesOffset + 2
   };
@@ -14498,7 +14504,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleOnPasteImageSuccessAction$3$context$listFileUpload$maxWidth(this.context, listFileUpload, this.constraintsEditor.maxWidth);
     },
-    $signature: 249
+    $signature: 255
   };
   B.ComposerView_build_____closure7.prototype = {
     call$3(listFileUpload, base64, uploadError) {
@@ -14693,7 +14699,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).onLocalFileDropZoneListener$3$context$details$maxWidth(this.context, details, this.constraintsEditor.maxWidth);
     },
-    $signature: 231
+    $signature: 233
   };
   B.ComposerView_build__closure7.prototype = {
     call$0() {
@@ -14895,7 +14901,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Column$(t1, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
     },
-    $signature: 230
+    $signature: 231
   };
   B.ComposerView_build__closure1.prototype = {
     call$2(context, constraintsBody) {
@@ -14909,7 +14915,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ComposerView_build___closure.prototype = {
     call$0() {
-      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, _this = this,
+      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, _this = this,
         t1 = _this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -14939,9 +14945,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t15 = _this.constraints;
       A.Expando__checkType(t1);
       t16 = t3._as(t2.get(t1)).get$handleOnDragEnterHtmlEditorWeb();
-      t17 = _this.context;
       A.Expando__checkType(t1);
-      return B.WebEditorView$(t6, t7, t8, t5, t15.maxHeight, t4, t10, t16, t13, t14, t11, t9, t3._as(t2.get(t1)).get$restoreCollapsibleButton(), t12, new B.ComposerView_build____closure7(t1, t17), new B.ComposerView_build____closure8(t1, t17, _this.constraintsBody), t15.maxWidth);
+      t17 = t3._as(t2.get(t1)).get$handleOnDragOverHtmlEditorWeb();
+      t18 = _this.context;
+      A.Expando__checkType(t1);
+      return B.WebEditorView$(t6, t7, t8, t5, t15.maxHeight, t4, t10, t16, t17, t13, t14, t11, t9, t3._as(t2.get(t1)).get$restoreCollapsibleButton(), t12, new B.ComposerView_build____closure7(t1, t18), new B.ComposerView_build____closure8(t1, t18, _this.constraintsBody), t15.maxWidth);
     },
     $signature: typesOffset + 2
   };
@@ -14952,7 +14960,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleOnPasteImageSuccessAction$3$context$listFileUpload$maxWidth(this.context, listFileUpload, this.constraintsBody.maxWidth);
     },
-    $signature: 249
+    $signature: 255
   };
   B.ComposerView_build____closure7.prototype = {
     call$3(listFileUpload, base64, uploadError) {
@@ -15147,7 +15155,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).onLocalFileDropZoneListener$3$context$details$maxWidth(this.context, details, this.constraintsBody.maxWidth);
     },
-    $signature: 231
+    $signature: 233
   };
   B.ComposerView__createMoreOptionPopupItems_closure.prototype = {
     call$0() {
@@ -15208,25 +15216,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, constraints) {
       return A.PointerInterceptor$(this.$this.childBuilder.call$2(context, constraints));
     },
-    $signature: 238
+    $signature: 240
   };
   B.DesktopResponsiveContainerView_build_closure0.prototype = {
     call$2(context, constraints) {
       return A.PointerInterceptor$(this.$this.childBuilder.call$2(context, constraints));
     },
-    $signature: 238
+    $signature: 240
   };
   B.MobileResponsiveContainerView_build_closure.prototype = {
     call$2(context, constraints) {
       return A.PointerInterceptor$(this.$this.childBuilder.call$2(context, constraints));
     },
-    $signature: 238
+    $signature: 240
   };
   B.TabletResponsiveContainerView_build_closure.prototype = {
     call$2(context, constraints) {
       return A.PointerInterceptor$(this.$this.childBuilder.call$2(context, constraints));
     },
-    $signature: 238
+    $signature: 240
   };
   B.WebEditorView_build_closure.prototype = {
     call$1(failure) {
@@ -15238,7 +15246,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A.Directionality_maybeOf(this.context);
       if (t3 == null)
         t3 = C.TextDirection_1;
-      return B.WebEditorWidget$(t2, t3, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onInitialContentLoadComplete, t1.onMouseDown, t1.onPasteImageFailureAction, t1.onPasteImageSuccessAction, null, t1.width);
+      return B.WebEditorWidget$(t2, t3, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onDragOver, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onInitialContentLoadComplete, t1.onMouseDown, t1.onPasteImageFailureAction, t1.onPasteImageSuccessAction, null, t1.width);
     },
     $signature: typesOffset + 10
   };
@@ -15259,7 +15267,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = A.Directionality_maybeOf(this.context);
         if (t3 == null)
           t3 = C.TextDirection_1;
-        return B.WebEditorWidget$(t2, t3, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onInitialContentLoadComplete, t1.onMouseDown, t1.onPasteImageFailureAction, t1.onPasteImageSuccessAction, null, t1.width);
+        return B.WebEditorWidget$(t2, t3, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onDragOver, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onInitialContentLoadComplete, t1.onMouseDown, t1.onPasteImageFailureAction, t1.onPasteImageSuccessAction, null, t1.width);
       }
     },
     $signature: 52
@@ -15280,7 +15288,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = A.Directionality_maybeOf(t2);
       if (t2 == null)
         t2 = C.TextDirection_1;
-      return B.WebEditorWidget$(t3, t2, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onInitialContentLoadComplete, t1.onMouseDown, t1.onPasteImageFailureAction, t1.onPasteImageSuccessAction, null, t1.width);
+      return B.WebEditorWidget$(t3, t2, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onDragOver, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onInitialContentLoadComplete, t1.onMouseDown, t1.onPasteImageFailureAction, t1.onPasteImageSuccessAction, null, t1.width);
     },
     $signature: typesOffset + 10
   };
@@ -15303,7 +15311,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = A.Directionality_maybeOf(t2);
         if (t2 == null)
           t2 = C.TextDirection_1;
-        return B.WebEditorWidget$(t3, t2, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onInitialContentLoadComplete, t1.onMouseDown, t1.onPasteImageFailureAction, t1.onPasteImageSuccessAction, null, t1.width);
+        return B.WebEditorWidget$(t3, t2, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onDragOver, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onInitialContentLoadComplete, t1.onMouseDown, t1.onPasteImageFailureAction, t1.onPasteImageSuccessAction, null, t1.width);
       }
     },
     $signature: 52
@@ -15486,7 +15494,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.resetTextField$0();
       t1.closeSuggestionBox$0();
     },
-    $signature: 248
+    $signature: 249
   };
   B._RecipientComposerWidgetState_build_____closure.prototype = {
     call$0() {
@@ -15792,7 +15800,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t7 = t3.onUnFocus;
       t8 = t3.onEditorSettings;
       t9 = t3.onEditorTextSizeChanged;
-      return A.HtmlEditor$(A.Callbacks$(t5, t7, t5, t5, t8, t3.onDragEnter, new B._WebEditorState_build__closure(), t6, t3.onPasteImageSuccessAction, t3.onPasteImageFailureAction, new B._WebEditorState_build__closure0(t1), t3.onInitialContentLoadComplete, new B._WebEditorState_build__closure1(t1, context), new B._WebEditorState_build__closure2(t1), t9), t2, t4, C.HtmlToolbarOptions_List_empty_ToolbarType_3, null, new A.OtherOptions(height));
+      return A.HtmlEditor$(A.Callbacks$(t5, t7, t5, t5, t8, t3.onDragEnter, new B._WebEditorState_build__closure(), t3.onDragOver, t6, t3.onPasteImageSuccessAction, t3.onPasteImageFailureAction, new B._WebEditorState_build__closure0(t1), t3.onInitialContentLoadComplete, new B._WebEditorState_build__closure1(t1, context), new B._WebEditorState_build__closure2(t1), t9), t2, t4, C.HtmlToolbarOptions_List_empty_ToolbarType_3, null, new A.OtherOptions(height));
     },
     $signature: 1705
   };
@@ -15828,7 +15836,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B._WebEditorState_build__closure.prototype = {
     call$1(_) {
     },
-    $signature: 255
+    $signature: 186
   };
   B.EmailView_build_closure.prototype = {
     call$0() {
@@ -16358,7 +16366,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleEmailAction$3(this.context, presentationEmail, this.action);
     },
-    $signature: 199
+    $signature: 200
   };
   B.EmailView__popupMenuEmailActionTile_closure.prototype = {
     call$1(action) {
@@ -16735,7 +16743,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.push(A.Row$(t1, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null));
       return A.Container$(_null, A.Row$(t2, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, D.BoxDecoration_qbf, _null, 52, _null, _null, D.EdgeInsetsDirectional_16_0_16_0, _null, _null, _null);
     },
-    $signature: 188
+    $signature: 190
   };
   B.EmailViewAppBarWidget_build__closure.prototype = {
     call$0() {
@@ -16805,7 +16813,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.onMoreActionClick.call$2(t1.presentationEmail, position);
       return t1;
     },
-    $signature: 186
+    $signature: 189
   };
   B.EmailViewBottomBarWidget_build_closure.prototype = {
     call$0() {
@@ -17335,7 +17343,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleClickAvatarAction$2(this.context, position);
     },
-    $signature: 186
+    $signature: 189
   };
   B.MailboxDashBoardView_build_closure0.prototype = {
     call$0() {
@@ -17823,7 +17831,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, index) {
       return D.Padding_spY;
     },
-    $signature: 189
+    $signature: 193
   };
   B.MailboxDashBoardView__buildDownloadTaskStateWidget__closure.prototype = {
     call$2(context, index) {
@@ -18590,7 +18598,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.resetTextField$0();
       t1.closeSuggestionBox$0();
     },
-    $signature: 248
+    $signature: 249
   };
   B._TextFieldAutocompleteEmailAddressWebState_build______closure.prototype = {
     call$0() {
@@ -18620,7 +18628,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 === $ && A.throwUnnamedLateFieldNI();
       return t1._toSuggestionEmailAddress$2(emailAddress, t2);
     },
-    $signature: 212
+    $signature: 215
   };
   B._TextFieldAutocompleteEmailAddressWebState__isDuplicated_closure.prototype = {
     call$1(emailAddress) {
@@ -18641,7 +18649,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(emailAddress) {
       return new A.SuggestionEmailAddress(emailAddress, C.SuggestionEmailState_1);
     },
-    $signature: 212
+    $signature: 215
   };
   B._TextFieldAutocompleteEmailAddressWebState__handleFocusTagAction_closure.prototype = {
     call$0() {
@@ -19022,7 +19030,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t6 = this.octetQuota;
       return A.Container$(C.AlignmentDirectional_m1_0, A.Column$(A._setArrayType([A.Row$(A._setArrayType([t2, C.SizedBox_12_null_null_null, A.Text$(A.Intl__message("Storage", _null, "storageQuotas", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_8aB1, _null, _null, _null, _null, _null)], t3), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.SizedBox_null_8_null_null, new A.SizedBox(t1._getProgressBarMaxWith$1(constraints.maxWidth), _null, A.LinearProgressIndicator$(C.Color_4293388524, C.BorderRadius_ww8, B.QuotasExtensions_getQuotasStateProgressBarColor(t6), 3, B.QuotasExtensions_get_usedStoragePercent(t6)), _null), C.SizedBox_null_8_null_null, A.Text$(B.QuotasExtensions_getQuotasStateTitle(t6, context), _null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, B.QuotasExtensions_getQuotasStateTitleColor(t6), _null, _null, _null, _null, _null, _null, _null, _null, 13, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null, _null, _null)], t3), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1), C.Clip_0, _null, _null, new A.BoxDecoration(t4, _null, D.Border_Lxv, _null, _null, _null, _null, C.BoxShape_0), _null, _null, _null, t5, D.EdgeInsetsDirectional_16_16_0_0, _null, _null, _null);
     },
-    $signature: 188
+    $signature: 190
   };
   B.QuotasBannerWidget_build_closure.prototype = {
     call$0() {
@@ -19670,7 +19678,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = false;
       return new A.Padding(t4, A.Divider$(t1 ? _null : C.Color_4294967295, _null, _null, _null), _null);
     },
-    $signature: 189
+    $signature: 193
   };
   B.SearchEmailView__markAsEmailSpamOrUnSpamAction_closure.prototype = {
     call$1(email) {
@@ -19690,7 +19698,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t2 === true ? C.EmailActionType_21 : C.EmailActionType_20;
       return t1.pressEmailAction$3(this.context, t2, email);
     },
-    $signature: 199
+    $signature: 200
   };
   B.SearchEmailView__buildLoadingViewLoadMore_closure.prototype = {
     call$0() {
@@ -19970,7 +19978,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A.ListView$builder(null, new B.SearchMailboxView__buildMailboxListView__closure(t1), J.get$length$asx(t3._as(t2.get(t1)).listMailboxSearched.get$value(0)), null, C.ValueKey_list_mailbox_searched, t4, null, false, C.Axis_1, true);
     },
-    $signature: 190
+    $signature: 191
   };
   B.SearchMailboxView__buildMailboxListView__closure.prototype = {
     call$2(context, index) {
@@ -20014,7 +20022,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.closeSearchView$1(t2);
       return null;
     },
-    $signature: 191
+    $signature: 194
   };
   B.SearchMailboxView__buildMailboxListView____closure0.prototype = {
     call$2(position, mailbox) {
@@ -20465,7 +20473,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = false;
       return new A.Padding(t4, A.Divider$(t1 ? _null : C.Color_4294967295, _null, _null, _null), _null);
     },
-    $signature: 189
+    $signature: 193
   };
   B.ThreadView__buildEmailItemDraggable_closure2.prototype = {
     call$1(_) {
@@ -20679,7 +20687,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return t1.handleEmailActionType$3$mailboxContain(t3 === true ? C.EmailActionType_21 : C.EmailActionType_20, email, t2);
     },
-    $signature: 199
+    $signature: 200
   };
   B.ThreadView__openInNewTabContextMenuItemAction_closure.prototype = {
     call$1(email) {
@@ -20691,7 +20699,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
       A.AppUtils_launchLink(J.toString$0$(email.routeWeb));
     },
-    $signature: 199
+    $signature: 200
   };
   B.ThreadView__archiveMessageContextMenuItemAction_closure.prototype = {
     call$1(email) {
@@ -20701,7 +20709,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController.archiveMessage$2(this.context, email);
       return null;
     },
-    $signature: 199
+    $signature: 200
   };
   B.ThreadView__buildMarkAsSpamPopupMenuItem_closure.prototype = {
     call$0() {
@@ -20811,7 +20819,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
       return A.Container$(_null, A.Row$(A._setArrayType([t4, t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_filter.svg", t6, _null, D.ValueKey_filter_message_button, _null, 80, new B.DefaultWebAppBarThreadWidget_build__closure(t1), new B.DefaultWebAppBarThreadWidget_build__closure0(t1), _null, A.Intl__message("Filter messages", _null, "filter_messages", _null, _null))], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_4294967295, C.BoxConstraints_86y0, _null, _null, _null, _null, _null, t2, _null, _null, _null);
     },
-    $signature: 188
+    $signature: 190
   };
   B.DefaultWebAppBarThreadWidget_build__closure0.prototype = {
     call$0() {
@@ -20827,7 +20835,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = t1.onPopupMenuFilterEmailAction;
       return t2 == null ? null : t2.call$2(t1.filterOption, position);
     },
-    $signature: 186
+    $signature: 189
   };
   B.SelectionWebAppBarThreadWidget_build_closure.prototype = {
     call$0() {
@@ -21909,5 +21917,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "agJ+r/dAtiWdt2BeLVF18hxW+AA=");
+})($__dart_deferred_initializers__, "4Dm5NmHl7Hl3M/j6jr3qXa0cmL8=");
 ;
