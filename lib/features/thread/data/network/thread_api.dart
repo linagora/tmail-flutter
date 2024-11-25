@@ -20,7 +20,6 @@ import 'package:jmap_dart_client/jmap/mail/email/get/get_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_response.dart';
-import 'package:model/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/list_email_extension.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet_get_method.dart';
@@ -91,22 +90,31 @@ class ThreadAPI {
       QueryEmailResponse.deserialize,
     );
 
-    List<Email>? emailList;
+    final emailList = sortEmails(
+      getEmailResponse: responseOfGetEmailMethod,
+      queryEmailResponse: responseOfQueryEmailMethod,
+    );
 
-    if (responseOfGetEmailMethod?.list.isNotEmpty == true &&
-        responseOfQueryEmailMethod?.ids.isNotEmpty == true) {
-      log('ThreadAPI::getAllEmail: QUERY_EMAIL_IDS = ${responseOfQueryEmailMethod?.ids}');
-      final listSortedEmail = responseOfGetEmailMethod!.list
-        .sortingByOrderOfIdList(responseOfQueryEmailMethod!.ids.toList());
-      emailList = listSortedEmail;
-    } else {
-      emailList = responseOfGetEmailMethod?.list;
-    }
-    log('ThreadAPI::getAllEmail: EMAIL_DISPLAYED_IDS = ${emailList?.listEmailIds}');
     return EmailsResponse(
       emailList: emailList,
       state: responseOfGetEmailMethod?.state,
     );
+  }
+
+  List<Email>? sortEmails({
+    GetEmailResponse? getEmailResponse,
+    QueryEmailResponse? queryEmailResponse,
+  }) {
+    final listEmails = getEmailResponse?.list;
+    final listIds = queryEmailResponse?.ids.toList();
+
+    if (listEmails?.isNotEmpty != true || listIds?.isNotEmpty != true) {
+      return listEmails;
+    }
+
+    final listSortedEmails = listEmails!.sortEmailsById(listIds!);
+
+    return listSortedEmails;
   }
 
   Future<SearchEmailsResponse> searchEmails(
@@ -166,21 +174,16 @@ class ThreadAPI {
       .build()
       .execute();
 
-    final emailResultList = result.parse<GetEmailResponse>(
+    final responseOfGetEmailMethod = result.parse<GetEmailResponse>(
         getEmailInvocation.methodCallId, GetEmailResponse.deserialize);
     final responseOfQueryEmailMethod = result.parse<QueryEmailResponse>(
       queryEmailInvocation.methodCallId,
       QueryEmailResponse.deserialize);
 
-    List<Email>? sortedEmailList;
-
-    if (emailResultList?.list.isNotEmpty == true &&
-        responseOfQueryEmailMethod?.ids.isNotEmpty == true) {
-      sortedEmailList = emailResultList!.list
-        .sortingByOrderOfIdList(responseOfQueryEmailMethod!.ids.toList());
-    } else {
-      sortedEmailList = emailResultList?.list;
-    }
+    final sortedEmailList = sortEmails(
+      getEmailResponse: responseOfGetEmailMethod,
+      queryEmailResponse: responseOfQueryEmailMethod,
+    );
 
     final searchSnippets = _getSearchSnippetsFromResponse(
       result,
@@ -188,7 +191,7 @@ class ThreadAPI {
     );
     return SearchEmailsResponse(
         emailList: sortedEmailList,
-        state: emailResultList?.state,
+        state: responseOfGetEmailMethod?.state,
         searchSnippets: searchSnippets);
   }
 
