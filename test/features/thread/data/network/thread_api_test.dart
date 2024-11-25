@@ -2,19 +2,49 @@ import 'package:dio/dio.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http_mock_adapter/http_mock_adapter.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
+import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
+import 'package:jmap_dart_client/jmap/mail/email/query/query_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet.dart';
+import 'package:model/extensions/email_id_extensions.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_email.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_emails_response.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/session_fixtures.dart';
+
+class MockGetEmailResponse extends GetEmailResponse {
+  final List<Email> emailList;
+
+  MockGetEmailResponse(this.emailList) : super(
+    AccountId(Id('abc')),
+    State('123'),
+    emailList,
+    [],
+  );
+}
+
+class MockQueryEmailResponse extends QueryEmailResponse {
+  final Set<Id> idList;
+
+  MockQueryEmailResponse(this.idList) : super(
+    AccountId(Id('abc')),
+    State('123'),
+    false,
+    UnsignedInt(0),
+    idList,
+    UnsignedInt(0),
+    UnsignedInt(0),
+  );
+}
 
 void main() {
   final baseOption  = BaseOptions(method: 'POST');
@@ -225,6 +255,171 @@ void main() {
               state: state
             ),
           ),
+        );
+      });
+    });
+
+    group('sortEmails::test', () {
+      test('Should returns emails as is when emailList is empty', () {
+        final getEmailResponse = MockGetEmailResponse([]);
+        final queryEmailResponse = MockQueryEmailResponse({
+          Id('id1'),
+          Id('id2'),
+        });
+
+        final result = threadApi.sortEmails(
+          getEmailResponse: getEmailResponse,
+          queryEmailResponse: queryEmailResponse,
+        );
+
+        expect(result, []);
+      });
+
+      test('Should returns emails as is when idList is empty', () {
+        final getEmailResponse = MockGetEmailResponse([
+          Email(id: EmailId(Id('id1'))),
+          Email(id: EmailId(Id('id2'))),
+        ]);
+        final queryEmailResponse = MockQueryEmailResponse({});
+
+        final result = threadApi.sortEmails(
+          getEmailResponse: getEmailResponse,
+          queryEmailResponse: queryEmailResponse,
+        );
+
+        expect(result, [
+          Email(id: EmailId(Id('id1'))),
+          Email(id: EmailId(Id('id2'))),
+        ]);
+      });
+
+      test('Sorts emails according to idList', () {
+        final getEmailResponse = MockGetEmailResponse([
+          Email(id: EmailId(Id('id1'))),
+          Email(id: EmailId(Id('id2'))),
+          Email(id: EmailId(Id('id3'))),
+        ]);
+        final queryEmailResponse = MockQueryEmailResponse({
+          Id('id2'),
+          Id('id3'),
+          Id('id1'),
+        });
+
+        final result = threadApi.sortEmails(
+          getEmailResponse: getEmailResponse,
+          queryEmailResponse: queryEmailResponse,
+        );
+
+        expect(
+          result?.map((e) => e.id!.asString).toList(),
+          ['id2', 'id3', 'id1'],
+        );
+      });
+
+      test('Should returns null if getEmailResponse is null', () {
+        const getEmailResponse = null;
+        final queryEmailResponse = MockQueryEmailResponse({Id('id1')});
+
+        final result = threadApi.sortEmails(
+          getEmailResponse: getEmailResponse,
+          queryEmailResponse: queryEmailResponse,
+        );
+
+        expect(result, isNull);
+      });
+
+      test('Should returns emails as is when queryEmailResponse is null', () {
+        final getEmailResponse = MockGetEmailResponse([
+          Email(id: EmailId(Id('id1'))),
+          Email(id: EmailId(Id('id2'))),
+        ]);
+        const queryEmailResponse = null;
+
+        final result = threadApi.sortEmails(
+          getEmailResponse: getEmailResponse,
+          queryEmailResponse: queryEmailResponse,
+        );
+
+        expect(
+          result,
+          [
+            Email(id: EmailId(Id('id1'))),
+            Email(id: EmailId(Id('id2'))),
+          ],
+        );
+      });
+
+      test('Should remain in original order when the emailList contains emails whose id does not appear in idList', () {
+        final getEmailResponse = MockGetEmailResponse([
+          Email(id: EmailId(Id('id1'))),
+          Email(id: EmailId(Id('id2'))),
+          Email(id: EmailId(Id('id3'))),
+        ]);
+        final queryEmailResponse = MockQueryEmailResponse({
+          Id('id4'),
+          Id('id5'),
+        });
+
+        final result = threadApi.sortEmails(
+          getEmailResponse: getEmailResponse,
+          queryEmailResponse: queryEmailResponse,
+        );
+
+        expect(
+          result?.map((e) => e.id!.asString).toList(),
+          ['id1', 'id2', 'id3'],
+        );
+      });
+
+      test(
+        'Should still be sorted according to the ids that are present in emailList\n'
+        'when idList contains ids that do not match any in emailList',
+      () {
+        final getEmailResponse = MockGetEmailResponse([
+          Email(id: EmailId(Id('id1'))),
+          Email(id: EmailId(Id('id2'))),
+        ]);
+        final queryEmailResponse = MockQueryEmailResponse({
+          Id('id1'),
+          Id('id2'),
+          Id('id3'),
+        });
+
+        final result = threadApi.sortEmails(
+          getEmailResponse: getEmailResponse,
+          queryEmailResponse: queryEmailResponse,
+        );
+
+        expect(
+          result?.map((e) => e.id!.asString).toList(),
+          ['id1', 'id2'],
+        );
+      });
+
+      test(
+        'When both emailList and idList have ids that do not match\n'
+        'only the emails whose ids appear in both lists are sorted according to the order in idList\n'
+        'and emails that are not in idList are preserved in their original positions in the final list',
+      () {
+        final getEmailResponse = MockGetEmailResponse([
+          Email(id: EmailId(Id('id1'))),
+          Email(id: EmailId(Id('id2'))),
+          Email(id: EmailId(Id('id3'))),
+          Email(id: EmailId(Id('id4'))),
+        ]);
+        final queryEmailResponse = MockQueryEmailResponse({
+          Id('id3'),
+          Id('id1'),
+        });
+
+        final result = threadApi.sortEmails(
+          getEmailResponse: getEmailResponse,
+          queryEmailResponse: queryEmailResponse,
+        );
+
+        expect(
+          result?.map((e) => e.id!.asString).toList(),
+          ['id3', 'id1', 'id2', 'id4'],
         );
       });
     });
