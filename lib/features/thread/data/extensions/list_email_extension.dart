@@ -24,8 +24,15 @@ extension ListEmailExtension on List<Email> {
     };
 
     sort((email1, email2) {
-      final indexEmail1 = indexMap[email1.id!.id] ?? double.maxFinite;
-      final indexEmail2 = indexMap[email2.id!.id] ?? double.maxFinite;
+      final emailId1 = email1.id?.id;
+      final emailId2 = email2.id?.id;
+
+      if (emailId1 == null || emailId2 == null) {
+        return emailId1 == null ? 1 : -1;
+      }
+
+      final indexEmail1 = indexMap[emailId1] ?? double.maxFinite;
+      final indexEmail2 = indexMap[emailId2] ?? double.maxFinite;
 
       return indexEmail1.compareTo(indexEmail2);
     });

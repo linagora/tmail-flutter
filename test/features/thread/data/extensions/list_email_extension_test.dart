@@ -139,5 +139,28 @@ void main() {
         ['id3', 'id4', 'id5'],
       );
     });
+
+    test('should keep emails with null IDs in their original order at the end', () {
+      // Arrange
+      final referenceIds = [
+        Id('id2'),
+        Id('id1'),
+      ];
+
+      final emails = [
+        Email(id: EmailId(Id('id1'))),
+        Email(id: null),
+        Email(id: EmailId(Id('id2'))),
+      ];
+
+      // Act
+      final sortedEmails = emails.sortEmailsById(referenceIds);
+
+      // Assert
+      expect(
+        sortedEmails.map((e) => e.id?.asString).toList(),
+        ['id2', 'id1', null],
+      );
+    });
   });
 }
