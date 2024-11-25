@@ -123,6 +123,13 @@
             }
           });
         });
+    } else {
+      _flutter.loader.load({
+        onEntrypointLoaded: async function(engineInitializer) {
+          const appRunner = await engineInitializer.initializeEngine();
+          await appRunner.runApp();
+        }
+      });
     }
   </script>
   <script src="https://unpkg.com/pica/dist/pica.min.js" ></script> 
