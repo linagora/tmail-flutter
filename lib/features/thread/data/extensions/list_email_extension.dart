@@ -17,23 +17,24 @@ extension ListEmailExtension on List<Email> {
     };
   }
 
-  List<Email> sortingByOrderOfIdList(List<Id> ids) {
-    if (ids.length != length) {
-      return this;
-    }
+  List<Email> sortEmailsById(List<Id> referenceIds) {
+    final indexMap = {
+      for (var i = 0; i < referenceIds.length; i++)
+        referenceIds[i]: i
+    };
 
     sort((email1, email2) {
-      final id1 = email1.id?.id;
-      final id2 = email2.id?.id;
+      final emailId1 = email1.id?.id;
+      final emailId2 = email2.id?.id;
 
-      if (id1 == null || id2 == null) {
-        return 0;
+      if (emailId1 == null || emailId2 == null) {
+        return emailId1 == null ? 1 : -1;
       }
 
-      final index1 = ids.indexWhere((id) => id == id1);
-      final index2 = ids.indexWhere((id) => id == id2);
+      final indexEmail1 = indexMap[emailId1] ?? double.maxFinite;
+      final indexEmail2 = indexMap[emailId2] ?? double.maxFinite;
 
-      return index1.compareTo(index2);
+      return indexEmail1.compareTo(indexEmail2);
     });
 
     return this;
