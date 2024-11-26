@@ -15,7 +15,7 @@ permissions:
 jobs:
   reports:
     name: Upload test reports
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: dorny/test-reporter@v1
         with:

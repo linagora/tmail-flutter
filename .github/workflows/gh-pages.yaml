@@ -11,7 +11,7 @@ concurrency:
 jobs:
   deploy:
     name: Build web version and deploy
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     environment:
       name: PR-${{ github.event.pull_request.number }}
       url: ${{ steps.configure.outputs.URL }}

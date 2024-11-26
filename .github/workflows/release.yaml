@@ -18,7 +18,7 @@ jobs:
       matrix:
         include:
           - os: android
-            runner: ubuntu-latest
+            runner: ubuntu-24.04
           - os: ios
             runner: macos-latest
       fail-fast: false
