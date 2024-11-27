@@ -356,7 +356,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           context,
           receiveTime
         )
-      )
+      ),
+      key: const Key('date_time_filter_context_menu'),
     );
   }
 
