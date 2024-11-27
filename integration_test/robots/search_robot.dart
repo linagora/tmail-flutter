@@ -39,4 +39,22 @@ class SearchRobot extends CoreRobot {
     await $.waitUntilVisible($(AppLocalizations().showingResultsFor));
     await $(AppLocalizations().showingResultsFor).tap();
   }
+
+  Future<void> scrollToDateTimeButtonFilter() async {
+    await $.scrollUntilVisible(
+      finder: $(#mobile_dateTime_search_filter_button),
+      view: $(#search_filter_list_view),
+      scrollDirection: AxisDirection.right,
+      delta: 300,
+    );
+  }
+
+  Future<void> openDateTimeBottomDialog() async {
+    await $(#mobile_dateTime_search_filter_button).tap();
+  }
+
+  Future<void> selectDateTime(String dateTimeType) async {
+    await $(find.text(dateTimeType)).tap();
+    await $.pump(const Duration(seconds: 2));
+  }
 }

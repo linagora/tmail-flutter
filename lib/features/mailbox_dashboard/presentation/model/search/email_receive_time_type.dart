@@ -13,26 +13,41 @@ enum EmailReceiveTimeType {
   customRange;
 
   String getTitle(BuildContext context, {DateTime? startDate, DateTime? endDate}) {
+    return getTitleByAppLocalizations(
+      AppLocalizations.of(context),
+      startDate: startDate,
+      endDate: endDate,
+    );
+  }
+
+  String getTitleByAppLocalizations(
+    AppLocalizations appLocalizations,
+    {
+      DateTime? startDate,
+      DateTime? endDate,
+    }
+  ) {
     switch(this) {
       case EmailReceiveTimeType.allTime:
-        return AppLocalizations.of(context).allTime;
+        return appLocalizations.allTime;
       case EmailReceiveTimeType.last7Days:
-        return AppLocalizations.of(context).last7Days;
+        return appLocalizations.last7Days;
       case EmailReceiveTimeType.last30Days:
-        return AppLocalizations.of(context).last30Days;
+        return appLocalizations.last30Days;
       case EmailReceiveTimeType.last6Months:
-        return AppLocalizations.of(context).last6Months;
+        return appLocalizations.last6Months;
       case EmailReceiveTimeType.lastYear:
-        return AppLocalizations.of(context).lastYears;
+        return appLocalizations.lastYears;
       case EmailReceiveTimeType.customRange:
         if (startDate != null && endDate != null) {
           final startDateString = startDate.formatDate(pattern: 'yyyy-dd-MM');
           final endDateString = endDate.formatDate(pattern: 'yyyy-dd-MM');
-          return AppLocalizations.of(context).dateRangeAdvancedSearchFilter(
-              startDateString,
-              endDateString);
+          return appLocalizations.dateRangeAdvancedSearchFilter(
+            startDateString,
+            endDateString,
+          );
         } else {
-          return AppLocalizations.of(context).customRange;
+          return appLocalizations.customRange;
         }
     }
   }
