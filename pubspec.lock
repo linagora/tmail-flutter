@@ -1170,8 +1170,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: "bugfix/drag-drop-editor"
-      resolved-ref: "504f62d15f15b3dc52047f79fa20c7f8818ddffe"
+      ref: main
+      resolved-ref: "2021c2ab42160217821fa26e7fedaacb465a10f4"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "3.1.2"
