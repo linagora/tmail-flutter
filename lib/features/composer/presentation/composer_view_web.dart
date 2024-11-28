@@ -186,6 +186,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                 child: Padding(
                                   padding: ComposerStyle.mobileEditorPadding,
                                   child: Obx(() => WebEditorView(
+                                    key: controller.responsiveContainerKey,
                                     editorController: controller.richTextWebController!.editorController,
                                     arguments: controller.composerArguments.value,
                                     contentViewState: controller.emailContentsViewState.value,
@@ -199,6 +200,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                     width: constraints.maxWidth,
                                     height: constraints.maxHeight,
                                     onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
+                                    onDragOver: controller.handleOnDragOverHtmlEditorWeb,
                                     onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
                                       context: context,
                                       maxWidth: constraintsEditor.maxWidth,
@@ -448,6 +450,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                         padding: ComposerStyle.desktopEditorPadding,
                                         child: Obx(() {
                                           return WebEditorView(
+                                            key: controller.responsiveContainerKey,
                                             editorController: controller.richTextWebController!.editorController,
                                             arguments: controller.composerArguments.value,
                                             contentViewState: controller.emailContentsViewState.value,
@@ -461,6 +464,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                             width: constraints.maxWidth,
                                             height: constraints.maxHeight,
                                             onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
+                                            onDragOver: controller.handleOnDragOverHtmlEditorWeb,
                                             onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
                                               context: context,
                                               maxWidth: constraintsEditor.maxWidth,
@@ -728,6 +732,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                       child: Padding(
                                         padding: ComposerStyle.tabletEditorPadding,
                                         child: Obx(() => WebEditorView(
+                                          key: controller.responsiveContainerKey,
                                           editorController: controller.richTextWebController!.editorController,
                                           arguments: controller.composerArguments.value,
                                           contentViewState: controller.emailContentsViewState.value,
@@ -741,6 +746,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                           width: constraints.maxWidth,
                                           height: constraints.maxHeight,
                                           onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
+                                          onDragOver: controller.handleOnDragOverHtmlEditorWeb,
                                           onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
                                             context: context,
                                             maxWidth: constraintsBody.maxWidth,
