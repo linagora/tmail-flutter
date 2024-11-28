@@ -25,3 +25,4 @@ Accepted
 - Twake Mail web now will validate cache with the server every time it is loaded
   - If the status code is 200, new resources will be fetched
   - If the status code is 304, old resources will be used
+- All of the existing service workers will be removed, even if it is not Flutter Service Worker
