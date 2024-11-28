@@ -13,6 +13,7 @@ typedef OnMouseDownEditorAction = Function();
 typedef OnEditorSettingsChange = Function(EditorSettings settings);
 typedef OnEditorTextSizeChanged = Function(int? size);
 typedef OnDragEnterListener = Function(List<dynamic>? types);
+typedef OnDragOverListener = Function(List<dynamic>? types);
 typedef OnPasteImageSuccessAction = Function(List<FileUpload> listFileUpload);
 typedef OnPasteImageFailureAction = Function(
     List<FileUpload>? listFileUpload,
@@ -34,6 +35,7 @@ class WebEditorWidget extends StatefulWidget {
   final OnEditorTextSizeChanged? onEditorTextSizeChanged;
   final double? height;
   final OnDragEnterListener? onDragEnter;
+  final OnDragOverListener? onDragOver;
   final OnPasteImageSuccessAction? onPasteImageSuccessAction;
   final OnPasteImageFailureAction? onPasteImageFailureAction;
   final OnInitialContentLoadComplete? onInitialContentLoadComplete;
@@ -52,6 +54,7 @@ class WebEditorWidget extends StatefulWidget {
     this.onEditorTextSizeChanged,
     this.height,
     this.onDragEnter,
+    this.onDragOver,
     this.onPasteImageSuccessAction,
     this.onPasteImageFailureAction,
     this.onInitialContentLoadComplete,
@@ -160,6 +163,7 @@ class _WebEditorState extends State<WebEditorWidget> {
           HtmlUtils.lineHeight100Percent.name
         ),
         onDragEnter: widget.onDragEnter,
+        onDragOver: widget.onDragOver,
         onDragLeave: (_) {},
         onImageUpload: widget.onPasteImageSuccessAction,
         onImageUploadError: widget.onPasteImageFailureAction,
