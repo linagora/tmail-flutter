@@ -198,6 +198,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                     onEditorTextSizeChanged: controller.richTextWebController!.onEditorTextSizeChanged,
                                     height: constraints.maxHeight,
                                     onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
+                                    onDragOver: controller.handleOnDragOverHtmlEditorWeb,
                                     onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
                                       context: context,
                                       maxWidth: constraintsEditor.maxWidth,
@@ -460,6 +461,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                             onEditorTextSizeChanged: controller.richTextWebController?.onEditorTextSizeChanged,
                                             height: constraints.maxHeight,
                                             onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
+                                            onDragOver: controller.handleOnDragOverHtmlEditorWeb,
                                             onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
                                               context: context,
                                               maxWidth: constraintsEditor.maxWidth,
@@ -744,6 +746,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                           onEditorTextSizeChanged: controller.richTextWebController!.onEditorTextSizeChanged,
                                           height: constraints.maxHeight,
                                           onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
+                                          onDragOver: controller.handleOnDragOverHtmlEditorWeb,
                                           onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
                                             context: context,
                                             maxWidth: constraintsBody.maxWidth,

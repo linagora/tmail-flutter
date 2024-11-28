@@ -31,6 +31,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
   final OnEditorTextSizeChanged? onEditorTextSizeChanged;
   final double? height;
   final OnDragEnterListener? onDragEnter;
+  final OnDragOverListener? onDragOver;
   final OnPasteImageSuccessAction? onPasteImageSuccessAction;
   final OnPasteImageFailureAction? onPasteImageFailureAction;
   final OnInitialContentLoadComplete? onInitialContentLoadComplete;
@@ -50,6 +51,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
     this.onEditorTextSizeChanged,
     this.height,
     this.onDragEnter,
+    this.onDragOver,
     this.onPasteImageSuccessAction,
     this.onPasteImageFailureAction,
     this.onInitialContentLoadComplete,
@@ -78,6 +80,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           onEditorTextSizeChanged: onEditorTextSizeChanged,
           height: height,
           onDragEnter: onDragEnter,
+          onDragOver: onDragOver,
           onPasteImageSuccessAction: onPasteImageSuccessAction,
           onPasteImageFailureAction: onPasteImageFailureAction,
           onInitialContentLoadComplete: onInitialContentLoadComplete,
@@ -106,6 +109,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
             onEditorTextSizeChanged: onEditorTextSizeChanged,
             height: height,
             onDragEnter: onDragEnter,
+            onDragOver: onDragOver,
             onPasteImageSuccessAction: onPasteImageSuccessAction,
             onPasteImageFailureAction: onPasteImageFailureAction,
             onInitialContentLoadComplete: onInitialContentLoadComplete,
@@ -133,6 +137,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 onEditorTextSizeChanged: onEditorTextSizeChanged,
                 height: height,
                 onDragEnter: onDragEnter,
+                onDragOver: onDragOver,
                 onPasteImageSuccessAction: onPasteImageSuccessAction,
                 onPasteImageFailureAction: onPasteImageFailureAction,
                 onInitialContentLoadComplete: onInitialContentLoadComplete,
@@ -169,6 +174,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
               onEditorTextSizeChanged: onEditorTextSizeChanged,
               height: height,
               onDragEnter: onDragEnter,
+              onDragOver: onDragOver,
               onPasteImageSuccessAction: onPasteImageSuccessAction,
               onPasteImageFailureAction: onPasteImageFailureAction,
               onInitialContentLoadComplete: onInitialContentLoadComplete,
@@ -200,6 +206,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
                 onEditorTextSizeChanged: onEditorTextSizeChanged,
                 height: height,
                 onDragEnter: onDragEnter,
+                onDragOver: onDragOver,
                 onPasteImageSuccessAction: onPasteImageSuccessAction,
                 onPasteImageFailureAction: onPasteImageFailureAction,
                 onInitialContentLoadComplete: onInitialContentLoadComplete,
@@ -221,6 +228,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           onEditorTextSizeChanged: onEditorTextSizeChanged,
           height: height,
           onDragEnter: onDragEnter,
+          onDragOver: onDragOver,
           onPasteImageSuccessAction: onPasteImageSuccessAction,
           onPasteImageFailureAction: onPasteImageFailureAction,
           onInitialContentLoadComplete: onInitialContentLoadComplete,

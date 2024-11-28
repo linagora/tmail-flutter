@@ -237,6 +237,7 @@ class ComposerController extends BaseController
   void onInit() {
     super.onInit();
     if (PlatformInfo.isWeb) {
+      responsiveContainerKey = GlobalKey();
       richTextWebController = getBinding<RichTextWebController>();
       responsiveContainerKey = GlobalKey();
       menuMoreOptionController = CustomPopupMenuController();
@@ -286,6 +287,7 @@ class ComposerController extends BaseController
       richTextMobileTabletController = null;
     }
     _identityContentOnOpenPolicy = SignatureStatus.editedAvailable;
+    responsiveContainerKey = null;
     super.onClose();
   }
 
@@ -2241,6 +2243,12 @@ class ComposerController extends BaseController
   }
 
   void handleOnDragEnterHtmlEditorWeb(List<dynamic>? types) {
+    if (types.validateFilesTransfer) {
+      mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.active;
+    }
+  }
+
+  void handleOnDragOverHtmlEditorWeb(List<dynamic>? types) {
     if (types.validateFilesTransfer) {
       mailboxDashBoardController.localFileDraggableAppState.value = DraggableAppState.active;
     }
