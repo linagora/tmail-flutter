@@ -121,7 +121,7 @@ class MailboxTree with EquatableMixin {
     return false;
   }
 
-  String? getNodePath(MailboxId mailboxId) {
+  String? getNodePath(MailboxId mailboxId, String pathSeparator) {
     final matchedNode = findNode((node) => node.item.id == mailboxId);
     if (matchedNode == null) {
       return null;
@@ -141,9 +141,9 @@ class MailboxTree with EquatableMixin {
         break;
       }
       if (currentContext != null) {
-        path = '${parentNode.item.getDisplayName(currentContext!)}/$path';
+        path = '${parentNode.item.getDisplayName(currentContext!)}$pathSeparator$path';
       } else {
-        path = '${parentNode.item.name?.name}/$path';
+        path = '${parentNode.item.name?.name}$pathSeparator$path';
       }
       parentId = parentNode.item.parentId;
     }

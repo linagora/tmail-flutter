@@ -66,6 +66,8 @@ mixin MailboxWidgetMixin {
         MailboxActions.disallowSubaddressing
       else
         MailboxActions.allowSubaddressing,
+      if (mailbox.isSubaddressingAllowed)
+        MailboxActions.copySubaddress,
       if (mailbox.isSubscribedMailbox)
         MailboxActions.disableMailbox
       else

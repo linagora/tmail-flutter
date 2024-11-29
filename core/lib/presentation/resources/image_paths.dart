@@ -223,6 +223,7 @@ class ImagePaths {
   String get icLogoTwakeWelcome => _getImagePath('ic_logo_twake_welcome.svg');
   String get icHelp => _getImagePath('ic_help.svg');
   String get icDownloadAll => _getImagePath('ic_download_all.svg');
+  String get icCopy => _getImagePath('ic_copy.svg');
   String get icSubaddressingAllow => _getImagePath('ic_subaddressing_allow.svg');
   String get icSubaddressingDisallow => _getImagePath('ic_subaddressing_disallow.svg');
 
