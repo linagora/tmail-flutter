@@ -16,6 +16,7 @@ enum MailboxActions {
   markAsRead,
   selectForRuleAction,
   openInNewTab,
+  copySubaddress,
   disableSpamReport,
   enableSpamReport,
   disableMailbox,
@@ -50,6 +51,8 @@ extension MailboxActionsExtension on MailboxActions {
     switch(this) {
       case MailboxActions.openInNewTab:
         return AppLocalizations.of(context).openInNewTab;
+      case MailboxActions.copySubaddress:
+        return AppLocalizations.of(context).copySubaddress;
       case MailboxActions.newSubfolder:
         return AppLocalizations.of(context).newSubfolder;
       case MailboxActions.disableSpamReport:
@@ -89,6 +92,8 @@ extension MailboxActionsExtension on MailboxActions {
     switch(this) {
       case MailboxActions.openInNewTab:
         return imagePaths.icOpenInNewTab;
+      case MailboxActions.copySubaddress:
+        return imagePaths.icCopy;
       case MailboxActions.newSubfolder:
         return imagePaths.icAddNewFolder;
       case MailboxActions.disableSpamReport:
@@ -181,6 +186,7 @@ extension MailboxActionsExtension on MailboxActions {
   ContextMenuItemState getContextMenuItemState(PresentationMailbox mailbox) {
     switch(this) {
       case MailboxActions.openInNewTab:
+      case MailboxActions.copySubaddress:
       case MailboxActions.newSubfolder:
       case MailboxActions.disableSpamReport:
       case MailboxActions.enableSpamReport:
