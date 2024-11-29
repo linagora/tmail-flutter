@@ -764,6 +764,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "emailSubaddressCopiedToClipboard": "Email subaddress copied to clipboard",
+  "@emailSubaddressCopiedToClipboard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "minimize": "Minimize",
   "@minimize": {
     "type": "text",
@@ -2556,6 +2562,12 @@
   },
   "openInNewTab": "Open in new tab",
   "@openInNewTab": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copySubaddress": "Copy subaddress",
+  "@copySubaddress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

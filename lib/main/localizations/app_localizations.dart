@@ -787,6 +787,12 @@ class AppLocalizations {
         name: 'email_address_copied_to_clipboard');
   }
 
+  String get emailSubaddressCopiedToClipboard {
+    return Intl.message(
+        'Email subaddress copied to clipboard',
+        name: 'emailSubaddressCopiedToClipboard');
+  }
+
   String get minimize {
     return Intl.message(
         'Minimize',
@@ -2628,6 +2634,13 @@ class AppLocalizations {
     );
   }
 
+  String get copySubaddress {
+    return Intl.message(
+      'Copy subaddress',
+      name: 'copySubaddress',
+    );
+  }
+
   String get regards {
     return Intl.message(
       'Regards',
@@ -2976,6 +2989,13 @@ class AppLocalizations {
     return Intl.message(
       'Error',
       name: 'error',
+    );
+  }
+
+  String get errorWhileFetchingSubaddress {
+    return Intl.message(
+      'Error while fetching the subaddress',
+      name: 'errorWhileFetchingSubaddress',
     );
   }
 
