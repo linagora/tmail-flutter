@@ -77,6 +77,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.d
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/open_mailbox_view_event.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/copy_subaddress_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
@@ -1091,6 +1092,22 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         _unsubscribeMailboxAction(mailbox.id);
         break;
       case MailboxActions.allowSubaddressing:
+        try{
+          final subaddress = getSubaddress(mailboxDashBoardController.userEmail, findNodePathWithSeparator(mailbox.id, '.')!);
+          openConfirmationDialogSubaddressingAction(
+              context,
+              responsiveUtils,
+              imagePaths,
+              mailbox.id,
+              mailbox.getDisplayName(context),
+              subaddress,
+              mailbox.rights,
+              onAllowSubaddressingAction: _handleSubaddressingAction
+          );
+        } catch (error) {
+          appToast.showToastErrorMessage(context, AppLocalizations.of(context).errorWhileFetchingSubaddress);
+        }
+        break;
       case MailboxActions.disallowSubaddressing:
         _handleSubaddressingAction(mailbox.id, mailbox.rights, actions);
         break;
@@ -1469,6 +1486,51 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       mailboxDashBoardController.emptyTrashFolderAction(trashFolderId: presentationMailbox.id);
     } else if (presentationMailbox.isSpam) {
       mailboxDashBoardController.emptySpamFolderAction(spamFolderId: presentationMailbox.id);
+    }
+  }
+
+  void openConfirmationDialogSubaddressingAction(
+      BuildContext context,
+      ResponsiveUtils responsiveUtils,
+      ImagePaths imagePaths,
+      MailboxId mailboxId,
+      String mailboxName,
+      String subaddress,
+      Map<String, List<String>?>? currentRights, {
+        required AllowSubaddressingActionCallback onAllowSubaddressingAction
+      }) {
+    if (responsiveUtils.isLandscapeMobile(context) || responsiveUtils.isPortraitMobile(context)) {
+      (ConfirmationDialogActionSheetBuilder(context)
+        ..messageText(AppLocalizations.of(context).message_confirmation_dialog_allow_subaddressing(mailboxName))
+        ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
+        ..onConfirmAction(AppLocalizations.of(context).allow, () => onAllowSubaddressingAction(mailboxId, currentRights, MailboxActions.allowSubaddressing))
+      ).show();
+    } else {
+      Get.dialog(
+        PointerInterceptor(
+            child: (ConfirmDialogBuilder(imagePaths)
+              ..key(const Key('confirm_dialog_subaddressing'))
+              ..title(AppLocalizations.of(context).allowSubaddressing)
+              ..styleTitle(const TextStyle(
+                  fontSize: 17,
+                  fontWeight: FontWeight.w500,
+                  color: AppColor.colorTextButton
+              ))
+              ..content(AppLocalizations.of(context).message_confirmation_dialog_allow_subaddressing(mailboxName))
+              ..addIcon(SvgPicture.asset(imagePaths.icSubaddressingAllow, width: 64, height: 64))
+              ..addWidgetContent(CopySubaddressWidget(
+                context: context,
+                imagePath: imagePaths,
+                subaddress: subaddress,
+                onCopyButtonAction: () => copySubaddressAction(context, subaddress),
+              ))
+              ..colorCancelButton(AppColor.colorContentEmail)
+              ..onCloseButtonAction(() => popBack())
+              ..onConfirmButtonAction(AppLocalizations.of(context).allow, () => onAllowSubaddressingAction(mailboxId, currentRights, MailboxActions.allowSubaddressing))
+              ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack())
+            ).build()),
+        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      );
     }
   }
 
