@@ -15619,8 +15619,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B._RecipientComposerWidgetState_build___closure8.prototype = {
     call$7(context, tagEditorState, suggestionEmailAddress, index, $length, highlight, suggestionValid) {
-      var t1 = this.$this;
-      return new B.RecipientSuggestionItemWidget(suggestionEmailAddress.state, suggestionEmailAddress.emailAddress, t1._widget.imagePaths, suggestionValid, highlight, new B._RecipientComposerWidgetState_build____closure0(t1, this.stateSetter, tagEditorState), null);
+      var t1 = this.$this,
+        t2 = t1._widget.imagePaths,
+        t3 = suggestionEmailAddress.emailAddress.email;
+      t3 = A.MailAddress_MailAddress$validateAddress(t3 == null ? "" : t3);
+      return new B.RecipientSuggestionItemWidget(suggestionEmailAddress.state, new A.EmailAddress(A.MailAddressExtension_get_getDisplayName(t3), t3.asEncodedString$0()), t2, suggestionValid, highlight, new B._RecipientComposerWidgetState_build____closure0(t1, this.stateSetter, tagEditorState), null);
     },
     $signature: typesOffset + 37
   };
@@ -22069,5 +22072,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "YKH6vu1G0ZJroNZwn6zIL8OI12U=");
+})($__dart_deferred_initializers__, "WB0fHOXzlsEujzd+tL3Ex1paRRA=");
 ;
