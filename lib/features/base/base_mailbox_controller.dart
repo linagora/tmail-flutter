@@ -210,12 +210,16 @@ abstract class BaseMailboxController extends BaseController {
     return teamMailboxesTree.value.findNode((node) => node.item.id == mailboxId);
   }
 
-  String? findNodePath(MailboxId mailboxId) {
-    var mailboxNodePath = defaultMailboxTree.value.getNodePath(mailboxId)
-      ?? personalMailboxTree.value.getNodePath(mailboxId)
-      ?? teamMailboxesTree.value.getNodePath(mailboxId);
+  String? findNodePathWithSeparator(MailboxId mailboxId, String pathSeparator) {
+    var mailboxNodePath = defaultMailboxTree.value.getNodePath(mailboxId, pathSeparator)
+      ?? personalMailboxTree.value.getNodePath(mailboxId, pathSeparator)
+      ?? teamMailboxesTree.value.getNodePath(mailboxId, pathSeparator);
     log('BaseMailboxController::findNodePath():mailboxNodePath: $mailboxNodePath');
     return mailboxNodePath;
+  }
+
+  String? findNodePath(MailboxId mailboxId) {
+    return findNodePathWithSeparator(mailboxId, '/');
   }
 
   MailboxNode? findMailboxNodeByRole(Role role) {

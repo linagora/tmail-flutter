@@ -5,6 +5,7 @@ import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -31,6 +32,8 @@ import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/exceptions/empty_folder_name_exception.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/exceptions/invalid_mail_format_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_name_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/null_session_or_accountid_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
@@ -1072,6 +1075,14 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       case MailboxActions.openInNewTab:
         openMailboxInNewTabAction(mailbox);
         break;
+      case MailboxActions.copySubaddress:
+        try{
+          final subaddress = getSubaddress(mailboxDashBoardController.userEmail, findNodePathWithSeparator(mailbox.id, '.')!);
+          copySubaddressAction(context, subaddress);
+        } catch (error) {
+          appToast.showToastErrorMessage(context, AppLocalizations.of(context).errorWhileFetchingSubaddress);
+        }
+        break;
       case MailboxActions.disableSpamReport:
       case MailboxActions.enableSpamReport:
         mailboxDashBoardController.storeSpamReportStateAction();
@@ -1459,5 +1470,23 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     } else if (presentationMailbox.isSpam) {
       mailboxDashBoardController.emptySpamFolderAction(spamFolderId: presentationMailbox.id);
     }
+  }
+
+  void copySubaddressAction(BuildContext context, String subaddress) {
+    Clipboard.setData(ClipboardData(text: subaddress));
+    appToast.showToastSuccessMessage(context, AppLocalizations.of(context).emailSubaddressCopiedToClipboard);
+  }
+
+  String getSubaddress(String userEmail, String folderName) {
+    if (folderName.isEmpty) {
+      throw EmptyFolderNameException(folderName);
+    }
+
+    final atIndex = userEmail.indexOf('@');
+    if (atIndex <= 0 || atIndex == userEmail.length - 1) {
+      throw InvalidMailFormatException(userEmail);
+    }
+
+    return '${userEmail.substring(0, atIndex)}+$folderName@${userEmail.substring(atIndex + 1)}';
   }
 }
