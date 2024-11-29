@@ -4,9 +4,11 @@ import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:model/extensions/presentation_mailbox_extension.dart';
-import 'package:model/mailbox/expand_mode.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:model/mailbox/mailbox_constants.dart';
+import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
@@ -15,6 +17,8 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_bottom_sheet_action_tile_builder.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_dashboard/app_list_dashboard_item.dart';
+import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 mixin MailboxWidgetMixin {
@@ -53,7 +57,7 @@ mixin MailboxWidgetMixin {
     ];
   }
 
-  List<MailboxActions> _listActionForPersonalMailbox(PresentationMailbox mailbox) {
+  List<MailboxActions> _listActionForPersonalMailbox(PresentationMailbox mailbox, bool subaddressingSupported) {
     return [
       if (PlatformInfo.isWeb && mailbox.isSubscribedMailbox)
         MailboxActions.openInNewTab,
@@ -62,12 +66,14 @@ mixin MailboxWidgetMixin {
         MailboxActions.markAsRead,
       MailboxActions.move,
       MailboxActions.rename,
-      if (mailbox.isSubaddressingAllowed)
-        MailboxActions.disallowSubaddressing
-      else
-        MailboxActions.allowSubaddressing,
-      if (mailbox.isSubaddressingAllowed)
-        MailboxActions.copySubaddress,
+      if (subaddressingSupported) ...[
+        if (mailbox.isSubaddressingAllowed)
+          MailboxActions.disallowSubaddressing
+        else
+          MailboxActions.allowSubaddressing,
+        if (mailbox.isSubaddressingAllowed)
+          MailboxActions.copySubaddress,
+      ],
       if (mailbox.isSubscribedMailbox)
         MailboxActions.disableMailbox
       else
@@ -93,12 +99,13 @@ mixin MailboxWidgetMixin {
   List<MailboxActions> _listActionForAllMailboxType(
     PresentationMailbox mailbox,
     bool spamReportEnabled,
-    bool deletedMessageVaultSupported
+    bool deletedMessageVaultSupported,
+    bool subaddressingSupported,
   ) {
     if (mailbox.isDefault) {
       return _listActionForDefaultMailbox(mailbox, spamReportEnabled, deletedMessageVaultSupported);
     } else if (mailbox.isPersonal) {
-      return _listActionForPersonalMailbox(mailbox);
+      return _listActionForPersonalMailbox(mailbox, subaddressingSupported);
     } else {
       return _listActionForTeamMailbox(mailbox);
     }
@@ -114,10 +121,15 @@ mixin MailboxWidgetMixin {
         controller.mailboxDashBoardController.sessionCurrent,
         controller.mailboxDashBoardController.accountId.value);
 
+    final bool subaddressingSupported = isSubaddressingSupported(
+        controller.mailboxDashBoardController.sessionCurrent,
+        controller.mailboxDashBoardController.accountId.value);
+
     final contextMenuActions = listContextMenuItemAction(
       mailbox,
       controller.mailboxDashBoardController.enableSpamReport,
-      deletedMessageVaultSupported
+      deletedMessageVaultSupported,
+      subaddressingSupported,
     );
 
     if (contextMenuActions.isEmpty) {
@@ -189,9 +201,10 @@ mixin MailboxWidgetMixin {
   List<ContextMenuItemMailboxAction> listContextMenuItemAction(
     PresentationMailbox mailbox,
     bool spamReportEnabled,
-    bool deletedMessageVaultSupported
+    bool deletedMessageVaultSupported,
+    bool subaddressingSupported,
   ) {
-    final mailboxActionsSupported = _listActionForAllMailboxType(mailbox, spamReportEnabled, deletedMessageVaultSupported);
+    final mailboxActionsSupported = _listActionForAllMailboxType(mailbox, spamReportEnabled, deletedMessageVaultSupported, subaddressingSupported);
 
     final listContextMenuItemAction = mailboxActionsSupported
       .map((action) => ContextMenuItemMailboxAction(action, action.getContextMenuItemState(mailbox)))
@@ -212,10 +225,15 @@ mixin MailboxWidgetMixin {
         controller.mailboxDashBoardController.sessionCurrent,
         controller.mailboxDashBoardController.accountId.value);
 
+    final bool subaddressingSupported = isSubaddressingSupported(
+      controller.mailboxDashBoardController.sessionCurrent,
+      controller.mailboxDashBoardController.accountId.value);
+
     final contextMenuActions = listContextMenuItemAction(
       mailbox,
       controller.mailboxDashBoardController.enableSpamReport,
-      deletedMessageVaultSupported
+      deletedMessageVaultSupported,
+      subaddressingSupported,
     );
 
     if (contextMenuActions.isEmpty) {
@@ -266,6 +284,20 @@ mixin MailboxWidgetMixin {
         handleMailboxAction: handleMailboxAction
       ))
       .toList();
+  }
+
+  static bool isSubaddressingSupported(Session? session, AccountId? accountId) {
+    if (session == null || accountId == null) {
+      return false;
+    }
+    if (!CapabilityIdentifier.jmapTeamMailboxes.isSupported(session, accountId)) {
+      return false;
+    }
+
+    return (session.getCapabilityProperties(accountId, CapabilityIdentifier.jmapTeamMailboxes)
+        ?.props[0] as Map<String, dynamic>?)
+        ?[subaddressingSupported]
+        ?? false;
   }
 
   PopupMenuItem _buildPopupMenuItem(

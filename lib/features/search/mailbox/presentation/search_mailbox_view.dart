@@ -201,10 +201,15 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
         controller.dashboardController.sessionCurrent,
         controller.dashboardController.accountId.value);
 
+    final bool subaddressingSupported = MailboxWidgetMixin.isSubaddressingSupported(
+        controller.dashboardController.sessionCurrent,
+        controller.dashboardController.accountId.value);
+
     final contextMenuActions = listContextMenuItemAction(
       mailbox,
       controller.dashboardController.enableSpamReport,
-      deletedMessageVaultSupported
+      deletedMessageVaultSupported,
+      subaddressingSupported,
     );
     return contextMenuActions
       .map((action) => _mailboxFocusedMenuItem(context, action, mailbox))
@@ -262,10 +267,15 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
         controller.dashboardController.sessionCurrent,
         controller.dashboardController.accountId.value);
 
+    final bool subaddressingSupported = MailboxWidgetMixin.isSubaddressingSupported(
+        controller.dashboardController.sessionCurrent,
+        controller.dashboardController.accountId.value);
+
     final contextMenuActions = listContextMenuItemAction(
       mailbox,
       controller.dashboardController.enableSpamReport,
-      deletedMessageVaultSupported
+      deletedMessageVaultSupported,
+      subaddressingSupported,
     );
 
     if (contextMenuActions.isEmpty) {
