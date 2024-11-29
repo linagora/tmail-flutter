@@ -718,6 +718,16 @@
       "nameMailbox": {}
     }
   },
+  "message_confirmation_dialog_allow_subaddressing": "You are about to allow anyone to send emails directly to your folder \"{nameMailbox}\" using:",
+  "@message_confirmation_dialog_allow_subaddressing": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox"
+    ],
+    "placeholders": {
+      "nameMailbox": {}
+    }
+  },
   "renameFolder": "Rename folder",
   "@renameFolder": {
     "type": "text",
@@ -2360,6 +2370,12 @@
   },
   "allowSubaddressing": "Allow subaddressing",
   "@allowSubaddressing": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allow": "Allow",
+  "@allow": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

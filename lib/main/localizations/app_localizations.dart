@@ -729,6 +729,14 @@ class AppLocalizations {
     );
   }
 
+  String message_confirmation_dialog_allow_subaddressing(String nameMailbox) {
+    return Intl.message(
+        'You are about to allow anyone to send emails directly to your folder "$nameMailbox" using:',
+        name: 'message_confirmation_dialog_allow_subaddressing',
+        args: [nameMailbox]
+    );
+  }
+
   String get renameFolder {
     return Intl.message(
       'Rename folder',
@@ -2432,6 +2440,12 @@ class AppLocalizations {
     return Intl.message(
         'Allow subaddressing',
         name: 'allowSubaddressing');
+  }
+
+  String get allow {
+    return Intl.message(
+        'Allow',
+        name: 'allow');
   }
 
   String get disallowSubaddressing {
