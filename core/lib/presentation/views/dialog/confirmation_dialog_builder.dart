@@ -12,10 +12,11 @@ class ConfirmDialogBuilder {
 
   Key? _key;
   String _title = '';
-  String _content = '';
+  String _textContent = '';
   String _confirmText = '';
   String _cancelText = '';
   Widget? _iconWidget;
+  Widget? _additionalWidgetContent;
   Color? _colorCancelButton;
   Color? _colorConfirmButton;
   TextStyle? _styleTextCancelButton;
@@ -63,7 +64,11 @@ class ConfirmDialogBuilder {
   }
 
   void content(String content) {
-    _content = content;
+    _textContent = content;
+  }
+
+  void addWidgetContent(Widget? icon) {
+    _additionalWidgetContent = icon;
   }
 
   void addIcon(Widget? icon) {
@@ -210,11 +215,11 @@ class ConfirmDialogBuilder {
                       )
                   )
               ),
-            if (_content.isNotEmpty)
+            if (_textContent.isNotEmpty)
               Padding(
                 padding: _paddingContent ?? const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
                 child: Center(
-                  child: Text(_content,
+                  child: Text(_textContent,
                       textAlign: TextAlign.center,
                       style: _styleContent ?? const TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog)
                   ),
@@ -232,6 +237,11 @@ class ConfirmDialogBuilder {
                     ),
                   ),
                 ),
+              ),
+            if (_additionalWidgetContent != null)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: _additionalWidgetContent,
               ),
             if (isArrangeActionButtonsVertical)
               ...[
