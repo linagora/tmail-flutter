@@ -765,6 +765,10 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
         ? Some({queryString})
         : null);
 
+    if (searchController.searchEmailFilter.value.isContainFlagged) {
+      filterMessageOption.value = FilterMessageOption.starred;
+    }
+
     FocusManager.instance.primaryFocus?.unfocus();
 
     dispatchAction(StartSearchEmailAction());
