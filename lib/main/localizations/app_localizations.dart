@@ -4848,4 +4848,18 @@ class AppLocalizations {
       args: [days],
     );
   }
+
+  String get copy {
+    return Intl.message(
+      'Copy',
+      name: 'copy',
+    );
+  }
+
+  String get modifyEmailAddress {
+    return Intl.message(
+      'Modify email address',
+      name: 'modifyEmailAddress',
+    );
+  }
 }

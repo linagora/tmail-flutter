@@ -37,6 +37,12 @@ typedef OnFocusEmailAddressChangeAction = void Function(PrefixEmailAddress prefi
 typedef OnRemoveDraggableEmailAddressAction = void Function(DraggableEmailAddress draggableEmailAddress);
 typedef OnDeleteTagAction = void Function(EmailAddress emailAddress);
 typedef OnEnableAllRecipientsInputAction = void Function(bool isEnabled);
+typedef OnEditRecipientAction = void Function(
+  BuildContext context,
+  PrefixEmailAddress prefix,
+  EmailAddress emailAddress,
+  RelativeRect position,
+);
 
 class RecipientComposerWidget extends StatefulWidget {
 
@@ -62,6 +68,7 @@ class RecipientComposerWidget extends StatefulWidget {
   final OnShowFullListEmailAddressAction? onShowFullListEmailAddressAction;
   final OnFocusEmailAddressChangeAction? onFocusEmailAddressChangeAction;
   final OnRemoveDraggableEmailAddressAction? onRemoveDraggableEmailAddressAction;
+  final OnEditRecipientAction? onEditRecipientAction;
   final VoidCallback? onFocusNextAddressAction;
   final EdgeInsetsGeometry? padding;
   final EdgeInsetsGeometry? margin;
@@ -101,6 +108,7 @@ class RecipientComposerWidget extends StatefulWidget {
     this.onRemoveDraggableEmailAddressAction,
     this.onEnableAllRecipientsInputAction,
     this.focusNodeKeyboard,
+    this.onEditRecipientAction,
   });
 
   @override
@@ -217,6 +225,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                               maxWidth: widget.maxWidth,
                               onDeleteTagAction: (emailAddress) => _handleDeleteTagAction.call(emailAddress, stateSetter),
                               onShowFullAction: widget.onShowFullListEmailAddressAction,
+                              onEditRecipientAction: widget.onEditRecipientAction,
                             );
                           },
                           onTagChanged: (value) => _handleOnTagChangeAction.call(value, stateSetter),
@@ -309,6 +318,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                           maxWidth: widget.maxWidth,
                           onDeleteTagAction: (emailAddress) => _handleDeleteTagAction.call(emailAddress, stateSetter),
                           onShowFullAction: widget.onShowFullListEmailAddressAction,
+                          onEditRecipientAction: widget.onEditRecipientAction,
                         );
                       },
                       onTagChanged: (value) => _handleOnTagChangeAction.call(value, stateSetter),

@@ -4601,5 +4601,17 @@
     "placeholders": {
       "days": {}
     }
+  },
+  "copy": "Copy",
+  "@copy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "modifyEmailAddress": "Modify email address",
+  "@modifyEmailAddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
