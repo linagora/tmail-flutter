@@ -74,6 +74,7 @@ class NotificationService: UNNotificationServiceExtension {
                 basicAuth: keychainSharingSession.basicAuth,
                 tokenEndpointUrl: keychainSharingSession.tokenEndpoint,
                 oidcScopes: keychainSharingSession.oidcScopes,
+                isTWP: keychainSharingSession.isTWP,
                 onComplete: { (emails, errors) in
                     do {
                         if emails.isEmpty {

@@ -5,20 +5,17 @@ import 'package:model/account/authentication_type.dart';
 import 'package:model/account/personal_account.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
+import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
-import 'package:tmail_ui_user/features/starting_page/domain/repository/saas_authentication_repository.dart';
-import 'package:tmail_ui_user/features/starting_page/domain/state/sign_up_twake_workplace_state.dart';
 
-class SignUpTwakeWorkplaceInteractor {
-  final SaasAuthenticationRepository _saasRepository;
+class AutoSignInViaDeepLinkInteractor {
   final AuthenticationOIDCRepository _authenticationOIDCRepository;
   final AccountRepository _accountRepository;
   final CredentialRepository _credentialRepository;
 
-  const SignUpTwakeWorkplaceInteractor(
-    this._saasRepository,
+  const AutoSignInViaDeepLinkInteractor(
     this._authenticationOIDCRepository,
     this._accountRepository,
     this._credentialRepository
@@ -26,12 +23,11 @@ class SignUpTwakeWorkplaceInteractor {
 
   Stream<Either<Failure, Success>> execute({
     required Uri baseUri,
+    required TokenOIDC tokenOIDC,
     required OIDCConfiguration oidcConfiguration
   }) async* {
     try {
-      yield Right<Failure, Success>(SignUpTwakeWorkplaceLoading());
-
-      final tokenOIDC = await _saasRepository.signUpTwakeWorkplace(oidcConfiguration);
+      yield Right<Failure, Success>(AutoSignInViaDeepLinkLoading());
 
       await Future.wait([
         _credentialRepository.saveBaseUrl(baseUri),
@@ -47,9 +43,13 @@ class SignUpTwakeWorkplaceInteractor {
         )
       );
 
-      yield Right<Failure, Success>(SignUpTwakeWorkplaceSuccess(tokenOIDC, baseUri, oidcConfiguration));
+      yield Right<Failure, Success>(AutoSignInViaDeepLinkSuccess(
+        tokenOIDC,
+        baseUri,
+        oidcConfiguration,
+      ));
     } catch (e) {
-      yield Left<Failure, Success>(SignUpTwakeWorkplaceFailure(e));
+      yield Left<Failure, Success>(AutoSignInViaDeepLinkFailure(e));
     }
   }
 }

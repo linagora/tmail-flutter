@@ -82,7 +82,7 @@ class IOSSharingManager {
         userName: personalAccount.userName!
       );
 
-      final tokenRecords = await _getTokenEndpointAndScopes();
+      final tokenRecords = await _getTokenEndpointScopesAndIsTWP();
 
       final mailboxIdsBlockNotification = await _getMailboxIdsBlockNotification(
         accountId: personalAccount.accountId!,
@@ -99,7 +99,9 @@ class IOSSharingManager {
         basicAuth: credentialInfo,
         tokenEndpoint: tokenRecords?.tokenEndpoint,
         oidcScopes: tokenRecords?.scopes,
-        mailboxIdsBlockNotification: mailboxIdsBlockNotification);
+        mailboxIdsBlockNotification: mailboxIdsBlockNotification,
+        isTWP: tokenRecords?.isTWP ?? false,
+      );
 
       await _keychainSharingManager.save(keychainSharingSession);
 
@@ -171,13 +173,14 @@ class IOSSharingManager {
     }
   }
 
-  Future<({String? tokenEndpoint, List<String>? scopes})?> _getTokenEndpointAndScopes() async {
+  Future<({String? tokenEndpoint, List<String>? scopes, bool isTWP})?> _getTokenEndpointScopesAndIsTWP() async {
     try {
       final oidcConfig = await _oidcConfigurationCacheManager.getOidcConfiguration();
       final oidcDiscoveryResponse = await _oidcHttpClient.discoverOIDC(oidcConfig);
       return (
         tokenEndpoint: oidcDiscoveryResponse.tokenEndpoint,
-        scopes: oidcConfig.scopes
+        scopes: oidcConfig.scopes,
+        isTWP: oidcConfig.isTWP,
       );
     } catch (e) {
       logError('IOSSharingManager::_getTokenEndpointAndScopes:Exception: $e');

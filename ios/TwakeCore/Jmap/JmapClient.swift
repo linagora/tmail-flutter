@@ -24,6 +24,7 @@ class JmapClient {
         basicAuth: String?,
         tokenEndpointUrl: String?,
         oidcScopes: [String]?,
+        isTWP: Bool?,
         onComplete: @escaping ([Email], [Error]) -> Void
     ) {
         if (authenticationType == AuthenticationType.basic) {
@@ -42,7 +43,8 @@ class JmapClient {
             tokenRefreshManager = TokenRefreshManager(
                 refreshToken: tokenOidc?.refreshToken ?? "",
                 tokenEndpoint: tokenEndpointUrl ?? "",
-                scopes: oidcScopes
+                scopes: oidcScopes,
+                isTWP: isTWP
             )
         }
 

@@ -27,6 +27,7 @@ class KeychainSharingSession with EquatableMixin {
   String? tokenEndpoint;
   List<String>? oidcScopes;
   List<MailboxId>? mailboxIdsBlockNotification;
+  bool isTWP;
 
   KeychainSharingSession({
     required this.accountId,
@@ -40,6 +41,7 @@ class KeychainSharingSession with EquatableMixin {
     this.tokenEndpoint,
     this.oidcScopes,
     this.mailboxIdsBlockNotification,
+    this.isTWP = false,
   });
 
   factory KeychainSharingSession.fromJson(Map<String, dynamic> json) => _$KeychainSharingSessionFromJson(json);
@@ -59,5 +61,6 @@ class KeychainSharingSession with EquatableMixin {
     tokenEndpoint,
     oidcScopes,
     mailboxIdsBlockNotification,
+    isTWP,
   ];
 }

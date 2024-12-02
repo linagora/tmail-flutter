@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-10-31T13:18:32.336494",
+  "@@last_modified": "2024-11-22T22:45:13.197952",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4068,6 +4068,30 @@
   },
   "createTwakeIdFailed": "Create Twake Id failed. Please check again.",
   "@createTwakeIdFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "swithAccountConfirmation": "Switch Account Confirmation",
+  "@swithAccountConfirmation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yesLogout": "Yes, Log out",
+  "@yesLogout": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "doYouWantToLogoutOf": "Do you want to log out of",
+  "@doYouWantToLogoutOf": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "andSwitchAccount": "and switch account",
+  "@andSwitchAccount": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

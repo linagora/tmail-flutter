@@ -33,6 +33,7 @@
 				<array>
 					<string>ShareMedia-$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 					<string>teammail.mobile</string>
+					<string>twakemail.mobile</string>
 					<string>mailto</string>
 				</array>
 			</dict>

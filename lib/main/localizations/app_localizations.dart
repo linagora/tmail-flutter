@@ -4273,4 +4273,32 @@ class AppLocalizations {
       name: 'createTwakeIdFailed',
     );
   }
+
+  String get swithAccountConfirmation {
+    return Intl.message(
+      'Switch Account Confirmation',
+      name: 'swithAccountConfirmation',
+    );
+  }
+
+  String get yesLogout {
+    return Intl.message(
+      'Yes, Log out',
+      name: 'yesLogout',
+    );
+  }
+
+  String get doYouWantToLogoutOf {
+    return Intl.message(
+      'Do you want to log out of',
+      name: 'doYouWantToLogoutOf',
+    );
+  }
+
+  String get andSwitchAccount {
+    return Intl.message(
+      'and switch account',
+      name: 'andSwitchAccount',
+    );
+  }
 }
