@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/pages/app_pages.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
+import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:worker_manager/worker_manager.dart';
 
@@ -38,8 +39,16 @@ Future<void> runTmail() async {
   runApp(const TMailApp());
 }
 
-class TMailApp extends StatelessWidget {
+class TMailApp extends StatefulWidget {
   const TMailApp({Key? key}) : super(key: key);
+
+  @override
+  State<TMailApp> createState() => _TMailAppState();
+}
+
+class _TMailAppState extends State<TMailApp> {
+
+  final TwakeAppManager _twakeAppManager = Get.find<TwakeAppManager>();
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +83,13 @@ class TMailApp extends StatelessWidget {
       unknownRoute: AppPages.unknownRoutePage,
       defaultTransition: Transition.noTransition,
       initialRoute: AppRoutes.home,
-      getPages: AppPages.pages);
+      getPages: AppPages.pages,
+    );
+  }
+
+  @override
+  void dispose() {
+    _twakeAppManager.dispose();
+    super.dispose();
   }
 }

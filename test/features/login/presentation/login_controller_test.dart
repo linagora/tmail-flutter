@@ -36,6 +36,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oi
 import 'package:tmail_ui_user/features/starting_page/domain/usecase/sign_in_twake_workplace_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
+import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import 'login_controller_test.mocks.dart';
@@ -71,6 +72,7 @@ import 'login_controller_test.mocks.dart';
   MockSpec<LanguageCacheManager>(),
   MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
+  MockSpec<TwakeAppManager>(),
 ])
 void main() {
   late MockAuthenticationInteractor mockAuthenticationInteractor;
@@ -103,6 +105,7 @@ void main() {
   late MockUuid mockUuid;
   late MockApplicationManager mockApplicationManager;
   late MockToastManager mockToastManager;
+  late MockTwakeAppManager mockTwakeAppManager;
 
   late LoginController loginController;
 
@@ -142,6 +145,7 @@ void main() {
       mockUuid = MockUuid();
       mockApplicationManager = MockApplicationManager();
       mockToastManager = MockToastManager();
+      mockTwakeAppManager = MockTwakeAppManager();
 
       Get.put<GetSessionInteractor>(mockGetSessionInteractor);
       Get.put<GetAuthenticatedAccountInteractor>(mockGetAuthenticatedAccountInteractor);
@@ -163,6 +167,7 @@ void main() {
       Get.put<Uuid>(mockUuid);
       Get.put<ApplicationManager>(mockApplicationManager);
       Get.put<ToastManager>(mockToastManager);
+      Get.put<TwakeAppManager>(mockTwakeAppManager);
       Get.testMode = true;
 
       loginController = LoginController(
