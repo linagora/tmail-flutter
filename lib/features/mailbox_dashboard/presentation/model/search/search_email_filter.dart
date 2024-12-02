@@ -7,6 +7,7 @@ import 'package:jmap_dart_client/jmap/core/filter/filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/filter/operator/logic_filter_operator.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_filter_condition_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
@@ -198,6 +199,8 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
     sortOrderType != EmailSortOrderType.mostRecent ||
     (mailbox != null && mailbox?.id != PresentationMailbox.unifiedMailbox.id) ||
     hasAttachment;
+
+  bool get isContainFlagged => hasKeyword.contains(KeyWordIdentifier.emailFlagged.value);
 
   @override
   List<Object?> get props => [
