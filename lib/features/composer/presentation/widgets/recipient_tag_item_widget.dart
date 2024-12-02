@@ -10,6 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
+import 'package:tmail_ui_user/features/base/widget/smart_interaction_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/recipient_tag_item_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/draggable_recipient_tag_widget.dart';
@@ -30,6 +31,7 @@ class RecipientTagItemWidget extends StatelessWidget {
   final List<EmailAddress> collapsedListEmailAddress;
   final OnShowFullListEmailAddressAction? onShowFullAction;
   final OnDeleteTagAction? onDeleteTagAction;
+  final OnEditRecipientAction? onEditRecipientAction;
   final bool isTestingForWeb;
   final String? composerId;
 
@@ -47,6 +49,7 @@ class RecipientTagItemWidget extends StatelessWidget {
     this.isLatestEmail = false,
     this.onShowFullAction,
     this.onDeleteTagAction,
+    this.onEditRecipientAction,
     this.maxWidth,
     this.composerId,
   });
@@ -100,7 +103,17 @@ class RecipientTagItemWidget extends StatelessWidget {
         childWhenDragging: DraggableRecipientTagWidget(emailAddress: currentEmailAddress),
         child: MouseRegion(
           cursor: SystemMouseCursors.grab,
-          child: tagWidget,
+          child: SmartInteractionWidget(
+            onRightMouseClickAction: (position) => _onEditRecipientAction(
+              context,
+              position,
+            ),
+            onDoubleClickAction: (position) => _onEditRecipientAction(
+              context,
+              position,
+            ),
+            child: tagWidget,
+          ),
         ),
       );
     }
@@ -170,5 +183,14 @@ class RecipientTagItemWidget extends StatelessWidget {
         color: AppColor.colorBorderEmailAddressInvalid
       );
     }
+  }
+
+  void _onEditRecipientAction(BuildContext context, RelativeRect position) {
+    onEditRecipientAction?.call(
+      context,
+      prefix,
+      currentEmailAddress,
+      position,
+    );
   }
 }
