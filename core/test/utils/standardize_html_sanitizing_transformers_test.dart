@@ -6,67 +6,80 @@ void main() {
   group('StandardizeHtmlSanitizingTransformers::test', () {
     const transformer = StandardizeHtmlSanitizingTransformers();
     const htmlEscape = HtmlEscape();
+    const listHTMLTags = [
+      'div',
+      'span',
+      'p',
+      'a',
+      'i',
+      'table',
+      'font',
+      'u',
+      'center',
+      'style',
+      'section',
+      'google-sheets-html-origin',
+    ];
+    const listOnEventAttributes = [
+      'mousedown',
+      'mouseenter',
+      'mouseleave',
+      'mousemove',
+      'mouseover',
+      'mouseout',
+      'mouseup',
+      'load',
+      'unload',
+      'loadstart',
+      'loadeddata',
+      'loadedmetadata',
+      'playing',
+      'show',
+      'error',
+      'message',
+      'focus',
+      'focusin',
+      'focusout',
+      'keydown',
+      'keypress',
+      'keyup',
+      'input',
+      'ended',
+      'drag',
+      'drop',
+      'dragstart',
+      'dragover',
+      'dragleave',
+      'dragend',
+      'dragenter',
+      'beforeunload',
+      'beforeprint',
+      'afterprint',
+      'blur',
+      'click',
+      'change',
+      'contextmenu',
+      'cut',
+      'copy',
+      'dblclick',
+      'abort',
+      'durationchange',
+      'progress',
+      'resize',
+      'reset',
+      'scroll',
+      'seeked',
+      'select',
+      'submit',
+      'toggle',
+      'volumechange',
+      'touchstart',
+      'touchmove',
+      'touchend',
+      'touchcancel',
+    ];
 
     test('SHOULD remove all `on*` attributes tag', () {
-      const listOnEventAttributes = [
-        'mousedown',
-        'mouseenter',
-        'mouseleave',
-        'mousemove',
-        'mouseover',
-        'mouseout',
-        'mouseup',
-        'load',
-        'unload',
-        'loadstart',
-        'loadeddata',
-        'loadedmetadata',
-        'playing',
-        'show',
-        'error',
-        'message',
-        'focus',
-        'focusin',
-        'focusout',
-        'keydown',
-        'keydpress',
-        'keydup',
-        'input',
-        'ended',
-        'drag',
-        'drop',
-        'dragstart',
-        'dragover',
-        'dragleave',
-        'dragend',
-        'dragenter',
-        'beforeunload',
-        'beforeprint',
-        'afterprint',
-        'blur',
-        'click',
-        'change',
-        'contextmenu',
-        'cut',
-        'copy',
-        'dblclick',
-        'abort',
-        'durationchange',
-        'progress',
-        'resize',
-        'reset',
-        'scroll',
-        'seeked',
-        'select',
-        'submit',
-        'toggle',
-        'volumechange',
-        'touchstart',
-        'touchmove',
-        'touchend',
-        'touchcancel'
-      ];
-
       for (var i = 0; i < listOnEventAttributes.length; i++) {
         final inputHtml = '<img src="1" href="1" on${listOnEventAttributes[i]}="javascript:alert(1)">';
         final result = transformer.process(inputHtml, htmlEscape);
@@ -76,22 +89,6 @@ void main() {
     });
 
     test('SHOULD remove all `on*` attributes for any tags', () {
-      const listOnEventAttributes = [
-        'mousedown', 'mouseenter', 'mouseleave', 'mousemove', 'mouseover',
-        'mouseout', 'mouseup', 'load', 'unload', 'loadstart', 'loadeddata',
-        'loadedmetadata', 'playing', 'show', 'error', 'message', 'focus',
-        'focusin', 'focusout', 'keydown', 'keypress', 'keyup', 'input', 'ended',
-        'drag', 'drop', 'dragstart', 'dragover', 'dragleave', 'dragend', 'dragenter',
-        'beforeunload', 'beforeprint', 'afterprint', 'blur', 'click', 'change',
-        'contextmenu', 'cut', 'copy', 'dblclick', 'abort', 'durationchange',
-        'progress', 'resize', 'reset', 'scroll', 'seeked', 'select', 'submit',
-        'toggle', 'volumechange', 'touchstart', 'touchmove', 'touchend', 'touchcancel'
-      ];
-
-      const listHTMLTags = [
-        'div', 'span', 'p', 'a', 'u', 'i', 'table', 'section'
-      ];
-
       for (var tag in listHTMLTags) {
         for (var event in listOnEventAttributes) {
           final inputHtml = '<$tag on$event="javascript:alert(1)"></$tag>';
@@ -99,6 +96,24 @@ void main() {
 
           expect(result, equals('<$tag></$tag>'));
         }
+      }
+    });
+
+    test('SHOULD remove all `on*` attributes for `colgroup` tag', () {
+      for (var event in listOnEventAttributes) {
+        final inputHtml = '<table><colgroup on$event="javascript:alert(1)"></colgroup></table>';
+        final result = transformer.process(inputHtml, htmlEscape);
+
+        expect(result, equals('<table><colgroup></colgroup></table>'));
+      }
+    });
+
+    test('SHOULD remove all `on*` attributes for `col` tag', () {
+      for (var event in listOnEventAttributes) {
+        final inputHtml = '<table><colgroup><col on$event="javascript:alert(1)"></colgroup></table>';
+        final result = transformer.process(inputHtml, htmlEscape);
+
+        expect(result, equals('<table><colgroup><col></colgroup></table>'));
       }
     });
 
