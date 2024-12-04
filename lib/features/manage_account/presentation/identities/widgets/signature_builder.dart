@@ -11,11 +11,13 @@ class SignatureBuilder extends StatelessWidget {
     required this.value,
     this.height = 150,
     this.width = 280,
+    this.scrollController,
   }) : super(key: key);
 
   final String value;
   final double width;
   final double height;
+  final ScrollController? scrollController;
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +28,13 @@ class SignatureBuilder extends StatelessWidget {
         heightContent: height,
         contentPadding: 0,
         maxHeight: height,
-        minWidth: height,
+        htmlContentMinWidth: width,
+        htmlContentMinHeight: 0.0,
+        offsetHtmlContentHeight: 0.0,
         allowResizeToDocumentSize: false,
-        adjustHeight: true,
         direction: AppUtils.getCurrentDirection(context),
+        scrollController: scrollController,
+        keepAlive: true,
       );
     } else {
       return HtmlContentViewer(
@@ -37,7 +42,7 @@ class SignatureBuilder extends StatelessWidget {
         initialWidth: width,
         maxViewHeight: height,
         contentPadding: 0,
-        minHtmlContentHeight: 0.0,
+        htmlContentMinHeight: 0.0,
         offsetHtmlContentHeight: 0.0,
         direction: AppUtils.getCurrentDirection(context),
         keepAlive: true,

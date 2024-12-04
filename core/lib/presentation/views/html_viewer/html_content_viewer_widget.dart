@@ -31,7 +31,7 @@ class HtmlContentViewer extends StatefulWidget {
   final double? contentPadding;
   final bool useDefaultFont;
   final double? maxHtmlContentHeight;
-  final double minHtmlContentHeight;
+  final double htmlContentMinHeight;
   final double offsetHtmlContentHeight;
   final bool keepAlive;
   final bool disableScrolling;
@@ -49,7 +49,7 @@ class HtmlContentViewer extends StatefulWidget {
     required this.contentHtml,
     this.initialWidth,
     this.direction,
-    this.minHtmlContentHeight = ConstantsUI.htmlContentMinHeight,
+    this.htmlContentMinHeight = ConstantsUI.htmlContentMinHeight,
     this.offsetHtmlContentHeight = ConstantsUI.htmlContentOffsetHeight,
     this.keepWidthWhileLoading = false,
     this.contentPadding,
@@ -133,7 +133,7 @@ class HtmlContentViewState extends State<HtmlContentViewer>
   }
 
   void _initialData() {
-    _actualHeight = widget.minHtmlContentHeight;
+    _actualHeight = widget.htmlContentMinHeight;
     _htmlData = HtmlUtils.generateHtmlDocument(
       content: widget.contentHtml,
       direction: widget.direction,
@@ -324,7 +324,7 @@ class HtmlContentViewState extends State<HtmlContentViewer>
     }
 
     return currentHeight.clamp(
-      widget.minHtmlContentHeight,
+      widget.htmlContentMinHeight,
       maxHtmlContentHeight,
     );
   }

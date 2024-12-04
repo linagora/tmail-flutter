@@ -78,7 +78,8 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
   final signatureViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
   dynamic newIdentityArguments;
-  
+  ScrollController? listIdentityScrollController;
+
   final _beforeReconnectManager = Get.find<BeforeReconnectManager>();
 
   IdentitiesController(
@@ -97,6 +98,9 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
     _registerObxStreamListener();
     RestoreIdentityCacheInteractorBindings().dependencies();
     _beforeReconnectManager.addListener(onBeforeReconnect);
+    if (PlatformInfo.isWeb) {
+      listIdentityScrollController = ScrollController();
+    }
     super.onInit();
   }
 
@@ -546,6 +550,9 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
     RestoreIdentityCacheInteractorBindings().close();
     newIdentityArguments = null;
     _beforeReconnectManager.removeListener(onBeforeReconnect);
+    if (PlatformInfo.isWeb) {
+      listIdentityScrollController?.dispose();
+    }
     super.onClose();
   }
 }

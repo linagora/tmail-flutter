@@ -91,6 +91,7 @@ class IdentitiesView extends GetWidget<IdentitiesController> {
                 final Widget listView = ListView.separated(
                   shrinkWrap: true,
                   itemCount: controller.listAllIdentities.length + 1,
+                  controller: controller.listIdentityScrollController,
                   padding: const EdgeInsetsDirectional.only(
                     start: 24,
                     end: 24,
@@ -110,6 +111,7 @@ class IdentitiesView extends GetWidget<IdentitiesController> {
                       mapIdentitySignatures: controller.mapIdentitySignatures,
                       signatureViewState: controller.signatureViewState.value,
                       isDesktop: isDesktop,
+                      scrollController: controller.listIdentityScrollController,
                       onEditIdentityAction: (identitySelected) =>
                           controller.goToEditIdentity(context, identitySelected),
                       onDeleteIdentityAction: (identitySelected) =>

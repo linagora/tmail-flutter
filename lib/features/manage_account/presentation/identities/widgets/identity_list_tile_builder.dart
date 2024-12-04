@@ -26,6 +26,7 @@ class IdentityListTileBuilder extends StatelessWidget {
     required this.onDeleteIdentityAction,
     this.isDesktop = false,
     this.isSelected = false,
+    this.scrollController,
   }) : super(key: key);
 
   final Identity identity;
@@ -36,6 +37,7 @@ class IdentityListTileBuilder extends StatelessWidget {
   final bool isDesktop;
   final OnEditIdentityAction onEditIdentityAction;
   final OnDeleteIdentityAction onDeleteIdentityAction;
+  final ScrollController? scrollController;
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +103,7 @@ class IdentityListTileBuilder extends StatelessWidget {
             SignatureBuilder(
               value: signatureContent,
               width: isDesktop ? 280 : double.infinity,
+              scrollController: scrollController,
             ),
           ],
       ],
