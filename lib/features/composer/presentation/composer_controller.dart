@@ -5,7 +5,6 @@ import 'dart:math';
 import 'package:core/core.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:dartz/dartz.dart';
-import 'package:desktop_drop/desktop_drop.dart';
 import 'package:dio/dio.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:file_picker/file_picker.dart';
@@ -1969,14 +1968,12 @@ class ComposerController extends BaseController
     }
   }
 
-  void onLocalFileDropZoneListener({
+  Future<void> onSuperDropListener({
     required BuildContext context,
-    required DropDoneDetails details,
+    required List<FileInfo> listFileInfo,
     required double maxWidth
   }) async {
     _setUpMaxWidthInlineImage(context: context, maxWidth: maxWidth);
-
-    final listFileInfo = await onDragDone(context: context, details: details);
 
     if (listFileInfo.isEmpty && context.mounted) {
       appToast.showToastErrorMessage(

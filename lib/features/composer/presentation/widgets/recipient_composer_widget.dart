@@ -17,6 +17,7 @@ import 'package:model/email/prefix_email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:super_tag_editor/tag_editor.dart';
+import 'package:core/presentation/views/text/text_drop_zone_web.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mail_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
@@ -162,7 +163,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                   if (PlatformInfo.isWeb || widget.isTestingForWeb) {
                     return DragTarget<DraggableEmailAddress>(
                       builder: (context, candidateData, rejectedData) {
-                        return TagEditor<SuggestionEmailAddress>(
+                        final child = TagEditor<SuggestionEmailAddress>(
                           key: widget.keyTagEditor,
                           length: _collapsedListEmailAddress.length,
                           controller: widget.controller,
@@ -243,6 +244,27 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                               },
                             );
                           },
+                        );
+
+                        return TextDropZoneWeb(
+                          onHover: () {
+                            if (!_isDragging) {
+                              stateSetter(() => _isDragging = true);
+                            }
+                          },
+                          onLeave: () {
+                            if (_isDragging) {
+                              stateSetter(() => _isDragging = false);
+                            }
+                          },
+                          onDrop: (value) {
+                            if (_isDragging) {
+                              stateSetter(() => _isDragging = false);
+                            }
+                            widget.controller?.text += value;
+                            widget.focusNode?.requestFocus();
+                          },
+                          child: child,
                         );
                       },
                       onAcceptWithDetails: (draggableEmailAddress) => _handleAcceptDraggableEmailAddressAction(draggableEmailAddress.data, stateSetter),
