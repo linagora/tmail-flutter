@@ -145,7 +145,7 @@ dependencies:
 
   path_provider: 2.1.5
 
-  device_info_plus: 9.0.1
+  device_info_plus: 9.0.2
 
   permission_handler: 10.2.0
 
@@ -235,8 +235,6 @@ dependencies:
 
   mime: 1.0.4
 
-  desktop_drop: 0.4.4
-
   future_loading_dialog: 0.3.0
 
   file_picker: 8.0.5
@@ -261,6 +259,8 @@ dependencies:
     git:
       url: https://github.com/linagora/twake-previewer-flutter.git
       ref: main
+
+  super_drag_and_drop: 0.7.0
 
 dev_dependencies:
   flutter_test:
