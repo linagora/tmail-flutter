@@ -17,8 +17,8 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_ide
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_default_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/transform_html_signature_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/utils/identity_utils.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/transform_list_signature_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/identities/utils/identity_utils.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
@@ -89,7 +89,7 @@ class IdentityInteractorsBindings extends InteractorsBindings {
       Get.find<IdentityUtils>(tag: composerId)
     ), tag: composerId);
     Get.lazyPut(
-      () => TransformHtmlSignatureInteractor(Get.find<IdentityRepository>(tag: composerId)),
+      () => TransformListSignatureInteractor(Get.find<IdentityRepository>(tag: composerId)),
       tag: composerId,
     );
     Get.lazyPut(
@@ -138,7 +138,7 @@ class IdentityInteractorsBindings extends InteractorsBindings {
     Get.delete<DeleteIdentityInteractor>(tag: composerId);
     Get.delete<EditIdentityInteractor>(tag: composerId);
     Get.delete<EditDefaultIdentityInteractor>(tag: composerId);
-    Get.delete<TransformHtmlSignatureInteractor>(tag: composerId);
+    Get.delete<TransformListSignatureInteractor>(tag: composerId);
     Get.delete<SaveIdentityCacheOnWebInteractor>(tag: composerId);
   }
 }

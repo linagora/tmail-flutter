@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/manage_account/data/datasource/identity_d
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/identities_response.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/identity_signature.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/repository/identity_repository.dart';
 
 class IdentityRepositoryImpl extends IdentityRepository {
@@ -36,7 +37,7 @@ class IdentityRepositoryImpl extends IdentityRepository {
   }
 
   @override
-  Future<String> transformHtmlSignature(String signature) {
-    return _dataSource.transformHtmlSignature(signature);
+  Future<IdentitySignature> transformHtmlSignature(IdentitySignature identitySignature) {
+    return _dataSource.transformHtmlSignature(identitySignature);
   }
 }

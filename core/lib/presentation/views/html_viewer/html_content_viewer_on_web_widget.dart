@@ -22,6 +22,9 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final TextDirection? direction;
   final double? contentPadding;
   final bool useDefaultFont;
+  final double? minWidth;
+  final double? maxHeight;
+  final bool adjustHeight;
 
   /// Handler for mailto: links
   final OnMailtoClicked? mailtoDelegate;
@@ -40,6 +43,9 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     required this.heightContent,
     this.allowResizeToDocumentSize = true,
     this.useDefaultFont = false,
+    this.adjustHeight = false,
+    this.minWidth,
+    this.maxHeight,
     this.mailtoDelegate,
     this.direction,
     this.onClickHyperLinkAction,
@@ -53,13 +59,15 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
 
 class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
 
-  static const double _minWidth = 300;
+  static const double _defaultMinWidth = 300;
   /// The view ID for the IFrameElement. Must be unique.
   late String _createdViewId;
   /// The actual height of the content view, used to automatically set the height
   late double _actualHeight;
   /// The actual width of the content view, used to automatically set the width
   late double _actualWidth;
+
+  late double _minWidth;
 
   Future<bool>? _webInit;
   String? _htmlData;
@@ -75,6 +83,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
     super.initState();
     _actualHeight = widget.heightContent;
     _actualWidth = widget.widthContent;
+    _minWidth = widget.minWidth ?? _defaultMinWidth;
     _createdViewId = _getRandString(10);
     _setUpWeb();
 
@@ -92,8 +101,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       if (data['type'] != null && data['type'].contains('toDart: htmlHeight')) {
         final docHeight = data['height'] ?? _actualHeight;
         if (docHeight != null && mounted) {
-          final scrollHeightWithBuffer = docHeight + 30.0;
-          if (scrollHeightWithBuffer > minHeight) {
+          final bottomPadding = widget.adjustHeight ? 0 : 30.0;
+          final scrollHeightWithBuffer = docHeight + bottomPadding;
+          if (scrollHeightWithBuffer > minHeight || widget.adjustHeight) {
             setState(() {
               _actualHeight = scrollHeightWithBuffer;
               _isLoading = false;
@@ -264,7 +274,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
 
     final htmlTemplate = HtmlUtils.generateHtmlDocument(
       content: content,
-      minHeight: minHeight,
+      minHeight: widget.adjustHeight ? 0 : minHeight,
       minWidth: _minWidth,
       styleCSS: HtmlTemplate.tooltipLinkCss,
       javaScripts: webViewActionScripts
@@ -313,9 +323,12 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
               future: _webInit,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return SizedBox(
+                  return Container(
                     height: _actualHeight,
                     width: _actualWidth,
+                    constraints: widget.adjustHeight && widget.maxHeight != null
+                      ? BoxConstraints(maxHeight: widget.maxHeight!)
+                      : null,
                     child: HtmlElementView(
                       key: ValueKey(_htmlData),
                       viewType: _createdViewId,
