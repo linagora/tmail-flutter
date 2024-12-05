@@ -60,7 +60,6 @@ export 'extensions/session_extension.dart';
 export 'extensions/username_extension.dart';
 export 'extensions/utc_date_extension.dart';
 export 'extensions/contact_support_capability_extension.dart';
-export 'extensions/list_id_extension.dart';
 // Identity
 export 'identity/identity_request_dto.dart';
 export 'mailbox/expand_mode.dart';
