@@ -4401,4 +4401,11 @@ class AppLocalizations {
       name: 'doYouWantToLogOutAndSwitchTo',
     );
   }
+
+  String get getHelpOrReportABug {
+    return Intl.message(
+      'Get help or report a bug',
+      name: 'getHelpOrReportABug',
+    );
+  }
 }

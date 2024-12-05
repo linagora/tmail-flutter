@@ -2930,6 +2930,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "errorWhileFetchingSubaddress": "Error while fetching the subaddress",
+  "@errorWhileFetchingSubaddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "connectedToTheInternet": "Connected to the internet",
   "@connectedToTheInternet": {
     "type": "text",
@@ -4190,6 +4196,12 @@
   },
   "doYouWantToLogOutAndSwitchTo": "Do you want to log out and switch to",
   "@doYouWantToLogOutAndSwitchTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "getHelpOrReportABug": "Get help or report a bug",
+  "@getHelpOrReportABug": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
