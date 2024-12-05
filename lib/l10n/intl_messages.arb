@@ -2930,6 +2930,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "errorWhileFetchingSubaddress": "Error while fetching the subaddress",
+  "@errorWhileFetchingSubaddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "connectedToTheInternet": "Connected to the internet",
   "@connectedToTheInternet": {
     "type": "text",
