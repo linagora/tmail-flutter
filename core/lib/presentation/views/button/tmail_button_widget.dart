@@ -40,6 +40,7 @@ class TMailButtonWidget extends StatelessWidget {
   final MainAxisSize mainAxisSize;
   final bool isLoading;
   final Color? hoverColor;
+  final TextOverflow? textOverflow;
 
   const TMailButtonWidget({
     super.key,
@@ -74,6 +75,7 @@ class TMailButtonWidget extends StatelessWidget {
     this.mainAxisSize = MainAxisSize.max,
     this.isLoading = false,
     this.hoverColor,
+    this.textOverflow,
   });
 
   factory TMailButtonWidget.fromIcon({
@@ -149,6 +151,7 @@ class TMailButtonWidget extends StatelessWidget {
     BoxBorder? border,
     int? maxLines,
     Color? hoverColor,
+    TextOverflow? textOverflow,
   }) {
     return TMailButtonWidget(
       key: key,
@@ -172,6 +175,7 @@ class TMailButtonWidget extends StatelessWidget {
       border: border,
       maxLines: maxLines,
       hoverColor: hoverColor,
+      textOverflow: textOverflow,
     );
   }
 
@@ -200,7 +204,7 @@ class TMailButtonWidget extends StatelessWidget {
                 color: AppColor.colorTextButtonHeaderThread
               ),
               maxLines: maxLines,
-              overflow: maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null,
+              overflow: textOverflow ?? (maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null),
               softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
             ),
             if (trailingIcon != null)
@@ -240,7 +244,7 @@ class TMailButtonWidget extends StatelessWidget {
                       color: AppColor.colorTextButtonHeaderThread
                     ),
                     maxLines: maxLines,
-                    overflow: maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null,
+                    overflow: textOverflow ?? (maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null),
                     softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
                   ),
                 )
@@ -253,7 +257,7 @@ class TMailButtonWidget extends StatelessWidget {
                     color: AppColor.colorTextButtonHeaderThread
                   ),
                   maxLines: maxLines,
-                  overflow: maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null,
+                  overflow: textOverflow ?? (maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null),
                   softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
                 ),
               if (trailingIcon != null)
@@ -284,7 +288,7 @@ class TMailButtonWidget extends StatelessWidget {
                       color: AppColor.colorTextButtonHeaderThread
                     ),
                     maxLines: maxLines,
-                    overflow: maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null,
+                    overflow: textOverflow ?? (maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null),
                     softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
                   ),
                 )
@@ -297,7 +301,7 @@ class TMailButtonWidget extends StatelessWidget {
                     color: AppColor.colorTextButtonHeaderThread
                   ),
                   maxLines: maxLines,
-                  overflow: maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null,
+                  overflow: textOverflow ?? (maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null),
                   softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
                 ),
               SizedBox(width: iconSpace),
@@ -339,7 +343,7 @@ class TMailButtonWidget extends StatelessWidget {
           color: AppColor.colorTextButtonHeaderThread
         ),
         maxLines: maxLines,
-        overflow: maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null,
+        overflow: textOverflow ?? (maxLines == 1 ? CommonTextStyle.defaultTextOverFlow : null),
         softWrap: maxLines == 1 ? CommonTextStyle.defaultSoftWrap : null,
       );
     }
