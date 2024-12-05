@@ -5,6 +5,7 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:model/support/contact_support_capability.dart';
+import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/navigation_bar_style.dart';
@@ -22,6 +23,7 @@ class NavigationBarWidget extends StatelessWidget {
   final VoidCallback? onTapApplicationLogoAction;
   final VoidCallback? onShowAppDashboardAction;
   final OnTapAvatarActionWithPositionClick? onTapAvatarAction;
+  final OnTapContactSupportAction? onTapContactSupportAction;
 
   const NavigationBarWidget({
     super.key,
@@ -33,6 +35,7 @@ class NavigationBarWidget extends StatelessWidget {
     this.onShowAppDashboardAction,
     this.onTapApplicationLogoAction,
     this.onTapAvatarAction,
+    this.onTapContactSupportAction,
   });
 
   @override
@@ -69,7 +72,7 @@ class NavigationBarWidget extends StatelessWidget {
                     backgroundColor: Colors.transparent,
                     margin: const EdgeInsetsDirectional.only(end: 8),
                     tooltipMessage: AppLocalizations.of(context).getHelpOrReportABug,
-                    onTapActionCallback: () {},
+                    onTapActionCallback: () => onTapContactSupportAction?.call(contactSupportCapability!),
                   ),
                 if (AppConfig.appGridDashboardAvailable && appGridController != null)
                   Padding(
@@ -109,7 +112,7 @@ class NavigationBarWidget extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 margin: const EdgeInsetsDirectional.only(end: 8),
                 tooltipMessage: AppLocalizations.of(context).getHelpOrReportABug,
-                onTapActionCallback: () {},
+                onTapActionCallback: () => onTapContactSupportAction?.call(contactSupportCapability!),
               ),
             if (AppConfig.appGridDashboardAvailable && appGridController != null)
               Padding(
