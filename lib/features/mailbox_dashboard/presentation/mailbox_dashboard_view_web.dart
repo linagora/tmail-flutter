@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
@@ -66,7 +67,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         return const SizedBox.shrink();
                       } else {
                         return NavigationBarWidget(
+                          imagePaths: controller.imagePaths,
                           avatarUserName: controller.sessionCurrent?.username.firstCharacter ?? '',
+                          contactSupportCapability: controller.sessionCurrent?.getContactSupportCapability(accountId),
                           searchForm: SearchInputFormWidget(),
                           appGridController: controller.appGridDashboardController,
                           onShowAppDashboardAction: controller.showAppDashboardAction,

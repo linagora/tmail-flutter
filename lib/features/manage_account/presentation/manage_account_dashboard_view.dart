@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/state/banner_state.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/always_read_receipt/always_read_receipt_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
@@ -41,7 +42,9 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                   return const SizedBox.shrink();
                 } else {
                   return NavigationBarWidget(
+                    imagePaths: controller.imagePaths,
                     avatarUserName: controller.sessionCurrent?.username.firstCharacter ?? '',
+                    contactSupportCapability: controller.sessionCurrent?.getContactSupportCapability(accountId),
                     onTapApplicationLogoAction: () => controller.backToMailboxDashBoard(context: context),
                     onTapAvatarAction: (position) => controller.handleClickAvatarAction(context, position),
                   );
