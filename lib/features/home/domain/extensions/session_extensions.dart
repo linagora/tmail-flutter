@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/converter/state_converter.dart';
 import 'package:jmap_dart_client/http/converter/user_name_converter.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:model/model.dart';
@@ -18,6 +19,7 @@ import 'package:tmail_ui_user/features/home/domain/converter/session_capabilitie
 import 'package:tmail_ui_user/features/home/domain/converter/session_primary_account_converter.dart';
 
 extension SessionExtensions on Session {
+  static final CapabilityIdentifier linagoraContactSupportCapability = CapabilityIdentifier(Uri.parse('com:linagora:params:jmap:contact:support'));
 
   Map<String, dynamic> toJson() {
     final val = <String, dynamic>{};
@@ -76,6 +78,20 @@ extension SessionExtensions on Session {
       return minInputLength;
     } catch (e) {
       logError('SessionExtensions::getMinInputLengthAutocomplete():[Exception] $e');
+      return null;
+    }
+  }
+
+  ContactSupportCapability? getContactSupportCapability(AccountId accountId) {
+    try {
+      final contactSupportCapability = getCapabilityProperties<ContactSupportCapability>(
+        accountId,
+        linagoraContactSupportCapability,
+      );
+      log('SessionExtensions::getContactSupport:contactSupportCapability = $contactSupportCapability');
+      return contactSupportCapability;
+    } catch (e) {
+      logError('SessionExtensions::getContactSupportCapability():[Exception] $e');
       return null;
     }
   }

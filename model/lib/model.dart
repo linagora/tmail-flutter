@@ -80,3 +80,5 @@ export 'oidc/token_oidc.dart';
 // Upload
 export 'upload/file_info.dart';
 export 'upload/upload_response.dart';
+// Support
+export 'support/contact_support_capability.dart';
