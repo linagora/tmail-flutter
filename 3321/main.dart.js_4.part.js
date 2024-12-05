@@ -15580,10 +15580,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B._RecipientComposerWidgetState_build___closure12.prototype = {
     call$1(value) {
-      var t1 = this.$this;
+      var t2,
+        t1 = this.$this;
       if (t1._recipient_composer_widget$_isDragging)
         this.stateSetter.call$1(new B._RecipientComposerWidgetState_build____closure(t1));
-      t1._widget.controller.set$text(0, value);
+      t2 = t1._widget.controller;
+      t2.set$text(0, t2._change_notifier$_value.text + value);
       t1 = t1._widget.focusNode;
       if (t1 != null)
         t1.requestFocus$0();
@@ -22153,5 +22155,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "DABPmPvWEWzcn2LP/lkCNctcS2w=");
+})($__dart_deferred_initializers__, "aHZ6ipNlR1SfeCjJngSAtIuH/O0=");
 ;
