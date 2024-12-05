@@ -72,7 +72,7 @@ class NavigationBarWidget extends StatelessWidget {
                     backgroundColor: Colors.transparent,
                     margin: const EdgeInsetsDirectional.only(end: 8),
                     tooltipMessage: AppLocalizations.of(context).getHelpOrReportABug,
-                    onTapActionCallback: () {},
+                    onTapActionCallback: () => onTapContactSupportAction?.call(contactSupportCapability!),
                   ),
                 if (AppConfig.appGridDashboardAvailable && appGridController != null)
                   Padding(
@@ -112,7 +112,7 @@ class NavigationBarWidget extends StatelessWidget {
                 backgroundColor: Colors.transparent,
                 margin: const EdgeInsetsDirectional.only(end: 8),
                 tooltipMessage: AppLocalizations.of(context).getHelpOrReportABug,
-                onTapActionCallback: () {},
+                onTapActionCallback: () => onTapContactSupportAction?.call(contactSupportCapability!),
               ),
             if (AppConfig.appGridDashboardAvailable && appGridController != null)
               Padding(
