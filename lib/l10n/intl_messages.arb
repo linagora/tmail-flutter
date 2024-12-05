@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-12-03T10:03:02.076482",
+  "@@last_modified": "2024-12-05T18:34:48.830922",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2924,6 +2924,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "errorWhileFetchingSubaddress": "Error while fetching the subaddress",
+  "@errorWhileFetchingSubaddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "connectedToTheInternet": "Connected to the internet",
   "@connectedToTheInternet": {
     "type": "text",
@@ -4148,6 +4154,24 @@
   },
   "createTwakeIdFailed": "Create Twake Id failed. Please check again.",
   "@createTwakeIdFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yesLogout": "Yes, Log out",
+  "@yesLogout": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "logoutConfirmation": "Logout Confirmation",
+  "@logoutConfirmation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationLogout": "Do you want to log out of",
+  "@messageConfirmationLogout": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
