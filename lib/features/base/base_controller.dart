@@ -28,6 +28,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/model.dart';
 import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
+import 'package:tmail_ui_user/features/base/mixin/logout_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_context_menu_action_mixin.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
@@ -73,7 +74,8 @@ import 'package:uuid/uuid.dart';
 
 abstract class BaseController extends GetxController
     with MessageDialogActionMixin,
-        PopupContextMenuActionMixin {
+        PopupContextMenuActionMixin,
+        LogoutMixin {
 
   final CachingManager cachingManager = Get.find<CachingManager>();
   final LanguageCacheManager languageCacheManager = Get.find<LanguageCacheManager>();
@@ -436,11 +438,28 @@ abstract class BaseController extends GetxController
       arguments: LoginArguments(LoginFormType.none));
   }
 
-  void logout(Session? session, AccountId? accountId) async {
+  void logout(
+    BuildContext context,
+    Session? session,
+    AccountId? accountId,
+  ) {
+    if (PlatformInfo.isMobile) {
+      showLogoutConfirmDialog(
+        context: context,
+        username: session?.username.value ?? '',
+        onConfirmAction: () => _handleLogoutAction(session, accountId),
+      );
+    } else {
+      _handleLogoutAction(session, accountId);
+    }
+  }
+
+  Future<void> _handleLogoutAction(Session? session, AccountId? accountId) async {
     if (session == null || accountId == null) {
       await clearDataAndGoToLoginPage();
       return;
     }
+
     _isFcmEnabled = _isFcmActivated(session, accountId);
     if (isAuthenticatedWithOidc) {
       consumeState(logoutOidcInteractor.execute());
