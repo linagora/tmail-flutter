@@ -367,7 +367,7 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
         sessionCurrent?.username,
         onLogoutAction: () {
           popBack();
-          logout(sessionCurrent, accountId.value);
+          logout(context, sessionCurrent, accountId.value);
         }
       )
     );
