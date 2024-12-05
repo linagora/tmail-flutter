@@ -3077,6 +3077,7 @@ class MailboxDashBoardController extends ReloadableController
         onLogoutAction: () {
           popBack();
           logout(
+            context,
             sessionCurrent,
             accountId.value
           );
