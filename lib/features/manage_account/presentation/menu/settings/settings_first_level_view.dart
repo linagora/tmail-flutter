@@ -163,6 +163,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           AppLocalizations.of(context).sign_out,
           controller.imagePaths.icSignOut,
           () => controller.manageAccountDashboardController.logout(
+              context,
               controller.manageAccountDashboardController.sessionCurrent,
               controller.manageAccountDashboardController.accountId.value)
         ),
