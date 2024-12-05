@@ -118,11 +118,7 @@ class MailboxView extends BaseMailboxView {
                                           fontWeight: FontWeight.w500,
                                           color: AppColor.primaryColor,
                                         ),
-                                        onTapActionCallback: () =>
-                                          controller.onGetHelpOrReportBug(
-                                            controller.contactSupportCapability!,
-                                            controller.mailboxDashBoardController,
-                                          ),
+                                        onTapActionCallback: () {},
                                       ),
                                     ),
                                   ],
