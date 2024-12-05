@@ -4366,6 +4366,27 @@ class AppLocalizations {
     );
   }
 
+  String get yesLogout {
+    return Intl.message(
+      'Yes, Log out',
+      name: 'yesLogout',
+    );
+  }
+
+  String get logoutConfirmation {
+    return Intl.message(
+      'Logout Confirmation',
+      name: 'logoutConfirmation',
+    );
+  }
+
+  String get messageConfirmationLogout {
+    return Intl.message(
+      'Do you want to log out of',
+      name: 'messageConfirmationLogout',
+    );
+  }
+
   String get getHelpOrReportABug {
     return Intl.message(
       'Get help or report a bug',
