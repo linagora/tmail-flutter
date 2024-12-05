@@ -58,12 +58,54 @@ class MailboxView extends BaseMailboxView {
                 child: _buildListMailbox(context),
               ),
             )),
-            const QuotasView(
-              padding: EdgeInsetsDirectional.only(
-                start: QuotasViewStyles.padding,
-                top: QuotasViewStyles.padding,
+            const Divider(color: AppColor.colorDividerHorizontal),
+            if (controller.responsiveUtils.isWebDesktop(context) ||
+                controller.contactSupportCapability == null)
+              const QuotasView(
+                padding: EdgeInsetsDirectional.only(
+                  start: QuotasViewStyles.padding,
+                  top: QuotasViewStyles.padding,
+                ),
+              )
+            else
+              Row(
+                children: [
+                  const Expanded(
+                    child: QuotasView(
+                      padding: EdgeInsetsDirectional.only(
+                        start: QuotasViewStyles.padding,
+                        top: QuotasViewStyles.padding,
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: TMailButtonWidget(
+                      text: AppLocalizations.of(context).getHelpOrReportABug,
+                      icon: controller.imagePaths.icHelp,
+                      verticalDirection: true,
+                      backgroundColor: Colors.transparent,
+                      maxLines: 2,
+                      flexibleText: true,
+                      mainAxisSize: MainAxisSize.min,
+                      margin: const EdgeInsetsDirectional.only(
+                        end: 12,
+                        start: 4,
+                        top: 6,
+                        bottom: 6,
+                      ),
+                      borderRadius: 10,
+                      textOverflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                      textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        fontSize: 13,
+                        fontWeight: FontWeight.w500,
+                        color: AppColor.primaryColor,
+                      ),
+                      onTapActionCallback: () {},
+                    ),
+                  ),
+                ],
               ),
-            ),
             Container(
               color: AppColor.colorBgMailbox,
               width: double.infinity,
@@ -130,14 +172,21 @@ class MailboxView extends BaseMailboxView {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(child: Text(
-                AppLocalizations.of(context).folders,
-                style: const TextStyle(
-                  fontSize: 17,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold
-                )
-              )),
+              Expanded(
+                child: Padding(
+                  padding: EdgeInsetsDirectional.only(
+                    start: controller.responsiveUtils.isWebDesktop(context) ? 0 : 12,
+                  ),
+                  child: Text(
+                    AppLocalizations.of(context).folders,
+                    style: const TextStyle(
+                      fontSize: 17,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
               Padding(
                 padding: EdgeInsetsDirectional.only(end: controller.responsiveUtils.isDesktop(context) ? 0 : 12),
                 child: Row(

@@ -88,7 +88,7 @@ extension SessionExtensions on Session {
         accountId,
         linagoraContactSupportCapability,
       );
-      log('SessionExtensions::getContactSupport:contactSupportCapability = $contactSupportCapability');
+      log('SessionExtensions::getContactSupportCapability:contactSupportCapability = $contactSupportCapability');
       return contactSupportCapability;
     } catch (e) {
       logError('SessionExtensions::getContactSupportCapability():[Exception] $e');
