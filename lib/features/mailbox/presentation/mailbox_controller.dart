@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.d
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_name_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
@@ -1360,5 +1361,14 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     } else if (presentationMailbox.isSpam) {
       mailboxDashBoardController.emptySpamFolderAction(spamFolderId: presentationMailbox.id);
     }
+  }
+
+  ContactSupportCapability? get contactSupportCapability {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final session = mailboxDashBoardController.sessionCurrent;
+
+    if (accountId == null || session == null) return null;
+
+    return session.getContactSupportCapability(accountId);
   }
 }
