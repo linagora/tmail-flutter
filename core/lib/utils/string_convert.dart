@@ -1,6 +1,9 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'app_logger.dart';
+
+import 'package:core/domain/exceptions/string_exception.dart';
 
 class StringConvert {
   static const String separatorPattern = r'[ ,;]+';
@@ -36,6 +39,26 @@ class StringConvert {
       return listStrings;
     } catch (e) {
       return [];
+    }
+  }
+
+  static String decodeFromBytes(
+    Uint8List bytes, {
+    required String? charset,
+    bool isHtml = false,
+  }) {
+    if (isHtml) {
+      return utf8.decode(bytes);
+    } else if (charset == null) {
+      throw const NullCharsetException();
+    } else if (charset.toLowerCase().contains('utf-8')) {
+      return utf8.decode(bytes);
+    } else if (charset.toLowerCase().contains('latin')) {
+      return latin1.decode(bytes);
+    } else if (charset.toLowerCase().contains('ascii')) {
+      return ascii.decode(bytes);
+    } else {
+      throw const UnsupportedCharsetException();
     }
   }
 }

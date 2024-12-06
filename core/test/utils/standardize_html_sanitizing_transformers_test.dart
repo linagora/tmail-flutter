@@ -143,5 +143,35 @@ void main() {
 
       expect(result, equals('<img src="cid:email123">'));
     });
+
+    test(
+      'SHOULD persist nav tag and remove href attribute of A tag '
+      'WHEN href is invalid',
+    () {
+      const inputHtml = '<nav href="javascript:alert(1)"></nav>';
+      final result = transformer.process(inputHtml, htmlEscape);
+
+      expect(result, equals('<nav></nav>'));
+    });
+
+    test(
+      'SHOULD persist main tag and remove href attribute of A tag '
+      'WHEN href is invalid',
+    () {
+      const inputHtml = '<main href="javascript:alert(1)"></main>';
+      final result = transformer.process(inputHtml, htmlEscape);
+
+      expect(result, equals('<main></main>'));
+    });
+
+    test(
+      'SHOULD persist footer tag and remove href attribute of A tag '
+      'WHEN href is invalid',
+    () {
+      const inputHtml = '<footer href="javascript:alert(1)"></footer>';
+      final result = transformer.process(inputHtml, htmlEscape);
+
+      expect(result, equals('<footer></footer>'));
+    });
   });
 }

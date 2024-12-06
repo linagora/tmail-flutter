@@ -520,4 +520,14 @@ class EmailRepositoryImpl extends EmailRepository {
   Future<EMLPreviewer> getPreviewEMLContentInMemory(String keyStored) {
     return emailDataSource[DataSourceType.session]!.getPreviewEMLContentInMemory(keyStored);
   }
+
+  @override
+  Future<String> sanitizeHtmlContent(
+    String htmlContent,
+    TransformConfiguration configuration
+  ) {
+    return _htmlDataSource.transformHtmlEmailContent(
+      htmlContent,
+      configuration);
+  }
 }
