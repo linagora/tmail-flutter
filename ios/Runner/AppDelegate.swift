@@ -8,6 +8,7 @@ import flutter_local_notifications
 @objc class AppDelegate: FlutterAppDelegate {
 
     var notificationInteractionChannel: FlutterMethodChannel?
+    var fcmMethodChannel: FlutterMethodChannel?
     var currentEmailId: String?
     
     override func application(
@@ -17,6 +18,7 @@ import flutter_local_notifications
         GeneratedPluginRegistrant.register(with: self)
         
         createNotificationInteractionChannel()
+        createFcmMethodChannel()
         
         if let payload = launchOptions?[.remoteNotification] as? [AnyHashable : Any],
            let emailId = payload[JmapConstants.EMAIL_ID] as? String,
@@ -52,6 +54,14 @@ import flutter_local_notifications
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
+    override func applicationDidEnterBackground(_ application: UIApplication) {
+        updateApplicationStateInUserDefaults(false)
+    }
+    
+    override func applicationWillTerminate(_ application: UIApplication) {
+        updateApplicationStateInUserDefaults(false)
+    }
+    
     override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         let sharingIntent = SwiftReceiveSharingIntentPlugin.instance
         if sharingIntent.hasMatchingSchemePrefix(url: url) {
@@ -69,6 +79,7 @@ import flutter_local_notifications
     
     override func applicationDidBecomeActive(_ application: UIApplication) {
         removeAppBadger()
+        updateApplicationStateInUserDefaults(true)
     }
     
     private func handleEmailAndress(open url: URL) -> URL? {
@@ -90,12 +101,19 @@ import flutter_local_notifications
                                          willPresent notification: UNNotification,
                                          withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         TwakeLogger.shared.log(message: "AppDelegate::userNotificationCenter::willPresent::notification: \(notification)")
+        TwakeLogger.shared.log(message: "AppDelegate::userNotificationCenter::willPresent::notificationContent: \(notification.request.content.userInfo)")
         if let notificationBadgeCount = notification.request.content.badge?.intValue, notificationBadgeCount > 0 {
             let newBadgeCount = UIApplication.shared.applicationIconBadgeNumber + notificationBadgeCount
             TwakeLogger.shared.log(message: "AppDelegate::userNotificationCenter::willPresent:newBadgeCount: \(newBadgeCount)")
             updateAppBadger(newBadgeCount: newBadgeCount)
         }
-        if validateDisplayPushNotification(userInfo: notification.request.content.userInfo) {
+        if UIApplication.shared.applicationState == .active {
+            fcmMethodChannel?.invokeMethod(
+                CoreUtils.FCM_ON_MESSAGE_METHOD_NAME,
+                arguments: notification.request.content.userInfo)
+            
+            completionHandler([])
+        } else if validateDisplayPushNotification(userInfo: notification.request.content.userInfo) {
             completionHandler([.alert, .badge, .sound])
         } else {
             completionHandler([])
@@ -166,5 +184,20 @@ extension AppDelegate {
                 break
             }
         }
+    }
+    
+    private func createFcmMethodChannel() {
+        let controller : FlutterViewController = window?.rootViewController as! FlutterViewController
+        
+        self.fcmMethodChannel = FlutterMethodChannel(
+            name: CoreUtils.FCM_METHOD_CHANNEL_NAME,
+            binaryMessenger: controller.binaryMessenger
+        )
+    }
+    
+    private func updateApplicationStateInUserDefaults(_ appIsActive: Bool) {
+        let appGroupId = (Bundle.main.object(forInfoDictionaryKey: "AppGroupId") as? String) ?? "group.\(Bundle.main.bundleIdentifier!)"
+        let userDefaults = UserDefaults(suiteName: appGroupId)
+        userDefaults?.set(appIsActive, forKey: CoreUtils.APPLICATION_STATE)
     }
 }
