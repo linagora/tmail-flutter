@@ -16,6 +16,14 @@ class NotificationService: UNNotificationServiceExtension {
         handler = contentHandler
         modifiedContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
         
+        let appGroupId = (Bundle.main.object(forInfoDictionaryKey: "AppGroupId") as? String) ?? "group.\(Bundle.main.bundleIdentifier!)"
+        let userDefaults = UserDefaults(suiteName: appGroupId)
+        let isAppActive = userDefaults?.value(forKey: CoreUtils.APPLICATION_STATE) as? Bool
+        if isAppActive == true {
+            self.modifiedContent?.userInfo = request.content.userInfo.merging(["data": request.content.userInfo], uniquingKeysWith: {(_, new) in new})
+            contentHandler(self.modifiedContent ?? request.content)
+        }
+        
         guard let payloadData = request.content.userInfo as? [String: Any],
               !keychainController.retrieveSharingSessions().isEmpty else {
             self.showDefaultNotification(message: NSLocalizedString(self.newNotificationDefaultMessageKey, comment: "Localizable"))
