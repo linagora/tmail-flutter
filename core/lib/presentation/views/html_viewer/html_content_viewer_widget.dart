@@ -6,9 +6,9 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
 import 'package:url_launcher/url_launcher_string.dart';
@@ -22,6 +22,8 @@ class HtmlContentViewer extends StatefulWidget {
   final String contentHtml;
   final double? initialWidth;
   final TextDirection? direction;
+  final double? contentPadding;
+  final bool adjustHeight;
 
   final OnLoadWidthHtmlViewerAction? onLoadWidthHtmlViewer;
   final OnMailtoDelegateAction? onMailtoDelegateAction;
@@ -30,8 +32,10 @@ class HtmlContentViewer extends StatefulWidget {
   const HtmlContentViewer({
     Key? key,
     required this.contentHtml,
+    this.adjustHeight = false,
     this.initialWidth,
     this.direction,
+    this.contentPadding,
     this.onLoadWidthHtmlViewer,
     this.onMailtoDelegateAction,
     this.onScrollHorizontalEnd
@@ -44,12 +48,13 @@ class HtmlContentViewer extends StatefulWidget {
 class _HtmlContentViewState extends State<HtmlContentViewer> {
 
   static const double _minHeight = 100.0;
-  static const double _offsetHeight = 30.0;
+  static const double _defaultOffsetHeight = 30.0;
 
   late InAppWebViewController _webViewController;
   late double _actualHeight;
   late Set<Factory<OneSequenceGestureRecognizer>> _gestureRecognizers;
   late String _customScripts;
+  late double _offsetHeight;
 
   final _loadingBarNotifier = ValueNotifier(true);
 
@@ -63,6 +68,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   @override
   void initState() {
     super.initState();
+    _offsetHeight = widget.adjustHeight ? 0 : _defaultOffsetHeight;
     if (PlatformInfo.isAndroid) {
       _gestureRecognizers = {
         Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer()),
@@ -96,12 +102,14 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     _htmlData = HtmlUtils.generateHtmlDocument(
       content: widget.contentHtml,
       direction: widget.direction,
-      javaScripts: _customScripts
+      javaScripts: _customScripts,
+      contentPadding: widget.contentPadding,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    log('_HtmlContentViewState::build:_actualHeight = $_actualHeight');
     return Stack(children: [
       if (_htmlData == null)
         const SizedBox.shrink()
@@ -165,7 +173,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   ) async {
     final maxContentHeight = math.max(oldContentSize.height, newContentSize.height);
     log('_HtmlContentViewState::_onContentSizeChanged:maxContentHeight: $maxContentHeight');
-    if (maxContentHeight > _actualHeight && !_loadingBarNotifier.value && mounted) {
+    if ((maxContentHeight > _actualHeight || widget.adjustHeight) && !_loadingBarNotifier.value && mounted) {
       log('_HtmlContentViewState::_onContentSizeChanged:HEIGHT_UPDATED: $maxContentHeight');
       setState(() {
         _actualHeight = maxContentHeight + _offsetHeight;
@@ -186,7 +194,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   void _onHandleContentSizeChangedEvent(List<dynamic> parameters) async {
     final maxContentHeight = await _webViewController.evaluateJavascript(source: 'document.body.scrollHeight');
     log('_HtmlContentViewState::_onHandleContentSizeChangedEvent:maxContentHeight: $maxContentHeight');
-    if (maxContentHeight is num && maxContentHeight > _actualHeight && !_loadingBarNotifier.value && mounted) {
+    if (maxContentHeight is num && (maxContentHeight > _actualHeight || widget.adjustHeight) && !_loadingBarNotifier.value && mounted) {
       log('_HtmlContentViewState::_onHandleContentSizeChangedEvent:HEIGHT_UPDATED: $maxContentHeight');
       setState(() {
         _actualHeight = maxContentHeight + _offsetHeight;

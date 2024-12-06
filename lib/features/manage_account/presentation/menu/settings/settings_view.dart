@@ -19,7 +19,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/notification/notification_view.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -213,9 +213,9 @@ class SettingsView extends GetWidget<SettingsController> {
     return Obx(() {
       switch(controller.manageAccountDashboardController.accountMenuItemSelected.value) {
         case AccountMenuItem.profiles:
-          return SafeArea(
+          return const SafeArea(
             top: false,
-            child: ProfilesView());
+            child: IdentitiesView());
         case AccountMenuItem.languageAndRegion:
           return const SafeArea(
             top: false,

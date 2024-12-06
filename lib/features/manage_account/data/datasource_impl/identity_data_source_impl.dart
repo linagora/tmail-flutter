@@ -1,11 +1,5 @@
-import 'package:core/presentation/utils/html_transformer/dom/block_code_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/dom/block_quoted_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/dom/image_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
-import 'package:core/presentation/utils/html_transformer/dom/script_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -15,6 +9,7 @@ import 'package:tmail_ui_user/features/manage_account/data/network/identity_api.
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/identities_response.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/identity_signature.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class IdentityDataSourceImpl extends IdentityDataSource {
@@ -58,18 +53,13 @@ class IdentityDataSourceImpl extends IdentityDataSource {
   }
 
   @override
-  Future<String> transformHtmlSignature(String signature) {
+  Future<IdentitySignature> transformHtmlSignature(IdentitySignature identitySignature) {
     return Future.sync(() async {
       final signatureUnescape = await _htmlTransform.transformToHtml(
-        htmlContent: signature,
-        transformConfiguration: TransformConfiguration.create(customDomTransformers: [
-          const RemoveScriptTransformer(),
-          const BlockQuotedTransformer(),
-          const BlockCodeTransformer(),
-          SanitizeHyperLinkTagInHtmlTransformer(useTooltip: PlatformInfo.isWeb),
-          const ImageTransformer(),
-        ]));
-      return signatureUnescape;
+        htmlContent: identitySignature.signature,
+        transformConfiguration: TransformConfiguration.forSignatureIdentity(),
+      );
+      return identitySignature.newSignature(signatureUnescape);
     }).catchError(_exceptionThrower.throwException);
   }
 }

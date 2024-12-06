@@ -3,34 +3,33 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/transform_list_signature_state.dart';
 
-class IdentityLoadingWidget extends StatelessWidget {
+class SignatureLoadingWidget extends StatelessWidget {
 
-  final Either<Failure, Success> identityViewState;
+  final Either<Failure, Success> signatureViewState;
 
-  const IdentityLoadingWidget({
+  const SignatureLoadingWidget({
     super.key,
-    required this.identityViewState,
+    required this.signatureViewState,
   });
 
   @override
   Widget build(BuildContext context) {
-    return identityViewState.fold(
+    return signatureViewState.fold(
       (failure) => const SizedBox.shrink(),
       (success) {
-        if (success is GetAllIdentitiesLoading || success is GetSessionLoading) {
+        if (success is TransformListSignatureLoading) {
           return const Center(
             child: Padding(
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.all(8),
               child: CupertinoActivityIndicator(color: AppColor.colorLoading),
             ),
           );
         } else {
           return const SizedBox.shrink();
         }
-      }
+      },
     );
   }
 }

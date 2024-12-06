@@ -86,6 +86,16 @@ class TransformConfiguration {
     const RemoveMaxWidthInImageStyleTransformer(),
   ]);
 
+   factory TransformConfiguration.forSignatureIdentity() => TransformConfiguration.create(
+     customDomTransformers: [
+       const RemoveScriptTransformer(),
+       const BlockQuotedTransformer(),
+       const BlockCodeTransformer(),
+       SanitizeHyperLinkTagInHtmlTransformer(useTooltip: PlatformInfo.isWeb),
+       const ImageTransformer(),
+     ],
+   );
+
   /// Provides easy access to a standard configuration that does not block external images.
   static TransformConfiguration standardConfiguration = TransformConfiguration(
     standardDomTransformers,

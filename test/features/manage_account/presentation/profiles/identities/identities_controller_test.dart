@@ -29,7 +29,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_defau
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/transform_html_signature_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/transform_list_signature_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_controller.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/usecase/add_identity_to_public_assets_interactor.dart';
@@ -78,7 +78,7 @@ const fallbackGenerators = {
   MockSpec<EditIdentityInteractor>(),
   MockSpec<CreateNewDefaultIdentityInteractor>(),
   MockSpec<EditDefaultIdentityInteractor>(),
-  MockSpec<TransformHtmlSignatureInteractor>(),
+  MockSpec<TransformListSignatureInteractor>(),
   MockSpec<ManageAccountDashBoardController>(fallbackGenerators: fallbackGenerators),
   MockSpec<SaveIdentityCacheOnWebInteractor>(),
   MockSpec<BeforeReconnectManager>(),
@@ -93,7 +93,7 @@ void main() {
   late MockEditIdentityInteractor mockEditIdentityInteractor;
   late MockCreateNewDefaultIdentityInteractor mockCreateNewDefaultIdentityInteractor;
   late MockEditDefaultIdentityInteractor mockEditDefaultIdentityInteractor;
-  late MockTransformHtmlSignatureInteractor mockTransformHtmlSignatureInteractor;
+  late MockTransformListSignatureInteractor mockTransformListSignatureInteractor;
   late MockManageAccountDashBoardController mockManageAccountDashBoardController;
 
   late MockCachingManager mockCachingManager;
@@ -160,7 +160,7 @@ void main() {
     mockEditIdentityInteractor = MockEditIdentityInteractor();
     mockCreateNewDefaultIdentityInteractor = MockCreateNewDefaultIdentityInteractor();
     mockEditDefaultIdentityInteractor = MockEditDefaultIdentityInteractor();
-    mockTransformHtmlSignatureInteractor = MockTransformHtmlSignatureInteractor();
+    mockTransformListSignatureInteractor = MockTransformListSignatureInteractor();
 
     mockManageAccountDashBoardController = MockManageAccountDashBoardController();
     Get.put<BeforeReconnectManager>(MockBeforeReconnectManager());
@@ -176,7 +176,7 @@ void main() {
       mockEditIdentityInteractor,
       mockCreateNewDefaultIdentityInteractor,
       mockEditDefaultIdentityInteractor,
-      mockTransformHtmlSignatureInteractor,
+      mockTransformListSignatureInteractor,
       mockSaveIdentityCacheOnWebInteractor);
   });
 
@@ -230,10 +230,25 @@ void main() {
       'should only show identities with name not empty',
     () async {
       // arrange
-      final identity1 = Identity(name: '', mayDelete: true);
-      final identity2 = Identity(mayDelete: true);
-      final identity3 = Identity(name: 'valid name', mayDelete: true);
-      final identity4 = Identity(name: '    ', mayDelete: true);
+      final identity1 = Identity(
+        id: IdentityId(Id('identity1')),
+        name: '',
+        mayDelete: true,
+      );
+      final identity2 = Identity(
+        id: IdentityId(Id('identity2')),
+        mayDelete: true,
+      );
+      final identity3 = Identity(
+        id: IdentityId(Id('identity3')),
+        name: 'valid name',
+        mayDelete: true,
+      );
+      final identity4 = Identity(
+        id: IdentityId(Id('identity4')),
+        name: '    ',
+        mayDelete: true,
+      );
       when(mockGetAllIdentitiesInteractor.execute(any, any, properties: anyNamed('properties')))
         .thenAnswer((_) => Stream.value(Right(GetAllIdentitiesSuccess(
           [identity1, identity2, identity3, identity4],

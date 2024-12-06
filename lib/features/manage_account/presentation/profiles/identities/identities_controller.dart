@@ -12,7 +12,9 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
+import 'package:model/extensions/identity_extension.dart';
 import 'package:model/extensions/identity_request_dto_extension.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_handler.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
@@ -26,20 +28,22 @@ import 'package:tmail_ui_user/features/identity_creator/presentation/model/ident
 import 'package:tmail_ui_user/features/identity_creator/presentation/restore_identity_cache_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/edit_identity_request.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/identity_signature.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_default_identity_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_identity_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/delete_identity_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/edit_identity_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/state/transform_html_signature_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/transform_list_signature_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_default_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_default_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/transform_html_signature_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/transform_list_signature_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/identity_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/list_identity_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/identity_action_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/delete_identity_dialog_builder.dart';
@@ -66,12 +70,14 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
   final DeleteIdentityInteractor _deleteIdentityInteractor;
   final EditIdentityInteractor _editIdentityInteractor;
   final EditDefaultIdentityInteractor _editDefaultIdentityInteractor;
-  final TransformHtmlSignatureInteractor _transformHtmlSignatureInteractor;
+  final TransformListSignatureInteractor _transformListSignatureInteractor;
   final SaveIdentityCacheOnWebInteractor _saveIdentityCacheOnWebInteractor;
 
   final identitySelected = Rxn<Identity>();
-  final signatureSelected = Rxn<String>();
   final listAllIdentities = <Identity>[].obs;
+  final mapIdentitySignatures = <IdentityId, String>{}.obs;
+  final identitiesViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
+  final signatureViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
   dynamic newIdentityArguments;
   
@@ -84,7 +90,7 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
     this._editIdentityInteractor,
     this._createNewDefaultIdentityInteractor,
     this._editDefaultIdentityInteractor,
-    this._transformHtmlSignatureInteractor,
+    this._transformListSignatureInteractor,
     this._saveIdentityCacheOnWebInteractor
   );
 
@@ -98,9 +104,10 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
 
   @override
   void handleSuccessViewState(Success success) {
-    super.handleSuccessViewState(success);
     if (success is GetAllIdentitiesSuccess) {
       _handleGetAllIdentitiesSuccess(success);
+    } if (success is GetAllIdentitiesLoading) {
+      identitiesViewState.value = Right(success);
     } else if (success is CreateNewIdentitySuccess) {
       _createNewIdentitySuccess(success);
     } else if (success is CreateNewDefaultIdentitySuccess) {
@@ -109,19 +116,25 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
       _deleteIdentitySuccess(success);
     } else if (success is EditIdentitySuccess) {
       _editIdentitySuccess(success);
-    } else if (success is TransformHtmlSignatureSuccess) {
-      signatureSelected.value = success.signature;
+    } else if (success is TransformListSignatureLoading) {
+      signatureViewState.value = Right(success);
+    } else if (success is TransformListSignatureSuccess) {
+      signatureViewState.value = Right(success);
+      _syncMapIdentitySignatures(success.identitySignatures);
     } else if (success is RemoveIdentityFromPublicAssetsSuccessState) {
       _deleteIdentityAction(success.identityId);
     } else if (success is GetIdentityCacheOnWebSuccess) {
       _openIdentityEditorFromCache(success);
+    } else {
+      super.handleSuccessViewState(success);
     }
   }
 
   @override
   void handleFailureViewState(Failure failure) {
-    super.handleFailureViewState(failure);
-    if (failure is DeleteIdentityFailure) {
+    if (failure is GetAllIdentitiesFailure) {
+      identitiesViewState.value = Left(failure);
+    } else if (failure is DeleteIdentityFailure) {
       _deleteIdentityFailure(failure);
     } else if (failure is RemoveIdentityFromPublicAssetsFailureState) {
       _deleteIdentityAction(failure.identityId);
@@ -129,6 +142,11 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
       _deleteIdentityAction(failure.identityId);
     } else if (failure is GetIdentityCacheOnWebFailure) {
       _removeIdentityCache();
+    } else if (failure is TransformListSignatureFailure) {
+      signatureViewState.value = Left(failure);
+      _syncMapIdentitySignatures(failure.identitySignatures);
+    } else {
+      super.handleFailureViewState(failure);
     }
   }
 
@@ -159,25 +177,35 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
   }
 
   void _handleGetAllIdentitiesSuccess(GetAllIdentitiesSuccess success) {
-    if (success.identities?.isNotEmpty == true) {
-      final newListIdentities = success.identities!
-        .where((identity) => identity.mayDelete == true && identity.name?.trim().isNotEmpty == true)
-        .toList();
-      listAllIdentities.addAll(newListIdentities);
-    }
+    identitiesViewState.value = Right(success);
+    final newListIdentities = success.identities?.where(_validateIdentity).toList() ?? [];
 
-    if (listAllIdentities.isNotEmpty) {
-      selectIdentity(listAllIdentities.first);
-    }
+    if (newListIdentities.isEmpty) return;
+
+    listAllIdentities.addAll(newListIdentities);
+
+    identitySelected.value = listAllIdentities.first;
+
+    _transformSignature();
   }
 
-  void selectIdentity(Identity? newIdentity) {
-    signatureSelected.value = null;
-    identitySelected.value = newIdentity;
+  bool _validateIdentity(Identity identity) {
+    return identity.mayDelete == true &&
+        identity.name?.trim().isNotEmpty == true;
+  }
 
-    if (newIdentity != null) {
-      consumeState(_transformHtmlSignatureInteractor.execute(newIdentity.signatureAsString));
-    }
+  void _transformSignature() {
+    final listIdentitySignature = listAllIdentities.toListIdentitySignature();
+    consumeState(_transformListSignatureInteractor.execute(listIdentitySignature));
+  }
+
+  void _syncMapIdentitySignatures(List<IdentitySignature> identitySignatures) {
+    mapIdentitySignatures.value = Map.fromEntries(
+      identitySignatures.map((identitySignature) => MapEntry(
+        identitySignature.identityId,
+        identitySignature.signature,
+      )),
+    );
   }
 
   void goToCreateNewIdentity(BuildContext context) async {
@@ -511,6 +539,23 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
       session!.username,
       identityCache: identityCache
     ));
+  }
+
+  void setIdentityAsDefault(Identity? identity) {
+    final accountId = accountDashBoardController.accountId.value;
+    final session = accountDashBoardController.sessionCurrent;
+
+    if (identity == null || accountId == null || session == null) return;
+
+    identitySelected.value = identity;
+
+    final editIdentityRequest = EditIdentityRequest(
+      identityId: identity.id!,
+      identityRequest: identity.toIdentityRequest(sortOrder: UnsignedInt(0)),
+      isDefaultIdentity: true,
+    );
+
+    _editIdentityAction(session, accountId, editIdentityRequest);
   }
 
   @override

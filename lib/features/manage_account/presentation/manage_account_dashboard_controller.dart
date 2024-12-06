@@ -31,7 +31,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/notification/bindings/notification_binding.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identity_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -175,7 +175,7 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
   void _bindingControllerMenuItemView(AccountMenuItem item) {
     switch (item) {
       case AccountMenuItem.profiles:
-        ProfileBindings().dependencies();
+        IdentityBindings().dependencies();
         break;
       case AccountMenuItem.languageAndRegion:
         LanguageAndRegionBindings().dependencies();

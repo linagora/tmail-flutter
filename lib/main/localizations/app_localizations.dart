@@ -1240,7 +1240,7 @@ class AppLocalizations {
 
   String get profilesSettingExplanation {
     return Intl.message(
-      'Info about you, and options to manage it.',
+      'Create the multiply profiles, signatures and forwarding rules for your email',
       name: 'profilesSettingExplanation'
     );
   }
@@ -4344,5 +4344,11 @@ class AppLocalizations {
       'Create Twake Id failed. Please check again.',
       name: 'createTwakeIdFailed',
     );
+  }
+
+  String get createNewProfile {
+    return Intl.message(
+      'Create new profile',
+      name: 'createNewProfile');
   }
 }

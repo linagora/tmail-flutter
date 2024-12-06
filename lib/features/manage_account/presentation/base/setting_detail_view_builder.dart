@@ -20,20 +20,26 @@ class SettingDetailViewBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Widget childWidget = Container(
+      width: double.infinity,
+      height: double.infinity,
+      color: SettingsUtils.getContentBackgroundColor(context, responsiveUtils),
+      decoration: SettingsUtils.getBoxDecorationForContent(context, responsiveUtils),
+      margin: SettingsUtils.getMarginSettingDetailsView(context, responsiveUtils),
+      padding: padding,
+      child: child,
+    );
+
+    if (onTapGestureDetector != null) {
+      childWidget = GestureDetector(
+        onTap: onTapGestureDetector,
+        child: childWidget,
+      );
+    }
+
     return Scaffold(
       backgroundColor: SettingsUtils.getBackgroundColor(context, responsiveUtils),
-      body: GestureDetector(
-        onTap: onTapGestureDetector,
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
-          color: SettingsUtils.getContentBackgroundColor(context, responsiveUtils),
-          decoration: SettingsUtils.getBoxDecorationForContent(context, responsiveUtils),
-          margin: SettingsUtils.getMarginSettingDetailsView(context, responsiveUtils),
-          padding: padding,
-          child: child,
-        ),
-      ),
+      body: childWidget,
     );
   }
 }

@@ -17,7 +17,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/manage_accoun
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 
@@ -108,7 +108,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
     return Obx(() {
       switch(controller.accountMenuItemSelected.value) {
         case AccountMenuItem.profiles:
-          return ProfilesView();
+          return const IdentitiesView();
         case AccountMenuItem.languageAndRegion:
           return const LanguageAndRegionView();
         case AccountMenuItem.emailRules:

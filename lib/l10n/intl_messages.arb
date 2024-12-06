@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-11-25T10:57:37.546143",
+  "@@last_modified": "2024-12-04T13:48:34.001337",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -1206,7 +1206,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "profilesSettingExplanation": "Info about you, and options to manage it.",
+  "profilesSettingExplanation": "Create the multiply profiles, signatures and forwarding rules for your email",
   "@profilesSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
@@ -4132,6 +4132,12 @@
   },
   "createTwakeIdFailed": "Create Twake Id failed. Please check again.",
   "@createTwakeIdFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createNewProfile": "Create new profile",
+  "@createNewProfile": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

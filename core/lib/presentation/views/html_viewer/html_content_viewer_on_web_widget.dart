@@ -17,6 +17,10 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final double widthContent;
   final double heightContent;
   final TextDirection? direction;
+  final double? minWidth;
+  final double? maxHeight;
+  final double? contentPadding;
+  final bool adjustHeight;
 
   /// Handler for mailto: links
   final Function(Uri?)? mailtoDelegate;
@@ -30,6 +34,10 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     required this.widthContent,
     required this.heightContent,
     this.allowResizeToDocumentSize = true,
+    this.adjustHeight = false,
+    this.minWidth,
+    this.maxHeight,
+    this.contentPadding,
     this.mailtoDelegate,
     this.direction,
   }) : super(key: key);
@@ -40,13 +48,15 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
 
 class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
 
-  static const double _minWidth = 300;
+  static const double _defaultMinWidth = 300;
   /// The view ID for the IFrameElement. Must be unique.
   late String _createdViewId;
   /// The actual height of the content view, used to automatically set the height
   late double _actualHeight;
   /// The actual width of the content view, used to automatically set the width
   late double _actualWidth;
+
+  late double _minWidth;
 
   Future<bool>? _webInit;
   String? _htmlData;
@@ -61,6 +71,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
     super.initState();
     _actualHeight = widget.heightContent;
     _actualWidth = widget.widthContent;
+    _minWidth = widget.minWidth ?? _defaultMinWidth;
     _createdViewId = _getRandString(10);
     _setUpWeb();
 
@@ -78,8 +89,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       if (data['type'] != null && data['type'].contains('toDart: htmlHeight')) {
         final docHeight = data['height'] ?? _actualHeight;
         if (docHeight != null && mounted) {
-          final scrollHeightWithBuffer = docHeight + 30.0;
-          if (scrollHeightWithBuffer > minHeight) {
+          final bottomPadding = widget.adjustHeight ? 0 : 30.0;
+          final scrollHeightWithBuffer = docHeight + bottomPadding;
+          if (scrollHeightWithBuffer > minHeight || widget.adjustHeight) {
             setState(() {
               _actualHeight = scrollHeightWithBuffer;
               _isLoading = false;
@@ -214,11 +226,13 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
 
     final htmlTemplate = HtmlUtils.generateHtmlDocument(
       content: content,
-      minHeight: minHeight,
+      minHeight: widget.adjustHeight ? 0 : minHeight,
       minWidth: _minWidth,
       styleCSS: HtmlTemplate.tooltipLinkCss,
       javaScripts: webViewActionScripts + scriptsDisableZoom + HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
-      direction: widget.direction);
+      direction: widget.direction,
+      contentPadding: widget.contentPadding
+    );
 
     return htmlTemplate;
   }
@@ -246,47 +260,58 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraint) {
-      minHeight = math.max(constraint.maxHeight, minHeight);
-      return Stack(
-        children: [
-          if (_htmlData?.isNotEmpty == false)
-            const SizedBox.shrink()
-          else
-            FutureBuilder<bool>(
-              future: _webInit,
-              builder: (context, snapshot) {
-                if (snapshot.hasData) {
-                  return SizedBox(
-                    height: _actualHeight,
-                    width: _actualWidth,
-                    child: HtmlElementView(
-                      key: ValueKey(_htmlData),
-                      viewType: _createdViewId,
-                    ),
-                  );
-                } else {
-                  return const SizedBox.shrink();
-                }
+    return Stack(
+      children: [
+        if (_htmlData?.isNotEmpty == false)
+          const SizedBox.shrink()
+        else
+          FutureBuilder<bool>(
+            future: _webInit,
+            builder: (context, snapshot) {
+              if (!snapshot.hasData) {
+                return const SizedBox.shrink();
               }
-            ),
-          if (_isLoading)
-            const Align(
-              alignment: Alignment.topCenter,
-              child: Padding(
-                padding: EdgeInsets.all(16),
-                child: SizedBox(
-                  width: 30,
-                  height: 30,
-                  child: CupertinoActivityIndicator(
-                    color: AppColor.colorLoading
-                  )
+
+              if (widget.adjustHeight) {
+                return Container(
+                  height: _actualHeight,
+                  width: _actualWidth,
+                  constraints: widget.maxHeight != null
+                    ? BoxConstraints(maxHeight: widget.maxHeight!)
+                    : null,
+                  child: HtmlElementView(
+                    key: ValueKey(_htmlData),
+                    viewType: _createdViewId,
+                  ),
+                );
+              }
+
+              return SizedBox(
+                height: _actualHeight,
+                width: _actualWidth,
+                child: HtmlElementView(
+                  key: ValueKey(_htmlData),
+                  viewType: _createdViewId,
+                ),
+              );
+            }
+          ),
+        if (_isLoading)
+          const Align(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: SizedBox(
+                width: 30,
+                height: 30,
+                child: CupertinoActivityIndicator(
+                  color: AppColor.colorLoading
                 )
               )
             )
-        ],
-      );
-    });
+          )
+      ],
+    );
   }
 
   @override

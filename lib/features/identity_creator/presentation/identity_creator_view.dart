@@ -472,10 +472,16 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
               ),
             ]
           ),
-          _buildHtmlEditorWeb(
-            context,
-            controller.contentHtmlEditor,
-            maxWidth),
+          ConstrainedBox(
+            constraints: BoxConstraints(
+              maxWidth: maxWidth,
+              maxHeight: 300,
+            ),
+            child: _buildHtmlEditorWeb(
+              context,
+              controller.contentHtmlEditor,
+              maxWidth),
+          ),
         ],
       );
     } else {

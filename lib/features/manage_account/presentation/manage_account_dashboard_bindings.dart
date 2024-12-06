@@ -8,7 +8,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_a
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_bindings.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identity_bindings.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
 class ManageAccountDashBoardBindings extends BaseBindings {
@@ -18,7 +18,7 @@ class ManageAccountDashBoardBindings extends BaseBindings {
     super.dependencies();
     SettingsBindings().dependencies();
     ManageAccountMenuBindings().dependencies();
-    ProfileBindings().dependencies();
+    IdentityBindings().dependencies();
   }
 
   @override

@@ -91,7 +91,8 @@ class HtmlUtils {
     String? styleCSS,
     String? javaScripts,
     bool hideScrollBar = true,
-    TextDirection? direction
+    TextDirection? direction,
+    double? contentPadding,
   }) {
     return '''
       <!DOCTYPE html>
@@ -117,7 +118,7 @@ class HtmlUtils {
         ${styleCSS ?? ''}
       </style>
       </head>
-      <body ${direction == TextDirection.rtl ? 'dir="rtl"' : ''} style = "overflow-x: hidden">
+      <body ${direction == TextDirection.rtl ? 'dir="rtl"' : ''} style = "overflow-x: hidden; ${contentPadding != null ? 'margin: ${contentPadding}px;' : ''}">
       <div class="tmail-content">$content</div>
       ${javaScripts ?? ''}
       </body>
