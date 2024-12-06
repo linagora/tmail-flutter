@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:better_open_file/better_open_file.dart' as open_file;
 import 'package:core/core.dart';
+import 'package:core/presentation/views/html_viewer/html_attachment_previewer.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -50,6 +51,7 @@ import 'package:tmail_ui_user/features/email/domain/state/download_attachment_fo
 import 'package:tmail_ui_user/features/email/domain/state/download_attachments_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_html_content_from_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
@@ -70,6 +72,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_html_content_from_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sender_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_event_attendance_status_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
@@ -134,6 +137,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final StoreOpenedEmailInteractor _storeOpenedEmailInteractor;
   final PrintEmailInteractor _printEmailInteractor;
   final StoreEventAttendanceStatusInteractor _storeEventAttendanceStatusInteractor;
+  final GetHtmlContentFromAttachmentInteractor _getHtmlContentFromAttachmentInteractor;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
@@ -181,6 +185,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._storeOpenedEmailInteractor,
     this._printEmailInteractor,
     this._storeEventAttendanceStatusInteractor,
+    this._getHtmlContentFromAttachmentInteractor,
   );
 
   @override
@@ -236,6 +241,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       calendarEventSuccess(success);
     } else if (success is StoreEventAttendanceStatusSuccess) {
       _showToastMessageEventAttendanceSuccess(success);
+    } else if (success is GetHtmlContentFromAttachmentSuccess) {
+      Get.dialog(HtmlAttachmentPreviewer(
+        htmlContent: success.sanitizedHtmlContent,
+      ));
     }
   }
 
@@ -1816,6 +1825,23 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     if (PlatformInfo.isWeb) {
       if (PlatformInfo.isCanvasKit && attachment.validatePDFIcon()) {
         previewPDFFileAction(context, attachment);
+      } else if (attachment.validateHtmlAttachment()) {
+        final accountId = mailboxDashBoardController.accountId.value;
+        final downloadUrl = mailboxDashBoardController.sessionCurrent
+          ?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
+        final blobId = attachment.blobId;
+
+        if (accountId == null || downloadUrl == null || blobId == null) return;
+
+        consumeState(_getHtmlContentFromAttachmentInteractor.execute(
+          accountId,
+          attachment,
+          DownloadTaskId(blobId.value),
+          downloadUrl,
+          TransformConfiguration.fromTextTransformers(
+            TransformConfiguration.standardTextTransformers,
+          ),
+        ));
       } else {
         downloadAttachmentForWeb(attachment);
       }
