@@ -13,4 +13,5 @@ class Constant {
   static const mailtoScheme = 'mailto';
   static const attachmentScheme = 'attachment';
   static const emlPreviewerScheme = 'eml-previewer';
+  static const htmlExtension = '.html';
 }

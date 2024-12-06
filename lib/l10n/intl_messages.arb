@@ -4247,5 +4247,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "saveAndRefresh": "Save & refresh",
+  "@saveAndRefresh": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "thisHtmlAttachmentCannotBePreviewed": "This html attachment cannot be previewed",
+  "@thisHtmlAttachmentCannotBePreviewed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

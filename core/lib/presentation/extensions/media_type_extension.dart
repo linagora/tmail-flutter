@@ -47,4 +47,9 @@ extension MediaTypeExtension on MediaType {
           fileName?.endsWith(Constant.pdfExtension) == true);
 
   bool get isEMLFile => mimeType == Constant.emlMimeType;
+
+  bool isHTMLFile({required String? fileName}) =>
+      mimeType == Constant.textHtmlMimeType ||
+      (mimeType == Constant.octetStreamMimeType &&
+          fileName?.endsWith(Constant.htmlExtension) == true);
 }

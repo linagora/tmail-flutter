@@ -4463,4 +4463,18 @@ class AppLocalizations {
       name: 'editAsNewEmail',
     );
   }
+
+  String get saveAndRefresh {
+    return Intl.message(
+      'Save & refresh',
+      name: 'saveAndRefresh',
+    );
+  }
+
+  String get thisHtmlAttachmentCannotBePreviewed {
+    return Intl.message(
+      'This html attachment cannot be previewed',
+      name: 'thisHtmlAttachmentCannotBePreviewed',
+    );
+  }
 }

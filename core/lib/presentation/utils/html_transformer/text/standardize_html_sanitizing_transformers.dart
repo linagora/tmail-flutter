@@ -23,6 +23,9 @@ class StandardizeHtmlSanitizingTransformers extends TextTransformer {
     'google-sheets-html-origin',
     'colgroup',
     'col',
+    'nav',
+    'main',
+    'footer',
   ];
 
   const StandardizeHtmlSanitizingTransformers();

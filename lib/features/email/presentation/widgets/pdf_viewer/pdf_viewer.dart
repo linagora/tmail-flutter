@@ -21,7 +21,7 @@ import 'package:tmail_ui_user/features/email/domain/exceptions/download_attachme
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/pagination_pdf_viewer.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/top_bar_pdf_viewer.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/top_bar_attachment_viewer.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -221,8 +221,8 @@ class _PDFViewerState extends State<PDFViewer> {
                         if (deviceInfo.hasData && deviceInfo.data is WebBrowserInfo) {
                           browserName = (deviceInfo.data as WebBrowserInfo).browserName;
                         }
-                        return TopBarPDFViewer(
-                          attachment: widget.attachment,
+                        return TopBarAttachmentViewer(
+                          title: widget.attachment.generateFileName(),
                           downloadAction: () => widget.downloadAction?.call(
                             viewState.bytes,
                             widget.attachment.generateFileName()
@@ -235,8 +235,8 @@ class _PDFViewerState extends State<PDFViewer> {
                   }
                   return child ?? const SizedBox.shrink();
                 },
-                child: TopBarPDFViewer(
-                  attachment: widget.attachment,
+                child: TopBarAttachmentViewer(
+                  title: widget.attachment.generateFileName(),
                   closeAction: () {
                     _downloadAttachmentCancelToken?.cancel();
                     Navigator.maybeOf(context)?.pop();
