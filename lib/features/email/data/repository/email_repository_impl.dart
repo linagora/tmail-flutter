@@ -315,4 +315,14 @@ class EmailRepositoryImpl extends EmailRepository {
       emailId,
       eventActionType);
   }
+
+  @override
+  Future<String> sanitizeHtmlContent(
+    String htmlContent,
+    TransformConfiguration configuration
+  ) {
+    return _htmlDataSource.transformHtmlEmailContent(
+      htmlContent,
+      configuration);
+  }
 }
