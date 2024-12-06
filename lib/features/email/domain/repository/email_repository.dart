@@ -195,4 +195,8 @@ abstract class EmailRepository {
   Future<void> storePreviewEMLContentToSessionStorage(EMLPreviewer emlPreviewer);
 
   Future<EMLPreviewer> getPreviewEMLContentInMemory(String keyStored);
+
+  Future<String> sanitizeHtmlContent(
+    String htmlContent,
+    TransformConfiguration configuration);
 }
