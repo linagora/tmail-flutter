@@ -2135,6 +2135,61 @@ class ComposerController extends BaseController
     _updateStatusEmailSendButton();
   }
 
+  void onEditRecipient(PrefixEmailAddress prefix, EmailAddress emailAddress) {
+    switch(prefix) {
+      case PrefixEmailAddress.to:
+        listToEmailAddress.remove(emailAddress);
+        toAddressExpandMode.value = ExpandMode.EXPAND;
+        toAddressExpandMode.refresh();
+
+        toEmailAddressController.text = emailAddress.emailAddress;
+        toEmailAddressController.value = toEmailAddressController.value.copyWith(
+          text: emailAddress.emailAddress,
+          selection: TextSelection(
+            baseOffset: emailAddress.emailAddress.length,
+            extentOffset: emailAddress.emailAddress.length,
+          ),
+          composing: TextRange.empty,
+        );
+        toAddressFocusNode?.requestFocus();
+        break;
+      case PrefixEmailAddress.cc:
+        listCcEmailAddress.remove(emailAddress);
+        ccAddressExpandMode.value = ExpandMode.EXPAND;
+        ccAddressExpandMode.refresh();
+
+        ccEmailAddressController.text = emailAddress.emailAddress;
+        ccEmailAddressController.value = ccEmailAddressController.value.copyWith(
+          text: emailAddress.emailAddress,
+          selection: TextSelection(
+            baseOffset: emailAddress.emailAddress.length,
+            extentOffset: emailAddress.emailAddress.length,
+          ),
+          composing: TextRange.empty,
+        );
+        ccAddressFocusNode?.requestFocus();
+        break;
+      case PrefixEmailAddress.bcc:
+        listBccEmailAddress.remove(emailAddress);
+        bccAddressExpandMode.value = ExpandMode.EXPAND;
+        bccAddressExpandMode.refresh();
+
+        bccEmailAddressController.text = emailAddress.emailAddress;
+        bccEmailAddressController.value = bccEmailAddressController.value.copyWith(
+          text: emailAddress.emailAddress,
+          selection: TextSelection(
+            baseOffset: emailAddress.emailAddress.length,
+            extentOffset: emailAddress.emailAddress.length,
+          ),
+          composing: TextRange.empty,
+        );
+        bccAddressFocusNode?.requestFocus();
+        break;
+      default:
+        break;
+    }
+  }
+
   void onAttachmentDropZoneListener(Attachment attachment) {
     log('ComposerController::onAttachmentDropZoneListener: attachment = $attachment');
     uploadController.validateTotalSizeAttachmentsBeforeUpload(
