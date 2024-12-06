@@ -18,6 +18,7 @@ class DateSelectionFieldWebWidget extends StatelessWidget {
   final EmailRecoveryTimeType? recoveryTimeSelected;
   final OnRecoveryTimeSelected? onRecoveryTimeSelected;
   final VoidCallback? onTapCalendar;
+  final DateTime restorationHorizon;
 
   const DateSelectionFieldWebWidget({
     super.key,
@@ -29,6 +30,7 @@ class DateSelectionFieldWebWidget extends StatelessWidget {
     this.recoveryTimeSelected,
     this.onRecoveryTimeSelected,
     this.onTapCalendar,
+    required this.restorationHorizon
   });
 
   @override
@@ -54,7 +56,7 @@ class DateSelectionFieldWebWidget extends StatelessWidget {
                 endDate: endDate,
                 recoveryTimeSelected: recoveryTimeSelected,
                 onRecoveryTimeSelected: onRecoveryTimeSelected,
-                items: field.getSupportedTimeTypes(),
+                items: field.getSupportedTimeTypes(restorationHorizon),
               ),
             ),
             const SizedBox(width: DateSelectionFieldStyles.icCalenderSpace),

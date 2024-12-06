@@ -6,6 +6,7 @@ import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 enum EmailRecoveryTimeType {
   allTime,
   last7Days,
+  last15Days,
   last30Days,
   last6Months,
   last1Year,
@@ -18,6 +19,8 @@ enum EmailRecoveryTimeType {
         return AppLocalizations.of(context).allTime;
       case EmailRecoveryTimeType.last7Days:
         return AppLocalizations.of(context).last7Days;
+      case EmailRecoveryTimeType.last15Days:
+        return AppLocalizations.of(context).last15Days;
       case EmailRecoveryTimeType.last30Days:
         return AppLocalizations.of(context).last30Days;
       case EmailRecoveryTimeType.last6Months:
@@ -47,6 +50,10 @@ enum EmailRecoveryTimeType {
         final today = DateTime.now();
         final last7Days = today.subtract(const Duration(days: 7));
         return last7Days.toUTCDate();
+      case EmailRecoveryTimeType.last15Days:
+        final today = DateTime.now();
+        final last15Days = today.subtract(const Duration(days: 15));
+        return last15Days.toUTCDate();
       case EmailRecoveryTimeType.last30Days:
         final today = DateTime.now();
         final last30Days = today.subtract(const Duration(days: 30));
@@ -68,6 +75,7 @@ enum EmailRecoveryTimeType {
   UTCDate? toLatestUTCDate() {
     switch(this) {
       case EmailRecoveryTimeType.last7Days:
+      case EmailRecoveryTimeType.last15Days:
       case EmailRecoveryTimeType.last30Days:
       case EmailRecoveryTimeType.last6Months:
       case EmailRecoveryTimeType.last1Year:

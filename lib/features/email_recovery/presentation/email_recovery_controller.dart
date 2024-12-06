@@ -8,9 +8,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:model/autocomplete/auto_complete_pattern.dart';
-import 'package:model/extensions/email_address_extension.dart';
-import 'package:model/mailbox/expand_mode.dart';
+import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -25,6 +23,7 @@ import 'package:tmail_ui_user/features/email_recovery/presentation/controller/in
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_field.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_time_type.dart';
+import 'package:tmail_ui_user/features/email_recovery/presentation/model/session_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
@@ -34,7 +33,7 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
   GetDeviceContactSuggestionsInteractor? _getDeviceContactSuggestionsInteractor;
 
-  final deletionDateFieldSelected = EmailRecoveryTimeType.last1Year.obs;
+  final deletionDateFieldSelected = EmailRecoveryTimeType.last7Days.obs;
   final receptionDateFieldSelected = EmailRecoveryTimeType.allTime.obs;
   final startDeletionDate = Rxn<DateTime>();
   final endDeletionDate = Rxn<DateTime>();
@@ -347,6 +346,10 @@ class EmailRecoveryController extends BaseController with DateRangePickerMixin {
     KeyboardUtils.hideKeyboard(context);
     popBack();
   }
+
+  String getRestorationHorizonAsString() => arguments!.session.getRestorationHorizonAsString();
+
+  DateTime getRestorationHorizonAsDateTime() => arguments!.session.getRestorationHorizonAsDateTime();
 
   @override
   void dispose() {
