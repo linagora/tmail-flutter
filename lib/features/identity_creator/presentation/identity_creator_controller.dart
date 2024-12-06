@@ -11,7 +11,6 @@ import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
-import 'package:desktop_drop/desktop_drop.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/scheduler.dart';
@@ -878,14 +877,13 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
       AppLocalizations.of(context).thisImageCannotBePastedIntoTheEditor);
   }
 
-  void onLocalFileDropZoneListener({
+  Future<void> onSuperDropListener({
     required BuildContext context,
-    required DropDoneDetails details,
+    required List<FileInfo> listFileInfo,
     required double maxWidth
   }) async {
     clearFocusEditor(context);
 
-    final listFileInfo = await onDragDone(context: context, details: details);
     await _uploadMultipleFilesToPublicAsset(
       context,
       listFileInfo,

@@ -12,6 +12,7 @@ class SubjectComposerWidget extends StatelessWidget {
   final ValueChanged<String>? onTextChange;
   final EdgeInsetsGeometry? margin;
   final EdgeInsetsGeometry? padding;
+  final bool dropTextEnabled;
 
   const SubjectComposerWidget({
     super.key,
@@ -20,6 +21,7 @@ class SubjectComposerWidget extends StatelessWidget {
     required this.onTextChange,
     this.margin,
     this.padding,
+    this.dropTextEnabled = false,
   });
 
   @override
@@ -52,6 +54,7 @@ class SubjectComposerWidget extends StatelessWidget {
               textDirection: DirectionUtils.getDirectionByLanguage(context),
               textStyle: SubjectComposerWidgetStyle.inputTextStyle,
               languageToolController: textController,
+              dropTextEnabled: dropTextEnabled,
             )
           )
         ]

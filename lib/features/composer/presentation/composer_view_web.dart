@@ -198,6 +198,7 @@ class ComposerView extends GetWidget<ComposerController> {
                   onTextChange: controller.setSubjectEmail,
                   padding: ComposerStyle.mobileSubjectPadding,
                   margin: ComposerStyle.mobileSubjectMargin,
+                  dropTextEnabled: true,
                 ),
                 Expanded(
                   child: LayoutBuilder(
@@ -301,10 +302,10 @@ class ComposerView extends GetWidget<ComposerController> {
                                     imagePaths: controller.imagePaths,
                                     width: constraintsEditor.maxWidth,
                                     height: constraintsEditor.maxHeight,
-                                    onLocalFileDropZoneListener: (details) =>
-                                      controller.onLocalFileDropZoneListener(
+                                    onSuperDrop: (listFileInfo) => 
+                                      controller.onSuperDropListener(
                                         context: context,
-                                        details: details,
+                                        listFileInfo: listFileInfo,
                                         maxWidth: constraintsEditor.maxWidth,
                                       ),
                                   )
@@ -472,6 +473,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 onTextChange: controller.setSubjectEmail,
                 padding: ComposerStyle.desktopSubjectPadding,
                 margin: ComposerStyle.desktopSubjectMargin,
+                dropTextEnabled: true,
               ),
               Expanded(
                 child: LayoutBuilder(
@@ -607,10 +609,10 @@ class ComposerView extends GetWidget<ComposerController> {
                                   imagePaths: controller.imagePaths,
                                   width: constraintsEditor.maxWidth,
                                   height: constraintsEditor.maxHeight,
-                                  onLocalFileDropZoneListener: (details) =>
-                                    controller.onLocalFileDropZoneListener(
+                                  onSuperDrop: (listFileInfo) => 
+                                    controller.onSuperDropListener(
                                       context: context,
-                                      details: details,
+                                      listFileInfo: listFileInfo,
                                       maxWidth: constraintsEditor.maxWidth,
                                     ),
                                 )
@@ -779,6 +781,7 @@ class ComposerView extends GetWidget<ComposerController> {
                 onTextChange: controller.setSubjectEmail,
                 padding: ComposerStyle.tabletSubjectPadding,
                 margin: ComposerStyle.tabletSubjectMargin,
+                dropTextEnabled: true,
               ),
               Expanded(
                 child: LayoutBuilder(
@@ -912,10 +915,10 @@ class ComposerView extends GetWidget<ComposerController> {
                                   imagePaths: controller.imagePaths,
                                   width: constraintsBody.maxWidth,
                                   height: constraintsBody.maxHeight,
-                                  onLocalFileDropZoneListener: (details) =>
-                                    controller.onLocalFileDropZoneListener(
+                                  onSuperDrop: (listFileInfo) => 
+                                    controller.onSuperDropListener(
                                       context: context,
-                                      details: details,
+                                      listFileInfo: listFileInfo,
                                       maxWidth: constraintsBody.maxWidth,
                                     ),
                                 )

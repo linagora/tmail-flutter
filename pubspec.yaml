@@ -153,7 +153,7 @@ dependencies:
 
   path_provider: 2.1.1
 
-  device_info_plus: 8.1.0
+  device_info_plus: 9.0.2
 
   permission_handler: 10.2.0
 
@@ -245,8 +245,6 @@ dependencies:
 
   mime: 1.0.4
 
-  desktop_drop: 0.4.4
-
   future_loading_dialog: 0.3.0
 
   file_picker: 5.3.1
@@ -258,6 +256,8 @@ dependencies:
   tip_dialog: 4.0.0
 
   flutter_web_auth_2: 3.1.1
+
+  super_drag_and_drop: 0.7.0
 
 dev_dependencies:
   flutter_test:

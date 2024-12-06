@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/views/text/text_drop_zone_web.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:languagetool_textfield/languagetool_textfield.dart';
@@ -27,6 +28,7 @@ class TextFieldBuilder extends StatefulWidget {
   final bool readOnly;
   final MouseCursor? mouseCursor;
   final LanguageToolController? languageToolController;
+  final bool dropTextEnabled;
 
   const TextFieldBuilder({
     super.key,
@@ -52,6 +54,7 @@ class TextFieldBuilder extends StatefulWidget {
     this.onTapOutside,
     this.onTextChange,
     this.onTextSubmitted,
+    this.dropTextEnabled = false,
   });
 
   @override
@@ -85,8 +88,10 @@ class _TextFieldBuilderState extends State<TextFieldBuilder> {
 
   @override
   Widget build(BuildContext context) {
+    Widget child;
+
     if (_languageToolController != null) {
-      return LanguageToolTextField(
+      child = LanguageToolTextField(
         key: widget.key,
         controller: _languageToolController!,
         cursorColor: widget.cursorColor,
@@ -104,55 +109,46 @@ class _TextFieldBuilderState extends State<TextFieldBuilder> {
         textDirection: _textDirection,
         readOnly: widget.readOnly,
         mouseCursor: widget.mouseCursor,
-        onTextChange: (value) {
-          widget.onTextChange?.call(value);
-          if (value.isNotEmpty) {
-            final directionByText = DirectionUtils.getDirectionByEndsText(value);
-            if (directionByText != _textDirection) {
-              setState(() {
-                _textDirection = directionByText;
-              });
-            }
-          }
-        },
+        onTextChange: _onChanged,
         onTextSubmitted: widget.onTextSubmitted,
+        onTap: widget.onTap,
+        onTapOutside: widget.onTapOutside,
+      );
+    } else {
+      child = TextField(
+        key: widget.key,
+        controller: _controller,
+        cursorColor: widget.cursorColor,
+        autocorrect: widget.autocorrect,
+        textInputAction: widget.textInputAction,
+        decoration: widget.decoration,
+        maxLines: widget.maxLines,
+        minLines: widget.minLines,
+        keyboardAppearance: widget.keyboardAppearance,
+        style: widget.textStyle,
+        obscureText: widget.obscureText,
+        keyboardType: widget.keyboardType,
+        autofocus: widget.autoFocus,
+        focusNode: widget.focusNode,
+        textDirection: _textDirection,
+        readOnly: widget.readOnly,
+        mouseCursor: widget.mouseCursor,
+        onChanged: _onChanged,
+        onSubmitted: widget.onTextSubmitted,
         onTap: widget.onTap,
         onTapOutside: widget.onTapOutside,
       );
     }
 
-    return TextField(
-      key: widget.key,
-      controller: _controller,
-      cursorColor: widget.cursorColor,
-      autocorrect: widget.autocorrect,
-      textInputAction: widget.textInputAction,
-      decoration: widget.decoration,
-      maxLines: widget.maxLines,
-      minLines: widget.minLines,
-      keyboardAppearance: widget.keyboardAppearance,
-      style: widget.textStyle,
-      obscureText: widget.obscureText,
-      keyboardType: widget.keyboardType,
-      autofocus: widget.autoFocus,
-      focusNode: widget.focusNode,
-      textDirection: _textDirection,
-      readOnly: widget.readOnly,
-      mouseCursor: widget.mouseCursor,
-      onChanged: (value) {
-        widget.onTextChange?.call(value);
-        if (value.isNotEmpty) {
-          final directionByText = DirectionUtils.getDirectionByEndsText(value);
-          if (directionByText != _textDirection) {
-            setState(() {
-              _textDirection = directionByText;
-            });
-          }
-        }
+    if (!widget.dropTextEnabled) return child;
+
+    return TextDropZoneWeb(
+      onDrop: (value) {
+        (_languageToolController ?? _controller)?.text += value;
+        widget.focusNode?.requestFocus();
+        _onChanged(value);
       },
-      onSubmitted: widget.onTextSubmitted,
-      onTap: widget.onTap,
-      onTapOutside: widget.onTapOutside,
+      child: child,
     );
   }
 
@@ -165,5 +161,17 @@ class _TextFieldBuilderState extends State<TextFieldBuilder> {
       _languageToolController?.dispose();
     }
     super.dispose();
+  }
+
+  void _onChanged(String value) {
+    widget.onTextChange?.call(value);
+    if (value.isNotEmpty) {
+      final directionByText = DirectionUtils.getDirectionByEndsText(value);
+      if (directionByText != _textDirection) {
+        setState(() {
+          _textDirection = directionByText;
+        });
+      }
+    }
   }
 }
