@@ -477,30 +477,33 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
 
   Widget _buildMessageHtmlTextEditor(BuildContext context) {
     if (PlatformInfo.isWeb) {
-      return html_editor_browser.HtmlEditor(
-        key: const Key('vacation_message_html_text_editor_web'),
-        controller: controller.richTextControllerForWeb.editorController,
-        htmlEditorOptions: html_editor_browser.HtmlEditorOptions(
-          hint: '',
-          darkMode: false,
-          initialText: controller.vacationMessageHtmlText,
-          spellCheck: true,
-          customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context))
-        ),
-        htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
-            toolbarType: html_editor_browser.ToolbarType.hide,
-            defaultToolbarButtons: []),
-        otherOptions: const html_editor_browser.OtherOptions(height: 150),
-        callbacks: html_editor_browser.Callbacks(
-          onChangeSelection: controller.richTextControllerForWeb.onEditorSettingsChange,
-          onChangeContent: controller.updateMessageHtmlText,
-          onFocus: () {
-            KeyboardUtils.hideKeyboard(context);
-            Future.delayed(const Duration(milliseconds: 500), () {
-              controller.richTextControllerForWeb.editorController.setFocus();
-            });
-            controller.richTextControllerForWeb.closeAllMenuPopup();
-          }
+      return ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 300),
+        child: html_editor_browser.HtmlEditor(
+          key: const Key('vacation_message_html_text_editor_web'),
+          controller: controller.richTextControllerForWeb.editorController,
+          htmlEditorOptions: html_editor_browser.HtmlEditorOptions(
+            hint: '',
+            darkMode: false,
+            initialText: controller.vacationMessageHtmlText,
+            spellCheck: true,
+            customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context))
+          ),
+          htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
+              toolbarType: html_editor_browser.ToolbarType.hide,
+              defaultToolbarButtons: []),
+          otherOptions: const html_editor_browser.OtherOptions(height: 150),
+          callbacks: html_editor_browser.Callbacks(
+            onChangeSelection: controller.richTextControllerForWeb.onEditorSettingsChange,
+            onChangeContent: controller.updateMessageHtmlText,
+            onFocus: () {
+              KeyboardUtils.hideKeyboard(context);
+              Future.delayed(const Duration(milliseconds: 500), () {
+                controller.richTextControllerForWeb.editorController.setFocus();
+              });
+              controller.richTextControllerForWeb.closeAllMenuPopup();
+            }
+          ),
         ),
       );
     } else {
