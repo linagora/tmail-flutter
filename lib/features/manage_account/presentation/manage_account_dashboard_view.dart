@@ -41,6 +41,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                   return const SizedBox.shrink();
                 } else {
                   return NavigationBarWidget(
+                    imagePaths: controller.imagePaths,
                     avatarUserName: controller.sessionCurrent?.username.firstCharacter ?? '',
                     onTapApplicationLogoAction: () => controller.backToMailboxDashBoard(context: context),
                     onTapAvatarAction: (position) => controller.handleClickAvatarAction(context, position),

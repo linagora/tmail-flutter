@@ -31,12 +31,6 @@ class QuotasView extends GetWidget<QuotasController> {
               color: controller.responsiveUtils.isWebDesktop(context)
                 ? QuotasViewStyles.webBackgroundColor
                 : QuotasViewStyles.mobileBackgroundColor,
-              border: const Border(
-                top: BorderSide(
-                  color: QuotasViewStyles.topLineColor,
-                  width: QuotasViewStyles.topLineSize,
-                )
-              ),
             ),
             alignment: AlignmentDirectional.centerStart,
             child: Column(
@@ -59,6 +53,8 @@ class QuotasView extends GetWidget<QuotasController> {
                         fontWeight: QuotasViewStyles.labelFontWeight,
                         color: QuotasViewStyles.labelTextColor
                       ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     )
                   ],
                 ),
@@ -80,6 +76,8 @@ class QuotasView extends GetWidget<QuotasController> {
                     fontWeight: QuotasViewStyles.progressStateFontWeight,
                     color: octetQuota.getQuotasStateTitleColor()
                   ),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 )
               ],
             ),

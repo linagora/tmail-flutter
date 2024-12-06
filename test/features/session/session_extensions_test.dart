@@ -6,6 +6,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/support/contact_support_capability.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 
 import '../../fixtures/account_fixtures.dart';
@@ -97,6 +98,105 @@ void main() {
 
       // Act
       final result = session.getMinInputLengthAutocomplete(AccountFixtures.aliceAccountId);
+
+      // Assert
+      expect(result, isNull);
+    });
+  });
+
+  group('getContactSupportCapability::test', () {
+    test('SHOULD return ContactSupportCapability WHEN ContactSupportCapability is available', () {
+      // Arrange
+      final contactSupportCapability = ContactSupportCapability(
+        supportMailAddress: 'contact.support@example.com',
+        httpLink: 'https://contact.support',
+      );
+      final session = Session(
+          {
+            SessionExtensions.linagoraContactSupportCapability: contactSupportCapability
+          },
+          {
+            AccountFixtures.aliceAccountId: Account(
+              AccountName('Alice'),
+              true,
+              false,
+              {
+                SessionExtensions.linagoraContactSupportCapability: contactSupportCapability
+              },
+            )
+          },
+          {},
+          UserName(''),
+          Uri(),
+          Uri(),
+          Uri(),
+          Uri(),
+          State(''),
+      );
+
+      // Act
+      final result = session.getContactSupportCapability(AccountFixtures.aliceAccountId);
+
+      // Assert
+      expect(result?.supportMailAddress, equals(contactSupportCapability.supportMailAddress));
+      expect(result?.httpLink, equals(contactSupportCapability.httpLink));
+    });
+
+    test('SHOULD return null WHEN ContactSupportCapability is not available', () {
+      // Arrange
+      final session = Session(
+          {
+            SessionExtensions.linagoraContactSupportCapability: EmptyCapability()
+          },
+          {
+            AccountFixtures.aliceAccountId: Account(
+              AccountName('Alice'),
+              true,
+              false,
+              {
+                SessionExtensions.linagoraContactSupportCapability: EmptyCapability()
+              },
+            )
+          },
+          {},
+          UserName(''),
+          Uri(),
+          Uri(),
+          Uri(),
+          Uri(),
+          State(''),
+      );
+
+      // Act
+      final result = session.getContactSupportCapability(AccountFixtures.aliceAccountId);
+
+      // Assert
+      expect(result, isNull);
+    });
+
+    test('SHOULD return null WHEN ContactSupportCapability is not supported', () {
+      // Arrange
+      final session = Session(
+          {},
+          {
+            AccountFixtures.aliceAccountId: Account(
+              AccountName('Alice'),
+              true,
+              false,
+              {},
+            )
+          },
+          {},
+          UserName(''),
+          Uri(),
+          Uri(),
+          Uri(),
+          Uri(),
+          State(''),
+      );
+
+      // Act
+      final result = session.getContactSupportCapability(AccountFixtures.aliceAccountId);
 
       // Assert
       expect(result, isNull);
