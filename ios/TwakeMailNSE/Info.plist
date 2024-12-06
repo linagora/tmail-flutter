@@ -13,5 +13,7 @@
 		<key>NSExtensionPrincipalClass</key>
 		<string>$(PRODUCT_MODULE_NAME).NotificationService</string>
 	</dict>
+	<key>AppGroupId</key>
+	<string>${APP_GROUP_ID}</string>
 </dict>
 </plist>
