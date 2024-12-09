@@ -36,4 +36,12 @@ extension LinagoraEcosystemExtension on LinagoraEcosystem {
 
     return listWebAppLinagora + listMobileAppLinagora;
   }
+
+  List<AppLinagoraEcosystem> get listAppLinagoraEcosystemOnIOS {
+    return listAppLinagoraEcosystem.where((app) => app.isAppIOSEnabled).toList();
+  }
+
+  List<AppLinagoraEcosystem> get listAppLinagoraEcosystemOnAndroid {
+    return listAppLinagoraEcosystem.where((app) => app.isAppAndroidEnabled).toList();
+  }
 }

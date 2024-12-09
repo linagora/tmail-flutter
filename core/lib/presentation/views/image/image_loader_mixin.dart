@@ -1,5 +1,6 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/utils/app_logger.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -9,17 +10,38 @@ mixin ImageLoaderMixin {
     required String imagePath,
     double? imageSize
   }) {
-    if (isImageNetworkLink(imagePath)) {
+    if (isImageNetworkLink(imagePath) && isImageSVG(imagePath)) {
+      return SvgPicture.network(
+        imagePath,
+        width: imageSize ?? 150,
+        height: imageSize ?? 150,
+        fit: BoxFit.fill,
+        placeholderBuilder: (_) {
+          return const CupertinoActivityIndicator();
+        },
+      );
+    } else if (isImageNetworkLink(imagePath)) {
       return Image.network(
         imagePath,
         fit: BoxFit.fill,
         width: imageSize ?? 150,
         height: imageSize ?? 150,
-        errorBuilder: (_, __, ___) {
+        loadingBuilder: (_, child, loadingProgress) {
+          if (loadingProgress != null &&
+              loadingProgress.cumulativeBytesLoaded != loadingProgress.expectedTotalBytes) {
+            return const Center(
+              child: CupertinoActivityIndicator(),
+            );
+          }
+          return child;
+        },
+        errorBuilder: (context, error, stackTrace) {
+          logError('ImageLoaderMixin::buildImage:Exception = $error');
           return Container(
             width: imageSize ?? 150,
             height: imageSize ?? 150,
-            color: AppColor.textFieldHintColor,
+            alignment: Alignment.center,
+            child: const Icon(Icons.error_outline),
           );
         },
       );

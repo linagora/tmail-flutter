@@ -39,6 +39,13 @@ class AppLinagoraEcosystem extends LinagoraEcosystemProperties {
 
   Uri? get appRedirectLink => webLink;
 
+  bool get isAppIOSEnabled => iosUrlScheme?.isNotEmpty == true ||
+      iosAppStoreLink?.isNotEmpty == true ||
+      appRedirectLink != null;
+
+  bool get isAppAndroidEnabled => androidPackageId?.isNotEmpty == true ||
+      appRedirectLink != null;
+
   @override
   List<Object?> get props => [
     appName,

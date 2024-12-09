@@ -2,6 +2,7 @@
 import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/string_convert.dart';
 import 'package:external_app_launcher/external_app_launcher.dart';
+import 'package:rich_text_composer/views/commons/logger.dart';
 import 'package:url_launcher/url_launcher.dart' as launcher;
 
 mixin LauncherApplicationMixin {
@@ -12,18 +13,22 @@ mixin LauncherApplicationMixin {
     String? iosStoreLink,
     Uri? uri,
   }) async {
-    if (PlatformInfo.isWeb && uri != null) {
-      await openWebApplication(uri);
-    } else if (PlatformInfo.isAndroid && androidPackageId != null) {
-      await openAndroidApplication(androidPackageId);
-    } else if (PlatformInfo.isIOS &&
-        (iosScheme != null || iosStoreLink != null)) {
-      await openIOSApplication(
-        iosScheme,
-        iosStoreLink,
-      );
-    } else if (uri != null) {
-      await openOtherApplication(uri);
+    try {
+      if (PlatformInfo.isWeb && uri != null) {
+        await openWebApplication(uri);
+      } else if (PlatformInfo.isAndroid && androidPackageId != null) {
+        await openAndroidApplication(androidPackageId);
+      } else if (PlatformInfo.isIOS &&
+          (iosScheme != null || iosStoreLink != null)) {
+        await openIOSApplication(
+          iosScheme,
+          iosStoreLink,
+        );
+      } else if (uri != null) {
+        await openOtherApplication(uri);
+      }
+    } catch (e) {
+      logError('LauncherApplicationMixin::launchApplication:Exception = $e');
     }
   }
 
