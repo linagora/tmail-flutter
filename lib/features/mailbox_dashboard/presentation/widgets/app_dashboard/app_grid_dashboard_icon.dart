@@ -9,15 +9,15 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class AppGridDashboardIcon extends StatelessWidget {
 
-  final ImagePaths _imagePaths = Get.find<ImagePaths>();
-
+  final ImagePaths imagePaths;
   final AppGridDashboardController appGridController;
   final VoidCallback? onShowAppDashboardAction;
 
-  AppGridDashboardIcon({
+  const AppGridDashboardIcon({
     super.key,
+    required this.imagePaths,
     required this.appGridController,
-    this.onShowAppDashboardAction
+    this.onShowAppDashboardAction,
   });
 
   @override
@@ -48,7 +48,7 @@ class AppGridDashboardIcon extends StatelessWidget {
           }),
           visible: isAppGridOpen,
           child: TMailButtonWidget.fromIcon(
-            icon: _imagePaths.icAppDashboard,
+            icon: imagePaths.icAppDashboard,
             backgroundColor: Colors.transparent,
             iconSize: 30,
             padding: const EdgeInsets.all(6),
