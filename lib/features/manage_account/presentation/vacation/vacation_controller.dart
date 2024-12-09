@@ -90,7 +90,7 @@ class VacationController extends BaseController {
   void _initializeValueForVacation(VacationPresentation newVacation) {
     vacationPresentation.value = newVacation;
     subjectTextController.text = newVacation.subject ?? '';
-    updateMessageHtmlText(newVacation.messageHtmlText ?? newVacation.messagePlainText ?? '');
+    updateMessageHtmlText(newVacation.messageHtmlText ?? '');
     if (PlatformInfo.isWeb) {
       _richTextControllerForWeb.editorController.setText(newVacation.messageHtmlText ?? '');
     } else {
