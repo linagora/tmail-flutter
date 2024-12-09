@@ -8824,7 +8824,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (!_this._isCollapsed) {
         t1 = _this._widget.listFileUploaded;
         t2 = t1.$ti._eval$1("MappedListIterable<ListBase.E,AttachmentItemComposerWidget>");
-        t3.push(A.Container$(_null, A.SingleChildScrollView$(A.Wrap$(C.WrapAlignment_0, A.List_List$of(new A.MappedListIterable(t1, new B._AttachmentComposerWidgetState_build_closure0(_this), t2), true, t2._eval$1("ListIterable.E")), C.WrapCrossAlignment_0, C.WrapAlignment_0, 8, 8), _null, _null, _null, _null, _null, C.Axis_1), C.Clip_0, _null, D.BoxConstraints_cUt0, _null, _null, _null, _null, _null, C.EdgeInsetsDirectional_16_8_16_8, _null, _null, 1 / 0));
+        t3.push(A.Container$(_null, A.SingleChildScrollView$(A.Wrap$(C.WrapAlignment_0, A.List_List$of(new A.MappedListIterable(t1, new B._AttachmentComposerWidgetState_build_closure0(_this), t2), true, t2._eval$1("ListIterable.E")), C.WrapCrossAlignment_0, C.WrapAlignment_0, 8, 8), _null, _null, _null, _null, _null, C.Axis_1), C.Clip_0, _null, D.BoxConstraints_cUt1, _null, _null, _null, _null, _null, C.EdgeInsetsDirectional_16_8_16_8, _null, _null, 1 / 0));
       }
       return A.Container$(_null, A.Column$(t3, C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1), C.Clip_0, _null, _null, D.BoxDecoration_8sn, _null, _null, _null, _null, _null, _null, _null, 1 / 0);
     }
@@ -9432,7 +9432,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = $.GetInstance__getInstance = C.C_GetInstance;
       t1.find$1$1$tag(0, _null, type$.ImagePaths);
       t1 = A._setArrayType([], type$.JSArray_Widget);
-      t1.push(A.Container$(_null, new A.LayoutBuilder(new B.EventBodyContentWidget_build_closure(this), _null), C.Clip_0, _null, D.BoxConstraints_cUt, _null, _null, _null, _null, _null, C.EdgeInsetsDirectional_0_0_4_0, _null, _null, _null));
+      t1.push(A.Container$(_null, new A.LayoutBuilder(new B.EventBodyContentWidget_build_closure(this), _null), C.Clip_0, _null, D.BoxConstraints_cUt0, _null, _null, _null, _null, _null, C.EdgeInsetsDirectional_0_0_4_0, _null, _null, _null));
       t1.push(A.PositionedDirectional$(_null, A.SvgPicture$asset("assets/images/ic_format_quote.svg", C.Alignment_0_0, _null, C.BoxFit_1, _null, _null, _null, _null), 0, _null, 0, _null));
       return A.Container$(_null, new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, t1, _null), C.Clip_2, _null, _null, D.BoxDecoration_4GC, _null, _null, _null, _null, D.EdgeInsetsDirectional_16_16_8_16, _null, _null, 1 / 0);
     }
@@ -21806,8 +21806,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Border_Lxv = new A.Border(C.BorderSide_00, C.BorderSide_Q1M, C.BorderSide_Q1M, C.BorderSide_Q1M);
     D.BoxConstraints_86y5 = new A.BoxConstraints(24, 1 / 0, 24, 1 / 0);
     D.BoxConstraints_NQk = new A.BoxConstraints(0, 490, 0, 1 / 0);
-    D.BoxConstraints_cUt0 = new A.BoxConstraints(0, 1 / 0, 0, 150);
-    D.BoxConstraints_cUt = new A.BoxConstraints(0, 1 / 0, 0, 200);
+    D.BoxConstraints_cUt1 = new A.BoxConstraints(0, 1 / 0, 0, 150);
+    D.BoxConstraints_cUt0 = new A.BoxConstraints(0, 1 / 0, 0, 200);
     D.BoxConstraints_oA85 = new A.BoxConstraints(0, 100, 0, 1 / 0);
     D.BoxConstraints_oA81 = new A.BoxConstraints(0, 250, 0, 1 / 0);
     D.BoxConstraints_oA82 = new A.BoxConstraints(0, 300, 0, 1 / 0);
@@ -22130,5 +22130,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "yh5i+4KJ/EhVRdI+jS6XjR1KWSc=");
+})($__dart_deferred_initializers__, "4Cce3PBKUtBkIMN4ZPT0IIHMk2c=");
 ;
