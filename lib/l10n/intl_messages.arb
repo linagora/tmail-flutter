@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-11-27T12:48:02.567768",
+  "@@last_modified": "2024-12-09T16:35:03.349467",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4066,8 +4066,14 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "Your session expired. We need to take you back to the login page in order to refresh it. You might want to save the email you are currently editing before we do so.",
+  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "Your session has expired. We’ll try to save your draft before taking you to the login page, but please copy any important content to be safe.",
   "@messageWarningDialogWhenExpiredOIDCTokenAndReconnection": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveAndRefresh": "Save & refresh",
+  "@saveAndRefresh": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -4269,7 +4269,7 @@ class AppLocalizations {
 
   String get messageWarningDialogWhenExpiredOIDCTokenAndReconnection {
     return Intl.message(
-      'Your session expired. We need to take you back to the login page in order to refresh it. You might want to save the email you are currently editing before we do so.',
+      'Your session has expired. We’ll try to save your draft before taking you to the login page, but please copy any important content to be safe.',
       name: 'messageWarningDialogWhenExpiredOIDCTokenAndReconnection',
     );
   }
