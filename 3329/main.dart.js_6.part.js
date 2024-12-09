@@ -150,6 +150,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._needsSemanticsUpdate = true;
       _._semantics = null;
     },
+    log1(value, level) {
+      switch (level.index) {
+        case 1:
+          break;
+        case 0:
+          break;
+      }
+    },
+    Level0: function Level0(t0, t1) {
+      this.index = t0;
+      this._core$_name = t1;
+    },
     LauncherApplicationMixin: function LauncherApplicationMixin() {
     },
     PopupMenuWidgetMixin: function PopupMenuWidgetMixin() {
@@ -602,6 +614,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return this.super$RenderProxyBoxMixin$hitTestChildren(result, position);
     }
   };
+  B.Level0.prototype = {
+    _enumToString$0() {
+      return "Level." + this._core$_name;
+    }
+  };
   B.LauncherApplicationMixin.prototype = {
     launchApplication$4$androidPackageId$iosScheme$iosStoreLink$uri(androidPackageId, iosScheme, iosStoreLink, uri) {
       return this.launchApplication$body$LauncherApplicationMixin(androidPackageId, iosScheme, iosStoreLink, uri);
@@ -612,20 +629,46 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     launchApplication$body$LauncherApplicationMixin(androidPackageId, iosScheme, iosStoreLink, uri) {
       var $async$goto = 0,
         $async$completer = A._makeAsyncAwaitCompleter(type$.void),
-        $async$self = this;
+        $async$handler = 1, $async$currentError, $async$self = this, e, exception, $async$exception;
       var $async$launchApplication$4$androidPackageId$iosScheme$iosStoreLink$uri = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
-        if ($async$errorCode === 1)
-          return A._asyncRethrow($async$result, $async$completer);
+        if ($async$errorCode === 1) {
+          $async$currentError = $async$result;
+          $async$goto = $async$handler;
+        }
         while (true)
           switch ($async$goto) {
             case 0:
               // Function start
-              $async$goto = 2;
+              $async$handler = 3;
+              $async$goto = 6;
               return A._asyncAwait($async$self.openWebApplication$1(uri), $async$launchApplication$4$androidPackageId$iosScheme$iosStoreLink$uri);
-            case 2:
+            case 6:
               // returning from await.
+              $async$handler = 1;
+              // goto after finally
+              $async$goto = 5;
+              break;
+            case 3:
+              // catch
+              $async$handler = 2;
+              $async$exception = $async$currentError;
+              e = A.unwrapException($async$exception);
+              B.log1("LauncherApplicationMixin::launchApplication:Exception = " + A.S(e), D.Level_10);
+              // goto after finally
+              $async$goto = 5;
+              break;
+            case 2:
+              // uncaught
+              // goto rethrow
+              $async$goto = 1;
+              break;
+            case 5:
+              // after finally
               // implicit return
               return A._asyncReturn(null, $async$completer);
+            case 1:
+              // rethrow
+              return A._asyncRethrow($async$currentError, $async$completer);
           }
       });
       return A._asyncStartSync($async$launchApplication$4$androidPackageId$iosScheme$iosStoreLink$uri, $async$completer);
@@ -1028,7 +1071,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 141
+    $signature: 138
   };
   B._HtmlContentViewerOnWebState_initState__closure.prototype = {
     call$0() {
@@ -1054,7 +1097,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 361
+    $signature: 537
   };
   B._HtmlContentViewerOnWebState__setUpWeb_closure0.prototype = {
     call$0() {
@@ -1077,7 +1120,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(D.Align_ChN);
       return new A.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
     },
-    $signature: 142
+    $signature: 152
   };
   B._HtmlContentViewerOnWebState_build__closure.prototype = {
     call$2(context, snapshot) {
@@ -1158,7 +1201,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.push(t3.build$0());
       return A.Row$(t2, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null);
     },
-    $signature: 355
+    $signature: 312
   };
   B.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -1209,8 +1252,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(B.PortalLinkScope, A.InheritedWidget);
     _inherit(B.PortalTheater, A.SingleChildRenderObjectWidget);
     _inherit(B.RenderPortalTheater, A.RenderProxyBox);
+    _inheritMany(A._Enum, [B.Level0, B.SuggestionEmailState0]);
     _inherit(B.SuggestionEmailAddress0, B._SuggestionEmailAddress_Object_EquatableMixin0);
-    _inherit(B.SuggestionEmailState0, A._Enum);
     _inherit(B._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin_ImageLoaderMixin, B._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin);
     _inherit(B.AppGridDashboardItem, B._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin_ImageLoaderMixin);
     _mixin(B._SuggestionEmailAddress_Object_EquatableMixin0, A.EquatableMixin);
@@ -1274,6 +1317,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_16_12_16_12 = new A.EdgeInsets(16, 12, 16, 12);
     D.EdgeInsets_32_16_32_16 = new A.EdgeInsets(32, 16, 32, 16);
     D.EdgeInsets_8_5_8_5 = new A.EdgeInsets(8, 5, 8, 5);
+    D.Level_0 = new B.Level0(0, "info");
+    D.Level_10 = new B.Level0(1, "error");
     D.PageStorageKey_mailbox_list = new A.PageStorageKey("mailbox_list", A.findType("PageStorageKey<String>"));
     D.SizedBox_16_null_null_null = new A.SizedBox(16, null, null, null);
     D.SizedBox_24_null_null_null = new A.SizedBox(24, null, null, null);
@@ -1293,5 +1338,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "fTH1ssJlyokChcdWyu/jRaGICNA=");
+})($__dart_deferred_initializers__, "Qrz+ZNNN0z7pkKMG9R3GMT70G2Q=");
 ;
