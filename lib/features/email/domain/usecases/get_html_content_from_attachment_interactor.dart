@@ -60,6 +60,7 @@ class GetHtmlContentFromAttachmentInteractor {
                 );
               sanitizeState = Right(GetHtmlContentFromAttachmentSuccess(
                 sanitizedHtmlContent: sanitizedHtmlContent,
+                htmlAttachmentTitle: attachment.generateFileName(),
               ));
             } catch (e) {
               sanitizeState = Left(GetHtmlContentFromAttachmentFailure(exception: e));

@@ -13,8 +13,14 @@ class StringConvert {
     return text ?? '';
   }
 
-  static String decodeFromBytes(Uint8List bytes, {required String? charset}) {
-    if (charset == null) {
+  static String decodeFromBytes(
+    Uint8List bytes, {
+    required String? charset,
+    bool isHtml = false,
+  }) {
+    if (isHtml) {
+      return utf8.decode(bytes);
+    } else if (charset == null) {
       throw const NullCharsetException();
     } else if (charset.toLowerCase().contains('utf-8')) {
       return utf8.decode(bytes);

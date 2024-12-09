@@ -4,7 +4,6 @@ import 'dart:typed_data';
 
 import 'package:better_open_file/better_open_file.dart' as open_file;
 import 'package:core/core.dart';
-import 'package:core/presentation/views/html_viewer/html_attachment_previewer.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -91,6 +90,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_lis
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_dialog_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/html_attachment_previewer.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/pdf_viewer.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
@@ -243,6 +243,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _showToastMessageEventAttendanceSuccess(success);
     } else if (success is GetHtmlContentFromAttachmentSuccess) {
       Get.dialog(HtmlAttachmentPreviewer(
+        title: success.htmlAttachmentTitle,
         htmlContent: success.sanitizedHtmlContent,
       ));
     }
