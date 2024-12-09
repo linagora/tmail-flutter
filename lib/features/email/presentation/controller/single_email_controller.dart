@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:better_open_file/better_open_file.dart' as open_file;
 import 'package:core/core.dart';
+import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -1827,20 +1828,16 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       if (PlatformInfo.isCanvasKit && attachment.validatePDFIcon()) {
         previewPDFFileAction(context, attachment);
       } else if (attachment.validateHtmlAttachment()) {
-        final accountId = mailboxDashBoardController.accountId.value;
-        final downloadUrl = mailboxDashBoardController.sessionCurrent
-          ?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
-        final blobId = attachment.blobId;
-
-        if (accountId == null || downloadUrl == null || blobId == null) return;
+        final attachmentEvaluation = evaluateAttachment(attachment);
+        if (!attachmentEvaluation.canDownloadAttachment) return;
 
         consumeState(_getHtmlContentFromAttachmentInteractor.execute(
-          accountId,
+          attachmentEvaluation.accountId!,
           attachment,
-          DownloadTaskId(blobId.value),
-          downloadUrl,
+          DownloadTaskId(attachmentEvaluation.blobId!.value),
+          attachmentEvaluation.downloadUrl!,
           TransformConfiguration.fromTextTransformers(
-            TransformConfiguration.standardTextTransformers,
+            [const StandardizeHtmlSanitizingTransformers()],
           ),
         ));
       } else {
@@ -1851,6 +1848,36 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else {
       log('EmailView::_handleViewAttachmentAction: THE PLATFORM IS SUPPORTED');
     }
+  }
+
+  ({
+    bool canDownloadAttachment,
+    AccountId? accountId,
+    String? downloadUrl,
+    Id? blobId,
+  }) evaluateAttachment(
+    Attachment attachment,
+  ) {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final downloadUrl = mailboxDashBoardController.sessionCurrent
+        ?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
+    final blobId = attachment.blobId;
+
+    if (accountId == null || downloadUrl == null || blobId == null) {
+      return (
+        canDownloadAttachment: false,
+        accountId: accountId,
+        downloadUrl: downloadUrl,
+        blobId: blobId,
+      );
+    }
+
+    return (
+      canDownloadAttachment: true,
+      accountId: accountId,
+      downloadUrl: downloadUrl,
+      blobId: blobId,
+    );
   }
 
   Future<void> previewPDFFileAction(BuildContext context, Attachment attachment) async {
