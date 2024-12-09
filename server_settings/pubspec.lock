@@ -287,8 +287,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: bb4ffba9e3aba2cbb60c1173663abf975b521199
+      ref: "bugfix/allow-vacation-response-textbody-null"
+      resolved-ref: "1702db4bc855e7e66c6e1d6b1f2cd0d09c4f1149"
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
     version: "0.3.0"
