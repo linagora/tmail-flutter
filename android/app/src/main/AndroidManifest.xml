@@ -11,8 +11,6 @@
     <uses-sdk tools:overrideLibrary="io.flutter.plugins.webviewflutter, com.pichillilorenzo.flutter_inappwebview" />
 
     <queries>
-        <package android:name="com.linagora.android.linshare" />
-
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <category android:name="android.intent.category.BROWSABLE" />

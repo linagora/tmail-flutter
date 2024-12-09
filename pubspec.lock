@@ -524,11 +524,12 @@ packages:
   external_app_launcher:
     dependency: "direct main"
     description:
-      name: external_app_launcher
-      sha256: fb55cddd706c62ede11056750d5e018ef379820e09739e967873211dd537d833
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.1.0"
+      path: "."
+      ref: master
+      resolved-ref: cb31d10b5a7261f774b6e312d82c5cf1899979b6
+      url: "https://github.com/putnokiabel/external_app_launcher.git"
+    source: git
+    version: "4.0.0"
   external_path:
     dependency: "direct main"
     description:

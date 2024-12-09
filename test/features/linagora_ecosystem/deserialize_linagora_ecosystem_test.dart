@@ -56,7 +56,7 @@ void main() {
         LinagoraEcosystemIdentifier.twakeDrive: AppLinagoraEcosystem(
           appName: 'Twake Drive',
           logoURL: 'https://xyz',
-          webLink: 'https://abc',
+          webLink: Uri.parse('https://abc'),
         ),
         LinagoraEcosystemIdentifier.mobileApps: MobileAppsLinagoraEcosystem({
           LinagoraEcosystemIdentifier.twakeChat: AppLinagoraEcosystem(
