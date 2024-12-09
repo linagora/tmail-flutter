@@ -4345,4 +4345,12 @@ class AppLocalizations {
       name: 'createTwakeIdFailed',
     );
   }
+
+  // Create text "This html attachment cannot be previewed"
+  String get thisHtmlAttachmentCannotBePreviewed {
+    return Intl.message(
+      'This html attachment cannot be previewed',
+      name: 'thisHtmlAttachmentCannotBePreviewed',
+    );
+  }
 }

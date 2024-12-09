@@ -270,6 +270,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else if (failure is CalendarEventReplyFailure
         || failure is StoreEventAttendanceStatusFailure) {
       _calendarEventFailure(failure);
+    } else if (failure is GetHtmlContentFromAttachmentFailure) {
+      _handleGetHtmlContentFromAttachmentFailure();
     }
   }
 
@@ -1829,7 +1831,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         previewPDFFileAction(context, attachment);
       } else if (attachment.validateHtmlAttachment()) {
         final attachmentEvaluation = evaluateAttachment(attachment);
-        if (!attachmentEvaluation.canDownloadAttachment) return;
+        if (!attachmentEvaluation.canDownloadAttachment) {
+          consumeState(Stream.value(Left(GetHtmlContentFromAttachmentFailure(exception: null))));
+          return;
+        }
 
         consumeState(_getHtmlContentFromAttachmentInteractor.execute(
           attachmentEvaluation.accountId!,
@@ -1927,5 +1932,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     mailboxDashBoardController.goToComposer(
       ComposerArguments.fromMailtoUri(listEmailAddress: listEmailAddressMailTo)
     );
+  }
+  
+  void _handleGetHtmlContentFromAttachmentFailure() {
+    if (currentOverlayContext != null && currentContext != null) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).thisHtmlAttachmentCannotBePreviewed);
+    }
   }
 }

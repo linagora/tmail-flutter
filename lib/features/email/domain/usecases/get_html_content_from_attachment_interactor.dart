@@ -73,6 +73,8 @@ class GetHtmlContentFromAttachmentInteractor {
       onReceiveController.close();
       if (sanitizeState != null) {
         yield sanitizeState!;
+      } else {
+        yield Left(GetHtmlContentFromAttachmentFailure(exception: null));
       }
       
     } catch (e) {
