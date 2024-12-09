@@ -73,7 +73,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                           contactSupportCapability: controller.sessionCurrent?.getContactSupportCapability(accountId),
                           searchForm: SearchInputFormWidget(),
                           appGridController: controller.appGridDashboardController,
-                          onShowAppDashboardAction: controller.showAppDashboardAction,
                           onTapApplicationLogoAction: controller.redirectToInboxAction,
                           onTapAvatarAction: (position) => controller.handleClickAvatarAction(context, position),
                           onTapContactSupportAction: (contactSupport) =>

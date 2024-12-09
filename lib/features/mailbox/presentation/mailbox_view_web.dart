@@ -10,13 +10,13 @@ import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/app_grid_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_view.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/styles/quotas_view_styles.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class MailboxView extends BaseMailboxView {
 
@@ -154,9 +154,18 @@ class MailboxView extends BaseMailboxView {
             ),
           )),
         Obx(() => MailboxLoadingBarWidget(viewState: controller.viewState.value)),
-        AppConfig.appGridDashboardAvailable && controller.responsiveUtils.isWebNotDesktop(context)
-          ? buildAppGridDashboard(context, controller.responsiveUtils, controller.imagePaths, controller)
-          : const SizedBox.shrink(),
+        Obx(() {
+          final linagoraApps = controller
+              .mailboxDashBoardController
+              .appGridDashboardController
+              .listLinagoraApp;
+
+          if (linagoraApps.isNotEmpty && !controller.responsiveUtils.isDesktop(context)) {
+            return AppGridView(linagoraApps: linagoraApps);
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
         const SizedBox(height: 8),
         Obx(() {
           if (controller.defaultMailboxIsNotEmpty) {

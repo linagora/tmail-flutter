@@ -1,27 +1,20 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:core/utils/config/app_config_loader.dart';
 import 'package:dartz/dartz.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/app_dashboard/app_dashboard_configuration_parser.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/app_dashboard/linagora_applications.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/app_grid_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_app_dashboard_configuration_state.dart';
 
 class GetAppDashboardConfigurationInteractor {
-  final AppConfigLoader _appConfigLoader;
+  final AppGridRepository _appGridRepository;
 
-  GetAppDashboardConfigurationInteractor(this._appConfigLoader);
+  GetAppDashboardConfigurationInteractor(this._appGridRepository);
 
-  Stream<Either<Failure, Success>> execute(String appDashboardConfigurationPath) async* {
+  Stream<Either<Failure, Success>> execute(String path) async* {
     try {
       yield Right(LoadingAppDashboardConfiguration());
-
-      final linagoraApps = await _appConfigLoader.load<LinagoraApplications>(
-        appDashboardConfigurationPath,
-        AppDashboardConfigurationParser()
-      );
-
-      yield Right(GetAppDashboardConfigurationSuccess(linagoraApps));
+      final linagoraApps = await _appGridRepository.getLinagoraApplications(path);
+      yield Right(GetAppDashboardConfigurationSuccess(linagoraApps.apps));
     } catch (e) {
       logError('GetAppDashboardConfigurationInteractor::execute(): $e');
       yield Left(GetAppDashboardConfigurationFailure(e));

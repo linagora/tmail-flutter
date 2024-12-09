@@ -14,4 +14,6 @@ class Constant {
   static const attachmentScheme = 'attachment';
   static const emlPreviewerScheme = 'eml-previewer';
   static const htmlExtension = '.html';
+  static const slashCharacter = '/';
+  static const andCharacter = '&';
 }

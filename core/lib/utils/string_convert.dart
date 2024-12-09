@@ -69,4 +69,8 @@ class StringConvert {
       throw const UnsupportedCharsetException();
     }
   }
+
+  static String toUrlScheme(String hostScheme) {
+    return '$hostScheme://';
+  }
 }

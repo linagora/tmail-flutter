@@ -28,7 +28,7 @@ class OIDCHttpClient {
     try {
       final result = await _dioClient.get(
         Endpoint.webFinger
-          .generateOIDCPath(Uri.parse(oidcRequest.baseUrl))
+          .usingBaseUrl(oidcRequest.baseUrl)
           .withQueryParameters([
             StringQueryParameter('resource', oidcRequest.resourceUrl),
             StringQueryParameter('rel', OIDCRequest.relUrl),

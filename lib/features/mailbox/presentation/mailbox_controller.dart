@@ -1172,14 +1172,6 @@ class MailboxController extends BaseMailboxController
           _triggerToggleMailboxCategories();
         }
         break;
-      case MailboxCategories.appGrid:
-        final currentExpandMode = mailboxDashBoardController.appGridDashboardController.appDashboardExpandMode.value;
-        if (currentExpandMode == ExpandMode.COLLAPSE) {
-          _showAppDashboardAction();
-        } else {
-          mailboxDashBoardController.appGridDashboardController.toggleAppGridDashboard();
-        }
-        break;
     }
   }
 
@@ -1198,10 +1190,6 @@ class MailboxController extends BaseMailboxController
       log('MailboxController::_handleNavigationRouteParameters():navigationRouter: $navigationRouter');
       _navigationRouter = navigationRouter;
     }
-  }
-
-  void _showAppDashboardAction() {
-    mailboxDashBoardController.showAppDashboardAction();
   }
 
   void handleMailboxAction(
