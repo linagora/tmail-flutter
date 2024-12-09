@@ -100,5 +100,5 @@ dependencies {
     implementation 'androidx.work:work-runtime-ktx:2.7.0'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'androidx.window:window:1.0.0'
-    androidTestUtil "androidx.test:orchestrator:1.5.0"
+    androidTestUtil "androidx.test:orchestrator:1.5.1"
 }
