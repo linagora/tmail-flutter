@@ -14,7 +14,6 @@ class VacationPresentation with EquatableMixin, OptionParamMixin {
   final TimeOfDay? startTime;
   final DateTime? endDate;
   final TimeOfDay? endTime;
-  final String? messagePlainText;
   final String? messageHtmlText;
   final String? subject;
   final bool vacationStopEnabled;
@@ -25,7 +24,6 @@ class VacationPresentation with EquatableMixin, OptionParamMixin {
     this.startTime,
     this.endDate,
     this.endTime,
-    this.messagePlainText,
     this.messageHtmlText,
     this.subject,
     this.vacationStopEnabled = false,
@@ -52,7 +50,6 @@ class VacationPresentation with EquatableMixin, OptionParamMixin {
       startTime: getOptionParam(startTimeOption, startTime),
       endDate: getOptionParam(endDateOption, endDate),
       endTime: getOptionParam(endTimeOption, endTime),
-      messagePlainText: getOptionParam(messagePlainTextOption, messagePlainText),
       messageHtmlText: getOptionParam(messageHtmlTextOption, messageHtmlText),
       subject: getOptionParam(subjectOption, subject),
       vacationStopEnabled: vacationStopEnabled ?? this.vacationStopEnabled
@@ -81,7 +78,6 @@ class VacationPresentation with EquatableMixin, OptionParamMixin {
     endDate,
     endTime,
     vacationStopEnabled,
-    messagePlainText,
     messageHtmlText,
     subject,
   ];
@@ -93,7 +89,6 @@ extension VacationPresentationExtension on VacationPresentation {
       isEnabled: isEnabled,
       fromDate: fromDate != null ? UTCDate(fromDate!.toUtc()) : null,
       toDate: toDate != null ? UTCDate(toDate!.toUtc()) : null,
-      textBody: messagePlainText,
       htmlBody: messageHtmlText,
       subject: subject,
     );
