@@ -50,6 +50,7 @@ class GetHtmlContentFromAttachmentInteractor {
             final htmlContent = StringConvert.decodeFromBytes(
               success.bytes,
               charset: success.attachment.charset,
+              isHtml: true,
             );
             try {
               final sanitizedHtmlContent = await _downloadAttachmentForWebInteractor
