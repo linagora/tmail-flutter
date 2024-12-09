@@ -3219,7 +3219,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       t5 = t2._as(t1.get(_this))._richTextControllerForWeb;
       A.Expando__checkType(_this);
-      return A.HtmlEditor$(A.Callbacks$(_null, _null, _null, t2._as(t1.get(_this)).get$updateMessageHtmlText(), t5.get$onEditorSettingsChange(), _null, _null, _null, new C.VacationView__buildMessageHtmlTextEditor_closure(_this, context), _null, _null, _null, _null, _null, _null, _null), t3.editorController, t4, B.HtmlToolbarOptions_List_empty_ToolbarType_3, D.ValueKey_LB7, D.OtherOptions_150);
+      return new A.ConstrainedBox(D.BoxConstraints_cUt, A.HtmlEditor$(A.Callbacks$(_null, _null, _null, t2._as(t1.get(_this)).get$updateMessageHtmlText(), t5.get$onEditorSettingsChange(), _null, _null, _null, new C.VacationView__buildMessageHtmlTextEditor_closure(_this, context), _null, _null, _null, _null, _null, _null, _null), t3.editorController, t4, B.HtmlToolbarOptions_List_empty_ToolbarType_3, D.ValueKey_LB7, D.OtherOptions_150), _null);
     }
   };
   C._VacationView_GetWidget_RichTextButtonMixin.prototype = {};
@@ -5753,6 +5753,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   (function constants() {
     var makeConstList = hunkHelpers.makeConstList;
     D.AlwaysReadReceiptView_null = new C.AlwaysReadReceiptView(null);
+    D.BoxConstraints_cUt = new A.BoxConstraints(0, 1 / 0, 0, 300);
     D.BoxConstraints_oA80 = new A.BoxConstraints(0, 80, 0, 1 / 0);
     D.Color_4294637559 = new A.Color(4294637559);
     D.BoxDecoration_NYu = new A.BoxDecoration(D.Color_4294637559, null, null, B.BorderRadius_ww81, null, null, null, B.BoxShape_0);
@@ -5858,5 +5859,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_7", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "dQuxcZGG43N8QkYL3VmcgvXuZds=");
+})($__dart_deferred_initializers__, "ALtWkAlHl735dMpKOcarKHvIgCI=");
 ;
