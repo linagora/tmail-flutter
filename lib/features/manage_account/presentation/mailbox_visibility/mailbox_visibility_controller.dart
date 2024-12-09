@@ -152,8 +152,6 @@ class MailboxVisibilityController extends BaseMailboxController {
         mailboxCategoriesExpandMode.value.teamMailboxes = newExpandMode;
         mailboxCategoriesExpandMode.refresh();
         break;
-      case MailboxCategories.appGrid:
-        break;
     }
   }
 

@@ -67,9 +67,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       } else {
                         return NavigationBarWidget(
                           avatarUserName: controller.sessionCurrent?.username.firstCharacter ?? '',
+                          imagePaths: controller.imagePaths,
                           searchForm: SearchInputFormWidget(),
                           appGridController: controller.appGridDashboardController,
-                          onShowAppDashboardAction: controller.showAppDashboardAction,
                           onTapApplicationLogoAction: controller.redirectToInboxAction,
                           onTapAvatarAction: (position) => controller.handleClickAvatarAction(context, position),
                         );
