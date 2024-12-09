@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/empty_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem_properties.dart';
@@ -11,7 +12,7 @@ class AppLinagoraEcosystem extends LinagoraEcosystemProperties {
   final String? androidPackageId;
   final String? iosUrlScheme;
   final String? iosAppStoreLink;
-  final String? webLink;
+  final Uri? webLink;
 
   AppLinagoraEcosystem({
     this.appName,
@@ -33,6 +34,17 @@ class AppLinagoraEcosystem extends LinagoraEcosystemProperties {
       return EmptyLinagoraEcosystem();
     }
   }
+
+  String? getIconPath(ImagePaths imagePaths) => logoURL;
+
+  Uri? get appRedirectLink => webLink;
+
+  bool get isAppIOSEnabled => iosUrlScheme?.isNotEmpty == true ||
+      iosAppStoreLink?.isNotEmpty == true ||
+      appRedirectLink != null;
+
+  bool get isAppAndroidEnabled => androidPackageId?.isNotEmpty == true ||
+      appRedirectLink != null;
 
   @override
   List<Object?> get props => [

@@ -1,17 +1,17 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/app_dashboard/linagora_applications.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/app_linagora_ecosystem.dart';
 
-class LoadingAppDashboardConfiguration extends UIState {}
+class LoadingAppDashboardConfiguration extends LoadingState {}
 
 class GetAppDashboardConfigurationSuccess extends UIState {
 
-  final LinagoraApplications linagoraApplications;
+  final List<AppLinagoraEcosystem> listLinagoraApp;
 
-  GetAppDashboardConfigurationSuccess(this.linagoraApplications);
+  GetAppDashboardConfigurationSuccess(this.listLinagoraApp);
 
   @override
-  List<Object> get props => [linagoraApplications];
+  List<Object> get props => [listLinagoraApp];
 }
 
 class GetAppDashboardConfigurationFailure extends FeatureFailure {

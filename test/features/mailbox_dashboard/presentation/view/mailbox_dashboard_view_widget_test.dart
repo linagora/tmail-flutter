@@ -136,7 +136,7 @@ const fallbackGenerators = {
   MockSpec<RemoveEmailDraftsInteractor>(),
   MockSpec<EmailReceiveManager>(),
   MockSpec<DownloadController>(fallbackGenerators: fallbackGenerators),
-  MockSpec<AppGridDashboardController>(),
+  MockSpec<AppGridDashboardController>(fallbackGenerators: fallbackGenerators),
   MockSpec<SpamReportController>(fallbackGenerators: fallbackGenerators),
   MockSpec<NetworkConnectionController>(fallbackGenerators: fallbackGenerators),
   MockSpec<QuickSearchEmailInteractor>(),
