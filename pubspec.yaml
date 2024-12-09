@@ -275,7 +275,7 @@ dev_dependencies:
 
   http_mock_adapter: 0.4.2
 
-  patrol: 3.11.1
+  patrol: 3.11.0
 
   plugin_platform_interface: 2.1.8
 
