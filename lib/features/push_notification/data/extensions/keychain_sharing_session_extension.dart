@@ -17,6 +17,7 @@ extension KeychainSharingSessionExtension on KeychainSharingSession {
       tokenEndpoint: tokenEndpoint,
       oidcScopes: oidcScopes,
       mailboxIdsBlockNotification: mailboxIdsBlockNotification ?? this.mailboxIdsBlockNotification,
+      isTWP: isTWP,
     );
   }
 }

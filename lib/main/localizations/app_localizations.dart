@@ -4345,4 +4345,25 @@ class AppLocalizations {
       name: 'createTwakeIdFailed',
     );
   }
+
+  String get switchAccountConfirmation {
+    return Intl.message(
+      'Switch Account Confirmation',
+      name: 'switchAccountConfirmation',
+    );
+  }
+
+  String get youAreCurrentlyLoggedInWith {
+    return Intl.message(
+      'You are currently logged in with',
+      name: 'youAreCurrentlyLoggedInWith',
+    );
+  }
+
+  String get doYouWantToLogOutAndSwitchTo {
+    return Intl.message(
+      'Do you want to log out and switch to',
+      name: 'doYouWantToLogOutAndSwitchTo',
+    );
+  }
 }

@@ -2,26 +2,25 @@
 import 'package:equatable/equatable.dart';
 
 class OIDCConfiguration with EquatableMixin {
-  final redirectOidcMobile = 'teammail.mobile://oauthredirect';
-  final wellKnownOpenId = '.well-known/openid-configuration';
-  final loginRedirectOidcWeb = 'login-callback.html';
-  final logoutRedirectOidcWeb = 'logout-callback.html';
+  static const String _wellKnownOpenId = '.well-known/openid-configuration';
 
   final String authority;
   final String clientId;
   final List<String> scopes;
+  final bool isTWP;
 
   OIDCConfiguration({
     required this.authority,
     required this.clientId,
-    required this.scopes
+    required this.scopes,
+    this.isTWP = false,
   });
 
   String get discoveryUrl {
     if (authority.endsWith('/')) {
-      return authority + wellKnownOpenId;
+      return authority + _wellKnownOpenId;
     } else {
-      return '$authority/$wellKnownOpenId';
+      return '$authority/$_wellKnownOpenId';
     }
   }
 
@@ -29,6 +28,7 @@ class OIDCConfiguration with EquatableMixin {
   List<Object?> get props => [
     authority,
     clientId,
-    scopes
+    scopes,
+    isTWP,
   ];
 }
