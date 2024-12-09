@@ -1,28 +1,29 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/navigation_bar_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_dashboard/app_grid_dashboard_icon.dart';
-import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class NavigationBarWidget extends StatelessWidget {
 
   final String avatarUserName;
+  final ImagePaths imagePaths;
   final Widget? searchForm;
   final AppGridDashboardController? appGridController;
   final VoidCallback? onTapApplicationLogoAction;
-  final VoidCallback? onShowAppDashboardAction;
   final OnTapAvatarActionWithPositionClick? onTapAvatarAction;
 
   const NavigationBarWidget({
     super.key,
     required this.avatarUserName,
+    required this.imagePaths,
     this.searchForm,
     this.appGridController,
-    this.onShowAppDashboardAction,
     this.onTapApplicationLogoAction,
     this.onTapAvatarAction,
   });
@@ -54,11 +55,16 @@ class NavigationBarWidget extends StatelessWidget {
                   child: searchForm
                 ),
                 const Spacer(),
-                if (AppConfig.appGridDashboardAvailable && appGridController != null)
-                  AppGridDashboardIcon(
-                    appGridController: appGridController!,
-                    onShowAppDashboardAction: onShowAppDashboardAction,
-                  ),
+                if (appGridController != null)
+                  Obx(() {
+                    if (appGridController!.listLinagoraApp.isNotEmpty) {
+                      return AppGridDashboardIcon(
+                        imagePaths: imagePaths,
+                        linagoraApps: appGridController!.listLinagoraApp,
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  }),
                 const SizedBox(width: 16),
                 (AvatarBuilder()
                   ..text(avatarUserName)
@@ -82,11 +88,16 @@ class NavigationBarWidget extends StatelessWidget {
         else
           ...[
             const Spacer(),
-            if (AppConfig.appGridDashboardAvailable && appGridController != null)
-              AppGridDashboardIcon(
-                appGridController: appGridController!,
-                onShowAppDashboardAction: onShowAppDashboardAction,
-              ),
+            if (appGridController != null)
+              Obx(() {
+                if (appGridController!.listLinagoraApp.isNotEmpty) {
+                  return AppGridDashboardIcon(
+                    imagePaths: imagePaths,
+                    linagoraApps: appGridController!.listLinagoraApp,
+                  );
+                }
+                return const SizedBox.shrink();
+              }),
             const SizedBox(width: 16),
             (AvatarBuilder()
               ..text(avatarUserName)

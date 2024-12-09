@@ -85,7 +85,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentat
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/exceptions/spam_report_exception.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_app_dashboard_configuration_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composer_cache_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
@@ -307,6 +306,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
       _registerPendingCurrentEmailIdInNotification();
     }
     _handleArguments();
+    _loadAppGrid();
     super.onReady();
   }
 
@@ -375,8 +375,6 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess ||
         success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
       _deleteMultipleEmailsPermanentlySuccess(success);
-    } else if (success is GetAppDashboardConfigurationSuccess) {
-      appGridDashboardController.handleShowAppDashboard(success.linagoraApplications);
     } else if(success is GetEmailByIdSuccess) {
       openEmailDetailedView(success.email);
     } else if (success is StoreSendingEmailSuccess) {
@@ -1952,16 +1950,6 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     dispatchAction(EmptyTrashAction());
   }
 
-  void showAppDashboardAction() async {
-    log('MailboxDashBoardController::showAppDashboardAction(): begin');
-    final apps = appGridDashboardController.linagoraApplications.value;
-    if (apps != null) {
-      consumeState(Stream.value(Right(GetAppDashboardConfigurationSuccess(apps))));
-      return;
-    }
-    consumeState(appGridDashboardController.showDashboardAction());
-  }
-
   bool isAbleMarkAllAsRead(){
     return !searchController.isSearchEmailRunning && selectedMailbox.value != null && selectedMailbox.value!.isDrafts;
   }
@@ -2924,6 +2912,16 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     return getMinInputLengthAutocomplete(
       session: sessionCurrent!,
       accountId: accountId.value!);
+  }
+
+  void _loadAppGrid() {
+    if (PlatformInfo.isWeb && AppConfig.appGridDashboardAvailable) {
+      appGridDashboardController.loadAppDashboardConfiguration();
+    } else if (PlatformInfo.isMobile) {
+      appGridDashboardController.loadAppGridLinagraEcosystem(
+        dynamicUrlInterceptors.jmapUrl ?? '',
+      );
+    }
   }
 
   @override

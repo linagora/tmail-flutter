@@ -42,6 +42,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                 } else {
                   return NavigationBarWidget(
                     avatarUserName: controller.sessionCurrent?.username.firstCharacter ?? '',
+                    imagePaths: controller.imagePaths,
                     onTapApplicationLogoAction: () => controller.backToMailboxDashBoard(context: context),
                     onTapAvatarAction: (position) => controller.handleClickAvatarAction(context, position),
                   );
