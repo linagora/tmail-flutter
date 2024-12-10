@@ -473,6 +473,66 @@ abstract class BaseController extends GetxController
     }
   }
 
+  Future<void> logoutToSignInNewAccount({
+    required Session session,
+    required AccountId accountId,
+    required Function onSuccessCallback,
+    required Function onFailureCallback,
+  }) async {
+    try {
+      _isFcmEnabled = _isFcmActivated(session, accountId);
+
+      if (isAuthenticatedWithOidc) {
+        final logoutViewState = await logoutOidcInteractor.execute().last;
+
+        logoutViewState.fold(
+          (failure) => onFailureCallback(),
+          (success) async {
+            if (success is LogoutOidcSuccess) {
+              await _handleDeleteFCMAndClearData();
+              onSuccessCallback();
+            } else {
+              onFailureCallback();
+            }
+          },
+        );
+      } else {
+        await _handleDeleteFCMAndClearData();
+        onSuccessCallback();
+      }
+    } catch (e) {
+      logError('BaseController::logoutToSignInNewAccount:Exception = $e');
+      onFailureCallback();
+    }
+  }
+
+  Future<void> _handleDeleteFCMAndClearData() async {
+    await Future.wait([
+      if (_isFcmEnabled)
+        _handleDeleteFCMRegistration(),
+      clearAllData(),
+    ]);
+  }
+
+  Future<void> _handleDeleteFCMRegistration() async {
+    try {
+      _getStoredFirebaseRegistrationInteractor = getBinding<GetStoredFirebaseRegistrationInteractor>();
+      final fcmRegistration = await _getStoredFirebaseRegistrationInteractor?.execute().last;
+
+      fcmRegistration?.fold(
+        (failure) => null,
+        (success) async {
+          if (success is GetStoredFirebaseRegistrationSuccess) {
+            _destroyFirebaseRegistrationInteractor = getBinding<DestroyFirebaseRegistrationInteractor>();
+            await _destroyFirebaseRegistrationInteractor?.execute(success.firebaseRegistration.id!).last;
+          }
+        },
+      );
+    } catch (e) {
+      logError('BaseController::_handleDeleteFCMRegistration:Exception = $e');
+    }
+  }
+
   void _destroyFirebaseRegistration(FirebaseRegistrationId firebaseRegistrationId) async {
     _destroyFirebaseRegistrationInteractor = getBinding<DestroyFirebaseRegistrationInteractor>();
     if (_destroyFirebaseRegistrationInteractor != null) {
@@ -503,10 +563,14 @@ abstract class BaseController extends GetxController
   }
 
   Future<void> clearAllData() async {
-    if (isAuthenticatedWithOidc) {
-      await _clearOidcAuthData();
-    } else {
-      await _clearBasicAuthData();
+    try {
+      if (isAuthenticatedWithOidc) {
+        await _clearOidcAuthData();
+      } else {
+        await _clearBasicAuthData();
+      }
+    } catch (e) {
+      logError('BaseController::clearAllData:Exception = $e');
     }
   }
 
