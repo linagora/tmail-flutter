@@ -1,3 +1,4 @@
+import 'package:core/utils/platform_info.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/cleanup/data/datasource/cleanup_datasource.dart';
@@ -11,8 +12,11 @@ import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_email_cac
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_url_cache_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_login_username_interactor.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/usecases/cleanup_recent_search_cache_interactor.dart';
+import 'package:tmail_ui_user/features/home/domain/usecases/auto_sign_in_via_deep_link_interactor.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_controller.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/authentication_oidc_repository.dart';
+import 'package:tmail_ui_user/features/login/domain/repository/credential_repository.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
@@ -54,6 +58,13 @@ class HomeBindings extends BaseBindings {
     Get.lazyPut(() => CleanupRecentLoginUrlCacheInteractor(Get.find<CleanupRepository>()));
     Get.lazyPut(() => CleanupRecentLoginUsernameCacheInteractor(Get.find<CleanupRepository>()));
     Get.lazyPut(() => CheckOIDCIsAvailableInteractor(Get.find<AuthenticationOIDCRepository>()));
+    if (PlatformInfo.isMobile) {
+      Get.lazyPut(() => AutoSignInViaDeepLinkInteractor(
+        Get.find<AuthenticationOIDCRepository>(),
+        Get.find<AccountRepository>(),
+        Get.find<CredentialRepository>(),
+      ));
+    }
   }
 
   @override

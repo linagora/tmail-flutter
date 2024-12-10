@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:model/model.dart';
 
 class DeepLinkData with EquatableMixin {
-  final String path;
+  final String action;
   final String? accessToken;
   final String? refreshToken;
   final String? idToken;
@@ -10,7 +10,7 @@ class DeepLinkData with EquatableMixin {
   final String? username;
 
   DeepLinkData({
-    required this.path,
+    required this.action,
     this.accessToken,
     this.refreshToken,
     this.idToken,
@@ -35,7 +35,7 @@ class DeepLinkData with EquatableMixin {
 
   @override
   List<Object?> get props => [
-    path,
+    action,
     accessToken,
     refreshToken,
     idToken,
