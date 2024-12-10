@@ -4175,5 +4175,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "tokenInvalid": "Token invalid",
+  "@tokenInvalid": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
