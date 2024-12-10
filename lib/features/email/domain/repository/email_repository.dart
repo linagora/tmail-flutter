@@ -152,4 +152,8 @@ abstract class EmailRepository {
     AccountId accountId,
     EmailId emailId,
     EventActionType eventActionType);
+
+  Future<String> sanitizeHtmlContent(
+    String htmlContent,
+    TransformConfiguration configuration);
 }

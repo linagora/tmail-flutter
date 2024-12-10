@@ -6,4 +6,6 @@ extension AttachmentExtension on Attachment {
   String getIcon(ImagePaths imagePaths) => type?.getIcon(imagePaths, fileName: name) ?? imagePaths.icFileEPup;
 
   bool validatePDFIcon() => type?.validatePDFIcon(fileName: name) ?? false;
+
+  bool validateHtmlAttachment() => type?.validateHtmlMediaType(fileName: name) ?? false;
 }
