@@ -58,7 +58,8 @@ class AuthenticationClientMobile implements AuthenticationClientBase {
         idTokenHint: tokenId.uuid,
         postLogoutRedirectUrl: config.logoutRedirectUrl,
         discoveryUrl: config.discoveryUrl,
-        serviceConfiguration: authorizationServiceConfiguration
+        serviceConfiguration: authorizationServiceConfiguration,
+        preferEphemeralSession: true,
     ));
     log('AuthenticationClientMobile::logoutOidc(): ${endSession?.state}');
     return endSession?.state?.isNotEmpty == true;
