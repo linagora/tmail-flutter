@@ -4118,6 +4118,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "tokenInvalid": "Token invalid",
+  "@tokenInvalid": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "getHelpOrReportABug": "Get help or report a bug",
   "@getHelpOrReportABug": {
     "type": "text",

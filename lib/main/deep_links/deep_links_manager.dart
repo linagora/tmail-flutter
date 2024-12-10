@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 class DeepLinksManager {
   Future<DeepLinkData?> getDeepLinkData() async {
     final uriLink = await AppLinks().getInitialLink();
+    log('DeepLinksManager::getDeepLinkData:uriLink = $uriLink');
     if (uriLink == null) return null;
 
     final deepLinkData = parseDeepLink(uriLink.toString());
@@ -16,18 +17,24 @@ class DeepLinksManager {
 
   DeepLinkData? parseDeepLink(String url) {
     try {
-      final uri = Uri.parse(url.replaceFirst(OIDCConstant.twakeWorkplaceUrlScheme, 'https'));
+      final updatedUrl = url.replaceFirst(
+        OIDCConstant.twakeWorkplaceUrlScheme,
+        'https',
+      );
+      final uri = Uri.parse(updatedUrl);
+      final action = uri.host;
+      final accessToken = uri.queryParameters['access_token'];
+      final refreshToken = uri.queryParameters['refresh_token'];
+      final idToken = uri.queryParameters['id_token'];
+      final expiresInStr = uri.queryParameters['expires_in'];
+      final username = uri.queryParameters['username'];
 
-      final accessToken = uri.queryParameters['access_token'] ?? '';
-      final refreshToken = uri.queryParameters['refresh_token'] ?? '';
-      final idToken = uri.queryParameters['id_token'] ?? '';
-      final expiresInStr = uri.queryParameters['expires_in'] ?? '';
-      final username = uri.queryParameters['username'] ?? '';
-
-      final expiresIn = int.tryParse(expiresInStr);
+      final expiresIn = expiresInStr != null
+        ? int.tryParse(expiresInStr)
+        : null;
 
       return DeepLinkData(
-        path: uri.path,
+        action: action,
         accessToken: accessToken,
         refreshToken: refreshToken,
         idToken: idToken,
