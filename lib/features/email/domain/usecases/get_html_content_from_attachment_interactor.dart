@@ -52,20 +52,11 @@ class GetHtmlContentFromAttachmentInteractor {
               charset: success.attachment.charset,
               isHtml: true,
             );
-            try {
-              final sanitizedHtmlContent = await _downloadAttachmentForWebInteractor
-                .emailRepository
-                .sanitizeHtmlContent(
-                  htmlContent,
-                  transformConfiguration,
-                );
-              sanitizeState = Right(GetHtmlContentFromAttachmentSuccess(
-                sanitizedHtmlContent: sanitizedHtmlContent,
-                htmlAttachmentTitle: attachment.generateFileName(),
-              ));
-            } catch (e) {
-              sanitizeState = Left(GetHtmlContentFromAttachmentFailure(exception: e));
-            }
+            sanitizeState = await _sanitizeHtmlContent(
+              htmlContent,
+              transformConfiguration,
+              attachment,
+            );
           }
         },
       );
@@ -81,6 +72,28 @@ class GetHtmlContentFromAttachmentInteractor {
       logError('GetHtmlContentFromAttachmentInteractor:exception: $e');
       onReceiveController.close();
       yield Left(GetHtmlContentFromAttachmentFailure(exception: e));
+    }
+  }
+
+  Future<Either<Failure, Success>?> _sanitizeHtmlContent(
+    String htmlContent,
+    TransformConfiguration transformConfiguration,
+    Attachment attachment,
+  ) async {
+    try {
+      final sanitizedHtmlContent = await _downloadAttachmentForWebInteractor
+        .emailRepository
+        .sanitizeHtmlContent(
+          htmlContent,
+          transformConfiguration,
+        );
+      return Right(GetHtmlContentFromAttachmentSuccess(
+        sanitizedHtmlContent: sanitizedHtmlContent,
+        htmlAttachmentTitle: attachment.generateFileName(),
+        attachment: attachment,
+      ));
+    } catch (e) {
+      return Left(GetHtmlContentFromAttachmentFailure(exception: e));
     }
   }
 }

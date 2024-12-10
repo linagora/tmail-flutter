@@ -1,90 +1,87 @@
-import 'dart:convert';
-import 'dart:math';
 
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/utils/shims/dart_ui.dart';
+import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/top_bar_attachment_viewer.dart';
-import 'package:universal_html/html.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-class HtmlAttachmentPreviewer extends StatefulWidget {
+class HtmlAttachmentPreviewer extends StatelessWidget {
   const HtmlAttachmentPreviewer({
     super.key,
     required this.htmlContent,
     required this.title,
+    required this.mailToClicked,
+    required this.downloadAttachmentClicked,
   });
 
   final String title;
   final String htmlContent;
+  final void Function(Uri? mailToUri) mailToClicked;
+  final VoidCallback downloadAttachmentClicked;
 
-  @override
-  State<HtmlAttachmentPreviewer> createState() => _HtmlAttachmentPreviewerState();
-}
-
-class _HtmlAttachmentPreviewerState extends State<HtmlAttachmentPreviewer> {
-  late final IFrameElement _iframeElement;
-  late final String _viewId;
-
-  @override
-  void initState() {
-    super.initState();
-    _iframeElement = IFrameElement()
-      ..srcdoc = widget.htmlContent
-      ..style.border = 'none'
-      ..style.overflow = 'hidden'
-      ..style.width = '100%'
-      ..style.height = '100%';
-    _viewId = _getRandString(10);
-
-    platformViewRegistry.registerViewFactory(_viewId, (int viewId) => _iframeElement);
-  }
-
+  static const double _verticalMargin = 16;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         TopBarAttachmentViewer(
-          title: widget.title,
-          closeAction: () {
-            if (!mounted) return;
-            Get.back();
-          },
+          title: title,
+          closeAction: Get.back,
+          downloadAction: downloadAttachmentClicked,
         ),
         Expanded(
-          child: Center(
-            child: ResponsiveWidget(
-              responsiveUtils: ResponsiveUtils(),
-              desktop: Container(
-                width: MediaQuery.sizeOf(context).width * 0.4,
-                color: Colors.white,
-                margin: const EdgeInsets.symmetric(vertical: 16),
-                child: HtmlElementView(viewType: _viewId),
-              ),
-              tablet: Container(
-                width: MediaQuery.sizeOf(context).width * 0.8,
-                color: Colors.white,
-                margin: const EdgeInsets.symmetric(vertical: 16),
-                child: HtmlElementView(viewType: _viewId),
-              ),
-              mobile: Container(
-                width: MediaQuery.sizeOf(context).width,
-                color: Colors.white,
-                margin: const EdgeInsets.symmetric(vertical: 16),
-                child: HtmlElementView(viewType: _viewId),
-              ),
-            ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: Center(
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(vertical: _verticalMargin),
+                    color: Colors.white,
+                    child: ResponsiveWidget(
+                      responsiveUtils: ResponsiveUtils(),
+                      desktop: _buildHtmlViewerWith(
+                        context,
+                        width: constraints.maxWidth * 0.4,
+                        height: constraints.maxHeight - _verticalMargin * 2
+                      ),
+                      tablet: _buildHtmlViewerWith(
+                        context,
+                        width: constraints.maxWidth * 0.8,
+                        height: constraints.maxHeight - _verticalMargin * 2
+                      ),
+                      mobile: _buildHtmlViewerWith(
+                        context,
+                        width: constraints.maxWidth,
+                        height: constraints.maxHeight - _verticalMargin * 2
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }
           ),
         ),
       ],
     );
   }
 
-  String _getRandString(int len) {
-    var random = Random.secure();
-    var values = List<int>.generate(len, (i) => random.nextInt(255));
-    return base64UrlEncode(values);
+  HtmlContentViewerOnWeb _buildHtmlViewerWith(
+    BuildContext context, {
+    required double width,
+    required double height,
+  }) {
+    return HtmlContentViewerOnWeb(
+      contentHtml: htmlContent,
+      widthContent: width,
+      heightContent: height,
+      direction: AppUtils.getCurrentDirection(context),
+      mailtoDelegate: (uri) {
+        Get.back();
+        mailToClicked(uri);
+      },
+    );
   }
 }

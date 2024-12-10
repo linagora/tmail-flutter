@@ -246,6 +246,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       Get.dialog(HtmlAttachmentPreviewer(
         title: success.htmlAttachmentTitle,
         htmlContent: success.sanitizedHtmlContent,
+        mailToClicked: openMailToLink,
+        downloadAttachmentClicked: () {
+          downloadAttachmentForWeb(success.attachment);
+        },
       ));
     }
   }
