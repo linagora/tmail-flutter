@@ -1,0 +1,96 @@
+
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
+import 'package:core/presentation/views/responsive/responsive_widget.dart';
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/top_bar_attachment_viewer.dart';
+import 'package:tmail_ui_user/main/utils/app_utils.dart';
+
+class HtmlAttachmentPreviewer extends StatelessWidget {
+  const HtmlAttachmentPreviewer({
+    super.key,
+    required this.htmlContent,
+    required this.title,
+    required this.mailToClicked,
+    required this.downloadAttachmentClicked,
+  });
+
+  final String title;
+  final String htmlContent;
+  final void Function(Uri? mailToUri) mailToClicked;
+  final VoidCallback downloadAttachmentClicked;
+
+  static const double _verticalMargin = 16;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TopBarAttachmentViewer(
+          title: title,
+          closeAction: Get.back,
+          downloadAction: downloadAttachmentClicked,
+        ),
+        Expanded(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                child: GestureDetector(
+                  onTap: Get.back,
+                  child: PointerInterceptor(
+                    child: ColoredBox(
+                      color: Colors.transparent,
+                      child: Center(
+                        child: Container(
+                          margin: const EdgeInsets.symmetric(vertical: _verticalMargin),
+                          color: Colors.white,
+                          child: ResponsiveWidget(
+                            responsiveUtils: ResponsiveUtils(),
+                            desktop: _buildHtmlViewerWith(
+                              context,
+                              width: constraints.maxWidth * 0.4,
+                              height: constraints.maxHeight - _verticalMargin * 2
+                            ),
+                            tablet: _buildHtmlViewerWith(
+                              context,
+                              width: constraints.maxWidth * 0.8,
+                              height: constraints.maxHeight - _verticalMargin * 2
+                            ),
+                            mobile: _buildHtmlViewerWith(
+                              context,
+                              width: constraints.maxWidth,
+                              height: constraints.maxHeight - _verticalMargin * 2
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }
+          ),
+        ),
+      ],
+    );
+  }
+
+  HtmlContentViewerOnWeb _buildHtmlViewerWith(
+    BuildContext context, {
+    required double width,
+    required double height,
+  }) {
+    return HtmlContentViewerOnWeb(
+      contentHtml: htmlContent,
+      widthContent: width,
+      heightContent: height,
+      direction: AppUtils.getCurrentDirection(context),
+      mailtoDelegate: (uri) {
+        Get.back();
+        mailToClicked(uri);
+      },
+    );
+  }
+}
