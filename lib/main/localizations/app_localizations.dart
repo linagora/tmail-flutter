@@ -4308,4 +4308,11 @@ class AppLocalizations {
       name: 'messageConfirmationLogout',
     );
   }
+
+  String get tokenInvalid {
+    return Intl.message(
+      'Token invalid',
+      name: 'tokenInvalid',
+    );
+  }
 }
