@@ -1,4 +1,5 @@
 
+import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/email_action_type.dart';
@@ -148,3 +149,14 @@ class OpenAdvancedSearchViewAction extends DashBoardAction {}
 class ClearSearchFilterAppliedAction extends DashBoardAction {}
 
 class ClearAdvancedSearchFilterEmailAction extends DashBoardAction {}
+
+class MoreSelectedEmailAction extends DashBoardAction {
+
+  final BuildContext context;
+  final RelativeRect position;
+
+  MoreSelectedEmailAction(this.context, this.position);
+
+  @override
+  List<Object> get props => [context, position];
+}

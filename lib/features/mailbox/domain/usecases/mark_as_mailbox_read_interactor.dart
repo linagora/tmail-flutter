@@ -35,22 +35,24 @@ class MarkAsMailboxReadInteractor {
       final currentMailboxState = listState.first;
       final currentEmailState = listState.last;
 
-      final listEmails = await _mailboxRepository.markAsMailboxRead(
+      final listEmailId = await _mailboxRepository.markAsMailboxRead(
         session,
         accountId,
         mailboxId,
         totalEmailUnread,
         onProgressController);
 
-      if (totalEmailUnread == listEmails.length) {
+      if (totalEmailUnread == listEmailId.length) {
         yield Right(MarkAsMailboxReadAllSuccess(
+          mailboxId,
           mailboxDisplayName,
           currentEmailState: currentEmailState,
           currentMailboxState: currentMailboxState));
-      } else if (listEmails.isNotEmpty) {
+      } else if (listEmailId.isNotEmpty) {
         yield Right(MarkAsMailboxReadHasSomeEmailFailure(
+          mailboxId,
           mailboxDisplayName,
-          listEmails.length,
+          listEmailId.length,
           currentEmailState: currentEmailState,
           currentMailboxState: currentMailboxState));
       } else {

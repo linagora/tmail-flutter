@@ -239,7 +239,7 @@ class EmailAPI with HandleSetErrorMixin {
     }
   }
 
-  Future<List<Email>> markAsRead(
+  Future<List<Email>> markAsReadAndGetResult(
     Session session,
     AccountId accountId,
     List<Email> emails,
@@ -275,6 +275,41 @@ class EmailAPI with HandleSetErrorMixin {
     }).catchError((error) {
       throw error;
     });
+  }
+
+  Future<List<EmailId>> markAsRead(
+    Session session,
+    AccountId accountId,
+    List<Email> emails,
+    ReadActions readActions
+  ) async {
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addUpdates(emails.listEmailIds.generateMapUpdateObjectMarkAsRead(readActions));
+
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+
+    final capabilities = setEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final response = await (requestBuilder..usings(capabilities))
+      .build()
+      .execute();
+
+    final setEmailResponse = response.parse<SetEmailResponse>(
+      setEmailInvocation.methodCallId,
+      SetEmailResponse.deserialize
+    );
+
+    final listIdUpdated = setEmailResponse?.updated?.keys.toList();
+    final mapErrors = handleSetResponse([setEmailResponse]);
+
+    if (listIdUpdated != null && mapErrors.isEmpty) {
+      final listEmailIdUpdated = listIdUpdated.map((id) => EmailId(id)).toList();
+      return listEmailIdUpdated;
+    } else {
+      throw SetMethodException(mapErrors);
+    }
   }
 
   Future<List<DownloadTaskId>> downloadAttachments(
@@ -793,6 +828,49 @@ class EmailAPI with HandleSetErrorMixin {
       return listEmails.first;
     } else {
       throw NotFoundEmailException();
+    }
+  }
+
+  Future<List<EmailId>> moveSelectionAllEmailsToFolder(
+    Session session,
+    AccountId accountId,
+    MailboxId currentMailboxId,
+    MailboxId destinationMailboxId,
+    List<EmailId> listEmailId,
+    {
+      bool isDestinationSpamMailbox = false
+    }
+  ) async {
+    final moveProperties = isDestinationSpamMailbox
+      ? listEmailId.generateMapUpdateObjectMoveToSpam(currentMailboxId, destinationMailboxId)
+      : listEmailId.generateMapUpdateObjectMoveToMailbox(currentMailboxId, destinationMailboxId);
+
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addUpdates(moveProperties);
+
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+
+    final capabilities = setEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final response = await (requestBuilder..usings(capabilities))
+      .build()
+      .execute();
+
+    final setEmailResponse = response.parse<SetEmailResponse>(
+      setEmailInvocation.methodCallId,
+      SetEmailResponse.deserialize
+    );
+
+    final listIdUpdated = setEmailResponse?.updated?.keys.toList();
+    final mapErrors = handleSetResponse([setEmailResponse]);
+
+    if (listIdUpdated != null && mapErrors.isEmpty) {
+      final listEmailIdUpdated = listIdUpdated.map((id) => EmailId(id)).toList();
+      return listEmailIdUpdated;
+    } else {
+      throw SetMethodException(mapErrors);
     }
   }
 }

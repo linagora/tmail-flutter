@@ -1,5 +1,8 @@
 import 'dart:async';
 
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
+import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -131,6 +134,88 @@ class ThreadDataSourceImpl extends ThreadDataSource {
     return Future.sync(() async {
       final email = await threadAPI.getEmailById(session, accountId, emailId, properties: properties);
       return email.toPresentationEmail();
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<List<EmailId>> markAllAsUnreadForSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmailRead,
+    StreamController<dartz.Either<Failure, Success>> onProgressController
+  ) {
+    return Future.sync(() async {
+      return await _threadIsolateWorker.markAllAsUnreadForSelectionAllEmails(
+        session,
+        accountId,
+        mailboxId,
+        totalEmailRead,
+        onProgressController
+      );
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<List<EmailId>> moveAllSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId currentMailboxId,
+    MailboxId destinationMailboxId,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+    {
+      bool isDestinationSpamMailbox = false
+    }
+  ) {
+    return Future.sync(() async {
+      return await _threadIsolateWorker.moveAllSelectionAllEmails(
+        session,
+        accountId,
+        currentMailboxId,
+        destinationMailboxId,
+        totalEmails,
+        onProgressController,
+        isDestinationSpamMailbox: isDestinationSpamMailbox
+      );
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<List<EmailId>> deleteAllPermanentlyEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+  ) {
+    return Future.sync(() async {
+      return await _threadIsolateWorker.deleteAllPermanentlyEmails(
+        session,
+        accountId,
+        mailboxId,
+        totalEmails,
+        onProgressController,
+      );
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<List<EmailId>> markAllAsStarredForSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController
+  ) {
+    return Future.sync(() async {
+      return await _threadIsolateWorker.markAllAsStarredForSelectionAllEmails(
+        session,
+        accountId,
+        mailboxId,
+        totalEmails,
+        onProgressController,
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 }

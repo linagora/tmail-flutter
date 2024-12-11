@@ -295,8 +295,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: bb4ffba9e3aba2cbb60c1173663abf975b521199
+      ref: add-reference-destroy-property
+      resolved-ref: "1700754235ac124a55f90c38b81c2bfc661fc3b8"
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
     version: "0.3.0"

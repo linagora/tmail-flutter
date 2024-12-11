@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart'
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filter_email_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
@@ -35,6 +36,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_bu
 import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_message_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/select_all_banner/select_all_emails_in_mailbox_banner.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_loading_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -163,6 +165,20 @@ class ThreadView extends GetWidget<ThreadController>
                       }),
                       if (!controller.responsiveUtils.isDesktop(context))
                         _buildMarkAsMailboxReadLoading(context),
+                      if (controller.responsiveUtils.isWebDesktop(context))
+                        Obx(() {
+                          if (controller.validateToShowSelectionEmailsBanner()) {
+                            return SelectAllEmailInMailboxBanner(
+                              limitEmailsInPage: controller.mailboxDashBoardController.listEmailSelected.length,
+                              totalEmails: controller.mailboxDashBoardController.selectedMailbox.value!.totalEmails!.value.value.toInt(),
+                              folderName: controller.mailboxDashBoardController.selectedMailbox.value!.getDisplayName(context),
+                              onSelectAllEmailAction: controller.enableSelectAllEmails,
+                              onClearSelection: controller.cancelSelectEmail
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        }),
                       Obx(() => ThreadViewLoadingBarWidget(viewState: controller.viewState.value)),
                       Expanded(
                         child: Container(
