@@ -3226,9 +3226,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.$this = t0;
       this.context = t1;
     },
-    IconOpenAdvancedSearchWidget_build__closure: function IconOpenAdvancedSearchWidget_build__closure(t0, t1) {
+    IconOpenAdvancedSearchWidget_build__closure: function IconOpenAdvancedSearchWidget_build__closure(t0) {
       this.$this = t0;
-      this.context = t1;
     },
     SortByDropDownButton: function SortByDropDownButton(t0, t1, t2, t3) {
       var _ = this;
@@ -19164,16 +19163,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.IconOpenAdvancedSearchWidget_build_closure.prototype = {
     call$0() {
-      var t6, t7, _null = null,
+      var t6, _null = null,
         t1 = this.context,
         t2 = type$._LocalizationsScope,
         t3 = A.Bidi_isRtlLanguage(t1.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 0 : 8,
         t4 = A.Bidi_isRtlLanguage(t1.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 8 : 0,
         t5 = A.Bidi_isRtlLanguage(t1.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 0 : 2;
-      t2 = A.Bidi_isRtlLanguage(t1.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 2 : 0;
-      t6 = this.$this;
-      t7 = t6.searchController;
-      return new A.Padding(new A.EdgeInsets(t4, 0, t3, 0), A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_filter_advanced.svg", C.Alignment_0_0, t7.isAdvancedSearchViewOpen.get$value(0) || t7.advancedSearchIsActivated.get$value(0) ? A.ColorNullableExtension_asFilter(C.Color_4278221567) : A.ColorNullableExtension_asFilter(C.Color_4288258733), C.BoxFit_1, 16, _null, _null, 16), new A.EdgeInsets(t2, 0, t5, 0), _null, _null, 40, new B.IconOpenAdvancedSearchWidget_build__closure(t6, t1), 15, _null), _null);
+      t1 = A.Bidi_isRtlLanguage(t1.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 2 : 0;
+      t2 = this.$this;
+      t6 = t2.searchController;
+      return new A.Padding(new A.EdgeInsets(t4, 0, t3, 0), A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_filter_advanced.svg", C.Alignment_0_0, t6.isAdvancedSearchViewOpen.get$value(0) || t6.advancedSearchIsActivated.get$value(0) ? A.ColorNullableExtension_asFilter(C.Color_4278221567) : A.ColorNullableExtension_asFilter(C.Color_4288258733), C.BoxFit_1, 16, _null, _null, 16), new A.EdgeInsets(t1, 0, t5, 0), _null, _null, 40, new B.IconOpenAdvancedSearchWidget_build__closure(t2), 15, _null), _null);
     },
     $signature: 630
   };
@@ -19181,7 +19180,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$0() {
       A.log("IconOpenAdvancedSearchWidget::build(): clicked", C.Level_3);
       var t1 = this.$this;
-      t1.advancedFilterController.initSearchFilterField$1(this.context);
+      t1.advancedFilterController.initSearchFilterField$0();
       t1.searchController.isAdvancedSearchViewOpen.set$value(0, true);
     },
     $signature: 0
@@ -22850,5 +22849,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "1KBwkR76oTqCpL723J5YHpfE7j4=");
+})($__dart_deferred_initializers__, "XSWpvO1yqs6babBhIZLEVcIKm0I=");
 ;
