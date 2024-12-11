@@ -94,6 +94,7 @@ class HtmlAttachmentPreviewer extends StatelessWidget {
         popBack();
         mailToClicked(uri);
       },
+      keepWidthWhileLoading: true,
     );
   }
 }
