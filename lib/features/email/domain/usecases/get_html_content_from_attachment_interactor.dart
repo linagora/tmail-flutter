@@ -27,7 +27,7 @@ class GetHtmlContentFromAttachmentInteractor {
   ) async* {
     final onReceiveController = StreamController<Either<Failure, Success>>();
     try {
-      yield Right(GettingHtmlContentFromAttachment());
+      yield Right(GettingHtmlContentFromAttachment(attachment: attachment));
       final downloadState = await _downloadAttachmentForWebInteractor.execute(
         taskId,
         attachment,
@@ -41,11 +41,12 @@ class GetHtmlContentFromAttachmentInteractor {
         (failure) {
           sanitizeState = Left(GetHtmlContentFromAttachmentFailure(
             exception: failure is FeatureFailure ? failure.exception : null,
+            attachment: attachment,
           ));
         },
         (success) async {
           if (success is! DownloadAttachmentForWebSuccess) {
-            sanitizeState = Right(GettingHtmlContentFromAttachment());
+            sanitizeState = Right(GettingHtmlContentFromAttachment(attachment: attachment));
           } else {
             final htmlContent = StringConvert.decodeFromBytes(
               success.bytes,
@@ -65,13 +66,19 @@ class GetHtmlContentFromAttachmentInteractor {
       if (sanitizeState != null) {
         yield sanitizeState!;
       } else {
-        yield Left(GetHtmlContentFromAttachmentFailure(exception: null));
+        yield Left(GetHtmlContentFromAttachmentFailure(
+          exception: null,
+          attachment: attachment,
+        ));
       }
       
     } catch (e) {
       logError('GetHtmlContentFromAttachmentInteractor:exception: $e');
       onReceiveController.close();
-      yield Left(GetHtmlContentFromAttachmentFailure(exception: e));
+      yield Left(GetHtmlContentFromAttachmentFailure(
+        exception: e,
+        attachment: attachment,
+      ));
     }
   }
 
@@ -93,7 +100,10 @@ class GetHtmlContentFromAttachmentInteractor {
         attachment: attachment,
       ));
     } catch (e) {
-      return Left(GetHtmlContentFromAttachmentFailure(exception: e));
+      return Left(GetHtmlContentFromAttachmentFailure(
+        exception: e,
+        attachment: attachment,
+      ));
     }
   }
 }

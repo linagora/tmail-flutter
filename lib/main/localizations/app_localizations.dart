@@ -4346,7 +4346,6 @@ class AppLocalizations {
     );
   }
 
-  // Create text "This html attachment cannot be previewed"
   String get thisHtmlAttachmentCannotBePreviewed {
     return Intl.message(
       'This html attachment cannot be previewed',

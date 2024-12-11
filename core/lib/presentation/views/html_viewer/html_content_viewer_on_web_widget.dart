@@ -11,6 +11,8 @@ import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:universal_html/html.dart' as html;
 
+typedef OnMailtoClicked = void Function(Uri? uri);
+
 class HtmlContentViewerOnWeb extends StatefulWidget {
 
   final String contentHtml;
@@ -19,10 +21,12 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final TextDirection? direction;
 
   /// Handler for mailto: links
-  final Function(Uri?)? mailtoDelegate;
+  final OnMailtoClicked? mailtoDelegate;
 
   // if widthContent is bigger than width of htmlContent, set this to true let widget able to resize to width of htmlContent 
   final bool allowResizeToDocumentSize;
+
+  final bool keepWidthWhileLoading;
   
   const HtmlContentViewerOnWeb({
     Key? key,
@@ -32,6 +36,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     this.allowResizeToDocumentSize = true,
     this.mailtoDelegate,
     this.direction,
+    this.keepWidthWhileLoading = false,
   }) : super(key: key);
 
   @override
@@ -93,7 +98,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
         }
       }
 
-      if (data['type'] != null && data['type'].contains('toDart: htmlWidth')) {
+      if (data['type'] != null && data['type'].contains('toDart: htmlWidth') && !widget.keepWidthWhileLoading) {
         final docWidth = data['width'] ?? _actualWidth;
         if (docWidth != null && mounted) {
           if (docWidth > _minWidth && widget.allowResizeToDocumentSize) {

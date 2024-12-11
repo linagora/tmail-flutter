@@ -243,6 +243,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else if (success is StoreEventAttendanceStatusSuccess) {
       _showToastMessageEventAttendanceSuccess(success);
     } else if (success is GetHtmlContentFromAttachmentSuccess) {
+      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
       Get.dialog(HtmlAttachmentPreviewer(
         title: success.htmlAttachmentTitle,
         htmlContent: success.sanitizedHtmlContent,
@@ -250,7 +251,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         downloadAttachmentClicked: () {
           downloadAttachmentForWeb(success.attachment);
         },
+        responsiveUtils: responsiveUtils,
       ));
+    } else if (success is GettingHtmlContentFromAttachment) {
+      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
     }
   }
 
@@ -275,7 +279,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         || failure is StoreEventAttendanceStatusFailure) {
       _calendarEventFailure(failure);
     } else if (failure is GetHtmlContentFromAttachmentFailure) {
-      _handleGetHtmlContentFromAttachmentFailure();
+      _handleGetHtmlContentFromAttachmentFailure(failure);
     }
   }
 
@@ -1836,7 +1840,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       } else if (attachment.validateHtmlAttachment()) {
         final attachmentEvaluation = evaluateAttachment(attachment);
         if (!attachmentEvaluation.canDownloadAttachment) {
-          consumeState(Stream.value(Left(GetHtmlContentFromAttachmentFailure(exception: null))));
+          consumeState(Stream.value(Left(GetHtmlContentFromAttachmentFailure(
+            exception: null,
+            attachment: attachment,
+          ))));
           return;
         }
 
@@ -1938,7 +1945,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
   }
   
-  void _handleGetHtmlContentFromAttachmentFailure() {
+  void _handleGetHtmlContentFromAttachmentFailure(GetHtmlContentFromAttachmentFailure failure) {
+    _updateAttachmentsViewState(failure.attachment.blobId, Left(failure));
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,

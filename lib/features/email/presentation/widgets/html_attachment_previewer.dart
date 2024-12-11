@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/top_bar_attachment_viewer.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class HtmlAttachmentPreviewer extends StatelessWidget {
@@ -15,12 +16,14 @@ class HtmlAttachmentPreviewer extends StatelessWidget {
     required this.title,
     required this.mailToClicked,
     required this.downloadAttachmentClicked,
+    required this.responsiveUtils,
   });
 
   final String title;
   final String htmlContent;
-  final void Function(Uri? mailToUri) mailToClicked;
+  final OnMailtoClicked mailToClicked;
   final VoidCallback downloadAttachmentClicked;
+  final ResponsiveUtils responsiveUtils;
 
   static const double _verticalMargin = 16;
 
@@ -47,7 +50,7 @@ class HtmlAttachmentPreviewer extends StatelessWidget {
                           margin: const EdgeInsets.symmetric(vertical: _verticalMargin),
                           color: Colors.white,
                           child: ResponsiveWidget(
-                            responsiveUtils: ResponsiveUtils(),
+                            responsiveUtils: responsiveUtils,
                             desktop: _buildHtmlViewerWith(
                               context,
                               width: constraints.maxWidth * 0.4,
@@ -88,7 +91,7 @@ class HtmlAttachmentPreviewer extends StatelessWidget {
       heightContent: height,
       direction: AppUtils.getCurrentDirection(context),
       mailtoDelegate: (uri) {
-        Get.back();
+        popBack();
         mailToClicked(uri);
       },
     );

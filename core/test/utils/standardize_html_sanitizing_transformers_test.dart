@@ -158,5 +158,26 @@ void main() {
 
       expect(result, equals('<img src="cid:email123">'));
     });
+
+    test('SHOULD persist nav tag', () {
+      const inputHtml = '<nav></nav>';
+      final result = transformer.process(inputHtml, htmlEscape);
+
+      expect(result, equals('<nav></nav>'));
+    });
+
+    test('SHOULD persist main tag', () {
+      const inputHtml = '<main></main>';
+      final result = transformer.process(inputHtml, htmlEscape);
+
+      expect(result, equals('<main></main>'));
+    });
+
+    test('SHOULD persist footer tag', () {
+      const inputHtml = '<footer></footer>';
+      final result = transformer.process(inputHtml, htmlEscape);
+
+      expect(result, equals('<footer></footer>'));
+    });
   });
 }

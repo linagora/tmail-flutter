@@ -10,6 +10,7 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_html_content_from_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -58,10 +59,12 @@ class EmailUtils {
   static bool checkingIfAttachmentActionIsEnabled(Either<Failure, Success>? state) {
     return state?.fold(
       (failure) {
-        return failure is DownloadAttachmentForWebFailure;
+        return failure is DownloadAttachmentForWebFailure
+          || failure is GetHtmlContentFromAttachmentFailure;
       },
       (success) {
         return success is DownloadAttachmentForWebSuccess
+          || success is GetHtmlContentFromAttachmentSuccess
           || success is IdleDownloadAttachmentForWeb;
       }) ?? false;
   }
