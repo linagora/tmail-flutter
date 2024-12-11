@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:better_open_file/better_open_file.dart' as open_file;
 import 'package:core/core.dart';
+import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -1852,8 +1853,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           attachment,
           DownloadTaskId(attachmentEvaluation.blobId!.value),
           attachmentEvaluation.downloadUrl!,
-          TransformConfiguration.fromTextTransformers(
-            [const StandardizeHtmlSanitizingTransformers()],
+          TransformConfiguration.create(
+            customDomTransformers: [SanitizeHyperLinkTagInHtmlTransformer()],
+            customTextTransformers: [const StandardizeHtmlSanitizingTransformers()],
           ),
         ));
       } else {
