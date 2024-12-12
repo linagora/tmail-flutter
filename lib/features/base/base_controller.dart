@@ -60,6 +60,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
+import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 abstract class BaseController extends GetxController
@@ -81,6 +82,7 @@ abstract class BaseController extends GetxController
   final Uuid uuid = Get.find<Uuid>();
   final ApplicationManager applicationManager = Get.find<ApplicationManager>();
   final ToastManager toastManager = Get.find<ToastManager>();
+  final TwakeAppManager twakeAppManager = Get.find<TwakeAppManager>();
 
   bool _isFcmEnabled = false;
 
@@ -218,43 +220,49 @@ abstract class BaseController extends GetxController
   }
 
   void _handleBadCredentialsException() {
-    if (PlatformInfo.isWeb) {
-      if (currentContext == null) {
-        _executeBeforeReconnectAndLogOut();
-        return;
-      }
-
-      showConfirmDialogAction(
-        currentContext!,
-        AppLocalizations.of(currentContext!).dialogMessageSessionHasExpired,
-        AppLocalizations.of(currentContext!).reconnect,
-        title: AppLocalizations.of(currentContext!).sessionExpired,
-        alignCenter: true,
-        outsideDismissible: false,
-        titleActionButtonMaxLines: 1,
-        icon: SvgPicture.asset(imagePaths.icTMailLogo, width: 64, height: 64),
-        onConfirmAction: _executeBeforeReconnectAndLogOut,
-        onCancelAction: onCancelReconnectWhenSessionExpired
-      );
-    } else if (PlatformInfo.isMobile) {
-      if (currentContext == null) {
-        clearDataAndGoToLoginPage();
-        return;
-      }
-
-      showConfirmDialogAction(
-        currentContext!,
-        AppLocalizations.of(currentContext!).dialogMessageSessionHasExpired,
-        AppLocalizations.of(currentContext!).reconnect,
-        title: AppLocalizations.of(currentContext!).sessionExpired,
-        alignCenter: true,
-        outsideDismissible: false,
-        titleActionButtonMaxLines: 1,
-        icon: SvgPicture.asset(imagePaths.icTMailLogo, width: 64, height: 64),
-        onConfirmAction: clearDataAndGoToLoginPage,
-        onCancelAction: onCancelReconnectWhenSessionExpired
-      );
+    log('$runtimeType::_handleBadCredentialsException:');
+    if (!twakeAppManager.isComposerOpened) {
+      _performReconnection();
+      return;
     }
+
+    if (currentContext == null) {
+      _performSaveAndReconnection();
+      return;
+    }
+
+    final appLocalizations = AppLocalizations.of(currentContext!);
+    showConfirmDialogAction(
+      currentContext!,
+      appLocalizations.messageWarningDialogWhenExpiredOIDCTokenAndReconnection,
+      appLocalizations.saveAndRefresh,
+      title: appLocalizations.sessionExpired,
+      cancelTitle: appLocalizations.no,
+      alignCenter: true,
+      outsideDismissible: false,
+      titleActionButtonMaxLines: 1,
+      marginIcon: EdgeInsetsDirectional.zero,
+      icon: SvgPicture.asset(imagePaths.icTMailLogo, width: 64, height: 64),
+      onConfirmAction: _performSaveAndReconnection,
+      onCancelAction: _performReconnection,
+      onCloseButtonAction: _performCloseReconnectionConfirmDialog
+    );
+  }
+
+  void _performSaveAndReconnection() {
+    if (PlatformInfo.isWeb) {
+      _executeBeforeReconnectAndLogOut();
+    } else if (PlatformInfo.isMobile) {
+      clearDataAndGoToLoginPage();
+    }
+  }
+
+  void _performReconnection() {
+    clearDataAndGoToLoginPage();
+  }
+
+  void _performCloseReconnectionConfirmDialog() {
+    popBack();
   }
 
   void onDataFailureViewState(Failure failure) {

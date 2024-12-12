@@ -39,6 +39,7 @@ import 'package:tmail_ui_user/features/public_asset/domain/usecase/remove_identi
 import 'package:tmail_ui_user/features/public_asset/presentation/clean_up_public_assets_interactor_bindings.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
+import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../../fixtures/session_fixtures.dart';
@@ -65,6 +66,7 @@ const fallbackGenerators = {
   MockSpec<Uuid>(),
   MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
+  MockSpec<TwakeAppManager>(),
 
   // Reloadable controller mockspecs
   MockSpec<GetSessionInteractor>(),
@@ -109,6 +111,7 @@ void main() {
   late MockUuid mockUuid;
   late MockApplicationManager mockApplicationManager;
   late MockToastManager mockToastManager;
+  late MockTwakeAppManager mockTwakeAppManager;
 
   late MockSaveIdentityCacheOnWebInteractor mockSaveIdentityCacheOnWebInteractor;
 
@@ -127,6 +130,7 @@ void main() {
     mockUuid = MockUuid();
     mockApplicationManager = MockApplicationManager();
     mockToastManager = MockToastManager();
+    mockTwakeAppManager = MockTwakeAppManager();
 
     mockSaveIdentityCacheOnWebInteractor = MockSaveIdentityCacheOnWebInteractor();
 
@@ -147,6 +151,7 @@ void main() {
     Get.put<Uuid>(mockUuid);
     Get.put<ApplicationManager>(mockApplicationManager);
     Get.put<ToastManager>(mockToastManager);
+    Get.put<TwakeAppManager>(mockTwakeAppManager);
 
     // mock reloadable controller
     Get.put<GetSessionInteractor>(MockGetSessionInteractor());
