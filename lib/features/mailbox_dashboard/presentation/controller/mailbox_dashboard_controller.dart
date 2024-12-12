@@ -427,6 +427,7 @@ class MailboxDashBoardController extends ReloadableController
     } else if (success is GetAllIdentitiesSuccess) {
       _handleGetAllIdentitiesSuccess(success);
     } else if (success is GetComposerCacheSuccess) {
+      _removeComposerCacheOnWeb();
       goToComposer(ComposerArguments.fromSessionStorageBrowser(success.composerCache));
     } else if (success is GetIdentityCacheOnWebSuccess) {
       goToSettings();
@@ -1671,12 +1672,14 @@ class MailboxDashBoardController extends ReloadableController
     composerArguments = arguments;
     ComposerBindings().dependencies();
     composerOverlayState.value = ComposerOverlayState.active;
+    twakeAppManager.openComposerOnWeb();
   }
 
   void closeComposerOverlay({dynamic result}) async {
     composerArguments = null;
     ComposerBindings().dispose();
     composerOverlayState.value = ComposerOverlayState.inActive;
+    twakeAppManager.closeComposerOnWeb();
     if (result is SendingEmailArguments) {
       handleSendEmailAction(result);
     } else if (result is SendEmailSuccess ||
@@ -3225,6 +3228,7 @@ class MailboxDashBoardController extends ReloadableController
     mapDefaultMailboxIdByRole = {};
     WebSocketController.instance.onClose();
     _currentEmailState = null;
+    twakeAppManager.closeComposerOnWeb();
     super.onClose();
   }
 }
