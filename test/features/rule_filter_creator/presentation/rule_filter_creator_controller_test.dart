@@ -48,6 +48,7 @@ import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_f
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_widget.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
+import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../fixtures/widget_fixtures.dart';
@@ -67,6 +68,7 @@ import 'rule_filter_creator_controller_test.mocks.dart';
   MockSpec<Uuid>(),
   MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
+  MockSpec<TwakeAppManager>(),
   // Rule filter creator controller mock specs
   MockSpec<TreeBuilder>(),
   MockSpec<VerifyNameInteractor>(),
@@ -95,6 +97,7 @@ void main() {
   late MockUuid mockUuid;
   late MockApplicationManager mockApplicationManager;
   late MockToastManager mockToastManager;
+  late MockTwakeAppManager mockTwakeAppManager;
 
   setUpAll(() {
     Get.testMode = true;
@@ -113,6 +116,7 @@ void main() {
     mockUuid = MockUuid();
     mockApplicationManager = MockApplicationManager();
     mockToastManager = MockToastManager();
+    mockTwakeAppManager = MockTwakeAppManager();
 
     Get.put<CachingManager>(mockCachingManager);
     Get.put<LanguageCacheManager>(mockLanguageCacheManager);
@@ -131,6 +135,7 @@ void main() {
     Get.put<Uuid>(mockUuid);
     Get.put<ApplicationManager>(mockApplicationManager);
     Get.put<ToastManager>(mockToastManager);
+    Get.put<TwakeAppManager>(mockTwakeAppManager);
 
     // Mock rule filter creator controller
     mockTreeBuilder = MockTreeBuilder();
