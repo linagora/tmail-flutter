@@ -140,21 +140,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     loadBuffer$2(key, decode) {
       var _null = null,
         chunkEvents = B.StreamController_StreamController(_null, _null, _null, _null, false, type$.ImageChunkEvent);
-      return B.MultiFrameImageStreamCompleter$(new B._ControllerStream(chunkEvents, B._instanceType(chunkEvents)._eval$1("_ControllerStream<1>")), this._loadAsync$3(key, decode, chunkEvents), key.url, _null, key.scale);
+      return B.MultiFrameImageStreamCompleter$(new B._ControllerStream(chunkEvents, B._instanceType(chunkEvents)._eval$1("_ControllerStream<1>")), this.__network_image_web$_loadAsync$3(key, decode, chunkEvents), key.url, _null, key.scale);
     },
     loadImage$2(key, decode) {
       var _null = null,
         chunkEvents = B.StreamController_StreamController(_null, _null, _null, _null, false, type$.ImageChunkEvent);
-      return B.MultiFrameImageStreamCompleter$(new B._ControllerStream(chunkEvents, B._instanceType(chunkEvents)._eval$1("_ControllerStream<1>")), this._loadAsync$3(key, decode, chunkEvents), key.url, _null, key.scale);
+      return B.MultiFrameImageStreamCompleter$(new B._ControllerStream(chunkEvents, B._instanceType(chunkEvents)._eval$1("_ControllerStream<1>")), this.__network_image_web$_loadAsync$3(key, decode, chunkEvents), key.url, _null, key.scale);
     },
-    _loadAsync$3(key, decode, chunkEvents) {
+    __network_image_web$_loadAsync$3(key, decode, chunkEvents) {
       return this._loadAsync$body$NetworkImage(key, decode, chunkEvents);
     },
     _loadAsync$body$NetworkImage(key, decode, chunkEvents) {
       var $async$goto = 0,
         $async$completer = B._makeAsyncAwaitCompleter(type$.Codec),
         $async$returnValue, completer, request, bytes, t1, resolved, t2, $async$temp1;
-      var $async$_loadAsync$3 = B._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
+      var $async$__network_image_web$_loadAsync$3 = B._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
         if ($async$errorCode === 1)
           return B._asyncRethrow($async$result, $async$completer);
         while (true)
@@ -178,7 +178,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               request.addEventListener("error", t1._as(B.allowInterop(new A.NetworkImage__loadAsync_closure0(completer))));
               request.send();
               $async$goto = 6;
-              return B._asyncAwait(t2, $async$_loadAsync$3);
+              return B._asyncAwait(t2, $async$__network_image_web$_loadAsync$3);
             case 6:
               // returning from await.
               t2 = request.response;
@@ -188,7 +188,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
                 throw B.wrapException(A.NetworkImageLoadException$(B.getProperty(request, "status"), resolved));
               $async$temp1 = decode;
               $async$goto = 7;
-              return B._asyncAwait(B.ImmutableBuffer_fromUint8List(bytes), $async$_loadAsync$3);
+              return B._asyncAwait(B.ImmutableBuffer_fromUint8List(bytes), $async$__network_image_web$_loadAsync$3);
             case 7:
               // returning from await.
               $async$returnValue = $async$temp1.call$1($async$result);
@@ -211,7 +211,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               return B._asyncReturn($async$returnValue, $async$completer);
           }
       });
-      return B._asyncStartSync($async$_loadAsync$3, $async$completer);
+      return B._asyncStartSync($async$__network_image_web$_loadAsync$3, $async$completer);
     },
     $eq(_, other) {
       if (other == null)
@@ -296,7 +296,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(_) {
       return C.CupertinoActivityIndicator_null_true_1_null;
     },
-    $signature: 1764
+    $signature: 1767
   };
   A.ImageLoaderMixin_buildImage_closure0.prototype = {
     call$3(_, child, loadingProgress) {
@@ -306,7 +306,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     "call*": "call$3",
     $requiredArgCount: 3,
-    $signature: 1765
+    $signature: 1768
   };
   A.ImageLoaderMixin_buildImage_closure1.prototype = {
     call$3(context, error, stackTrace) {
@@ -315,7 +315,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = this.imageSize;
       return B.Container$(C.Alignment_0_0, D.Icon_MYE, C.Clip_0, _null, _null, _null, _null, t1, _null, _null, _null, _null, _null, t1);
     },
-    $signature: 1766
+    $signature: 1769
   };
   A.NetworkImage__loadAsync_closure.prototype = {
     call$1(e) {
@@ -338,7 +338,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(e) {
       return this.completer.completeError$1(e);
     },
-    $signature: 1767
+    $signature: 1770
   };
   A.NetworkImage__loadAsync_closure1.prototype = {
     call$2(bytes, total) {
@@ -369,7 +369,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1768
+    $signature: 1771
   };
   (function inheritance() {
     var _mixin = hunkHelpers.mixin,
@@ -406,8 +406,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   (function constants() {
     D.Center_IFX = new B.Center(C.Alignment_0_0, null, null, C.CupertinoActivityIndicator_null_true_1_null, null);
     D.EdgeInsetsDirectional_16_16_16_0 = new B.EdgeInsetsDirectional(16, 16, 16, 0);
-    D.IconData_57912_false = new B.IconData(57912, false);
-    D.Icon_MYE = new B.Icon(D.IconData_57912_false, null, null, null, null);
+    D.Icon_MYE = new B.Icon(C.IconData_57912_false, null, null, null, null);
     D.TextStyle_OkG0 = new B.TextStyle(true, C.Color_4278221567, null, null, null, null, 14, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
   })();
 };
@@ -415,5 +414,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_2", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "tokFMjXJ+MKXqREbHwpKylPvuFE=");
+})($__dart_deferred_initializers__, "smxHLwGvFZ/ghprz9uYsz9MxQH0=");
 ;
