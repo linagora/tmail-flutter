@@ -96,6 +96,7 @@ import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
     if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
+import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import 'mailbox_dashboard_controller_test.mocks.dart';
@@ -174,6 +175,7 @@ const fallbackGenerators = {
   MockSpec<RemoveComposerCacheOnWebInteractor>(),
   MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
+  MockSpec<TwakeAppManager>(),
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<GetIdentityCacheOnWebInteractor>(),
 ])
@@ -239,6 +241,7 @@ void main() {
   final uuid = MockUuid();
   final applicationManager = MockApplicationManager();
   final mockToastManager = MockToastManager();
+  final mockTwakeAppManager = MockTwakeAppManager();
 
   // mock reloadable controller Get dependencies
   final getSessionInteractor = MockGetSessionInteractor();
@@ -305,6 +308,7 @@ void main() {
     Get.put<Uuid>(uuid);
     Get.put<ApplicationManager>(applicationManager);
     Get.put<ToastManager>(mockToastManager);
+    Get.put<TwakeAppManager>(mockTwakeAppManager);
     Get.put<GetSessionInteractor>(getSessionInteractor);
     Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
     Get.put<UpdateAccountCacheInteractor>(updateAccountCacheInteractor);
