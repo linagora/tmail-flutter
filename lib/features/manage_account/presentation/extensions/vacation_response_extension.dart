@@ -22,7 +22,6 @@ extension VacationResponseExtension on VacationResponse {
       endTime: toDate?.value != null
           ? TimeOfDay.fromDateTime(toDate!.value.toLocal())
           : null,
-      messagePlainText: textBody,
       messageHtmlText: htmlBody,
       subject: subject,
       vacationStopEnabled: toDate != null
@@ -78,7 +77,6 @@ extension VacationResponseExtension on VacationResponse {
     UTCDate? fromDate,
     UTCDate? toDate,
     String? subject,
-    String? textBody,
     String? htmlBody
   }) {
     return VacationResponse(
@@ -86,7 +84,6 @@ extension VacationResponseExtension on VacationResponse {
       fromDate: fromDate ?? this.fromDate,
       toDate: toDate ?? this.toDate,
       subject: subject ?? this.subject,
-      textBody: textBody ?? this.textBody,
       htmlBody: htmlBody ?? this.htmlBody
     );
   }
