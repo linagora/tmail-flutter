@@ -1612,12 +1612,11 @@ packages:
   pdfrx:
     dependency: "direct main"
     description:
-      path: "."
-      ref: "fixbug/minscale-usage"
-      resolved-ref: "45a4bd5a1394d801ad25ab0ba2bfe072904477fd"
-      url: "https://github.com/linagora/pdfrx.git"
-    source: git
-    version: "1.0.93"
+      name: pdfrx
+      sha256: "29c7b03d27d647c80da8cc08bd1256c74df90e5640fdd676646e4bd04f90553a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.94"
   percent_indicator:
     dependency: "direct main"
     description:
