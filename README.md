@@ -203,7 +203,7 @@ No we do not plan to support such extensions, that are currently not standardize
 
   #### Using the docker-compose file
 
-  We also include a [docker-compose.yaml](docker-compose.yaml) file so you can get a testing environment up quickly. This use our [tmail-backend](https://hub.docker.com/r/linagora/tmail-backend) image for the JMAP server.
+  We also include a [docker-compose.yaml](backend-docker/docker-compose.yaml) file so you can get a testing environment up quickly. This use our [tmail-backend](https://hub.docker.com/r/linagora/tmail-backend) image for the JMAP server.
 
   Here are the steps to setup:
 
