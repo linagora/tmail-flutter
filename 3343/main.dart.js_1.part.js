@@ -357,7 +357,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
       A._instanceType(_this)._eval$1("GetWidget.S")._as(t3._jsWeakMap.get(_this)).toString;
-      return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([new A.ConstrainedBox(D.BoxConstraints_oA88, t1, _null), A.Positioned$fill(24, new A.Align(C.Alignment_0_1, _null, _null, A.SvgPicture$asset("assets/images/power_by_linagora.svg", C.Alignment_0_0, _null, C.BoxFit_0, 44, _null, _null, 97), _null), 0)], t2), _null);
+      return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([new A.ConstrainedBox(D.BoxConstraints_oA88, t1, _null), A.Positioned$fill(24, new A.Align(C.Alignment_0_1, _null, _null, A.SvgPicture$asset("assets/images/power_by_linagora.svg", C.Alignment_0_0, _null, C.BoxFit_0, 44, _null, _null, 97), _null))], t2), _null);
     },
     _buildWebForm$1(context) {
       var t2, t3, t4, t5, t6, t7, t8, t9, _this = this, _null = null,
@@ -844,5 +844,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "PjllL95wrXzfIBcHr6gKUXq+ngY=");
+})($__dart_deferred_initializers__, "Cnu72oqJBcigvvgJ5qwWg+pY/j8=");
 ;

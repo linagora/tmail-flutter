@@ -12697,7 +12697,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = t3._as(t2.get(t1)).imagePaths;
         t5 = this.constraintsEditor;
         A.Expando__checkType(t1);
-        return A.Positioned$fill(0, A.PointerInterceptor$(new B.AttachmentDropZoneWidget(t4, t5.maxWidth, t5.maxHeight, t3._as(t2.get(t1)).get$onAttachmentDropZoneListener(), null)), 0);
+        return A.Positioned$fill(0, A.PointerInterceptor$(new B.AttachmentDropZoneWidget(t4, t5.maxWidth, t5.maxHeight, t3._as(t2.get(t1)).get$onAttachmentDropZoneListener(), null)));
       } else
         return C.SizedBox_0_0_null_null;
     },
@@ -12714,7 +12714,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (J.$eq$(t3._as(t2.get(t1)).mailboxDashBoardController.localFileDraggableAppState.get$value(0), C.DraggableAppState_0)) {
         A.Expando__checkType(t1);
         t4 = this.constraintsEditor;
-        return A.Positioned$fill(0, A.PointerInterceptor$(new A.LocalFileDropZoneWidget(t3._as(t2.get(t1)).imagePaths, t4.maxWidth, t4.maxHeight, C.EdgeInsetsDirectional_8_8_8_60, new B.ComposerView_build____closure9(t1, this.context, t4), null)), 0);
+        return A.Positioned$fill(0, A.PointerInterceptor$(new A.LocalFileDropZoneWidget(t3._as(t2.get(t1)).imagePaths, t4.maxWidth, t4.maxHeight, C.EdgeInsetsDirectional_8_8_8_60, new B.ComposerView_build____closure9(t1, this.context, t4), null)));
       } else
         return C.SizedBox_0_0_null_null;
     },
@@ -13214,7 +13214,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = t3._as(t2.get(t1)).imagePaths;
         t5 = this.constraintsEditor;
         A.Expando__checkType(t1);
-        return A.Positioned$fill(0, A.PointerInterceptor$(new B.AttachmentDropZoneWidget(t4, t5.maxWidth, t5.maxHeight, t3._as(t2.get(t1)).get$onAttachmentDropZoneListener(), null)), 0);
+        return A.Positioned$fill(0, A.PointerInterceptor$(new B.AttachmentDropZoneWidget(t4, t5.maxWidth, t5.maxHeight, t3._as(t2.get(t1)).get$onAttachmentDropZoneListener(), null)));
       } else
         return C.SizedBox_0_0_null_null;
     },
@@ -13231,7 +13231,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (J.$eq$(t3._as(t2.get(t1)).mailboxDashBoardController.localFileDraggableAppState.get$value(0), C.DraggableAppState_0)) {
         A.Expando__checkType(t1);
         t4 = this.constraintsEditor;
-        return A.Positioned$fill(0, A.PointerInterceptor$(new A.LocalFileDropZoneWidget(t3._as(t2.get(t1)).imagePaths, t4.maxWidth, t4.maxHeight, C.EdgeInsetsDirectional_8_8_8_60, new B.ComposerView_build_____closure(t1, this.context, t4), null)), 0);
+        return A.Positioned$fill(0, A.PointerInterceptor$(new A.LocalFileDropZoneWidget(t3._as(t2.get(t1)).imagePaths, t4.maxWidth, t4.maxHeight, C.EdgeInsetsDirectional_8_8_8_60, new B.ComposerView_build_____closure(t1, this.context, t4), null)));
       } else
         return C.SizedBox_0_0_null_null;
     },
@@ -13709,7 +13709,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = t3._as(t2.get(t1)).imagePaths;
         t5 = this.constraintsBody;
         A.Expando__checkType(t1);
-        return A.Positioned$fill(0, A.PointerInterceptor$(new B.AttachmentDropZoneWidget(t4, t5.maxWidth, t5.maxHeight, t3._as(t2.get(t1)).get$onAttachmentDropZoneListener(), null)), 0);
+        return A.Positioned$fill(0, A.PointerInterceptor$(new B.AttachmentDropZoneWidget(t4, t5.maxWidth, t5.maxHeight, t3._as(t2.get(t1)).get$onAttachmentDropZoneListener(), null)));
       } else
         return C.SizedBox_0_0_null_null;
     },
@@ -13726,7 +13726,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (J.$eq$(t3._as(t2.get(t1)).mailboxDashBoardController.localFileDraggableAppState.get$value(0), C.DraggableAppState_0)) {
         A.Expando__checkType(t1);
         t4 = this.constraintsBody;
-        return A.Positioned$fill(0, A.PointerInterceptor$(new A.LocalFileDropZoneWidget(t3._as(t2.get(t1)).imagePaths, t4.maxWidth, t4.maxHeight, C.EdgeInsetsDirectional_8_8_8_60, new B.ComposerView_build____closure(t1, this.context, t4), null)), 0);
+        return A.Positioned$fill(0, A.PointerInterceptor$(new A.LocalFileDropZoneWidget(t3._as(t2.get(t1)).imagePaths, t4.maxWidth, t4.maxHeight, C.EdgeInsetsDirectional_8_8_8_60, new B.ComposerView_build____closure(t1, this.context, t4), null)));
       } else
         return C.SizedBox_0_0_null_null;
     },
@@ -20489,5 +20489,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "LgGgfRU8/1Jdw8jz5mXUMlyrMjw=");
+})($__dart_deferred_initializers__, "KnR5A7IR5TUTp5cRFoYp9IVordk=");
 ;
