@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
+import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 class CoreBindings extends Bindings {
@@ -72,6 +73,7 @@ class CoreBindings extends Bindings {
     if (PlatformInfo.isIOS) {
       Get.put(IOSNotificationManager());
     }
+    Get.put(TwakeAppManager());
   }
 
   void _bindingIsolate() {

@@ -4149,13 +4149,6 @@ class AppLocalizations {
     );
   }
 
-  String get dialogMessageSessionHasExpired {
-    return Intl.message(
-      'The current session has expired. Please reconnect to the server',
-      name: 'dialogMessageSessionHasExpired',
-    );
-  }
-
   String get sMimeGoodSignatureMessage {
     return Intl.message(
       'The authenticity of this message had been verified with SMime signature.',
@@ -4336,4 +4329,19 @@ class AppLocalizations {
       name: 'getHelpOrReportABug',
     );
   }
+
+  String get messageWarningDialogWhenExpiredOIDCTokenAndReconnection {
+    return Intl.message(
+      'Your session expired. We need to take you back to the login page in order to refresh it. You might want to save the email you are currently editing before we do so.',
+      name: 'messageWarningDialogWhenExpiredOIDCTokenAndReconnection',
+    );
+  }
+
+  String get saveAndRefresh {
+    return Intl.message(
+      'Save & refresh',
+      name: 'saveAndRefresh',
+    );
+  }
+
 }
