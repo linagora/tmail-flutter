@@ -61,7 +61,7 @@ class _PDFViewerState extends State<PDFViewer> {
   final DeviceInfoPlugin _deviceInfoPlugin = Get.find<DeviceInfoPlugin>();
   final FocusNode _keyboardFocusNode = FocusNode();
   bool _showPagination = false;
-  final double _scrollbarWidth = 10;
+  static const double _scrollbarWidth = 10;
 
   @override
   void initState() {
@@ -137,84 +137,85 @@ class _PDFViewerState extends State<PDFViewer> {
                   valueListenable: _pdfViewStateNotifier,
                   builder: (context, viewState, widget) {
                     if (viewState is DownloadAttachmentForWebSuccess) {
-                      return Stack(
-                        children: [
-                          PdfViewer.data(
-                            viewState.bytes,
-                            sourceName: this.widget.attachment.generateFileName(),
-                            controller: _pdfViewerController,
-                            params: PdfViewerParams(
-                              panAxis: PanAxis.vertical,
-                              scrollByMouseWheel: 0.5,
-                              backgroundColor: Colors.transparent,
-                              onViewerReady: (_, __) => setState(() {
-                                _showPagination = true;
-                              }),
-                              layoutPages: (pages, params) {
-                                final viewWidth = MediaQuery.sizeOf(context).width;
-                                final viewHeight = MediaQuery.sizeOf(context).height;
-                                final width = pages.fold(
-                                  0.0,
-                                  (prev, page) => max(prev, page.width)) + params.margin * 2;
-                                final pageLayouts = <Rect>[];
-                                double top = params.margin;
-                                for (final page in pages) {
-                                  pageLayouts.add(
-                                    Rect.fromLTWH(
-                                      viewWidth > viewHeight
-                                        ? (width - page.width) / 2
-                                        : 0,
-                                      top,
-                                      page.width,
-                                      page.height,
-                                    ),
-                                  );
-                                  top += page.height + params.margin;
-                                }
-
-                                return PdfPageLayout(
-                                  pageLayouts: pageLayouts,
-                                  documentSize: Size(width, top),
-                                );
-                              },
-                              viewerOverlayBuilder: (_, __, ___) => [
-                                PdfViewerScrollThumb(
-                                  controller: _pdfViewerController,
-                                  orientation: ScrollbarOrientation.right,
-                                  thumbSize: Size(_scrollbarWidth, 100),
-                                  thumbBuilder: (_, __, ___, ____) => const ColoredBox(
-                                    color: Colors.white,
-                                  ),
+                      return PdfViewer.data(
+                        viewState.bytes,
+                        sourceName: this.widget.attachment.generateFileName(),
+                        controller: _pdfViewerController,
+                        params: PdfViewerParams(
+                          panAxis: PanAxis.vertical,
+                          scrollByMouseWheel: 0.5,
+                          backgroundColor: Colors.transparent,
+                          onViewerReady: (_, __) {
+                            _pdfViewerController.setZoom(
+                              _pdfViewerController.centerPosition,
+                              1);
+                            setState(() => _showPagination = true);
+                          },
+                          minScale: 1,
+                          maxScale: 4,
+                          boundaryMargin: const EdgeInsets.all(double.infinity),
+                          layoutPages: (pages, params) {
+                            final viewWidth = MediaQuery.sizeOf(context).width;
+                            final viewHeight = MediaQuery.sizeOf(context).height;
+                            final width = pages.fold(
+                              0.0,
+                              (prev, page) => max(prev, page.width)) + params.margin * 2;
+                            final pageLayouts = <Rect>[];
+                            double top = params.margin;
+                            for (final page in pages) {
+                              pageLayouts.add(
+                                Rect.fromLTWH(
+                                  viewWidth > viewHeight
+                                    ? (width - page.width) / 2
+                                    : 0,
+                                  top,
+                                  page.width,
+                                  page.height,
                                 ),
-                              ],
+                              );
+                              top += page.height + params.margin;
+                            }
+
+                            return PdfPageLayout(
+                              pageLayouts: pageLayouts,
+                              documentSize: Size(width, top),
+                            );
+                          },
+                          viewerOverlayBuilder: (_, __, ___) => [
+                            Positioned(
+                              left: 0,
+                              height: _pdfViewerController.documentSize.height,
+                              width: _tapOutSideZoneWidth,
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.translucent,
+                                onTap: _closeView,
+                                child: const IgnorePointer(
+                                  child: SizedBox.expand(),
+                                ),
+                              ),
                             ),
-                          ),
-                          Positioned.fill(
-                            right: _scrollbarWidth,
-                            child: GestureDetector(
-                              behavior: HitTestBehavior.translucent,
-                              onTapDown: (details) {
-                                final pageWidth = _pdfViewerController
-                                  .layout
-                                  .pageLayouts
-                                  .firstOrNull
-                                  ?.width;
-                                if (pageWidth == null) return;
-
-                                final screenWidth = MediaQuery.sizeOf(context).width;
-                                final pageMargin = _pdfViewerController.params.margin;
-
-                                if (details.localPosition.dx > pageWidth - pageMargin
-                                  && details.localPosition.dx < screenWidth - pageWidth + pageMargin
-                                ) {
-                                  return;
-                                }
-
-                                _closeView();
-                              },
+                            Positioned(
+                              right: _scrollbarWidth,
+                              height: _pdfViewerController.documentSize.height,
+                              width: _tapOutSideZoneWidth - _scrollbarWidth,
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.translucent,
+                                onTap: _closeView,
+                                child: const IgnorePointer(
+                                  child: SizedBox.expand(),
+                                ),
+                              ),
                             ),
-                          ),
-                        ],
+                            PdfViewerScrollThumb(
+                              controller: _pdfViewerController,
+                              orientation: ScrollbarOrientation.right,
+                              thumbSize: const Size(_scrollbarWidth, 100),
+                              thumbBuilder: (_, __, ___, ____) => const ColoredBox(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
+                        ),
                       );
                     } else if (viewState is DownloadingAttachmentForWeb) {
                       return CircularPercentIndicator(
@@ -312,5 +313,16 @@ class _PDFViewerState extends State<PDFViewer> {
     if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
       _closeView();
     }
+  }
+
+  double get _tapOutSideZoneWidth {
+    final documentWidth = _pdfViewerController.documentSize.width
+      - _pdfViewerController.params.margin * 2;
+    final documentRenderWidth = documentWidth * _pdfViewerController.currentZoom;
+    final viewSizeWidth = _pdfViewerController.viewSize.width;
+
+    return viewSizeWidth > documentRenderWidth
+      ?(viewSizeWidth - documentRenderWidth) / 2
+      : 0;
   }
 }
