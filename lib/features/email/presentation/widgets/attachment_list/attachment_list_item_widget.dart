@@ -70,6 +70,7 @@ class AttachmentListItemWidget extends StatelessWidget {
                             maxLines: 1,
                             overflowWidget: const TextOverflowWidget(
                               position: TextOverflowPosition.middle,
+                              clearType: TextOverflowClearType.clipRect,
                               child: Text(
                                 "...",
                                 style: AttachmentListItemWidgetStyle.dotsLabelTextStyle,
