@@ -95,6 +95,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
+import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
@@ -177,6 +178,7 @@ const fallbackGenerators = {
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<GetQuotasInteractor>(),
   MockSpec<ToastManager>(),
+  MockSpec<TwakeAppManager>(),
   MockSpec<GetIdentityCacheOnWebInteractor>(),
 ])
 void main() {
@@ -224,6 +226,7 @@ void main() {
   final deleteAuthorityOidcInteractor = MockDeleteAuthorityOidcInteractor();
   final appToast = MockAppToast();
   final toastManager = MockToastManager();
+  final mockTwakeAppManager = MockTwakeAppManager();
   final imagePaths = ImagePaths();
   final responsiveUtils = MockResponsiveUtils();
   final uuid = MockUuid();
@@ -299,6 +302,7 @@ void main() {
       Get.put<DeleteAuthorityOidcInteractor>(deleteAuthorityOidcInteractor);
       Get.put<AppToast>(appToast);
       Get.put<ToastManager>(toastManager);
+      Get.put<TwakeAppManager>(mockTwakeAppManager);
       Get.put<ImagePaths>(imagePaths);
       Get.put<ResponsiveUtils>(responsiveUtils);
       Get.put<Uuid>(uuid);

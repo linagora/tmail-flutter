@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-12-09T13:59:58.460897",
+  "@@last_modified": "2024-12-12T15:50:46.911821",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2930,12 +2930,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "errorWhileFetchingSubaddress": "Error while fetching the subaddress",
-  "@errorWhileFetchingSubaddress": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "connectedToTheInternet": "Connected to the internet",
   "@connectedToTheInternet": {
     "type": "text",
@@ -4038,12 +4032,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "dialogMessageSessionHasExpired": "The current session has expired. Please reconnect to the server",
-  "@dialogMessageSessionHasExpired": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "sMimeGoodSignatureMessage": "The authenticity of this message had been verified with SMime signature.",
   "@sMimeGoodSignatureMessage": {
     "type": "text",
@@ -4202,6 +4190,18 @@
   },
   "getHelpOrReportABug": "Get help or report a bug",
   "@getHelpOrReportABug": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "Your session expired. We need to take you back to the login page in order to refresh it. You might want to save the email you are currently editing before we do so.",
+  "@messageWarningDialogWhenExpiredOIDCTokenAndReconnection": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveAndRefresh": "Save & refresh",
+  "@saveAndRefresh": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
