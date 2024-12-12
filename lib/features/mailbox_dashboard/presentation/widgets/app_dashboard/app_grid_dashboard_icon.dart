@@ -2,60 +2,74 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
-import 'package:get/get.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/app_linagora_ecosystem.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_dashboard/app_grid_dashboard_overlay.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-class AppGridDashboardIcon extends StatelessWidget {
+class AppGridDashboardIcon extends StatefulWidget {
 
   final ImagePaths imagePaths;
-  final AppGridDashboardController appGridController;
-  final VoidCallback? onShowAppDashboardAction;
+  final List<AppLinagoraEcosystem> linagoraApps;
 
   const AppGridDashboardIcon({
     super.key,
     required this.imagePaths,
-    required this.appGridController,
-    this.onShowAppDashboardAction,
+    required this.linagoraApps,
   });
 
   @override
+  State<AppGridDashboardIcon> createState() => _AppGridDashboardIconState();
+}
+
+class _AppGridDashboardIconState extends State<AppGridDashboardIcon> {
+
+  final ValueNotifier<bool> _isExpandedNotifier = ValueNotifier<bool>(false);
+
+  @override
+  void dispose() {
+    _isExpandedNotifier.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Obx(() {
-      final isAppGridOpen = appGridController.isAppGridDashboardOverlayOpen.value;
-      return PortalTarget(
-        visible: isAppGridOpen,
-        portalFollower: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: appGridController.toggleAppGridDashboard
-        ),
-        child: PortalTarget(
-          anchor: Aligned(
-            follower: AppUtils.isDirectionRTL(context)
-              ? Alignment.topLeft
-              : Alignment.topRight,
-            target: AppUtils.isDirectionRTL(context)
-              ? Alignment.bottomLeft
-              : Alignment.bottomRight
+    return ValueListenableBuilder(
+      valueListenable: _isExpandedNotifier,
+      builder: (context, isExpanded, child) {
+        return PortalTarget(
+          visible: isExpanded,
+          portalFollower: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: _toggleAppGridDashboard,
           ),
-          portalFollower: Obx(() {
-            final listApps = appGridController.linagoraApplications.value;
-            if (listApps?.apps.isNotEmpty == true) {
-              return AppDashboardOverlay(listApps!);
-            }
-            return const SizedBox.shrink();
-          }),
-          visible: isAppGridOpen,
-          child: TMailButtonWidget.fromIcon(
-            icon: imagePaths.icAppDashboard,
-            backgroundColor: Colors.transparent,
-            iconSize: 30,
-            padding: const EdgeInsets.all(6),
-            onTapActionCallback: onShowAppDashboardAction,
+          child: PortalTarget(
+            anchor: Aligned(
+              follower: AppUtils.isDirectionRTL(context)
+                ? Alignment.topLeft
+                : Alignment.topRight,
+              target: AppUtils.isDirectionRTL(context)
+                ? Alignment.bottomLeft
+                : Alignment.bottomRight,
+            ),
+            portalFollower: AppDashboardOverlay(
+              listLinagoraApp: widget.linagoraApps,
+              imagePaths: widget.imagePaths,
+            ),
+            visible: isExpanded,
+            child: TMailButtonWidget.fromIcon(
+              icon: widget.imagePaths.icAppDashboard,
+              backgroundColor: Colors.transparent,
+              iconSize: 30,
+              padding: const EdgeInsets.all(6),
+              onTapActionCallback: _toggleAppGridDashboard,
+            ),
           ),
-        )
-      );
-    });
+        );
+      },
+    );
+  }
+
+  void _toggleAppGridDashboard() {
+    _isExpandedNotifier.value = !_isExpandedNotifier.value;
   }
 }

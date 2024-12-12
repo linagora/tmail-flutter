@@ -1,38 +1,48 @@
-import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
-import 'package:dartz/dartz.dart';
 import 'package:get/get_rx/get_rx.dart';
-import 'package:model/mailbox/expand_mode.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/app_dashboard/linagora_applications.dart';
+import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/app_linagora_ecosystem.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_app_dashboard_configuration_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_app_grid_linagora_ecosystem_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_app_dashboard_configuration_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_app_grid_linagra_ecosystem_interactor.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
-class AppGridDashboardController {
-  final isAppGridDashboardOverlayOpen = false.obs;
-  final appDashboardExpandMode = ExpandMode.COLLAPSE.obs;
-  final linagoraApplications = Rxn<LinagoraApplications>();
+class AppGridDashboardController extends BaseController {
+  final listLinagoraApp = RxList<AppLinagoraEcosystem>();
 
   final GetAppDashboardConfigurationInteractor _getAppDashboardConfigurationInteractor;
+  final GetAppGridLinagraEcosystemInteractor _getAppGridLinagraEcosystemInteractor;
 
-  AppGridDashboardController(this._getAppDashboardConfigurationInteractor);
+  AppGridDashboardController(
+    this._getAppDashboardConfigurationInteractor,
+    this._getAppGridLinagraEcosystemInteractor,
+  );
 
-  void toggleAppGridDashboard() {
-    isAppGridDashboardOverlayOpen.toggle();
-    final newExpandMode = appDashboardExpandMode.value == ExpandMode.EXPAND
-        ? ExpandMode.COLLAPSE
-        : ExpandMode.EXPAND;
-    appDashboardExpandMode.value = newExpandMode;
+  @override
+  void handleSuccessViewState(Success success) {
+    if (success is GetAppDashboardConfigurationSuccess) {
+      syncLinagoraApps(success.listLinagoraApp);
+    } else if (success is GetAppGridLinagraEcosystemSuccess) {
+      syncLinagoraApps(success.listAppLinagoraEcosystem);
+    } else {
+      super.handleSuccessViewState(success);
+    }
   }
 
-  Stream<Either<Failure, Success>> showDashboardAction() {
-    return _getAppDashboardConfigurationInteractor.execute(AppConfig.appDashboardConfigurationPath);
+  void loadAppDashboardConfiguration() {
+    consumeState(_getAppDashboardConfigurationInteractor.execute(
+      AppConfig.appDashboardConfigurationPath,
+    ));
   }
 
-  void handleShowAppDashboard(LinagoraApplications linagoraApps) {
-    log('AppGridDashboardController::handleShowAppDashboard(): $linagoraApps');
-    isAppGridDashboardOverlayOpen.value = true;
-    appDashboardExpandMode.value = ExpandMode.EXPAND;
-    linagoraApplications.value = linagoraApps;
+  void loadAppGridLinagraEcosystem(String baseUrl) {
+    consumeState(_getAppGridLinagraEcosystemInteractor.execute(baseUrl));
+  }
+
+  void syncLinagoraApps(List<AppLinagoraEcosystem> linagoraApps) {
+    log('AppGridDashboardController::setListLinagoraApp:linagoraApps = $linagoraApps');
+    listLinagoraApp.value = linagoraApps;
   }
 }
