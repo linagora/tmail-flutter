@@ -37,6 +37,7 @@ typedef OnFocusEmailAddressChangeAction = void Function(PrefixEmailAddress prefi
 typedef OnRemoveDraggableEmailAddressAction = void Function(DraggableEmailAddress draggableEmailAddress);
 typedef OnDeleteTagAction = void Function(EmailAddress emailAddress);
 typedef OnEnableAllRecipientsInputAction = void Function(bool isEnabled);
+typedef OnEditRecipientAction = void Function(PrefixEmailAddress prefix, EmailAddress emailAddress);
 
 class RecipientComposerWidget extends StatefulWidget {
 
@@ -68,6 +69,7 @@ class RecipientComposerWidget extends StatefulWidget {
   final OnEnableAllRecipientsInputAction? onEnableAllRecipientsInputAction;
   final bool isTestingForWeb;
   final int minInputLengthAutocomplete;
+  final OnEditRecipientAction? onEditRecipientAction;
 
   const RecipientComposerWidget({
     super.key,
@@ -99,6 +101,7 @@ class RecipientComposerWidget extends StatefulWidget {
     this.onRemoveDraggableEmailAddressAction,
     this.onEnableAllRecipientsInputAction,
     this.focusNodeKeyboard,
+    this.onEditRecipientAction,
   });
 
   @override
@@ -213,6 +216,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                               maxWidth: widget.maxWidth,
                               onDeleteTagAction: (emailAddress) => _handleDeleteTagAction.call(emailAddress, stateSetter),
                               onShowFullAction: widget.onShowFullListEmailAddressAction,
+                              onEditRecipientAction: widget.onEditRecipientAction,
                             );
                           },
                           onTagChanged: (value) => _handleOnTagChangeAction.call(value, stateSetter),
@@ -297,6 +301,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                           maxWidth: widget.maxWidth,
                           onDeleteTagAction: (emailAddress) => _handleDeleteTagAction.call(emailAddress, stateSetter),
                           onShowFullAction: widget.onShowFullListEmailAddressAction,
+                          onEditRecipientAction: widget.onEditRecipientAction,
                         );
                       },
                       onTagChanged: (value) => _handleOnTagChangeAction.call(value, stateSetter),
