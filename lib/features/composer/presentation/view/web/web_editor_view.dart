@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_edi
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class WebEditorView extends StatelessWidget with EditorViewMixin {
@@ -152,7 +153,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
         return contentViewState!.fold(
           (failure) {
             final emailContentQuoted = getEmailContentQuotedAsHtml(
-              context: context,
+              locale: Localizations.localeOf(context),
+              appLocalizations: AppLocalizations.of(context),
               emailContent: '',
               emailActionType: arguments!.emailActionType,
               presentationEmail: arguments!.presentationEmail!
@@ -181,7 +183,8 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
               return const CupertinoLoadingWidget(padding: EdgeInsets.all(16.0));
             } else {
               final emailContentQuoted = getEmailContentQuotedAsHtml(
-                context: context,
+                locale: Localizations.localeOf(context),
+                appLocalizations: AppLocalizations.of(context),
                 emailContent: success is TransformHtmlEmailContentSuccess
                   ? success.htmlContent
                   : '',
