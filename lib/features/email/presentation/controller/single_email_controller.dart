@@ -6,6 +6,7 @@ import 'package:better_open_file/better_open_file.dart' as open_file;
 import 'package:core/core.dart';
 import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/text/new_line_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -1477,8 +1478,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     consumeState(_parseCalendarEventInteractor!.execute(
       accountId,
       blobIds,
-      TransformConfiguration.fromTextTransformers([
-        const SanitizeAutolinkHtmlTransformers(),
+      TransformConfiguration.fromTextTransformers(const [
+        SanitizeAutolinkHtmlTransformers(),
+        StandardizeHtmlSanitizingTransformers(),
         NewLineTransformer(),
       ])
     ));
