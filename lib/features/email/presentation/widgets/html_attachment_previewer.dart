@@ -3,7 +3,6 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/top_bar_attachment_viewer.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -33,7 +32,7 @@ class HtmlAttachmentPreviewer extends StatelessWidget {
       children: [
         TopBarAttachmentViewer(
           title: title,
-          closeAction: Get.back,
+          closeAction: popBack,
           downloadAction: downloadAttachmentClicked,
         ),
         Expanded(
@@ -41,7 +40,7 @@ class HtmlAttachmentPreviewer extends StatelessWidget {
             builder: (context, constraints) {
               return SingleChildScrollView(
                 child: GestureDetector(
-                  onTap: Get.back,
+                  onTap: popBack,
                   child: PointerInterceptor(
                     child: ColoredBox(
                       color: Colors.transparent,
