@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/extensions/email_address_extension.dart';
@@ -26,6 +27,18 @@ extension SetEmailAddressExtension on Set<EmailAddress>? {
     final listEmail = emailAddressToListString(expandMode: expandMode, limitAddress: limitAddress, isFullEmailAddress: isFullEmailAddress);
     return listEmail.isNotEmpty ? listEmail.join(', ') : '';
   }
+
+  String toEscapeHtmlString(String separator) {
+    if (this?.isNotEmpty != true) return '';
+
+    final listEmail = this
+      !.map((emailAddress) => emailAddress.asFullStringWithLtGtCharacter().escapeLtGtHtmlString())
+      .toList();
+
+    return listEmail.isNotEmpty ? listEmail.join(separator) : '';
+  }
+
+  String toEscapeHtmlStringUseCommaSeparator() => toEscapeHtmlString(', ');
 
   int numberEmailAddress() => this != null ? this!.length : 0;
 
