@@ -1,3 +1,7 @@
+## [0.14.3] - 2024-12-16
+### Fixed
+- Disable Spell check API 
+
 ## [0.14.2] - 2024-11-20
 ### Added
 - #3010 Highlight search result with SearchSnippet method
