@@ -1,4 +1,6 @@
 
+import 'dart:convert';
+
 extension HtmlExtension on String {
 
   static const String editorStartTags = '<div><br><br></div>';
@@ -40,4 +42,19 @@ extension HtmlExtension on String {
     'cite',
     attribute: 'style="text-align: left;display: block;"'
   );
+}
+
+extension HtmlNullableExtension on String? {
+  String escapeHtmlString({HtmlEscapeMode escapeMode = HtmlEscapeMode.unknown}) {
+    try {
+      if (this?.trim().isNotEmpty != true) return '';
+
+      return HtmlEscape(escapeMode).convert(this!);
+    } catch (e) {
+      return '';
+    }
+  }
+
+  String escapeLtGtHtmlString() =>
+      escapeHtmlString(escapeMode: HtmlEscapeMode.element);
 }

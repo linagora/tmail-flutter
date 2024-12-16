@@ -27,6 +27,17 @@ extension EmailAddressExtension on EmailAddress {
     return '';
   }
 
+  String asFullStringWithLtGtCharacter() {
+    if (displayName.isNotEmpty && emailAddress.isNotEmpty) {
+      return '${displayName.capitalizeFirstEach} <$emailAddress>';
+    } else if (displayName.isNotEmpty) {
+      return displayName.capitalizeFirstEach;
+    } else if (emailAddress.isNotEmpty) {
+      return '<$emailAddress>';
+    }
+    return '';
+  }
+
   String get emailAddress => email ?? '';
 
   String get displayName => name ?? '';

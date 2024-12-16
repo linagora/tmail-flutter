@@ -53,62 +53,63 @@ extension EmailActionTypeExtension on EmailActionType {
   }
 
   String? getHeaderEmailQuoted({
-    required BuildContext context,
+    required Locale locale,
+    required AppLocalizations appLocalizations,
     required PresentationEmail presentationEmail
   }) {
-    final locale = Localizations.localeOf(context).toLanguageTag();
+    final languageTag = locale.toLanguageTag();
     switch(this) {
       case EmailActionType.reply:
       case EmailActionType.replyAll:
         final receivedAt = presentationEmail.receivedAt;
-        final emailAddress = presentationEmail.from.listEmailAddressToString(isFullEmailAddress: true);
-        return AppLocalizations.of(context).header_email_quoted(
-          receivedAt.formatDateToLocal(pattern: 'MMM d, y h:mm a', locale: locale),
+        final emailAddress = presentationEmail.from.toEscapeHtmlStringUseCommaSeparator();
+        return appLocalizations.header_email_quoted(
+          receivedAt.formatDateToLocal(pattern: 'MMM d, y h:mm a', locale: languageTag),
           emailAddress
         );
       case EmailActionType.forward:
-        var headerQuoted = '------- ${AppLocalizations.of(context).forwarded_message} -------'.addNewLineTag();
+        var headerQuoted = '------- ${appLocalizations.forwarded_message} -------'.addNewLineTag();
 
-        final subject = presentationEmail.subject ?? '';
+        final subject = presentationEmail.subject?.escapeLtGtHtmlString() ?? '';
         final receivedAt = presentationEmail.receivedAt;
-        final fromEmailAddress = presentationEmail.from.listEmailAddressToString(isFullEmailAddress: true);
-        final toEmailAddress = presentationEmail.to.listEmailAddressToString(isFullEmailAddress: true);
-        final ccEmailAddress = presentationEmail.cc.listEmailAddressToString(isFullEmailAddress: true);
-        final bccEmailAddress = presentationEmail.bcc.listEmailAddressToString(isFullEmailAddress: true);
+        final fromEmailAddress = presentationEmail.from.toEscapeHtmlStringUseCommaSeparator();
+        final toEmailAddress = presentationEmail.to.toEscapeHtmlStringUseCommaSeparator();
+        final ccEmailAddress = presentationEmail.cc.toEscapeHtmlStringUseCommaSeparator();
+        final bccEmailAddress = presentationEmail.bcc.toEscapeHtmlStringUseCommaSeparator();
 
         if (subject.isNotEmpty) {
           headerQuoted = headerQuoted
-            .append('${AppLocalizations.of(context).subject_email}: ')
+            .append('${appLocalizations.subject_email}: ')
             .append(subject)
             .addNewLineTag();
         }
         if (receivedAt != null) {
           headerQuoted = headerQuoted
-            .append('${AppLocalizations.of(context).date}: ')
-            .append(receivedAt.formatDateToLocal(pattern: 'MMM d, y h:mm a', locale: locale))
+            .append('${appLocalizations.date}: ')
+            .append(receivedAt.formatDateToLocal(pattern: 'MMM d, y h:mm a', locale: languageTag))
             .addNewLineTag();
         }
         if (fromEmailAddress.isNotEmpty) {
           headerQuoted = headerQuoted
-            .append('${AppLocalizations.of(context).from_email_address_prefix}: ')
+            .append('${appLocalizations.from_email_address_prefix}: ')
             .append(fromEmailAddress)
             .addNewLineTag();
         }
         if (toEmailAddress.isNotEmpty) {
           headerQuoted = headerQuoted
-            .append('${AppLocalizations.of(context).to_email_address_prefix}: ')
+            .append('${appLocalizations.to_email_address_prefix}: ')
             .append(toEmailAddress)
             .addNewLineTag();
         }
         if (ccEmailAddress.isNotEmpty) {
           headerQuoted = headerQuoted
-            .append('${AppLocalizations.of(context).cc_email_address_prefix}: ')
+            .append('${appLocalizations.cc_email_address_prefix}: ')
             .append(ccEmailAddress)
             .addNewLineTag();
         }
         if (bccEmailAddress.isNotEmpty) {
           headerQuoted = headerQuoted
-            .append('${AppLocalizations.of(context).bcc_email_address_prefix}: ')
+            .append('${appLocalizations.bcc_email_address_prefix}: ')
             .append(bccEmailAddress)
             .addNewLineTag();
         }
