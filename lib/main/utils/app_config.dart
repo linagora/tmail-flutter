@@ -68,4 +68,6 @@ class AppConfig {
   static String get _platformEnv => dotenv.get('PLATFORM', fallback: 'other');
 
   static bool get isSaasPlatForm => _platformEnv.toLowerCase() == saasPlatform;
+
+  static bool get isWebSocketEchoPingEnabled => dotenv.get('WS_ECHO_PING', fallback: 'false') == 'true';
 }
