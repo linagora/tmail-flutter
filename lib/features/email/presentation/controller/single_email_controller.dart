@@ -522,7 +522,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         _parseCalendarEventAction(
           accountId: mailboxDashBoardController.accountId.value!,
           blobIds: success.attachments?.calendarEventBlobIds ?? {},
-          emailContents: success.htmlEmailContent
         );
       } else {
         emailContents.value = success.htmlEmailContent;
@@ -567,7 +566,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         _parseCalendarEventAction(
           accountId: mailboxDashBoardController.accountId.value!,
           blobIds: success.attachments?.calendarEventBlobIds ?? {},
-          emailContents: success.htmlEmailContent
         );
       } else {
         emailContents.value = success.htmlEmailContent;
@@ -1469,10 +1467,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       CapabilityIdentifier.jamesCalendarEvent.isSupported(session, accountId);
   }
 
+  @visibleForTesting
+  parseCalendarEventAction({
+    required AccountId accountId,
+    required Set<Id> blobIds,
+  }) => _parseCalendarEventAction(accountId: accountId, blobIds: blobIds);
+
   void _parseCalendarEventAction({
     required AccountId accountId,
     required Set<Id> blobIds,
-    required String emailContents
   }) {
     log("SingleEmailController::_parseCalendarEventAction:blobIds: $blobIds");
     consumeState(_parseCalendarEventInteractor!.execute(
