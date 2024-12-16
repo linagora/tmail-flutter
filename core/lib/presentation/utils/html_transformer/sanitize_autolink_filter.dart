@@ -7,6 +7,7 @@ import 'package:linkify/linkify.dart';
 class SanitizeAutolinkFilter {
 
   final HtmlEscape htmlEscape;
+  final bool escapeHtml;
   final _linkifyOption = const LinkifyOptions(
     humanize: true,
     looseUrl: true,
@@ -18,7 +19,7 @@ class SanitizeAutolinkFilter {
     const UrlLinkifier()
   ];
 
-  SanitizeAutolinkFilter(this.htmlEscape);
+  SanitizeAutolinkFilter(this.htmlEscape, {this.escapeHtml = true});
 
   String process(String inputText) {
     try {
@@ -36,7 +37,7 @@ class SanitizeAutolinkFilter {
 
       for (var element in elements) {
         if (element is TextElement) {
-          final escapedHtml = htmlEscape.convert(element.text);
+          final escapedHtml = escapeHtml ? htmlEscape.convert(element.text) : element.text;
           htmlTextBuffer.write(escapedHtml);
         } else if (element is EmailElement) {
           final emailLinkTag = _buildEmailLinkTag(

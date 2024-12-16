@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_accept_response.dart';
@@ -23,4 +24,8 @@ abstract class CalendarEventRepository {
     AccountId accountId,
     Set<Id> blobIds,
     String? language);
+
+  Future<List<BlobCalendarEvent>> transformCalendarEventDescription(
+    List<BlobCalendarEvent> blobCalendarEvents,
+    TransformConfiguration transformConfiguration);
 }

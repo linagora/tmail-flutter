@@ -5,10 +5,21 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:date_format/date_format.dart' as date_format;
 import 'package:flutter/material.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee_participation_status.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_duration.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_event_status.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_extension_fields.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_free_busy_status.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_priority.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_privacy.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_sequence.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_id.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_method.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/recurrence_rule/recurrence_rule.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
@@ -364,4 +375,52 @@ extension CalendarEventExtension on CalendarEvent {
     method == EventMethod.request ||
     method == EventMethod.add ||
     method == EventMethod.counter;
+
+  CalendarEvent copyWith({
+    EventId? eventId,
+    String? title,
+    String? description,
+    DateTime? startDate,
+    DateTime? endDate,
+    UTCDate? startUtcDate,
+    UTCDate? endUtcDate,
+    CalendarDuration? duration,
+    String? timeZone,
+    String? location,
+    EventMethod? method,
+    CalendarSequence? sequence,
+    CalendarPrivacy? privacy,
+    CalendarPriority? priority,
+    CalendarFreeBusyStatus? freeBusyStatus,
+    CalendarEventStatus? status,
+    CalendarOrganizer? organizer,
+    List<CalendarAttendee>? participants,
+    CalendarExtensionFields? extensionFields,
+    List<RecurrenceRule>? recurrenceRules,
+    List<RecurrenceRule>? excludedCalendarEvents,
+  }) {
+    return CalendarEvent(
+      eventId: eventId ?? this.eventId,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      startUtcDate: startUtcDate ?? this.startUtcDate,
+      endUtcDate: endUtcDate ?? this.endUtcDate,
+      duration: duration ?? this.duration,
+      timeZone: timeZone ?? this.timeZone,
+      location: location ?? this.location,
+      method: method ?? this.method,
+      sequence: sequence ?? this.sequence,
+      privacy: privacy ?? this.privacy,
+      priority: priority ?? this.priority,
+      freeBusyStatus: freeBusyStatus ?? this.freeBusyStatus,
+      status: status ?? this.status,
+      organizer: organizer ?? this.organizer,
+      participants: participants ?? this.participants,
+      extensionFields: extensionFields ?? this.extensionFields,
+      recurrenceRules: recurrenceRules ?? this.recurrenceRules,
+      excludedCalendarEvents: excludedCalendarEvents ?? this.excludedCalendarEvents,
+    );
+  }
 }
