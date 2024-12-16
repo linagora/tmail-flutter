@@ -9,17 +9,25 @@ import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_reject_
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/calendar_event_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/repository/calendar_event_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/calendar_event_exceptions.dart';
 
 import 'calendar_event_repository_impl_test.mocks.dart';
 
-@GenerateNiceMocks([MockSpec<CalendarEventDataSource>()])
+@GenerateNiceMocks([
+  MockSpec<CalendarEventDataSource>(),
+  MockSpec<HtmlDataSource>(),
+])
 void main() {
   final calendarEventNetworkDataSource = MockCalendarEventDataSource();
+  final htmlDatasource = MockHtmlDataSource();
   final calendarEventDataSource = {
     DataSourceType.network: calendarEventNetworkDataSource};
-  final calendarEventRepository = CalendarEventRepositoryImpl(calendarEventDataSource);
+  final calendarEventRepository = CalendarEventRepositoryImpl(
+    calendarEventDataSource,
+    htmlDatasource,
+  );
   final accountId = AccountId(Id('123'));
   final blobId = Id('blobId');
   const language = 'en';
