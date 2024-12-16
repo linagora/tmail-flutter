@@ -4,6 +4,9 @@ import 'dart:typed_data';
 
 import 'package:better_open_file/better_open_file.dart' as open_file;
 import 'package:core/core.dart';
+import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_unescape_html_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/text/new_line_transformer.dart';
+import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -519,7 +522,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         _parseCalendarEventAction(
           accountId: mailboxDashBoardController.accountId.value!,
           blobIds: success.attachments?.calendarEventBlobIds ?? {},
-          emailContents: success.htmlEmailContent
         );
       } else {
         emailContents.value = success.htmlEmailContent;
@@ -564,7 +566,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         _parseCalendarEventAction(
           accountId: mailboxDashBoardController.accountId.value!,
           blobIds: success.attachments?.calendarEventBlobIds ?? {},
-          emailContents: success.htmlEmailContent
         );
       } else {
         emailContents.value = success.htmlEmailContent;
@@ -1466,13 +1467,26 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       CapabilityIdentifier.jamesCalendarEvent.isSupported(session, accountId);
   }
 
+  @visibleForTesting
+  parseCalendarEventAction({
+    required AccountId accountId,
+    required Set<Id> blobIds,
+  }) => _parseCalendarEventAction(accountId: accountId, blobIds: blobIds);
+
   void _parseCalendarEventAction({
     required AccountId accountId,
     required Set<Id> blobIds,
-    required String emailContents
   }) {
     log("SingleEmailController::_parseCalendarEventAction:blobIds: $blobIds");
-    consumeState(_parseCalendarEventInteractor!.execute(accountId, blobIds, emailContents));
+    consumeState(_parseCalendarEventInteractor!.execute(
+      accountId,
+      blobIds,
+      TransformConfiguration.fromTextTransformers(const [
+        SanitizeAutolinkUnescapeHtmlTransformer(),
+        StandardizeHtmlSanitizingTransformers(),
+        NewLineTransformer(),
+      ])
+    ));
   }
 
   void _handleParseCalendarEventSuccess(ParseCalendarEventSuccess success) {
