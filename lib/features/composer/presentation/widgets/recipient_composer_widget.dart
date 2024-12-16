@@ -222,7 +222,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                             return RecipientSuggestionItemWidget(
                               imagePaths: widget.imagePaths,
                               suggestionState: suggestionEmailAddress.state,
-                              emailAddress: MailAddress.validateAddress(suggestionEmailAddress.emailAddress.emailAddress).asEmailAddress(),
+                              emailAddress: _subAdressingValidatedEmailAddress(suggestionEmailAddress.emailAddress),
                               suggestionValid: suggestionValid,
                               highlight: highlight,
                               onSelectedAction: (emailAddress) {
@@ -306,7 +306,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                         return RecipientSuggestionItemWidget(
                           imagePaths: widget.imagePaths,
                           suggestionState: suggestionEmailAddress.state,
-                          emailAddress: MailAddress.validateAddress(suggestionEmailAddress.emailAddress.emailAddress).asEmailAddress(),
+                          emailAddress: _subAdressingValidatedEmailAddress(suggestionEmailAddress.emailAddress),
                           suggestionValid: suggestionValid,
                           highlight: highlight,
                           onSelectedAction: (emailAddress) {
@@ -506,38 +506,51 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
   void _handleSelectOptionAction(
     SuggestionEmailAddress suggestionEmailAddress,
     StateSetter stateSetter
-  ) {
-    MailAddress mailAddress = MailAddress.validateAddress(suggestionEmailAddress.emailAddress.emailAddress);
-    if (!_isDuplicatedRecipient(mailAddress.asEncodedString())) {
-      stateSetter(() => _currentListEmailAddress.add(mailAddress.asEmailAddress()));
-      _updateListEmailAddressAction();
-    }
-  }
+  ) => _onEmailAddressReceived(
+    suggestionEmailAddress.emailAddress.emailAddress,
+    stateSetter);
 
   void _handleSubmitTagAction(
     String value,
     StateSetter stateSetter
-  ) {
-    MailAddress mailAddress = MailAddress.validateAddress(value.trim());
-    if (!_isDuplicatedRecipient(mailAddress.asEncodedString())) {
-      stateSetter(() => _currentListEmailAddress.add(mailAddress.asEmailAddress()));
-      _updateListEmailAddressAction();
-    }
-  }
+  ) => _onEmailAddressReceived(value, stateSetter);
 
   void _handleOnTagChangeAction(
     String value,
     StateSetter stateSetter
   ) {
-    MailAddress mailAddress = MailAddress.validateAddress(value.trim());
-    if (!_isDuplicatedRecipient(mailAddress.asEncodedString())) {
-      stateSetter(() => _currentListEmailAddress.add(mailAddress.asEmailAddress()));
-      _updateListEmailAddressAction();
-    }
+    _onEmailAddressReceived(value, stateSetter);
     _gapBetweenTagChangedAndFindSuggestion = Timer(
       const Duration(seconds: 1),
       _handleGapBetweenTagChangedAndFindSuggestion
     );
+  }
+
+  void _onEmailAddressReceived(String email, StateSetter stateSetter) {
+    try {
+      final mailAddress = MailAddress.validateAddress(email.trim());
+      if (!_isDuplicatedRecipient(mailAddress.asEncodedString())) {
+        stateSetter(() => _currentListEmailAddress.add(mailAddress.asEmailAddress()));
+        _updateListEmailAddressAction();
+      }
+    } catch (e) {
+      logError('_RecipientComposerWidgetState::_onEmailAddressReceived:Exception = $e');
+      final emailAddress = EmailAddress(null, email);
+      if (!_isDuplicatedRecipient(email)) {
+        stateSetter(() => _currentListEmailAddress.add(emailAddress));
+        _updateListEmailAddressAction();
+      }
+    }
+  }
+
+  EmailAddress _subAdressingValidatedEmailAddress(EmailAddress emailAddress) {
+    try {
+      final mailAddress = MailAddress.validateAddress(emailAddress.emailAddress);
+      return mailAddress.asEmailAddress();
+    } catch (e) {
+      logError('_RecipientComposerWidgetState::_subAdressingValidated:Exception = $e');
+      return emailAddress;
+    }
   }
 
   void _handleAcceptDraggableEmailAddressAction(
