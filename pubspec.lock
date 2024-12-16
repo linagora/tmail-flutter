@@ -1289,7 +1289,7 @@ packages:
     source: hosted
     version: "6.6.1"
   languagetool_textfield:
-    dependency: "direct main"
+    dependency: transitive
     description:
       path: "."
       ref: twake-supported
