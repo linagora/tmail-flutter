@@ -1,16 +1,14 @@
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' hide HttpClient;
 
 import 'package:collection/collection.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
+import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:model/email/attachment.dart';
-import 'package:model/email/email_action_type.dart';
-import 'package:model/extensions/session_extension.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:model/extensions/presentation_mailbox_extension.dart';
-import 'package:model/upload/file_info.dart';
+import 'package:jmap_dart_client/jmap/mail/email/set/set_email_method.dart';
+import 'package:model/model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
@@ -22,11 +20,15 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_ident
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
+import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 import '../models/provisioning_email.dart';
 
 mixin ScenarioUtilsMixin {
-  Future<void> provisionEmail(List<ProvisioningEmail> provisioningEmails) async {
+  Future<void> provisionEmail(
+    List<ProvisioningEmail> provisioningEmails, {
+    bool refreshEmailView = true,
+  }) async {
     ComposerBindings().dependencies();
 
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
@@ -62,9 +64,72 @@ mixin ScenarioUtilsMixin {
     }));
 
     // Refresh view after provisioning emails
-    threadController.refreshAllEmail();
+    if (refreshEmailView) {
+      threadController.refreshAllEmail();
+    }
 
     ComposerBindings().dispose();
+  }
+
+  Future<void> simulateMarkEmailsAsReadWithSubjectsFromOutsideCurrentClient({
+    required List<String> subjects,
+    bool isRead = false,
+  }) async {
+    final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+    final emails = mailboxDashBoardController
+      .emailsInCurrentMailbox
+      .where((presentationEmail) => subjects.contains(
+        presentationEmail.subject
+      ))
+      .map((presentationEmail) => presentationEmail.toEmail())
+      .toList();
+    final session = mailboxDashBoardController.sessionCurrent;
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (session == null || accountId == null) return;
+
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addUpdates(emails.listEmailIds.generateMapUpdateObjectMarkAsRead(
+        isRead ? ReadActions.markAsRead : ReadActions.markAsUnread
+      ));
+    final requestBuilder = JmapRequestBuilder(
+      Get.find<HttpClient>(),
+      ProcessingInvocation(),
+    );
+    requestBuilder.invocation(setEmailMethod);
+    final capabilities = setEmailMethod
+      .requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+    await (requestBuilder..usings(capabilities)).build().execute();
+  }
+
+  Future<void> simulateMarkEmailsAsStarWithSubjectsFromOutsideCurrentClient({
+    required List<String> subjects,
+    bool isStar = false,
+  }) async {
+    final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+    final emails = mailboxDashBoardController
+      .emailsInCurrentMailbox
+      .where((presentationEmail) => subjects.contains(
+        presentationEmail.subject
+      ))
+      .map((presentationEmail) => presentationEmail.toEmail())
+      .toList();
+    final session = mailboxDashBoardController.sessionCurrent;
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (session == null || accountId == null) return;
+
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addUpdates(emails.listEmailIds.generateMapUpdateObjectMarkAsStar(
+        isStar ? MarkStarAction.markStar : MarkStarAction.unMarkStar
+      ));
+    final requestBuilder = JmapRequestBuilder(
+      Get.find<HttpClient>(),
+      ProcessingInvocation(),
+    );
+    requestBuilder.invocation(setEmailMethod);
+    final capabilities = setEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+    await (requestBuilder..usings(capabilities)).build().execute();
   }
 
   Future<File> preparingTxtFile(String content) async {
