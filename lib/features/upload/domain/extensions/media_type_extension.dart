@@ -25,4 +25,7 @@ extension MediaTypeExtension on MediaType {
 
   bool validatePDFIcon({required String? fileName}) => mimeType == 'application/pdf' ||
     (mimeType == 'application/octet-stream' && fileName?.endsWith('.pdf') == true);
+
+  bool validateHtmlMediaType({required String? fileName}) => mimeType == 'text/html' ||
+    (mimeType == 'application/octet-stream' && fileName?.endsWith('.html') == true);
 }

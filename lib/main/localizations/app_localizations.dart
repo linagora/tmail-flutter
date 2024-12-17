@@ -4416,4 +4416,10 @@ class AppLocalizations {
     );
   }
 
+  String get thisHtmlAttachmentCannotBePreviewed {
+    return Intl.message(
+      'This html attachment cannot be previewed',
+      name: 'thisHtmlAttachmentCannotBePreviewed',
+    );
+  }
 }

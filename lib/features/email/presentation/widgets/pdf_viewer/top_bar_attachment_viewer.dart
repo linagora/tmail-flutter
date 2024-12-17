@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class TopBarPDFViewer extends StatelessWidget {
-  final Attachment attachment;
+class TopBarAttachmentViewer extends StatelessWidget {
+  final String title;
   final VoidCallback? downloadAction;
   final VoidCallback? printAction;
   final VoidCallback? closeAction;
 
-  const TopBarPDFViewer({
+  const TopBarAttachmentViewer({
     super.key,
-    required this.attachment,
+    required this.title,
     this.downloadAction,
     this.printAction,
     this.closeAction,
@@ -40,7 +39,7 @@ class TopBarPDFViewer extends StatelessWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              attachment.generateFileName(),
+              title,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
                 color: Colors.white,
                 fontSize: 17,

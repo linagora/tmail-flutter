@@ -4,6 +4,8 @@ import 'dart:typed_data';
 
 import 'package:better_open_file/better_open_file.dart' as open_file;
 import 'package:core/core.dart';
+import 'package:core/presentation/utils/html_transformer/dom/sanitize_hyper_link_tag_in_html_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -50,6 +52,7 @@ import 'package:tmail_ui_user/features/email/domain/state/download_attachment_fo
 import 'package:tmail_ui_user/features/email/domain/state/download_attachments_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_html_content_from_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
@@ -70,6 +73,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_html_content_from_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sender_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_event_attendance_status_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
@@ -88,6 +92,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_lis
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_dialog_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/html_attachment_previewer.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/pdf_viewer.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
@@ -134,6 +139,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final StoreOpenedEmailInteractor _storeOpenedEmailInteractor;
   final PrintEmailInteractor _printEmailInteractor;
   final StoreEventAttendanceStatusInteractor _storeEventAttendanceStatusInteractor;
+  final GetHtmlContentFromAttachmentInteractor _getHtmlContentFromAttachmentInteractor;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
@@ -181,6 +187,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._storeOpenedEmailInteractor,
     this._printEmailInteractor,
     this._storeEventAttendanceStatusInteractor,
+    this._getHtmlContentFromAttachmentInteractor,
   );
 
   @override
@@ -236,6 +243,19 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       calendarEventSuccess(success);
     } else if (success is StoreEventAttendanceStatusSuccess) {
       _showToastMessageEventAttendanceSuccess(success);
+    } else if (success is GetHtmlContentFromAttachmentSuccess) {
+      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
+      Get.dialog(HtmlAttachmentPreviewer(
+        title: success.htmlAttachmentTitle,
+        htmlContent: success.sanitizedHtmlContent,
+        mailToClicked: openMailToLink,
+        downloadAttachmentClicked: () {
+          downloadAttachmentForWeb(success.attachment);
+        },
+        responsiveUtils: responsiveUtils,
+      ));
+    } else if (success is GettingHtmlContentFromAttachment) {
+      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
     }
   }
 
@@ -259,6 +279,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else if (failure is CalendarEventReplyFailure
         || failure is StoreEventAttendanceStatusFailure) {
       _calendarEventFailure(failure);
+    } else if (failure is GetHtmlContentFromAttachmentFailure) {
+      _handleGetHtmlContentFromAttachmentFailure(failure);
     }
   }
 
@@ -1816,6 +1838,26 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     if (PlatformInfo.isWeb) {
       if (PlatformInfo.isCanvasKit && attachment.validatePDFIcon()) {
         previewPDFFileAction(context, attachment);
+      } else if (attachment.validateHtmlAttachment()) {
+        final attachmentEvaluation = evaluateAttachment(attachment);
+        if (!attachmentEvaluation.canDownloadAttachment) {
+          consumeState(Stream.value(Left(GetHtmlContentFromAttachmentFailure(
+            exception: null,
+            attachment: attachment,
+          ))));
+          return;
+        }
+
+        consumeState(_getHtmlContentFromAttachmentInteractor.execute(
+          attachmentEvaluation.accountId!,
+          attachment,
+          DownloadTaskId(attachmentEvaluation.blobId!.value),
+          attachmentEvaluation.downloadUrl!,
+          TransformConfiguration.create(
+            customDomTransformers: [SanitizeHyperLinkTagInHtmlTransformer()],
+            customTextTransformers: [const StandardizeHtmlSanitizingTransformers()],
+          ),
+        ));
       } else {
         downloadAttachmentForWeb(attachment);
       }
@@ -1824,6 +1866,36 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else {
       log('EmailView::_handleViewAttachmentAction: THE PLATFORM IS SUPPORTED');
     }
+  }
+
+  ({
+    bool canDownloadAttachment,
+    AccountId? accountId,
+    String? downloadUrl,
+    Id? blobId,
+  }) evaluateAttachment(
+    Attachment attachment,
+  ) {
+    final accountId = mailboxDashBoardController.accountId.value;
+    final downloadUrl = mailboxDashBoardController.sessionCurrent
+        ?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
+    final blobId = attachment.blobId;
+
+    if (accountId == null || downloadUrl == null || blobId == null) {
+      return (
+        canDownloadAttachment: false,
+        accountId: accountId,
+        downloadUrl: downloadUrl,
+        blobId: blobId,
+      );
+    }
+
+    return (
+      canDownloadAttachment: true,
+      accountId: accountId,
+      downloadUrl: downloadUrl,
+      blobId: blobId,
+    );
   }
 
   Future<void> previewPDFFileAction(BuildContext context, Attachment attachment) async {
@@ -1873,5 +1945,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     mailboxDashBoardController.goToComposer(
       ComposerArguments.fromMailtoUri(listEmailAddress: listEmailAddressMailTo)
     );
+  }
+  
+  void _handleGetHtmlContentFromAttachmentFailure(GetHtmlContentFromAttachmentFailure failure) {
+    _updateAttachmentsViewState(failure.attachment.blobId, Left(failure));
+    if (currentOverlayContext != null && currentContext != null) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).thisHtmlAttachmentCannotBePreviewed);
+    }
   }
 }

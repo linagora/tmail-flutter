@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_accept_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_html_content_from_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/maybe_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_reject_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
@@ -93,6 +94,7 @@ const fallbackGenerators = {
   MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
   MockSpec<TwakeAppManager>(),
+  MockSpec<GetHtmlContentFromAttachmentInteractor>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -128,6 +130,7 @@ void main() {
   final applicationManager = MockApplicationManager();
   final mockToastManager = MockToastManager();
   final mockTwakeAppManager = MockTwakeAppManager();
+  final getHtmlContentFromAttachmentInteractor = MockGetHtmlContentFromAttachmentInteractor();
 
   late SingleEmailController singleEmailController;
 
@@ -183,6 +186,7 @@ void main() {
       storeOpenedEmailInteractor,
       printEmailInteractor,
       storeEventAttendanceStatusInteractor,
+      getHtmlContentFromAttachmentInteractor,
     );
   });
 
