@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:model/support/contact_support_capability.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
@@ -11,7 +12,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/navigation_bar_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_dashboard/app_grid_dashboard_icon.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class NavigationBarWidget extends StatelessWidget {
 
@@ -21,7 +21,6 @@ class NavigationBarWidget extends StatelessWidget {
   final Widget? searchForm;
   final AppGridDashboardController? appGridController;
   final VoidCallback? onTapApplicationLogoAction;
-  final VoidCallback? onShowAppDashboardAction;
   final OnTapAvatarActionWithPositionClick? onTapAvatarAction;
   final OnTapContactSupportAction? onTapContactSupportAction;
 
@@ -32,7 +31,6 @@ class NavigationBarWidget extends StatelessWidget {
     this.contactSupportCapability,
     this.searchForm,
     this.appGridController,
-    this.onShowAppDashboardAction,
     this.onTapApplicationLogoAction,
     this.onTapAvatarAction,
     this.onTapContactSupportAction,
@@ -74,15 +72,17 @@ class NavigationBarWidget extends StatelessWidget {
                     tooltipMessage: AppLocalizations.of(context).getHelpOrReportABug,
                     onTapActionCallback: () => onTapContactSupportAction?.call(contactSupportCapability!),
                   ),
-                if (AppConfig.appGridDashboardAvailable && appGridController != null)
-                  Padding(
-                    padding: const EdgeInsetsDirectional.only(end: 16),
-                    child: AppGridDashboardIcon(
-                      imagePaths: imagePaths,
-                      appGridController: appGridController!,
-                      onShowAppDashboardAction: onShowAppDashboardAction,
-                    ),
-                  ),
+                if (appGridController != null)
+                  Obx(() {
+                    if (appGridController!.listLinagoraApp.isNotEmpty) {
+                      return AppGridDashboardIcon(
+                        imagePaths: imagePaths,
+                        linagoraApps: appGridController!.listLinagoraApp,
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  }),
+                const SizedBox(width: 16),
                 (AvatarBuilder()
                   ..text(avatarUserName)
                   ..backgroundColor(Colors.white)
@@ -114,15 +114,17 @@ class NavigationBarWidget extends StatelessWidget {
                 tooltipMessage: AppLocalizations.of(context).getHelpOrReportABug,
                 onTapActionCallback: () => onTapContactSupportAction?.call(contactSupportCapability!),
               ),
-            if (AppConfig.appGridDashboardAvailable && appGridController != null)
-              Padding(
-                padding: const EdgeInsetsDirectional.only(end: 16),
-                child: AppGridDashboardIcon(
-                  imagePaths: imagePaths,
-                  appGridController: appGridController!,
-                  onShowAppDashboardAction: onShowAppDashboardAction,
-                ),
-              ),
+            if (appGridController != null)
+              Obx(() {
+                if (appGridController!.listLinagoraApp.isNotEmpty) {
+                  return AppGridDashboardIcon(
+                    imagePaths: imagePaths,
+                    linagoraApps: appGridController!.listLinagoraApp,
+                  );
+                }
+                return const SizedBox.shrink();
+              }),
+            const SizedBox(width: 16),
             (AvatarBuilder()
               ..text(avatarUserName)
               ..backgroundColor(Colors.white)

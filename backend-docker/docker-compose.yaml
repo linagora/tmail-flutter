@@ -2,7 +2,7 @@ version: "3"
 
 services:
   tmail-backend:
-    image: linagora/tmail-backend:memory-1.0.0
+    image: linagora/tmail-backend:memory-1.0.1-rc1
     container_name: tmail-backend
     volumes:
       - ./jwt_publickey:/root/conf/jwt_publickey
@@ -10,6 +10,7 @@ services:
       - ./mailetcontainer.xml:/root/conf/mailetcontainer.xml
       - ./imapserver.xml:/root/conf/imapserver.xml
       - ./jmap.properties:/root/conf/jmap.properties
+      - ./linagora-ecosystem.properties:/root/conf/linagora-ecosystem.properties
       - ../provisioning/integration_test/search_email_with_sort_order/provisioning.sh:/root/conf/integration_test/search_email_with_sort_order/provisioning.sh
       - ../provisioning/integration_test/search_email_with_sort_order/eml:/root/conf/integration_test/search_email_with_sort_order/eml
     ports:
