@@ -3,6 +3,7 @@ import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_accept_response.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_maybe_response.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_reject_response.dart';
@@ -62,15 +63,23 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
     return Future.wait(blobCalendarEvents.map((blobCalendarEvent) async {
       return BlobCalendarEvent(
         blobId: blobCalendarEvent.blobId,
-        calendarEventList: await Future.wait(blobCalendarEvent.calendarEventList.map((calendarEvent) async {
-          return calendarEvent.copyWith(
-            description: await _htmlDataSource.transformHtmlEmailContent(
-              calendarEvent.description ?? '',
-              transformConfiguration,
-            ),
-          );
-        })),
+        calendarEventList: await Future.wait(blobCalendarEvent.calendarEventList.map((calendarEvent) {
+          return _transformCalendarEventDescription(calendarEvent, transformConfiguration);
+        },
+      )),
       );
     }));
+  }
+
+  Future<CalendarEvent> _transformCalendarEventDescription(
+    CalendarEvent calendarEvent,
+    TransformConfiguration transformConfiguration,
+  ) async {
+    return calendarEvent.copyWith(
+      description: await _htmlDataSource.transformHtmlEmailContent(
+        calendarEvent.description ?? '',
+        transformConfiguration,
+      ),
+    );
   }
 }

@@ -398,6 +398,58 @@ void main() {
 
     test(
       'should transform all calendar event description url to a tag '
+      'and all new line to <br> tag',
+    () async {
+      // arrange
+      const eventDescription = '\nhttps://example1.com\nhttps://example2.com';
+      const expectedEventDescription = '<html><head></head><body>'
+        '<br>'
+        '<a href="https://example1.com" target="_blank" rel="noreferrer">example1.com</a>'
+        '<br>'
+        '<a href="https://example2.com" target="_blank" rel="noreferrer">example2.com</a>'
+        '</body></html>';
+      final blobId = Id('abc123');
+      final calendarEvent = CalendarEvent(
+        description: eventDescription,
+      );
+      final blobCalendarEvents = [
+        BlobCalendarEvent(
+          blobId: blobId,
+          calendarEventList: [calendarEvent],
+        ),
+      ];
+      when(calendarEventDataSource.parse(any, any))
+        .thenAnswer((_) async => blobCalendarEvents);
+
+      when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(PresentationEmail()));
+      when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(EmailUIAction()));
+      when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+      when(mailboxDashboardController.accountId).thenReturn(Rxn(AccountFixtures.aliceAccountId));
+      when(emailSupervisorController.scrollPhysicsPageView).thenReturn(Rxn());
+
+      singleEmailController.onInit();
+      mailboxDashboardController.accountId.refresh();
+      
+      // act
+      singleEmailController.parseCalendarEventAction(
+        accountId: AccountFixtures.aliceAccountId,
+        blobIds: {blobId},
+      );
+      await untilCalled(calendarEventDataSource.parse(any, any));
+      await Future.delayed(Duration.zero);
+      
+      // assert
+      expect(
+        singleEmailController.blobCalendarEvent.value,
+        BlobCalendarEvent(
+          blobId: blobId,
+          calendarEventList: [CalendarEvent(description: expectedEventDescription)],
+        ),
+      );
+    });
+
+    test(
+      'should transform all calendar event description url to a tag '
       'and all new line to <br> tag '
       'and remove all xss attempt',
     () async {
