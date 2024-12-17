@@ -1482,8 +1482,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       accountId,
       blobIds,
       TransformConfiguration.fromTextTransformers(const [
-        SanitizeAutolinkHtmlTransformers(),
         StandardizeHtmlSanitizingTransformers(),
+        SanitizeAutolinkHtmlTransformers(),
         NewLineTransformer(),
       ])
     ));

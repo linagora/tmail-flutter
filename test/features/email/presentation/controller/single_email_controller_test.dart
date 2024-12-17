@@ -398,15 +398,22 @@ void main() {
 
     test(
       'should transform all calendar event description url to a tag '
-      'and all new line to <br> tag',
+      'and all new line to <br> tag '
+      'and remove all xss attempt',
     () async {
       // arrange
-      const eventDescription = '\nhttps://example1.com\nhttps://example2.com';
+      const eventDescription = '\nhttps://example1.com'
+        '\nhttps://example2.com'
+        '\n<script>alert(1)</script>'
+        '\n<a href="javascript:alert(1)">href xss</a>';
       const expectedEventDescription = '<html><head></head><body>'
         '<br>'
         '<a href="https://example1.com" target="_blank" rel="noreferrer">example1.com</a>'
         '<br>'
         '<a href="https://example2.com" target="_blank" rel="noreferrer">example2.com</a>'
+        '<br>'
+        '<br>'
+        '&lt;a&gt;href xss&lt;/a&gt;'
         '</body></html>';
       final blobId = Id('abc123');
       final calendarEvent = CalendarEvent(
