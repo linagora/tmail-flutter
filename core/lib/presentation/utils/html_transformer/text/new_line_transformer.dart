@@ -8,8 +8,8 @@ class NewLineTransformer extends TextTransformer {
   @override
   String process(String text, HtmlEscape htmlEscape) {
     return text
-      ..replaceAll('\n', '<br>')
-      ..replaceAll('\r', '')
-      ..replaceAll('\t', '');
+      .replaceAll('\n', '<br>')
+      .replaceAll('\r', '')
+      .replaceAll('\t', '');
   }
 }
