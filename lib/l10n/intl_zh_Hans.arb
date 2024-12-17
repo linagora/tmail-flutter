@@ -1,1 +1,68 @@
-{}
+{
+  "delete": "删除",
+  "@delete": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cancel": "取消",
+  "@cancel": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_as_read": "标记为已读",
+  "@mark_as_read": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reply": "回复",
+  "@reply": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "rename": "重命名",
+  "@rename": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "password": "密码",
+  "@password": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forward": "转发",
+  "@forward": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "move_to_trash": "移动到垃圾箱",
+  "@move_to_trash": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "edit": "编辑",
+  "@edit": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "move": "移动",
+  "@move": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_as_unread": "标记为未读",
+  "@mark_as_unread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  }
+}
