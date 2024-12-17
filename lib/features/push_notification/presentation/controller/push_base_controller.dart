@@ -43,6 +43,8 @@ abstract class PushBaseController {
     this.session = session;
   }
 
+  void onClose() {}
+
   void mappingTypeStateToAction(
     Map<String, dynamic> mapTypeState,
     AccountId accountId,

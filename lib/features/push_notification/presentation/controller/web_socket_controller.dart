@@ -4,7 +4,9 @@ import 'dart:convert';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:fcm/model/type_name.dart';
+import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
@@ -33,13 +35,12 @@ class WebSocketController extends PushBaseController {
   WebSocketChannel? _webSocketChannel;
   Timer? _webSocketPingTimer;
   StreamSubscription? _webSocketSubscription;
+  AppLifecycleListener? _appLifecycleListener;
 
   @override
   void handleFailureViewState(Failure failure) {
     logError('WebSocketController::handleFailureViewState():Failure $failure');
-    _webSocketSubscription?.cancel();
-    _webSocketChannel = null;
-    _webSocketPingTimer?.cancel();
+    _cleanUpWebSocketResources();
     if (failure is WebSocketConnectionFailed) {
       _handleWebSocketConnectionRetry();
     }
@@ -64,6 +65,31 @@ class WebSocketController extends PushBaseController {
     super.initialize(accountId: accountId, session: session);
 
     _connectWebSocket(accountId, session);
+    if (PlatformInfo.isMobile) {
+      _listenToAppLifeCycle(accountId, session);
+    }
+  }
+
+  @override
+  void onClose() {
+    _cleanUpWebSocketResources();
+    _appLifecycleListener?.dispose();
+    _appLifecycleListener = null;
+    super.onClose();
+  }
+
+  void _listenToAppLifeCycle(AccountId? accountId, Session? session) {
+    _appLifecycleListener ??= AppLifecycleListener(
+      onStateChange: (appLifecycleState) {
+        switch (appLifecycleState) {
+          case AppLifecycleState.resumed:
+            _connectWebSocket(accountId, session);
+            break;
+          default:
+            _cleanUpWebSocketResources();
+        }
+      },
+    );
   }
 
   void _connectWebSocket(AccountId? accountId, Session? session) {
@@ -74,9 +100,16 @@ class WebSocketController extends PushBaseController {
 
     consumeState(_connectWebSocketInteractor!.execute(session, accountId));
   }
+
+  void _cleanUpWebSocketResources() {
+    _webSocketSubscription?.cancel();
+    _webSocketChannel = null;
+    _webSocketPingTimer?.cancel();
+  }
   
   void _handleWebSocketConnectionSuccess(WebSocketConnectionSuccess success) {
     log('WebSocketController::_handleWebSocketConnectionSuccess(): $success');
+    _cleanUpWebSocketResources();
     _retryRemained = 3;
     _webSocketChannel = success.webSocketChannel;
     _enableWebSocketPush();
@@ -87,9 +120,7 @@ class WebSocketController extends PushBaseController {
   }
 
   void _handleWebSocketConnectionRetry() {
-    _webSocketSubscription?.cancel();
-    _webSocketChannel = null;
-    _webSocketPingTimer?.cancel();
+    _cleanUpWebSocketResources();
     if (_retryRemained > 0) {
       _retryRemained--;
       _connectWebSocket(accountId, session);

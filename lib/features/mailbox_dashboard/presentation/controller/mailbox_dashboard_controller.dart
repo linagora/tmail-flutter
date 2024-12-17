@@ -125,6 +125,7 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/delete_mailbox_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_email_state_to_refresh_interactor.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/usecases/get_mailbox_state_to_refresh_interactor.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/controller/web_socket_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
@@ -627,9 +628,8 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     injectAutoCompleteBindings(session, currentAccountId);
     injectRuleFilterBindings(session, currentAccountId);
     injectVacationBindings(session, currentAccountId);
-    if (PlatformInfo.isWeb) {
-      injectWebSocket(session, currentAccountId);
-    } else {
+    injectWebSocket(session, currentAccountId);
+    if (PlatformInfo.isMobile) {
       injectFCMBindings(session, currentAccountId);
     }
 
@@ -2948,6 +2948,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     sessionCurrent = null;
     mapMailboxById = {};
     mapDefaultMailboxIdByRole = {};
+    WebSocketController.instance.onClose();
     super.onClose();
   }
 }
