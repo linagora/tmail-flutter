@@ -27,13 +27,6 @@ dependencies:
     sdk: flutter
 
   ### Dependencies from git ###
-  # TODO: We will change it when the PR in upstream repository will be merged
-  # https://github.com/solid-software/languagetool_textfield/pull/83
-  languagetool_textfield:
-    git:
-      url: https://github.com/dab246/languagetool_textfield.git
-      ref: twake-supported
-
   # Sanitize_html is restricting Tags and Attributes. So some of our own tags and attributes (signature, public asset,...) will be lost when sanitizing html.
   # TODO: We will change it when the PR in upstream repository will be merged
   # https://github.com/google/dart-neats/pull/259
