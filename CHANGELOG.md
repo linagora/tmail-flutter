@@ -1,3 +1,8 @@
+## [0.11.4003-patch01] - 2024-12-18
+### Fixed
+- Sanitize HTML when forward/reply/replyAll an email
+- Sanitize HTML when print email
+
 ## [0.11.4003-patch01] - 2024-10-25
 ### Fixed
 - Standardize HTML sanitizing when preview email (https://github.com/linagora/twake-workplace-private/issues/204)
