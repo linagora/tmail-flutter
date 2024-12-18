@@ -144,7 +144,7 @@ abstract class EmailRepository {
     TransformConfiguration configuration
   );
 
-  Future<Email> unsubscribeMail(Session session, AccountId accountId, EmailId emailId);
+  Future<void> unsubscribeMail(Session session, AccountId accountId, EmailId emailId);
 
   Future<EmailRecoveryAction> restoreDeletedMessage(RestoredDeletedMessageRequest restoredDeletedMessageRequest);
 
