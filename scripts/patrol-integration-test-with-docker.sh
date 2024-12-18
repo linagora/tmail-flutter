@@ -41,7 +41,7 @@ export BOB="bob"
 export ALICE="alice"
 export DOMAIN="example.com"
 
-docker exec tmail-backend ./root/conf/integration_test/search_email_with_sort_order/provisioning.sh
+docker exec tmail-backend ./root/conf/integration_test/provisioning.sh
 
 cd ..
 
