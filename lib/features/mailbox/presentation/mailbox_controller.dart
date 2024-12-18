@@ -19,15 +19,7 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
-import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/get_restored_deleted_message_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
@@ -44,7 +36,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/create_default_mailb
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_mailboxes_state.dart';
@@ -72,16 +63,11 @@ import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
@@ -247,48 +233,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       mailboxDashBoardController.routerParameters,
       _handleNavigationRouteParameters
     );
-
-    ever(mailboxDashBoardController.viewState, (state) {
-      state.fold((failure) => null, (success) {
-        if (success is MarkAsMultipleEmailReadAllSuccess) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is MoveMultipleEmailToMailboxAllSuccess) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is EmptyTrashFolderSuccess) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is MarkAsEmailReadSuccess) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is MoveToMailboxSuccess) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is DeleteEmailPermanentlySuccess) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is SaveEmailAsDraftsSuccess) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is RemoveEmailDraftsSuccess) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is SendEmailSuccess) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is MarkAsMailboxReadAllSuccess) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is UpdateEmailDraftsSuccess) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is EmptySpamFolderSuccess) {
-          _refreshMailboxChanges(currentMailboxState: success.currentMailboxState);
-        } else if (success is GetRestoredDeletedMessageSuccess) {
-          _refreshMailboxChanges(properties: MailboxConstants.propertiesDefault);
-        }
-      });
-    });
 
     ever(mailboxDashBoardController.dashBoardAction, (action) {
       if (action is ClearSearchEmailAction) {
