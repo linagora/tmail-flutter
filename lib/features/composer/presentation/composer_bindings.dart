@@ -113,6 +113,7 @@ class ComposerBindings extends BaseBindings {
       Get.find<PrintUtils>(),
       Get.find<ImagePaths>(),
       Get.find<FileUtils>(),
+      Get.find<HtmlAnalyzer>(),
       Get.find<CacheExceptionThrower>()
     ));
     Get.lazyPut(() => EmailHiveCacheDataSourceImpl(
