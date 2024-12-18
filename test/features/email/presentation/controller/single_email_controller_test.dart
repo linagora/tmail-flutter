@@ -465,7 +465,7 @@ void main() {
         '<a href="https://example2.com" target="_blank" rel="noreferrer">example2.com</a>'
         '<br>'
         '<br>'
-        '&lt;a&gt;href xss&lt;/a&gt;'
+        '<a>href xss</a>'
         '</body></html>';
       final blobId = Id('abc123');
       final calendarEvent = CalendarEvent(
