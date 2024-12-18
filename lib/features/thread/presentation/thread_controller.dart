@@ -18,22 +18,10 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
-import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/store_event_attendance_status_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -51,14 +39,9 @@ import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
@@ -341,54 +324,6 @@ class ThreadController extends BaseController with EmailActionController {
         refreshAllEmail();
         mailboxDashBoardController.clearEmailUIAction();
       }
-    });
-
-    ever(mailboxDashBoardController.viewState, (viewState) {
-      viewState.map((success) {
-        if (success is MarkAsEmailReadSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MoveToMailboxSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MarkAsStarEmailSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is DeleteEmailPermanentlySuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is SaveEmailAsDraftsSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is RemoveEmailDraftsSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is SendEmailSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is UpdateEmailDraftsSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MarkAsMailboxReadAllSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MoveMultipleEmailToMailboxAllSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MarkAsStarMultipleEmailAllSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MarkAsStarMultipleEmailHasSomeEmailFailure) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MarkAsMultipleEmailReadAllSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is EmptyTrashFolderSuccess || success is EmptySpamFolderSuccess) {
-          refreshAllEmail();
-        } else if (success is UnsubscribeEmailSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is StoreEventAttendanceStatusSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        }
-      });
     });
   }
 
