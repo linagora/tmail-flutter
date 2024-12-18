@@ -4,22 +4,22 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/application_manager.dart';
-import 'package:dartz/dartz.dart';
+import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
-import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
+import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
@@ -266,10 +266,6 @@ void main() {
         'AND `mailboxDashBoardController.emailsInCurrentMailbox` should not be cleared',
       () async {
         // Arrange
-        final updatedEmail = Email(
-          id: EmailId(Id('email1')),
-          keywords: {KeyWordIdentifier.emailFlagged: true}
-        );
         final emailList = [
           PresentationEmail(
             id: EmailId(Id('email1')),
@@ -308,10 +304,8 @@ void main() {
         // Act
         threadController.onInit();
 
-        final markAsStarEmailSuccess = MarkAsStarEmailSuccess(
-          updatedEmail,
-          MarkStarAction.markStar);
-        mockMailboxDashBoardController.viewState.value = Right(markAsStarEmailSuccess);
+        mockMailboxDashBoardController.emailUIAction.value =
+            RefreshChangeEmailAction(State('new-state'));
 
         await untilCalled(mockSearchEmailInteractor.execute(
           any,
