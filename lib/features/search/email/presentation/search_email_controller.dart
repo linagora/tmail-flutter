@@ -31,6 +31,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_e
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
+import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -100,7 +101,7 @@ class SearchEmailController extends BaseController
   final resultSearchViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
   late Debouncer<String> _deBouncerTime;
-  late Worker dashBoardViewStateWorker;
+  late Worker emailUIActionWorker;
   late Worker dashBoardActionWorker;
   late SearchMoreState searchMoreState;
   late bool canSearchMore;
@@ -245,6 +246,15 @@ class SearchEmailController extends BaseController
           mailboxDashBoardController.clearDashBoardAction();
         }
       }
+    );
+
+    emailUIActionWorker = ever(
+      mailboxDashBoardController.emailUIAction,
+      (action) {
+        if (action is RefreshChangeEmailAction) {
+          _refreshEmailChanges();
+        }
+      },
     );
   }
 
@@ -966,7 +976,7 @@ class SearchEmailController extends BaseController
     resultSearchScrollController.dispose();
     listSearchFilterScrollController.dispose();
     _deBouncerTime.cancel();
-    dashBoardViewStateWorker.dispose();
+    emailUIActionWorker.dispose();
     dashBoardActionWorker.dispose();
     super.onClose();
   }
