@@ -4,7 +4,7 @@ import 'dart:typed_data';
 
 import 'package:better_open_file/better_open_file.dart' as open_file;
 import 'package:core/core.dart';
-import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_html_transformers.dart';
+import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_unescape_html_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/text/new_line_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/text/standardize_html_sanitizing_transformers.dart';
 import 'package:dartz/dartz.dart';
@@ -1482,8 +1482,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       accountId,
       blobIds,
       TransformConfiguration.fromTextTransformers(const [
+        SanitizeAutolinkUnescapeHtmlTransformer(),
         StandardizeHtmlSanitizingTransformers(),
-        SanitizeAutolinkHtmlTransformers(),
         NewLineTransformer(),
       ])
     ));
