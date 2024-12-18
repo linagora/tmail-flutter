@@ -1,12 +1,16 @@
 import 'package:core/data/model/print_attachment.dart';
 import 'package:core/domain/extensions/datetime_extension.dart';
+import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:filesize/filesize.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/print_file_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
@@ -16,18 +20,23 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
   final PrintUtils _printUtils;
   final ImagePaths _imagePaths;
   final FileUtils _fileUtils;
+  final HtmlAnalyzer _htmlAnalyzer;
   final ExceptionThrower _exceptionThrower;
 
   PrintFileDataSourceImpl(
     this._printUtils,
     this._imagePaths,
     this._fileUtils,
+    this._htmlAnalyzer,
     this._exceptionThrower
   );
 
   @override
   Future<void> printEmail(EmailPrint emailPrint) {
     return Future.sync(() async {
+      final emailContentEscaped = await _transformHtmlEmailContent(
+          emailPrint.emailContent);
+
       final sender = emailPrint.emailInformation.from?.isNotEmpty == true
         ? emailPrint.emailInformation.from!.first
         : null;
@@ -43,7 +52,7 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
           final iconBase64Data = await _fileUtils.convertImageAssetToBase64(attachment.getIcon(_imagePaths));
           final printAttachment = PrintAttachment(
             iconBase64Data: iconBase64Data,
-            name: attachment.name ?? '',
+            name: attachment.name.escapeLtGtHtmlString(),
             size: filesize(attachment.size?.value)
           );
           listPrintAttachment.add(printAttachment);
@@ -53,9 +62,9 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
       return await _printUtils.printEmail(
         appName: emailPrint.appName,
         userName: emailPrint.userName,
-        subject: emailPrint.emailInformation.subject ?? '',
-        emailContent: emailPrint.emailContent,
-        senderName: sender?.name ?? '',
+        subject: emailPrint.emailInformation.subject?.escapeLtGtHtmlString() ?? '',
+        emailContent: emailContentEscaped,
+        senderName: sender?.name.escapeLtGtHtmlString() ?? '',
         senderEmailAddress: sender?.email ?? '',
         dateTime: receiveTime,
         fromPrefix: emailPrint.fromPrefix,
@@ -71,5 +80,18 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
         listAttachment: listPrintAttachment
       );
     }).catchError(_exceptionThrower.throwException);
+  }
+
+  Future<String> _transformHtmlEmailContent(String emailContent) async {
+    try {
+      final htmlContentTransformed = await _htmlAnalyzer.transformHtmlEmailContent(
+        emailContent,
+        TransformConfiguration.forPrintEmail(),
+      );
+      return htmlContentTransformed;
+    } catch (e) {
+      logError('PrintFileDataSourceImpl::_transformHtmlEmailContent: Exception: $e');
+      return emailContent;
+    }
   }
 }
