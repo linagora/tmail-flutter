@@ -513,17 +513,23 @@ class ThreadController extends BaseController with EmailActionController {
     return limit;
   }
 
+  @visibleForTesting
+  void setCurrentEmailState({jmap.State? newState}) {
+    _currentEmailState = newState;
+  }
+
   void _refreshEmailChanges({jmap.State? newState}) {
     log('ThreadController::_refreshEmailChanges(): newState: $newState');
+    if (_currentEmailState == null ||
+        _currentEmailState == newState ||
+        _session == null ||
+        _accountId == null) {
+      return;
+    }
+
     if (searchController.isSearchEmailRunning) {
       _searchEmail(limit: limitEmailFetched, needRefreshSearchState: true);
     } else {
-      if (_currentEmailState == null ||
-          _currentEmailState == newState ||
-          _session == null ||
-          _accountId == null) {
-        return;
-      }
       consumeState(_refreshChangesEmailsInMailboxInteractor.execute(
         _session!,
         _accountId!,
@@ -1168,12 +1174,10 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void goToCreateEmailRuleView() async {
-    final accountId = mailboxDashBoardController.accountId.value;
-    final session = mailboxDashBoardController.sessionCurrent;
-    if (accountId != null && session != null) {
+    if (_accountId != null && _session != null) {
       final arguments = RulesFilterCreatorArguments(
-        accountId,
-        session,
+        _accountId!,
+        _session!,
         mailboxDestination: selectedMailbox
       );
 
@@ -1182,7 +1186,7 @@ class ThreadController extends BaseController with EmailActionController {
         : await push(AppRoutes.rulesFilterCreator, arguments: arguments);
 
       if (newRuleFilterRequest is CreateNewEmailRuleFilterRequest) {
-        _createNewRuleFilterAction(accountId, newRuleFilterRequest);
+        _createNewRuleFilterAction(_accountId!, newRuleFilterRequest);
       }
     } else {
       logError('ThreadController::goToCreateEmailRuleView: Account or Session is NULL');

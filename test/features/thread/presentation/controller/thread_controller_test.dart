@@ -304,6 +304,7 @@ void main() {
         // Act
         threadController.onInit();
 
+        threadController.setCurrentEmailState(newState: State('old-state'));
         mockMailboxDashBoardController.emailUIAction.value =
             RefreshChangeEmailAction(State('new-state'));
 

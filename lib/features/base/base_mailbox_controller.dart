@@ -104,8 +104,7 @@ abstract class BaseMailboxController extends BaseController {
     teamMailboxesTree.value = tupleTree.value3;
   }
 
-  Future<void> syncAllMailboxWithDisplayName(BuildContext context) async {
-    log("BaseMailboxController::syncAllMailboxWithDisplayName");
+  void syncAllMailboxWithDisplayName(BuildContext context) {
     final syncedMailbox = allMailboxes
       .map((mailbox) => mailbox.withDisplayName(mailbox.getDisplayName(context)))
       .toList();

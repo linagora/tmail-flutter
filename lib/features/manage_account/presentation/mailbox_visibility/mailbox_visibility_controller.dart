@@ -73,7 +73,7 @@ class MailboxVisibilityController extends BaseMailboxController {
       currentMailboxState = success.currentMailboxState;
       await refreshTree(success.mailboxList);
       if (currentContext != null) {
-        await syncAllMailboxWithDisplayName(currentContext!);
+        syncAllMailboxWithDisplayName(currentContext!);
       }
     } else if (success is SubscribeMailboxSuccess) {
       _subscribeMailboxSuccess(success);
@@ -99,7 +99,7 @@ class MailboxVisibilityController extends BaseMailboxController {
     await buildTree(mailboxList);
     dispatchState(Right(BuildTreeMailboxVisibilitySuccess()));
     if (currentContext != null) {
-      await syncAllMailboxWithDisplayName(currentContext!);
+      syncAllMailboxWithDisplayName(currentContext!);
     }
   }
 

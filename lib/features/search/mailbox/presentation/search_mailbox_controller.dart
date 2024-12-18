@@ -136,13 +136,13 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       currentMailboxState = success.currentMailboxState;
       await buildTree(success.mailboxList);
       if (currentContext != null) {
-        await syncAllMailboxWithDisplayName(currentContext!);
+        syncAllMailboxWithDisplayName(currentContext!);
       }
     } else if (success is RefreshChangesAllMailboxSuccess) {
       currentMailboxState = success.currentMailboxState;
       await refreshTree(success.mailboxList);
       if (currentContext != null) {
-        await syncAllMailboxWithDisplayName(currentContext!);
+        syncAllMailboxWithDisplayName(currentContext!);
       }
       searchMailboxAction();
     } else if (success is SearchMailboxSuccess) {

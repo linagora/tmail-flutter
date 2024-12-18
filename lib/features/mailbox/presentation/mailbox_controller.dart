@@ -57,6 +57,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_catego
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/open_mailbox_view_event.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_state_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
@@ -97,6 +98,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   final _openMailboxEventController = StreamController<OpenMailboxViewEvent>();
   final mailboxListScrollController = ScrollController();
+  final _mailboxStateManager = MailboxStateManager();
 
   PresentationMailbox? get selectedMailbox => mailboxDashBoardController.selectedMailbox.value;
 
@@ -145,6 +147,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   void onClose() {
     _openMailboxEventController.close();
     mailboxListScrollController.dispose();
+    _mailboxStateManager.dispose();
     super.onClose();
   }
 
@@ -153,8 +156,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     super.handleSuccessViewState(success);
     if (success is GetAllMailboxSuccess) {
       _handleGetAllMailboxSuccess(success);
-    } else if (success is RefreshChangesAllMailboxSuccess) {
-      _handleRefreshChangesAllMailboxSuccess(success);
     } else if (success is CreateNewMailboxSuccess) {
       _createNewMailboxSuccess(success);
     } else if (success is DeleteMultipleMailboxAllSuccess) {
@@ -181,8 +182,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       _renameMailboxFailure(failure);
     } else if (failure is DeleteMultipleMailboxFailure) {
       _deleteMailboxFailure(failure);
-    } else if (failure is RefreshChangesAllMailboxFailure) {
-      _clearNewFolderId();
     }
   }
 
@@ -203,13 +202,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
           mailboxDashBoardController.getSpamReportBanner();
           if (PlatformInfo.isIOS) {
             _updateMailboxIdsBlockNotificationToKeychain(success.mailboxList);
-          }
-        } else if (success is RefreshChangesAllMailboxSuccess) {
-          _selectSelectedMailboxDefault();
-          mailboxDashBoardController.refreshSpamReportBanner();
-
-          if (_newFolderId != null) {
-            _redirectToNewFolder();
           }
         }
       });
@@ -283,17 +275,87 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     if (accountId == null ||
         session == null ||
         currentMailboxState == null ||
-        newState == currentMailboxState) {
+        newState == null) {
       _newFolderId = null;
       return;
     }
 
-    refreshMailboxChanges(
-      session!,
-      accountId!,
-      currentMailboxState!,
-      properties: MailboxConstants.propertiesDefault,
-    );
+    _mailboxStateManager.addState(newState);
+
+    if (!_mailboxStateManager.isProcessing) {
+      _processMailboxStateQueue(
+        session!,
+        accountId!,
+      );
+    }
+  }
+
+  Future<void> _processMailboxStateQueue(
+    Session session,
+    AccountId accountId,
+  ) async {
+    if (_mailboxStateManager.isProcessing) return;
+
+    _mailboxStateManager.startProcessing();
+
+    while (_mailboxStateManager.isQueueNotEmpty()) {
+      final nextState = _mailboxStateManager.getFirstState();
+
+      if (nextState == currentMailboxState) {
+        log('MailboxController::_processMailboxStateQueue:Skipping redundant state: $nextState');
+        continue;
+      }
+
+      log('MailboxController::_processMailboxStateQueue:Processing new state: $nextState & current state = $currentMailboxState');
+      try {
+        final refreshViewState = await refreshAllMailboxInteractor!.execute(
+          session,
+          accountId,
+          currentMailboxState!,
+          properties: MailboxConstants.propertiesDefault,
+        ).last;
+
+        final refreshState = refreshViewState
+          .foldSuccessWithResult<RefreshChangesAllMailboxSuccess>();
+
+        if (refreshState is RefreshChangesAllMailboxSuccess) {
+          await _handleRefreshChangeMailboxSuccess(refreshState);
+          if (currentMailboxState != null) {
+            _mailboxStateManager.removeStatesUpToCurrent(currentMailboxState!);
+          }
+        } else {
+          _clearNewFolderId();
+          onDataFailureViewState(refreshState);
+        }
+      } catch (e, stackTrace) {
+        logError('MailboxController::_processMailboxStateQueue:Error processing state: $e');
+        onError(e, stackTrace);
+      }
+    }
+
+    _mailboxStateManager.stopProcessing();
+  }
+
+  Future<void> _handleRefreshChangeMailboxSuccess(RefreshChangesAllMailboxSuccess success) async {
+    currentMailboxState = success.currentMailboxState;
+    log('MailboxController::_handleRefreshChangeMailboxSuccess:currentMailboxState: $currentMailboxState');
+    final listMailboxDisplayed = success
+        .mailboxList
+        .listSubscribedMailboxesAndDefaultMailboxes;
+
+    await refreshTree(listMailboxDisplayed);
+
+    if (currentContext != null) {
+      syncAllMailboxWithDisplayName(currentContext!);
+    }
+    _setMapMailbox();
+    _setOutboxMailbox();
+    _selectSelectedMailboxDefault();
+    mailboxDashBoardController.refreshSpamReportBanner();
+
+    if (_newFolderId != null) {
+      _redirectToNewFolder();
+    }
   }
 
   void _setMapMailbox() {
@@ -1078,7 +1140,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     final listMailboxDisplayed = success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes;
     await buildTree(listMailboxDisplayed);
     if (currentContext != null) {
-      await syncAllMailboxWithDisplayName(currentContext!);
+      syncAllMailboxWithDisplayName(currentContext!);
     }
     _setMapMailbox();
     _setOutboxMailbox();
@@ -1103,18 +1165,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     _iosSharingManager!.updateMailboxIdsBlockNotificationInKeyChain(
       accountId: accountId!,
       mailboxIds: mailboxIdsBlockNotification);
-  }
-
-  void _handleRefreshChangesAllMailboxSuccess(RefreshChangesAllMailboxSuccess success) async {
-    currentMailboxState = success.currentMailboxState;
-    log('MailboxController::_handleRefreshChangesAllMailboxSuccess:currentMailboxState: $currentMailboxState');
-    final listMailboxDisplayed = success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes;
-    await refreshTree(listMailboxDisplayed);
-    if (currentContext != null) {
-      await syncAllMailboxWithDisplayName(currentContext!);
-    }
-    _setMapMailbox();
-    _setOutboxMailbox();
   }
 
   void _unsubscribeMailboxAction(MailboxId mailboxId) {
