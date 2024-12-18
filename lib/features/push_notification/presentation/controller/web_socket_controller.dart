@@ -17,7 +17,6 @@ import 'package:tmail_ui_user/features/push_notification/presentation/extensions
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class WebSocketController extends PushBaseController {
@@ -80,9 +79,7 @@ class WebSocketController extends PushBaseController {
     _retryRemained = 3;
     _webSocketChannel = success.webSocketChannel;
     _enableWebSocketPush();
-    if (AppConfig.isWebSocketEchoPingEnabled) {
-      _pingWebSocket();
-    }
+    _pingWebSocket();
     _listenToWebSocket();
   }
 
