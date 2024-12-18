@@ -35,7 +35,6 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanent
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/store_event_attendance_status_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
@@ -66,7 +65,6 @@ import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_sta
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
@@ -251,15 +249,12 @@ class SearchEmailController extends BaseController
     dashBoardViewStateWorker = ever(mailboxDashBoardController.viewState, (viewState) {
       viewState.map((success) {
         if (success is MarkAsEmailReadSuccess ||
-            success is MoveToMailboxSuccess ||
             success is MarkAsStarEmailSuccess ||
             success is DeleteEmailPermanentlySuccess ||
             success is MarkAsMultipleEmailReadAllSuccess ||
             success is MarkAsMultipleEmailReadHasSomeEmailFailure ||
             success is MarkAsStarMultipleEmailAllSuccess ||
             success is MarkAsStarMultipleEmailHasSomeEmailFailure ||
-            success is MoveMultipleEmailToMailboxAllSuccess ||
-            success is MoveMultipleEmailToMailboxHasSomeEmailFailure ||
             success is EmptyTrashFolderSuccess ||
             success is EmptySpamFolderSuccess ||
             success is DeleteMultipleEmailsPermanentlyAllSuccess ||

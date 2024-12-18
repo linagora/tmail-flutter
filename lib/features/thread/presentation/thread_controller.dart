@@ -26,7 +26,6 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanent
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/store_event_attendance_status_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
@@ -58,7 +57,6 @@ import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
@@ -347,8 +345,6 @@ class ThreadController extends BaseController with EmailActionController {
       viewState.map((success) {
         if (success is MarkAsEmailReadSuccess) {
           _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MoveToMailboxSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
         } else if (success is MarkAsStarEmailSuccess) {
           _refreshEmailChanges(currentEmailState: success.currentEmailState);
         } else if (success is DeleteEmailPermanentlySuccess) {
@@ -364,10 +360,6 @@ class ThreadController extends BaseController with EmailActionController {
         } else if (success is MarkAsMailboxReadAllSuccess) {
           _refreshEmailChanges(currentEmailState: success.currentEmailState);
         } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MoveMultipleEmailToMailboxAllSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
           _refreshEmailChanges(currentEmailState: success.currentEmailState);
         } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess) {
           _refreshEmailChanges(currentEmailState: success.currentEmailState);
