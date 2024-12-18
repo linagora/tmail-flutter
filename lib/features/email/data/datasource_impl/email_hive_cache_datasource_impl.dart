@@ -339,7 +339,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<Email> unsubscribeMail(Session session, AccountId accountId, EmailId emailId) {
+  Future<void> unsubscribeMail(Session session, AccountId accountId, EmailId emailId) {
     throw UnimplementedError();
   }
 

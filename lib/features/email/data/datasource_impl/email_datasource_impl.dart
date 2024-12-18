@@ -307,7 +307,7 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<Email> unsubscribeMail(Session session, AccountId accountId, EmailId emailId) {
+  Future<void> unsubscribeMail(Session session, AccountId accountId, EmailId emailId) {
     return Future.sync(() async {
       return await emailAPI.unsubscribeMail(session, accountId, emailId);
     }).catchError(_exceptionThrower.throwException);

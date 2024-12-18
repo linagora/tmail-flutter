@@ -293,7 +293,7 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<Email> unsubscribeMail(Session session, AccountId accountId, EmailId emailId) {
+  Future<void> unsubscribeMail(Session session, AccountId accountId, EmailId emailId) {
     return emailDataSource[DataSourceType.network]!.unsubscribeMail(session, accountId, emailId);
   }
 
