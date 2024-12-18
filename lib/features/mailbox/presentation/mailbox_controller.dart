@@ -239,7 +239,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
         mailboxDashBoardController.clearMailboxUIAction();
       } else if (action is RefreshChangeMailboxAction) {
         _refreshMailboxChanges(newState: action.newState);
-        mailboxDashBoardController.clearMailboxUIAction();
       } else if (action is OpenMailboxAction) {
         if (currentContext != null) {
           _handleOpenMailbox(currentContext!, action.presentationMailbox);
