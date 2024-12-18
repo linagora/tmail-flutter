@@ -10,8 +10,8 @@ services:
       - ./mailetcontainer.xml:/root/conf/mailetcontainer.xml
       - ./imapserver.xml:/root/conf/imapserver.xml
       - ./jmap.properties:/root/conf/jmap.properties
-      - ../provisioning/integration_test/search_email_with_sort_order/provisioning.sh:/root/conf/integration_test/search_email_with_sort_order/provisioning.sh
-      - ../provisioning/integration_test/search_email_with_sort_order/eml:/root/conf/integration_test/search_email_with_sort_order/eml
+      - ../provisioning/integration_test/provisioning.sh:/root/conf/integration_test/provisioning.sh
+      - ../provisioning/integration_test/eml:/root/conf/integration_test/eml
     ports:
       - "80:80"
     environment:
