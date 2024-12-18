@@ -362,12 +362,20 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
       }
     } else if (success is UpdateVacationSuccess) {
       _handleUpdateVacationSuccess(success);
-    } else if (success is MarkAsMultipleEmailReadAllSuccess ||
-        success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-      _markAsReadSelectedMultipleEmailSuccess(success);
-    } else if (success is MarkAsStarMultipleEmailAllSuccess ||
-        success is MarkAsStarMultipleEmailHasSomeEmailFailure) {
-      _markAsStarMultipleEmailSuccess(success);
+    } else if (success is MarkAsMultipleEmailReadAllSuccess) {
+      _markAsReadSelectedMultipleEmailSuccess(success.readActions);
+    } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+      _markAsReadSelectedMultipleEmailSuccess(success.readActions);
+    } else if (success is MarkAsStarMultipleEmailAllSuccess) {
+      _markAsStarMultipleEmailSuccess(
+        success.markStarAction,
+        success.countMarkStarSuccess,
+      );
+    } else if (success is MarkAsStarMultipleEmailHasSomeEmailFailure) {
+      _markAsStarMultipleEmailSuccess(
+        success.markStarAction,
+        success.countMarkStarSuccess,
+      );
     } else if (success is MoveMultipleEmailToMailboxAllSuccess ||
         success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
       _moveSelectedMultipleEmailToMailboxSuccess(success);
@@ -867,14 +875,19 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     }
   }
 
-  void markAsEmailRead(PresentationEmail presentationEmail, ReadActions readActions, MarkReadAction markReadAction) async {
+  void markAsEmailRead(
+    EmailId emailId,
+    ReadActions readActions,
+    MarkReadAction markReadAction,
+  ) {
     if (accountId.value != null && sessionCurrent != null) {
       consumeState(_markAsEmailReadInteractor.execute(
         sessionCurrent!,
         accountId.value!,
-        presentationEmail.toEmail(),
+        emailId,
         readActions,
-        markReadAction));
+        markReadAction,
+      ));
     }
   }
 
@@ -883,35 +896,34 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
       consumeState(_markAsStarEmailInteractor.execute(
         sessionCurrent!,
         accountId.value!,
-        presentationEmail.toEmail(),
+        presentationEmail.id!,
         action));
     }
   }
 
   void markAsReadSelectedMultipleEmail(List<PresentationEmail> listPresentationEmail, ReadActions readActions) {
-    final listEmail = listPresentationEmail
-        .map((presentationEmail) => presentationEmail.toEmail())
-        .toList();
-    log('MailboxDashBoardController::markAsReadSelectedMultipleEmail(): listEmail: ${listEmail.length}');
+    final listEmailNeedMarkAsRead = listPresentationEmail
+      .where((email) {
+        if (readActions == ReadActions.markAsUnread) {
+          return email.hasRead;
+        } else {
+          return !email.hasRead;
+        }
+      })
+      .toList();
+
     if (accountId.value != null && sessionCurrent != null) {
       consumeState(_markAsMultipleEmailReadInteractor.execute(
         sessionCurrent!,
         accountId.value!,
-        listEmail,
-        readActions));
+        listEmailNeedMarkAsRead.listEmailIds,
+        readActions,
+      ));
     }
   }
 
-  void _markAsReadSelectedMultipleEmailSuccess(Success success) {
-    ReadActions? readActions;
-
-    if (success is MarkAsMultipleEmailReadAllSuccess) {
-      readActions = success.readActions;
-    } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-      readActions = success.readActions;
-    }
-
-    if (readActions != null && currentContext != null && currentOverlayContext != null) {
+  void _markAsReadSelectedMultipleEmailSuccess(ReadActions readActions) {
+    if (currentContext != null && currentOverlayContext != null) {
       final message = readActions == ReadActions.markAsUnread
         ? AppLocalizations.of(currentContext!).marked_message_toast(AppLocalizations.of(currentContext!).unread)
         : AppLocalizations.of(currentContext!).marked_message_toast(AppLocalizations.of(currentContext!).read);
@@ -926,30 +938,24 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     }
   }
 
-  void _markAsReadEmailSuccess(Success success) {
-    ReadActions? readActions;
-    MarkReadAction? markReadAction;
-    PresentationEmail? presentationEmail;
-
-    if (success is MarkAsEmailReadSuccess) {
-      readActions = success.readActions;
-      markReadAction = success.markReadAction;
-      presentationEmail = success.updatedEmail.toPresentationEmail();
-    }
-
-    if (readActions != null && currentContext != null && currentOverlayContext != null && markReadAction == MarkReadAction.swipeOnThread) {
-      final message = readActions == ReadActions.markAsUnread
+  void _markAsReadEmailSuccess(MarkAsEmailReadSuccess success) {
+    if (currentContext != null &&
+        currentOverlayContext != null &&
+        success.markReadAction == MarkReadAction.swipeOnThread) {
+      final message = success.readActions == ReadActions.markAsUnread
         ? AppLocalizations.of(currentContext!).markedSingleMessageToast(AppLocalizations.of(currentContext!).unread.toLowerCase())
         : AppLocalizations.of(currentContext!).markedSingleMessageToast(AppLocalizations.of(currentContext!).read.toLowerCase());
 
-      final undoAction = readActions == ReadActions.markAsUnread ? ReadActions.markAsRead : ReadActions.markAsUnread;
+      final undoAction = success.readActions == ReadActions.markAsUnread
+          ? ReadActions.markAsRead
+          : ReadActions.markAsUnread;
 
       appToast.showToastMessage(
         currentOverlayContext!,
         message,
         actionName: AppLocalizations.of(currentContext!).undo,
         onActionClick: () {
-          markAsEmailRead(presentationEmail!, undoAction, MarkReadAction.undo);
+          markAsEmailRead(success.emailId, undoAction, MarkReadAction.undo);
         },
         leadingSVGIcon: imagePaths.icToastSuccessMessage,
         backgroundColor: AppColor.toastSuccessBackgroundColor,
@@ -960,43 +966,42 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   }
 
   void markAsStarSelectedMultipleEmail(List<PresentationEmail> listPresentationEmail, MarkStarAction markStarAction) {
-    final listEmail = listPresentationEmail
-        .map((presentationEmail) => presentationEmail.toEmail())
-        .toList();
     if (accountId.value != null && sessionCurrent != null) {
+      final listEmailIds = listPresentationEmail
+          .where((email) {
+            if (markStarAction == MarkStarAction.unMarkStar) {
+              return email.hasStarred;
+            } else {
+              return !email.hasStarred;
+            }
+          })
+          .toList()
+          .listEmailIds;
+
       consumeState(_markAsStarMultipleEmailInteractor.execute(
         sessionCurrent!,
         accountId.value!,
-        listEmail,
+        listEmailIds,
         markStarAction));
     }
   }
 
-  void _markAsStarMultipleEmailSuccess(Success success) {
-    MarkStarAction? markStarAction;
-    int countMarkStarSuccess = 0;
-
-    if (success is MarkAsStarMultipleEmailAllSuccess) {
-      markStarAction = success.markStarAction;
-      countMarkStarSuccess = success.countMarkStarSuccess;
-    } else if (success is MarkAsStarMultipleEmailHasSomeEmailFailure) {
-      markStarAction = success.markStarAction;
-      countMarkStarSuccess = success.countMarkStarSuccess;
-    }
-
-    if (markStarAction != null) {
+  void _markAsStarMultipleEmailSuccess(
+    MarkStarAction markStarAction,
+    int countMarkStarSuccess,
+  ) {
+    if (currentOverlayContext != null && currentContext != null) {
       final message = markStarAction == MarkStarAction.unMarkStar
         ? AppLocalizations.of(currentContext!).marked_unstar_multiple_item(countMarkStarSuccess)
         : AppLocalizations.of(currentContext!).marked_star_multiple_item(countMarkStarSuccess);
 
-      if (currentOverlayContext != null && currentContext != null) {
-        appToast.showToastMessage(
-          currentOverlayContext!,
-          message,
-          leadingSVGIcon: markStarAction == MarkStarAction.unMarkStar
-            ? imagePaths.icUnStar
-            : imagePaths.icStar);
-      }
+      appToast.showToastMessage(
+        currentOverlayContext!,
+        message,
+        leadingSVGIcon: markStarAction == MarkStarAction.unMarkStar
+          ? imagePaths.icUnStar
+          : imagePaths.icStar,
+      );
     }
   }
 

@@ -224,8 +224,16 @@ mixin EmailActionController {
     mailboxDashBoardController.deleteEmailPermanently(email);
   }
 
-  void markAsEmailRead(PresentationEmail presentationEmail, ReadActions readActions, MarkReadAction markReadAction) async {
-    mailboxDashBoardController.markAsEmailRead(presentationEmail, readActions, markReadAction);
+  void markAsEmailRead(
+    PresentationEmail presentationEmail,
+    ReadActions readActions,
+    MarkReadAction markReadAction,
+  ) {
+    mailboxDashBoardController.markAsEmailRead(
+      presentationEmail.id!,
+      readActions,
+      markReadAction,
+    );
   }
 
   void markAsStarEmail(PresentationEmail presentationEmail, MarkStarAction action) {

@@ -17,7 +17,7 @@ class MarkAsMultipleEmailReadInteractor {
   Stream<Either<Failure, Success>> execute(
     Session session,
     AccountId accountId,
-    List<Email> emails,
+    List<EmailId> emailIds,
     ReadActions readAction
   ) async* {
     try {
@@ -31,25 +31,24 @@ class MarkAsMultipleEmailReadInteractor {
       final currentMailboxState = listState.first;
       final currentEmailState = listState.last;
 
-      final listEmailNeedMarkAsRead = emails
-          .where((email) => readAction == ReadActions.markAsUnread ? email.hasRead : !email.hasRead)
-          .toList();
+      final result = await _emailRepository.markAsRead(
+        session,
+        accountId,
+        emailIds,
+        readAction,
+      );
 
-      final result = await _emailRepository.markAsRead(session, accountId, listEmailNeedMarkAsRead, readAction);
-
-      if (listEmailNeedMarkAsRead.length == result.length) {
-        final countMarkAsReadSuccess = emails.length;
+      if (emailIds.length == result.length) {
         yield Right(MarkAsMultipleEmailReadAllSuccess(
-            countMarkAsReadSuccess,
+            result.length,
             readAction,
             currentEmailState: currentEmailState,
             currentMailboxState: currentMailboxState));
       } else if (result.isEmpty) {
         yield Left(MarkAsMultipleEmailReadAllFailure(readAction));
       } else {
-        final countMarkAsReadSuccess = emails.length - (listEmailNeedMarkAsRead.length - result.length);
         yield Right(MarkAsMultipleEmailReadHasSomeEmailFailure(
-            countMarkAsReadSuccess,
+            result.length,
             readAction,
             currentEmailState: currentEmailState,
             currentMailboxState: currentMailboxState));
