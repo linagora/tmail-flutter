@@ -78,7 +78,7 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<List<Email>> markAsMailboxRead(
+  Future<List<EmailId>> markAsMailboxRead(
       Session session,
       AccountId accountId,
       MailboxId mailboxId,

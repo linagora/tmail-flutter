@@ -44,13 +44,11 @@ import 'package:model/account/authentication_type.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
-import 'package:model/email/email_property.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
-import 'package:model/extensions/list_email_extension.dart';
 import 'package:model/extensions/list_email_id_extension.dart';
 import 'package:model/extensions/mailbox_id_extension.dart';
 import 'package:model/extensions/session_extension.dart';
@@ -239,24 +237,18 @@ class EmailAPI with HandleSetErrorMixin {
     }
   }
 
-  Future<List<Email>> markAsRead(
+  Future<List<EmailId>> markAsRead(
     Session session,
     AccountId accountId,
-    List<Email> emails,
-    ReadActions readActions
+    List<EmailId> emailIds,
+    ReadActions readActions,
   ) async {
     final setEmailMethod = SetEmailMethod(accountId)
-      ..addUpdates(emails.listEmailIds.generateMapUpdateObjectMarkAsRead(readActions));
-
-    final getEmailMethod = GetEmailMethod(accountId)
-      ..addIds(emails.listEmailIds.toIds().toSet())
-      ..addProperties(Properties({EmailProperty.keywords}));
+      ..addUpdates(emailIds.generateMapUpdateObjectMarkAsRead(readActions));
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
-    requestBuilder.invocation(setEmailMethod);
-
-    final getEmailInvocation = requestBuilder.invocation(getEmailMethod);
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
     final capabilities = setEmailMethod.requiredCapabilities
       .toCapabilitiesSupportTeamMailboxes(session, accountId);
@@ -266,15 +258,22 @@ class EmailAPI with HandleSetErrorMixin {
       .build()
       .execute();
 
-    final getEmailResponse = response.parse<GetEmailResponse>(
-      getEmailInvocation.methodCallId,
-      GetEmailResponse.deserialize);
+    final setEmailResponse = response.parse<SetEmailResponse>(
+      setEmailInvocation.methodCallId,
+      SetEmailResponse.deserialize,
+    );
 
-    return Future.sync(() async {
-      return getEmailResponse!.list;
-    }).catchError((error) {
-      throw error;
-    });
+    final emailIdUpdated = setEmailResponse?.updated
+      ?.keys
+      .map((id) => EmailId(id))
+      .toList() ?? [];
+    final mapErrors = handleSetResponse([setEmailResponse]);
+
+    if (emailIdUpdated.isNotEmpty) {
+      return emailIdUpdated;
+    } else {
+      throw SetMethodException(mapErrors);
+    }
   }
 
   Future<List<DownloadTaskId>> downloadAttachments(
@@ -449,24 +448,18 @@ class EmailAPI with HandleSetErrorMixin {
     return listEmailIdRequest.where((emailId) => listUpdated.expand((e) => e).toList().contains(emailId.id)).toList();
   }
 
-  Future<List<Email>> markAsStar(
+  Future<List<EmailId>> markAsStar(
     Session session,
     AccountId accountId,
-    List<Email> emails,
+    List<EmailId> emailIds,
     MarkStarAction markStarAction
   ) async {
     final setEmailMethod = SetEmailMethod(accountId)
-      ..addUpdates(emails.listEmailIds.generateMapUpdateObjectMarkAsStar(markStarAction));
-
-    final getEmailMethod = GetEmailMethod(accountId)
-      ..addIds(emails.listEmailIds.toIds().toSet())
-      ..addProperties(Properties({EmailProperty.keywords}));
+      ..addUpdates(emailIds.generateMapUpdateObjectMarkAsStar(markStarAction));
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
-    requestBuilder.invocation(setEmailMethod);
-
-    final getEmailInvocation = requestBuilder.invocation(getEmailMethod);
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
     final capabilities = setEmailMethod.requiredCapabilities
       .toCapabilitiesSupportTeamMailboxes(session, accountId);
@@ -476,15 +469,22 @@ class EmailAPI with HandleSetErrorMixin {
       .build()
       .execute();
 
-    final getEmailResponse = response.parse<GetEmailResponse>(
-      getEmailInvocation.methodCallId,
-      GetEmailResponse.deserialize);
+    final setEmailResponse = response.parse<SetEmailResponse>(
+      setEmailInvocation.methodCallId,
+      SetEmailResponse.deserialize,
+    );
 
-    return Future.sync(() async {
-      return getEmailResponse!.list;
-    }).catchError((error) {
-      throw error;
-    });
+    final emailIdUpdated = setEmailResponse?.updated
+        ?.keys
+        .map((id) => EmailId(id))
+        .toList() ?? [];
+    final mapErrors = handleSetResponse([setEmailResponse]);
+
+    if (emailIdUpdated.isNotEmpty) {
+      return emailIdUpdated;
+    } else {
+      throw SetMethodException(mapErrors);
+    }
   }
 
   Future<Email> saveEmailAsDrafts(
@@ -756,7 +756,7 @@ class EmailAPI with HandleSetErrorMixin {
     }
   }
 
-  Future<Email> storeEventAttendanceStatus(
+  Future<void> storeEventAttendanceStatus(
     Session session,
     AccountId accountId,
     EmailId emailId,
@@ -765,15 +765,9 @@ class EmailAPI with HandleSetErrorMixin {
     final setEmailMethod = SetEmailMethod(accountId)
       ..addUpdates(emailId.generateMapUpdateObjectEventAttendanceStatus(eventActionType));
 
-    final getEmailMethod = GetEmailMethod(accountId)
-      ..addIds({emailId.id})
-      ..addProperties(Properties({EmailProperty.keywords}));
-
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
-    requestBuilder.invocation(setEmailMethod);
-
-    final getEmailInvocation = requestBuilder.invocation(getEmailMethod);
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
     final capabilities = setEmailMethod.requiredCapabilities
       .toCapabilitiesSupportTeamMailboxes(session, accountId);
@@ -783,16 +777,19 @@ class EmailAPI with HandleSetErrorMixin {
       .build()
       .execute();
 
-    final getEmailResponse = response.parse<GetEmailResponse>(
-      getEmailInvocation.methodCallId,
-      GetEmailResponse.deserialize);
+    final setEmailResponse = response.parse<SetEmailResponse>(
+      setEmailInvocation.methodCallId,
+      SetEmailResponse.deserialize,
+    );
 
-    final listEmails = getEmailResponse?.list ?? [];
+    final emailIdUpdated = setEmailResponse?.updated
+        ?.keys
+        .map((id) => EmailId(id))
+        .toList() ?? [];
+    final mapErrors = handleSetResponse([setEmailResponse]);
 
-    if (listEmails.isNotEmpty) {
-      return listEmails.first;
-    } else {
-      throw NotFoundEmailException();
+    if (emailIdUpdated.isEmpty) {
+      throw SetMethodException(mapErrors);
     }
   }
 }

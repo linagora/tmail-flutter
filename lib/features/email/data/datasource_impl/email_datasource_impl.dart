@@ -75,14 +75,14 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<List<Email>> markAsRead(
+  Future<List<EmailId>> markAsRead(
     Session session,
     AccountId accountId,
-    List<Email> emails,
-    ReadActions readActions
+    List<EmailId> emailIds,
+    ReadActions readActions,
   ) {
     return Future.sync(() async {
-      return await emailAPI.markAsRead(session, accountId, emails, readActions);
+      return await emailAPI.markAsRead(session, accountId, emailIds, readActions);
     }).catchError(_exceptionThrower.throwException);
   }
 
@@ -119,9 +119,19 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<List<Email>> markAsStar(Session session, AccountId accountId, List<Email> emails, MarkStarAction markStarAction) {
+  Future<List<EmailId>> markAsStar(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+    MarkStarAction markStarAction,
+  ) {
     return Future.sync(() async {
-      return await emailAPI.markAsStar(session, accountId, emails, markStarAction);
+      return await emailAPI.markAsStar(
+        session,
+        accountId,
+        emailIds,
+        markStarAction,
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 
@@ -318,7 +328,7 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<Email> storeEventAttendanceStatus(
+  Future<void> storeEventAttendanceStatus(
     Session session,
     AccountId accountId,
     EmailId emailId,

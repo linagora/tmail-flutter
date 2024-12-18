@@ -120,12 +120,17 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<List<Email>> markAsRead(Session session, AccountId accountId, List<Email> emails, ReadActions readActions) {
+  Future<List<EmailId>> markAsRead(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+    ReadActions readActions,
+  ) {
     throw UnimplementedError();
   }
 
   @override
-  Future<List<Email>> markAsStar(Session session, AccountId accountId, List<Email> emails, MarkStarAction markStarAction) {
+  Future<List<EmailId>> markAsStar(Session session, AccountId accountId, List<EmailId> emailIds, MarkStarAction markStarAction) {
     throw UnimplementedError();
   }
 

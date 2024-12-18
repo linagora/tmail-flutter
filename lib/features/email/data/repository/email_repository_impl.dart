@@ -83,13 +83,18 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<List<Email>> markAsRead(
+  Future<List<EmailId>> markAsRead(
     Session session,
     AccountId accountId,
-    List<Email> emails,
-    ReadActions readActions
+    List<EmailId> emailIds,
+    ReadActions readActions,
   ) {
-    return emailDataSource[DataSourceType.network]!.markAsRead(session, accountId, emails, readActions);
+    return emailDataSource[DataSourceType.network]!.markAsRead(
+      session,
+      accountId,
+      emailIds,
+      readActions,
+    );
   }
 
   @override
@@ -124,13 +129,18 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<List<Email>> markAsStar(
+  Future<List<EmailId>> markAsStar(
     Session session,
     AccountId accountId,
-    List<Email> emails,
+    List<EmailId> emailIds,
     MarkStarAction markStarAction
   ) {
-    return emailDataSource[DataSourceType.network]!.markAsStar(session, accountId, emails, markStarAction);
+    return emailDataSource[DataSourceType.network]!.markAsStar(
+      session,
+      accountId,
+      emailIds,
+      markStarAction,
+    );
   }
 
   @override
@@ -303,7 +313,7 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<Email> storeEventAttendanceStatus(
+  Future<void> storeEventAttendanceStatus(
     Session session,
     AccountId accountId,
     EmailId emailId,
