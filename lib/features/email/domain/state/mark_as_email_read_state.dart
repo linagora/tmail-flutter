@@ -7,12 +7,12 @@ import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 
 class MarkAsEmailReadSuccess extends UIActionState {
-  final Email updatedEmail;
+  final EmailId emailId;
   final ReadActions readActions;
   final MarkReadAction markReadAction;
 
   MarkAsEmailReadSuccess(
-    this.updatedEmail,
+    this.emailId,
     this.readActions,
     this.markReadAction,
     {
@@ -22,7 +22,7 @@ class MarkAsEmailReadSuccess extends UIActionState {
   ) : super(currentEmailState, currentMailboxState);
 
   @override
-  List<Object?> get props => [updatedEmail, readActions, markReadAction, ...super.props];
+  List<Object?> get props => [emailId, readActions, markReadAction, ...super.props];
 }
 
 class MarkAsEmailReadFailure extends FeatureFailure {

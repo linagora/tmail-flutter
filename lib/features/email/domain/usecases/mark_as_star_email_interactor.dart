@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -12,19 +13,24 @@ class MarkAsStarEmailInteractor {
 
   MarkAsStarEmailInteractor(this.emailRepository);
 
-  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, Email email, MarkStarAction markStarAction) async* {
+  Stream<Either<Failure, Success>> execute(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    MarkStarAction markStarAction,
+  ) async* {
     try {
       final currentEmailState = await emailRepository.getEmailState(session, accountId);
-      final result = await emailRepository.markAsStar(session, accountId, [email], markStarAction);
-      if (result.isNotEmpty) {
-        final updatedEmail = email.updatedEmail(newKeywords: result.first.keywords);
-        yield Right(MarkAsStarEmailSuccess(
-            updatedEmail,
-            markStarAction,
-            currentEmailState: currentEmailState));
-      } else {
-        yield Left(MarkAsStarEmailFailure(markStarAction));
-      }
+      await emailRepository.markAsStar(
+        session,
+        accountId,
+        [emailId],
+        markStarAction,
+      );
+      yield Right(MarkAsStarEmailSuccess(
+        markStarAction,
+        currentEmailState: currentEmailState,
+      ));
     } catch (e) {
       yield Left(MarkAsStarEmailFailure(markStarAction, exception: e));
     }

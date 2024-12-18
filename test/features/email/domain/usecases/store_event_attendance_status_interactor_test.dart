@@ -60,7 +60,6 @@ void main() {
           Right(StoreEventAttendanceStatusLoading()),
           Right(StoreEventAttendanceStatusSuccess(
             eventActionType,
-            updatedEmail,
             currentEmailState: currentEmailState)),
         ]),
       );
