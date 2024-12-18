@@ -316,10 +316,7 @@ class ThreadController extends BaseController with EmailActionController {
 
     ever(mailboxDashBoardController.emailUIAction, (action) {
       if (action is RefreshChangeEmailAction) {
-        if (action.newState != _currentEmailState) {
-          _refreshEmailChanges();
-        }
-        mailboxDashBoardController.clearEmailUIAction();
+        _refreshEmailChanges(newState: action.newState);
       } else if (action is RefreshAllEmailAction) {
         refreshAllEmail();
         mailboxDashBoardController.clearEmailUIAction();
@@ -516,28 +513,33 @@ class ThreadController extends BaseController with EmailActionController {
     return limit;
   }
 
-  void _refreshEmailChanges({jmap.State? currentEmailState}) {
-    log('ThreadController::_refreshEmailChanges(): currentEmailState: $currentEmailState');
+  void _refreshEmailChanges({jmap.State? newState}) {
+    log('ThreadController::_refreshEmailChanges(): newState: $newState');
     if (searchController.isSearchEmailRunning) {
       _searchEmail(limit: limitEmailFetched, needRefreshSearchState: true);
     } else {
-      final newEmailState = currentEmailState ?? _currentEmailState;
-      log('ThreadController::_refreshEmailChanges(): newEmailState: $newEmailState');
-      if (_session != null && _accountId != null && newEmailState != null) {
-        consumeState(_refreshChangesEmailsInMailboxInteractor.execute(
+      if (_currentEmailState == null ||
+          _currentEmailState == newState ||
+          _session == null ||
+          _accountId == null) {
+        return;
+      }
+      consumeState(_refreshChangesEmailsInMailboxInteractor.execute(
+        _session!,
+        _accountId!,
+        _currentEmailState!,
+        sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
+        propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
           _session!,
           _accountId!,
-          newEmailState,
-          sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
-          propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
-          propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-          emailFilter: EmailFilter(
-            filter: _getFilterCondition(mailboxIdSelected: selectedMailboxId),
-            filterOption: mailboxDashBoardController.filterMessageOption.value,
-            mailboxId: selectedMailboxId
-          )
-        ));
-      }
+        ),
+        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+        emailFilter: EmailFilter(
+          filter: _getFilterCondition(mailboxIdSelected: selectedMailboxId),
+          filterOption: mailboxDashBoardController.filterMessageOption.value,
+          mailboxId: selectedMailboxId,
+        ),
+      ));
     }
   }
 
