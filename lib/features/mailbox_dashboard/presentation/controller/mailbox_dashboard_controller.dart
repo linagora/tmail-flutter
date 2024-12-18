@@ -401,7 +401,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     } else if (success is DeleteSendingEmailSuccess) {
       getAllSendingEmails();
     } else if (success is UnsubscribeEmailSuccess) {
-      _handleUnsubscribeMailSuccess(success.newEmail);
+      _handleUnsubscribeMailSuccess();
     } else if (success is RestoreDeletedMessageSuccess) {
       dispatchMailboxUIAction(RefreshChangeMailboxAction(success.currentMailboxState));
       _handleRestoreDeletedMessageSuccess(success.emailRecoveryAction.id!);
@@ -2599,13 +2599,16 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     }
   }
 
-  void _handleUnsubscribeMailSuccess(Email email) {
+  void _handleUnsubscribeMailSuccess() {
     if (currentContext != null && currentOverlayContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).unsubscribedFromThisMailingList);
     }
-    setSelectedEmail(email.toPresentationEmail());
+    final newEmail = selectedEmail.value?.updateKeywords({
+      KeyWordIdentifierExtension.unsubscribeMail: true,
+    });
+    setSelectedEmail(newEmail);
   }
 
   void _replaceBrowserHistory({Uri? uri}) {
