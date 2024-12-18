@@ -678,17 +678,13 @@ class EmailAPI with HandleSetErrorMixin {
     }
   }
 
-  Future<Email> unsubscribeMail(Session session, AccountId accountId, EmailId emailId) async {
+  Future<void> unsubscribeMail(Session session, AccountId accountId, EmailId emailId) async {
     final setEmailMethod = SetEmailMethod(accountId)
       ..addUpdates(emailId.generateMapUpdateObjectUnsubscribeMail());
 
-    final getEmailMethod = GetEmailMethod(accountId)
-      ..addIds({emailId.id})
-      ..addProperties(ThreadConstants.propertiesDefault);
-
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
     requestBuilder.invocation(setEmailMethod);
-    final getEmailInvocation = requestBuilder.invocation(getEmailMethod);
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
     final capabilities = setEmailMethod.requiredCapabilities.toCapabilitiesSupportTeamMailboxes(session, accountId);
 
@@ -697,14 +693,19 @@ class EmailAPI with HandleSetErrorMixin {
       .build()
       .execute();
 
-    final getEmailResponse = response.parse<GetEmailResponse>(
-      getEmailInvocation.methodCallId,
-      GetEmailResponse.deserialize);
+    final setEmailResponse = response.parse<SetEmailResponse>(
+      setEmailInvocation.methodCallId,
+      SetEmailResponse.deserialize,
+    );
 
-    if (getEmailResponse?.list.isNotEmpty == true) {
-      return getEmailResponse!.list.first;
-    } else {
-      throw NotFoundEmailException();
+    final emailIdUpdated = setEmailResponse?.updated
+        ?.keys
+        .map((id) => EmailId(id))
+        .toList() ?? [];
+    final mapErrors = handleSetResponse([setEmailResponse]);
+
+    if (emailIdUpdated.isEmpty) {
+      throw SetMethodException(mapErrors);
     }
   }
 

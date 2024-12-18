@@ -143,7 +143,7 @@ abstract class EmailDataSource {
 
   Future<SendingEmail> getStoredSendingEmail(AccountId accountId, UserName userName, String sendingId);
 
-  Future<Email> unsubscribeMail(Session session, AccountId accountId, EmailId emailId);
+  Future<void> unsubscribeMail(Session session, AccountId accountId, EmailId emailId);
 
   Future<EmailRecoveryAction> restoreDeletedMessage(RestoredDeletedMessageRequest restoredDeletedMessageRequest);
 
