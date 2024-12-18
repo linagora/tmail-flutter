@@ -1,3 +1,9 @@
+## [0.14.3] - 2024-12-18
+### Fixed
+- #3349 Sanitize HTML when forward/reply/replyAll an email
+- #3349 Sanitize HTML when print email
+- #3349 Add recipients information to the email body when forward/reply/replyAll an email
+
 ## [0.14.3] - 2024-12-16
 ### Fixed
 - Disable Spell check API 
