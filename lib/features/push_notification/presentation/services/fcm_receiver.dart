@@ -20,14 +20,9 @@ class FcmReceiver {
   static const int MAX_COUNT_RETRY_TO_GET_FCM_TOKEN = 3;
 
   Future onInitialFcmListener() async {
-    _onForegroundMessage();
     _onBackgroundMessage();
 
     await _onHandleFcmToken();
-  }
-
-  void _onForegroundMessage() {
-    FirebaseMessaging.onMessage.listen(FcmService.instance.handleFirebaseForegroundMessage);
   }
 
   void _onBackgroundMessage() {

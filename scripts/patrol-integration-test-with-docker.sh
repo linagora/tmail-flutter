@@ -28,7 +28,9 @@ openssl genpkey -algorithm rsa -pkeyopt rsa_keygen_bits:4096 -out jwt_privatekey
 openssl rsa -in jwt_privatekey -pubout -out jwt_publickey
 
 # Replace content of jmap.properties with url.prefix=$BASIC_AUTH_URL
+# and websocket.url.prefix=ws${BASIC_AUTH_URL:4}
 sed -i "s|url.prefix=.*|url.prefix=$BASIC_AUTH_URL|" jmap.properties
+sed -i '' "s|websocket.url.prefix=.*|websocket.url.prefix=ws${BASIC_AUTH_URL:4}|" jmap.properties
 
 echo "Starting services and adding users..."
 docker compose up -d

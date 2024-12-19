@@ -59,15 +59,7 @@ class FcmMessageController extends PushBaseController {
     super.initialize(accountId: accountId, session: session);
 
     _listenTokenStream();
-    _listenForegroundMessageStream();
     _listenBackgroundMessageStream();
-  }
-
-  void _listenForegroundMessageStream() {
-    FcmService.instance.foregroundMessageStreamController
-      ?.stream
-      .debounceTime(const Duration(milliseconds: FcmUtils.durationMessageComing))
-      .listen(_handleForegroundMessageAction);
   }
 
   void _listenBackgroundMessageStream() {
@@ -82,21 +74,6 @@ class FcmMessageController extends PushBaseController {
       ?.stream
       .debounceTime(const Duration(milliseconds: FcmUtils.durationRefreshToken))
       .listen(FcmTokenController.instance.onFcmTokenChanged);
-  }
-
-  void _handleForegroundMessageAction(Map<String, dynamic> payloadData) {
-    log('FcmMessageController::_handleForegroundMessageAction():payloadData: $payloadData | accountId: $accountId');
-    if (accountId != null && session?.username != null) {
-      final stateChange = FcmUtils.instance.convertFirebaseDataMessageToStateChange(payloadData);
-      final mapTypeState = stateChange.getMapTypeState(accountId!);
-      mappingTypeStateToAction(
-        mapTypeState,
-        accountId!,
-        emailChangeListener: EmailChangeListener.instance,
-        mailboxChangeListener: MailboxChangeListener.instance,
-        session!.username,
-        session: session);
-    }
   }
 
   void _handleBackgroundMessageAction(Map<String, dynamic> payloadData) async {

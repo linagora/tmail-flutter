@@ -1,15 +1,11 @@
 
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:tmail_ui_user/features/push_notification/presentation/model/broadcast_message_event_data.dart';
-import 'package:universal_html/html.dart' as html;
 
 class FcmService {
 
-  StreamController<Map<String, dynamic>>? foregroundMessageStreamController;
   StreamController<Map<String, dynamic>>?  backgroundMessageStreamController;
   StreamController<String?>? fcmTokenStreamController;
 
@@ -19,30 +15,10 @@ class FcmService {
 
   static FcmService get instance => _instance;
 
-  void handleFirebaseForegroundMessage(RemoteMessage newRemoteMessage) {
-    log('FcmService::handleFirebaseForegroundMessage():data: ${newRemoteMessage.data}');
-    if (newRemoteMessage.data.isNotEmpty) {
-      foregroundMessageStreamController?.add(newRemoteMessage.data);
-    }
-  }
-
   void handleFirebaseBackgroundMessage(RemoteMessage newRemoteMessage) {
     log('FcmService::handleFirebaseBackgroundMessage():data: ${newRemoteMessage.data}');
     if (newRemoteMessage.data.isNotEmpty) {
       backgroundMessageStreamController?.add(newRemoteMessage.data);
-    }
-  }
-
-  void handleMessageEventBroadcastChannel(html.MessageEvent messageEvent) {
-    log('FcmService::handleMessageEventBroadcastChannel():TYPE: ${messageEvent.data.runtimeType} | DATA: ${messageEvent.data}');
-    try {
-      final jsonEventData = jsonDecode(jsonEncode(messageEvent.data)) as Map<String, dynamic>;
-      final eventData = BroadcastMessageEventData.fromJson(jsonEventData);
-      if (eventData.data?.isNotEmpty == true) {
-        foregroundMessageStreamController?.add(eventData.data!);
-      }
-    } catch (e) {
-      logError('FcmService::handleMessageEventBroadcastChannel: Exception = $e');
     }
   }
 
@@ -53,17 +29,14 @@ class FcmService {
 
   void initialStreamController() {
     log('FcmService::initialStreamController:');
-    foregroundMessageStreamController = StreamController<Map<String, dynamic>>.broadcast();
     backgroundMessageStreamController = StreamController<Map<String, dynamic>>.broadcast();
     fcmTokenStreamController = StreamController<String?>.broadcast();
   }
 
   void closeStream() {
-    foregroundMessageStreamController?.close();
     backgroundMessageStreamController?.close();
     fcmTokenStreamController?.close();
 
-    foregroundMessageStreamController = null;
     backgroundMessageStreamController = null;
     fcmTokenStreamController = null;
   }
