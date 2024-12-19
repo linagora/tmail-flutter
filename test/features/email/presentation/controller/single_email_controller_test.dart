@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:ui';
 
 import 'package:core/core.dart';
@@ -18,7 +19,12 @@ import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_accept_
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/calendar_event_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/html_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
+import 'package:tmail_ui_user/features/email/data/repository/calendar_event_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_accept_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
@@ -32,9 +38,11 @@ import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_i
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_event_attendance_status_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
@@ -46,9 +54,11 @@ import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
+import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:uuid/uuid.dart';
 
+import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/email_fixtures.dart';
 import 'single_email_controller_test.mocks.dart';
 
@@ -91,6 +101,8 @@ const fallbackGenerators = {
   MockSpec<PrintUtils>(),
   MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
+  MockSpec<CalendarEventDataSource>(),
+  MockSpec<DioClient>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -361,6 +373,139 @@ void main() {
 
     tearDown(() {
       debugDefaultTargetPlatformOverride = null;
+    });
+  });
+
+  group('_parseCalendarEventAction method test:', () {
+    final calendarEventDataSource = MockCalendarEventDataSource();
+    final calendarEventRepository = CalendarEventRepositoryImpl(
+      {DataSourceType.network :calendarEventDataSource},
+      HtmlDataSourceImpl(
+        HtmlAnalyzer(HtmlTransform(
+          MockDioClient(),
+          const HtmlEscape(),
+        )),
+        CacheExceptionThrower(),
+      ),
+    );
+
+    setUp(() {
+      Get.put(ParseCalendarEventInteractor(calendarEventRepository));
+    });
+
+    tearDown(() {
+      Get.delete<ParseCalendarEventInteractor>();
+    });
+
+    test(
+      'should transform all calendar event description url to a tag '
+      'and all new line to <br> tag',
+    () async {
+      // arrange
+      const eventDescription = '\nhttps://example1.com\nhttps://example2.com';
+      const expectedEventDescription = '<html><head></head><body>'
+        '<br>'
+        '<a href="https://example1.com" target="_blank" rel="noreferrer">example1.com</a>'
+        '<br>'
+        '<a href="https://example2.com" target="_blank" rel="noreferrer">example2.com</a>'
+        '</body></html>';
+      final blobId = Id('abc123');
+      final calendarEvent = CalendarEvent(
+        description: eventDescription,
+      );
+      final blobCalendarEvents = [
+        BlobCalendarEvent(
+          blobId: blobId,
+          calendarEventList: [calendarEvent],
+        ),
+      ];
+      when(calendarEventDataSource.parse(any, any))
+        .thenAnswer((_) async => blobCalendarEvents);
+
+      when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(PresentationEmail()));
+      when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(EmailUIAction()));
+      when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+      when(mailboxDashboardController.accountId).thenReturn(Rxn(AccountFixtures.aliceAccountId));
+      when(emailSupervisorController.scrollPhysicsPageView).thenReturn(Rxn());
+
+      singleEmailController.onInit();
+      mailboxDashboardController.accountId.refresh();
+      
+      // act
+      singleEmailController.parseCalendarEventAction(
+        accountId: AccountFixtures.aliceAccountId,
+        blobIds: {blobId},
+      );
+      await untilCalled(calendarEventDataSource.parse(any, any));
+      await Future.delayed(Duration.zero);
+      
+      // assert
+      expect(
+        singleEmailController.blobCalendarEvent.value,
+        BlobCalendarEvent(
+          blobId: blobId,
+          calendarEventList: [CalendarEvent(description: expectedEventDescription)],
+        ),
+      );
+    });
+
+    test(
+      'should transform all calendar event description url to a tag '
+      'and all new line to <br> tag '
+      'and remove all xss attempt',
+    () async {
+      // arrange
+      const eventDescription = '\nhttps://example1.com'
+        '\nhttps://example2.com'
+        '\n<script>alert(1)</script>'
+        '\n<a href="javascript:alert(1)">href xss</a>';
+      const expectedEventDescription = '<html><head></head><body>'
+        '<br>'
+        '<a href="https://example1.com" target="_blank" rel="noreferrer">example1.com</a>'
+        '<br>'
+        '<a href="https://example2.com" target="_blank" rel="noreferrer">example2.com</a>'
+        '<br>'
+        '<br>'
+        '<a>href xss</a>'
+        '</body></html>';
+      final blobId = Id('abc123');
+      final calendarEvent = CalendarEvent(
+        description: eventDescription,
+      );
+      final blobCalendarEvents = [
+        BlobCalendarEvent(
+          blobId: blobId,
+          calendarEventList: [calendarEvent],
+        ),
+      ];
+      when(calendarEventDataSource.parse(any, any))
+        .thenAnswer((_) async => blobCalendarEvents);
+
+      when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(PresentationEmail()));
+      when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(EmailUIAction()));
+      when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+      when(mailboxDashboardController.accountId).thenReturn(Rxn(AccountFixtures.aliceAccountId));
+      when(emailSupervisorController.scrollPhysicsPageView).thenReturn(Rxn());
+
+      singleEmailController.onInit();
+      mailboxDashboardController.accountId.refresh();
+      
+      // act
+      singleEmailController.parseCalendarEventAction(
+        accountId: AccountFixtures.aliceAccountId,
+        blobIds: {blobId},
+      );
+      await untilCalled(calendarEventDataSource.parse(any, any));
+      await Future.delayed(Duration.zero);
+      
+      // assert
+      expect(
+        singleEmailController.blobCalendarEvent.value,
+        BlobCalendarEvent(
+          blobId: blobId,
+          calendarEventList: [CalendarEvent(description: expectedEventDescription)],
+        ),
+      );
     });
   });
 }
