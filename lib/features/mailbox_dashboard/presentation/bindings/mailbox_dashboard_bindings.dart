@@ -52,14 +52,11 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_r
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/search_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/session_storage_composer_datasource.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/spam_report_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/hive_spam_report_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/local_spam_report_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/search_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/session_storage_composer_datasoure_impl.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/spam_report_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/network/spam_report_api.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/search_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/spam_report_repository_impl.dart';
@@ -71,7 +68,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_app
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spam_mailbox_cached_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spam_report_state_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_unread_spam_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
@@ -153,7 +149,6 @@ class MailboxDashBoardBindings extends BaseBindings {
 
     Get.put(SpamReportController(
       Get.find<StoreSpamReportInteractor>(),
-      Get.find<GetUnreadSpamMailboxInteractor>(),
       Get.find<StoreSpamReportStateInteractor>(),
       Get.find<GetSpamReportStateInteractor>(),
       Get.find<GetSpamMailboxCachedInteractor>()));
@@ -198,7 +193,6 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<PrintFileDataSource>(() => Get.find<PrintFileDataSourceImpl>());
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
     Get.lazyPut<SessionStorageComposerDatasource>(() => Get.find<SessionStorageComposerDatasourceImpl>());
-    Get.lazyPut<SpamReportDataSource>(() => Get.find<SpamReportDataSourceImpl>());
     Get.lazyPut<MailboxDataSource>(() => Get.find<MailboxDataSourceImpl>());
     Get.lazyPut<MailboxCacheDataSourceImpl>(() => Get.find<MailboxCacheDataSourceImpl>());
     Get.lazyPut<ServerSettingsDataSource>(
@@ -244,10 +238,6 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => SessionStorageComposerDatasourceImpl(
       Get.find<HtmlTransform>(),
       Get.find<CacheExceptionThrower>()));
-     Get.lazyPut(() => SpamReportDataSourceImpl(
-      Get.find<SpamReportApi>(),
-      Get.find<RemoteExceptionThrower>(),
-    ));    
     Get.lazyPut(() => LocalSpamReportDataSourceImpl(
       Get.find<LocalSpamReportManager>(),
       Get.find<CacheExceptionThrower>(),
@@ -329,8 +319,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<EmailRepository>()));
     Get.lazyPut(() => StoreSpamReportInteractor(
       Get.find<SpamReportRepository>()));
-    Get.lazyPut(() => GetUnreadSpamMailboxInteractor(
-      Get.find<SpamReportRepository>()));
     Get.lazyPut(() => StoreSpamReportStateInteractor(
       Get.find<SpamReportRepository>()));
     Get.lazyPut(() => GetSpamReportStateInteractor(
@@ -405,7 +393,6 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => ComposerCacheRepositoryImpl(Get.find<SessionStorageComposerDatasource>()));
     Get.lazyPut(() => SpamReportRepositoryImpl(
       {
-        DataSourceType.network: Get.find<SpamReportDataSource>(),
         DataSourceType.local: Get.find<LocalSpamReportDataSourceImpl>(),
         DataSourceType.hiveCache: Get.find<HiveSpamReportDataSourceImpl>()
       },
