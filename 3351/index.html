@@ -112,33 +112,15 @@ _flutter.buildConfig = {"engineRevision":"edd8546116457bdf1c5bdfb13ecb9463d2bb5e
     
     loadLanguageResources().finally(initialTmailApp);
 
-    if ('serviceWorker' in navigator) {
-      navigator
-        .serviceWorker
-        .getRegistrations()
-        .then(async function(registrations) {
-          try {
-            await Promise.all(registrations.map(function(registration) {
-              return registration.unregister();
-            }));
-          } catch (error) {
-            console.log('[Twake Mail] Error unregistering service worker: ', error);
-          }
-          _flutter.loader.load({
-            onEntrypointLoaded: async function(engineInitializer) {
-              const appRunner = await engineInitializer.initializeEngine();
-              await appRunner.runApp();
-            }
-          });
-        });
-    } else {
-      _flutter.loader.load({
-        onEntrypointLoaded: async function(engineInitializer) {
-          const appRunner = await engineInitializer.initializeEngine();
-          await appRunner.runApp();
-        }
-      });
-    }
+    _flutter.loader.load({
+      serviceWorkerSettings: {
+        serviceWorkerVersion: "3918250360",
+      },
+      onEntrypointLoaded: async function(engineInitializer) {
+        const appRunner = await engineInitializer.initializeEngine();
+        await appRunner.runApp();
+      }
+    });
   </script>
   <script src="https://unpkg.com/pica/dist/pica.min.js" ></script> 
 </body>
