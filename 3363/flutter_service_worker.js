@@ -339,7 +339,7 @@ const RESOURCES = {"icons/Icon-maskable-192.png": "009a8eae32218365ab20cce81aa89
 "login-callback.html": "e17f83d4982ea3cce6e692b31c4b4beb",
 "logout-callback.html": "999326dc9a0f37c9a9a4280b4a35dc51",
 "main.dart.js_7.part.js": "4d54d90665240ca813abc2470fa6c2c2",
-"flutter_bootstrap.js": "c5f224fd66c5a9be7462a7183bb52a44",
+"flutter_bootstrap.js": "afb6272a7b18a71cde9f7d7d50b9455e",
 "worker_service/img/ic-close-1x.png": "27b9c71ff0cf463da5f1affb11b4c204",
 "worker_service/img/tmail-3x.png": "7b5f8e671c4f39ae5d1a67b46fe494d7",
 "worker_service/img/tmail-2x.png": "55f91555db37edb9ed0608f7ee3f37ee",
