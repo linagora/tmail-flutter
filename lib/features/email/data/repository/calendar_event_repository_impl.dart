@@ -76,10 +76,12 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
     TransformConfiguration transformConfiguration,
   ) async {
     return calendarEvent.copyWith(
-      description: await _htmlDataSource.transformHtmlEmailContent(
-        calendarEvent.description ?? '',
-        transformConfiguration,
-      ),
+      description: calendarEvent.description?.trim().isNotEmpty == true
+        ? await _htmlDataSource.transformHtmlEmailContent(
+            calendarEvent.description!,
+            transformConfiguration,
+          )
+        : calendarEvent.description,
     );
   }
 }
