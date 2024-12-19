@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:debounce_throttle/debounce_throttle.dart';
 import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -16,6 +17,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/controller
 import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
@@ -32,6 +34,7 @@ class WebSocketController extends PushBaseController {
   WebSocketChannel? _webSocketChannel;
   Timer? _webSocketPingTimer;
   StreamSubscription? _webSocketSubscription;
+  Debouncer<StateChange?>? _stateChangeDebouncer;
 
   @override
   void handleFailureViewState(Failure failure) {
@@ -39,6 +42,7 @@ class WebSocketController extends PushBaseController {
     _webSocketSubscription?.cancel();
     _webSocketChannel = null;
     _webSocketPingTimer?.cancel();
+    _stateChangeDebouncer?.cancel();
     if (failure is WebSocketConnectionFailed) {
       _handleWebSocketConnectionRetry();
     }
@@ -81,6 +85,7 @@ class WebSocketController extends PushBaseController {
     _enableWebSocketPush();
     _pingWebSocket();
     _listenToWebSocket();
+    _initStateChangeDeouncerTimer();
   }
 
   void _handleWebSocketConnectionRetry() {
@@ -116,14 +121,7 @@ class WebSocketController extends PushBaseController {
 
         try {
           final stateChange = StateChange.fromJson(data);
-          final mapTypeState = stateChange.getMapTypeState(accountId!);
-          mappingTypeStateToAction(
-            mapTypeState,
-            accountId!,
-            emailChangeListener: EmailChangeListener.instance,
-            mailboxChangeListener: MailboxChangeListener.instance,
-            session!.username,
-            session: session);
+          _stateChangeDebouncer?.value = stateChange;
         } catch (e) {
           logError('WebSocketController::_listenToWebSocket(): Data is not StateChange');
         }
@@ -137,6 +135,29 @@ class WebSocketController extends PushBaseController {
         log('WebSocketController::_listenToWebSocket():onDone');
         _handleWebSocketConnectionRetry();
       },
+    );
+  }
+
+  void _initStateChangeDeouncerTimer() {
+    _stateChangeDebouncer = Debouncer<StateChange?>(
+      const Duration(milliseconds: FcmUtils.durationMessageComing),
+      initialValue: null,
+    );
+
+    _stateChangeDebouncer?.values.listen(_handleStateChange);
+  }
+
+  void _handleStateChange(StateChange? stateChange) {
+    if (stateChange == null || accountId == null || session == null) return;
+
+    final mapTypeState = stateChange.getMapTypeState(accountId!);
+    mappingTypeStateToAction(
+      mapTypeState,
+      accountId!,
+      emailChangeListener: EmailChangeListener.instance,
+      mailboxChangeListener: MailboxChangeListener.instance,
+      session!.username,
+      session: session,
     );
   }
 }

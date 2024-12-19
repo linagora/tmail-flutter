@@ -45,7 +45,12 @@ abstract class EmailRepository {
     }
   );
 
-  Future<List<Email>> markAsRead(Session session, AccountId accountId, List<Email> emails, ReadActions readActions);
+  Future<List<EmailId>> markAsRead(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+    ReadActions readActions,
+  );
 
   Future<List<DownloadTaskId>> downloadAttachments(
     List<Attachment> attachments,
@@ -74,10 +79,10 @@ abstract class EmailRepository {
 
   Future<List<EmailId>> moveToMailbox(Session session, AccountId accountId, MoveToMailboxRequest moveRequest);
 
-  Future<List<Email>> markAsStar(
+  Future<List<EmailId>> markAsStar(
     Session session,
     AccountId accountId,
-    List<Email> emails,
+    List<EmailId> emailIds,
     MarkStarAction markStarAction
   );
 
@@ -139,7 +144,7 @@ abstract class EmailRepository {
     TransformConfiguration configuration
   );
 
-  Future<Email> unsubscribeMail(Session session, AccountId accountId, EmailId emailId);
+  Future<void> unsubscribeMail(Session session, AccountId accountId, EmailId emailId);
 
   Future<EmailRecoveryAction> restoreDeletedMessage(RestoredDeletedMessageRequest restoredDeletedMessageRequest);
 
@@ -147,7 +152,7 @@ abstract class EmailRepository {
 
   Future<void> printEmail(EmailPrint emailPrint);
 
-  Future<Email> storeEventAttendanceStatus(
+  Future<void> storeEventAttendanceStatus(
     Session session,
     AccountId accountId,
     EmailId emailId,

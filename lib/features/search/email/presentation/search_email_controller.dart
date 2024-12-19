@@ -31,13 +31,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_e
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
-import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/store_event_attendance_status_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
+import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -62,11 +56,6 @@ import 'package:tmail_ui_user/features/search/email/presentation/model/search_mo
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
@@ -112,7 +101,7 @@ class SearchEmailController extends BaseController
   final resultSearchViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
   late Debouncer<String> _deBouncerTime;
-  late Worker dashBoardViewStateWorker;
+  late Worker emailUIActionWorker;
   late Worker dashBoardActionWorker;
   late SearchMoreState searchMoreState;
   late bool canSearchMore;
@@ -246,30 +235,6 @@ class SearchEmailController extends BaseController
   }
 
   void _initWorkerListener() {
-    dashBoardViewStateWorker = ever(mailboxDashBoardController.viewState, (viewState) {
-      viewState.map((success) {
-        if (success is MarkAsEmailReadSuccess ||
-            success is MoveToMailboxSuccess ||
-            success is MarkAsStarEmailSuccess ||
-            success is DeleteEmailPermanentlySuccess ||
-            success is MarkAsMultipleEmailReadAllSuccess ||
-            success is MarkAsMultipleEmailReadHasSomeEmailFailure ||
-            success is MarkAsStarMultipleEmailAllSuccess ||
-            success is MarkAsStarMultipleEmailHasSomeEmailFailure ||
-            success is MoveMultipleEmailToMailboxAllSuccess ||
-            success is MoveMultipleEmailToMailboxHasSomeEmailFailure ||
-            success is EmptyTrashFolderSuccess ||
-            success is EmptySpamFolderSuccess ||
-            success is DeleteMultipleEmailsPermanentlyAllSuccess ||
-            success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure ||
-            success is UnsubscribeEmailSuccess ||
-            success is StoreEventAttendanceStatusSuccess
-        ) {
-          _refreshEmailChanges();
-        }
-      });
-    });
-
     dashBoardActionWorker = ever(
       mailboxDashBoardController.dashBoardAction,
       (action) {
@@ -281,6 +246,15 @@ class SearchEmailController extends BaseController
           mailboxDashBoardController.clearDashBoardAction();
         }
       }
+    );
+
+    emailUIActionWorker = ever(
+      mailboxDashBoardController.emailUIAction,
+      (action) {
+        if (action is RefreshChangeEmailAction) {
+          _refreshEmailChanges();
+        }
+      },
     );
   }
 
@@ -1002,7 +976,7 @@ class SearchEmailController extends BaseController
     resultSearchScrollController.dispose();
     listSearchFilterScrollController.dispose();
     _deBouncerTime.cancel();
-    dashBoardViewStateWorker.dispose();
+    emailUIActionWorker.dispose();
     dashBoardActionWorker.dispose();
     super.onClose();
   }

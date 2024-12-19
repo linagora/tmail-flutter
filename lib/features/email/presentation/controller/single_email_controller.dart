@@ -20,6 +20,7 @@ import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mdn/disposition.dart';
 import 'package:jmap_dart_client/jmap/mdn/mdn.dart';
 import 'package:model/email/eml_attachment.dart';
@@ -59,6 +60,7 @@ import 'package:tmail_ui_user/features/email/domain/state/send_receipt_to_sender
 import 'package:tmail_ui_user/features/email/domain/state/store_event_attendance_status_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/maybe_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_reject_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
@@ -66,7 +68,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
@@ -166,6 +167,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   CalendarEvent? get calendarEvent => blobCalendarEvent.value?.calendarEventList.firstOrNull;
   Id? get _displayingEventBlobId => blobCalendarEvent.value?.blobId;
 
+  AccountId? get accountId => mailboxDashBoardController.accountId.value;
+
+  Session? get session => mailboxDashBoardController.sessionCurrent;
+
   SingleEmailController(
     this._getEmailContentInteractor,
     this._markAsEmailReadInteractor,
@@ -203,7 +208,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else if (success is GetEmailContentFromCacheSuccess) {
       _getEmailContentOfflineSuccess(success);
     } else if (success is MarkAsEmailReadSuccess) {
-      _markAsEmailReadSuccess(success);
+      _handleMarkAsEmailReadCompleted(success.readActions);
     } else if (success is ExportAttachmentSuccess) {
       _exportAttachmentSuccessAction(success);
     } else if (success is MoveToMailboxSuccess) {
@@ -241,7 +246,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void handleFailureViewState(Failure failure) {
     super.handleFailureViewState(failure);
     if (failure is MarkAsEmailReadFailure) {
-      _markAsEmailReadFailure(failure);
+      _handleMarkAsEmailReadCompleted(failure.readActions);
     } else if (failure is DownloadAttachmentsFailure) {
       _downloadAttachmentsFailure(failure);
     } else if (failure is ExportAttachmentFailure) {
@@ -264,7 +269,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     ever(mailboxDashBoardController.accountId, (accountId) {
       if (accountId is AccountId) {
         _injectAndGetInteractorBindings(
-          mailboxDashBoardController.sessionCurrent,
+          session,
           accountId
         );
       }
@@ -418,10 +423,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _getAllIdentities() {
-    final accountId = mailboxDashBoardController.accountId.value;
-    final session = mailboxDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
-      consumeState(_getAllIdentitiesInteractor.execute(session, accountId));
+      consumeState(_getAllIdentitiesInteractor.execute(session!, accountId!));
     }
   }
 
@@ -474,17 +477,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         )
       )));
     } else {
-      final session = mailboxDashBoardController.sessionCurrent;
-      final accountId = mailboxDashBoardController.accountId.value;
       if (session != null && accountId != null) {
-        final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl) ?? '';
+        final baseDownloadUrl = session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
         TransformConfiguration transformConfiguration = PlatformInfo.isWeb
           ? TransformConfiguration.forPreviewEmailOnWeb()
           : TransformConfiguration.forPreviewEmail();
 
         consumeState(_getEmailContentInteractor.execute(
-          session,
-          accountId,
+          session!,
+          accountId!,
           emailId,
           baseDownloadUrl,
           transformConfiguration
@@ -584,8 +585,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         );
 
         _storeOpenedEmailAction(
-          mailboxDashBoardController.sessionCurrent,
-          mailboxDashBoardController.accountId.value,
+          session,
+          accountId,
           detailedEmail
         );
       }
@@ -646,27 +647,24 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void markAsEmailRead(PresentationEmail presentationEmail, ReadActions readActions, MarkReadAction markReadAction) async {
-    final accountId = mailboxDashBoardController.accountId.value;
-    final session = mailboxDashBoardController.sessionCurrent;
+  void markAsEmailRead(
+    PresentationEmail presentationEmail,
+    ReadActions readActions,
+    MarkReadAction markReadAction,
+  ) {
     if (accountId != null && session != null) {
-      consumeState(_markAsEmailReadInteractor.execute(session, accountId, presentationEmail.toEmail(), readActions, markReadAction));
+      consumeState(_markAsEmailReadInteractor.execute(
+        session!,
+        accountId!,
+        presentationEmail.id!,
+        readActions,
+        markReadAction,
+      ));
     }
   }
 
-  void _markAsEmailReadSuccess(Success success) {
-    log('SingleEmailController::_markAsEmailReadSuccess(): $success');
-    mailboxDashBoardController.dispatchState(Right(success));
-
-    if (success is MarkAsEmailReadSuccess
-        && success.readActions == ReadActions.markAsUnread) {
-      closeEmailView(context: currentContext);
-    }
-  }
-
-  void _markAsEmailReadFailure(Failure failure) {
-    if (failure is MarkAsEmailReadFailure
-        && failure.readActions == ReadActions.markAsUnread) {
+  void _handleMarkAsEmailReadCompleted(ReadActions readActions) {
+    if (readActions == ReadActions.markAsUnread) {
       closeEmailView(context: currentContext);
     }
   }
@@ -710,11 +708,16 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _downloadAttachmentsAction(List<Attachment> attachments) async {
-    final accountId = mailboxDashBoardController.accountId.value;
-    if (accountId != null && mailboxDashBoardController.sessionCurrent != null) {
-      final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
-      consumeState(_downloadAttachmentsInteractor.execute(attachments, accountId, baseDownloadUrl));
+  void _downloadAttachmentsAction(List<Attachment> attachments) {
+    if (accountId != null && session != null) {
+      final baseDownloadUrl = session!.getDownloadUrl(
+        jmapUrl: dynamicUrlInterceptors.jmapUrl,
+      );
+      consumeState(_downloadAttachmentsInteractor.execute(
+        attachments,
+        accountId!,
+        baseDownloadUrl,
+      ));
     }
   }
 
@@ -759,11 +762,17 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _exportAttachmentAction(Attachment attachment, CancelToken cancelToken) async {
-    final accountId = mailboxDashBoardController.accountId.value;
-    if (accountId != null && mailboxDashBoardController.sessionCurrent != null) {
-      final baseDownloadUrl = mailboxDashBoardController.sessionCurrent!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
-      consumeState(_exportAttachmentInteractor.execute(attachment, accountId, baseDownloadUrl, cancelToken));
+  void _exportAttachmentAction(Attachment attachment, CancelToken cancelToken) {
+    if (accountId != null && session != null) {
+      final baseDownloadUrl = session!.getDownloadUrl(
+        jmapUrl: dynamicUrlInterceptors.jmapUrl,
+      );
+      consumeState(_exportAttachmentInteractor.execute(
+        attachment,
+        accountId!,
+        baseDownloadUrl,
+        cancelToken,
+      ));
     }
   }
 
@@ -806,15 +815,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void downloadAttachmentForWeb(Attachment attachment) {
-    final accountId = mailboxDashBoardController.accountId.value;
-    final session = mailboxDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
-      final baseDownloadUrl = session.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
+      final baseDownloadUrl = session!.getDownloadUrl(
+        jmapUrl: dynamicUrlInterceptors.jmapUrl,
+      );
       final generateTaskId = DownloadTaskId(uuid.v4());
       consumeState(_downloadAttachmentForWebInteractor.execute(
           generateTaskId,
           attachment,
-          accountId,
+          accountId!,
           baseDownloadUrl,
           _downloadProgressStateController));
     } else {
@@ -875,12 +884,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void moveToMailbox(BuildContext context, PresentationEmail email) async {
     final currentMailbox = getMailboxContain(email);
-    final accountId = mailboxDashBoardController.accountId.value;
-    final session = mailboxDashBoardController.sessionCurrent;
 
     if (currentMailbox != null && accountId != null) {
       final arguments = DestinationPickerArguments(
-        accountId,
+        accountId!,
         MailboxActions.moveEmail,
         session,
         mailboxIdSelected: currentMailbox.mailboxId
@@ -892,13 +899,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
       if (destinationMailbox != null &&
           destinationMailbox is PresentationMailbox &&
-          mailboxDashBoardController.sessionCurrent != null &&
+          session != null &&
           context.mounted
       ) {
         _dispatchMoveToAction(
           context,
-          accountId,
-          mailboxDashBoardController.sessionCurrent!,
+          accountId!,
+          session!,
           email,
           currentMailbox,
           destinationMailbox);
@@ -977,24 +984,20 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _revertedToOriginalMailbox(MoveToMailboxRequest newMoveRequest) {
-    final accountId = mailboxDashBoardController.accountId.value;
-    final session = mailboxDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
-      _moveToMailbox(currentContext!, session, accountId, newMoveRequest);
+      _moveToMailbox(currentContext!, session!, accountId!, newMoveRequest);
     }
   }
 
-  void moveToTrash(BuildContext context, PresentationEmail email) async {
-    final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
+  void moveToTrash(BuildContext context, PresentationEmail email) {
     final trashMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleTrash);
     final currentMailbox = getMailboxContain(email);
 
     if (session != null && accountId != null && currentMailbox != null && trashMailboxId != null) {
       _moveToTrashAction(
         context,
-        session,
-        accountId,
+        session!,
+        accountId!,
         MoveToMailboxRequest(
           {currentMailbox.id: [email.id!]},
           trashMailboxId,
@@ -1014,17 +1017,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     mailboxDashBoardController.moveToMailbox(session, accountId, moveRequest);
   }
 
-  void moveToSpam(BuildContext context, PresentationEmail email) async {
-    final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
+  void moveToSpam(BuildContext context, PresentationEmail email) {
     final spamMailboxId = mailboxDashBoardController.spamMailboxId;
     final currentMailbox = getMailboxContain(email);
 
     if (session != null && accountId != null && currentMailbox != null && spamMailboxId != null) {
       _moveToSpamAction(
         context,
-        session,
-        accountId,
+        session!,
+        accountId!,
         MoveToMailboxRequest(
           {currentMailbox.id: [email.id!]},
           spamMailboxId,
@@ -1034,17 +1035,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void unSpam(BuildContext context, PresentationEmail email) async {
-    final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
+  void unSpam(BuildContext context, PresentationEmail email) {
     final spamMailboxId = mailboxDashBoardController.spamMailboxId;
     final inboxMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleInbox);
 
     if (session != null && accountId != null && spamMailboxId != null && inboxMailboxId != null) {
       _moveToSpamAction(
         context,
-        session,
-        accountId,
+        session!,
+        accountId!,
         MoveToMailboxRequest(
           {spamMailboxId: [email.id!]},
           inboxMailboxId,
@@ -1064,18 +1063,25 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     mailboxDashBoardController.moveToMailbox(session, accountId, moveRequest);
   }
 
-  void markAsStarEmail(PresentationEmail presentationEmail, MarkStarAction markStarAction) async {
-    final accountId = mailboxDashBoardController.accountId.value;
-    final session = mailboxDashBoardController.sessionCurrent;
+  void markAsStarEmail(
+    PresentationEmail presentationEmail,
+    MarkStarAction markStarAction,
+  ) {
     if (accountId != null && session != null) {
-      consumeState(_markAsStarEmailInteractor.execute(session, accountId, presentationEmail.toEmail(), markStarAction));
+      consumeState(_markAsStarEmailInteractor.execute(
+        session!,
+        accountId!,
+        presentationEmail.id!,
+        markStarAction,
+      ));
     }
   }
 
   void _markAsEmailStarSuccess(MarkAsStarEmailSuccess success) {
-    final selectedEmail = mailboxDashBoardController.selectedEmail.value;
-    mailboxDashBoardController.setSelectedEmail(selectedEmail?.updateKeywords(success.updatedEmail.keywords));
-    mailboxDashBoardController.dispatchState(Right(success));
+    final newEmail = currentEmail?.updateKeywords({
+      KeyWordIdentifier.emailFlagged: true,
+    });
+    mailboxDashBoardController.setSelectedEmail(newEmail);
   }
 
   void handleEmailAction(BuildContext context, PresentationEmail presentationEmail, EmailActionType actionType) {
@@ -1209,8 +1215,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _handleSendReceiptToSenderAction(BuildContext context) {
-    final accountId = mailboxDashBoardController.accountId.value;
-    final session = mailboxDashBoardController.sessionCurrent;
     if (accountId == null || session == null) {
       return;
     }
@@ -1236,7 +1240,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       return;
     }
 
-    final receiverEmailAddress = _getReceiverEmailAddress(currentEmail!) ?? session.username.value;
+    final receiverEmailAddress = _getReceiverEmailAddress(currentEmail!) ?? session!.username.value;
     log('SingleEmailController::_handleSendReceiptToSenderAction():receiverEmailAddress: $receiverEmailAddress');
     final mdnToSender = _generateMDN(context, currentEmail!, receiverEmailAddress);
     final sendReceiptRequest = SendReceiptToSenderRequest(
@@ -1245,7 +1249,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         sendId: Id(uuid.v1()));
     log('SingleEmailController::_handleSendReceiptToSenderAction(): sendReceiptRequest: $sendReceiptRequest');
 
-    consumeState(_sendReceiptToSenderInteractor!.execute(accountId, sendReceiptRequest));
+    consumeState(_sendReceiptToSenderInteractor!.execute(accountId!, sendReceiptRequest));
   }
 
   String? _getReceiverEmailAddress(PresentationEmail presentationEmail) {
@@ -1394,12 +1398,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void quickCreatingRule(BuildContext context, EmailAddress emailAddress) async {
     popBack();
 
-    final accountId = mailboxDashBoardController.accountId.value;
-    final session = mailboxDashBoardController.sessionCurrent;
     if (accountId != null && session != null) {
       final arguments = RulesFilterCreatorArguments(
-        accountId,
-        session,
+        accountId!,
+        session!,
         emailAddress: emailAddress);
 
       final newRuleFilterRequest = PlatformInfo.isWeb
@@ -1407,7 +1409,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         : await push(AppRoutes.rulesFilterCreator, arguments: arguments);
 
       if (newRuleFilterRequest is CreateNewEmailRuleFilterRequest) {
-        _createNewRuleFilterAction(accountId, newRuleFilterRequest);
+        _createNewRuleFilterAction(accountId!, newRuleFilterRequest);
       }
     }
   }
@@ -1459,11 +1461,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   bool get _isCalendarEventSupported {
-    final accountId = mailboxDashBoardController.accountId.value;
-    final session = mailboxDashBoardController.sessionCurrent;
     return session != null &&
       accountId != null &&
-      CapabilityIdentifier.jamesCalendarEvent.isSupported(session, accountId);
+      CapabilityIdentifier.jamesCalendarEvent.isSupported(session!, accountId!);
   }
 
   void _parseCalendarEventAction({
@@ -1676,88 +1676,85 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _acceptCalendarEventAction(EmailId emailId) {
     if (_acceptCalendarEventInteractor == null
       || _displayingEventBlobId == null
-      || mailboxDashBoardController.accountId.value == null
-      || mailboxDashBoardController.sessionCurrent == null
-      || mailboxDashBoardController.sessionCurrent
-        !.validateCalendarEventCapability(mailboxDashBoardController.accountId.value!)
-        .isAvailable == false
+      || accountId == null
+      || session == null
+      || session!.validateCalendarEventCapability(accountId!).isAvailable == false
     ) {
       consumeState(Stream.value(Left(CalendarEventAcceptFailure())));
     } else {
       consumeState(_acceptCalendarEventInteractor!.execute(
-        mailboxDashBoardController.accountId.value!,
+        accountId!,
         {_displayingEventBlobId!},
         emailId,
-        mailboxDashBoardController.sessionCurrent!.getLanguageForCalendarEvent(
+        session!.getLanguageForCalendarEvent(
           LocalizationService.getLocaleFromLanguage(),
-          mailboxDashBoardController.accountId.value!)));
+          accountId!,
+        ),
+      ));
     }
   }
 
   void _rejectCalendarEventAction(EmailId emailId) {
     if (_rejectCalendarEventInteractor == null
       || _displayingEventBlobId == null
-      || mailboxDashBoardController.accountId.value == null
-      || mailboxDashBoardController.sessionCurrent == null
-      || mailboxDashBoardController.sessionCurrent
-        !.validateCalendarEventCapability(mailboxDashBoardController.accountId.value!)
-        .isAvailable == false
+      || accountId == null
+      || session == null
+      || session!.validateCalendarEventCapability(accountId!).isAvailable == false
     ) {
       consumeState(Stream.value(Left(CalendarEventRejectFailure())));
     } else {
       consumeState(_rejectCalendarEventInteractor!.execute(
-        mailboxDashBoardController.accountId.value!,
+        accountId!,
         {_displayingEventBlobId!},
         emailId,
-        mailboxDashBoardController.sessionCurrent!.getLanguageForCalendarEvent(
+        session!.getLanguageForCalendarEvent(
           LocalizationService.getLocaleFromLanguage(),
-          mailboxDashBoardController.accountId.value!)));
+          accountId!,
+        ),
+      ));
     }
   }
 
   void _maybeCalendarEventAction(EmailId emailId) {
     if (_maybeCalendarEventInteractor == null
       || _displayingEventBlobId == null
-      || mailboxDashBoardController.accountId.value == null
-      || mailboxDashBoardController.sessionCurrent == null
-      || mailboxDashBoardController.sessionCurrent
-        !.validateCalendarEventCapability(mailboxDashBoardController.accountId.value!)
-        .isAvailable == false
+      || accountId == null
+      || session == null
+      || session!.validateCalendarEventCapability(accountId!).isAvailable == false
     ) {
       consumeState(Stream.value(Left(CalendarEventMaybeFailure())));
     } else {
       consumeState(_maybeCalendarEventInteractor!.execute(
-        mailboxDashBoardController.accountId.value!,
+        accountId!,
         {_displayingEventBlobId!},
         emailId,
-        mailboxDashBoardController.sessionCurrent!.getLanguageForCalendarEvent(
+        session!.getLanguageForCalendarEvent(
           LocalizationService.getLocaleFromLanguage(),
-          mailboxDashBoardController.accountId.value!)));
+          accountId!,
+        ),
+      ));
     }
   }
 
   void calendarEventSuccess(CalendarEventReplySuccess success) {
-    final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
-
     if (session == null || accountId == null) {
       consumeState(Stream.value(Left(StoreEventAttendanceStatusFailure(exception: NotFoundSessionException()))));
       return;
     }
 
     consumeState(_storeEventAttendanceStatusInteractor.execute(
-      session,
-      accountId,
+      session!,
+      accountId!,
       success.emailId,
       success.getEventActionType()
     ));
   }
 
   void _showToastMessageEventAttendanceSuccess(StoreEventAttendanceStatusSuccess success) {
-    final selectedEmail = mailboxDashBoardController.selectedEmail.value;
-    final newEmail = selectedEmail?.updateKeywords(success.updatedEmail.keywords);
+    final newEmail = currentEmail?.updateKeywords(
+      success.eventActionType.getMapKeywords(),
+    );
     mailboxDashBoardController.setSelectedEmail(newEmail);
-    mailboxDashBoardController.dispatchState(Right(success));
 
     if (currentOverlayContext == null || currentContext == null) {
       return;
@@ -1825,16 +1822,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   Future<void> previewPDFFileAction(BuildContext context, Attachment attachment) async {
-    final accountId = mailboxDashBoardController.accountId.value;
-    final downloadUrl = mailboxDashBoardController.sessionCurrent
-      ?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
-
-    if (accountId == null || downloadUrl == null) {
+    if (accountId == null || session == null) {
       appToast.showToastErrorMessage(
         context,
         AppLocalizations.of(context).noPreviewAvailable);
       return;
     }
+    final downloadUrl = session!.getDownloadUrl(
+      jmapUrl: dynamicUrlInterceptors.jmapUrl,
+    );
 
     await Get.generalDialog(
       barrierColor: Colors.black.withOpacity(0.8),
@@ -1842,7 +1838,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         return PointerInterceptor(
           child: PDFViewer(
             attachment: attachment,
-            accountId: accountId,
+            accountId: accountId!,
             downloadUrl: downloadUrl,
             downloadAction: _downloadPDFFile,
             printAction: _printPDFFile,
@@ -1862,7 +1858,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
 
     final listEmailAddressMailTo = listEmailAddressAttendees
-      .where((emailAddress) => emailAddress.emailAddress.isNotEmpty && emailAddress.emailAddress != mailboxDashBoardController.sessionCurrent?.username.value)
+      .where((emailAddress) {
+        return emailAddress.emailAddress.isNotEmpty &&
+            emailAddress.emailAddress != session?.username.value;
+      })
       .toSet()
       .toList();
 

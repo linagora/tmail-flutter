@@ -38,7 +38,7 @@ abstract class MailboxDataSource {
 
   Future<bool> moveMailbox(Session session, AccountId accountId, MoveMailboxRequest request);
 
-  Future<List<Email>> markAsMailboxRead(
+  Future<List<EmailId>> markAsMailboxRead(
       Session session,
       AccountId accountId,
       MailboxId mailboxId,

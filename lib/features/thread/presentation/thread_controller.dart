@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/presentation/extensions/either_view_state_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -18,22 +19,10 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
-import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/store_event_attendance_status_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -44,6 +33,8 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_ru
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
@@ -51,14 +42,9 @@ import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
@@ -113,6 +99,7 @@ class ThreadController extends BaseController with EmailActionController {
   final latestEmailSelectedOrUnselected = Rxn<PresentationEmail>();
   @visibleForTesting
   bool isListEmailScrollViewJumping = false;
+  WebSocketQueueHandler? _webSocketQueueHandler;
 
   StreamSubscription<html.Event>? _resizeBrowserStreamSubscription;
 
@@ -145,6 +132,7 @@ class ThreadController extends BaseController with EmailActionController {
     if (PlatformInfo.isWeb) {
       _registerBrowserResizeListener();
     }
+    _initWebSocketQueueHandler();
     super.onInit();
   }
 
@@ -171,8 +159,6 @@ class ThreadController extends BaseController with EmailActionController {
     super.handleSuccessViewState(success);
     if (success is GetAllEmailSuccess) {
       _getAllEmailSuccess(success);
-    } else if (success is RefreshChangesAllEmailSuccess) {
-      _refreshChangesAllEmailSuccess(success);
     } else if (success is LoadMoreEmailsSuccess) {
       _loadMoreEmailsSuccess(success);
     } else if (success is SearchEmailSuccess) {
@@ -246,6 +232,13 @@ class ThreadController extends BaseController with EmailActionController {
         _handleOnDoneGetAllEmailSuccess(success);
       }
     });
+  }
+
+  void _initWebSocketQueueHandler() {
+    _webSocketQueueHandler = WebSocketQueueHandler(
+      processMessageCallback: _handleWebSocketMessage,
+      onErrorCallback: onError,
+    );
   }
 
   void _resetLoadingMore() {
@@ -333,62 +326,11 @@ class ThreadController extends BaseController with EmailActionController {
 
     ever(mailboxDashBoardController.emailUIAction, (action) {
       if (action is RefreshChangeEmailAction) {
-        if (action.newState != _currentEmailState) {
-          _refreshEmailChanges();
-        }
-        mailboxDashBoardController.clearEmailUIAction();
+        _refreshEmailChanges(newState: action.newState);
       } else if (action is RefreshAllEmailAction) {
         refreshAllEmail();
         mailboxDashBoardController.clearEmailUIAction();
       }
-    });
-
-    ever(mailboxDashBoardController.viewState, (viewState) {
-      viewState.map((success) {
-        if (success is MarkAsEmailReadSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MoveToMailboxSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MarkAsStarEmailSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is DeleteEmailPermanentlySuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is SaveEmailAsDraftsSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is RemoveEmailDraftsSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is SendEmailSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is UpdateEmailDraftsSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MarkAsMailboxReadAllSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MoveMultipleEmailToMailboxAllSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is DeleteMultipleEmailsPermanentlyAllSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MarkAsStarMultipleEmailAllSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MarkAsStarMultipleEmailHasSomeEmailFailure) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MarkAsMultipleEmailReadAllSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is EmptyTrashFolderSuccess || success is EmptySpamFolderSuccess) {
-          refreshAllEmail();
-        } else if (success is UnsubscribeEmailSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        } else if (success is StoreEventAttendanceStatusSuccess) {
-          _refreshEmailChanges(currentEmailState: success.currentEmailState);
-        }
-      });
     });
   }
 
@@ -581,28 +523,108 @@ class ThreadController extends BaseController with EmailActionController {
     return limit;
   }
 
-  void _refreshEmailChanges({jmap.State? currentEmailState}) {
-    log('ThreadController::_refreshEmailChanges(): currentEmailState: $currentEmailState');
-    if (searchController.isSearchEmailRunning) {
-      _searchEmail(limit: limitEmailFetched, needRefreshSearchState: true);
-    } else {
-      final newEmailState = currentEmailState ?? _currentEmailState;
-      log('ThreadController::_refreshEmailChanges(): newEmailState: $newEmailState');
-      if (_session != null && _accountId != null && newEmailState != null) {
-        consumeState(_refreshChangesEmailsInMailboxInteractor.execute(
+  @visibleForTesting
+  void setCurrentEmailState({jmap.State? newState}) {
+    _currentEmailState = newState;
+  }
+
+  void _refreshEmailChanges({jmap.State? newState}) {
+    log('ThreadController::_refreshEmailChanges(): newState: $newState');
+    if (_accountId == null ||
+        _session == null ||
+        _currentEmailState == null ||
+        newState == null) {
+      return;
+    }
+
+    _webSocketQueueHandler?.enqueue(WebSocketMessage(
+      newState: newState,
+      accountId: _accountId!,
+      session: _session!,
+    ));
+  }
+
+  Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
+    try {
+      if (_currentEmailState == message.newState) {
+        log('ThreadController::_handleWebSocketMessage:Skipping redundant state: ${message.newState}');
+        return Future.value();
+      }
+
+      if (searchController.isSearchEmailRunning) {
+        canSearchMore = false;
+        searchController.updateFilterEmail(
+          positionOption: option(
+            _searchEmailFilter.sortOrderType.isScrollByPosition(),
+            0,
+          ),
+          beforeOption: const None(),
+        );
+        searchController.activateSimpleSearch();
+
+        final searchViewState = await _searchEmailInteractor.execute(
           _session!,
           _accountId!,
-          newEmailState,
+          limit: limitEmailFetched,
+          position: _searchEmailFilter.position,
+          sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
+          filter: _searchEmailFilter.mappingToEmailFilterCondition(
+            moreFilterCondition: _getFilterCondition(),
+          ),
+          properties: EmailUtils.getPropertiesForEmailGetMethod(
+            _session!,
+            _accountId!,
+          ),
+          needRefreshSearchState: true,
+        ).last;
+
+        final searchState = searchViewState
+          .foldSuccessWithResult<SearchEmailSuccess>();
+
+        if (searchState is SearchEmailSuccess) {
+          _searchEmailsSuccess(searchState);
+          if (_currentEmailState != null) {
+            _webSocketQueueHandler?.removeMessagesUpToCurrent(_currentEmailState!.value);
+          }
+        } else {
+          mailboxDashBoardController.updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
+          canSearchMore = false;
+          mailboxDashBoardController.emailsInCurrentMailbox.clear();
+          onDataFailureViewState(searchState);
+        }
+      } else {
+        final refreshViewState = await _refreshChangesEmailsInMailboxInteractor.execute(
+          _session!,
+          _accountId!,
+          _currentEmailState!,
           sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
-          propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
+          propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
+            _session!,
+            _accountId!,
+          ),
           propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
           emailFilter: EmailFilter(
             filter: _getFilterCondition(mailboxIdSelected: selectedMailboxId),
             filterOption: mailboxDashBoardController.filterMessageOption.value,
-            mailboxId: selectedMailboxId
-          )
-        ));
+            mailboxId: selectedMailboxId,
+          ),
+        ).last;
+
+        final refreshState = refreshViewState
+          .foldSuccessWithResult<RefreshChangesAllEmailSuccess>();
+
+        if (refreshState is RefreshChangesAllEmailSuccess) {
+          _refreshChangesAllEmailSuccess(refreshState);
+          if (_currentEmailState != null) {
+            _webSocketQueueHandler?.removeMessagesUpToCurrent(_currentEmailState!.value);
+          }
+        } else {
+          onDataFailureViewState(refreshState);
+        }
       }
+    } catch (e, stackTrace) {
+      logError('ThreadController::_processMailboxStateQueue:Error processing state: $e');
+      onError(e, stackTrace);
     }
   }
 
@@ -1231,12 +1253,10 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void goToCreateEmailRuleView() async {
-    final accountId = mailboxDashBoardController.accountId.value;
-    final session = mailboxDashBoardController.sessionCurrent;
-    if (accountId != null && session != null) {
+    if (_accountId != null && _session != null) {
       final arguments = RulesFilterCreatorArguments(
-        accountId,
-        session,
+        _accountId!,
+        _session!,
         mailboxDestination: selectedMailbox
       );
 
@@ -1245,7 +1265,7 @@ class ThreadController extends BaseController with EmailActionController {
         : await push(AppRoutes.rulesFilterCreator, arguments: arguments);
 
       if (newRuleFilterRequest is CreateNewEmailRuleFilterRequest) {
-        _createNewRuleFilterAction(accountId, newRuleFilterRequest);
+        _createNewRuleFilterAction(_accountId!, newRuleFilterRequest);
       }
     } else {
       logError('ThreadController::goToCreateEmailRuleView: Account or Session is NULL');
