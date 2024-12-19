@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:core/presentation/extensions/either_view_state_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -32,6 +33,8 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_ru
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
@@ -96,6 +99,7 @@ class ThreadController extends BaseController with EmailActionController {
   final latestEmailSelectedOrUnselected = Rxn<PresentationEmail>();
   @visibleForTesting
   bool isListEmailScrollViewJumping = false;
+  WebSocketQueueHandler? _webSocketQueueHandler;
 
   StreamSubscription<html.Event>? _resizeBrowserStreamSubscription;
 
@@ -128,6 +132,7 @@ class ThreadController extends BaseController with EmailActionController {
     if (PlatformInfo.isWeb) {
       _registerBrowserResizeListener();
     }
+    _initWebSocketQueueHandler();
     super.onInit();
   }
 
@@ -154,8 +159,6 @@ class ThreadController extends BaseController with EmailActionController {
     super.handleSuccessViewState(success);
     if (success is GetAllEmailSuccess) {
       _getAllEmailSuccess(success);
-    } else if (success is RefreshChangesAllEmailSuccess) {
-      _refreshChangesAllEmailSuccess(success);
     } else if (success is LoadMoreEmailsSuccess) {
       _loadMoreEmailsSuccess(success);
     } else if (success is SearchEmailSuccess) {
@@ -229,6 +232,13 @@ class ThreadController extends BaseController with EmailActionController {
         _handleOnDoneGetAllEmailSuccess(success);
       }
     });
+  }
+
+  void _initWebSocketQueueHandler() {
+    _webSocketQueueHandler = WebSocketQueueHandler(
+      processMessageCallback: _handleWebSocketMessage,
+      onErrorCallback: onError,
+    );
   }
 
   void _resetLoadingMore() {
@@ -520,32 +530,101 @@ class ThreadController extends BaseController with EmailActionController {
 
   void _refreshEmailChanges({jmap.State? newState}) {
     log('ThreadController::_refreshEmailChanges(): newState: $newState');
-    if (_currentEmailState == null ||
-        _currentEmailState == newState ||
+    if (_accountId == null ||
         _session == null ||
-        _accountId == null) {
+        _currentEmailState == null ||
+        newState == null) {
       return;
     }
 
-    if (searchController.isSearchEmailRunning) {
-      _searchEmail(limit: limitEmailFetched, needRefreshSearchState: true);
-    } else {
-      consumeState(_refreshChangesEmailsInMailboxInteractor.execute(
-        _session!,
-        _accountId!,
-        _currentEmailState!,
-        sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
-        propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
+    _webSocketQueueHandler?.enqueue(WebSocketMessage(
+      newState: newState,
+      accountId: _accountId!,
+      session: _session!,
+    ));
+  }
+
+  Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
+    try {
+      if (_currentEmailState == message.newState) {
+        log('ThreadController::_handleWebSocketMessage:Skipping redundant state: ${message.newState}');
+        return Future.value();
+      }
+
+      if (searchController.isSearchEmailRunning) {
+        canSearchMore = false;
+        searchController.updateFilterEmail(
+          positionOption: option(
+            _searchEmailFilter.sortOrderType.isScrollByPosition(),
+            0,
+          ),
+          beforeOption: const None(),
+        );
+        searchController.activateSimpleSearch();
+
+        final searchViewState = await _searchEmailInteractor.execute(
           _session!,
           _accountId!,
-        ),
-        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
-        emailFilter: EmailFilter(
-          filter: _getFilterCondition(mailboxIdSelected: selectedMailboxId),
-          filterOption: mailboxDashBoardController.filterMessageOption.value,
-          mailboxId: selectedMailboxId,
-        ),
-      ));
+          limit: limitEmailFetched,
+          position: _searchEmailFilter.position,
+          sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
+          filter: _searchEmailFilter.mappingToEmailFilterCondition(
+            moreFilterCondition: _getFilterCondition(),
+          ),
+          properties: EmailUtils.getPropertiesForEmailGetMethod(
+            _session!,
+            _accountId!,
+          ),
+          needRefreshSearchState: true,
+        ).last;
+
+        final searchState = searchViewState
+          .foldSuccessWithResult<SearchEmailSuccess>();
+
+        if (searchState is SearchEmailSuccess) {
+          _searchEmailsSuccess(searchState);
+          if (_currentEmailState != null) {
+            _webSocketQueueHandler?.removeMessagesUpToCurrent(_currentEmailState!.value);
+          }
+        } else {
+          mailboxDashBoardController.updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
+          canSearchMore = false;
+          mailboxDashBoardController.emailsInCurrentMailbox.clear();
+          onDataFailureViewState(searchState);
+        }
+      } else {
+        final refreshViewState = await _refreshChangesEmailsInMailboxInteractor.execute(
+          _session!,
+          _accountId!,
+          _currentEmailState!,
+          sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
+          propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
+            _session!,
+            _accountId!,
+          ),
+          propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+          emailFilter: EmailFilter(
+            filter: _getFilterCondition(mailboxIdSelected: selectedMailboxId),
+            filterOption: mailboxDashBoardController.filterMessageOption.value,
+            mailboxId: selectedMailboxId,
+          ),
+        ).last;
+
+        final refreshState = refreshViewState
+          .foldSuccessWithResult<RefreshChangesAllEmailSuccess>();
+
+        if (refreshState is RefreshChangesAllEmailSuccess) {
+          _refreshChangesAllEmailSuccess(refreshState);
+          if (_currentEmailState != null) {
+            _webSocketQueueHandler?.removeMessagesUpToCurrent(_currentEmailState!.value);
+          }
+        } else {
+          onDataFailureViewState(refreshState);
+        }
+      }
+    } catch (e, stackTrace) {
+      logError('ThreadController::_processMailboxStateQueue:Error processing state: $e');
+      onError(e, stackTrace);
     }
   }
 

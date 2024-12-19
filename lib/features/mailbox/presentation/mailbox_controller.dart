@@ -57,7 +57,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_catego
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/open_mailbox_view_event.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_state_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
@@ -65,6 +64,8 @@ import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_ma
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -95,10 +96,10 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
   MailboxId? _newFolderId;
   NavigationRouter? _navigationRouter;
+  WebSocketQueueHandler? _webSocketQueueHandler;
 
   final _openMailboxEventController = StreamController<OpenMailboxViewEvent>();
   final mailboxListScrollController = ScrollController();
-  final _mailboxStateManager = MailboxStateManager();
 
   PresentationMailbox? get selectedMailbox => mailboxDashBoardController.selectedMailbox.value;
 
@@ -130,6 +131,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   @override
   void onInit() {
     _registerObxStreamListener();
+    _initWebSocketQueueHandler();
     super.onInit();
   }
 
@@ -147,7 +149,7 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
   void onClose() {
     _openMailboxEventController.close();
     mailboxListScrollController.dispose();
-    _mailboxStateManager.dispose();
+    _webSocketQueueHandler?.dispose();
     super.onClose();
   }
 
@@ -250,6 +252,13 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     });
   }
 
+  void _initWebSocketQueueHandler() {
+    _webSocketQueueHandler = WebSocketQueueHandler(
+      processMessageCallback: _handleWebSocketMessage,
+      onErrorCallback: onError,
+    );
+  }
+
   void _initCollapseMailboxCategories() {
     if (kIsWeb && currentContext != null
         && (responsiveUtils.isMobile(currentContext!) || responsiveUtils.isTablet(currentContext!))) {
@@ -280,60 +289,43 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
       return;
     }
 
-    _mailboxStateManager.addState(newState);
-
-    if (!_mailboxStateManager.isProcessing) {
-      _processMailboxStateQueue(
-        session!,
-        accountId!,
-      );
-    }
+    _webSocketQueueHandler?.enqueue(WebSocketMessage(
+      newState: newState,
+      accountId: accountId!,
+      session: session!,
+    ));
   }
 
-  Future<void> _processMailboxStateQueue(
-    Session session,
-    AccountId accountId,
-  ) async {
-    if (_mailboxStateManager.isProcessing) return;
-
-    _mailboxStateManager.startProcessing();
-
-    while (_mailboxStateManager.isQueueNotEmpty()) {
-      final nextState = _mailboxStateManager.getFirstState();
-
-      if (nextState == currentMailboxState) {
-        log('MailboxController::_processMailboxStateQueue:Skipping redundant state: $nextState');
-        continue;
+  Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
+    try {
+      if (currentMailboxState == message.newState) {
+        log('MailboxController::_handleWebSocketMessage:Skipping redundant state: ${message.newState}');
+        return Future.value();
       }
 
-      log('MailboxController::_processMailboxStateQueue:Processing new state: $nextState & current state = $currentMailboxState');
-      try {
-        final refreshViewState = await refreshAllMailboxInteractor!.execute(
-          session,
-          accountId,
-          currentMailboxState!,
-          properties: MailboxConstants.propertiesDefault,
-        ).last;
+      final refreshViewState = await refreshAllMailboxInteractor!.execute(
+        message.session,
+        message.accountId,
+        currentMailboxState!,
+        properties: MailboxConstants.propertiesDefault,
+      ).last;
 
-        final refreshState = refreshViewState
+      final refreshState = refreshViewState
           .foldSuccessWithResult<RefreshChangesAllMailboxSuccess>();
 
-        if (refreshState is RefreshChangesAllMailboxSuccess) {
-          await _handleRefreshChangeMailboxSuccess(refreshState);
-          if (currentMailboxState != null) {
-            _mailboxStateManager.removeStatesUpToCurrent(currentMailboxState!);
-          }
-        } else {
-          _clearNewFolderId();
-          onDataFailureViewState(refreshState);
+      if (refreshState is RefreshChangesAllMailboxSuccess) {
+        await _handleRefreshChangeMailboxSuccess(refreshState);
+        if (currentMailboxState != null) {
+          _webSocketQueueHandler?.removeMessagesUpToCurrent(currentMailboxState!.value);
         }
-      } catch (e, stackTrace) {
-        logError('MailboxController::_processMailboxStateQueue:Error processing state: $e');
-        onError(e, stackTrace);
+      } else {
+        _clearNewFolderId();
+        onDataFailureViewState(refreshState);
       }
+    } catch (e, stackTrace) {
+      logError('MailboxController::_processMailboxStateQueue:Error processing state: $e');
+      onError(e, stackTrace);
     }
-
-    _mailboxStateManager.stopProcessing();
   }
 
   Future<void> _handleRefreshChangeMailboxSuccess(RefreshChangesAllMailboxSuccess success) async {
