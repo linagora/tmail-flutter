@@ -18,3 +18,5 @@ class GetSpamMailboxCachedFailure extends FeatureFailure {
 
   GetSpamMailboxCachedFailure(exception) : super(exception: exception);
 }
+
+class InvalidSpamReportCondition extends FeatureFailure {}

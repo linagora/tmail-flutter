@@ -2111,15 +2111,25 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   bool get enableSpamReport => spamReportController.enableSpamReport;
 
   void getSpamReportBanner() {
-    if (spamReportController.enableSpamReport &&
-        sessionCurrent != null &&
-        accountId.value != null) {
-      spamReportController.getSpamMailboxAction(sessionCurrent!, accountId.value!);
+    if (enableSpamReport) {
+      final spamId = spamMailboxId;
+      if (spamId == null) {
+        spamReportController.setSpamPresentationMailbox(null);
+        return;
+      }
+
+      final spamMailbox = mapMailboxById[spamId];
+      final unreadEmails = spamMailbox?.unreadEmails?.value.value ?? 0;
+      if (unreadEmails > 0) {
+        spamReportController.setSpamPresentationMailbox(spamMailbox);
+      } else {
+        spamReportController.setSpamPresentationMailbox(null);
+      }
     }
   }
 
   void refreshSpamReportBanner() {
-    if (spamReportController.enableSpamReport && sessionCurrent != null && accountId.value != null) {
+    if (enableSpamReport && sessionCurrent != null && accountId.value != null) {
       spamReportController.getSpamMailboxCached(accountId.value!, sessionCurrent!.username);
     }
   }
