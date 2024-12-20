@@ -26,7 +26,6 @@ import 'package:tmail_ui_user/features/login/data/utils/library_platform/app_aut
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/network/spam_report_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/forwarding_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/identity_api.dart';
 import 'package:tmail_ui_user/features/manage_account/data/network/rule_filter_api.dart';
@@ -123,7 +122,6 @@ class NetworkBindings extends Bindings {
     Get.put(ForwardingAPI(Get.find<HttpClient>()));
     Get.put(QuotasAPI(Get.find<HttpClient>()));
     Get.put(FcmApi(Get.find<HttpClient>()));
-    Get.put(SpamReportApi(Get.find<HttpClient>()));
     Get.put(ServerSettingsAPI(Get.find<HttpClient>()));
     Get.put(WebSocketApi(Get.find<DioClient>()));
   }
