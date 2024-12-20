@@ -26,6 +26,7 @@ class GetEmailsInMailboxInteractor {
       EmailFilter? emailFilter,
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
+      bool getLatestChanges = true,
     }
   ) async* {
     try {
@@ -39,7 +40,8 @@ class GetEmailsInMailboxInteractor {
           sort: sort,
           emailFilter: emailFilter,
           propertiesCreated: propertiesCreated,
-          propertiesUpdated: propertiesUpdated)
+          propertiesUpdated: propertiesUpdated,
+          getLatestChanges: getLatestChanges)
         .map((emailResponse) => _toGetEmailState(
           emailResponse: emailResponse,
           currentMailboxId: emailFilter?.mailboxId
