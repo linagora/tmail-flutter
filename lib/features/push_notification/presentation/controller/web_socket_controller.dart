@@ -64,7 +64,7 @@ class WebSocketController extends PushBaseController {
     super.initialize(accountId: accountId, session: session);
 
     _connectWebSocket(accountId, session);
-    if (!PlatformInfo.isWeb) {
+    if (PlatformInfo.isMobile) {
       _listenToAppLifeCycle(accountId, session);
     }
   }
