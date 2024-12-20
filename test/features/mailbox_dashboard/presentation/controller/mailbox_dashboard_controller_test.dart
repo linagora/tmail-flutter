@@ -414,6 +414,7 @@ void main() {
         limit: anyNamed('limit'),
         sort: anyNamed('sort'),
         emailFilter: anyNamed('emailFilter'),
+        getLatestChanges: anyNamed('getLatestChanges'),
         propertiesCreated: anyNamed('propertiesCreated'),
         propertiesUpdated: anyNamed('propertiesUpdated')));
       expect(searchController.sortOrderFiltered, EmailSortOrderType.mostRecent);
@@ -426,6 +427,7 @@ void main() {
           filter: EmailFilterCondition(inMailbox: testMailboxId),
           filterOption: FilterMessageOption.all,
           mailboxId: testMailboxId),
+        getLatestChanges: false,
         propertiesCreated: ThreadConstants.propertiesDefault,
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault));
     });
@@ -471,6 +473,7 @@ void main() {
         limit: anyNamed('limit'),
         sort: anyNamed('sort'),
         emailFilter: anyNamed('emailFilter'),
+        getLatestChanges: anyNamed('getLatestChanges'),
         propertiesCreated: anyNamed('propertiesCreated'),
         propertiesUpdated: anyNamed('propertiesUpdated')));
       expect(searchController.sortOrderFiltered, EmailSortOrderType.mostRecent);
@@ -483,6 +486,7 @@ void main() {
           filter: EmailFilterCondition(inMailbox: testMailboxId),
           filterOption: FilterMessageOption.all,
           mailboxId: testMailboxId),
+        getLatestChanges: false,
         propertiesCreated: ThreadConstants.propertiesDefault,
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault
       )).called(1);
