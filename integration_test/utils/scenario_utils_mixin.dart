@@ -4,6 +4,7 @@ import 'dart:io' hide HttpClient;
 import 'package:collection/collection.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -71,9 +72,10 @@ mixin ScenarioUtilsMixin {
     ComposerBindings().dispose();
   }
 
-  Future<void> simulateMarkEmailsAsReadWithSubjectsFromOutsideCurrentClient({
+  Future<void> simulateUpdateFlagsOfEmailsWithSubjectsFromOutsideCurrentClient({
     required List<String> subjects,
-    bool isRead = false,
+    bool? isRead,
+    bool? isStar,
   }) async {
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
     final emails = mailboxDashBoardController
@@ -81,54 +83,41 @@ mixin ScenarioUtilsMixin {
       .where((presentationEmail) => subjects.contains(
         presentationEmail.subject
       ))
-      .map((presentationEmail) => presentationEmail.toEmail())
       .toList();
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     if (session == null || accountId == null) return;
 
-    final setEmailMethod = SetEmailMethod(accountId)
-      ..addUpdates(emails.listEmailIds.generateMapUpdateObjectMarkAsRead(
-        isRead ? ReadActions.markAsRead : ReadActions.markAsUnread
-      ));
     final requestBuilder = JmapRequestBuilder(
       Get.find<HttpClient>(),
       ProcessingInvocation(),
     );
-    requestBuilder.invocation(setEmailMethod);
-    final capabilities = setEmailMethod
-      .requiredCapabilities
-      .toCapabilitiesSupportTeamMailboxes(session, accountId);
-    await (requestBuilder..usings(capabilities)).build().execute();
-  }
+    final capabilities = <CapabilityIdentifier>{};
 
-  Future<void> simulateMarkEmailsAsStarWithSubjectsFromOutsideCurrentClient({
-    required List<String> subjects,
-    bool isStar = false,
-  }) async {
-    final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-    final emails = mailboxDashBoardController
-      .emailsInCurrentMailbox
-      .where((presentationEmail) => subjects.contains(
-        presentationEmail.subject
-      ))
-      .map((presentationEmail) => presentationEmail.toEmail())
-      .toList();
-    final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
-    if (session == null || accountId == null) return;
-
-    final setEmailMethod = SetEmailMethod(accountId)
-      ..addUpdates(emails.listEmailIds.generateMapUpdateObjectMarkAsStar(
-        isStar ? MarkStarAction.markStar : MarkStarAction.unMarkStar
-      ));
-    final requestBuilder = JmapRequestBuilder(
-      Get.find<HttpClient>(),
-      ProcessingInvocation(),
-    );
-    requestBuilder.invocation(setEmailMethod);
-    final capabilities = setEmailMethod.requiredCapabilities
-      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+    // Mark as read/unread
+    if (isRead != null) {
+      final markEmailAsReadMethod = SetEmailMethod(accountId)
+        ..addUpdates(emails.listEmailIds.generateMapUpdateObjectMarkAsRead(
+          isRead ? ReadActions.markAsRead : ReadActions.markAsUnread
+        ));
+      requestBuilder.invocation(markEmailAsReadMethod);
+      capabilities.addAll(markEmailAsReadMethod
+        .requiredCapabilities
+        .toCapabilitiesSupportTeamMailboxes(session, accountId));
+    }
+    
+    // Mark as star/unstar
+    if (isStar != null) {
+      final markEmailAsStarMethod = SetEmailMethod(accountId)
+        ..addUpdates(emails.listEmailIds.generateMapUpdateObjectMarkAsStar(
+          isStar ? MarkStarAction.markStar : MarkStarAction.unMarkStar
+        ));
+      requestBuilder.invocation(markEmailAsStarMethod);
+      capabilities.addAll(markEmailAsStarMethod
+        .requiredCapabilities
+        .toCapabilitiesSupportTeamMailboxes(session, accountId));
+    }
+    
     await (requestBuilder..usings(capabilities)).build().execute();
   }
 

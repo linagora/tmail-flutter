@@ -33,14 +33,14 @@ class WebSocketUpdateUiScenario extends BaseScenario with ScenarioUtilsMixin {
     await _expectEmailUnreadWithSubject(subject);
     await _expectEmailUnstarredWithSubject(subject);
 
-    await simulateMarkEmailsAsReadWithSubjectsFromOutsideCurrentClient(
+    await simulateUpdateFlagsOfEmailsWithSubjectsFromOutsideCurrentClient(
       subjects: [subject],
       isRead: true,
     );
     await $.pumpAndSettle();
     await _expectEmailReadWithSubject(subject);
 
-    await simulateMarkEmailsAsStarWithSubjectsFromOutsideCurrentClient(
+    await simulateUpdateFlagsOfEmailsWithSubjectsFromOutsideCurrentClient(
       subjects: [subject],
       isStar: true,
     );
