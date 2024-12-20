@@ -254,7 +254,7 @@ class ThreadController extends BaseController with EmailActionController {
         _currentMemoryMailboxId = mailbox.id;
         consumeState(Stream.value(Right(GetAllEmailLoading())));
         _resetToOriginalValue();
-        _getAllEmailAction();
+        _getAllEmailAction(getLatestChanges: false);
       } else if (mailbox == null) { // disable current mailbox when search active
         _currentMemoryMailboxId = null;
         _resetToOriginalValue();
@@ -446,7 +446,7 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  void _getAllEmailAction() {
+  void _getAllEmailAction({bool getLatestChanges = true}) {
     log('ThreadController::_getAllEmailAction:');
     if (_session != null &&_accountId != null) {
       consumeState(_getEmailsInMailboxInteractor.execute(
@@ -461,6 +461,7 @@ class ThreadController extends BaseController with EmailActionController {
         ),
         propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+        getLatestChanges: getLatestChanges,
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));

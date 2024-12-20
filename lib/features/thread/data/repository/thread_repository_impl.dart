@@ -45,6 +45,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       EmailFilter? emailFilter,
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
+      bool getLatestChanges = true,
     }
   ) async* {
     log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId}');
@@ -92,7 +93,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       await _updateEmailCache(accountId, session.username, newCreated: networkEmailResponse.emailList);
     }
 
-    if (localEmailResponse.hasState()) {
+    if (localEmailResponse.hasState() && getLatestChanges) {
       log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId} local has state: ${localEmailResponse.state}');
       await _synchronizeCacheWithChanges(
         session,
