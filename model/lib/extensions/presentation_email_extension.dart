@@ -217,11 +217,14 @@ extension PresentationEmailExtension on PresentationEmail {
       ..searchSnippetPreview = searchSnippetPreview;
   }
 
-  PresentationEmail updateKeywords(Map<KeyWordIdentifier, bool>? newKeywords) {
+  PresentationEmail updateKeywords(Map<KeyWordIdentifier, bool> newKeywords) {
+    final combinedMap = {...(keywords ?? {}), ...newKeywords};
+    combinedMap.removeWhere((key, value) => !value);
+    log('PresentationEmailExtension::updateKeywords:combinedMap = $combinedMap');
     return PresentationEmail(
       id: this.id,
       blobId: blobId,
-      keywords: newKeywords,
+      keywords: combinedMap,
       size: size,
       receivedAt: receivedAt,
       hasAttachment: hasAttachment,

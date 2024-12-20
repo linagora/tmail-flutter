@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -15,7 +16,7 @@ class MarkAsStarMultipleEmailInteractor {
   Stream<Either<Failure, Success>> execute(
     Session session,
     AccountId accountId,
-    List<Email> emails,
+    List<EmailId> emailIds,
     MarkStarAction markStarAction
   ) async* {
     try {
@@ -23,24 +24,18 @@ class MarkAsStarMultipleEmailInteractor {
 
       final currentEmailState = await _emailRepository.getEmailState(session, accountId);
 
-      final listEmailNeedMarkStar = emails
-          .where((email) => markStarAction == MarkStarAction.unMarkStar ? email.hasStarred : !email.hasStarred)
-          .toList();
+      final result = await _emailRepository.markAsStar(session, accountId, emailIds, markStarAction);
 
-      final result = await _emailRepository.markAsStar(session, accountId, listEmailNeedMarkStar, markStarAction);
-
-      if (listEmailNeedMarkStar.length == result.length) {
-        final countMarkStarSuccess = emails.length;
+      if (emailIds.length == result.length) {
         yield Right(MarkAsStarMultipleEmailAllSuccess(
-            countMarkStarSuccess,
+            emailIds.length,
             markStarAction,
             currentEmailState: currentEmailState));
       } else if (result.isEmpty) {
         yield Left(MarkAsStarMultipleEmailAllFailure(markStarAction));
       } else {
-        final countMarkStarSuccess = emails.length - (listEmailNeedMarkStar.length - result.length);
         yield Right(MarkAsStarMultipleEmailHasSomeEmailFailure(
-            countMarkStarSuccess,
+            result.length,
             markStarAction,
             currentEmailState: currentEmailState));
       }

@@ -24,7 +24,7 @@ class StoreEventAttendanceStatusInteractor {
 
       final currentEmailState = await _emailRepository.getEmailState(session, accountId);
 
-      final updatedEmail = await _emailRepository.storeEventAttendanceStatus(
+      await _emailRepository.storeEventAttendanceStatus(
         session,
         accountId,
         emailId,
@@ -32,7 +32,6 @@ class StoreEventAttendanceStatusInteractor {
 
       yield Right(StoreEventAttendanceStatusSuccess(
         eventActionType,
-        updatedEmail,
         currentEmailState: currentEmailState));
     } catch (e) {
       yield Left(StoreEventAttendanceStatusFailure(exception: e));
