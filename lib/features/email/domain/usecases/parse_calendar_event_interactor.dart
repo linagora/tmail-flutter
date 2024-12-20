@@ -1,5 +1,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -15,15 +16,19 @@ class ParseCalendarEventInteractor {
   Stream<Either<Failure, Success>> execute(
     AccountId accountId,
     Set<Id> blobIds,
-    String emailContents
+    TransformConfiguration transformConfiguration,
   ) async* {
     try {
       yield Right(ParseCalendarEventLoading());
 
       final listBlobCalendarEvent = await _calendarEventRepository.parse(accountId, blobIds);
+      final listBlobCalendarEventWithTransformedDescription = await _calendarEventRepository.transformCalendarEventDescription(
+        listBlobCalendarEvent,
+        transformConfiguration,
+      );
 
-      if (listBlobCalendarEvent.isNotEmpty) {
-        yield Right(ParseCalendarEventSuccess(listBlobCalendarEvent));
+      if (listBlobCalendarEventWithTransformedDescription.isNotEmpty) {
+        yield Right(ParseCalendarEventSuccess(listBlobCalendarEventWithTransformedDescription));
       } else {
         yield Left(ParseCalendarEventFailure(NotFoundCalendarEventException()));
       }
