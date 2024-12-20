@@ -25,6 +25,7 @@ abstract class ThreadRepository {
       EmailFilter? emailFilter,
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
+      bool getLatestChanges = true,
     }
   );
 
