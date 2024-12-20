@@ -10,8 +10,11 @@ typedef ProcessMessageCallback = Future<void> Function(WebSocketMessage message)
 typedef OnErrorCallback = void Function(dynamic error, StackTrace stackTrace);
 
 class WebSocketQueueHandler {
+  static const int _maxQueueSize = 128;
+  static const int _maxProcessedIdsSize = 128;
+
   final Queue<WebSocketMessage> _messageQueue = Queue<WebSocketMessage>();
-  final Set<String> _processedMessageIds = {};
+  final Queue<String> _processedMessageIds = Queue<String>();
 
   Completer<void>? _processingLock;
 
@@ -24,7 +27,7 @@ class WebSocketQueueHandler {
     required this.processMessageCallback,
     this.onErrorCallback,
   }) {
-    _queueController.stream.listen((message) {
+    _queueController.stream.listen((_) {
       _processQueue();
     });
   }
@@ -33,6 +36,11 @@ class WebSocketQueueHandler {
     if (isMessageProcessed(message.id)) {
       log('WebSocketQueueHandler::enqueue:Message ${message.id} already processed, skipping');
       return;
+    }
+
+    if (queueSize >= _maxQueueSize) {
+      log('WebSocketQueueHandler::enqueue:Queue full, removing oldest message');
+      _messageQueue.removeFirst();
     }
 
     _messageQueue.add(message);
@@ -47,27 +55,34 @@ class WebSocketQueueHandler {
     _processingLock = Completer<void>();
 
     try {
-      while (_messageQueue.isNotEmpty) {
+      while (queueSize > 0) {
         final message = _messageQueue.first;
 
         try {
           await processMessageCallback(message);
-          _processedMessageIds.add(message.id);
+          _addToProcessedMessages(message.id);
           _messageQueue.removeFirst();
         } catch (e, stackTrace) {
           logError('WebSocketQueueHandler::_processQueue:Error processing message ${message.id}: $e');
           onErrorCallback?.call(e, stackTrace);
-          break;
+          _messageQueue.removeFirst();
         }
       }
     } finally {
       _processingLock?.complete();
       _processingLock = null;
 
-      if (_messageQueue.isNotEmpty) {
+      if (queueSize > 0) {
         scheduleMicrotask(() => _queueController.add(_messageQueue.first));
       }
     }
+  }
+
+  void _addToProcessedMessages(String messageId) {
+    if (_processedMessageIds.length >= _maxProcessedIdsSize) {
+      _processedMessageIds.removeFirst();
+    }
+    _processedMessageIds.add(messageId);
   }
 
   void removeMessagesUpToCurrent(String messageId) {
@@ -78,7 +93,7 @@ class WebSocketQueueHandler {
       log('WebSocketQueueHandler::removeMessagesUpToCurrent:Current state $messageId not found in the queue.');
       return;
     }
-    while (_messageQueue.isNotEmpty) {
+    while (queueSize > 0) {
       final removedMessage = _messageQueue.removeFirst();
       if (removedMessage.id == messageId) {
         break;

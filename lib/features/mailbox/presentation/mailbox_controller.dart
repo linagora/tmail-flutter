@@ -315,9 +315,6 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
 
       if (refreshState is RefreshChangesAllMailboxSuccess) {
         await _handleRefreshChangeMailboxSuccess(refreshState);
-        if (currentMailboxState != null) {
-          _webSocketQueueHandler?.removeMessagesUpToCurrent(currentMailboxState!.value);
-        }
       } else {
         _clearNewFolderId();
         onDataFailureViewState(refreshState);
@@ -325,6 +322,9 @@ class MailboxController extends BaseMailboxController with MailboxActionHandlerM
     } catch (e, stackTrace) {
       logError('MailboxController::_processMailboxStateQueue:Error processing state: $e');
       onError(e, stackTrace);
+    }
+    if (currentMailboxState != null) {
+      _webSocketQueueHandler?.removeMessagesUpToCurrent(currentMailboxState!.value);
     }
   }
 

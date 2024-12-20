@@ -1,5 +1,5 @@
+import 'dart:collection';
 
-import 'package:core/utils/app_logger.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
@@ -8,93 +8,195 @@ import 'package:tmail_ui_user/features/push_notification/presentation/websocket/
 import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/session_fixtures.dart';
 
+class MockWebSocketMessage extends WebSocketMessage {
+  MockWebSocketMessage(String message)
+      : super(
+          newState: State(message),
+          accountId: AccountFixtures.aliceAccountId,
+          session: SessionFixtures.aliceSession,
+        );
+}
+
 void main() {
   group('WebSocketQueueHandler::test', () {
-    late WebSocketQueueHandler webSocketQueueHandler;
+    late Queue<String> processedMessages;
 
     setUp(() {
-      webSocketQueueHandler = WebSocketQueueHandler(
-        processMessageCallback: (message) async {
-          log('WebSocketQueueHandler::main:message = $message');
-        },
-        onErrorCallback: (error, stackTrace) {
-          logError('WebSocketQueueHandler::main:error = $error | stackTrace = $stackTrace');
-        },
-      );
+      processedMessages = Queue<String>();
     });
 
-    tearDown(() {
-      webSocketQueueHandler.dispose();
+    WebSocketQueueHandler createHandler({
+      required ProcessMessageCallback processMessageCallback,
+      OnErrorCallback? onErrorCallback,
+    }) {
+      return WebSocketQueueHandler(
+        processMessageCallback: processMessageCallback,
+        onErrorCallback: onErrorCallback,
+      );
+    }
+
+    group('Basic Operations', () {
+      late WebSocketQueueHandler handler;
+
+      setUp(() {
+        handler = createHandler(
+          processMessageCallback: (message) async {
+            processedMessages.add(message.id);
+          },
+        );
+      });
+
+      tearDown(() => handler.dispose());
+
+      test('Should process messages in correct order', () async {
+        final messages = List.generate(5, (index) => MockWebSocketMessage('$index'));
+
+        for (var message in messages) {
+          handler.enqueue(message);
+        }
+
+        await handler.waitForEmpty();
+
+        expect(processedMessages, containsAllInOrder(['0', '1', '2', '3', '4']));
+      });
+
+      test('Should correctly remove messages up to specified ID', () async {
+        final messages = List.generate(5, (index) => MockWebSocketMessage('$index'));
+
+        for (var message in messages) {
+          handler.enqueue(message);
+        }
+
+        handler.removeMessagesUpToCurrent('2');
+
+        expect(handler.queueSize, 2);
+
+        await handler.waitForEmpty();
+
+        expect(processedMessages.length, 2);
+        expect(processedMessages.first, '3');
+      });
     });
 
-    test('should process messages in queue', () async {
-      final message1 = WebSocketMessage(
-        newState: State('msg1'),
-        accountId: AccountFixtures.aliceAccountId,
-        session: SessionFixtures.aliceSession,
-      );
-      final message2 = WebSocketMessage(
-        newState: State('msg2'),
-        accountId: AccountFixtures.aliceAccountId,
-        session: SessionFixtures.aliceSession,
-      );
+    group('Concurrent Operations', () {
+      late WebSocketQueueHandler handler;
 
-      webSocketQueueHandler.enqueue(message1);
-      webSocketQueueHandler.enqueue(message2);
+      setUp(() {
+        handler = createHandler(
+          processMessageCallback: (message) async {
+            processedMessages.add(message.id);
+          },
+        );
+      });
 
-      await webSocketQueueHandler.waitForEmpty();
+      tearDown(() => handler.dispose());
 
-      expect(webSocketQueueHandler.isMessageProcessed('msg1'), isTrue);
-      expect(webSocketQueueHandler.isMessageProcessed('msg2'), isTrue);
-      expect(webSocketQueueHandler.queueSize, 0);
+      test('Should handle concurrent message enqueueing', () async {
+        final messages = List.generate(5, (index) => MockWebSocketMessage('$index'));
+
+        await Future.wait(messages.map((message) => Future(() => handler.enqueue(message))));
+
+        await handler.waitForEmpty();
+
+        expect(processedMessages, containsAllInOrder(['0', '1', '2', '3', '4']));
+      });
+
+      test('Should maintain order under high concurrency', () async {
+        final messages = List.generate(10, (index) => MockWebSocketMessage('$index'));
+
+        for (var message in messages) {
+          handler.enqueue(message);
+        }
+
+        await handler.waitForEmpty();
+
+        expect(processedMessages, containsAllInOrder(['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']));
+      });
     });
 
-    test('should not process already processed messages', () async {
-      final message = WebSocketMessage(
-        newState: State('msg1'),
-        accountId: AccountFixtures.aliceAccountId,
-        session: SessionFixtures.aliceSession,
-      );
+    group('Error Handling', () {
+      test('Should continue processing after message failure', () async {
+        final handler = createHandler(
+          processMessageCallback: (message) async {
+            if (message.id == '2') throw Exception('Simulated Failure');
+            processedMessages.add(message.id);
+          },
+        );
 
-      webSocketQueueHandler.enqueue(message);
-      await webSocketQueueHandler.waitForEmpty();
+        handler.enqueue(MockWebSocketMessage('1'));
+        handler.enqueue(MockWebSocketMessage('2'));
+        handler.enqueue(MockWebSocketMessage('3'));
 
-      // Enqueue the same message again
-      webSocketQueueHandler.enqueue(message);
-      await webSocketQueueHandler.waitForEmpty();
+        await handler.waitForEmpty();
 
-      expect(webSocketQueueHandler.isMessageProcessed('msg1'), isTrue);
-      expect(webSocketQueueHandler.queueSize, 0);
+        expect(processedMessages, ['1', '3']);
+        handler.dispose();
+      });
+
+      test('Should handle exception in process callback', () async {
+        final handler = createHandler(
+          processMessageCallback: (message) async {
+            if (message.id == '1') throw Exception('Simulated Failure');
+            processedMessages.add(message.id);
+          },
+          onErrorCallback: (error, stackTrace) {
+            expect(error, isA<Exception>());
+          },
+        );
+
+        handler.enqueue(MockWebSocketMessage('1'));
+        handler.enqueue(MockWebSocketMessage('2'));
+
+        await handler.waitForEmpty();
+
+        expect(processedMessages, ['2']);
+        handler.dispose();
+      });
     });
 
-    test('should remove messages up to a given message ID', () {
-      final message1 = WebSocketMessage(
-        newState: State('msg1'),
-        accountId: AccountFixtures.aliceAccountId,
-        session: SessionFixtures.aliceSession,
-      );
+    group('Stress Testing', () {
+      late WebSocketQueueHandler handler;
 
-      final message2 = WebSocketMessage(
-        newState: State('msg2'),
-        accountId: AccountFixtures.aliceAccountId,
-        session: SessionFixtures.aliceSession,
-      );
+      setUp(() {
+        handler = createHandler(
+          processMessageCallback: (message) async {
+            processedMessages.add(message.id);
+          },
+        );
+      });
 
-      final message3 = WebSocketMessage(
-        newState: State('msg3'),
-        accountId: AccountFixtures.aliceAccountId,
-        session: SessionFixtures.aliceSession,
-      );
+      tearDown(() => handler.dispose());
 
-      webSocketQueueHandler.enqueue(message1);
-      webSocketQueueHandler.enqueue(message2);
-      webSocketQueueHandler.enqueue(message3);
+      test('Should handle large bursts of messages', () async {
+        handler = createHandler(
+          processMessageCallback: (message) async {
+            processedMessages.add(message.id);
+          },
+        );
 
-      webSocketQueueHandler.removeMessagesUpToCurrent('msg2');
+        const int burstSize = 1000;
+        for (int i = 0; i < burstSize; i++) {
+          await Future.delayed(const Duration(milliseconds: 10));
+          handler.enqueue(MockWebSocketMessage('$i'));
+        }
 
-      expect(webSocketQueueHandler.queueSize, 1);
-      expect(webSocketQueueHandler.isMessageProcessed('msg1'), false);
-      expect(webSocketQueueHandler.isMessageProcessed('msg2'), false);
+        await handler.waitForEmpty();
+
+        expect(processedMessages.length, burstSize);
+        expect(processedMessages, List.generate(burstSize, (i) => '$i'));
+      });
+
+      test('Should handle interleaved slow and fast messages', () async {
+        handler.enqueue(MockWebSocketMessage('1'));
+
+        Future.delayed(const Duration(milliseconds: 10), () {
+          handler.enqueue(MockWebSocketMessage('2'));
+        });
+
+        await handler.waitForEmpty();
+
+        expect(processedMessages, ['1', '2']);
+      });
     });
   });
 }

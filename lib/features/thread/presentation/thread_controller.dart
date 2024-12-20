@@ -93,7 +93,6 @@ class ThreadController extends BaseController with EmailActionController {
   bool canLoadMore = false;
   bool canSearchMore = false;
   MailboxId? _currentMemoryMailboxId;
-  jmap.State? _currentEmailState;
   final ScrollController listEmailController = ScrollController();
   final FocusNode focusNodeKeyBoard = FocusNode();
   final latestEmailSelectedOrUnselected = Rxn<PresentationEmail>();
@@ -145,7 +144,6 @@ class ThreadController extends BaseController with EmailActionController {
   @override
   void onClose() {
     _currentMemoryMailboxId = null;
-    _currentEmailState = null;
     listEmailController.dispose();
     focusNodeKeyBoard.dispose();
     if (PlatformInfo.isWeb) {
@@ -393,8 +391,8 @@ class ThreadController extends BaseController with EmailActionController {
       log('ThreadController::_getAllEmailSuccess: GetAllForMailboxId = ${success.currentMailboxId?.asString} | SELECTED_MAILBOX_ID = ${selectedMailboxId?.asString} | SELECTED_MAILBOX_NAME = ${selectedMailbox?.name?.name}');
       return;
     }
-    _currentEmailState = success.currentEmailState;
-    log('ThreadController::_getAllEmailSuccess():COUNT = ${success.emailList.length} | EMAIL_STATE = $_currentEmailState');
+    mailboxDashBoardController.setCurrentEmailState(success.currentEmailState);
+    log('ThreadController::_getAllEmailSuccess():COUNT = ${success.emailList.length} | EMAIL_STATE = ${mailboxDashBoardController.currentEmailState}');
     final newListEmail = success.emailList.syncPresentationEmail(
       mapMailboxById: mailboxDashBoardController.mapMailboxById,
       selectedMailbox: selectedMailbox,
@@ -423,8 +421,7 @@ class ThreadController extends BaseController with EmailActionController {
       log('ThreadController::_refreshChangesAllEmailSuccess: RefreshedMailboxId = ${success.currentMailboxId?.asString} | SELECTED_MAILBOX_ID = ${selectedMailboxId?.asString} | SELECTED_MAILBOX_NAME = ${selectedMailbox?.name?.name}');
       return;
     }
-
-    _currentEmailState = success.currentEmailState;
+    mailboxDashBoardController.setCurrentEmailState(success.currentEmailState);
     log('ThreadController::_refreshChangesAllEmailSuccess: COUNT = ${success.emailList.length}');
     final emailsBeforeChanges = mailboxDashBoardController.emailsInCurrentMailbox;
     final emailsAfterChanges = success.emailList;
@@ -523,16 +520,11 @@ class ThreadController extends BaseController with EmailActionController {
     return limit;
   }
 
-  @visibleForTesting
-  void setCurrentEmailState({jmap.State? newState}) {
-    _currentEmailState = newState;
-  }
-
   void _refreshEmailChanges({jmap.State? newState}) {
     log('ThreadController::_refreshEmailChanges(): newState: $newState');
     if (_accountId == null ||
         _session == null ||
-        _currentEmailState == null ||
+        mailboxDashBoardController.currentEmailState == null ||
         newState == null) {
       return;
     }
@@ -546,7 +538,8 @@ class ThreadController extends BaseController with EmailActionController {
 
   Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
     try {
-      if (_currentEmailState == message.newState) {
+      if (mailboxDashBoardController.currentEmailState == null ||
+          mailboxDashBoardController.currentEmailState == message.newState) {
         log('ThreadController::_handleWebSocketMessage:Skipping redundant state: ${message.newState}');
         return Future.value();
       }
@@ -583,9 +576,6 @@ class ThreadController extends BaseController with EmailActionController {
 
         if (searchState is SearchEmailSuccess) {
           _searchEmailsSuccess(searchState);
-          if (_currentEmailState != null) {
-            _webSocketQueueHandler?.removeMessagesUpToCurrent(_currentEmailState!.value);
-          }
         } else {
           mailboxDashBoardController.updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
           canSearchMore = false;
@@ -596,7 +586,7 @@ class ThreadController extends BaseController with EmailActionController {
         final refreshViewState = await _refreshChangesEmailsInMailboxInteractor.execute(
           _session!,
           _accountId!,
-          _currentEmailState!,
+          mailboxDashBoardController.currentEmailState!,
           sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
           propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
             _session!,
@@ -615,16 +605,18 @@ class ThreadController extends BaseController with EmailActionController {
 
         if (refreshState is RefreshChangesAllEmailSuccess) {
           _refreshChangesAllEmailSuccess(refreshState);
-          if (_currentEmailState != null) {
-            _webSocketQueueHandler?.removeMessagesUpToCurrent(_currentEmailState!.value);
-          }
         } else {
           onDataFailureViewState(refreshState);
         }
       }
     } catch (e, stackTrace) {
-      logError('ThreadController::_processMailboxStateQueue:Error processing state: $e');
+      logError('ThreadController::_handleWebSocketMessage:Error processing state: $e');
       onError(e, stackTrace);
+    } finally {
+      if (mailboxDashBoardController.currentEmailState != null) {
+        _webSocketQueueHandler?.removeMessagesUpToCurrent(
+            mailboxDashBoardController.currentEmailState!.value);
+      }
     }
   }
 

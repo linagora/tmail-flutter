@@ -148,16 +148,20 @@ class WebSocketController extends PushBaseController {
   }
 
   void _handleStateChange(StateChange? stateChange) {
-    if (stateChange == null || accountId == null || session == null) return;
+    try {
+      if (stateChange == null || accountId == null || session == null) return;
 
-    final mapTypeState = stateChange.getMapTypeState(accountId!);
-    mappingTypeStateToAction(
-      mapTypeState,
-      accountId!,
-      emailChangeListener: EmailChangeListener.instance,
-      mailboxChangeListener: MailboxChangeListener.instance,
-      session!.username,
-      session: session,
-    );
+      final mapTypeState = stateChange.getMapTypeState(accountId!);
+      mappingTypeStateToAction(
+        mapTypeState,
+        accountId!,
+        emailChangeListener: EmailChangeListener.instance,
+        mailboxChangeListener: MailboxChangeListener.instance,
+        session!.username,
+        session: session,
+      );
+    } catch (e) {
+      logError('WebSocketController::_handleStateChange:Exception = $e');
+    }
   }
 }
