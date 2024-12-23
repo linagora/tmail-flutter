@@ -67,6 +67,7 @@ class _AppGridViewState extends State<AppGridView> {
               valueListenable: _isCollapsedNotifier,
               builder: (context, isCollapsed, child) {
                 return TMailButtonWidget.fromIcon(
+                  key: const Key('toggle_app_grid_button'),
                   icon: _getCollapseIcon(context, isCollapsed),
                   iconColor: isCollapsed
                     ? AppColor.colorIconUnSubscribedMailbox
@@ -94,6 +95,7 @@ class _AppGridViewState extends State<AppGridView> {
             }
           },
           child: ListView.builder(
+            key: const Key('list_view_app_grid'),
             shrinkWrap: true,
             primary: false,
             padding: const EdgeInsetsDirectional.only(

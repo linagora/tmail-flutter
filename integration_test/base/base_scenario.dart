@@ -12,4 +12,8 @@ abstract class BaseScenario {
     await $.waitUntilVisible(patrolFinder);
     expect(patrolFinder, findsWidgets);
   }
+
+  Future<void> expectViewInVisible(PatrolFinder patrolFinder) async {
+    expect(patrolFinder, findsNothing);
+  }
 }
