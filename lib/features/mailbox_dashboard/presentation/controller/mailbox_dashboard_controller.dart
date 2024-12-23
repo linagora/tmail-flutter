@@ -1465,10 +1465,6 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   void dispatchRoute(DashboardRoutes route) {
     log('MailboxDashBoardController::dispatchRoute(): $route');
     dashboardRoute.value = route;
-
-    if (dashboardRoute.value == DashboardRoutes.searchEmail) {
-      searchController.activateSimpleSearch();
-    }
   }
 
   @override

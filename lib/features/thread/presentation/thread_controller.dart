@@ -567,8 +567,6 @@ class ThreadController extends BaseController with EmailActionController {
       ),
       beforeOption: const None(),
     );
-    searchController.activateSimpleSearch();
-
     final searchViewState = await _searchEmailInteractor.execute(
       _session!,
       _accountId!,
