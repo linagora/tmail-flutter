@@ -16,6 +16,7 @@ export 'presentation/extensions/string_extension.dart';
 export 'presentation/extensions/tap_down_details_extension.dart';
 export 'domain/extensions/media_type_extension.dart';
 export 'presentation/extensions/map_extensions.dart';
+export 'presentation/extensions/either_view_state_extension.dart';
 
 // Exceptions
 export 'domain/exceptions/download_file_exception.dart';

@@ -127,7 +127,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
     if (success is GetAllMailboxSuccess) {
       await buildTree(success.mailboxList);
       if (currentContext != null) {
-        await syncAllMailboxWithDisplayName(currentContext!);
+        syncAllMailboxWithDisplayName(currentContext!);
       }
     } else if (success is GetAllRulesSuccess) {
       log('RulesFilterCreatorController::handleSuccessViewState():GetAllRulesSuccess: ${success.rules}');
