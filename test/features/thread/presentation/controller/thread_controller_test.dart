@@ -286,6 +286,7 @@ void main() {
         when(mockMailboxDashBoardController.emailUIAction).thenReturn(Rxn(null));
         when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(UIState.idle)));
         when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
+        when(mockMailboxDashBoardController.currentEmailState).thenReturn(State('old-state'));
         when(mockSearchController.searchState).thenReturn(Rx(SearchState.initial()));
         when(mockSearchController.isAdvancedSearchViewOpen).thenReturn(RxBool(false));
         when(mockSearchController.isSearchEmailRunning).thenReturn(true);

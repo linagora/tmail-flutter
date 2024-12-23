@@ -1711,57 +1711,54 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _rejectCalendarEventAction(EmailId emailId) {
     if (_rejectCalendarEventInteractor == null
       || _displayingEventBlobId == null
-      || mailboxDashBoardController.accountId.value == null
-      || mailboxDashBoardController.sessionCurrent == null
-      || mailboxDashBoardController.sessionCurrent
-        !.validateCalendarEventCapability(mailboxDashBoardController.accountId.value!)
-        .isAvailable == false
+      || accountId == null
+      || session == null
+      || session!.validateCalendarEventCapability(accountId!).isAvailable == false
     ) {
       consumeState(Stream.value(Left(CalendarEventRejectFailure())));
     } else {
       consumeState(_rejectCalendarEventInteractor!.execute(
-        mailboxDashBoardController.accountId.value!,
+        accountId!,
         {_displayingEventBlobId!},
         emailId,
-        mailboxDashBoardController.sessionCurrent!.getLanguageForCalendarEvent(
+        session!.getLanguageForCalendarEvent(
           LocalizationService.getLocaleFromLanguage(),
-          mailboxDashBoardController.accountId.value!)));
+          accountId!,
+        ),
+      ));
     }
   }
 
   void _maybeCalendarEventAction(EmailId emailId) {
     if (_maybeCalendarEventInteractor == null
       || _displayingEventBlobId == null
-      || mailboxDashBoardController.accountId.value == null
-      || mailboxDashBoardController.sessionCurrent == null
-      || mailboxDashBoardController.sessionCurrent
-        !.validateCalendarEventCapability(mailboxDashBoardController.accountId.value!)
-        .isAvailable == false
+      || accountId == null
+      || session == null
+      || session!.validateCalendarEventCapability(accountId!).isAvailable == false
     ) {
       consumeState(Stream.value(Left(CalendarEventMaybeFailure())));
     } else {
       consumeState(_maybeCalendarEventInteractor!.execute(
-        mailboxDashBoardController.accountId.value!,
+        accountId!,
         {_displayingEventBlobId!},
         emailId,
-        mailboxDashBoardController.sessionCurrent!.getLanguageForCalendarEvent(
+        session!.getLanguageForCalendarEvent(
           LocalizationService.getLocaleFromLanguage(),
-          mailboxDashBoardController.accountId.value!)));
+          accountId!,
+        ),
+      ));
     }
   }
 
   void calendarEventSuccess(CalendarEventReplySuccess success) {
-    final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
-
     if (session == null || accountId == null) {
       consumeState(Stream.value(Left(StoreEventAttendanceStatusFailure(exception: NotFoundSessionException()))));
       return;
     }
 
     consumeState(_storeEventAttendanceStatusInteractor.execute(
-      session,
-      accountId,
+      session!,
+      accountId!,
       success.emailId,
       success.getEventActionType()
     ));
@@ -1839,16 +1836,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   Future<void> previewPDFFileAction(BuildContext context, Attachment attachment) async {
-    final accountId = mailboxDashBoardController.accountId.value;
-    final downloadUrl = mailboxDashBoardController.sessionCurrent
-      ?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
-
-    if (accountId == null || downloadUrl == null) {
+    if (accountId == null || session == null) {
       appToast.showToastErrorMessage(
         context,
         AppLocalizations.of(context).noPreviewAvailable);
       return;
     }
+    final downloadUrl = session!.getDownloadUrl(
+      jmapUrl: dynamicUrlInterceptors.jmapUrl,
+    );
 
     await Get.generalDialog(
       barrierColor: Colors.black.withOpacity(0.8),
@@ -1856,7 +1852,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         return PointerInterceptor(
           child: PDFViewer(
             attachment: attachment,
-            accountId: accountId,
+            accountId: accountId!,
             downloadUrl: downloadUrl,
             downloadAction: _downloadPDFFile,
             printAction: _printPDFFile,
@@ -1876,7 +1872,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
 
     final listEmailAddressMailTo = listEmailAddressAttendees
-      .where((emailAddress) => emailAddress.emailAddress.isNotEmpty && emailAddress.emailAddress != mailboxDashBoardController.sessionCurrent?.username.value)
+      .where((emailAddress) {
+        return emailAddress.emailAddress.isNotEmpty &&
+            emailAddress.emailAddress != session?.username.value;
+      })
       .toSet()
       .toList();
 
