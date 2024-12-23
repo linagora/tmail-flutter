@@ -5,7 +5,6 @@ import 'package:dartz/dartz.dart' as dartz;
 import 'package:dio/dio.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/compose_email_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
@@ -15,18 +14,15 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/create_e
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 
 class CreateNewAndSendEmailInteractor {
   final EmailRepository _emailRepository;
-  final MailboxRepository _mailboxRepository;
   final ComposerRepository _composerRepository;
 
   CreateNewAndSendEmailInteractor(
     this._emailRepository,
-    this._mailboxRepository,
     this._composerRepository,
   );
 
@@ -37,11 +33,6 @@ class CreateNewAndSendEmailInteractor {
     SendingEmailArguments? sendingEmailArguments;
     try {
       yield dartz.Right<Failure, Success>(GenerateEmailLoading());
-
-      final listCurrentState = await _getStoredCurrentState(
-        session: createEmailRequest.session,
-        accountId: createEmailRequest.accountId
-      );
 
       sendingEmailArguments = await _createEmailObject(createEmailRequest);
 
@@ -67,8 +58,6 @@ class CreateNewAndSendEmailInteractor {
 
         yield dartz.Right<Failure, Success>(
           SendEmailSuccess(
-            currentMailboxState: listCurrentState?.value1,
-            currentEmailState: listCurrentState?.value2,
             emailRequest: sendingEmailArguments.emailRequest
           )
         );
@@ -104,26 +93,6 @@ class CreateNewAndSendEmailInteractor {
       return sendingEmailArgument;
     } catch (e) {
       logError('CreateNewAndSendEmailInteractor::_createEmailObject: Exception: $e');
-      return null;
-    }
-  }
-
-  Future<dartz.Tuple2<State?, State?>?> _getStoredCurrentState({
-    required Session session,
-    required AccountId accountId
-  }) async {
-    try {
-      final listState = await Future.wait([
-        _mailboxRepository.getMailboxState(session, accountId),
-        _emailRepository.getEmailState(session, accountId),
-      ]);
-
-      final mailboxState = listState.first;
-      final emailState = listState.last;
-
-      return dartz.Tuple2(mailboxState, emailState);
-    } catch (e) {
-      logError('CreateNewAndSendEmailInteractor::_getStoredCurrentState: Exception: $e');
       return null;
     }
   }

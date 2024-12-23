@@ -96,9 +96,7 @@ class SendEmailInteractorBindings extends InteractorsBindings {
 
   @override
   void bindingsInteractor() {
-    Get.lazyPut(() => SendEmailInteractor(
-      Get.find<EmailRepository>(),
-      Get.find<MailboxRepository>()));
+    Get.lazyPut(() => SendEmailInteractor(Get.find<EmailRepository>()));
   }
 
   @override

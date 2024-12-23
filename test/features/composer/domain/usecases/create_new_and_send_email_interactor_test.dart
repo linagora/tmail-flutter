@@ -7,7 +7,6 @@ import 'package:tmail_ui_user/features/composer/domain/repository/composer_repos
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
 import '../../../../fixtures/session_fixtures.dart';
@@ -15,16 +14,13 @@ import 'create_new_and_send_email_interactor_test.mocks.dart';
 
 @GenerateNiceMocks([
   MockSpec<EmailRepository>(),
-  MockSpec<MailboxRepository>(),
   MockSpec<ComposerRepository>(),
 ])
 void main() {
   final emailRepository = MockEmailRepository();
-  final mailboxRepository = MockMailboxRepository();
   final composerRepository = MockComposerRepository();
   final createNewAndSendEmailInteractor = CreateNewAndSendEmailInteractor(
     emailRepository,
-    mailboxRepository,
     composerRepository);
   group('create new and send email interactor test:', () {
     test(

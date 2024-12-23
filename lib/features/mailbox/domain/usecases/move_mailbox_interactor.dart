@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -14,8 +15,6 @@ class MoveMailboxInteractor {
   Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, MoveMailboxRequest request) async* {
     try {
       yield Right<Failure, Success>(LoadingMoveMailbox());
-
-      final currentMailboxState = await _mailboxRepository.getMailboxState(session, accountId);
       final result = await _mailboxRepository.moveMailbox(session, accountId, request);
       if (result) {
         yield Right<Failure, Success>(MoveMailboxSuccess(
@@ -24,7 +23,7 @@ class MoveMailboxInteractor {
             parentId: request.parentId,
             destinationMailboxId: request.destinationMailboxId,
             destinationMailboxDisplayName: request.destinationMailboxDisplayName,
-            currentMailboxState: currentMailboxState));
+        ));
       } else {
         yield Left<Failure, Success>(MoveMailboxFailure(null));
       }

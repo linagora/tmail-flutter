@@ -39,7 +39,7 @@ class MarkAsMailboxReadAllSuccess extends UIActionState {
   ];
 }
 
-class MarkAsMailboxReadHasSomeEmailFailure extends UIActionState {
+class MarkAsMailboxReadHasSomeEmailFailure extends UIState {
 
   final String mailboxDisplayName;
   final int countEmailsRead;
@@ -47,17 +47,12 @@ class MarkAsMailboxReadHasSomeEmailFailure extends UIActionState {
   MarkAsMailboxReadHasSomeEmailFailure(
     this.mailboxDisplayName,
     this.countEmailsRead,
-    {
-      jmap.State? currentEmailState,
-      jmap.State? currentMailboxState,
-    }
-  ) : super(currentMailboxState, currentEmailState);
+  );
 
   @override
   List<Object?> get props => [
     mailboxDisplayName,
     countEmailsRead,
-    ...super.props
   ];
 }
 

@@ -123,9 +123,7 @@ class EmailBindings extends BaseBindings {
   @override
   void bindingsInteractor() {
     Get.lazyPut(() => GetEmailContentInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => MarkAsEmailReadInteractor(
-        Get.find<EmailRepository>(),
-        Get.find<MailboxRepository>()));
+    Get.lazyPut(() => MarkAsEmailReadInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => DownloadAttachmentsInteractor(
         Get.find<EmailRepository>(),
         Get.find<CredentialRepository>(),
@@ -139,9 +137,7 @@ class EmailBindings extends BaseBindings {
         Get.find<AccountRepository>(),
         Get.find<AuthenticationOIDCRepository>(),
     ));
-    Get.lazyPut(() => MoveToMailboxInteractor(
-        Get.find<EmailRepository>(),
-        Get.find<MailboxRepository>()));
+    Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsStarEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => DownloadAttachmentForWebInteractor(
       Get.find<EmailRepository>(),

@@ -8,13 +8,11 @@ import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 
 class MarkAsEmailReadInteractor {
   final EmailRepository _emailRepository;
-  final MailboxRepository _mailboxRepository;
 
-  MarkAsEmailReadInteractor(this._emailRepository, this._mailboxRepository);
+  MarkAsEmailReadInteractor(this._emailRepository);
 
   Stream<Either<Failure, Success>> execute(
     Session session,
@@ -24,14 +22,6 @@ class MarkAsEmailReadInteractor {
     MarkReadAction markReadAction,
   ) async* {
     try {
-      final listState = await Future.wait([
-        _mailboxRepository.getMailboxState( session,accountId),
-        _emailRepository.getEmailState(session, accountId),
-      ], eagerError: true);
-
-      final currentMailboxState = listState.first;
-      final currentEmailState = listState.last;
-
       final result = await _emailRepository.markAsRead(
         session,
         accountId,
@@ -43,8 +33,6 @@ class MarkAsEmailReadInteractor {
         result.first,
         readAction,
         markReadAction,
-        currentEmailState: currentEmailState,
-        currentMailboxState: currentMailboxState,
       ));
     } catch (e) {
       yield Left(MarkAsEmailReadFailure(readAction, exception: e));

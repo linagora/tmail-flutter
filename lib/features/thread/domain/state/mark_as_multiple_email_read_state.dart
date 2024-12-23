@@ -1,26 +1,20 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:model/email/read_actions.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
-import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
 
 class LoadingMarkAsMultipleEmailReadAll extends UIState {}
 
-class MarkAsMultipleEmailReadAllSuccess extends UIActionState {
+class MarkAsMultipleEmailReadAllSuccess extends UIState {
   final int countMarkAsReadSuccess;
   final ReadActions readActions;
 
   MarkAsMultipleEmailReadAllSuccess(
       this.countMarkAsReadSuccess,
       this.readActions,
-      {
-        jmap.State? currentEmailState,
-        jmap.State? currentMailboxState,
-      }
-  ) : super(currentEmailState, currentMailboxState);
+  );
 
   @override
-  List<Object?> get props => [countMarkAsReadSuccess, readActions, ...super.props];
+  List<Object?> get props => [countMarkAsReadSuccess, readActions];
 }
 
 class MarkAsMultipleEmailReadAllFailure extends FeatureFailure {
@@ -32,21 +26,17 @@ class MarkAsMultipleEmailReadAllFailure extends FeatureFailure {
   List<Object> get props => [readActions];
 }
 
-class MarkAsMultipleEmailReadHasSomeEmailFailure extends UIActionState {
+class MarkAsMultipleEmailReadHasSomeEmailFailure extends UIState {
   final int countMarkAsReadSuccess;
   final ReadActions readActions;
 
   MarkAsMultipleEmailReadHasSomeEmailFailure(
     this.countMarkAsReadSuccess,
     this.readActions,
-    {
-      jmap.State? currentEmailState,
-      jmap.State? currentMailboxState,
-    }
-  ) : super(currentEmailState, currentMailboxState);
+  );
 
   @override
-  List<Object?> get props => [countMarkAsReadSuccess, readActions, ...super.props];
+  List<Object?> get props => [countMarkAsReadSuccess, readActions];
 }
 
 class MarkAsMultipleEmailReadFailure extends FeatureFailure {
