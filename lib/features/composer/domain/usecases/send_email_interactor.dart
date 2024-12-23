@@ -7,16 +7,12 @@ import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart'
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
 
 class SendEmailInteractor {
   final EmailRepository _emailRepository;
-  final MailboxRepository _mailboxRepository;
 
-  SendEmailInteractor(
-    this._emailRepository,
-    this._mailboxRepository);
+  SendEmailInteractor(this._emailRepository);
 
   Stream<Either<Failure, Success>> execute(
     Session session,
@@ -30,14 +26,6 @@ class SendEmailInteractor {
     try {
       yield Right<Failure, Success>(SendEmailLoading());
 
-      final listState = await Future.wait([
-        _mailboxRepository.getMailboxState(session, accountId),
-        _emailRepository.getEmailState(session, accountId),
-      ], eagerError: true);
-
-      final currentMailboxState = listState.first;
-      final currentEmailState = listState.last;
-
       await _emailRepository.sendEmail(
         session,
         accountId,
@@ -50,11 +38,7 @@ class SendEmailInteractor {
       }
 
       yield Right<Failure, Success>(
-        SendEmailSuccess(
-          currentEmailState: currentEmailState,
-          currentMailboxState: currentMailboxState,
-          emailRequest: emailRequest
-        )
+        SendEmailSuccess(emailRequest: emailRequest)
       );
     } catch (e) {
       yield Left<Failure, Success>(SendEmailFailure(

@@ -15,9 +15,8 @@ class UnsubscribeEmailInteractor {
   Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, EmailId emailId) async* {
     try {
       yield Right(UnsubscribeEmailLoading());
-      final currentEmailState = await emailRepository.getEmailState(session, accountId);
       await emailRepository.unsubscribeMail(session, accountId, emailId);
-      yield Right(UnsubscribeEmailSuccess(currentEmailState: currentEmailState));
+      yield Right(UnsubscribeEmailSuccess());
     } catch (e) {
       yield Left(UnsubscribeEmailFailure(exception: e));
     }

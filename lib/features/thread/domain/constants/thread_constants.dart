@@ -5,7 +5,6 @@ import 'package:model/email/email_property.dart';
 
 class ThreadConstants {
   static const maxCountEmails = 20;
-  static const maximumEmailQueryLimit = 256;
   static final defaultLimit = UnsignedInt(maxCountEmails);
   static final propertiesDefault = Properties({
     EmailProperty.id,

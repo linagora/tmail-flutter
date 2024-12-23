@@ -206,12 +206,10 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => GetAlwaysReadReceiptSettingInteractor(Get.find<ServerSettingsRepository>()));
     Get.lazyPut(() => CreateNewAndSendEmailInteractor(
       Get.find<EmailRepository>(),
-      Get.find<MailboxRepository>(),
       Get.find<ComposerRepository>(),
     ));
     Get.lazyPut(() => CreateNewAndSaveEmailToDraftsInteractor(
       Get.find<EmailRepository>(),
-      Get.find<MailboxRepository>(),
       Get.find<ComposerRepository>(),
     ));
     Get.lazyPut(() => RestoreEmailInlineImagesInteractor(

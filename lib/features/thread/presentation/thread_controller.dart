@@ -559,10 +559,6 @@ class ThreadController extends BaseController with EmailActionController {
 
   Future<void> _refreshChangeSearchEmail() async {
     log('ThreadController::_refreshChangeSearchEmail:');
-    if (limitEmailFetched.value > ThreadConstants.maximumEmailQueryLimit &&
-        listEmailController.hasClients) {
-      listEmailController.jumpTo(0);
-    }
     canSearchMore = false;
     searchController.updateFilterEmail(
       positionOption: option(

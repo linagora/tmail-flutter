@@ -404,7 +404,6 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     } else if (success is UnsubscribeEmailSuccess) {
       _handleUnsubscribeMailSuccess();
     } else if (success is RestoreDeletedMessageSuccess) {
-      dispatchMailboxUIAction(RefreshChangeMailboxAction(success.currentMailboxState));
       _handleRestoreDeletedMessageSuccess(success.emailRecoveryAction.id!);
     } else if (success is GetRestoredDeletedMessageSuccess) {
       _handleGetRestoredDeletedMessageSuccess(success);

@@ -22,22 +22,20 @@ class MarkAsStarMultipleEmailInteractor {
     try {
       yield Right(LoadingMarkAsStarMultipleEmailAll());
 
-      final currentEmailState = await _emailRepository.getEmailState(session, accountId);
-
       final result = await _emailRepository.markAsStar(session, accountId, emailIds, markStarAction);
 
       if (emailIds.length == result.length) {
         yield Right(MarkAsStarMultipleEmailAllSuccess(
             emailIds.length,
             markStarAction,
-            currentEmailState: currentEmailState));
+        ));
       } else if (result.isEmpty) {
         yield Left(MarkAsStarMultipleEmailAllFailure(markStarAction));
       } else {
         yield Right(MarkAsStarMultipleEmailHasSomeEmailFailure(
             result.length,
             markStarAction,
-            currentEmailState: currentEmailState));
+        ));
       }
     } catch (e) {
       yield Left(MarkAsStarMultipleEmailFailure(markStarAction, e));

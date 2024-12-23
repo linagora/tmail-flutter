@@ -21,6 +21,10 @@ class MoveToMailboxRequest with EquatableMixin {
     this.destinationPath,
   });
 
+  int get totalEmails => currentMailboxes
+    .values
+    .fold(0, (sum, element) => sum + element.length);
+
   @override
   List<Object?> get props => [
     currentMailboxes,

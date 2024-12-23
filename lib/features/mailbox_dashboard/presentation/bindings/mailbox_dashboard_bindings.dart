@@ -275,53 +275,30 @@ class MailboxDashBoardBindings extends BaseBindings {
 
   @override
   void bindingsInteractor() {
-    Get.lazyPut(() => RemoveEmailDraftsInteractor(
-        Get.find<EmailRepository>(),
-        Get.find<MailboxRepository>()));
-    Get.lazyPut(() => MoveToMailboxInteractor(
-        Get.find<EmailRepository>(),
-        Get.find<MailboxRepository>()));
-    Get.lazyPut(() => DeleteEmailPermanentlyInteractor(
-        Get.find<EmailRepository>(),
-        Get.find<MailboxRepository>()));
+    Get.lazyPut(() => RemoveEmailDraftsInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => MoveToMailboxInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => DeleteEmailPermanentlyInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => SaveRecentSearchInteractor(Get.find<SearchRepository>()));
     Get.lazyPut(() => GetAllRecentSearchLatestInteractor(Get.find<SearchRepository>()));
     Get.lazyPut(() => SearchEmailInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => SearchMoreEmailInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => RefreshChangesSearchEmailInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => QuickSearchEmailInteractor(Get.find<ThreadRepository>()));
-    Get.lazyPut(() => MarkAsMailboxReadInteractor(
-      Get.find<MailboxRepository>(),
-      Get.find<EmailRepository>())
-    );
+    Get.lazyPut(() => MarkAsMailboxReadInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => GetComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
-    Get.lazyPut(() => MarkAsEmailReadInteractor(
-        Get.find<EmailRepository>(),
-        Get.find<MailboxRepository>()
-    ));
+    Get.lazyPut(() => MarkAsEmailReadInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsStarEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsMultipleEmailReadInteractor(
         Get.find<EmailRepository>(),
-        Get.find<MailboxRepository>()
     ));
     Get.lazyPut(() => MarkAsStarMultipleEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MoveMultipleEmailToMailboxInteractor(
         Get.find<EmailRepository>(),
-        Get.find<MailboxRepository>()
     ));
-    Get.lazyPut(() => DeleteMultipleEmailsPermanentlyInteractor(
-        Get.find<EmailRepository>(),
-        Get.find<MailboxRepository>()));
-    Get.lazyPut(() => EmptyTrashFolderInteractor(
-        Get.find<ThreadRepository>(),
-        Get.find<MailboxRepository>(),
-        Get.find<EmailRepository>()));
-    Get.lazyPut(() => EmptySpamFolderInteractor(
-      Get.find<ThreadRepository>(),
-      Get.find<MailboxRepository>(),
-      Get.find<EmailRepository>()
-    ));
+    Get.lazyPut(() => DeleteMultipleEmailsPermanentlyInteractor(Get.find<EmailRepository>()));
+    Get.lazyPut(() => EmptyTrashFolderInteractor(Get.find<ThreadRepository>()));
+    Get.lazyPut(() => EmptySpamFolderInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => GetAppDashboardConfigurationInteractor(
         Get.find<AppConfigLoader>()));
     Get.lazyPut(() => GetEmailByIdInteractor(
@@ -336,17 +313,11 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => GetSpamReportStateInteractor(
       Get.find<SpamReportRepository>()));
     Get.lazyPut(() => GetSpamMailboxCachedInteractor(Get.find<SpamReportRepository>()));
-    Get.lazyPut(() => SendEmailInteractor(
-      Get.find<EmailRepository>(),
-      Get.find<MailboxRepository>(),
-    ));
+    Get.lazyPut(() => SendEmailInteractor(Get.find<EmailRepository>()));
     SendingQueueInteractorBindings().dependencies();
     Get.lazyPut(() => StoreSessionInteractor(Get.find<SessionRepository>()));
     Get.lazyPut(() => UnsubscribeEmailInteractor(Get.find<EmailRepository>()));
-    Get.lazyPut(() => RestoredDeletedMessageInteractor(
-      Get.find<EmailRepository>(),
-      Get.find<MailboxRepository>()
-    ));
+    Get.lazyPut(() => RestoredDeletedMessageInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => GetRestoredDeletedMessageInterator(
       Get.find<EmailRepository>(),
       Get.find<MailboxRepository>()

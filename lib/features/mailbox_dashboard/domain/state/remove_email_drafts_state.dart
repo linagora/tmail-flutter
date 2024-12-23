@@ -1,14 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
-import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
+import 'package:core/presentation/state/success.dart';
 
-class RemoveEmailDraftsSuccess extends UIActionState {
-
-  RemoveEmailDraftsSuccess({
-    jmap.State? currentEmailState,
-    jmap.State? currentMailboxState,
-  }) : super(currentEmailState, currentMailboxState);
-}
+class RemoveEmailDraftsSuccess extends UIState {}
 
 class RemoveEmailDraftsFailure extends FeatureFailure {
 

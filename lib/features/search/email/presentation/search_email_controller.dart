@@ -294,11 +294,6 @@ class SearchEmailController extends BaseController
         ? UnsignedInt(listResultSearch.length)
         : ThreadConstants.defaultLimit;
 
-      if (limit.value > ThreadConstants.maximumEmailQueryLimit &&
-          resultSearchScrollController.hasClients) {
-        resultSearchScrollController.jumpTo(0);
-      }
-
       _updateSimpleSearchFilter(
         beforeOption: const None(),
         positionOption: option(searchEmailFilter.value.sortOrderType.isScrollByPosition(), 0),

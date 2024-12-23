@@ -1,35 +1,23 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 
 class DeleteEmailPermanentlyInteractor {
   final EmailRepository _emailRepository;
-  final MailboxRepository _mailboxRepository;
 
-  DeleteEmailPermanentlyInteractor(this._emailRepository, this._mailboxRepository);
+  DeleteEmailPermanentlyInteractor(this._emailRepository);
 
   Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, EmailId emailId) async* {
     try {
       yield Right<Failure, Success>(StartDeleteEmailPermanently());
-
-      final listState = await Future.wait([
-        _mailboxRepository.getMailboxState(session, accountId),
-        _emailRepository.getEmailState(session, accountId),
-      ], eagerError: true);
-
-      final currentMailboxState = listState.first;
-      final currentEmailState = listState.last;
-
       final result = await _emailRepository.deleteEmailPermanently(session, accountId, emailId);
       if (result) {
-        yield Right<Failure, Success>(DeleteEmailPermanentlySuccess(
-            currentEmailState: currentEmailState,
-            currentMailboxState: currentMailboxState));
+        yield Right<Failure, Success>(DeleteEmailPermanentlySuccess());
       } else {
         yield Left<Failure, Success>(DeleteEmailPermanentlyFailure(null));
       }
