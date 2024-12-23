@@ -7,7 +7,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 
 class MoveToMailboxRequest with EquatableMixin {
 
-  final Map<MailboxId,List<EmailId>> currentMailboxes;
+  final Map<MailboxId, List<EmailId>> currentMailboxes;
   final MailboxId destinationMailboxId;
   final MoveAction moveAction;
   final EmailActionType emailActionType;
@@ -24,6 +24,9 @@ class MoveToMailboxRequest with EquatableMixin {
   int get totalEmails => currentMailboxes
     .values
     .fold(0, (sum, element) => sum + element.length);
+
+  bool get isMovingToSpam => moveAction == MoveAction.moving &&
+      emailActionType == EmailActionType.moveToSpam;
 
   @override
   List<Object?> get props => [
