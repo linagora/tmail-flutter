@@ -1030,6 +1030,7 @@ class SearchEmailController extends BaseController
     _deBouncerTime.cancel();
     emailUIActionWorker.dispose();
     dashBoardActionWorker.dispose();
+    _webSocketQueueHandler?.dispose();
     super.onClose();
   }
 }
