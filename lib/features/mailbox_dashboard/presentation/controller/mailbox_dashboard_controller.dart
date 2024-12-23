@@ -243,6 +243,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
   PresentationMailbox? outboxMailbox;
   ComposerArguments? composerArguments;
   List<Identity>? _identities;
+  jmap.State? _currentEmailState;
   ScrollController? listSearchFilterScrollController;
   StreamSubscription? _pendingSharedFileInfoSubscription;
   StreamSubscription? _receivingFileSharingStreamSubscription;
@@ -2930,6 +2931,12 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
       accountId: accountId.value!);
   }
 
+  void setCurrentEmailState(jmap.State? newState) {
+    _currentEmailState = newState;
+  }
+
+  jmap.State? get currentEmailState => _currentEmailState;
+
   @override
   void onClose() {
     if (PlatformInfo.isWeb) {
@@ -2957,6 +2964,7 @@ class MailboxDashBoardController extends ReloadableController with UserSettingPo
     mapMailboxById = {};
     mapDefaultMailboxIdByRole = {};
     WebSocketController.instance.onClose();
+    _currentEmailState = null;
     super.onClose();
   }
 }

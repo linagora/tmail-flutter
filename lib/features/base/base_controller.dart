@@ -143,20 +143,7 @@ abstract class BaseController extends GetxController
 
   void onData(Either<Failure, Success> newState) {
     viewState.value = newState;
-    viewState.value.fold(
-      (failure) {
-        if (failure is FeatureFailure) {
-          final isUrgentException = validateUrgentException(failure.exception);
-          if (isUrgentException) {
-            handleUrgentException(failure: failure, exception: failure.exception);
-          } else {
-            handleFailureViewState(failure);
-          }
-        } else {
-          handleFailureViewState(failure);
-        }
-      },
-      handleSuccessViewState);
+    viewState.value.fold(onDataFailureViewState, handleSuccessViewState);
   }
 
   void onError(dynamic error, StackTrace stackTrace) {
@@ -269,6 +256,19 @@ abstract class BaseController extends GetxController
         titleActionButtonMaxLines: 1,
         icon: SvgPicture.asset(imagePaths.icTMailLogo, width: 64, height: 64),
         onConfirmAction: clearDataAndGoToLoginPage);
+    }
+  }
+
+  void onDataFailureViewState(Failure failure) {
+    if (failure is FeatureFailure) {
+      final isUrgentException = validateUrgentException(failure.exception);
+      if (isUrgentException) {
+        handleUrgentException(failure: failure, exception: failure.exception);
+      } else {
+        handleFailureViewState(failure);
+      }
+    } else {
+      handleFailureViewState(failure);
     }
   }
 

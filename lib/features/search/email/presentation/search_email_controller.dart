@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/extensions/either_view_state_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -50,6 +52,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
 import 'package:tmail_ui_user/features/search/email/domain/state/refresh_changes_search_email_state.dart';
 import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/search_more_state.dart';
@@ -105,6 +109,7 @@ class SearchEmailController extends BaseController
   late Worker dashBoardActionWorker;
   late SearchMoreState searchMoreState;
   late bool canSearchMore;
+  WebSocketQueueHandler? _webSocketQueueHandler;
 
   PresentationMailbox? get currentMailbox => mailboxDashBoardController.selectedMailbox.value;
 
@@ -145,6 +150,7 @@ class SearchEmailController extends BaseController
     _initializeDebounceTimeTextSearchChange();
     _initializeTextInputFocus();
     _initWorkerListener();
+    _initWebSocketQueueHandler();
   }
 
   @override
@@ -165,8 +171,6 @@ class SearchEmailController extends BaseController
       searchMoreState = SearchMoreState.waiting;
     } else if (success is SearchMoreEmailSuccess) {
       _searchMoreEmailsSuccess(success);
-    } else if (success is RefreshChangesSearchEmailSuccess) {
-      _refreshChangesSearchEmailsSuccess(success);
     } else if (success is SearchingState) {
       resultSearchViewState.value = Right(success);
     }
@@ -252,10 +256,79 @@ class SearchEmailController extends BaseController
       mailboxDashBoardController.emailUIAction,
       (action) {
         if (action is RefreshChangeEmailAction) {
-          _refreshEmailChanges();
+          _refreshEmailChanges(newState: action.newState);
         }
       },
     );
+  }
+
+  void _refreshEmailChanges({jmap.State? newState}) {
+    log('SearchEmailController::_refreshEmailChanges(): newState: $newState');
+    if (accountId == null ||
+        session == null ||
+        mailboxDashBoardController.currentEmailState == null ||
+        newState == null ||
+        searchIsRunning.isFalse) {
+      return;
+    }
+
+    _webSocketQueueHandler?.enqueue(WebSocketMessage(newState: newState));
+  }
+
+  void _initWebSocketQueueHandler() {
+    _webSocketQueueHandler = WebSocketQueueHandler(
+      processMessageCallback: _handleWebSocketMessage,
+      onErrorCallback: onError,
+    );
+  }
+
+  Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
+    try {
+      if (mailboxDashBoardController.currentEmailState == null ||
+          mailboxDashBoardController.currentEmailState == message.newState) {
+        log('SearchEmailController::_handleWebSocketMessage:Skipping redundant state: ${message.newState}');
+        return Future.value();
+      }
+
+      final limit = listResultSearch.isNotEmpty
+        ? UnsignedInt(listResultSearch.length)
+        : ThreadConstants.defaultLimit;
+
+      if (limit.value > ThreadConstants.maximumEmailQueryLimit &&
+          resultSearchScrollController.hasClients) {
+        resultSearchScrollController.jumpTo(0);
+      }
+
+      _updateSimpleSearchFilter(
+        beforeOption: const None(),
+        positionOption: option(searchEmailFilter.value.sortOrderType.isScrollByPosition(), 0),
+      );
+
+      final searchViewState = await _refreshChangesSearchEmailInteractor.execute(
+        session!,
+        accountId!,
+        limit: limit,
+        position: searchEmailFilter.value.position,
+        sort: searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
+        filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
+        properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
+      ).last;
+
+      final searchState = searchViewState
+          .foldSuccessWithResult<RefreshChangesSearchEmailSuccess>();
+
+      if (searchState is RefreshChangesSearchEmailSuccess) {
+        _handleRefreshChangesSearchEmailsSuccess(searchState);
+      }
+    } catch (e, stackTrace) {
+      logError('SearchEmailController::_handleWebSocketMessage:Error processing state: $e');
+      onError(e, stackTrace);
+    } finally {
+      if (mailboxDashBoardController.currentEmailState != null) {
+        _webSocketQueueHandler?.removeMessagesUpToCurrent(
+            mailboxDashBoardController.currentEmailState!.value);
+      }
+    }
   }
 
   void _onSearchTextInputListener() {
@@ -264,28 +337,7 @@ class SearchEmailController extends BaseController
     }
   }
 
-  void _refreshEmailChanges() {
-    if (searchIsRunning.isTrue && session != null && accountId != null) {
-      final limit = listResultSearch.isNotEmpty
-          ? UnsignedInt(listResultSearch.length)
-          : ThreadConstants.defaultLimit;
-      _updateSimpleSearchFilter(
-        beforeOption: const None(),
-        positionOption: option(searchEmailFilter.value.sortOrderType.isScrollByPosition(), 0)
-      );
-      consumeState(_refreshChangesSearchEmailInteractor.execute(
-        session!,
-        accountId!,
-        limit: limit,
-        position: searchEmailFilter.value.position,
-        sort: searchEmailFilter.value.sortOrderType.getSortOrder().toNullable(),
-        filter: searchEmailFilter.value.mappingToEmailFilterCondition(),
-        properties: EmailUtils.getPropertiesForEmailGetMethod(session!, accountId!),
-      ));
-    }
-  }
-
-  void _refreshChangesSearchEmailsSuccess(RefreshChangesSearchEmailSuccess success) {
+  void _handleRefreshChangesSearchEmailsSuccess(RefreshChangesSearchEmailSuccess success) {
     final resultEmailSearchList = success.emailList
         .map((email) => email.toSearchPresentationEmail(mailboxDashBoardController.mapMailboxById))
         .toList();
@@ -306,8 +358,8 @@ class SearchEmailController extends BaseController
     return _getAllRecentSearchLatestInteractor
         .execute(pattern: pattern)
         .then((result) => result.fold(
-            (failure) => <RecentSearch>[],
-            (success) => success is GetAllRecentSearchLatestSuccess
+          (failure) => <RecentSearch>[],
+          (success) => success is GetAllRecentSearchLatestSuccess
             ? success.listRecentSearch
             : <RecentSearch>[]));
   }

@@ -112,12 +112,12 @@ class DestinationPickerController extends BaseMailboxController {
         await buildTree(success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes);
       }
       if (currentContext != null) {
-        await syncAllMailboxWithDisplayName(currentContext!);
+        syncAllMailboxWithDisplayName(currentContext!);
       }
     } else if (success is RefreshChangesAllMailboxSuccess) {
       await refreshTree(success.mailboxList.listSubscribedMailboxesAndDefaultMailboxes);
       if (currentContext != null) {
-        await syncAllMailboxWithDisplayName(currentContext!);
+        syncAllMailboxWithDisplayName(currentContext!);
       }
     } else if (success is SearchMailboxSuccess) {
       _searchMailboxSuccess(success);
