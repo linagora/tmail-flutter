@@ -38,11 +38,16 @@ class WebSocketQueueHandler {
       return;
     }
 
-    if (queueSize >= _maxQueueSize) {
-      log('WebSocketQueueHandler::enqueue:Queue full, removing oldest message');
-      _messageQueue.removeFirst();
+    try {
+      if (queueSize >= _maxQueueSize) {
+        log('WebSocketQueueHandler::enqueue:Queue full, removing oldest message');
+        _messageQueue.removeFirst();
+      }
+    } catch (e) {
+      logError('WebSocketQueueHandler::enqueue:Exception = $e');
     }
 
+    log('WebSocketQueueHandler::enqueue(): ${message.id}');
     _messageQueue.add(message);
     _queueController.add(message);
   }
@@ -57,6 +62,7 @@ class WebSocketQueueHandler {
     try {
       while (queueSize > 0) {
         final message = _messageQueue.removeFirst();
+        log('WebSocketQueueHandler::_processQueue(): processing message ${message.id}');
 
         try {
           await processMessageCallback(message);
@@ -78,27 +84,40 @@ class WebSocketQueueHandler {
   }
 
   void _addToProcessedMessages(String messageId) {
-    if (_processedMessageIds.length >= _maxProcessedIdsSize) {
-      _processedMessageIds.removeFirst();
+    log('WebSocketQueueHandler::_addToProcessedMessages(): adding message $messageId to processed messages');
+    try {
+      if (_processedMessageIds.length >= _maxProcessedIdsSize) {
+        _processedMessageIds.removeFirst();
+      }
+    } catch (e) {
+      logError('WebSocketQueueHandler::_addToProcessedMessages:Exception = $e');
     }
+
     _processedMessageIds.add(messageId);
   }
 
   void removeMessagesUpToCurrent(String messageId) {
-    final isCurrentStateExist = _messageQueue
-        .any((message) => message.id == messageId);
+    try {
+      log('WebSocketQueueHandler::removeMessagesUpToCurrent(): removing messages up to $messageId');
+      final isCurrentStateExist = _messageQueue
+          .any((message) => message.id == messageId);
 
-    if (!isCurrentStateExist) {
-      log('WebSocketQueueHandler::removeMessagesUpToCurrent:Current state $messageId not found in the queue.');
-      return;
-    }
-    while (queueSize > 0) {
-      final removedMessage = _messageQueue.removeFirst();
-      if (removedMessage.id == messageId) {
-        break;
+      if (!isCurrentStateExist) {
+        log('WebSocketQueueHandler::removeMessagesUpToCurrent:Current state $messageId not found in the queue.');
+        return;
       }
+
+      while (queueSize > 0) {
+        final removedMessage = _messageQueue.removeFirst();
+        log('WebSocketQueueHandler::removeMessagesUpToCurrent(): removing message ${removedMessage.id} up to $messageId');
+        if (removedMessage.id == messageId) {
+          break;
+        }
+      }
+      log('WebSocketQueueHandler::removeMessagesUpToCurrent:Updated Queue: $queueSize');
+    } catch (e) {
+      logError('WebSocketQueueHandler::removeMessagesUpToCurrent:Exception = $e');
     }
-    log('WebSocketQueueHandler::removeMessagesUpToCurrent:Updated Queue: $queueSize');
   }
 
   @visibleForTesting
