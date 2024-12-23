@@ -149,6 +149,7 @@ class ThreadController extends BaseController with EmailActionController {
     if (PlatformInfo.isWeb) {
       _resizeBrowserStreamSubscription?.cancel();
     }
+    _webSocketQueueHandler?.dispose();
     super.onClose();
   }
 

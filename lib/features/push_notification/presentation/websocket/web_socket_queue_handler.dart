@@ -116,6 +116,9 @@ class WebSocketQueueHandler {
   bool isMessageProcessed(String messageId) => _processedMessageIds.contains(messageId);
 
   void dispose() {
+    _messageQueue.clear();
+    _processedMessageIds.clear();
     _queueController.close();
+    _processingLock = null;
   }
 }
