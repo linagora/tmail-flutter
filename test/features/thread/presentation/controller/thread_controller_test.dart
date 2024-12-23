@@ -43,6 +43,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_em
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/search_state.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/search_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
@@ -411,6 +412,56 @@ void main() {
         )).called(1);
         expect(mockMailboxDashBoardController.emailsInCurrentMailbox.isEmpty, isTrue);
         expect(mockMailboxDashBoardController.emailsInCurrentMailbox.length, equals(0));
+      });
+    });
+
+    group('_registerObxStreamListener test:', () {
+      test(
+        'should call _getEmailsInMailboxInteractor.execute with getLatestChanges is false '
+        'when mailboxDashBoardController.selectedMailbox updated',
+      () async {
+        // arrange
+        final mailboxBefore = PresentationMailbox(MailboxId(Id('mailbox-before-id')));
+        final mailboxAfter = PresentationMailbox(MailboxId(Id('mailbox-after-id')));
+        final selectedMailbox = Rxn(mailboxBefore);
+        when(mockMailboxDashBoardController.sessionCurrent).thenReturn(SessionFixtures.aliceSession);
+        when(mockMailboxDashBoardController.accountId).thenReturn(Rxn(AccountFixtures.aliceAccountId));
+        when(mockMailboxDashBoardController.selectedMailbox).thenReturn(selectedMailbox);
+        when(mockMailboxDashBoardController.searchController).thenReturn(mockSearchController);
+        when(mockMailboxDashBoardController.dashBoardAction).thenReturn(Rxn());
+        when(mockMailboxDashBoardController.emailUIAction).thenReturn(Rxn());
+        when(mockMailboxDashBoardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+        when(mockMailboxDashBoardController.emailsInCurrentMailbox).thenReturn(RxList());
+        when(mockMailboxDashBoardController.listEmailSelected).thenReturn(RxList());
+        when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
+        when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
+        when(mockSearchController.searchState).thenReturn(SearchState(SearchStatus.INACTIVE).obs);
+        
+        // act
+        threadController.onInit();
+        mockMailboxDashBoardController.selectedMailbox.value = mailboxAfter;
+        await untilCalled(mockGetEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+          emailFilter: anyNamed('emailFilter'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          getLatestChanges: anyNamed('getLatestChanges'),
+        ));
+        
+        // assert
+        verify(mockGetEmailsInMailboxInteractor.execute(
+          any,
+          any,
+          limit: anyNamed('limit'),
+          sort: anyNamed('sort'),
+          emailFilter: anyNamed('emailFilter'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          getLatestChanges: false,
+        ));
       });
     });
   });
