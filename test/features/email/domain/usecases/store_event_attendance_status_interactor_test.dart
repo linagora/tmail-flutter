@@ -1,6 +1,5 @@
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter_test/flutter_test.dart';
-import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -34,13 +33,8 @@ void main() {
     const eventActionType = EventActionType.yes;
 
     test('SHOULD emit loading and success states when storeEventAttendanceStatus is successful', () async {
-      final currentEmailState = State('abc123');
       final updatedEmail = Email(id: emailIdFixture);
 
-      when(mockEmailRepository.getEmailState(
-        sessionFixture,
-        accountIdFixture
-      )).thenAnswer((_) async => currentEmailState);
       when(mockEmailRepository.storeEventAttendanceStatus(
         sessionFixture,
         accountIdFixture,
@@ -58,13 +52,10 @@ void main() {
         result,
         emitsInOrder([
           Right(StoreEventAttendanceStatusLoading()),
-          Right(StoreEventAttendanceStatusSuccess(
-            eventActionType,
-            currentEmailState: currentEmailState)),
+          Right(StoreEventAttendanceStatusSuccess(eventActionType)),
         ]),
       );
 
-      verify(mockEmailRepository.getEmailState(sessionFixture, accountIdFixture)).called(1);
       verify(mockEmailRepository.storeEventAttendanceStatus(
         sessionFixture,
         accountIdFixture,
@@ -77,9 +68,11 @@ void main() {
     test('SHOULD emit loading and failure states when storeEventAttendanceStatus throws an exception', () async {
       final exception = Exception();
 
-      when(mockEmailRepository.getEmailState(
+      when(mockEmailRepository.storeEventAttendanceStatus(
         sessionFixture,
-        accountIdFixture
+        accountIdFixture,
+        emailIdFixture,
+        eventActionType,
       )).thenThrow(exception);
 
       final result = storeEventAttendanceStatusInteractor.execute(
@@ -95,12 +88,6 @@ void main() {
           Left(StoreEventAttendanceStatusFailure(exception: exception)),
         ]),
       );
-
-      verify(mockEmailRepository.getEmailState(
-        sessionFixture,
-        accountIdFixture
-      )).called(1);
-      verifyNoMoreInteractions(mockEmailRepository);
     });
   });
 }

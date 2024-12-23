@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -15,17 +16,13 @@ class RenameMailboxInteractor {
   Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, RenameMailboxRequest request) async* {
     try {
       yield Right<Failure, Success>(LoadingRenameMailbox());
-
-      final currentMailboxState = await _mailboxRepository.getMailboxState(session, accountId);
-      log('RenameMailboxInteractor::execute:currentMailboxState: $currentMailboxState');
       final result = await _mailboxRepository.renameMailbox(session, accountId, request);
       if (result) {
-        yield Right<Failure, Success>(RenameMailboxSuccess(currentMailboxState: currentMailboxState));
+        yield Right<Failure, Success>(RenameMailboxSuccess());
       } else {
         yield Left<Failure, Success>(RenameMailboxFailure(null));
       }
     } catch (e) {
-      logError('RenameMailboxInteractor::execute(): error: $e');
       final exception = SetMailboxNameException.detectMailboxNameException(e, request.mailboxId);
       yield Left<Failure, Success>(RenameMailboxFailure(exception));
     }

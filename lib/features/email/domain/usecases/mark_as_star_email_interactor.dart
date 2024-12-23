@@ -20,17 +20,13 @@ class MarkAsStarEmailInteractor {
     MarkStarAction markStarAction,
   ) async* {
     try {
-      final currentEmailState = await emailRepository.getEmailState(session, accountId);
       await emailRepository.markAsStar(
         session,
         accountId,
         [emailId],
         markStarAction,
       );
-      yield Right(MarkAsStarEmailSuccess(
-        markStarAction,
-        currentEmailState: currentEmailState,
-      ));
+      yield Right(MarkAsStarEmailSuccess(markStarAction));
     } catch (e) {
       yield Left(MarkAsStarEmailFailure(markStarAction, exception: e));
     }
