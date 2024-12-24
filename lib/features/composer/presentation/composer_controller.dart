@@ -1545,15 +1545,30 @@ class ComposerController extends BaseController
     final inputToEmail = toEmailAddressController.text;
     final inputCcEmail = ccEmailAddressController.text;
     final inputBccEmail = bccEmailAddressController.text;
-
-    if (inputToEmail.isNotEmpty) {
-      _autoCreateToEmailTag(inputToEmail);
+    log('ComposerController::_autoCreateEmailTag:inputToEmail = $inputToEmail | inputCcEmail = $inputCcEmail | inputBccEmail = $inputBccEmail');
+    if (inputToEmail.trim().isNotEmpty) {
+      _autoCreateEmailTagForRecipientField(
+        prefixEmail: PrefixEmailAddress.to,
+        inputText: inputToEmail,
+        listEmailAddress: listToEmailAddress,
+        keyEmailTagEditor: keyToEmailTagEditor,
+      );
     }
-    if (inputCcEmail.isNotEmpty) {
-      _autoCreateCcEmailTag(inputCcEmail);
+    if (inputCcEmail.trim().isNotEmpty) {
+      _autoCreateEmailTagForRecipientField(
+        prefixEmail: PrefixEmailAddress.cc,
+        inputText: inputCcEmail,
+        listEmailAddress: listCcEmailAddress,
+        keyEmailTagEditor: keyCcEmailTagEditor,
+      );
     }
-    if (inputBccEmail.isNotEmpty) {
-      _autoCreateBccEmailTag(inputBccEmail);
+    if (inputBccEmail.trim().isNotEmpty) {
+      _autoCreateEmailTagForRecipientField(
+        prefixEmail: PrefixEmailAddress.bcc,
+        inputText: inputBccEmail,
+        listEmailAddress: listBccEmailAddress,
+        keyEmailTagEditor: keyBccEmailTagEditor,
+      );
     }
   }
 
@@ -1564,47 +1579,53 @@ class ComposerController extends BaseController
       .contains(inputEmail);
   }
 
-  void _autoCreateToEmailTag(String inputEmail) {
-    if (!_isDuplicatedRecipient(inputEmail, listToEmailAddress)) {
-      final emailAddress = EmailAddress(null, inputEmail);
-      listToEmailAddress.add(emailAddress);
-      isInitialRecipient.value = true;
-      isInitialRecipient.refresh();
-      _updateStatusEmailSendButton();
-    }
-    log('ComposerController::_autoCreateToEmailTag(): STATE: ${keyToEmailTagEditor.currentState}');
-    keyToEmailTagEditor.currentState?.resetTextField();
-    Future.delayed(const Duration(milliseconds: 300), () {
-      keyToEmailTagEditor.currentState?.closeSuggestionBox();
-    });
-  }
+  void _autoCreateEmailTagForRecipientField({
+    required PrefixEmailAddress prefixEmail,
+    required String inputText,
+    required List<EmailAddress> listEmailAddress,
+    required GlobalKey<TagsEditorState> keyEmailTagEditor,
+  }) {
+    log('ComposerController::_autoCreateEmailTagForRecipientField:prefixEmail = $prefixEmail | inputText = $inputText | listEmailAddress = $listEmailAddress');
+    switch(prefixEmail) {
+      case PrefixEmailAddress.to:
+      case PrefixEmailAddress.cc:
+      case PrefixEmailAddress.bcc:
+        final listString = StringConvert.extractStrings(inputText).toSet();
+        if (listString.isEmpty && !_isDuplicatedRecipient(inputText, listEmailAddress)) {
+          final emailAddress = EmailAddress(null, inputText);
+          listEmailAddress.add(emailAddress);
+          isInitialRecipient.value = true;
+          isInitialRecipient.refresh();
+          _updateStatusEmailSendButton();
+          keyEmailTagEditor.currentState?.resetTextField();
+          Future.delayed(
+            const Duration(milliseconds: 300),
+            keyEmailTagEditor.currentState?.closeSuggestionBox,
+          );
+        } else if (listString.isNotEmpty) {
+          final listStringNotExist = listString
+            .where((text) => !_isDuplicatedRecipient(text, listEmailAddress))
+            .toList();
 
-  void _autoCreateCcEmailTag(String inputEmail) {
-    if (!_isDuplicatedRecipient(inputEmail, listCcEmailAddress)) {
-      final emailAddress = EmailAddress(null, inputEmail);
-      listCcEmailAddress.add(emailAddress);
-      isInitialRecipient.value = true;
-      isInitialRecipient.refresh();
-      _updateStatusEmailSendButton();
+          if (listStringNotExist.isNotEmpty) {
+            final listAddress = listStringNotExist
+              .map((value) => EmailAddress(null, value))
+              .toList();
+            listEmailAddress.addAll(listAddress);
+            isInitialRecipient.value = true;
+            isInitialRecipient.refresh();
+            _updateStatusEmailSendButton();
+            keyEmailTagEditor.currentState?.resetTextField();
+            Future.delayed(
+              const Duration(milliseconds: 300),
+              keyEmailTagEditor.currentState?.closeSuggestionBox,
+            );
+          }
+        }
+        break;
+      default:
+        break;
     }
-    keyCcEmailTagEditor.currentState?.resetTextField();
-    Future.delayed(const Duration(milliseconds: 300), () {
-      keyCcEmailTagEditor.currentState?.closeSuggestionBox();
-    });
-  }
-
-  void _autoCreateBccEmailTag(String inputEmail) {
-    if (!_isDuplicatedRecipient(inputEmail, listBccEmailAddress)) {
-      final emailAddress = EmailAddress(null, inputEmail);
-      listBccEmailAddress.add(emailAddress);
-      isInitialRecipient.value = true;
-      isInitialRecipient.refresh();
-      _updateStatusEmailSendButton();
-    }
-    keyBccEmailTagEditor.currentState?.resetTextField();
-    Future.delayed(const Duration(milliseconds: 300), () {
-      keyBccEmailTagEditor.currentState?.closeSuggestionBox();
-    });
   }
 
   void _closeSuggestionBox() {
@@ -1664,22 +1685,37 @@ class ComposerController extends BaseController
         case PrefixEmailAddress.to:
           toAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputToEmail = toEmailAddressController.text;
-          if (inputToEmail.isNotEmpty) {
-            _autoCreateToEmailTag(inputToEmail);
+          if (inputToEmail.trim().isNotEmpty) {
+            _autoCreateEmailTagForRecipientField(
+              prefixEmail: PrefixEmailAddress.to,
+              inputText: inputToEmail,
+              listEmailAddress: listToEmailAddress,
+              keyEmailTagEditor: keyToEmailTagEditor,
+            );
           }
           break;
         case PrefixEmailAddress.cc:
           ccAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputCcEmail = ccEmailAddressController.text;
-          if (inputCcEmail.isNotEmpty) {
-            _autoCreateCcEmailTag(inputCcEmail);
+          if (inputCcEmail.trim().isNotEmpty) {
+            _autoCreateEmailTagForRecipientField(
+              prefixEmail: PrefixEmailAddress.cc,
+              inputText: inputCcEmail,
+              listEmailAddress: listCcEmailAddress,
+              keyEmailTagEditor: keyCcEmailTagEditor,
+            );
           }
           break;
         case PrefixEmailAddress.bcc:
           bccAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputBccEmail = bccEmailAddressController.text;
-          if (inputBccEmail.isNotEmpty) {
-            _autoCreateBccEmailTag(inputBccEmail);
+          if (inputBccEmail.trim().isNotEmpty) {
+            _autoCreateEmailTagForRecipientField(
+              prefixEmail: PrefixEmailAddress.bcc,
+              inputText: inputBccEmail,
+              listEmailAddress: listBccEmailAddress,
+              keyEmailTagEditor: keyBccEmailTagEditor,
+            );
           }
           break;
         default:
