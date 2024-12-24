@@ -8,9 +8,7 @@ import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:rich_text_composer/views/commons/constants.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
@@ -26,7 +24,6 @@ class VacationController extends BaseController {
   final _accountDashBoardController = Get.find<ManageAccountDashBoardController>();
   final _settingController = Get.find<SettingsController>();
 
-  final GetAllVacationInteractor _getAllVacationInteractor;
   final UpdateVacationInteractor _updateVacationInteractor;
   final RichTextWebController _richTextControllerForWeb;
 
@@ -46,7 +43,6 @@ class VacationController extends BaseController {
   final ScrollController scrollController = ScrollController();
 
   VacationController(
-    this._getAllVacationInteractor,
     this._updateVacationInteractor,
     this._richTextControllerForWeb
   );
@@ -63,18 +59,11 @@ class VacationController extends BaseController {
   }
 
   @override
-  void onReady() {
-    _getAllVacation();
-    super.onReady();
-  }
-
-  @override
   void handleSuccessViewState(Success success) {
-    super.handleSuccessViewState(success);
-    if (success is GetAllVacationSuccess) {
-      _handleGetAllVacationSuccess(success);
-    } else if (success is UpdateVacationSuccess) {
+    if (success is UpdateVacationSuccess) {
       _handleUpdateVacationSuccess(success);
+    } else {
+      super.handleSuccessViewState(success);
     }
   }
 
@@ -95,25 +84,6 @@ class VacationController extends BaseController {
   void _onSubjectTextListener() {
     if (subjectTextFocusNode.hasFocus && PlatformInfo.isMobile) {
       richTextControllerForMobile.hideRichTextView();
-    }
-  }
-
-  void _getAllVacation() {
-    final accountId = _accountDashBoardController.accountId.value;
-    if (accountId != null) {
-      consumeState(_getAllVacationInteractor.execute(accountId));
-    }
-  }
-
-  void _handleGetAllVacationSuccess(GetAllVacationSuccess success) {
-    if (success.listVacationResponse.isNotEmpty) {
-      currentVacation = success.listVacationResponse.first;
-      log('VacationController::_handleGetAllVacationSuccess(): $currentVacation');
-
-      if (currentVacation != null) {
-        final newVacationPresentation = currentVacation!.toVacationPresentation();
-        _initializeValueForVacation(newVacationPresentation);
-      }
     }
   }
 
