@@ -448,7 +448,7 @@ void main() {
           emailFilter: anyNamed('emailFilter'),
           propertiesCreated: anyNamed('propertiesCreated'),
           propertiesUpdated: anyNamed('propertiesUpdated'),
-          getLatestChanges: anyNamed('getLatestChanges'),
+          getLatestChanges: false,
         ));
         
         // assert
