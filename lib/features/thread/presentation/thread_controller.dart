@@ -499,9 +499,7 @@ class ThreadController extends BaseController with EmailActionController {
     }
     canLoadMore = newListEmail.length >= ThreadConstants.maxCountEmails;
 
-    if (mailboxDashBoardController.emailsInCurrentMailbox.isEmpty) {
-      refreshAllEmail();
-    } else if (PlatformInfo.isWeb) {
+    if (PlatformInfo.isWeb) {
       _validateBrowserHeight();
     }
   }
