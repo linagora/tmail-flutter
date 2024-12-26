@@ -19,4 +19,15 @@ class ThreadRobot extends CoreRobot {
   Future<void> tapOnSearchField() async {
     await $(ThreadView).$(SearchBarView).tap();
   }
+
+  Future<void> openMailbox(String mailboxName) async {
+    await $(#mobile_mailbox_menu_button).tap();
+    await $.scrollUntilVisible(finder: $(mailboxName));
+    await $(mailboxName).tap();
+  }
+
+  Future<void> openEmailWithSubject(String subject) async {
+    await $.scrollUntilVisible(finder: $(subject));
+    await $(subject).tap();
+  }
 }
