@@ -24,8 +24,11 @@ Brief the logic flows to make it easier to track changes during `attachment` dis
 2. Inline attachments: Displayed within the email body
 
 - Display is only allowed when the following conditions are met:
-  - `cid is not NULL` AND `disposition = 'inline'`
+  - `cid is not NULL` AND `disposition = 'inline' || disposition = NULL`
 
 ## Consequences
 
 - Any changes to attachment display while reading emails should be updated in this ADR.
+
+## References
+- [rfc2392](https://datatracker.ietf.org/doc/html/rfc2392)

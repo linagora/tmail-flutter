@@ -39,6 +39,8 @@ class Attachment with EquatableMixin {
 
   bool isDispositionInlined() => disposition == ContentDisposition.inline;
 
+  bool isDispositionUndefined() => disposition == null;
+
   bool isApplicationRTFInlined() => type?.mimeType == applicationRTFType && isDispositionInlined();
 
   String getDownloadUrl(String baseDownloadUrl, AccountId accountId) {
