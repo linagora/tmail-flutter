@@ -25,7 +25,7 @@ extension ListAttachmentExtension on List<Attachment> {
   }
 
   List<Attachment> get listAttachmentsDisplayedInContent =>
-    where((attachment) => attachment.hasCid() && attachment.isDispositionInlined())
+    where((attachment) => attachment.hasCid() && (attachment.isDispositionInlined() || attachment.isDispositionUndefined()))
     .toList();
 
   Map<String, String> toMapCidImageDownloadUrl({
