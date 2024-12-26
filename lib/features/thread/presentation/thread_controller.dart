@@ -557,6 +557,8 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   Future<void> _refreshChangeSearchEmail() async {
+    await _refreshChangeListEmailCache();
+
     log('ThreadController::_refreshChangeSearchEmail:');
     canSearchMore = false;
     searchController.updateFilterEmail(
@@ -596,9 +598,8 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  Future<void> _refreshChangeListEmail() async {
-    log('ThreadController::_refreshChangeListEmail:');
-    final refreshViewState = await _refreshChangesEmailsInMailboxInteractor.execute(
+  Future<Either<Failure, Success>> _refreshChangeListEmailCache() async {
+    return _refreshChangesEmailsInMailboxInteractor.execute(
       _session!,
       _accountId!,
       mailboxDashBoardController.currentEmailState!,
@@ -614,6 +615,11 @@ class ThreadController extends BaseController with EmailActionController {
         mailboxId: selectedMailboxId,
       ),
     ).last;
+  }
+
+  Future<void> _refreshChangeListEmail() async {
+    log('ThreadController::_refreshChangeListEmail:');
+    final refreshViewState = await _refreshChangeListEmailCache();
 
     final refreshState = refreshViewState
         .foldSuccessWithResult<RefreshChangesAllEmailSuccess>();
