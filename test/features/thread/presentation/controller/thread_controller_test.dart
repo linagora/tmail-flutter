@@ -35,6 +35,7 @@ import 'package:tmail_ui_user/features/network_connection/presentation/network_c
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
@@ -302,6 +303,19 @@ void main() {
           properties: anyNamed('properties'),
           needRefreshSearchState: anyNamed('needRefreshSearchState'),
         )).thenAnswer((_) => Stream.value(Right(SearchEmailSuccess(emailList))));
+        
+        when(mockRefreshChangesEmailsInMailboxInteractor.execute(
+          any, 
+          any, 
+          any,
+          sort: anyNamed('sort'),
+          propertiesCreated: anyNamed('propertiesCreated'),
+          propertiesUpdated: anyNamed('propertiesUpdated'),
+          emailFilter: anyNamed('emailFilter'), 
+        )).thenAnswer((_) => Stream.value(Right(RefreshChangesAllEmailSuccess(
+          emailList: emailList, 
+          currentEmailState: State('old-state'))))
+        );
 
         // Act
         threadController.onInit();
