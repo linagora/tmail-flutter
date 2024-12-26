@@ -1,4 +1,18 @@
-## [0.14.3] - 2024-12-18
+## [0.14.5] - 2024-12-26
+### Fixed 
+- #3336 Make Echo ping of web socket optional
+- #3347 Format Calendar event description
+- #3341 Enable Web socket for mobile in foreground
+- #3334 Remove all own resynch after any actions in mailbox, email
+- #3333 Remove Mailbox/query for spam banner when reload app
+- #3332 Remove resynch when switching mailbox
+- #3372 Remove Mailbox resynch when Emptying trash
+- #3369 Display CID without disposition as an attachment
+
+### Added
+- #3181 Contact support 
+
+## [0.14.4] - 2024-12-18
 ### Fixed
 - #3349 Sanitize HTML when forward/reply/replyAll an email
 - #3349 Sanitize HTML when print email
