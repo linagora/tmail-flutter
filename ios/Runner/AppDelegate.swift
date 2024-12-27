@@ -17,6 +17,7 @@ import flutter_local_notifications
         GeneratedPluginRegistrant.register(with: self)
         
         createNotificationInteractionChannel()
+        clearApplicationNotification()
         
         if let payload = launchOptions?[.remoteNotification] as? [AnyHashable : Any],
            let emailId = payload[JmapConstants.EMAIL_ID] as? String,
@@ -68,7 +69,7 @@ import flutter_local_notifications
     }
     
     override func applicationDidBecomeActive(_ application: UIApplication) {
-        removeAppBadger()
+        clearApplicationNotification()
     }
     
     private func handleEmailAndress(open url: URL) -> URL? {
@@ -125,6 +126,13 @@ import flutter_local_notifications
             return true
         }
         return false
+    }
+    
+    private func clearApplicationNotification() {
+        removeAppBadger()
+        let userNotificationCenter = UNUserNotificationCenter.current()
+        userNotificationCenter.removeAllDeliveredNotifications()
+        userNotificationCenter.removeAllPendingNotificationRequests()
     }
 }
 

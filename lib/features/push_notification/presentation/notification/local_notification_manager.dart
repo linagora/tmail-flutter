@@ -221,4 +221,8 @@ class LocalNotificationManager {
   void closeStream() {
     localNotificationsController.close();
   }
+
+  Future<void> clearAllNotifications() async {
+    _localNotificationsPlugin.cancelAll();
+  }
 }
