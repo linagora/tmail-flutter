@@ -59,7 +59,7 @@ class NotificationService: UNNotificationServiceExtension {
                 return self.notify()
             }
             
-            guard let oldEmailDeliveryState = keychainSharingSession.emailDeliveryState ?? keychainSharingSession.emailState,
+            guard let oldEmailDeliveryState = keychainSharingSession.emailDeliveryState,
                   newEmailDeliveryState != oldEmailDeliveryState else {
                 self.showDefaultNotification(message: NSLocalizedString(self.newEmailDefaultMessageKey, comment: "Localizable"))
                 return self.notify()
