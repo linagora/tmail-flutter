@@ -108,7 +108,7 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
   }
 
   @override
-  Future<List<EmailId>> emptyMailboxFolder(
+  Future<bool> emptyMailboxFolder(
     Session session,
     AccountId accountId,
     MailboxId mailboxId,

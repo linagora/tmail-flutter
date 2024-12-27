@@ -55,7 +55,7 @@ abstract class ThreadRepository {
     }
   );
 
-  Future<List<EmailId>> emptyTrashFolder(
+  Future<bool> emptyTrashFolder(
     Session session,
     AccountId accountId,
     MailboxId trashMailboxId,
@@ -68,7 +68,7 @@ abstract class ThreadRepository {
     {Properties? properties}
   );
 
-  Future<List<EmailId>> emptySpamFolder(
+  Future<bool> emptySpamFolder(
     Session session,
     AccountId accountId,
     MailboxId spamMailboxId,
