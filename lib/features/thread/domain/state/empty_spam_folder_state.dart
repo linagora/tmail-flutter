@@ -1,20 +1,21 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 
 class EmptySpamFolderLoading extends LoadingState {}
 
 class EmptySpamFolderSuccess extends UIState {
 
-  final List<EmailId> emailIds;
-
-  EmptySpamFolderSuccess(this.emailIds);
+  EmptySpamFolderSuccess();
 
   @override
-  List<Object?> get props => [emailIds];
+  List<Object?> get props => [];
 }
 
 class EmptySpamFolderFailure extends FeatureFailure {
 
   EmptySpamFolderFailure(dynamic exception) : super(exception: exception);
+}
+
+class CannotEmptySpamFolderException implements Exception {
+  CannotEmptySpamFolderException();
 }

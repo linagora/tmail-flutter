@@ -15,8 +15,10 @@ class EmptySpamFolderInteractor {
   Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, MailboxId spamMailboxId) async* {
     try {
       yield Right<Failure, Success>(EmptySpamFolderLoading());
-      final emailIdDeleted = await threadRepository.emptySpamFolder(session, accountId, spamMailboxId);
-      yield Right<Failure, Success>(EmptySpamFolderSuccess(emailIdDeleted));
+      final success = await threadRepository.emptySpamFolder(session, accountId, spamMailboxId);
+      final finalState = success ? Right<Failure, Success>(EmptySpamFolderSuccess()) 
+        : Left<Failure, Success>(EmptySpamFolderFailure(CannotEmptySpamFolderException()));
+      yield finalState;
     } catch (e) {
       yield Left<Failure, Success>(EmptySpamFolderFailure(e));
     }

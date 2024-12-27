@@ -15,8 +15,10 @@ class EmptyTrashFolderInteractor {
   Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, MailboxId trashMailboxId) async* {
     try {
       yield Right<Failure, Success>(EmptyTrashFolderLoading());
-      final emailIdDeleted = await threadRepository.emptyTrashFolder(session, accountId, trashMailboxId);
-      yield Right<Failure, Success>(EmptyTrashFolderSuccess(emailIdDeleted,));
+      final success = await threadRepository.emptyTrashFolder(session, accountId, trashMailboxId);
+      final finalState = success ? Right<Failure, Success>(EmptyTrashFolderSuccess())
+        : Left<Failure, Success>(EmptyTrashFolderFailure(CannotEmptyTrashException()));
+      yield finalState;
     } catch (e) {
       yield Left<Failure, Success>(EmptyTrashFolderFailure(e));
     }
