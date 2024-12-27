@@ -67,7 +67,7 @@ class ThreadIsolateWorker {
 
       while (hasEmails) {
         final emptyMailboxResponse = await args.threadAPI.deleteEmailsBaseOnQuery(
-          args.session, 
+          args.session,
           args.accountId,
           sort: <Comparator>{}..add(
             EmailComparator(EmailComparatorProperty.receivedAt)

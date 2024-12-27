@@ -392,7 +392,8 @@ void main() {
           AccountFixtures.aliceAccountId,
         );
 
-        expect(result, isTrue);
+        expect(result.isSuccess, isTrue);
+        expect(result.deletedCount, equals(2));
       });
 
       test('should return true when some emails are not found but others deleted successfully', () async {
@@ -441,13 +442,7 @@ void main() {
                   "accountId": AccountFixtures.aliceAccountId.id.value,
                   "filter": {
                     "inMailbox": "025b0580-6422-11ef-a702-5d10e1ebf1c3"
-                  },
-                  "sort": [
-                    {
-                      "isAscending": false,
-                      "property": "receivedAt"
-                    }
-                  ]
+                  }
                 },
                 "c0"
               ],
@@ -465,22 +460,26 @@ void main() {
               ]
             ],
             "using": [
-              "urn:ietf:params:jmap:core",
-              "urn:ietf:params:jmap:mail"
+              "urn:ietf:params:jmap:mail",
+              "urn:ietf:params:jmap:core"
             ],
           },
           headers: {
             "accept": "application/json;jmapVersion=rfc-8621",
-            "content-length": 589,
+            "content-length": 679,
           }
         );
 
         final result = await threadApi.deleteEmailsBaseOnQuery(
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
+          filter: EmailFilterCondition(
+            inMailbox: MailboxId(Id('025b0580-6422-11ef-a702-5d10e1ebf1c3')), 
+          )
         );
 
-        expect(result, isTrue);
+        expect(result.isSuccess, isTrue);
+        expect(result.deletedCount, equals(3));
       });
 
       test('should return false when some emails fail to delete for reasons other than not found', () async {
@@ -569,7 +568,8 @@ void main() {
           )
         );
 
-        expect(result, isFalse);
+        expect(result.isSuccess, isFalse);
+        expect(result.deletedCount, equals(2));
       });
     });
   });
