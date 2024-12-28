@@ -393,7 +393,7 @@ void main() {
         );
 
         expect(result.isSuccess, isTrue);
-        expect(result.deletedCount, equals(2));
+        expect(result.destroyedCount, equals(2));
       });
 
       test('should return true when some emails are not found but others deleted successfully', () async {
@@ -479,7 +479,8 @@ void main() {
         );
 
         expect(result.isSuccess, isTrue);
-        expect(result.deletedCount, equals(3));
+        expect(result.destroyedCount, equals(2));
+        expect(result.notFoundCount, equals(1));
       });
 
       test('should return false when some emails fail to delete for reasons other than not found', () async {
@@ -569,7 +570,8 @@ void main() {
         );
 
         expect(result.isSuccess, isFalse);
-        expect(result.deletedCount, equals(2));
+        expect(result.destroyedCount, equals(1));
+        expect(result.notFoundCount, equals(1));
       });
     });
   });

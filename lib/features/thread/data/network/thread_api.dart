@@ -354,11 +354,11 @@ class ThreadAPI with HandleSetErrorMixin {
 
     final queryResponse = result.parse<QueryEmailResponse>(
       queryEmailInvocation.methodCallId, 
-      QueryEmailResponse.deserialize  
+      QueryEmailResponse.deserialize
     );
 
     final setEmailResponse = result.parse<SetEmailResponse>(
-      setEmailInvocation.methodCallId, 
+      setEmailInvocation.methodCallId,
       SetEmailResponse.deserialize
     );
 
@@ -367,13 +367,14 @@ class ThreadAPI with HandleSetErrorMixin {
     
     final queriedCount = queryResponse?.ids.length ?? 0;
     final destroyedCount = destroyed?.length ?? 0;
+    log('ThreadAPI::deleteEmailsBaseOnQuery(): QUERIED_COUNT = $queriedCount, DESTROYED_COUNT = $destroyedCount');
     
     if (destroyedCount < queriedCount) {
       final notFoundErrorCounter = _countingNotFoundInNotDestroy(setEmailResponse);
       final isSuccess = destroyedCount + notFoundErrorCounter >= queriedCount;
-      return EmptyMailboxResponse(isSuccess, destroyedCount + notFoundErrorCounter);
+      return EmptyMailboxResponse(isSuccess, destroyedCount, notFoundErrorCounter);
     }
-    return EmptyMailboxResponse(true, destroyedCount);
+    return EmptyMailboxResponse(true, destroyedCount, 0);
   }
 
   int _countingNotFoundInNotDestroy(SetEmailResponse? setEmailResponse) {

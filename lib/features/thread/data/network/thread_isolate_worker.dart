@@ -75,7 +75,7 @@ class ThreadIsolateWorker {
           filter: EmailFilterCondition(inMailbox: args.mailboxId),
         );
         batchResult = !batchResult ? batchResult : emptyMailboxResponse.isSuccess;
-        hasEmails = emptyMailboxResponse.deletedCount > 0;
+        hasEmails = emptyMailboxResponse.destroyedCount > 0;
       }
       return batchResult;
     } catch (e) {
@@ -103,7 +103,7 @@ class ThreadIsolateWorker {
           filter: EmailFilterCondition(inMailbox: mailboxId),
         );
         batchResult = !batchResult ? batchResult : emptyMailboxResponse.isSuccess;
-        hasEmails = emptyMailboxResponse.deletedCount > 0;
+        hasEmails = emptyMailboxResponse.destroyedCount > 0;
       }
     } catch (e) {
       batchResult = false;
