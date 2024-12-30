@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
+import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
@@ -70,6 +71,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/websocket/
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
@@ -255,6 +257,55 @@ class MailboxController extends BaseMailboxController
         mailboxDashBoardController.clearMailboxUIAction();
       }
     });
+
+    ever(mailboxDashBoardController.viewState, (viewState) {
+      final reactionState = viewState.getOrElse(() => UIState.idle);
+      if (reactionState is MarkAsEmailReadSuccess) {
+        _handleMarkEmailsAsReadOrUnread(
+          affectedMailboxId: reactionState.mailboxId,
+          readCount: reactionState.readActions == ReadActions.markAsRead
+            ? 1
+            : null,
+          unreadCount: reactionState.readActions == ReadActions.markAsUnread
+            ? 1
+            : null,
+        );
+      } else if (reactionState is MarkAsMultipleEmailReadAllSuccess) {
+        _handleMarkEmailsAsReadOrUnread(
+          affectedMailboxId: reactionState.mailboxId,
+          readCount: reactionState.readActions == ReadActions.markAsRead
+            ? reactionState.emailIds.length
+            : null,
+          unreadCount: reactionState.readActions == ReadActions.markAsUnread
+            ? reactionState.emailIds.length
+            : null,
+        );
+      } else if (reactionState is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+        _handleMarkEmailsAsReadOrUnread(
+          affectedMailboxId: reactionState.mailboxId,
+          readCount: reactionState.readActions == ReadActions.markAsRead
+            ? reactionState.successEmailIds.length
+            : null,
+          unreadCount: reactionState.readActions == ReadActions.markAsUnread
+            ? reactionState.successEmailIds.length
+            : null,
+        );
+      }
+    });
+  }
+
+  void _handleMarkEmailsAsReadOrUnread({
+    required MailboxId? affectedMailboxId,
+    int? readCount,
+    int? unreadCount,
+  }) {
+    if (affectedMailboxId == null) return;
+
+    updateUnreadCountOfMailboxById(
+      affectedMailboxId,
+      readCount: readCount,
+      unreadCount: unreadCount,
+    );
   }
 
   void _initWebSocketQueueHandler() {

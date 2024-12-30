@@ -881,6 +881,7 @@ class MailboxDashBoardController extends ReloadableController
     EmailId emailId,
     ReadActions readActions,
     MarkReadAction markReadAction,
+    MailboxId? mailboxId,
   ) {
     if (accountId.value != null && sessionCurrent != null) {
       consumeState(_markAsEmailReadInteractor.execute(
@@ -889,6 +890,7 @@ class MailboxDashBoardController extends ReloadableController
         emailId,
         readActions,
         markReadAction,
+        mailboxId,
       ));
     }
   }
@@ -920,6 +922,7 @@ class MailboxDashBoardController extends ReloadableController
         accountId.value!,
         listEmailNeedMarkAsRead.listEmailIds,
         readActions,
+        listPresentationEmail.firstOrNull?.mailboxContain?.mailboxId,
       ));
     }
   }
@@ -957,7 +960,7 @@ class MailboxDashBoardController extends ReloadableController
         message,
         actionName: AppLocalizations.of(currentContext!).undo,
         onActionClick: () {
-          markAsEmailRead(success.emailId, undoAction, MarkReadAction.undo);
+          markAsEmailRead(success.emailId, undoAction, MarkReadAction.undo, success.mailboxId);
         },
         leadingSVGIcon: imagePaths.icToastSuccessMessage,
         backgroundColor: AppColor.toastSuccessBackgroundColor,

@@ -660,6 +660,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         presentationEmail.id!,
         readActions,
         markReadAction,
+        presentationEmail.mailboxContain?.mailboxId,
       ));
     }
   }
