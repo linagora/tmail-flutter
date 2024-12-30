@@ -47,7 +47,7 @@ class MarkAsMailboxReadHasSomeEmailFailure extends UIState {
 
   final String mailboxDisplayName;
   final int countEmailsRead;
-  final MailboxId? mailboxId;
+  final MailboxId mailboxId;
   final List<EmailId> successEmailIds;
 
   MarkAsMailboxReadHasSomeEmailFailure(
