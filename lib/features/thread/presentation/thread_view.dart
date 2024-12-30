@@ -864,7 +864,7 @@ class ThreadView extends GetWidget<ThreadController>
 
   Widget _buildMarkAsMailboxReadLoading(BuildContext context) {
     return Obx(() {
-      final viewState = controller.mailboxDashBoardController.viewStateMarkAsReadMailbox.value;
+      final viewState = controller.mailboxDashBoardController.viewStateMailboxActionProgress.value;
       return viewState.fold(
         (failure) => const SizedBox.shrink(),
         (success) {

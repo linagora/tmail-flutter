@@ -225,7 +225,7 @@ class MailboxDashBoardController extends ReloadableController
   final filterMessageOption = FilterMessageOption.all.obs;
   final listEmailSelected = <PresentationEmail>[].obs;
   final composerOverlayState = ComposerOverlayState.inActive.obs;
-  final viewStateMarkAsReadMailbox = Rx<Either<Failure, Success>>(Right(UIState.idle));
+  final viewStateMailboxActionProgress = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final vacationResponse = Rxn<VacationResponse>();
   final routerParameters = Rxn<Map<String, dynamic>>();
   final _isDraggingMailbox = RxBool(false);
@@ -559,7 +559,7 @@ class MailboxDashBoardController extends ReloadableController
 
   void _registerStreamListener() {
     progressState.listen((state) {
-      viewStateMarkAsReadMailbox.value = state;
+      viewStateMailboxActionProgress.value = state;
     });
 
     _refreshActionEventController.stream
@@ -1395,6 +1395,8 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _emptyTrashFolderSuccess(EmptyTrashFolderSuccess success) {
+    viewStateMailboxActionProgress.value = Right(UIState.idle);
+
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
@@ -1537,7 +1539,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _markAsReadMailboxSuccess(Success success) {
-    viewStateMarkAsReadMailbox.value = Right(UIState.idle);
+    viewStateMailboxActionProgress.value = Right(UIState.idle);
 
     if (success is MarkAsMailboxReadAllSuccess) {
       if (currentContext != null && currentOverlayContext != null) {
@@ -1557,7 +1559,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _markAsReadMailboxFailure(MarkAsMailboxReadFailure failure) {
-    viewStateMarkAsReadMailbox.value = Right(UIState.idle);
+    viewStateMailboxActionProgress.value = Right(UIState.idle);
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
@@ -1569,7 +1571,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _markAsReadMailboxAllFailure(MarkAsMailboxReadAllFailure failure) {
-    viewStateMarkAsReadMailbox.value = Right(UIState.idle);
+    viewStateMailboxActionProgress.value = Right(UIState.idle);
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
@@ -2392,6 +2394,8 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _emptySpamFolderSuccess(EmptySpamFolderSuccess success) {
+    viewStateMailboxActionProgress.value = Right(UIState.idle);
+
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
@@ -2774,6 +2778,18 @@ class MailboxDashBoardController extends ReloadableController
       currentOverlayContext!,
       AppLocalizations.of(currentOverlayContext!).restoreDeletedMessageFailed
     );
+  }
+
+  void _handleEmptySpamFolderFailure(EmptySpamFolderFailure failure) {
+    viewStateMailboxActionProgress.value = Right(UIState.idle);
+
+    toastManager.showMessageFailure(failure);
+  }
+
+  void _handleEmptyTrashFolderFailure(EmptyTrashFolderFailure failure) {
+    viewStateMailboxActionProgress.value = Right(UIState.idle);
+
+    toastManager.showMessageFailure(failure);
   }
 
   void _handleGetRestoredDeletedMessageSuccess(GetRestoredDeletedMessageSuccess success) async {
