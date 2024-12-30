@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
@@ -12,10 +14,24 @@ class EmptyTrashFolderInteractor {
 
   EmptyTrashFolderInteractor(this.threadRepository);
 
-  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, MailboxId trashMailboxId) async* {
+  Stream<Either<Failure, Success>> execute(
+    Session session, 
+    AccountId accountId, 
+    MailboxId trashMailboxId,
+    int totalEmails,
+    StreamController<Either<Failure, Success>> onProgressController
+  ) async* {
     try {
       yield Right<Failure, Success>(EmptyTrashFolderLoading());
-      final emailIdDeleted = await threadRepository.emptyTrashFolder(session, accountId, trashMailboxId);
+      onProgressController.add(Right(EmptyTrashFolderLoading()));
+
+      final emailIdDeleted = await threadRepository.emptyTrashFolder(
+        session, 
+        accountId, 
+        trashMailboxId,
+        totalEmails,
+        onProgressController
+      );
       yield Right<Failure, Success>(EmptyTrashFolderSuccess(emailIdDeleted,));
     } catch (e) {
       yield Left<Failure, Success>(EmptyTrashFolderFailure(e));
