@@ -83,6 +83,13 @@ class MailboxTree with EquatableMixin {
     }
   }
 
+  void updateMailboxNameById(MailboxId mailboxId, MailboxName mailboxName) {
+    final matchedNode = findNode((node) => node.item.id == mailboxId);
+    if (matchedNode != null) {
+      matchedNode.item = matchedNode.item.copyWith(name: mailboxName);
+    }
+  }
+
   String? getNodePath(MailboxId mailboxId) {
     final matchedNode = findNode((node) => node.item.id == mailboxId);
     if (matchedNode == null) {

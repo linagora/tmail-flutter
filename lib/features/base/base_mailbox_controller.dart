@@ -553,4 +553,29 @@ abstract class BaseMailboxController extends BaseController {
     mailboxNode = personalMailboxTree.value.findNodeOnFirstLevel((node) => node.item.name?.name.toLowerCase() == name);
     return mailboxNode;
   }
+
+  void updateMailboxNameById(MailboxId mailboxId, MailboxName mailboxName) {
+    MailboxNode? selectedNode;
+
+    selectedNode = defaultMailboxTree.value.findNode((node) => node.item.id == mailboxId);
+    if (selectedNode != null) {
+      defaultMailboxTree.value.updateMailboxNameById(mailboxId, mailboxName);
+      defaultMailboxTree.refresh();
+      return;
+    }
+
+    selectedNode = personalMailboxTree.value.findNode((node) => node.item.id == mailboxId);
+    if (selectedNode != null) {
+      personalMailboxTree.value.updateMailboxNameById(mailboxId, mailboxName);
+      personalMailboxTree.refresh();
+      return;
+    }
+
+    selectedNode = teamMailboxesTree.value.findNode((node) => node.item.id == mailboxId);
+    if (selectedNode != null) {
+      teamMailboxesTree.value.updateMailboxNameById(mailboxId, mailboxName);
+      teamMailboxesTree.refresh();
+      return;
+    }
+  }
 }
