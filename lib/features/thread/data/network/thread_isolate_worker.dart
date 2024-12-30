@@ -84,7 +84,11 @@ class ThreadIsolateWorker {
             EmailComparator(EmailComparatorProperty.receivedAt)
               ..setIsAscending(false)),
           filter: EmailFilterCondition(inMailbox: args.mailboxId, before: lastEmail?.receivedAt),
-          properties: Properties({EmailProperty.id}));
+          properties: Properties({
+            EmailProperty.id, 
+            EmailProperty.receivedAt
+          }),
+        );
 
         var newEmailList = emailsResponse.emailList ?? <Email>[];
         if (lastEmail != null) {
@@ -131,7 +135,11 @@ class ThreadIsolateWorker {
             EmailComparator(EmailComparatorProperty.receivedAt)
               ..setIsAscending(false)),
           filter: EmailFilterCondition(inMailbox: mailboxId, before: lastEmail?.receivedAt),
-          properties: Properties({EmailProperty.id}));
+          properties: Properties({
+            EmailProperty.id, 
+            EmailProperty.receivedAt
+          }),
+        );
 
         var newEmailList = emailsResponse.emailList ?? <Email>[];
         if (lastEmail != null) {
