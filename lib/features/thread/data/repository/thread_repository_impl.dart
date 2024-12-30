@@ -1,5 +1,8 @@
+import 'dart:async';
 
 import 'package:core/data/model/source_type/data_source_type.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -313,11 +316,20 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   @override
-  Future<List<EmailId>> emptyTrashFolder(Session session, AccountId accountId, MailboxId trashMailboxId) async {
+  Future<List<EmailId>> emptyTrashFolder(
+    Session session, 
+    AccountId accountId, 
+    MailboxId trashMailboxId,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController
+  ) async {
     final listEmailIdDeleted = await mapDataSource[DataSourceType.network]!.emptyMailboxFolder(
       session,
       accountId,
-      trashMailboxId);
+      trashMailboxId,
+      totalEmails,
+      onProgressController
+    );
 
     await _updateEmailCache(
       accountId,
@@ -396,11 +408,20 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   @override
-  Future<List<EmailId>> emptySpamFolder(Session session, AccountId accountId, MailboxId spamMailboxId) async {
+  Future<List<EmailId>> emptySpamFolder(
+    Session session, 
+    AccountId accountId, 
+    MailboxId spamMailboxId,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController
+  ) async {
     final listEmailIdDeleted = await mapDataSource[DataSourceType.network]!.emptyMailboxFolder(
       session,
       accountId,
-      spamMailboxId);
+      spamMailboxId,
+      totalEmails,
+      onProgressController
+    );
 
     await _updateEmailCache(
       accountId,
