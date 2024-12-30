@@ -148,6 +148,8 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
       searchMailboxAction();
     } else if (success is SearchMailboxSuccess) {
       _handleSearchMailboxSuccess(success);
+    } else if (success is RenameMailboxSuccess) {
+      updateMailboxNameById(success.request.mailboxId, success.request.newName);
     } else if (success is MoveMailboxSuccess) {
       _moveMailboxSuccess(success);
     } else if (success is DeleteMultipleMailboxAllSuccess) {
