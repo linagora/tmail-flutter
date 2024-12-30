@@ -107,7 +107,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                           responsiveUtils: controller.responsiveUtils,
                         )),
                         Obx(() => MarkMailboxAsReadLoadingBanner(
-                          viewState: controller.viewStateMarkAsReadMailbox.value,
+                          viewState: controller.viewStateMailboxActionProgress.value,
                         )),
                         const SpamReportBannerWebWidget(),
                         QuotasBannerWidget(),
