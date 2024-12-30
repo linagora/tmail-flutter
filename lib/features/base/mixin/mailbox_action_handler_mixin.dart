@@ -64,7 +64,10 @@ mixin MailboxActionHandlerMixin {
         ..onConfirmAction(AppLocalizations.of(context).delete, () {
             popBack();
             if (mailbox.countTotalEmails > 0) {
-              dashboardController.emptyTrashFolderAction(trashFolderId: mailbox.id);
+              dashboardController.emptyTrashFolderAction(
+                trashFolderId: mailbox.id,
+                totalEmails: mailbox.countTotalEmails
+              );
             } else {
               appToast.showToastWarningMessage(
                 context,
@@ -89,7 +92,10 @@ mixin MailboxActionHandlerMixin {
             ..onConfirmButtonAction(AppLocalizations.of(context).delete, () {
                 popBack();
                 if (mailbox.countTotalEmails > 0) {
-                  dashboardController.emptyTrashFolderAction(trashFolderId: mailbox.id);
+                  dashboardController.emptyTrashFolderAction(
+                    trashFolderId: mailbox.id,
+                    totalEmails: mailbox.countTotalEmails,
+                  );
                 } else {
                   appToast.showToastWarningMessage(
                     context,
