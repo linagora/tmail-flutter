@@ -33,6 +33,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_e
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
+import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
@@ -60,6 +61,7 @@ import 'package:tmail_ui_user/features/search/email/presentation/model/search_mo
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
@@ -260,6 +262,38 @@ class SearchEmailController extends BaseController
         }
       },
     );
+
+    ever(mailboxDashBoardController.viewState, (viewState) {
+      final reactionState = viewState.getOrElse(() => UIState.idle);
+      if (reactionState is MarkAsEmailReadSuccess) {
+        mailboxDashBoardController.handleMarkEmailsAsReadOrUnreadByEmailIds(
+          readEmailIds: reactionState.readActions == ReadActions.markAsRead
+            ? [reactionState.emailId]
+            : [],
+          unreadEmailIds: reactionState.readActions == ReadActions.markAsUnread
+            ? [reactionState.emailId]
+            : [],
+        );
+      } else if (reactionState is MarkAsMultipleEmailReadAllSuccess) {
+        mailboxDashBoardController.handleMarkEmailsAsReadOrUnreadByEmailIds(
+          readEmailIds: reactionState.readActions == ReadActions.markAsRead
+            ? reactionState.emailIds
+            : [],
+          unreadEmailIds: reactionState.readActions == ReadActions.markAsUnread
+            ? reactionState.emailIds
+            : [],
+        );
+      } else if (reactionState is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+        mailboxDashBoardController.handleMarkEmailsAsReadOrUnreadByEmailIds(
+          readEmailIds: reactionState.readActions == ReadActions.markAsRead
+            ? reactionState.successEmailIds
+            : [],
+          unreadEmailIds: reactionState.readActions == ReadActions.markAsUnread
+            ? reactionState.successEmailIds
+            : [],
+        );
+      }
+    });
   }
 
   void _refreshEmailChanges({jmap.State? newState}) {
