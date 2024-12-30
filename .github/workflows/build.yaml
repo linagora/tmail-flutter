@@ -38,7 +38,7 @@ jobs:
       - name: Setup Fastlane
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "ruby"
+          ruby-version: "3.3"
           bundler-cache: true
           working-directory: ${{ matrix.os }}
 
