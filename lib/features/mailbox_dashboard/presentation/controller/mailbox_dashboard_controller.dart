@@ -439,8 +439,11 @@ class MailboxDashBoardController extends ReloadableController
       _handleRestoreDeletedMessageFailed();
     } else if (failure is GetRestoredDeletedMessageFailure) {
       _handleRestoreDeletedMessageFailed();
-    } else if (failure is EmptySpamFolderFailure
-      || failure is MoveMultipleEmailToMailboxFailure) {
+    } else if (failure is EmptySpamFolderFailure) {
+      _handleEmptySpamFolderFailure(failure);
+    } else if (failure is EmptyTrashFolderFailure) {
+      _handleEmptyTrashFolderFailure(failure);
+    } else if (failure is MoveMultipleEmailToMailboxFailure) {
       toastManager.showMessageFailure(failure);
     } else if (failure is GetComposerCacheFailure) {
       _handleIdentityCache();
@@ -1385,12 +1388,22 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
-  void emptyTrashFolderAction({Function? onCancelSelectionEmail, MailboxId? trashFolderId}) {
+  void emptyTrashFolderAction({
+    Function? onCancelSelectionEmail, 
+    MailboxId? trashFolderId, 
+    int totalEmails = 0,
+  }) {
     onCancelSelectionEmail?.call();
 
     final trashMailboxId = trashFolderId ?? mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash];
     if (sessionCurrent != null && accountId.value != null && trashMailboxId != null) {
-      consumeState(_emptyTrashFolderInteractor.execute(sessionCurrent!, accountId.value!, trashMailboxId));
+      consumeState(_emptyTrashFolderInteractor.execute(
+        sessionCurrent!, 
+        accountId.value!, 
+        trashMailboxId,
+        totalEmails,
+        _progressStateController
+      ));
     }
   }
 
@@ -2371,7 +2384,11 @@ class MailboxDashBoardController extends ReloadableController
     consumeState(_storeSessionInteractor.execute(session));
   }
 
-  void emptySpamFolderAction({Function? onCancelSelectionEmail, MailboxId? spamFolderId}) {
+  void emptySpamFolderAction({
+    Function? onCancelSelectionEmail, 
+    MailboxId? spamFolderId,
+    int totalEmails = 0
+  }) {
     onCancelSelectionEmail?.call();
 
     spamFolderId ??= spamMailboxId;
@@ -2389,7 +2406,9 @@ class MailboxDashBoardController extends ReloadableController
     consumeState(_emptySpamFolderInteractor.execute(
       sessionCurrent!,
       accountId.value!,
-      spamFolderId
+      spamFolderId,
+      totalEmails,
+      _progressStateController
     ));
   }
 

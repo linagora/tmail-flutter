@@ -8,9 +8,9 @@ import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
-import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
@@ -69,7 +69,7 @@ class MailboxIsolateWorker {
           ),
           fun1: _handleMarkAsMailboxReadAction,
           notification: (value) {
-            if (value is List<Email>) {
+            if (value is List<EmailId>) {
               log('MailboxIsolateWorker::markAsMailboxRead(): onUpdateProgress: PERCENT ${value.length / totalEmailUnread}');
               onProgressController.add(Right(UpdatingMarkAsMailboxReadState(
                 mailboxId: mailboxId,

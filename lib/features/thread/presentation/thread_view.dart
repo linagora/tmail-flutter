@@ -18,6 +18,8 @@ import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widg
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_banner_widget.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
@@ -868,7 +870,10 @@ class ThreadView extends GetWidget<ThreadController>
       return viewState.fold(
         (failure) => const SizedBox.shrink(),
         (success) {
-          if (success is MarkAsMailboxReadLoading) {
+          if (success is MarkAsMailboxReadLoading
+              || success is EmptySpamFolderLoading
+              || success is EmptyTrashFolderLoading
+          ) {
             return Padding(
                 padding: EdgeInsets.only(
                     top: controller.responsiveUtils.isDesktop(context) ? 16 : 0,
@@ -878,16 +883,23 @@ class ThreadView extends GetWidget<ThreadController>
                 child: horizontalLoadingWidget);
           } else if (success is UpdatingMarkAsMailboxReadState) {
             final percent = success.countRead / success.totalUnread;
-            return Padding(
-                padding: EdgeInsets.only(
-                    top: controller.responsiveUtils.isDesktop(context) ? 16 : 0,
-                    left: 16,
-                    right: 16,
-                    bottom: controller.responsiveUtils.isDesktop(context) ? 0 : 16),
-                child: horizontalPercentLoadingWidget(percent));
+            return _buildProgressBanner(context, percent);
+          } else if (success is EmptyingFolderState) {
+            final percent = success.countEmailsDeleted / success.totalEmails;
+            return _buildProgressBanner(context, percent);
           }
           return const SizedBox.shrink();
           });
     });
+  }
+
+  Padding _buildProgressBanner(BuildContext context, double percent) {
+    return Padding(
+      padding: EdgeInsets.only(
+        top: controller.responsiveUtils.isDesktop(context) ? 16 : 0,
+        left: 16,
+        right: 16,
+        bottom: controller.responsiveUtils.isDesktop(context) ? 0 : 16),
+      child: horizontalPercentLoadingWidget(percent));
   }
 }
