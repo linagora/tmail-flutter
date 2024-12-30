@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
@@ -12,10 +14,24 @@ class EmptySpamFolderInteractor {
 
   EmptySpamFolderInteractor(this.threadRepository);
 
-  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, MailboxId spamMailboxId) async* {
+  Stream<Either<Failure, Success>> execute(
+    Session session, 
+    AccountId accountId, 
+    MailboxId spamMailboxId,
+    int totalEmails,
+    StreamController<Either<Failure, Success>> onProgressController
+  ) async* {
     try {
       yield Right<Failure, Success>(EmptySpamFolderLoading());
-      final emailIdDeleted = await threadRepository.emptySpamFolder(session, accountId, spamMailboxId);
+      onProgressController.add(Right(EmptySpamFolderLoading()));
+      
+      final emailIdDeleted = await threadRepository.emptySpamFolder(
+        session, 
+        accountId, 
+        spamMailboxId, 
+        totalEmails, 
+        onProgressController
+      );
       yield Right<Failure, Success>(EmptySpamFolderSuccess(emailIdDeleted));
     } catch (e) {
       yield Left<Failure, Success>(EmptySpamFolderFailure(e));
