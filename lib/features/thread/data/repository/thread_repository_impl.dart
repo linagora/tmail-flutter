@@ -46,6 +46,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
       bool getLatestChanges = true,
+      bool skipCache = false,
     }
   ) async* {
     log('ThreadRepositoryImpl::getAllEmail(): filter = ${emailFilter?.mailboxId}');
@@ -85,7 +86,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
         );
       }
       yield networkEmailResponse;
-    } else {
+    } else if (!skipCache) {
       yield localEmailResponse;
     }
 

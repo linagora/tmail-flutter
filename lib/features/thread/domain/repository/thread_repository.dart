@@ -26,6 +26,7 @@ abstract class ThreadRepository {
       Properties? propertiesCreated,
       Properties? propertiesUpdated,
       bool getLatestChanges = true,
+      bool skipCache = false,
     }
   );
 

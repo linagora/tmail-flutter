@@ -20,9 +20,11 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
+import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -45,6 +47,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
@@ -331,6 +334,70 @@ class ThreadController extends BaseController with EmailActionController {
         mailboxDashBoardController.clearEmailUIAction();
       }
     });
+
+    ever(mailboxDashBoardController.viewState, (viewState) {
+      final reactionState = viewState.getOrElse(() => UIState.idle);
+      if (reactionState is MarkAsEmailReadSuccess) {
+        _handleMarkEmailsAsReadOrUnreadByEmailIds(
+          readEmailIds: reactionState.readActions == ReadActions.markAsRead
+            ? [reactionState.emailId]
+            : [],
+          unreadEmailIds: reactionState.readActions == ReadActions.markAsUnread
+            ? [reactionState.emailId]
+            : [],
+        );
+      } else if (reactionState is MarkAsMultipleEmailReadAllSuccess) {
+        _handleMarkEmailsAsReadOrUnreadByEmailIds(
+          readEmailIds: reactionState.readActions == ReadActions.markAsRead
+            ? reactionState.emailIds
+            : [],
+          unreadEmailIds: reactionState.readActions == ReadActions.markAsUnread
+            ? reactionState.emailIds
+            : [],
+        );
+      } else if (reactionState is MarkAsMultipleEmailReadHasSomeEmailFailure) {
+        _handleMarkEmailsAsReadOrUnreadByEmailIds(
+          readEmailIds: reactionState.readActions == ReadActions.markAsRead
+            ? reactionState.successEmailIds
+            : [],
+          unreadEmailIds: reactionState.readActions == ReadActions.markAsUnread
+            ? reactionState.successEmailIds
+            : [],
+        );
+      } else if (reactionState is MarkAsMailboxReadAllSuccess) {
+        _handleMarkEmailsAsReadByMailboxId(reactionState.mailboxId);
+      } else if (reactionState is MarkAsMailboxReadHasSomeEmailFailure) {
+        _handleMarkEmailsAsReadOrUnreadByEmailIds(
+          readEmailIds: reactionState.successEmailIds,
+          unreadEmailIds: [],
+        );
+      }
+    });
+  }
+
+  void _handleMarkEmailsAsReadOrUnreadByEmailIds({
+    required List<EmailId> readEmailIds,
+    required List<EmailId> unreadEmailIds,
+  }) {
+    for (var presentationEmail in mailboxDashBoardController.emailsInCurrentMailbox) {
+      if (readEmailIds.contains(presentationEmail.id)) {
+        presentationEmail.keywords?[KeyWordIdentifier.emailSeen] = true;
+      } else if (unreadEmailIds.contains(presentationEmail.id)) {
+        presentationEmail.keywords?.remove(KeyWordIdentifier.emailSeen);
+      }
+    }
+    mailboxDashBoardController.emailsInCurrentMailbox.refresh();
+  }
+
+  void _handleMarkEmailsAsReadByMailboxId(MailboxId mailboxId) {
+    if (mailboxDashBoardController.selectedMailbox.value?.id != mailboxId) return;
+
+    for (var presentationEmail in mailboxDashBoardController.emailsInCurrentMailbox) {
+      if (presentationEmail.mailboxContain?.id != mailboxId) continue;
+
+      presentationEmail.keywords?[KeyWordIdentifier.emailSeen] = true;
+    }
+    mailboxDashBoardController.emailsInCurrentMailbox.refresh();
   }
 
   void _registerBrowserResizeListener() {
@@ -444,7 +511,10 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  void _getAllEmailAction({bool getLatestChanges = true}) {
+  void _getAllEmailAction({
+    bool getLatestChanges = true,
+    bool skipCache = false,
+  }) {
     log('ThreadController::_getAllEmailAction:');
     if (_session != null &&_accountId != null) {
       consumeState(_getEmailsInMailboxInteractor.execute(
@@ -460,6 +530,7 @@ class ThreadController extends BaseController with EmailActionController {
         propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
         getLatestChanges: getLatestChanges,
+        skipCache: skipCache,
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
@@ -508,7 +579,7 @@ class ThreadController extends BaseController with EmailActionController {
     if (searchController.isSearchEmailRunning) {
       _searchEmail(limit: limitEmailFetched);
     } else {
-      _getAllEmailAction();
+      _getAllEmailAction(skipCache: true);
     }
   }
 
@@ -792,6 +863,9 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void cancelSelectEmail() {
+    if (mailboxDashBoardController.currentSelectMode.value == SelectMode.INACTIVE) {
+      return;
+    }
     final newEmailList = mailboxDashBoardController.emailsInCurrentMailbox
       .map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE))
       .toList();
