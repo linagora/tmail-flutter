@@ -1,7 +1,11 @@
 import 'dart:async';
 
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:dartz/dartz.dart' as dartz;
+import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -19,6 +23,7 @@ import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/thread/data/model/empty_mailbox_folder_arguments.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/domain/exceptions/thread_exceptions.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/main/exceptions/isolate_exception.dart';
 import 'package:worker_manager/worker_manager.dart';
 
@@ -33,9 +38,11 @@ class ThreadIsolateWorker {
     Session session,
     AccountId accountId,
     MailboxId mailboxId,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController
   ) async {
     if (PlatformInfo.isWeb) {
-      return _emptyMailboxFolderOnWeb(session, accountId, mailboxId);
+      return _emptyMailboxFolderOnWeb(session, accountId, mailboxId, totalEmails, onProgressController);
     } else {
       final rootIsolateToken = RootIsolateToken.instance;
       if (rootIsolateToken == null) {
@@ -51,7 +58,15 @@ class ThreadIsolateWorker {
           mailboxId,
           rootIsolateToken
         ),
-        fun1: _emptyMailboxFolderAction
+        fun1: _emptyMailboxFolderAction,
+        notification: (value) {
+          if (value is List<EmailId>) {
+            log('ThreadIsolateWorker::emptyMailboxFolder(): onUpdateProgress ${value.length / totalEmails}');
+            onProgressController.add(Right<Failure, Success>(EmptyingFolderState(
+              mailboxId, value.length, totalEmails
+            )));
+          }
+        },
       );
 
       if (result.isEmpty) {
@@ -105,6 +120,7 @@ class ThreadIsolateWorker {
             args.accountId,
             newEmailList.listEmailIds);
           emailListCompleted.addAll(listEmailIdDeleted);
+          sendPort.send(listEmailIdDeleted);
         } else {
           hasEmails = false;
         }
@@ -121,6 +137,8 @@ class ThreadIsolateWorker {
     Session session,
     AccountId accountId,
     MailboxId mailboxId,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController
   ) async {
     List<EmailId> emailListCompleted = List.empty(growable: true);
     try {
@@ -156,6 +174,10 @@ class ThreadIsolateWorker {
             accountId,
             newEmailList.listEmailIds);
           emailListCompleted.addAll(listEmailIdDeleted);
+
+          onProgressController.add(Right<Failure, Success>(EmptyingFolderState(
+            mailboxId, listEmailIdDeleted.length, totalEmails
+          )));
         } else {
           hasEmails = false;
         }
