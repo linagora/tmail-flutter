@@ -21,6 +21,7 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:jmap_dart_client/jmap/mail/vacation/vacation_response.dart';
 import 'package:model/model.dart';
@@ -2946,6 +2947,20 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   jmap.State? get currentEmailState => _currentEmailState;
+
+  void handleMarkEmailsAsReadOrUnreadByEmailIds({
+    required List<EmailId> readEmailIds,
+    required List<EmailId> unreadEmailIds,
+  }) {
+    for (var presentationEmail in emailsInCurrentMailbox) {
+      if (readEmailIds.contains(presentationEmail.id)) {
+        presentationEmail.keywords?[KeyWordIdentifier.emailSeen] = true;
+      } else if (unreadEmailIds.contains(presentationEmail.id)) {
+        presentationEmail.keywords?.remove(KeyWordIdentifier.emailSeen);
+      }
+    }
+    emailsInCurrentMailbox.refresh();
+  }
 
   @override
   void onClose() {

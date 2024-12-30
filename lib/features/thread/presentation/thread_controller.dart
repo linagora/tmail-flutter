@@ -338,7 +338,7 @@ class ThreadController extends BaseController with EmailActionController {
     ever(mailboxDashBoardController.viewState, (viewState) {
       final reactionState = viewState.getOrElse(() => UIState.idle);
       if (reactionState is MarkAsEmailReadSuccess) {
-        _handleMarkEmailsAsReadOrUnreadByEmailIds(
+        mailboxDashBoardController.handleMarkEmailsAsReadOrUnreadByEmailIds(
           readEmailIds: reactionState.readActions == ReadActions.markAsRead
             ? [reactionState.emailId]
             : [],
@@ -347,7 +347,7 @@ class ThreadController extends BaseController with EmailActionController {
             : [],
         );
       } else if (reactionState is MarkAsMultipleEmailReadAllSuccess) {
-        _handleMarkEmailsAsReadOrUnreadByEmailIds(
+        mailboxDashBoardController.handleMarkEmailsAsReadOrUnreadByEmailIds(
           readEmailIds: reactionState.readActions == ReadActions.markAsRead
             ? reactionState.emailIds
             : [],
@@ -356,7 +356,7 @@ class ThreadController extends BaseController with EmailActionController {
             : [],
         );
       } else if (reactionState is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-        _handleMarkEmailsAsReadOrUnreadByEmailIds(
+        mailboxDashBoardController.handleMarkEmailsAsReadOrUnreadByEmailIds(
           readEmailIds: reactionState.readActions == ReadActions.markAsRead
             ? reactionState.successEmailIds
             : [],
@@ -367,26 +367,12 @@ class ThreadController extends BaseController with EmailActionController {
       } else if (reactionState is MarkAsMailboxReadAllSuccess) {
         _handleMarkEmailsAsReadByMailboxId(reactionState.mailboxId);
       } else if (reactionState is MarkAsMailboxReadHasSomeEmailFailure) {
-        _handleMarkEmailsAsReadOrUnreadByEmailIds(
+        mailboxDashBoardController.handleMarkEmailsAsReadOrUnreadByEmailIds(
           readEmailIds: reactionState.successEmailIds,
           unreadEmailIds: [],
         );
       }
     });
-  }
-
-  void _handleMarkEmailsAsReadOrUnreadByEmailIds({
-    required List<EmailId> readEmailIds,
-    required List<EmailId> unreadEmailIds,
-  }) {
-    for (var presentationEmail in mailboxDashBoardController.emailsInCurrentMailbox) {
-      if (readEmailIds.contains(presentationEmail.id)) {
-        presentationEmail.keywords?[KeyWordIdentifier.emailSeen] = true;
-      } else if (unreadEmailIds.contains(presentationEmail.id)) {
-        presentationEmail.keywords?.remove(KeyWordIdentifier.emailSeen);
-      }
-    }
-    mailboxDashBoardController.emailsInCurrentMailbox.refresh();
   }
 
   void _handleMarkEmailsAsReadByMailboxId(MailboxId mailboxId) {
