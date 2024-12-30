@@ -1,6 +1,7 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/base/state/ui_action_state.dart';
 
@@ -24,8 +25,10 @@ class UpdatingMarkAsMailboxReadState extends UIState {
 class MarkAsMailboxReadAllSuccess extends UIActionState {
 
   final String mailboxDisplayName;
+  final MailboxId mailboxId;
 
   MarkAsMailboxReadAllSuccess(this.mailboxDisplayName,
+    this.mailboxId,
     {
       jmap.State? currentEmailState,
       jmap.State? currentMailboxState,
@@ -35,6 +38,7 @@ class MarkAsMailboxReadAllSuccess extends UIActionState {
   @override
   List<Object?> get props => [
     mailboxDisplayName,
+    mailboxId,
     ...super.props
   ];
 }
@@ -43,16 +47,22 @@ class MarkAsMailboxReadHasSomeEmailFailure extends UIState {
 
   final String mailboxDisplayName;
   final int countEmailsRead;
+  final MailboxId? mailboxId;
+  final List<EmailId> successEmailIds;
 
   MarkAsMailboxReadHasSomeEmailFailure(
     this.mailboxDisplayName,
     this.countEmailsRead,
+    this.mailboxId,
+    this.successEmailIds,
   );
 
   @override
   List<Object?> get props => [
     mailboxDisplayName,
     countEmailsRead,
+    mailboxId,
+    successEmailIds,
   ];
 }
 

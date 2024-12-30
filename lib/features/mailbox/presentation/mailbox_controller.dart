@@ -37,6 +37,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_request.da
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_mailboxes_state.dart';
@@ -290,6 +291,15 @@ class MailboxController extends BaseMailboxController
             ? reactionState.successEmailIds.length
             : null,
         );
+      } else if (reactionState is MarkAsMailboxReadAllSuccess) {
+        _handleMarkMailboxAsRead(
+          affectedMailboxId: reactionState.mailboxId,
+        );
+      } else if (reactionState is MarkAsMailboxReadHasSomeEmailFailure) {
+        _handleMarkEmailsAsReadOrUnread(
+          affectedMailboxId: reactionState.mailboxId,
+          readCount: reactionState.successEmailIds.length,
+        );
       }
     });
   }
@@ -306,6 +316,14 @@ class MailboxController extends BaseMailboxController
       readCount: readCount,
       unreadCount: unreadCount,
     );
+  }
+
+  void _handleMarkMailboxAsRead({
+    required MailboxId? affectedMailboxId,
+  }) {
+    if (affectedMailboxId == null) return;
+
+    clearUnreadCount(affectedMailboxId);
   }
 
   void _initWebSocketQueueHandler() {
