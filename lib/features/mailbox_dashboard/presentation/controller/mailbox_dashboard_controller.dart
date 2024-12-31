@@ -1396,12 +1396,14 @@ class MailboxDashBoardController extends ReloadableController
     onCancelSelectionEmail?.call();
 
     final trashMailboxId = trashFolderId ?? mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash];
+    final trashMailbox = mapMailboxById[trashMailboxId];
+    final totalEmailsInTrash = totalEmails == 0 ? trashMailbox?.countTotalEmails : totalEmails;
     if (sessionCurrent != null && accountId.value != null && trashMailboxId != null) {
       consumeState(_emptyTrashFolderInteractor.execute(
         sessionCurrent!, 
         accountId.value!, 
         trashMailboxId,
-        totalEmails,
+        totalEmailsInTrash ?? 0,
         _progressStateController
       ));
     }
@@ -2458,7 +2460,7 @@ class MailboxDashBoardController extends ReloadableController
         ..onConfirmAction(AppLocalizations.of(context).delete_all, () {
           popBack();
           if (spamMailbox.countTotalEmails > 0) {
-            emptySpamFolderAction(spamFolderId: spamMailbox.id);
+            emptySpamFolderAction(spamFolderId: spamMailbox.id, totalEmails: spamMailbox.countTotalEmails);
           } else {
             appToast.showToastWarningMessage(
               context,
@@ -2483,7 +2485,7 @@ class MailboxDashBoardController extends ReloadableController
           ..onConfirmButtonAction(AppLocalizations.of(context).delete_all, () {
             popBack();
             if (spamMailbox.countTotalEmails > 0) {
-              emptySpamFolderAction(spamFolderId: spamMailbox.id);
+              emptySpamFolderAction(spamFolderId: spamMailbox.id, totalEmails: spamMailbox.countTotalEmails);
             } else {
               appToast.showToastWarningMessage(
                 context,

@@ -25,11 +25,9 @@ class MarkMailboxAsReadLoadingBanner extends StatelessWidget with AppLoaderMixin
             padding: MarkMailboxAsReadLoadingBannerStyle.bannerMargin,
             child: horizontalLoadingWidget);
         } else if (success is UpdatingMarkAsMailboxReadState) {
-          final percent = success.countRead / success.totalUnread;
-          return _buildProgressBanner(percent);
+          return _buildProgressBanner(success.countRead, success.totalUnread);
         } else if (success is EmptyingFolderState) {
-          final percent = success.countEmailsDeleted / success.totalEmails;
-          return _buildProgressBanner(percent);
+          return _buildProgressBanner(success.countEmailsDeleted, success.totalEmails);
         } else {
           return const SizedBox.shrink();
         }
@@ -37,7 +35,8 @@ class MarkMailboxAsReadLoadingBanner extends StatelessWidget with AppLoaderMixin
     );
   }
 
-  Padding _buildProgressBanner(double percent) {
+  Padding _buildProgressBanner(int progress, int total) {
+    final percent = total > 0 ? progress / total : 0.68;
     return Padding(
       padding: MarkMailboxAsReadLoadingBannerStyle.bannerMargin,
       child: horizontalPercentLoadingWidget(percent)

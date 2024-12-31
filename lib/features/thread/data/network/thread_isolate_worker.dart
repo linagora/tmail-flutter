@@ -61,7 +61,7 @@ class ThreadIsolateWorker {
         fun1: _emptyMailboxFolderAction,
         notification: (value) {
           if (value is List<EmailId>) {
-            log('ThreadIsolateWorker::emptyMailboxFolder(): onUpdateProgress ${value.length / totalEmails}');
+            log('ThreadIsolateWorker::emptyMailboxFolder(): processed ${value.length} - totalEmails $totalEmails');
             onProgressController.add(Right<Failure, Success>(EmptyingFolderState(
               mailboxId, value.length, totalEmails
             )));
@@ -120,7 +120,7 @@ class ThreadIsolateWorker {
             args.accountId,
             newEmailList.listEmailIds);
           emailListCompleted.addAll(listEmailIdDeleted);
-          sendPort.send(listEmailIdDeleted);
+          sendPort.send(emailListCompleted);
         } else {
           hasEmails = false;
         }
@@ -176,7 +176,7 @@ class ThreadIsolateWorker {
           emailListCompleted.addAll(listEmailIdDeleted);
 
           onProgressController.add(Right<Failure, Success>(EmptyingFolderState(
-            mailboxId, listEmailIdDeleted.length, totalEmails
+            mailboxId, emailListCompleted.length, totalEmails
           )));
         } else {
           hasEmails = false;

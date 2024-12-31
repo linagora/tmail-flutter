@@ -1,4 +1,5 @@
 import 'package:core/core.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -164,7 +165,7 @@ class ThreadView extends GetWidget<ThreadController>
                         }
                       }),
                       if (!controller.responsiveUtils.isDesktop(context))
-                        _buildMarkAsMailboxReadLoading(context),
+                        _buildMailboxActionProgressBanner(context),
                       Obx(() => ThreadViewLoadingBarWidget(viewState: controller.viewState.value)),
                       Expanded(
                         child: Container(
@@ -864,42 +865,68 @@ class ThreadView extends GetWidget<ThreadController>
     );
   }
 
-  Widget _buildMarkAsMailboxReadLoading(BuildContext context) {
+  Widget _buildMailboxActionProgressBanner(BuildContext context) {
     return Obx(() {
-      final viewState = controller.mailboxDashBoardController.viewStateMailboxActionProgress.value;
-      return viewState.fold(
-        (failure) => const SizedBox.shrink(),
-        (success) {
-          if (success is MarkAsMailboxReadLoading
-              || success is EmptySpamFolderLoading
-              || success is EmptyTrashFolderLoading
-          ) {
-            return Padding(
-                padding: EdgeInsets.only(
-                    top: controller.responsiveUtils.isDesktop(context) ? 16 : 0,
-                    left: 16,
-                    right: 16,
-                    bottom: controller.responsiveUtils.isDesktop(context) ? 0 : 16),
-                child: horizontalLoadingWidget);
-          } else if (success is UpdatingMarkAsMailboxReadState) {
-            final percent = success.countRead / success.totalUnread;
-            return _buildProgressBanner(context, percent);
-          } else if (success is EmptyingFolderState) {
-            final percent = success.countEmailsDeleted / success.totalEmails;
-            return _buildProgressBanner(context, percent);
-          }
-          return const SizedBox.shrink();
-          });
+      return _MailboxActionProgressBanner(
+        viewState: controller.mailboxDashBoardController.viewStateMailboxActionProgress.value,
+        responsiveUtils: controller.responsiveUtils,
+      );
     });
   }
+}
 
-  Padding _buildProgressBanner(BuildContext context, double percent) {
+class _MailboxActionProgressBanner extends StatelessWidget with AppLoaderMixin {
+  final Either<Failure, Success> viewState;
+  final ResponsiveUtils responsiveUtils;
+
+  const _MailboxActionProgressBanner({
+    required this.viewState,
+    required this.responsiveUtils,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return viewState.fold(
+      (failure) => const SizedBox.shrink(),
+      (success) {
+        if (success is MarkAsMailboxReadLoading ||
+            success is EmptySpamFolderLoading ||
+            success is EmptyTrashFolderLoading) {
+          return Padding(
+            padding: EdgeInsets.only(
+              top: responsiveUtils.isDesktop(context) ? 16 : 0,
+              left: 16,
+              right: 16,
+              bottom: responsiveUtils.isDesktop(context) ? 0 : 16,
+            ),
+            child: horizontalLoadingWidget,
+          );
+        } else if (success is UpdatingMarkAsMailboxReadState) {
+          return _buildProgressBanner(
+            context,
+            success.countRead,
+            success.totalUnread,
+          );
+        } else if (success is EmptyingFolderState) {
+          return _buildProgressBanner(
+            context,
+            success.countEmailsDeleted,
+            success.totalEmails,
+          );
+        }
+        return const SizedBox.shrink();
+      },
+    );
+  }
+
+  Padding _buildProgressBanner(BuildContext context, int progress, int total) {
+    final percent = total > 0 ? progress / total : 0.68;
     return Padding(
       padding: EdgeInsets.only(
-        top: controller.responsiveUtils.isDesktop(context) ? 16 : 0,
+        top: responsiveUtils.isDesktop(context) ? 16 : 0,
         left: 16,
         right: 16,
-        bottom: controller.responsiveUtils.isDesktop(context) ? 0 : 16),
+        bottom: responsiveUtils.isDesktop(context) ? 0 : 16),
       child: horizontalPercentLoadingWidget(percent));
   }
 }
