@@ -131,7 +131,7 @@ mixin MailboxActionHandlerMixin {
         ..onConfirmAction(AppLocalizations.of(context).delete_all, () {
           popBack();
           if (mailbox.countTotalEmails > 0) {
-            dashboardController.emptySpamFolderAction(spamFolderId: mailbox.id);
+            dashboardController.emptySpamFolderAction(spamFolderId: mailbox.id, totalEmails: mailbox.countTotalEmails);
           } else {
             appToast.showToastWarningMessage(
               context,
@@ -156,7 +156,7 @@ mixin MailboxActionHandlerMixin {
           ..onConfirmButtonAction(AppLocalizations.of(context).delete_all, () {
             popBack();
             if (mailbox.countTotalEmails > 0) {
-              dashboardController.emptySpamFolderAction(spamFolderId: mailbox.id);
+              dashboardController.emptySpamFolderAction(spamFolderId: mailbox.id, totalEmails: mailbox.countTotalEmails);
             } else {
               appToast.showToastWarningMessage(
                 context,
