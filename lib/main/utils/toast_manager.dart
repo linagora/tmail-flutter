@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_ex
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_twake_workplace_state.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_up_twake_workplace_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -63,6 +64,8 @@ class ToastManager {
         ?? AppLocalizations.of(currentContext!).unknownError;
     } else if (failure is EmptySpamFolderFailure) {
       message = AppLocalizations.of(currentContext!).emptySpamFolderFailed;
+    } else if (failure is EmptyTrashFolderFailure) {
+      message = AppLocalizations.of(currentContext!).emptyTrashFolderFailed;
     } else if (failure is MoveMultipleEmailToMailboxFailure
         && failure.emailActionType == EmailActionType.moveToSpam
         && failure.moveAction == MoveAction.moving) {

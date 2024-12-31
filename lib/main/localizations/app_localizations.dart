@@ -4162,6 +4162,12 @@ class AppLocalizations {
       name: 'emptySpamFolderFailed');
   }
 
+  String get emptyTrashFolderFailed {
+    return Intl.message(
+      'Empty trash folder failed',
+      name: 'emptyTrashFolderFailed');
+  }
+
   String get markAsSpamFailed {
     return Intl.message(
       'Mark as spam failed',

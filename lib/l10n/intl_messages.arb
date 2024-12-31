@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-10-31T13:18:32.336494",
+  "@@last_modified": "2024-12-31T12:11:05.777668",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -3966,6 +3966,12 @@
   },
   "emptySpamFolderFailed": "Empty spam folder failed",
   "@emptySpamFolderFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptyTrashFolderFailed": "Empty trash folder failed",
+  "@emptyTrashFolderFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
