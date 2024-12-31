@@ -20,6 +20,7 @@ import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_restored_deleted_message_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
@@ -299,6 +300,15 @@ class MailboxController extends BaseMailboxController
         _handleMarkEmailsAsReadOrUnread(
           affectedMailboxId: reactionState.mailboxId,
           readCount: reactionState.successEmailIds.length,
+        );
+      } else if (reactionState is GetRestoredDeletedMessageCompleted) {
+        _handleMarkEmailsAsReadOrUnread(
+          affectedMailboxId: reactionState.recoveredMailbox?.id,
+          unreadCount: reactionState
+            .emailRecoveryAction
+            .successfulRestoreCount
+            ?.value
+            .toInt() ?? 0,
         );
       }
     });
