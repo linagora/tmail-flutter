@@ -167,6 +167,8 @@ class MailboxController extends BaseMailboxController
       _deleteMultipleMailboxSuccess(success.listMailboxIdDeleted, success.currentMailboxState);
     } else if (success is DeleteMultipleMailboxHasSomeSuccess) {
       _deleteMultipleMailboxSuccess(success.listMailboxIdDeleted, success.currentMailboxState);
+    } else if (success is RenameMailboxSuccess) {
+      _renameMailboxSuccess(success);
     } else if (success is MoveMailboxSuccess) {
       _moveMailboxSuccess(success);
     } else if (success is SubscribeMailboxSuccess) {
