@@ -18,7 +18,7 @@ class RenameMailboxInteractor {
       yield Right<Failure, Success>(LoadingRenameMailbox());
       final result = await _mailboxRepository.renameMailbox(session, accountId, request);
       if (result) {
-        yield Right<Failure, Success>(RenameMailboxSuccess());
+        yield Right<Failure, Success>(RenameMailboxSuccess(request: request));
       } else {
         yield Left<Failure, Success>(RenameMailboxFailure(null));
       }

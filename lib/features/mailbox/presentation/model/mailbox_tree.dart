@@ -3,6 +3,7 @@ import 'dart:collection';
 
 import 'package:collection/collection.dart';
 import 'package:equatable/equatable.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -80,6 +81,27 @@ class MailboxTree with EquatableMixin {
       currentNode.childrenItems?.forEach((child) {
         queue.addLast(child);
       });
+    }
+  }
+
+  bool updateMailboxNameById(MailboxId mailboxId, MailboxName mailboxName) {
+    final matchedNode = findNode((node) => node.item.id == mailboxId);
+    if (matchedNode != null) {
+      matchedNode.item = matchedNode.item.copyWith(name: mailboxName);
+      return true;
+    }
+    return false;
+  }
+
+  void updateMailboxUnreadCountById(MailboxId mailboxId, int unreadCount) {
+    final matchedNode = findNode((node) => node.item.id == mailboxId);
+    if (matchedNode != null) {
+      final currentUnreadCount = matchedNode.item.unreadEmails?.value.value ?? 0;
+      final updatedUnreadCount = currentUnreadCount + unreadCount;
+      if (updatedUnreadCount < 0) return;
+      matchedNode.item = matchedNode.item.copyWith(
+        unreadEmails: UnreadEmails(UnsignedInt(updatedUnreadCount)),
+      );
     }
   }
 
