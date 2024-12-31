@@ -89,4 +89,42 @@ class PresentationMailbox with EquatableMixin {
     namespace,
     displayName,
   ];
+
+  PresentationMailbox copyWith({
+    MailboxId? id,
+    MailboxName? name,
+    MailboxId? parentId,
+    Role? role,
+    SortOrder? sortOrder,
+    TotalEmails? totalEmails,
+    UnreadEmails? unreadEmails,
+    TotalThreads? totalThreads,
+    UnreadThreads? unreadThreads,
+    MailboxRights? myRights,
+    IsSubscribed? isSubscribed,
+    SelectMode? selectMode,
+    String? mailboxPath,
+    MailboxState? state,
+    Namespace? namespace,
+    String? displayName,
+  }) {
+    return PresentationMailbox(
+      id ?? this.id,
+      name: name ?? this.name,
+      parentId: parentId ?? this.parentId,
+      role: role ?? this.role,
+      sortOrder: sortOrder ?? this.sortOrder,
+      totalEmails: totalEmails ?? this.totalEmails,
+      unreadEmails: unreadEmails ?? this.unreadEmails,
+      totalThreads: totalThreads ?? this.totalThreads,
+      unreadThreads: unreadThreads ?? this.unreadThreads,
+      myRights: myRights ?? this.myRights,
+      isSubscribed: isSubscribed ?? this.isSubscribed,
+      selectMode: selectMode ?? this.selectMode,
+      mailboxPath: mailboxPath ?? this.mailboxPath,
+      state: state ?? this.state,
+      namespace: namespace ?? this.namespace,
+      displayName: displayName ?? this.displayName,
+    );
+  }
 }
