@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
@@ -20,6 +21,7 @@ class MarkAsEmailReadInteractor {
     EmailId emailId,
     ReadActions readAction,
     MarkReadAction markReadAction,
+    MailboxId? mailboxId,
   ) async* {
     try {
       final result = await _emailRepository.markAsRead(
@@ -36,7 +38,8 @@ class MarkAsEmailReadInteractor {
           result.emailIdsSuccess.first,
           readAction,
           markReadAction,
-        ));
+          mailboxId,
+      ));
       }
     } catch (e) {
       yield Left(MarkAsEmailReadFailure(readAction, exception: e));

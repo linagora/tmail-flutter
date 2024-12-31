@@ -33,6 +33,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_request.da
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/move_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_changes_all_mailboxes_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/rename_mailbox_state.dart';
@@ -183,6 +184,18 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     ever(dashboardController.mailboxUIAction, (action) {
       if (action is RefreshChangeMailboxAction) {
         _refreshMailboxChanges(newState: action.newState);
+      }
+    });
+
+    ever(dashboardController.viewState, (viewState) {
+      final reactionState = viewState.getOrElse(() => UIState.idle);
+      if (reactionState is MarkAsMailboxReadAllSuccess) {
+        clearUnreadCount(reactionState.mailboxId);
+      } else if (reactionState is MarkAsMailboxReadHasSomeEmailFailure) {
+        updateUnreadCountOfMailboxById(
+          reactionState.mailboxId,
+          unreadChanges: -reactionState.countEmailsRead,
+        );
       }
     });
   }

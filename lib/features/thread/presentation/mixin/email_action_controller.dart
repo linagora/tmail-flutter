@@ -233,6 +233,7 @@ mixin EmailActionController {
       presentationEmail.id!,
       readActions,
       markReadAction,
+      presentationEmail.mailboxContain?.mailboxId,
     );
   }
 
