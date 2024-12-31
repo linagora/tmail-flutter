@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
@@ -17,7 +18,8 @@ class MarkAsMultipleEmailReadInteractor {
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
-    ReadActions readAction
+    ReadActions readAction,
+    MailboxId? mailboxId,
   ) async* {
     try {
       yield Right(LoadingMarkAsMultipleEmailReadAll());
@@ -31,15 +33,17 @@ class MarkAsMultipleEmailReadInteractor {
 
       if (emailIds.length == result.emailIdsSuccess.length) {
         yield Right(MarkAsMultipleEmailReadAllSuccess(
-            result.emailIdsSuccess.length,
-            readAction,
+          result.emailIdsSuccess,
+          readAction,
+          mailboxId,
         ));
       } else if (result.emailIdsSuccess.isEmpty) {
         yield Left(MarkAsMultipleEmailReadAllFailure(readAction));
       } else {
         yield Right(MarkAsMultipleEmailReadHasSomeEmailFailure(
-            result.emailIdsSuccess.length,
-            readAction,
+          result.emailIdsSuccess,
+          readAction,
+          mailboxId,
         ));
       }
     } catch (e) {

@@ -34,11 +34,13 @@ class MarkAsMailboxReadInteractor {
         onProgressController);
 
       if (totalEmailUnread == listEmails.length) {
-        yield Right(MarkAsMailboxReadAllSuccess(mailboxDisplayName));
+        yield Right(MarkAsMailboxReadAllSuccess(mailboxDisplayName, mailboxId));
       } else if (listEmails.isNotEmpty) {
         yield Right(MarkAsMailboxReadHasSomeEmailFailure(
           mailboxDisplayName,
           listEmails.length,
+          mailboxId,
+          listEmails,
         ));
       } else {
         yield Left(MarkAsMailboxReadAllFailure(mailboxDisplayName: mailboxDisplayName));

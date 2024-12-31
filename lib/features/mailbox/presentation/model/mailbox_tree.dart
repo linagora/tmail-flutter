@@ -93,16 +93,18 @@ class MailboxTree with EquatableMixin {
     return false;
   }
 
-  void updateMailboxUnreadCountById(MailboxId mailboxId, int unreadCount) {
+  bool updateMailboxUnreadCountById(MailboxId mailboxId, int unreadCount) {
     final matchedNode = findNode((node) => node.item.id == mailboxId);
     if (matchedNode != null) {
       final currentUnreadCount = matchedNode.item.unreadEmails?.value.value ?? 0;
       final updatedUnreadCount = currentUnreadCount + unreadCount;
-      if (updatedUnreadCount < 0) return;
+      if (updatedUnreadCount < 0) return true;
       matchedNode.item = matchedNode.item.copyWith(
         unreadEmails: UnreadEmails(UnsignedInt(updatedUnreadCount)),
       );
+      return true;
     }
+    return false;
   }
 
   String? getNodePath(MailboxId mailboxId) {

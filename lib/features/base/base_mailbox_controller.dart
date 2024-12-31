@@ -568,4 +568,41 @@ abstract class BaseMailboxController extends BaseController {
       }
     }
   }
+
+  void updateUnreadCountOfMailboxById(
+    MailboxId mailboxId, {
+    required int unreadChanges,
+  }) {
+    final mailboxTrees = [
+      defaultMailboxTree,
+      personalMailboxTree,
+      teamMailboxesTree,
+    ];
+
+    for (var mailboxTree in mailboxTrees) {
+      if (mailboxTree.value.updateMailboxUnreadCountById(mailboxId, unreadChanges)) {
+        mailboxTree.refresh();
+        break;
+      }
+    }
+  }
+
+  void clearUnreadCount(MailboxId mailboxId) {
+    final mailboxTrees = [
+      defaultMailboxTree,
+      personalMailboxTree,
+      teamMailboxesTree,
+    ];
+
+    for (var mailboxTree in mailboxTrees) {
+      final selectedNode = mailboxTree.value.findNode((node) => node.item.id == mailboxId);
+      if (selectedNode == null) continue;
+      final currentUnreadCount = selectedNode.item.unreadEmails?.value.value.toInt();
+      teamMailboxesTree.value.updateMailboxUnreadCountById(
+        mailboxId,
+        -(currentUnreadCount ?? 0));
+      teamMailboxesTree.refresh();
+      break;
+    }
+  }
 }
