@@ -2962,6 +2962,20 @@ class MailboxDashBoardController extends ReloadableController
     emailsInCurrentMailbox.refresh();
   }
 
+  void handleMarkEmailsAsStarById({
+    required List<EmailId> starredEmailIds,
+    required List<EmailId> unstarredEmailIds,
+  }) {
+    for (var presentationEmail in emailsInCurrentMailbox) {
+      if (starredEmailIds.contains(presentationEmail.id)) {
+        presentationEmail.keywords?[KeyWordIdentifier.emailFlagged] = true;
+      } else if (unstarredEmailIds.contains(presentationEmail.id)) {
+        presentationEmail.keywords?.remove(KeyWordIdentifier.emailFlagged);
+      }
+    }
+    emailsInCurrentMailbox.refresh();
+  }
+
   @override
   void onClose() {
     if (PlatformInfo.isWeb) {

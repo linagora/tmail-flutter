@@ -374,7 +374,7 @@ class ThreadController extends BaseController with EmailActionController {
           unreadEmailIds: [],
         );
       } else if (reactionState is MarkAsStarEmailSuccess) {
-        _handleMarkEmailsAsStarById(
+        mailboxDashBoardController.handleMarkEmailsAsStarById(
           starredEmailIds: reactionState.markStarAction == MarkStarAction.markStar
             ? [reactionState.emailId]
             : [],
@@ -383,7 +383,7 @@ class ThreadController extends BaseController with EmailActionController {
             : [],
         );
       } else if (reactionState is MarkAsStarMultipleEmailAllSuccess) {
-        _handleMarkEmailsAsStarById(
+        mailboxDashBoardController.handleMarkEmailsAsStarById(
           starredEmailIds: reactionState.markStarAction == MarkStarAction.markStar
             ? reactionState.emailIds
             : [],
@@ -392,7 +392,7 @@ class ThreadController extends BaseController with EmailActionController {
             : [],
         );
       } else if (reactionState is MarkAsStarMultipleEmailHasSomeEmailFailure) {
-        _handleMarkEmailsAsStarById(
+        mailboxDashBoardController.handleMarkEmailsAsStarById(
           starredEmailIds: reactionState.markStarAction == MarkStarAction.markStar
             ? reactionState.successEmailIds
             : [],
@@ -411,20 +411,6 @@ class ThreadController extends BaseController with EmailActionController {
       if (presentationEmail.mailboxContain?.id != mailboxId) continue;
 
       presentationEmail.keywords?[KeyWordIdentifier.emailSeen] = true;
-    }
-    mailboxDashBoardController.emailsInCurrentMailbox.refresh();
-  }
-
-  void _handleMarkEmailsAsStarById({
-    required List<EmailId> starredEmailIds,
-    required List<EmailId> unstarredEmailIds,
-  }) {
-    for (var presentationEmail in mailboxDashBoardController.emailsInCurrentMailbox) {
-      if (starredEmailIds.contains(presentationEmail.id)) {
-        presentationEmail.keywords?[KeyWordIdentifier.emailFlagged] = true;
-      } else if (unstarredEmailIds.contains(presentationEmail.id)) {
-        presentationEmail.keywords?.remove(KeyWordIdentifier.emailFlagged);
-      }
     }
     mailboxDashBoardController.emailsInCurrentMailbox.refresh();
   }
