@@ -21,6 +21,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
@@ -48,6 +49,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.d
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
@@ -371,6 +373,33 @@ class ThreadController extends BaseController with EmailActionController {
           readEmailIds: reactionState.successEmailIds,
           unreadEmailIds: [],
         );
+      } else if (reactionState is MarkAsStarEmailSuccess) {
+        _handleMarkEmailsAsStarById(
+          starredEmailIds: reactionState.markStarAction == MarkStarAction.markStar
+            ? [reactionState.emailId]
+            : [],
+          unstarredEmailIds: reactionState.markStarAction == MarkStarAction.unMarkStar
+            ? [reactionState.emailId]
+            : [],
+        );
+      } else if (reactionState is MarkAsStarMultipleEmailAllSuccess) {
+        _handleMarkEmailsAsStarById(
+          starredEmailIds: reactionState.markStarAction == MarkStarAction.markStar
+            ? reactionState.emailIds
+            : [],
+          unstarredEmailIds: reactionState.markStarAction == MarkStarAction.unMarkStar
+            ? reactionState.emailIds
+            : [],
+        );
+      } else if (reactionState is MarkAsStarMultipleEmailHasSomeEmailFailure) {
+        _handleMarkEmailsAsStarById(
+          starredEmailIds: reactionState.markStarAction == MarkStarAction.markStar
+            ? reactionState.successEmailIds
+            : [],
+          unstarredEmailIds: reactionState.markStarAction == MarkStarAction.unMarkStar
+            ? reactionState.successEmailIds
+            : [],
+        );
       }
     });
   }
@@ -382,6 +411,20 @@ class ThreadController extends BaseController with EmailActionController {
       if (presentationEmail.mailboxContain?.id != mailboxId) continue;
 
       presentationEmail.keywords?[KeyWordIdentifier.emailSeen] = true;
+    }
+    mailboxDashBoardController.emailsInCurrentMailbox.refresh();
+  }
+
+  void _handleMarkEmailsAsStarById({
+    required List<EmailId> starredEmailIds,
+    required List<EmailId> unstarredEmailIds,
+  }) {
+    for (var presentationEmail in mailboxDashBoardController.emailsInCurrentMailbox) {
+      if (starredEmailIds.contains(presentationEmail.id)) {
+        presentationEmail.keywords?[KeyWordIdentifier.emailFlagged] = true;
+      } else if (unstarredEmailIds.contains(presentationEmail.id)) {
+        presentationEmail.keywords?.remove(KeyWordIdentifier.emailFlagged);
+      }
     }
     mailboxDashBoardController.emailsInCurrentMailbox.refresh();
   }
