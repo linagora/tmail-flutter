@@ -34,6 +34,7 @@ import 'package:tmail_ui_user/features/contact/presentation/model/contact_argume
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
@@ -62,6 +63,7 @@ import 'package:tmail_ui_user/features/search/email/presentation/search_email_bi
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
@@ -289,6 +291,33 @@ class SearchEmailController extends BaseController
             ? reactionState.successEmailIds
             : [],
           unreadEmailIds: reactionState.readActions == ReadActions.markAsUnread
+            ? reactionState.successEmailIds
+            : [],
+        );
+      } else if (reactionState is MarkAsStarEmailSuccess) {
+        mailboxDashBoardController.handleMarkEmailsAsStarById(
+          starredEmailIds: reactionState.markStarAction == MarkStarAction.markStar
+            ? [reactionState.emailId]
+            : [],
+          unstarredEmailIds: reactionState.markStarAction == MarkStarAction.unMarkStar
+            ? [reactionState.emailId]
+            : [],
+        );
+      } else if (reactionState is MarkAsStarMultipleEmailAllSuccess) {
+        mailboxDashBoardController.handleMarkEmailsAsStarById(
+          starredEmailIds: reactionState.markStarAction == MarkStarAction.markStar
+            ? reactionState.emailIds
+            : [],
+          unstarredEmailIds: reactionState.markStarAction == MarkStarAction.unMarkStar
+            ? reactionState.emailIds
+            : [],
+        );
+      } else if (reactionState is MarkAsStarMultipleEmailHasSomeEmailFailure) {
+        mailboxDashBoardController.handleMarkEmailsAsStarById(
+          starredEmailIds: reactionState.markStarAction == MarkStarAction.markStar
+            ? reactionState.successEmailIds
+            : [],
+          unstarredEmailIds: reactionState.markStarAction == MarkStarAction.unMarkStar
             ? reactionState.successEmailIds
             : [],
         );
