@@ -95,6 +95,7 @@ import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.d
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
@@ -660,11 +661,18 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         presentationEmail.id!,
         readActions,
         markReadAction,
+        presentationEmail.mailboxContain?.mailboxId,
       ));
     }
   }
 
   void _handleMarkAsEmailReadCompleted(ReadActions readActions) {
+    if (_currentEmailId != null) {
+      mailboxDashBoardController.updateEmailFlagByEmailIds(
+        [_currentEmailId!],
+        readAction: ReadActions.markAsRead,
+      );
+    }
     if (readActions == ReadActions.markAsUnread) {
       closeEmailView(context: currentContext);
     }
@@ -1080,7 +1088,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _markAsEmailStarSuccess(MarkAsStarEmailSuccess success) {
     final newEmail = currentEmail?.updateKeywords({
-      KeyWordIdentifier.emailFlagged: true,
+      KeyWordIdentifier.emailFlagged: success.markStarAction == MarkStarAction.markStar,
     });
     mailboxDashBoardController.setSelectedEmail(newEmail);
   }

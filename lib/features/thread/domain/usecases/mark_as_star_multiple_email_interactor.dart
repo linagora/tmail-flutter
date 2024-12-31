@@ -26,15 +26,17 @@ class MarkAsStarMultipleEmailInteractor {
 
       if (emailIds.length == result.emailIdsSuccess.length) {
         yield Right(MarkAsStarMultipleEmailAllSuccess(
-            emailIds.length,
-            markStarAction,
+          emailIds.length,
+          markStarAction,
+          result.emailIdsSuccess,
         ));
       } else if (result.emailIdsSuccess.isEmpty) {
         yield Left(MarkAsStarMultipleEmailAllFailure(markStarAction));
       } else {
         yield Right(MarkAsStarMultipleEmailHasSomeEmailFailure(
-            result.emailIdsSuccess.length,
-            markStarAction,
+          result.emailIdsSuccess.length,
+          markStarAction,
+          result.emailIdsSuccess,
         ));
       }
     } catch (e) {
