@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 
@@ -12,12 +13,17 @@ class DeleteEmailPermanentlyInteractor {
 
   DeleteEmailPermanentlyInteractor(this._emailRepository);
 
-  Stream<Either<Failure, Success>> execute(Session session, AccountId accountId, EmailId emailId) async* {
+  Stream<Either<Failure, Success>> execute(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    MailboxId? mailboxId,
+  ) async* {
     try {
       yield Right<Failure, Success>(StartDeleteEmailPermanently());
       final result = await _emailRepository.deleteEmailPermanently(session, accountId, emailId);
       if (result) {
-        yield Right<Failure, Success>(DeleteEmailPermanentlySuccess());
+        yield Right<Failure, Success>(DeleteEmailPermanentlySuccess(emailId, mailboxId));
       } else {
         yield Left<Failure, Success>(DeleteEmailPermanentlyFailure(null));
       }

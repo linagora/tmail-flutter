@@ -1,27 +1,30 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 
 class LoadingDeleteMultipleEmailsPermanentlyAll extends UIState {}
 
 class DeleteMultipleEmailsPermanentlyAllSuccess extends UIState {
 
   List<EmailId> emailIds;
+  final MailboxId? mailboxId;
 
-  DeleteMultipleEmailsPermanentlyAllSuccess(this.emailIds);
+  DeleteMultipleEmailsPermanentlyAllSuccess(this.emailIds, this.mailboxId);
 
   @override
-  List<Object?> get props => [emailIds];
+  List<Object?> get props => [emailIds, mailboxId];
 }
 
 class DeleteMultipleEmailsPermanentlyHasSomeEmailFailure extends UIState {
 
   List<EmailId> emailIds;
+  final MailboxId? mailboxId;
 
-  DeleteMultipleEmailsPermanentlyHasSomeEmailFailure(this.emailIds);
+  DeleteMultipleEmailsPermanentlyHasSomeEmailFailure(this.emailIds, this.mailboxId);
 
   @override
-  List<Object?> get props => [emailIds];
+  List<Object?> get props => [emailIds, mailboxId];
 }
 
 class DeleteMultipleEmailsPermanentlyAllFailure extends FeatureFailure {}
