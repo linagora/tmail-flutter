@@ -32,7 +32,7 @@ class EmptyTrashFolderInteractor {
         totalEmails,
         onProgressController
       );
-      yield Right<Failure, Success>(EmptyTrashFolderSuccess(emailIdDeleted,));
+      yield Right<Failure, Success>(EmptyTrashFolderSuccess(emailIdDeleted, trashMailboxId));
     } catch (e) {
       yield Left<Failure, Success>(EmptyTrashFolderFailure(e));
     }

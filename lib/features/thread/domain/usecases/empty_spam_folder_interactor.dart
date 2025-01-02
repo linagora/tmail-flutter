@@ -32,7 +32,7 @@ class EmptySpamFolderInteractor {
         totalEmails, 
         onProgressController
       );
-      yield Right<Failure, Success>(EmptySpamFolderSuccess(emailIdDeleted));
+      yield Right<Failure, Success>(EmptySpamFolderSuccess(emailIdDeleted, spamMailboxId));
     } catch (e) {
       yield Left<Failure, Success>(EmptySpamFolderFailure(e));
     }
