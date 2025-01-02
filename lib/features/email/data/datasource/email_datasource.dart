@@ -9,6 +9,8 @@ import 'package:dio/dio.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
@@ -43,7 +45,10 @@ abstract class EmailDataSource {
     }
   );
 
-  Future<List<EmailId>> markAsRead(
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> markAsRead(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
@@ -75,9 +80,19 @@ abstract class EmailDataSource {
     {CancelToken? cancelToken}
   );
 
-  Future<List<EmailId>> moveToMailbox(Session session, AccountId accountId, MoveToMailboxRequest moveRequest);
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> moveToMailbox(
+    Session session,
+    AccountId accountId,
+    MoveToMailboxRequest moveRequest,
+  );
 
-  Future<List<EmailId>> markAsStar(
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> markAsStar(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
@@ -106,8 +121,14 @@ abstract class EmailDataSource {
     {CancelToken? cancelToken}
   );
 
-  Future<List<EmailId>> deleteMultipleEmailsPermanently(Session session, AccountId accountId, List<EmailId> emailIds);
-
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> deleteMultipleEmailsPermanently(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+  );
   Future<bool> deleteEmailPermanently(
     Session session,
     AccountId accountId,

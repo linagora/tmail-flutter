@@ -16,9 +16,9 @@ class MoveToMailboxInteractor {
     try {
       yield Right(LoadingMoveToMailbox());
       final result = await _emailRepository.moveToMailbox(session, accountId, moveRequest);
-      if (result.isNotEmpty) {
+      if (result.emailIdsSuccess.isNotEmpty) {
         yield Right(MoveToMailboxSuccess(
-          result.first,
+          result.emailIdsSuccess.first,
           moveRequest.currentMailboxes.keys.first,
           moveRequest.destinationMailboxId,
           moveRequest.moveAction,

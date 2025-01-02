@@ -29,11 +29,15 @@ class MarkAsEmailReadInteractor {
         readAction,
       );
 
-      yield Right(MarkAsEmailReadSuccess(
-        result.first,
-        readAction,
-        markReadAction,
-      ));
+      if (result.emailIdsSuccess.isEmpty) {
+        yield Left(MarkAsEmailReadFailure(readAction));
+      } else {
+        yield Right(MarkAsEmailReadSuccess(
+          result.emailIdsSuccess.first,
+          readAction,
+          markReadAction,
+        ));
+      }
     } catch (e) {
       yield Left(MarkAsEmailReadFailure(readAction, exception: e));
     }

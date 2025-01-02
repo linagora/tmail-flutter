@@ -18,6 +18,7 @@ import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
+import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -44,13 +45,13 @@ import 'package:model/account/account_request.dart';
 import 'package:model/account/authentication_type.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
-import 'package:model/email/email_property.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/list_email_id_extension.dart';
+import 'package:model/extensions/list_id_extension.dart';
 import 'package:model/extensions/mailbox_id_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/oidc/token_oidc.dart';
@@ -237,16 +238,21 @@ class EmailAPI with HandleSetErrorMixin {
     }
   }
 
-  Future<List<EmailId>> markAsRead(
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> markAsRead(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
     ReadActions readActions,
   ) async {
-    final maxBatches = _getMaxObjectsInSetMethod(session, accountId);
-    final totalEmails = emails.length;
+    final maxObjects = _getMaxObjectsInSetMethod(session, accountId);
+    final totalEmails = emailIds.length;
+    final maxBatches = min(totalEmails, maxObjects);
 
-    final List<Email> updatedEmails = List.empty(growable: true);
+    final List<EmailId> updatedEmailIds = List.empty(growable: true);
+    final Map<Id, SetError> mapErrors = <Id, SetError>{};
 
     for (int start = 0; start < totalEmails; start += maxBatches) {
       int end = (start + maxBatches < totalEmails)
@@ -254,20 +260,16 @@ class EmailAPI with HandleSetErrorMixin {
         : totalEmails;
       log('EmailAPI::markAsRead:emails from ${start + 1} to $end');
 
-      final currentListEmails = emails.sublist(start, end);
+      final currentListEmailIds = emailIds.sublist(start, end);
 
       final setEmailMethod = SetEmailMethod(accountId)
-        ..addUpdates(currentListEmails.listEmailIds.generateMapUpdateObjectMarkAsRead(readActions));
-
-      final getEmailMethod = GetEmailMethod(accountId)
-        ..addIds(emails.listEmailIds.toIds().toSet())
-        ..addProperties(Properties({EmailProperty.keywords}));
+        ..addUpdates(
+            currentListEmailIds.generateMapUpdateObjectMarkAsRead(readActions)
+          );
 
       final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
-      requestBuilder.invocation(setEmailMethod);
-
-      final getEmailInvocation = requestBuilder.invocation(getEmailMethod);
+      final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
       final capabilities = setEmailMethod.requiredCapabilities
           .toCapabilitiesSupportTeamMailboxes(session, accountId);
@@ -277,18 +279,19 @@ class EmailAPI with HandleSetErrorMixin {
         .build()
         .execute();
 
-      final getEmailResponse = response.parse<GetEmailResponse>(
-        getEmailInvocation.methodCallId,
-        GetEmailResponse.deserialize,
+      final setEmailResponse = response.parse<SetEmailResponse>(
+        setEmailInvocation.methodCallId,
+        SetEmailResponse.deserialize,
       );
 
-      final listEmails = getEmailResponse?.list ?? [];
-      if (listEmails.isNotEmpty) {
-        updatedEmails.addAll(listEmails);
-      }
+      final listEmailIds = setEmailResponse?.updated?.keys.toEmailIds() ?? [];
+      final mapErrors = handleSetResponse([setEmailResponse]);
+
+      updatedEmailIds.addAll(listEmailIds);
+      mapErrors.addAll(mapErrors);
     }
 
-    return updatedEmails;
+    return (emailIdsSuccess: updatedEmailIds, mapErrors: mapErrors);
   }
 
   Future<List<DownloadTaskId>> downloadAttachments(
@@ -397,47 +400,55 @@ class EmailAPI with HandleSetErrorMixin {
     return bytesDownloaded;
   }
 
-  Future<List<EmailId>> moveToMailbox(
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> moveToMailbox(
     Session session,
     AccountId accountId,
     MoveToMailboxRequest moveRequest
   ) async {
-    final maxBatches = _getMaxObjectsInSetMethod(session, accountId);
-
     final List<EmailId> listEmailIdResult = List.empty(growable: true);
+    final Map<Id, SetError> mapErrors = <Id, SetError>{};
 
     final listMailboxIds = moveRequest.currentMailboxes.keys.toList();
     for (int i = 0; i < listMailboxIds.length; i++) {
       final currentMailboxId = listMailboxIds[i];
       final listEmailIds = moveRequest.currentMailboxes[currentMailboxId]!;
       log('EmailAPI::moveToMailbox:from mailbox ${currentMailboxId.asString} with ${listEmailIds.length} emails to mailbox ${moveRequest.destinationMailboxId.asString}');
-      final movedEmailIds = await _moveEmailsBetweenMailboxes(
+      final resultRecords = await _moveEmailsBetweenMailboxes(
         session: session,
         accountId: accountId,
-        listEmailIds: listEmailIds,
+        emailIds: listEmailIds,
         currentMailboxId: currentMailboxId,
-        maxBatches: maxBatches,
         destinationMailboxId: moveRequest.destinationMailboxId,
         isMovingToSpam: moveRequest.isMovingToSpam,
       );
-      listEmailIdResult.addAll(movedEmailIds);
+
+      listEmailIdResult.addAll(resultRecords.emailIdsSuccess);
+      mapErrors.addAll(resultRecords.mapErrors);
     }
-    return listEmailIdResult;
+
+    return (emailIdsSuccess: listEmailIdResult, mapErrors: mapErrors);
   }
 
-  Future<List<EmailId>> _moveEmailsBetweenMailboxes({
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> _moveEmailsBetweenMailboxes({
     required Session session,
     required AccountId accountId,
-    required List<EmailId> listEmailIds,
+    required List<EmailId> emailIds,
     required MailboxId currentMailboxId,
     required MailboxId destinationMailboxId,
-    required int maxBatches,
     bool isMovingToSpam = false,
   }) async {
-    final maxBatches = _getMaxObjectsInSetMethod(session, accountId);
-    final totalEmails = listEmailIds.length;
+    final maxObjects = _getMaxObjectsInSetMethod(session, accountId);
+    final totalEmails = emailIds.length;
+    final maxBatches = min(totalEmails, maxObjects);
 
     final List<EmailId> updatedEmailIds = List.empty(growable: true);
+    final Map<Id, SetError> mapErrors = <Id, SetError>{};
 
     for (int start = 0; start < totalEmails; start += maxBatches) {
       int end = (start + maxBatches < totalEmails)
@@ -445,7 +456,7 @@ class EmailAPI with HandleSetErrorMixin {
           : totalEmails;
       log('EmailAPI::_moveEmailsBetweenMailboxes:emails from ${start + 1} to $end');
 
-      final currentEmailIds = listEmailIds.sublist(start, end);
+      final currentEmailIds = emailIds.sublist(start, end);
 
       final moveProperties = isMovingToSpam
           ? currentEmailIds.generateMapUpdateObjectMoveToSpam(
@@ -477,13 +488,14 @@ class EmailAPI with HandleSetErrorMixin {
         SetEmailResponse.deserialize,
       );
 
-      final listIdsUpdated = setEmailResponse?.updated?.keys ?? [];
-      if (listIdsUpdated.isNotEmpty == true) {
-        final listEmailIdsUpdated = listIdsUpdated.map((e) => EmailId(e)).toList();
-        updatedEmailIds.addAll(listEmailIdsUpdated);
-      }
+      final listEmailIds = setEmailResponse?.updated?.keys.toEmailIds() ?? [];
+      final mapErrors = handleSetResponse([setEmailResponse]);
+
+      updatedEmailIds.addAll(listEmailIds);
+      mapErrors.addAll(mapErrors);
     }
-    return updatedEmailIds;
+
+    return (emailIdsSuccess: updatedEmailIds, mapErrors: mapErrors);
   }
 
   int _getMaxObjectsInSetMethod(Session session, AccountId accountId) {
@@ -502,16 +514,21 @@ class EmailAPI with HandleSetErrorMixin {
     return minOfMaxObjectsInSetMethod;
   }
 
-  Future<List<EmailId>> markAsStar(
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> markAsStar(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
     MarkStarAction markStarAction
   ) async {
-    final maxBatches = _getMaxObjectsInSetMethod(session, accountId);
-    final totalEmails = emails.length;
+    final maxObjects = _getMaxObjectsInSetMethod(session, accountId);
+    final totalEmails = emailIds.length;
+    final maxBatches = min(totalEmails, maxObjects);
 
-    final List<Email> updatedEmails = List.empty(growable: true);
+    final List<EmailId> updatedEmailIds = List.empty(growable: true);
+    final Map<Id, SetError> mapErrors = <Id, SetError>{};
 
     for (int start = 0; start < totalEmails; start += maxBatches) {
       int end = (start + maxBatches < totalEmails)
@@ -519,20 +536,16 @@ class EmailAPI with HandleSetErrorMixin {
         : totalEmails;
       log('EmailAPI::markAsStar:emails from ${start + 1} to $end');
 
-      final currentListEmails = emails.sublist(start, end);
+      final currentListEmailIds = emailIds.sublist(start, end);
 
       final setEmailMethod = SetEmailMethod(accountId)
-        ..addUpdates(currentListEmails.listEmailIds.generateMapUpdateObjectMarkAsStar(markStarAction));
-
-      final getEmailMethod = GetEmailMethod(accountId)
-        ..addIds(emails.listEmailIds.toIds().toSet())
-        ..addProperties(Properties({EmailProperty.keywords}));
+        ..addUpdates(
+            currentListEmailIds.generateMapUpdateObjectMarkAsStar(markStarAction),
+          );
 
       final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
-      requestBuilder.invocation(setEmailMethod);
-
-      final getEmailInvocation = requestBuilder.invocation(getEmailMethod);
+      final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
       final capabilities = setEmailMethod.requiredCapabilities
           .toCapabilitiesSupportTeamMailboxes(session, accountId);
@@ -542,18 +555,19 @@ class EmailAPI with HandleSetErrorMixin {
         .build()
         .execute();
 
-      final getEmailResponse = response.parse<GetEmailResponse>(
-        getEmailInvocation.methodCallId,
-        GetEmailResponse.deserialize,
+      final setEmailResponse = response.parse<SetEmailResponse>(
+        setEmailInvocation.methodCallId,
+        SetEmailResponse.deserialize,
       );
 
-      final listEmails = getEmailResponse?.list ?? [];
-      if (listEmails.isNotEmpty) {
-        updatedEmails.addAll(listEmails);
-      }
+      final listEmailIds = setEmailResponse?.updated?.keys.toEmailIds() ?? [];
+      final mapErrors = handleSetResponse([setEmailResponse]);
+
+      updatedEmailIds.addAll(listEmailIds);
+      mapErrors.addAll(mapErrors);
     }
 
-    return updatedEmails;
+    return (emailIdsSuccess: updatedEmailIds, mapErrors: mapErrors);
   }
 
   Future<Email> saveEmailAsDrafts(
@@ -656,36 +670,56 @@ class EmailAPI with HandleSetErrorMixin {
     return emailCreated;
   }
 
-  Future<List<EmailId>> deleteMultipleEmailsPermanently(
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> deleteMultipleEmailsPermanently(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds
   ) async {
-    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
-    final setEmailMethod = SetEmailMethod(accountId)
-      ..addDestroy(emailIds.map((emailId) => emailId.id).toSet());
+    final maxObjects = _getMaxObjectsInSetMethod(session, accountId);
+    final totalEmails = emailIds.length;
+    final maxBatches = min(totalEmails, maxObjects);
 
-    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+    final List<EmailId> destroyedEmailIds = List.empty(growable: true);
+    final Map<Id, SetError> mapErrors = <Id, SetError>{};
 
-    final capabilities = setEmailMethod.requiredCapabilities
-      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+    for (int start = 0; start < totalEmails; start += maxBatches) {
+      int end = (start + maxBatches < totalEmails)
+          ? start + maxBatches
+          : totalEmails;
+      log('EmailAPI::deleteMultipleEmailsPermanently:emails from ${start + 1} to $end');
 
-    final response = await (requestBuilder
-        ..usings(capabilities))
-      .build()
-      .execute();
+      final currentListEmailIds = emailIds.sublist(start, end);
 
-    final setEmailResponse = response.parse<SetEmailResponse>(
+      final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+      final setEmailMethod = SetEmailMethod(accountId)
+        ..addDestroy(currentListEmailIds.toIds().toSet());
+
+      final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+
+      final capabilities = setEmailMethod.requiredCapabilities
+        .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+      final response = await (requestBuilder
+          ..usings(capabilities))
+        .build()
+        .execute();
+
+      final setEmailResponse = response.parse<SetEmailResponse>(
         setEmailInvocation.methodCallId,
-        SetEmailResponse.deserialize);
+        SetEmailResponse.deserialize,
+      );
 
-    final listIdResult = setEmailResponse?.destroyed;
+      final listEmailIds = setEmailResponse?.destroyed?.toEmailIds() ?? [];
+      final mapErrors = handleSetResponse([setEmailResponse]);
 
-    if (listIdResult != null) {
-      return listIdResult.map((id) => EmailId(id)).toList();
+      destroyedEmailIds.addAll(listEmailIds);
+      mapErrors.addAll(mapErrors);
     }
 
-    return List.empty();
+    return (emailIdsSuccess: destroyedEmailIds, mapErrors: mapErrors);
   }
 
   Future<bool> deleteEmailPermanently(
@@ -698,19 +732,20 @@ class EmailAPI with HandleSetErrorMixin {
     final setEmailMethod = SetEmailMethod(accountId)
       ..addDestroy({emailId.id});
 
-    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+      final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
-    final capabilities = setEmailMethod.requiredCapabilities
-      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+      final capabilities = setEmailMethod.requiredCapabilities
+          .toCapabilitiesSupportTeamMailboxes(session, accountId);
 
     final response = await (requestBuilder
         ..usings(capabilities))
       .build()
       .execute(cancelToken: cancelToken);
 
-    final setEmailResponse = response.parse<SetEmailResponse>(
+      final setEmailResponse = response.parse<SetEmailResponse>(
         setEmailInvocation.methodCallId,
-        SetEmailResponse.deserialize);
+        SetEmailResponse.deserialize,
+      );
 
     return setEmailResponse?.destroyed?.contains(emailId.id) == true;
   }
@@ -757,10 +792,10 @@ class EmailAPI with HandleSetErrorMixin {
 
     final capabilities = setEmailMethod.requiredCapabilities.toCapabilitiesSupportTeamMailboxes(session, accountId);
 
-    final response = await (requestBuilder
-        ..usings(capabilities))
-      .build()
-      .execute();
+      final response = await (requestBuilder
+          ..usings(capabilities))
+        .build()
+        .execute();
 
     final setEmailResponse = response.parse<SetEmailResponse>(
       setEmailInvocation.methodCallId,
