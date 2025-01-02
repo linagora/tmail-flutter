@@ -44,7 +44,10 @@ class CreateNewAndSaveEmailToDraftsInteractor {
           );
 
           yield dartz.Right<Failure, Success>(
-            SaveEmailAsDraftsSuccess(emailDraftSaved.id!)
+            SaveEmailAsDraftsSuccess(
+              emailDraftSaved.id!,
+              createEmailRequest.draftsMailboxId,
+            )
           );
         } else {
           yield dartz.Right<Failure, Success>(UpdatingEmailDrafts());
