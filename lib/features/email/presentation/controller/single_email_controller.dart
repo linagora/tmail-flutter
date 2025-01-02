@@ -17,6 +17,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
@@ -173,6 +174,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
 
   Session? get session => mailboxDashBoardController.sessionCurrent;
+
+  UserName? get userName => session?.username;
 
   SingleEmailController(
     this._getEmailContentInteractor,
