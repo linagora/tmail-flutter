@@ -24,16 +24,16 @@ class MarkAsStarMultipleEmailInteractor {
 
       final result = await _emailRepository.markAsStar(session, accountId, emailIds, markStarAction);
 
-      if (emailIds.length == result.length) {
+      if (emailIds.length == result.emailIdsSuccess.length) {
         yield Right(MarkAsStarMultipleEmailAllSuccess(
             emailIds.length,
             markStarAction,
         ));
-      } else if (result.isEmpty) {
+      } else if (result.emailIdsSuccess.isEmpty) {
         yield Left(MarkAsStarMultipleEmailAllFailure(markStarAction));
       } else {
         yield Right(MarkAsStarMultipleEmailHasSomeEmailFailure(
-            result.length,
+            result.emailIdsSuccess.length,
             markStarAction,
         ));
       }

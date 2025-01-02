@@ -29,16 +29,16 @@ class MarkAsMultipleEmailReadInteractor {
         readAction,
       );
 
-      if (emailIds.length == result.length) {
+      if (emailIds.length == result.emailIdsSuccess.length) {
         yield Right(MarkAsMultipleEmailReadAllSuccess(
-            result.length,
+            result.emailIdsSuccess.length,
             readAction,
         ));
-      } else if (result.isEmpty) {
+      } else if (result.emailIdsSuccess.isEmpty) {
         yield Left(MarkAsMultipleEmailReadAllFailure(readAction));
       } else {
         yield Right(MarkAsMultipleEmailReadHasSomeEmailFailure(
-            result.length,
+            result.emailIdsSuccess.length,
             readAction,
         ));
       }

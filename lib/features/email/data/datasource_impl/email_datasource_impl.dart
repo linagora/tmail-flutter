@@ -10,6 +10,8 @@ import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
@@ -75,7 +77,10 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<List<EmailId>> markAsRead(
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> markAsRead(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
@@ -112,14 +117,24 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<List<EmailId>> moveToMailbox(Session session, AccountId accountId, MoveToMailboxRequest moveRequest) {
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> moveToMailbox(
+    Session session,
+    AccountId accountId,
+    MoveToMailboxRequest moveRequest,
+  ) {
     return Future.sync(() async {
       return await emailAPI.moveToMailbox(session, accountId, moveRequest);
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<List<EmailId>> markAsStar(
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> markAsStar(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
@@ -211,9 +226,20 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<List<EmailId>> deleteMultipleEmailsPermanently(Session session, AccountId accountId, List<EmailId> emailIds) {
+  Future<({
+    List<EmailId> emailIdsSuccess,
+    Map<Id, SetError> mapErrors,
+  })> deleteMultipleEmailsPermanently(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds,
+  ) {
     return Future.sync(() async {
-      return await emailAPI.deleteMultipleEmailsPermanently(session, accountId, emailIds);
+      return await emailAPI.deleteMultipleEmailsPermanently(
+        session,
+        accountId,
+        emailIds,
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 

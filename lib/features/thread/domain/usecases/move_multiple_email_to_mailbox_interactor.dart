@@ -22,20 +22,20 @@ class MoveMultipleEmailToMailboxInteractor {
     try {
       yield Right(LoadingMoveMultipleEmailToMailboxAll());
       final result = await _emailRepository.moveToMailbox(session, accountId, moveRequest);
-      if (moveRequest.totalEmails == result.length) {
+      if (moveRequest.totalEmails == result.emailIdsSuccess.length) {
         yield Right(MoveMultipleEmailToMailboxAllSuccess(
-          result,
+          result.emailIdsSuccess,
           moveRequest.currentMailboxes.keys.first,
           moveRequest.destinationMailboxId,
           moveRequest.moveAction,
           moveRequest.emailActionType,
           destinationPath: moveRequest.destinationPath,
         ));
-      } else if (result.isEmpty) {
+      } else if (result.emailIdsSuccess.isEmpty) {
         yield Left(MoveMultipleEmailToMailboxAllFailure(moveRequest.moveAction, moveRequest.emailActionType));
       } else {
         yield Right(MoveMultipleEmailToMailboxHasSomeEmailFailure(
-          result,
+          result.emailIdsSuccess,
           moveRequest.currentMailboxes.keys.first,
           moveRequest.destinationMailboxId,
           moveRequest.moveAction,

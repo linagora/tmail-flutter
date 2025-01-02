@@ -100,7 +100,7 @@ class ThreadIsolateWorker {
               ..setIsAscending(false)),
           filter: EmailFilterCondition(inMailbox: args.mailboxId, before: lastEmail?.receivedAt),
           properties: Properties({
-            EmailProperty.id, 
+            EmailProperty.id,
             EmailProperty.receivedAt
           }),
         );
@@ -119,7 +119,7 @@ class ThreadIsolateWorker {
             args.session,
             args.accountId,
             newEmailList.listEmailIds);
-          emailListCompleted.addAll(listEmailIdDeleted);
+          emailListCompleted.addAll(listEmailIdDeleted.emailIdsSuccess);
           sendPort.send(emailListCompleted);
         } else {
           hasEmails = false;
@@ -154,7 +154,7 @@ class ThreadIsolateWorker {
               ..setIsAscending(false)),
           filter: EmailFilterCondition(inMailbox: mailboxId, before: lastEmail?.receivedAt),
           properties: Properties({
-            EmailProperty.id, 
+            EmailProperty.id,
             EmailProperty.receivedAt
           }),
         );
@@ -173,7 +173,7 @@ class ThreadIsolateWorker {
             session,
             accountId,
             newEmailList.listEmailIds);
-          emailListCompleted.addAll(listEmailIdDeleted);
+          emailListCompleted.addAll(listEmailIdDeleted.emailIdsSuccess);
 
           onProgressController.add(Right<Failure, Success>(EmptyingFolderState(
             mailboxId, emailListCompleted.length, totalEmails

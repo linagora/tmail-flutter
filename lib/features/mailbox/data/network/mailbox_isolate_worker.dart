@@ -138,8 +138,8 @@ class MailboxIsolateWorker {
             listEmailUnread.listEmailIds,
             ReadActions.markAsRead);
 
-          log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): MARK_READ: ${result.length}');
-          emailIdsCompleted.addAll(result);
+          log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): MARK_READ: ${result.emailIdsSuccess.length}');
+          emailIdsCompleted.addAll(result.emailIdsSuccess);
           sendPort.send(emailIdsCompleted);
         }
       }
@@ -206,8 +206,8 @@ class MailboxIsolateWorker {
             listEmailUnread.listEmailIds,
             ReadActions.markAsRead,
           );
-          log('MailboxIsolateWorker::_handleMarkAsMailboxReadActionOnWeb(): MARK_READ: ${result.length}');
-          emailIdsCompleted.addAll(result);
+          log('MailboxIsolateWorker::_handleMarkAsMailboxReadActionOnWeb(): MARK_READ: ${result.emailIdsSuccess.length}');
+          emailIdsCompleted.addAll(result.emailIdsSuccess);
 
           onProgressController.add(Right(UpdatingMarkAsMailboxReadState(
               mailboxId: mailboxId,
