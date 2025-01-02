@@ -20,10 +20,6 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
-import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
@@ -31,7 +27,6 @@ import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.d
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/move_emails_to_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -51,13 +46,9 @@ import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
@@ -348,67 +339,12 @@ class ThreadController extends BaseController with EmailActionController {
 
     ever(mailboxDashBoardController.viewState, (viewState) {
       final reactionState = viewState.getOrElse(() => UIState.idle);
-      if (reactionState is MarkAsEmailReadSuccess) {
-        mailboxDashBoardController.updateEmailFlagByEmailIds(
-          [reactionState.emailId],
-          readAction: reactionState.readActions,
-        );
-      } else if (reactionState is MarkAsMultipleEmailReadAllSuccess) {
-        mailboxDashBoardController.updateEmailFlagByEmailIds(
-          reactionState.emailIds,
-          readAction: reactionState.readActions,
-        );
-      } else if (reactionState is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-        mailboxDashBoardController.updateEmailFlagByEmailIds(
-          reactionState.successEmailIds,
-          readAction: reactionState.readActions,
-        );
-      } else if (reactionState is MarkAsMailboxReadAllSuccess) {
+      if (reactionState is MarkAsMailboxReadAllSuccess) {
         _handleMarkEmailsAsReadByMailboxId(reactionState.mailboxId);
       } else if (reactionState is MarkAsMailboxReadHasSomeEmailFailure) {
         mailboxDashBoardController.updateEmailFlagByEmailIds(
           reactionState.successEmailIds,
           readAction: ReadActions.markAsRead,
-        );
-      } else if (reactionState is MarkAsStarEmailSuccess) {
-        mailboxDashBoardController.updateEmailFlagByEmailIds(
-          [reactionState.emailId],
-          markStarAction: reactionState.markStarAction,
-        );
-      } else if (reactionState is MarkAsStarMultipleEmailAllSuccess) {
-        mailboxDashBoardController.updateEmailFlagByEmailIds(
-          reactionState.emailIds,
-          markStarAction: reactionState.markStarAction,
-        );
-      } else if (reactionState is MarkAsStarMultipleEmailHasSomeEmailFailure) {
-        mailboxDashBoardController.updateEmailFlagByEmailIds(
-          reactionState.successEmailIds,
-          markStarAction: reactionState.markStarAction,
-        );
-      } else if (reactionState is DeleteEmailPermanentlySuccess) {
-        mailboxDashBoardController.handleDeleteEmailsInMailbox(
-          emailIds: [reactionState.emailId],
-          affectedMailboxId: reactionState.mailboxId,
-        );
-      } else if (reactionState is DeleteMultipleEmailsPermanentlyAllSuccess) {
-        mailboxDashBoardController.handleDeleteEmailsInMailbox(
-          emailIds: reactionState.emailIds,
-          affectedMailboxId: reactionState.mailboxId,
-        );
-      } else if (reactionState is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
-        mailboxDashBoardController.handleDeleteEmailsInMailbox(
-          emailIds: reactionState.emailIds,
-          affectedMailboxId: reactionState.mailboxId,
-        );
-      } else if (reactionState is EmptyTrashFolderSuccess) {
-        mailboxDashBoardController.handleDeleteEmailsInMailbox(
-          emailIds: reactionState.emailIds,
-          affectedMailboxId: reactionState.mailboxId,
-        );
-      } else if (reactionState is EmptySpamFolderSuccess) {
-        mailboxDashBoardController.handleDeleteEmailsInMailbox(
-          emailIds: reactionState.emailIds,
-          affectedMailboxId: reactionState.mailboxId,
         );
       } else if (reactionState is MoveToMailboxSuccess) {
         mailboxDashBoardController.handleMoveEmailsToMailbox(
