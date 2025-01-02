@@ -15296,7 +15296,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return B.WebEditorWidget$(t2, t3, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onInitialContentLoadComplete, t1.onMouseDown, t1.onPasteImageFailureAction, t1.onPasteImageSuccessAction, null, t1.width);
       }
     },
-    $signature: 51
+    $signature: 52
   };
   B.WebEditorView_build_closure1.prototype = {
     call$1(failure) {
@@ -15347,7 +15347,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return B.WebEditorWidget$(t3, t2, t1.editorController, t1.height, t1.onChangeContent, t1.onDragEnter, t1.onEditorSettings, t1.onEditorTextSizeChanged, t1.onFocus, t1.onInitial, t1.onInitialContentLoadComplete, t1.onMouseDown, t1.onPasteImageFailureAction, t1.onPasteImageSuccessAction, null, t1.width);
       }
     },
-    $signature: 51
+    $signature: 52
   };
   B.AttachmentHeaderComposerWidget_build_closure0.prototype = {
     call$0() {
@@ -15386,7 +15386,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return t1._viewStateToUI$1(t1.viewState);
     },
-    $signature: 51
+    $signature: 52
   };
   B.InsertImageLoadingBarWidget__viewStateToUI_closure.prototype = {
     call$1(failure) {
@@ -15401,7 +15401,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 51
+    $signature: 52
   };
   B._RecipientComposerWidgetState_build_closure0.prototype = {
     call$1($focus) {
@@ -16434,13 +16434,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(link) {
       return link.length !== 0;
     },
-    $signature: 18
+    $signature: 17
   };
   B.CalendarEventExtension_get_videoConferences_closure0.prototype = {
     call$1(link) {
       return link.length !== 0;
     },
-    $signature: 18
+    $signature: 17
   };
   B.ListAttendeeExtension_withoutOrganizer_closure.prototype = {
     call$1(attendee) {
@@ -16940,7 +16940,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 51
+    $signature: 52
   };
   B.InformationSenderAndReceiverBuilder_build_closure.prototype = {
     call$2(context, constraints) {
@@ -17210,7 +17210,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._openMailboxEventController.add$1(0, new A.OpenMailboxViewEvent(this.context, t2));
       return null;
     },
-    $signature: 46
+    $signature: 48
   };
   B.MailboxView__buildListChildTileWidget___closure3.prototype = {
     call$1(mailboxNode) {
@@ -17224,7 +17224,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return t4.toggleMailboxFolder$2(mailboxNode, t3._as(t2.get(t1)).mailboxListScrollController);
     },
-    $signature: 46
+    $signature: 48
   };
   B.MailboxView__buildListChildTileWidget___closure4.prototype = {
     call$2(position, mailboxNode) {
@@ -17250,7 +17250,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).emptyMailboxAction$2(this.context, mailboxNode.item);
     },
-    $signature: 46
+    $signature: 48
   };
   B.MailboxView__buildListChildTileWidget__closure0.prototype = {
     call$0() {
@@ -17277,7 +17277,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._openMailboxEventController.add$1(0, new A.OpenMailboxViewEvent(this.context, t2));
       return null;
     },
-    $signature: 46
+    $signature: 48
   };
   B.MailboxView__buildListChildTileWidget___closure0.prototype = {
     call$2(position, mailboxNode) {
@@ -17303,7 +17303,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).emptyMailboxAction$2(this.context, mailboxNode.item);
     },
-    $signature: 46
+    $signature: 48
   };
   B.MailboxLoadingBarWidget_build_closure.prototype = {
     call$1(failure) {
@@ -19879,7 +19879,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return t1._suggestionViewStateToUI$1(t1.suggestionViewState);
       }
     },
-    $signature: 51
+    $signature: 52
   };
   B.EmptySearchEmailWidget__suggestionViewStateToUI_closure.prototype = {
     call$1(failure) {
@@ -19894,7 +19894,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return B.EmptyEmailsWidget$(false, this.$this.isNetworkConnectionAvailable, true, D.ValueKey_empty_search_email_view, null);
     },
-    $signature: 51
+    $signature: 52
   };
   B.SearchEmailLoadingBarWidget_build_closure.prototype = {
     call$1(failure) {
@@ -19913,7 +19913,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return t1._search_email_loading_bar_widget$_suggestionViewStateToUI$1(t1.suggestionViewState);
       }
     },
-    $signature: 51
+    $signature: 52
   };
   B.SearchEmailLoadingBarWidget__suggestionViewStateToUI_closure.prototype = {
     call$1(failure) {
@@ -20721,7 +20721,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return B.EmptyEmailsWidget$(t6 !== C.FilterMessageOption_0, !t4, t5, D.ValueKey_empty_thread_view, t3._as(t2.get(t1)).get$goToCreateEmailRuleView());
       }
     },
-    $signature: 51
+    $signature: 52
   };
   B.ThreadView__markAsEmailSpamOrUnSpamContextMenuItemAction_closure.prototype = {
     call$1(email) {
@@ -21970,5 +21970,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "Xj2UnW/ZhI0IIPoT5hY8mwZh9+Q=");
+})($__dart_deferred_initializers__, "U4nXHTGjyaNSIulI9ap7YF5M25c=");
 ;

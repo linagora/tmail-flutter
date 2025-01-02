@@ -4245,7 +4245,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t4.toggleMailboxFolder$2(mailboxNode, t3._as(t2.get(t1)).mailboxListScrollController);
     },
-    $signature: 46
+    $signature: 48
   };
   C.MailboxVisibilityView__buildListChildTileWidget__closure0.prototype = {
     call$1(mailboxNode) {
@@ -4259,7 +4259,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t4.toggleMailboxFolder$2(mailboxNode, t3._as(t2.get(t1)).mailboxListScrollController);
     },
-    $signature: 46
+    $signature: 48
   };
   C.MailBoxVisibilityFolderTileBuilder_build_closure.prototype = {
     call$0() {
@@ -5126,13 +5126,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 51
+    $signature: 52
   };
   C.IdentityLoadingWidget_build_closure0.prototype = {
     call$1(success) {
       return this.$this.identityViewState.fold$2(0, new C.IdentityLoadingWidget_build__closure(), new C.IdentityLoadingWidget_build__closure0());
     },
-    $signature: 51
+    $signature: 52
   };
   C.IdentityLoadingWidget_build__closure.prototype = {
     call$1(failure) {
@@ -5147,7 +5147,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 51
+    $signature: 52
   };
   C.SignatureBuilder_build_closure.prototype = {
     call$2(context, constraints) {
@@ -5860,5 +5860,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_7", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "0mMAb1BSuemb+ZMpuzQzbwVhBms=");
+})($__dart_deferred_initializers__, "1Cb6WtQdocFUBA69mLz9kpCrTgQ=");
 ;
