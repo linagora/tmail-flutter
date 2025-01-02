@@ -132,7 +132,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
                 ]
               ),
             ),
-            if (widget.emailSelected.numberOfAllEmailAddress() > 1)
+            if (widget.emailSelected.countRecipients > 1)
               TMailButtonWidget.fromIcon(
                 icon: _imagePaths.icChevronDown,
                 backgroundColor: Colors.transparent,
@@ -217,7 +217,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
                 ]
               ),
             ),
-            if (widget.emailSelected.numberOfAllEmailAddress() > 1)
+            if (widget.emailSelected.countRecipients > 1)
               TMailButtonWidget.fromIcon(
                 icon: _imagePaths.icChevronDown,
                 backgroundColor: Colors.transparent,

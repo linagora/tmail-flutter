@@ -48,8 +48,11 @@ class EmailViewBottomBarWidget extends StatelessWidget {
         child: Row(
           children: [
             Obx(() {
-              if (_singleEmailController.currentEmailLoaded.value != null
-                  && presentationEmail.numberOfAllEmailAddress() > 1) {
+              final emailLoader = _singleEmailController.currentEmailLoaded.value;
+              final countMailAddress = presentationEmail.getCountMailAddressWithoutMe(
+                _singleEmailController.userName?.value ?? '',
+              );
+              if (emailLoader != null && countMailAddress > 1) {
                 return Expanded(
                   child: TMailButtonWidget(
                     key: const Key('reply_all_emails_button'),

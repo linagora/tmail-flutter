@@ -44,7 +44,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
     return Padding(
       padding: const EdgeInsetsDirectional.only(start: 16, end: 16, top: 16),
       child: Row(
-        crossAxisAlignment: emailSelected.numberOfAllEmailAddress() > 0
+        crossAxisAlignment: emailSelected.countRecipients > 0
           ? CrossAxisAlignment.start
           : CrossAxisAlignment.center,
         children: [
@@ -96,7 +96,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                       )),
                       ReceivedTimeBuilder(emailSelected: emailSelected),
                     ]),
-                  if (emailSelected.numberOfAllEmailAddress() > 0)
+                  if (emailSelected.countRecipients > 0)
                     EmailReceiverWidget(
                       emailSelected: emailSelected,
                       maxWidth: constraints.maxWidth,
