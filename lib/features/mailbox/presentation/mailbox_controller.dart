@@ -19,6 +19,7 @@ import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_restored_deleted_message_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
@@ -66,6 +67,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/mailbox_creator_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_mailbox_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -310,6 +312,16 @@ class MailboxController extends BaseMailboxController
             ?.value
             .toInt() ?? 0,
         );
+      } else if (reactionState is SaveEmailAsDraftsSuccess) {
+        _handleDraftSaved(
+          affectedMailboxId: reactionState.draftMailboxId,
+          totalEmailsChanged: 1,
+        );
+      } else if (reactionState is RemoveEmailDraftsSuccess) {
+        _handleDraftSaved(
+          affectedMailboxId: reactionState.draftMailboxId,
+          totalEmailsChanged: -1,
+        );
       }
     });
   }
@@ -333,6 +345,18 @@ class MailboxController extends BaseMailboxController
     if (affectedMailboxId == null) return;
 
     clearUnreadCount(affectedMailboxId);
+  }
+
+  void _handleDraftSaved({
+    required MailboxId? affectedMailboxId,
+    required int totalEmailsChanged,
+  }) {
+    if (affectedMailboxId == null) return;
+
+    updateMailboxTotalEmailsCountById(
+      affectedMailboxId,
+      totalEmailsChanged,
+    );
   }
 
   void _initWebSocketQueueHandler() {

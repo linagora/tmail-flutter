@@ -107,6 +107,20 @@ class MailboxTree with EquatableMixin {
     return false;
   }
 
+  bool updateMailboxTotalEmailsCountById(MailboxId mailboxId, int totalEmailsCount) {
+    final matchedNode = findNode((node) => node.item.id == mailboxId);
+    if (matchedNode != null) {
+      final currentTotalEmailsCount = matchedNode.item.totalEmails?.value.value ?? 0;
+      final updatedTotalEmailsCount = currentTotalEmailsCount + totalEmailsCount;
+      if (updatedTotalEmailsCount < 0) return true;
+      matchedNode.item = matchedNode.item.copyWith(
+        totalEmails: TotalEmails(UnsignedInt(updatedTotalEmailsCount)),
+      );
+      return true;
+    }
+    return false;
+  }
+
   String? getNodePath(MailboxId mailboxId) {
     final matchedNode = findNode((node) => node.item.id == mailboxId);
     if (matchedNode == null) {

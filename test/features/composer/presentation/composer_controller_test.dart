@@ -591,7 +591,7 @@ void main() {
                 createEmailRequest: anyNamed('createEmailRequest'),
                 cancelToken: anyNamed('cancelToken')))
               .thenAnswer((_) => Stream.value(
-                Right(SaveEmailAsDraftsSuccess(EmailId(Id('123'))))));
+                Right(SaveEmailAsDraftsSuccess(EmailId(Id('123')), null))));
 
             final savedEmailDraft = SavedEmailDraft(
               content: emailContent,
@@ -1039,7 +1039,7 @@ void main() {
                 createEmailRequest: anyNamed('createEmailRequest'),
                 cancelToken: anyNamed('cancelToken')))
               .thenAnswer((_) => Stream.value(
-                Right(SaveEmailAsDraftsSuccess(EmailId(Id('123'))))));
+                Right(SaveEmailAsDraftsSuccess(EmailId(Id('123')), null))));
 
             final savedEmailDraft = SavedEmailDraft(
               content: emailContent,
