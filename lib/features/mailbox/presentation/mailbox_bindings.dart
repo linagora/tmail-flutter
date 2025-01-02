@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/email_hive_cache_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
@@ -122,6 +123,7 @@ class MailboxBindings extends BaseBindings {
         DataSourceType.local: Get.find<MailboxCacheDataSourceImpl>()
       },
       Get.find<StateDataSource>(),
+      Get.find<EmailHiveCacheDataSourceImpl>(),
     ));
   }
 }

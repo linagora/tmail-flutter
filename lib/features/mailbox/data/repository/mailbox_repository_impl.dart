@@ -15,8 +15,10 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/list_mailbox_extension.dart';
 import 'package:model/extensions/mailbox_extension.dart';
+import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/state_extension.dart';
@@ -36,10 +38,12 @@ class MailboxRepositoryImpl extends MailboxRepository {
 
   final Map<DataSourceType, MailboxDataSource> mapDataSource;
   final StateDataSource stateDataSource;
+  final EmailDataSource? emailDataSource;
 
   MailboxRepositoryImpl(
     this.mapDataSource,
     this.stateDataSource,
+    [this.emailDataSource,]
   );
 
   @override
@@ -211,23 +215,44 @@ class MailboxRepositoryImpl extends MailboxRepository {
   }
 
   @override
-  Future<bool> renameMailbox(Session session, AccountId accountId, RenameMailboxRequest request) {
-    return mapDataSource[DataSourceType.network]!.renameMailbox(session, accountId, request);
+  Future<bool> renameMailbox(Session session, AccountId accountId, RenameMailboxRequest request) async {
+    final result = await mapDataSource[DataSourceType.network]
+      !.renameMailbox(session, accountId, request);
+
+    await mapDataSource[DataSourceType.local]
+      !.renameMailbox(session, accountId, request);
+
+    return result;
   }
 
   @override
   Future<List<EmailId>> markAsMailboxRead(
-      Session session,
-      AccountId accountId,
-      MailboxId mailboxId,
-      int totalEmailUnread,
-      StreamController<dartz.Either<Failure, Success>> onProgressController) async {
-    return mapDataSource[DataSourceType.network]!.markAsMailboxRead(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmailUnread,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+  ) async {
+    final result = await mapDataSource[DataSourceType.network]!.markAsMailboxRead(
       session,
       accountId,
       mailboxId,
       totalEmailUnread,
       onProgressController);
+    await mapDataSource[DataSourceType.local]!.markAsMailboxRead(
+      session,
+      accountId,
+      mailboxId,
+      totalEmailUnread - result.length,
+      onProgressController,
+    );
+    await emailDataSource?.markAsRead(
+      session,
+      accountId,
+      result,
+      ReadActions.markAsRead,
+    );
+    return result;
   }
 
   @override

@@ -13,6 +13,8 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/extensions/list_mailbox_extension.dart';
+import 'package:model/extensions/mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
@@ -68,8 +70,26 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<bool> renameMailbox(Session session, AccountId accountId, RenameMailboxRequest request) {
-    throw UnimplementedError();
+  Future<bool> renameMailbox(
+    Session session,
+    AccountId accountId,
+    RenameMailboxRequest request,
+  ) async {
+    final cachedMailboxes = await getAllMailboxCache(accountId, session.username);
+    final updatedMailbox = cachedMailboxes.findMailbox(request.mailboxId);
+    if (updatedMailbox == null) return false;
+
+    final updatedMailboxIndex = cachedMailboxes.indexOf(updatedMailbox);
+    if (updatedMailboxIndex == -1) return false;
+    
+    cachedMailboxes[updatedMailboxIndex] = updatedMailbox.copyWith(name: request.newName);
+    await update(
+      accountId,
+      session.username,
+      updated: cachedMailboxes,
+    );
+
+    return true;
   }
 
   @override
@@ -79,12 +99,29 @@ class MailboxCacheDataSourceImpl extends MailboxDataSource {
 
   @override
   Future<List<EmailId>> markAsMailboxRead(
-      Session session,
-      AccountId accountId,
-      MailboxId mailboxId,
-      int totalEmailUnread,
-      StreamController<dartz.Either<Failure, Success>> onProgressController) {
-    throw UnimplementedError();
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmailUnread,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+  ) async {
+    final mailboxes = await getAllMailboxCache(accountId, session.username);
+    final updatedMailbox = mailboxes.findMailbox(mailboxId);
+    if (updatedMailbox == null) return [];
+
+    final updatedMailboxIndex = mailboxes.indexOf(updatedMailbox);
+    if (updatedMailboxIndex == -1) return [];
+
+    mailboxes[updatedMailboxIndex] = updatedMailbox.copyWith(
+      unreadEmails: UnreadEmails(UnsignedInt(totalEmailUnread)),
+    );
+    await _mailboxCacheManager.update(
+      accountId,
+      session.username,
+      updated: mailboxes,
+    );
+
+    return [];
   }
 
   @override
