@@ -605,4 +605,19 @@ abstract class BaseMailboxController extends BaseController {
       break;
     }
   }
+
+  void updateMailboxTotalEmailsCountById(MailboxId mailboxId, int totalEmails) {
+    final mailboxTrees = [
+      defaultMailboxTree,
+      personalMailboxTree,
+      teamMailboxesTree,
+    ];
+
+    for (var mailboxTree in mailboxTrees) {
+      if (mailboxTree.value.updateMailboxTotalEmailsCountById(mailboxId, totalEmails)) {
+        mailboxTree.refresh();
+        break;
+      }
+    }
+  }
 }

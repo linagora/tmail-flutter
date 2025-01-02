@@ -811,7 +811,7 @@ class MailboxDashBoardController extends ReloadableController
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).drafts_saved,
         actionName: AppLocalizations.of(currentContext!).discard,
-        onActionClick: () => _discardEmail(success.emailId),
+        onActionClick: () => _discardEmail(success.emailId, success.draftMailboxId),
         leadingSVGIcon: imagePaths.icMailboxDrafts,
         leadingSVGIconColor: Colors.white,
         backgroundColor: AppColor.toastSuccessBackgroundColor,
@@ -854,11 +854,16 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
-  void _discardEmail(EmailId emailId) {
+  void _discardEmail(EmailId emailId, MailboxId? draftMailboxId) {
     final currentAccountId = accountId.value;
     final session = sessionCurrent;
     if (currentAccountId != null && session != null) {
-      consumeState(_removeEmailDraftsInteractor.execute(session, currentAccountId, emailId));
+      consumeState(_removeEmailDraftsInteractor.execute(
+        session,
+        currentAccountId,
+        emailId,
+        draftMailboxId,
+      ));
     }
   }
 
