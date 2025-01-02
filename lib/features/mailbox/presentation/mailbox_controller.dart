@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanent
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_restored_deleted_message_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
@@ -80,6 +81,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
@@ -351,6 +353,24 @@ class MailboxController extends BaseMailboxController
           affectedMailboxId: reactionState.mailboxId,
           totalEmailsChanged: -reactionState.emailIds.length,
         );
+      } else if (reactionState is MoveToMailboxSuccess) {
+        _handleMoveEmailsToMailbox(
+          originalMailboxIdsWithEmailIds: reactionState.originalMailboxIdsWithEmailIds,
+          destinationMailboxId: reactionState.destinationMailboxId,
+          emailIdsWithReadStatus: reactionState.emailIdsWithReadStatus,
+        );
+      } else if (reactionState is MoveMultipleEmailToMailboxAllSuccess) {
+        _handleMoveEmailsToMailbox(
+          originalMailboxIdsWithEmailIds: reactionState.originalMailboxIdsWithEmailIds,
+          destinationMailboxId: reactionState.destinationMailboxId,
+          emailIdsWithReadStatus: reactionState.emailIdsWithReadStatus,
+        );
+      } else if (reactionState is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
+        _handleMoveEmailsToMailbox(
+          originalMailboxIdsWithEmailIds: reactionState.originalMailboxIdsWithMoveSucceededEmailIds,
+          destinationMailboxId: reactionState.destinationMailboxId,
+          emailIdsWithReadStatus: reactionState.moveSucceededEmailIdsWithReadStatus,
+        );
       }
     });
   }
@@ -397,6 +417,47 @@ class MailboxController extends BaseMailboxController
     updateMailboxTotalEmailsCountById(
       affectedMailboxId,
       totalEmailsChanged,
+    );
+  }
+
+  void _handleMoveEmailsToMailbox({
+    required Map<MailboxId, List<EmailId>> originalMailboxIdsWithEmailIds,
+    required MailboxId destinationMailboxId,
+    required Map<EmailId, bool> emailIdsWithReadStatus,
+  }) {
+    // Update changes in original mailboxes
+    for (var originalMailboxIdWithEmailIds in originalMailboxIdsWithEmailIds.entries) {
+      final originalMailboxId = originalMailboxIdWithEmailIds.key;
+      final emailsMovedCount = originalMailboxIdWithEmailIds.value.length;
+      final unreadEmailMovedCount = originalMailboxIdWithEmailIds.value
+          .where((emailId) => emailIdsWithReadStatus[emailId] == false)
+          .length;
+      updateMailboxTotalEmailsCountById(
+        originalMailboxId,
+        -emailsMovedCount,
+      );
+      updateUnreadCountOfMailboxById(
+        originalMailboxId,
+        unreadChanges: -unreadEmailMovedCount,
+      );
+    }
+
+    // Update changes in destination mailbox
+    updateMailboxTotalEmailsCountById(
+      destinationMailboxId,
+      originalMailboxIdsWithEmailIds.entries.fold(
+        0,
+        (sum, entry) => sum + entry.value.length,
+      ),
+    );
+    updateUnreadCountOfMailboxById(
+      destinationMailboxId,
+      unreadChanges: originalMailboxIdsWithEmailIds
+        .values
+        .fold(
+          0,
+          (sum, emails) => sum + emails.where((emailId) => emailIdsWithReadStatus[emailId] == false).length
+        ),
     );
   }
 
