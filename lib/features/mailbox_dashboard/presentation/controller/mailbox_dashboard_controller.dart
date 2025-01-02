@@ -55,6 +55,7 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails
 import 'package:tmail_ui_user/features/email/domain/state/delete_sending_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_restored_deleted_message_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/restore_deleted_message_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/store_sending_email_state.dart';
@@ -97,7 +98,9 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -366,18 +369,20 @@ class MailboxDashBoardController extends ReloadableController
     } else if (success is UpdateVacationSuccess) {
       _handleUpdateVacationSuccess(success);
     } else if (success is MarkAsMultipleEmailReadAllSuccess) {
-      _markAsReadSelectedMultipleEmailSuccess(success.readActions);
+      _markAsReadSelectedMultipleEmailSuccess(success.readActions, success.emailIds);
     } else if (success is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-      _markAsReadSelectedMultipleEmailSuccess(success.readActions);
+      _markAsReadSelectedMultipleEmailSuccess(success.readActions, success.successEmailIds);
     } else if (success is MarkAsStarMultipleEmailAllSuccess) {
       _markAsStarMultipleEmailSuccess(
         success.markStarAction,
         success.countMarkStarSuccess,
+        success.emailIds,
       );
     } else if (success is MarkAsStarMultipleEmailHasSomeEmailFailure) {
       _markAsStarMultipleEmailSuccess(
         success.markStarAction,
         success.countMarkStarSuccess,
+        success.successEmailIds,
       );
     } else if (success is MoveMultipleEmailToMailboxAllSuccess ||
         success is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
@@ -415,6 +420,11 @@ class MailboxDashBoardController extends ReloadableController
       goToComposer(ComposerArguments.fromSessionStorageBrowser(success.composerCache));
     } else if (success is GetIdentityCacheOnWebSuccess) {
       goToSettings();
+    } else if (success is MarkAsStarEmailSuccess) {
+      updateEmailFlagByEmailIds(
+        [success.emailId],
+        markStarAction: success.markStarAction,
+      );
     }
   }
 
@@ -899,6 +909,10 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _deleteEmailPermanentlySuccess(DeleteEmailPermanentlySuccess success) {
+    handleDeleteEmailsInMailbox(
+      emailIds: [success.emailId],
+      affectedMailboxId: success.mailboxId,
+    );
     if (currentOverlayContext != null &&  currentContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
@@ -958,7 +972,8 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
-  void _markAsReadSelectedMultipleEmailSuccess(ReadActions readActions) {
+  void _markAsReadSelectedMultipleEmailSuccess(ReadActions readActions, List<EmailId> emailIds) {
+    updateEmailFlagByEmailIds(emailIds, readAction: readActions);
     if (currentContext != null && currentOverlayContext != null) {
       final message = readActions == ReadActions.markAsUnread
         ? AppLocalizations.of(currentContext!).marked_message_toast(AppLocalizations.of(currentContext!).unread)
@@ -975,6 +990,10 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _markAsReadEmailSuccess(MarkAsEmailReadSuccess success) {
+    updateEmailFlagByEmailIds(
+      [success.emailId],
+      readAction: success.readActions,
+    );
     if (currentContext != null &&
         currentOverlayContext != null &&
         success.markReadAction == MarkReadAction.swipeOnThread) {
@@ -1025,7 +1044,9 @@ class MailboxDashBoardController extends ReloadableController
   void _markAsStarMultipleEmailSuccess(
     MarkStarAction markStarAction,
     int countMarkStarSuccess,
+    List<EmailId> emailIds,
   ) {
+    updateEmailFlagByEmailIds(emailIds, markStarAction: markStarAction);
     if (currentOverlayContext != null && currentContext != null) {
       final message = markStarAction == MarkStarAction.unMarkStar
         ? AppLocalizations.of(currentContext!).marked_unstar_multiple_item(countMarkStarSuccess)
@@ -1494,6 +1515,10 @@ class MailboxDashBoardController extends ReloadableController
   void _emptyTrashFolderSuccess(EmptyTrashFolderSuccess success) {
     viewStateMailboxActionProgress.value = Right(UIState.idle);
 
+    handleDeleteEmailsInMailbox(
+      emailIds: success.emailIds,
+      affectedMailboxId: success.mailboxId,
+    );
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
@@ -1516,8 +1541,16 @@ class MailboxDashBoardController extends ReloadableController
   void _deleteMultipleEmailsPermanentlySuccess(Success success) {
     List<EmailId> listEmailIdResult = <EmailId>[];
     if (success is DeleteMultipleEmailsPermanentlyAllSuccess) {
+      handleDeleteEmailsInMailbox(
+        emailIds: success.emailIds,
+        affectedMailboxId: success.mailboxId,
+      );
       listEmailIdResult = success.emailIds;
     } else if (success is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
+      handleDeleteEmailsInMailbox(
+        emailIds: success.emailIds,
+        affectedMailboxId: success.mailboxId,
+      );
       listEmailIdResult = success.emailIds;
     }
 
@@ -2500,6 +2533,10 @@ class MailboxDashBoardController extends ReloadableController
   void _emptySpamFolderSuccess(EmptySpamFolderSuccess success) {
     viewStateMailboxActionProgress.value = Right(UIState.idle);
 
+    handleDeleteEmailsInMailbox(
+      emailIds: success.emailIds,
+      affectedMailboxId: success.mailboxId,
+    );
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
