@@ -8,11 +8,12 @@ class EmptySpamFolderLoading extends LoadingState {}
 class EmptySpamFolderSuccess extends UIState {
 
   final List<EmailId> emailIds;
+  final MailboxId? mailboxId;
 
-  EmptySpamFolderSuccess(this.emailIds);
+  EmptySpamFolderSuccess(this.emailIds, this.mailboxId);
 
   @override
-  List<Object?> get props => [emailIds];
+  List<Object?> get props => [emailIds, mailboxId];
 }
 
 class EmptySpamFolderFailure extends FeatureFailure {

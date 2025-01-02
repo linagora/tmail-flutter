@@ -77,6 +77,8 @@ import 'package:tmail_ui_user/features/push_notification/presentation/websocket/
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_bindings.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -335,6 +337,16 @@ class MailboxController extends BaseMailboxController
           totalEmailsChanged: -reactionState.emailIds.length,
         );
       } else if (reactionState is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
+        _handleDeleteEmailsFromMailbox(
+          affectedMailboxId: reactionState.mailboxId,
+          totalEmailsChanged: -reactionState.emailIds.length,
+        );
+      } else if (reactionState is EmptyTrashFolderSuccess) {
+        _handleDeleteEmailsFromMailbox(
+          affectedMailboxId: reactionState.mailboxId,
+          totalEmailsChanged: -reactionState.emailIds.length,
+        );
+      } else if (reactionState is EmptySpamFolderSuccess) {
         _handleDeleteEmailsFromMailbox(
           affectedMailboxId: reactionState.mailboxId,
           totalEmailsChanged: -reactionState.emailIds.length,
