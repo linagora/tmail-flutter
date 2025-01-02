@@ -14,6 +14,8 @@ class MoveMultipleEmailToMailboxAllSuccess extends UIState {
   final MoveAction moveAction;
   final EmailActionType emailActionType;
   final String? destinationPath;
+  final Map<MailboxId,List<EmailId>> originalMailboxIdsWithEmailIds;
+  final Map<EmailId, bool> emailIdsWithReadStatus;
 
   MoveMultipleEmailToMailboxAllSuccess(
     this.movedListEmailId,
@@ -23,6 +25,8 @@ class MoveMultipleEmailToMailboxAllSuccess extends UIState {
     this.emailActionType,
     {
       this.destinationPath,
+      required this.originalMailboxIdsWithEmailIds,
+      required this.emailIdsWithReadStatus,
     }
   );
 
@@ -34,6 +38,8 @@ class MoveMultipleEmailToMailboxAllSuccess extends UIState {
     moveAction,
     emailActionType,
     destinationPath,
+    originalMailboxIdsWithEmailIds,
+    emailIdsWithReadStatus,
   ];
 }
 
@@ -54,6 +60,8 @@ class MoveMultipleEmailToMailboxHasSomeEmailFailure extends UIState {
   final MoveAction moveAction;
   final EmailActionType emailActionType;
   final String? destinationPath;
+  final Map<MailboxId,List<EmailId>> originalMailboxIdsWithMoveSucceededEmailIds;
+  final Map<EmailId, bool> moveSucceededEmailIdsWithReadStatus;
 
   MoveMultipleEmailToMailboxHasSomeEmailFailure(
     this.movedListEmailId,
@@ -63,6 +71,8 @@ class MoveMultipleEmailToMailboxHasSomeEmailFailure extends UIState {
     this.emailActionType,
     {
       this.destinationPath,
+      required this.originalMailboxIdsWithMoveSucceededEmailIds,
+      required this.moveSucceededEmailIdsWithReadStatus,
     }
   );
 
@@ -74,6 +84,8 @@ class MoveMultipleEmailToMailboxHasSomeEmailFailure extends UIState {
     moveAction,
     emailActionType,
     destinationPath,
+    originalMailboxIdsWithMoveSucceededEmailIds,
+    moveSucceededEmailIdsWithReadStatus,
   ];
 }
 

@@ -14,6 +14,8 @@ class MoveToMailboxSuccess extends UIState {
   final MoveAction moveAction;
   final EmailActionType emailActionType;
   final String? destinationPath;
+  final Map<MailboxId,List<EmailId>> originalMailboxIdsWithEmailIds;
+  final Map<EmailId, bool> emailIdsWithReadStatus;
 
   MoveToMailboxSuccess(
     this.emailId,
@@ -23,6 +25,8 @@ class MoveToMailboxSuccess extends UIState {
     this.emailActionType,
     {
       this.destinationPath,
+      required this.originalMailboxIdsWithEmailIds,
+      required this.emailIdsWithReadStatus,
     }
   );
 
@@ -34,6 +38,8 @@ class MoveToMailboxSuccess extends UIState {
     moveAction,
     emailActionType,
     destinationPath,
+    originalMailboxIdsWithEmailIds,
+    emailIdsWithReadStatus,
   ];
 }
 
