@@ -93,13 +93,22 @@ class EmailRepositoryImpl extends EmailRepository {
     AccountId accountId,
     List<EmailId> emailIds,
     ReadActions readActions,
-  ) {
-    return emailDataSource[DataSourceType.network]!.markAsRead(
+  ) async {
+    final result = await emailDataSource[DataSourceType.network]!.markAsRead(
       session,
       accountId,
       emailIds,
       readActions,
     );
+
+    await emailDataSource[DataSourceType.hiveCache]!.markAsRead(
+      session,
+      accountId,
+      result.emailIdsSuccess,
+      readActions,
+    );
+
+    return result;
   }
 
   @override
@@ -136,12 +145,34 @@ class EmailRepositoryImpl extends EmailRepository {
     Session session,
     AccountId accountId,
     MoveToMailboxRequest moveRequest,
-  ) {
-    return emailDataSource[DataSourceType.network]!.moveToMailbox(
+  ) async {
+    final result = await emailDataSource[DataSourceType.network]
+      !.moveToMailbox(
       session,
       accountId,
       moveRequest,
     );
+    final updatedCurrentMailboxes = moveRequest.currentMailboxes.map(
+      (key, value) => MapEntry(
+        key,
+        value.where(result.emailIdsSuccess.contains).toList(),
+      ),
+    );
+    
+    await emailDataSource[DataSourceType.hiveCache]
+      !.moveToMailbox(
+        session,
+        accountId,
+        MoveToMailboxRequest(
+          updatedCurrentMailboxes,
+          moveRequest.destinationMailboxId,
+          moveRequest.moveAction,
+          moveRequest.emailActionType,
+          destinationPath: moveRequest.destinationPath,
+        ),
+      );
+
+    return result;
   }
 
   @override
@@ -153,13 +184,20 @@ class EmailRepositoryImpl extends EmailRepository {
     AccountId accountId,
     List<EmailId> emailIds,
     MarkStarAction markStarAction
-  ) {
-    return emailDataSource[DataSourceType.network]!.markAsStar(
+  ) async {
+    final result = await emailDataSource[DataSourceType.network]!.markAsStar(
       session,
       accountId,
       emailIds,
       markStarAction,
     );
+    await emailDataSource[DataSourceType.hiveCache]!.markAsStar(
+      session,
+      accountId,
+      result.emailIdsSuccess,
+      markStarAction
+    );
+    return result;
   }
 
   @override
@@ -185,13 +223,20 @@ class EmailRepositoryImpl extends EmailRepository {
     AccountId accountId,
     Email email,
     {CancelToken? cancelToken}
-  ) {
-    return emailDataSource[DataSourceType.network]!.saveEmailAsDrafts(
+  ) async {
+    final result = await emailDataSource[DataSourceType.network]!.saveEmailAsDrafts(
       session,
       accountId,
       email,
       cancelToken: cancelToken
     );
+    await emailDataSource[DataSourceType.hiveCache]!.saveEmailAsDrafts(
+      session,
+      accountId,
+      result,
+      cancelToken: cancelToken
+    );
+    return result;
   }
 
   @override
@@ -200,13 +245,20 @@ class EmailRepositoryImpl extends EmailRepository {
     AccountId accountId,
     EmailId emailId,
     {CancelToken? cancelToken}
-  ) {
-    return emailDataSource[DataSourceType.network]!.removeEmailDrafts(
+  ) async {
+    final result = await emailDataSource[DataSourceType.network]!.removeEmailDrafts(
       session,
       accountId,
       emailId,
       cancelToken: cancelToken
     );
+    await emailDataSource[DataSourceType.hiveCache]!.removeEmailDrafts(
+      session,
+      accountId,
+      emailId,
+      cancelToken: cancelToken
+    );
+    return result;
   }
 
   @override
@@ -216,14 +268,21 @@ class EmailRepositoryImpl extends EmailRepository {
     Email newEmail,
     EmailId oldEmailId,
     {CancelToken? cancelToken}
-  ) {
-    return emailDataSource[DataSourceType.network]!.updateEmailDrafts(
+  ) async {
+    final result = await emailDataSource[DataSourceType.network]!.updateEmailDrafts(
       session,
       accountId,
       newEmail,
       oldEmailId,
       cancelToken: cancelToken
     );
+    await emailDataSource[DataSourceType.hiveCache]!.updateEmailDrafts(
+      session,
+      accountId,
+      result,
+      oldEmailId,
+    );
+    return result;
   }
 
   @override
@@ -254,12 +313,17 @@ class EmailRepositoryImpl extends EmailRepository {
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
-  ) {
-    return emailDataSource[DataSourceType.network]!.deleteMultipleEmailsPermanently(
+  ) async {
+    final result = await emailDataSource[DataSourceType.network]
+      !.deleteMultipleEmailsPermanently(
       session,
       accountId,
       emailIds,
     );
+    await emailDataSource[DataSourceType.hiveCache]
+      !.deleteMultipleEmailsPermanently(session, accountId, result.emailIdsSuccess);
+
+    return result;
   }
 
   @override
@@ -268,13 +332,20 @@ class EmailRepositoryImpl extends EmailRepository {
     AccountId accountId,
     EmailId emailId,
     {CancelToken? cancelToken}
-  ) {
-    return emailDataSource[DataSourceType.network]!.deleteEmailPermanently(
+  ) async {
+    final result = await emailDataSource[DataSourceType.network]!.deleteEmailPermanently(
       session,
       accountId,
       emailId,
       cancelToken: cancelToken
     );
+    await emailDataSource[DataSourceType.hiveCache]!.deleteEmailPermanently(
+      session,
+      accountId,
+      emailId,
+    );
+
+    return result;
   }
 
   @override

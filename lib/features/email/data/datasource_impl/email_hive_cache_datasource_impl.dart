@@ -18,11 +18,13 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/account/account_request.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
+import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
@@ -79,8 +81,13 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     AccountId accountId,
     EmailId emailId,
     {CancelToken? cancelToken}
-  ) {
-    throw UnimplementedError();
+  ) async {
+    await _emailCacheManager.update(
+      accountId,
+      session.username,
+      destroyed: [emailId],
+    );
+    return true;
   }
 
   @override
@@ -91,8 +98,16 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
-  ) {
-    throw UnimplementedError();
+  ) async {
+    await _emailCacheManager.update(
+      accountId,
+      session.username,
+      destroyed: emailIds,
+    );
+    return (
+      emailIdsSuccess: emailIds,
+      mapErrors: <Id, SetError>{}
+    );
   }
 
   @override
@@ -137,8 +152,24 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     AccountId accountId,
     List<EmailId> emailIds,
     ReadActions readActions,
-  ) {
-    throw UnimplementedError();
+  ) async {
+    final storedEmails = await Future.wait(emailIds.map(
+      (emailId) => getStoredEmail(session, accountId, emailId),
+    ));
+    for (var email in storedEmails) {
+      if (readActions == ReadActions.markAsUnread) {
+        email.keywords?.remove(KeyWordIdentifier.emailSeen);
+      } else {
+        email.keywords?[KeyWordIdentifier.emailSeen] = true;
+      }
+    }
+    await Future.wait(storedEmails.map(
+      (email) => storeEmail(session, accountId, email),
+    ));
+    return (
+      emailIdsSuccess: emailIds,
+      mapErrors: <Id, SetError>{}
+    );
   }
 
   @override
@@ -150,8 +181,24 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     AccountId accountId,
     List<EmailId> emailIds,
     MarkStarAction markStarAction,
-  ) {
-    throw UnimplementedError();
+  ) async {
+    final storedEmails = await Future.wait(emailIds.map(
+      (emailId) => getStoredEmail(session, accountId, emailId),
+    ));
+    for (var email in storedEmails) {
+      if (markStarAction == MarkStarAction.unMarkStar) {
+        email.keywords?.remove(KeyWordIdentifier.emailFlagged);
+      } else {
+        email.keywords?[KeyWordIdentifier.emailFlagged] = true;
+      }
+    }
+    await Future.wait(storedEmails.map(
+      (email) => storeEmail(session, accountId, email),
+    ));
+    return (
+      emailIdsSuccess: emailIds,
+      mapErrors: <Id, SetError>{}
+    );
   }
 
   @override
@@ -162,8 +209,29 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     Session session,
     AccountId accountId,
     MoveToMailboxRequest moveRequest,
-  ) {
-    throw UnimplementedError();
+  ) async {
+    final emailIds = moveRequest.currentMailboxes.entries.fold(
+      <EmailId>{},
+      (emailIds, entry) {
+        emailIds.addAll(entry.value);
+        return emailIds;
+      },
+    ).toList();
+    final storedEmails = await Future.wait(emailIds.map(
+      (emailId) => getStoredEmail(session, accountId, emailId),
+    ));
+    for (int i = 0; i < storedEmails.length; i++) {
+      storedEmails[i] = storedEmails[i].updatedEmail(
+        newMailboxIds: {moveRequest.destinationMailboxId: true},
+      );
+    }
+    await Future.wait(storedEmails.map(
+      (email) => storeEmail(session, accountId, email),
+    ));
+    return (
+      emailIdsSuccess: emailIds,
+      mapErrors: <Id, SetError>{}
+    );
   }
 
   @override
@@ -172,8 +240,13 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     AccountId accountId,
     EmailId emailId,
     {CancelToken? cancelToken}
-  ) {
-    throw UnimplementedError();
+  ) async {
+    await _emailCacheManager.update(
+      accountId,
+      session.username,
+      destroyed: [emailId],
+    );
+    return true;
   }
 
   @override
@@ -182,8 +255,9 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     AccountId accountId,
     Email email,
     {CancelToken? cancelToken}
-  ) {
-    throw UnimplementedError();
+  ) async {
+    await _emailCacheManager.update(accountId, session.username, created: [email]);
+    return email;
   }
 
   @override
@@ -232,8 +306,13 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     Email newEmail,
     EmailId oldEmailId,
     {CancelToken? cancelToken}
-  ) {
-    throw UnimplementedError();
+  ) async {
+    await _emailCacheManager.update(
+      accountId,
+      session.username,
+      updated: [newEmail],
+    );
+    return newEmail;
   }
 
   @override
