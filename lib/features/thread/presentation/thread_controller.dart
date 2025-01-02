@@ -49,6 +49,8 @@ import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
@@ -391,6 +393,16 @@ class ThreadController extends BaseController with EmailActionController {
           affectedMailboxId: reactionState.mailboxId,
         );
       } else if (reactionState is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
+        mailboxDashBoardController.handleDeleteEmailsInMailbox(
+          emailIds: reactionState.emailIds,
+          affectedMailboxId: reactionState.mailboxId,
+        );
+      } else if (reactionState is EmptyTrashFolderSuccess) {
+        mailboxDashBoardController.handleDeleteEmailsInMailbox(
+          emailIds: reactionState.emailIds,
+          affectedMailboxId: reactionState.mailboxId,
+        );
+      } else if (reactionState is EmptySpamFolderSuccess) {
         mailboxDashBoardController.handleDeleteEmailsInMailbox(
           emailIds: reactionState.emailIds,
           affectedMailboxId: reactionState.mailboxId,
