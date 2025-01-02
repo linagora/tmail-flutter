@@ -21,6 +21,8 @@ import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
+import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_restored_deleted_message_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -322,6 +324,21 @@ class MailboxController extends BaseMailboxController
           affectedMailboxId: reactionState.draftMailboxId,
           totalEmailsChanged: -1,
         );
+      } else if (reactionState is DeleteEmailPermanentlySuccess) {
+        _handleDeleteEmailsFromMailbox(
+          affectedMailboxId: reactionState.mailboxId,
+          totalEmailsChanged: -1,
+        );
+      } else if (reactionState is DeleteMultipleEmailsPermanentlyAllSuccess) {
+        _handleDeleteEmailsFromMailbox(
+          affectedMailboxId: reactionState.mailboxId,
+          totalEmailsChanged: -reactionState.emailIds.length,
+        );
+      } else if (reactionState is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
+        _handleDeleteEmailsFromMailbox(
+          affectedMailboxId: reactionState.mailboxId,
+          totalEmailsChanged: -reactionState.emailIds.length,
+        );
       }
     });
   }
@@ -348,6 +365,18 @@ class MailboxController extends BaseMailboxController
   }
 
   void _handleDraftSaved({
+    required MailboxId? affectedMailboxId,
+    required int totalEmailsChanged,
+  }) {
+    if (affectedMailboxId == null) return;
+
+    updateMailboxTotalEmailsCountById(
+      affectedMailboxId,
+      totalEmailsChanged,
+    );
+  }
+
+  void _handleDeleteEmailsFromMailbox({
     required MailboxId? affectedMailboxId,
     required int totalEmailsChanged,
   }) {
