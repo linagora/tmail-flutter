@@ -24,6 +24,7 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanent
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
@@ -31,6 +32,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/move_emails_to_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
@@ -56,6 +58,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
@@ -406,6 +409,21 @@ class ThreadController extends BaseController with EmailActionController {
         mailboxDashBoardController.handleDeleteEmailsInMailbox(
           emailIds: reactionState.emailIds,
           affectedMailboxId: reactionState.mailboxId,
+        );
+      } else if (reactionState is MoveToMailboxSuccess) {
+        mailboxDashBoardController.handleMoveEmailsToMailbox(
+          originalMailboxIdsWithEmailIds: reactionState.originalMailboxIdsWithEmailIds,
+          destinationMailboxId: reactionState.destinationMailboxId,
+        );
+      } else if (reactionState is MoveMultipleEmailToMailboxAllSuccess) {
+        mailboxDashBoardController.handleMoveEmailsToMailbox(
+          originalMailboxIdsWithEmailIds: reactionState.originalMailboxIdsWithEmailIds,
+          destinationMailboxId: reactionState.destinationMailboxId,
+        );
+      } else if (reactionState is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
+        mailboxDashBoardController.handleMoveEmailsToMailbox(
+          originalMailboxIdsWithEmailIds: reactionState.originalMailboxIdsWithMoveSucceededEmailIds,
+          destinationMailboxId: reactionState.destinationMailboxId,
         );
       }
     });
