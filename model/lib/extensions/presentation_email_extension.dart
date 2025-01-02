@@ -29,7 +29,16 @@ extension PresentationEmailExtension on PresentationEmail {
     }
   }
 
-  int numberOfAllEmailAddress() => to.numberEmailAddress() + cc.numberEmailAddress() + bcc.numberEmailAddress();
+  int get countRecipients =>
+      to.numberEmailAddress() +
+      cc.numberEmailAddress() +
+      bcc.numberEmailAddress();
+
+  int getCountMailAddressWithoutMe(String userName) =>
+      to.withoutMe(userName).numberEmailAddress() +
+      cc.withoutMe(userName).numberEmailAddress() +
+      bcc.withoutMe(userName).numberEmailAddress() +
+      from.withoutMe(userName).numberEmailAddress();
 
   String getReceivedAt(String newLocale, {String? pattern}) {
     final emailTime = receivedAt;

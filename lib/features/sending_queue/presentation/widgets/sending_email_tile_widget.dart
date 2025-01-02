@@ -76,7 +76,7 @@ class SendingEmailTileWidget extends StatelessWidget {
                       )
                     else
                       SvgPicture.asset(
-                        sendingEmail.presentationEmail.numberOfAllEmailAddress() == 1
+                        sendingEmail.presentationEmail.countRecipients == 1
                           ? sendingEmail.sendingState.getAvatarPersonal(_imagePaths)
                           : sendingEmail.sendingState.getAvatarGroup(_imagePaths),
                         fit: BoxFit.fill,

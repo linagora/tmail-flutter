@@ -47,6 +47,10 @@ extension SetEmailAddressExtension on Set<EmailAddress>? {
       ? this!.where((emailAddress) => emailAddress.email != emailAddressNotExist).toList()
       : List.empty();
   }
+
+  Set<EmailAddress> withoutMe(String userName) {
+    return filterEmailAddress(userName).toSet();
+  }
 }
 
 extension ListEmailAddressExtension on List<EmailAddress> {
