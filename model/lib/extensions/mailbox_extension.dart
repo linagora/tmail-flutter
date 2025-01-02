@@ -1,5 +1,7 @@
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox_rights.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/namespace.dart';
 import 'package:model/model.dart';
 
 extension MailboxExtension on Mailbox {
@@ -66,6 +68,38 @@ extension MailboxExtension on Mailbox {
         myRights: myRights,
         isSubscribed: isSubscribed,
         namespace: namespace,
+    );
+  }
+
+  Mailbox copyWith({
+    MailboxId? id,
+    MailboxName? name,
+    MailboxId? parentId,
+    Role? role,
+    SortOrder? sortOrder,
+    TotalEmails? totalEmails,
+    UnreadEmails? unreadEmails,
+    TotalThreads? totalThreads,
+    UnreadThreads? unreadThreads,
+    MailboxRights? myRights,
+    IsSubscribed? isSubscribed,
+    Namespace? namespace,
+    Map<String, List<String>?>? rights,
+  }) {
+    return Mailbox(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      parentId: parentId ?? this.parentId,
+      role: role ?? this.role,
+      sortOrder: sortOrder ?? this.sortOrder,
+      totalEmails: totalEmails ?? this.totalEmails,
+      unreadEmails: unreadEmails ?? this.unreadEmails,
+      totalThreads: totalThreads ?? this.totalThreads,
+      unreadThreads: unreadThreads ?? this.unreadThreads,
+      myRights: myRights ?? this.myRights,
+      isSubscribed: isSubscribed ?? this.isSubscribed,
+      namespace: namespace ?? this.namespace,
+      rights: rights ?? this.rights,
     );
   }
 }
