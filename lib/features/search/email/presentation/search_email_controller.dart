@@ -33,6 +33,8 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_e
 import 'package:tmail_ui_user/features/contact/presentation/model/contact_arguments.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
+import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
@@ -46,6 +48,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
@@ -297,6 +300,21 @@ class SearchEmailController extends BaseController
         mailboxDashBoardController.updateEmailFlagByEmailIds(
           reactionState.successEmailIds,
           markStarAction: reactionState.markStarAction,
+        );
+      } else if (reactionState is DeleteEmailPermanentlySuccess) {
+        mailboxDashBoardController.handleDeleteEmailsInMailbox(
+          emailIds: [reactionState.emailId],
+          affectedMailboxId: reactionState.mailboxId,
+        );
+      } else if (reactionState is DeleteMultipleEmailsPermanentlyAllSuccess) {
+        mailboxDashBoardController.handleDeleteEmailsInMailbox(
+          emailIds: reactionState.emailIds,
+          affectedMailboxId: reactionState.mailboxId,
+        );
+      } else if (reactionState is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
+        mailboxDashBoardController.handleDeleteEmailsInMailbox(
+          emailIds: reactionState.emailIds,
+          affectedMailboxId: reactionState.mailboxId,
         );
       }
     });

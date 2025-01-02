@@ -871,7 +871,12 @@ class MailboxDashBoardController extends ReloadableController
     final currentAccountId = accountId.value;
     final session = sessionCurrent;
     if (currentAccountId != null && session != null && email.id != null) {
-      consumeState(_deleteEmailPermanentlyInteractor.execute(session, currentAccountId, email.id!));
+      consumeState(_deleteEmailPermanentlyInteractor.execute(
+        session,
+        currentAccountId,
+        email.id!,
+        email.mailboxContain?.mailboxId,
+      ));
     }
   }
 
@@ -1434,7 +1439,8 @@ class MailboxDashBoardController extends ReloadableController
       consumeState(_deleteMultipleEmailsPermanentlyInteractor.execute(
         sessionCurrent!,
         accountId.value!,
-        listEmails.listEmailIds));
+        listEmails.listEmailIds,
+        listEmails.firstOrNull?.mailboxContain?.mailboxId));
     }
   }
 
