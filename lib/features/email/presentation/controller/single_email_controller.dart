@@ -670,7 +670,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     if (_currentEmailId != null) {
       mailboxDashBoardController.updateEmailFlagByEmailIds(
         [_currentEmailId!],
-        readAction: ReadActions.markAsRead,
+        readAction: readActions,
       );
     }
     if (readActions == ReadActions.markAsUnread) {

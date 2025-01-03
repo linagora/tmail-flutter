@@ -9,16 +9,16 @@ class LoadingMarkAsMultipleEmailReadAll extends UIState {}
 class MarkAsMultipleEmailReadAllSuccess extends UIState {
   final List<EmailId> emailIds;
   final ReadActions readActions;
-  final MailboxId? mailboxId;
+  final Map<MailboxId, List<EmailId>> markSuccessEmailIdsByMailboxId;
 
   MarkAsMultipleEmailReadAllSuccess(
     this.emailIds,
     this.readActions,
-    this.mailboxId,
+    this.markSuccessEmailIdsByMailboxId,
   );
 
   @override
-  List<Object?> get props => [emailIds, readActions, mailboxId];
+  List<Object?> get props => [emailIds, readActions, markSuccessEmailIdsByMailboxId];
 }
 
 class MarkAsMultipleEmailReadAllFailure extends FeatureFailure {
@@ -33,16 +33,16 @@ class MarkAsMultipleEmailReadAllFailure extends FeatureFailure {
 class MarkAsMultipleEmailReadHasSomeEmailFailure extends UIState {
   final List<EmailId> successEmailIds;
   final ReadActions readActions;
-  final MailboxId? mailboxId;
+  final Map<MailboxId, List<EmailId>> markSuccessEmailIdsByMailboxId;
 
   MarkAsMultipleEmailReadHasSomeEmailFailure(
     this.successEmailIds,
     this.readActions,
-    this.mailboxId,
+    this.markSuccessEmailIdsByMailboxId,
   );
 
   @override
-  List<Object?> get props => [successEmailIds, readActions, mailboxId];
+  List<Object?> get props => [successEmailIds, readActions, markSuccessEmailIdsByMailboxId];
 }
 
 class MarkAsMultipleEmailReadFailure extends FeatureFailure {
