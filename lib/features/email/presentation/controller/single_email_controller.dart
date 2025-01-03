@@ -1131,6 +1131,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       KeyWordIdentifier.emailFlagged: success.markStarAction == MarkStarAction.markStar,
     });
     mailboxDashBoardController.setSelectedEmail(newEmail);
+    
+    final emailId = newEmail?.id;
+    if (emailId == null) return;
+    mailboxDashBoardController.updateEmailFlagByEmailIds(
+      [emailId],
+      markStarAction: success.markStarAction,
+    );
   }
 
   void handleEmailAction(BuildContext context, PresentationEmail presentationEmail, EmailActionType actionType) {
