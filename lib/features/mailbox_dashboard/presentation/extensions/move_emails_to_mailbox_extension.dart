@@ -24,12 +24,7 @@ extension MoveEmailsToMailboxExtension on MailboxDashBoardController {
       .where((email) => movedEmailIds.contains(email.id))
       .toList();
     if (currentEmailsToBeMoved.isNotEmpty && destinationMailboxId != selectedMailbox.value?.id) {
-      emailsToBeUndo = currentEmailsToBeMoved;
       currentEmails.removeWhere(currentEmailsToBeMoved.contains);
-      updateEmailList(currentEmails);
-    } else if (moveAction == MoveAction.undo && destinationMailboxId == selectedMailbox.value?.id) {
-      currentEmails.addAll(emailsToBeUndo);
-      currentEmails.sort((a, b) => b.receivedAt?.value.compareTo(a.receivedAt?.value ?? DateTime.now()) ?? -1);
       updateEmailList(currentEmails);
     }
   }

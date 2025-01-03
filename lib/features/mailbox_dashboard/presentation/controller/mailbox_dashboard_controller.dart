@@ -253,7 +253,6 @@ class MailboxDashBoardController extends ReloadableController
   StreamSubscription? _pendingSharedFileInfoSubscription;
   StreamSubscription? _receivingFileSharingStreamSubscription;
   StreamSubscription? _currentEmailIdInNotificationIOSStreamSubscription;
-  List<PresentationEmail> emailsToBeUndo = [];
 
   final StreamController<Either<Failure, Success>> _progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
