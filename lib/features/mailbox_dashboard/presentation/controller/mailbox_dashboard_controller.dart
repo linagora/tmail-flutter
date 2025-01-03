@@ -1330,7 +1330,7 @@ class MailboxDashBoardController extends ReloadableController
           trashMailboxId,
           MoveAction.moving,
           EmailActionType.moveToTrash),
-        Map.fromIterable(
+        Map.fromEntries(
           listEmails
             .where((email) => email.id != null)
             .map((email) => MapEntry(email.id!, email.hasRead)),
