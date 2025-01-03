@@ -1,3 +1,11 @@
+## [0.14.6] - 2025-01-03
+### Fixed
+- #3372 Paging empty trash
+- #3370 Limit Email/set with limit is min of (50, maxObjectsInSet)
+- #3379 Show replyAll button in case recipients not include me
+- #3385 Realtime update UI base on Email/set
+- #3344 Paste recipients to composer
+
 ## [0.14.5] - 2024-12-26
 ### Fixed 
 - #3336 Make Echo ping of web socket optional
