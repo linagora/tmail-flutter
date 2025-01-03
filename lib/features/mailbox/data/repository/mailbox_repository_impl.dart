@@ -219,8 +219,12 @@ class MailboxRepositoryImpl extends MailboxRepository {
     final result = await mapDataSource[DataSourceType.network]
       !.renameMailbox(session, accountId, request);
 
-    await mapDataSource[DataSourceType.local]
-      !.renameMailbox(session, accountId, request);
+    try {
+      await mapDataSource[DataSourceType.local]
+        !.renameMailbox(session, accountId, request);
+    } catch (e) {
+      logError('MailboxRepositoryImpl::renameMailbox: Exception: $e');
+    }
 
     return result;
   }
@@ -239,19 +243,23 @@ class MailboxRepositoryImpl extends MailboxRepository {
       mailboxId,
       totalEmailUnread,
       onProgressController);
-    await mapDataSource[DataSourceType.local]!.markAsMailboxRead(
-      session,
-      accountId,
-      mailboxId,
-      totalEmailUnread - result.length,
-      onProgressController,
-    );
-    await emailDataSource?.markAsRead(
-      session,
-      accountId,
-      result,
-      ReadActions.markAsRead,
-    );
+    try {
+      await mapDataSource[DataSourceType.local]!.markAsMailboxRead(
+        session,
+        accountId,
+        mailboxId,
+        totalEmailUnread - result.length,
+        onProgressController,
+      );
+      await emailDataSource?.markAsRead(
+        session,
+        accountId,
+        result,
+        ReadActions.markAsRead,
+      );
+    } catch (e) {
+      logError('MailboxRepositoryImpl::markAsMailboxRead: Exception: $e');
+    }
     return result;
   }
 

@@ -6,6 +6,7 @@ import 'package:core/data/network/download/downloaded_response.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
@@ -101,12 +102,16 @@ class EmailRepositoryImpl extends EmailRepository {
       readActions,
     );
 
-    await emailDataSource[DataSourceType.hiveCache]!.markAsRead(
-      session,
-      accountId,
-      result.emailIdsSuccess,
-      readActions,
-    );
+    try {
+      await emailDataSource[DataSourceType.hiveCache]!.markAsRead(
+        session,
+        accountId,
+        result.emailIdsSuccess,
+        readActions,
+      );
+    } catch (e) {
+      logError('EmailRepositoryImpl::markAsRead:exception $e');
+    }
 
     return result;
   }
@@ -159,18 +164,22 @@ class EmailRepositoryImpl extends EmailRepository {
       ),
     );
     
-    await emailDataSource[DataSourceType.hiveCache]
-      !.moveToMailbox(
-        session,
-        accountId,
-        MoveToMailboxRequest(
-          updatedCurrentMailboxes,
-          moveRequest.destinationMailboxId,
-          moveRequest.moveAction,
-          moveRequest.emailActionType,
-          destinationPath: moveRequest.destinationPath,
-        ),
-      );
+    try {
+      await emailDataSource[DataSourceType.hiveCache]
+        !.moveToMailbox(
+          session,
+          accountId,
+          MoveToMailboxRequest(
+            updatedCurrentMailboxes,
+            moveRequest.destinationMailboxId,
+            moveRequest.moveAction,
+            moveRequest.emailActionType,
+            destinationPath: moveRequest.destinationPath,
+          ),
+        );
+    } catch (e) {
+      logError('EmailRepositoryImpl::moveToMailbox:exception $e');
+    }
 
     return result;
   }
@@ -191,12 +200,16 @@ class EmailRepositoryImpl extends EmailRepository {
       emailIds,
       markStarAction,
     );
-    await emailDataSource[DataSourceType.hiveCache]!.markAsStar(
-      session,
-      accountId,
-      result.emailIdsSuccess,
-      markStarAction
-    );
+    try {
+      await emailDataSource[DataSourceType.hiveCache]!.markAsStar(
+        session,
+        accountId,
+        result.emailIdsSuccess,
+        markStarAction
+      );
+    } catch (e) {
+      logError('EmailRepositoryImpl::markAsStar:exception $e');
+    }
     return result;
   }
 
@@ -230,12 +243,16 @@ class EmailRepositoryImpl extends EmailRepository {
       email,
       cancelToken: cancelToken
     );
-    await emailDataSource[DataSourceType.hiveCache]!.saveEmailAsDrafts(
-      session,
-      accountId,
-      result,
-      cancelToken: cancelToken
-    );
+    try {
+      await emailDataSource[DataSourceType.hiveCache]!.saveEmailAsDrafts(
+        session,
+        accountId,
+        result,
+        cancelToken: cancelToken
+      );
+    } catch (e) {
+      logError('EmailRepositoryImpl::saveEmailAsDrafts:exception $e');
+    }
     return result;
   }
 
@@ -252,12 +269,16 @@ class EmailRepositoryImpl extends EmailRepository {
       emailId,
       cancelToken: cancelToken
     );
-    await emailDataSource[DataSourceType.hiveCache]!.removeEmailDrafts(
-      session,
-      accountId,
-      emailId,
-      cancelToken: cancelToken
-    );
+    try {
+      await emailDataSource[DataSourceType.hiveCache]!.removeEmailDrafts(
+        session,
+        accountId,
+        emailId,
+        cancelToken: cancelToken
+      );
+    } catch (e) {
+      logError('EmailRepositoryImpl::removeEmailDrafts:exception $e');
+    }
     return result;
   }
 
@@ -276,12 +297,16 @@ class EmailRepositoryImpl extends EmailRepository {
       oldEmailId,
       cancelToken: cancelToken
     );
-    await emailDataSource[DataSourceType.hiveCache]!.updateEmailDrafts(
-      session,
-      accountId,
-      result,
-      oldEmailId,
-    );
+    try {
+      await emailDataSource[DataSourceType.hiveCache]!.updateEmailDrafts(
+        session,
+        accountId,
+        result,
+        oldEmailId,
+      );
+    } catch (e) {
+      logError('EmailRepositoryImpl::updateEmailDrafts:exception $e');
+    }
     return result;
   }
 
@@ -320,8 +345,12 @@ class EmailRepositoryImpl extends EmailRepository {
       accountId,
       emailIds,
     );
-    await emailDataSource[DataSourceType.hiveCache]
-      !.deleteMultipleEmailsPermanently(session, accountId, result.emailIdsSuccess);
+    try {
+      await emailDataSource[DataSourceType.hiveCache]
+        !.deleteMultipleEmailsPermanently(session, accountId, result.emailIdsSuccess);
+    } catch (e) {
+      logError('EmailRepositoryImpl::deleteMultipleEmailsPermanently:exception $e');
+    }
 
     return result;
   }
@@ -339,11 +368,15 @@ class EmailRepositoryImpl extends EmailRepository {
       emailId,
       cancelToken: cancelToken
     );
-    await emailDataSource[DataSourceType.hiveCache]!.deleteEmailPermanently(
-      session,
-      accountId,
-      emailId,
-    );
+    try {
+      await emailDataSource[DataSourceType.hiveCache]!.deleteEmailPermanently(
+        session,
+        accountId,
+        emailId,
+      );
+    } catch (e) {
+      logError('EmailRepositoryImpl::deleteEmailPermanently:exception $e');
+    }
 
     return result;
   }
