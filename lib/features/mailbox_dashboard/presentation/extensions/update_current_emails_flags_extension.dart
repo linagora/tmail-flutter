@@ -4,6 +4,7 @@ import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 
 extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
   void updateEmailFlagByEmailIds(
@@ -13,7 +14,11 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
   }) {
     if (readAction == null && markStarAction == null) return;
 
-    for (var email in emailsInCurrentMailbox) {
+    final currentEmails = dashboardRoute.value == DashboardRoutes.searchEmail
+      ? listResultSearch
+      : emailsInCurrentMailbox;
+
+    for (var email in currentEmails) {
       if (!emailIds.contains(email.id)) continue;
 
       switch (readAction) {
@@ -39,7 +44,7 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
       }
     }
 
-    emailsInCurrentMailbox.refresh();
+    currentEmails.refresh();
   }
 
   void _updateKeyword(
