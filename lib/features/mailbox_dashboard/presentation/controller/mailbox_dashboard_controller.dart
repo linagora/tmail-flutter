@@ -967,7 +967,7 @@ class MailboxDashBoardController extends ReloadableController
         accountId.value!,
         listEmailNeedMarkAsRead.listEmailIds,
         readActions,
-        listPresentationEmail.firstOrNull?.mailboxContain?.mailboxId,
+        listEmailNeedMarkAsRead.emailIdsByMailboxId,
       ));
     }
   }
