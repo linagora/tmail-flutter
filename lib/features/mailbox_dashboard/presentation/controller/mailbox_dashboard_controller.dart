@@ -1370,7 +1370,7 @@ class MailboxDashBoardController extends ReloadableController
         spamMailboxId!,
         MoveAction.moving,
         EmailActionType.moveToSpam),
-      Map.fromIterable(
+      Map.fromEntries(
         listEmail
           .where((email) => email.id != null)
           .map((email) => MapEntry(email.id!, email.hasRead)),
@@ -1421,7 +1421,7 @@ class MailboxDashBoardController extends ReloadableController
         inboxMailboxId,
         MoveAction.moving,
         EmailActionType.unSpam),
-      Map.fromIterable(
+      Map.fromEntries(
         listEmail
           .where((email) => email.id != null)
           .map((email) => MapEntry(email.id!, email.hasRead)),
