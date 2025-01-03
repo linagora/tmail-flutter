@@ -95,12 +95,14 @@ class EmailCacheManager {
     return _emailCacheClient.insertItem(keyCache, emailCache);
   }
 
-  Future<void> storeMultipleEmails(AccountId accountId, UserName userName, List<EmailCache> emailsCache) {
-    return Future.wait(emailsCache.map((emailCache) => storeEmail(
-      accountId,
-      userName,
-      emailCache,
-    )));
+  Future<void> storeMultipleEmails(AccountId accountId, UserName userName, List<EmailCache> emailsCache) async {
+    final emailsToCache = Map.fromEntries(emailsCache.map(
+      (emailCache) => MapEntry(
+        TupleKey(emailCache.id, accountId.asString, userName.value).encodeKey,
+        emailCache,
+      ),
+    ));
+    await _emailCacheClient.insertMultipleItem(emailsToCache);
   }
 
   Future<EmailCache> getStoredEmail(AccountId accountId, UserName userName, EmailId emailId) async {

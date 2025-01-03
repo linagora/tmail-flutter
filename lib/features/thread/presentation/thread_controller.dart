@@ -369,7 +369,9 @@ class ThreadController extends BaseController with EmailActionController {
           destinationMailboxId: reactionState.destinationMailboxId,
           moveAction: reactionState.moveAction,
         );
-        _checkIfCurrentMailboxCanLoadMore();
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _checkIfCurrentMailboxCanLoadMore();
+        });
       } else if (reactionState is DeleteEmailPermanentlySuccess
         || reactionState is DeleteMultipleEmailsPermanentlyAllSuccess
         || reactionState is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure
@@ -396,7 +398,7 @@ class ThreadController extends BaseController with EmailActionController {
     final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
     if (currentMailbox == null) return;
 
-    final totalEmailsCount = currentMailbox.totalEmails?.value.value ?? 0;
+    final totalEmailsCount = currentMailbox.countTotalEmails;
     if (totalEmailsCount == 0
       || mailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty
     ) return;
