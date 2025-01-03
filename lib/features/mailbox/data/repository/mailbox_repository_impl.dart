@@ -244,19 +244,21 @@ class MailboxRepositoryImpl extends MailboxRepository {
       totalEmailUnread,
       onProgressController);
     try {
-      await mapDataSource[DataSourceType.local]!.markAsMailboxRead(
-        session,
-        accountId,
-        mailboxId,
-        totalEmailUnread - result.length,
-        onProgressController,
-      );
-      await emailDataSource?.markAsRead(
-        session,
-        accountId,
-        result,
-        ReadActions.markAsRead,
-      );
+      await Future.wait([
+        mapDataSource[DataSourceType.local]!.markAsMailboxRead(
+          session,
+          accountId,
+          mailboxId,
+          totalEmailUnread - result.length,
+          onProgressController,
+        ),
+        emailDataSource?.markAsRead(
+          session,
+          accountId,
+          result,
+          ReadActions.markAsRead,
+        ) ?? Future.value(),
+      ]);
     } catch (e) {
       logError('MailboxRepositoryImpl::markAsMailboxRead: Exception: $e');
     }
