@@ -9,6 +9,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:core/utils/string_convert.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -501,11 +502,27 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
   void _handleSubmitTagAction(
     String value,
     StateSetter stateSetter
-  ) {
-    final textTrim = value.trim();
-    if (!_isDuplicatedRecipient(textTrim)) {
-      stateSetter(() => _currentListEmailAddress.add(EmailAddress(null, textTrim)));
+  ) => _createMailTag(value, stateSetter);
+
+  void _createMailTag(String value, StateSetter stateSetter) {
+    final listString = StringConvert.extractStrings(value.trim()).toSet();
+
+    if (listString.isEmpty && !_isDuplicatedRecipient(value)) {
+      stateSetter(() => _currentListEmailAddress.add(EmailAddress(null, value)));
       _updateListEmailAddressAction();
+    } else if (listString.isNotEmpty) {
+      final listStringNotExist = listString
+        .where((text) => !_isDuplicatedRecipient(text))
+        .toList();
+
+      if (listStringNotExist.isNotEmpty) {
+        final listAddress = listStringNotExist
+          .map((text) => EmailAddress(null, text))
+          .toList();
+        
+        stateSetter(() => _currentListEmailAddress.addAll(listAddress));
+        _updateListEmailAddressAction();
+      }
     }
   }
 
