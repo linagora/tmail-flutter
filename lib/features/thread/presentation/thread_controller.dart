@@ -20,6 +20,8 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
+import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
@@ -338,6 +340,7 @@ class ThreadController extends BaseController with EmailActionController {
     });
 
     ever(mailboxDashBoardController.viewState, (viewState) {
+      if (mailboxDashBoardController.searchController.isSearchEmailRunning) return;
       final reactionState = viewState.getOrElse(() => UIState.idle);
       if (reactionState is MarkAsMailboxReadAllSuccess) {
         _handleMarkEmailsAsReadByMailboxId(reactionState.mailboxId);
@@ -350,17 +353,30 @@ class ThreadController extends BaseController with EmailActionController {
         mailboxDashBoardController.handleMoveEmailsToMailbox(
           originalMailboxIdsWithEmailIds: reactionState.originalMailboxIdsWithEmailIds,
           destinationMailboxId: reactionState.destinationMailboxId,
+          moveAction: reactionState.moveAction,
         );
+        _checkIfCurrentMailboxCanLoadMore();
       } else if (reactionState is MoveMultipleEmailToMailboxAllSuccess) {
         mailboxDashBoardController.handleMoveEmailsToMailbox(
           originalMailboxIdsWithEmailIds: reactionState.originalMailboxIdsWithEmailIds,
           destinationMailboxId: reactionState.destinationMailboxId,
+          moveAction: reactionState.moveAction,
         );
+        _checkIfCurrentMailboxCanLoadMore();
       } else if (reactionState is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
         mailboxDashBoardController.handleMoveEmailsToMailbox(
           originalMailboxIdsWithEmailIds: reactionState.originalMailboxIdsWithMoveSucceededEmailIds,
           destinationMailboxId: reactionState.destinationMailboxId,
+          moveAction: reactionState.moveAction,
         );
+        _checkIfCurrentMailboxCanLoadMore();
+      } else if (reactionState is DeleteEmailPermanentlySuccess
+        || reactionState is DeleteMultipleEmailsPermanentlyAllSuccess
+        || reactionState is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure
+      ) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _checkIfCurrentMailboxCanLoadMore();
+        });
       }
     });
   }
@@ -374,6 +390,18 @@ class ThreadController extends BaseController with EmailActionController {
       presentationEmail.keywords?[KeyWordIdentifier.emailSeen] = true;
     }
     mailboxDashBoardController.emailsInCurrentMailbox.refresh();
+  }
+
+  void _checkIfCurrentMailboxCanLoadMore() {
+    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
+    if (currentMailbox == null) return;
+
+    final totalEmailsCount = currentMailbox.totalEmails?.value.value ?? 0;
+    if (totalEmailsCount == 0
+      || mailboxDashBoardController.emailsInCurrentMailbox.isNotEmpty
+    ) return;
+
+    dispatchState(Right(GetAllEmailLoading()));
   }
 
   void _registerBrowserResizeListener() {
