@@ -281,25 +281,29 @@ class MailboxController extends BaseMailboxController
             : null,
         );
       } else if (reactionState is MarkAsMultipleEmailReadAllSuccess) {
-        _handleMarkEmailsAsReadOrUnread(
-          affectedMailboxId: reactionState.mailboxId,
-          readCount: reactionState.readActions == ReadActions.markAsRead
-            ? reactionState.emailIds.length
-            : null,
-          unreadCount: reactionState.readActions == ReadActions.markAsUnread
-            ? reactionState.emailIds.length
-            : null,
-        );
+        for (var emailIdsByMailboxId in reactionState.markSuccessEmailIdsByMailboxId.entries) {
+          _handleMarkEmailsAsReadOrUnread(
+            affectedMailboxId: emailIdsByMailboxId.key,
+            readCount: reactionState.readActions == ReadActions.markAsRead
+              ? emailIdsByMailboxId.value.length
+              : null,
+            unreadCount: reactionState.readActions == ReadActions.markAsUnread
+              ? emailIdsByMailboxId.value.length
+              : null,
+          );
+        }
       } else if (reactionState is MarkAsMultipleEmailReadHasSomeEmailFailure) {
-        _handleMarkEmailsAsReadOrUnread(
-          affectedMailboxId: reactionState.mailboxId,
-          readCount: reactionState.readActions == ReadActions.markAsRead
-            ? reactionState.successEmailIds.length
-            : null,
-          unreadCount: reactionState.readActions == ReadActions.markAsUnread
-            ? reactionState.successEmailIds.length
-            : null,
-        );
+        for (var emailIdsByMailboxId in reactionState.markSuccessEmailIdsByMailboxId.entries) {
+          _handleMarkEmailsAsReadOrUnread(
+            affectedMailboxId: emailIdsByMailboxId.key,
+            readCount: reactionState.readActions == ReadActions.markAsRead
+              ? emailIdsByMailboxId.value.length
+              : null,
+            unreadCount: reactionState.readActions == ReadActions.markAsUnread
+              ? emailIdsByMailboxId.value.length
+              : null,
+          );
+        }
       } else if (reactionState is MarkAsMailboxReadAllSuccess) {
         _handleMarkMailboxAsRead(
           affectedMailboxId: reactionState.mailboxId,

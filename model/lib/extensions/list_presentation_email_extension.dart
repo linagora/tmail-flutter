@@ -22,6 +22,17 @@ extension ListPresentationEmailExtension on List<PresentationEmail> {
 
   List<EmailId> get listEmailIds => map((email) => email.id).whereNotNull().toList();
 
+  Map<MailboxId, List<EmailId>> get emailIdsByMailboxId => Map.from(
+    where((email) => email.mailboxContain?.mailboxId != null && email.id != null)
+      .fold(<MailboxId, List<EmailId>>{}, (combine, email) {
+        final mailboxId = email.mailboxContain!.mailboxId!;
+        combine[mailboxId] ??= [];
+        combine[mailboxId]!.add(email.id!);
+        return combine;
+      }
+    ),
+  );
+
   bool isAllCanDeletePermanently(Map<MailboxId, PresentationMailbox> mapMailbox) {
     final listMailboxContain = map((email) => email.findMailboxContain(mapMailbox))
         .whereType<PresentationMailbox>()

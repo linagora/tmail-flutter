@@ -19,7 +19,7 @@ class MarkAsMultipleEmailReadInteractor {
     AccountId accountId,
     List<EmailId> emailIds,
     ReadActions readAction,
-    MailboxId? mailboxId,
+    Map<MailboxId, List<EmailId>> emailIdsByMailboxId,
   ) async* {
     try {
       yield Right(LoadingMarkAsMultipleEmailReadAll());
@@ -30,12 +30,18 @@ class MarkAsMultipleEmailReadInteractor {
         emailIds,
         readAction,
       );
+      final markSuccessEmailIdsByMailboxId = emailIdsByMailboxId.map(
+        (key, value) => MapEntry(
+          key,
+          value.where(result.emailIdsSuccess.contains).toList(),
+        ),
+      );
 
       if (emailIds.length == result.emailIdsSuccess.length) {
         yield Right(MarkAsMultipleEmailReadAllSuccess(
           result.emailIdsSuccess,
           readAction,
-          mailboxId,
+          markSuccessEmailIdsByMailboxId,
         ));
       } else if (result.emailIdsSuccess.isEmpty) {
         yield Left(MarkAsMultipleEmailReadAllFailure(readAction));
@@ -43,7 +49,7 @@ class MarkAsMultipleEmailReadInteractor {
         yield Right(MarkAsMultipleEmailReadHasSomeEmailFailure(
           result.emailIdsSuccess,
           readAction,
-          mailboxId,
+          markSuccessEmailIdsByMailboxId,
         ));
       }
     } catch (e) {
