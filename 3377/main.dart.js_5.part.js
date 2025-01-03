@@ -200,17 +200,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.border = t4;
       _.key = t5;
     },
-    AppGridDashboardIcon$(appGridController, onShowAppDashboardAction) {
-      var t1;
-      $.$get$Get();
-      t1 = $.GetInstance__getInstance;
-      if (t1 == null)
-        t1 = $.GetInstance__getInstance = B.C_GetInstance;
-      return new C.AppGridDashboardIcon(t1.find$1$1$tag(0, null, type$.ImagePaths), appGridController, onShowAppDashboardAction, null);
-    },
     AppGridDashboardIcon: function AppGridDashboardIcon(t0, t1, t2, t3) {
       var _ = this;
-      _._app_grid_dashboard_icon$_imagePaths = t0;
+      _.imagePaths = t0;
       _.appGridController = t1;
       _.onShowAppDashboardAction = t2;
       _.key = t3;
@@ -240,18 +232,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     AppDashboardOverlay_build_closure: function AppDashboardOverlay_build_closure() {
     },
-    NavigationBarWidget$(appGridController, avatarUserName, onShowAppDashboardAction, onTapApplicationLogoAction, onTapAvatarAction, searchForm) {
-      return new C.NavigationBarWidget(avatarUserName, searchForm, appGridController, onTapApplicationLogoAction, onShowAppDashboardAction, onTapAvatarAction, null);
+    NavigationBarWidget$(appGridController, avatarUserName, contactSupportCapability, imagePaths, onShowAppDashboardAction, onTapApplicationLogoAction, onTapAvatarAction, onTapContactSupportAction, searchForm) {
+      return new C.NavigationBarWidget(imagePaths, avatarUserName, contactSupportCapability, searchForm, appGridController, onTapApplicationLogoAction, onShowAppDashboardAction, onTapAvatarAction, onTapContactSupportAction, null);
     },
-    NavigationBarWidget: function NavigationBarWidget(t0, t1, t2, t3, t4, t5, t6) {
+    NavigationBarWidget: function NavigationBarWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9) {
       var _ = this;
-      _.avatarUserName = t0;
-      _.searchForm = t1;
-      _.appGridController = t2;
-      _.onTapApplicationLogoAction = t3;
-      _.onShowAppDashboardAction = t4;
-      _.onTapAvatarAction = t5;
-      _.key = t6;
+      _.imagePaths = t0;
+      _.avatarUserName = t1;
+      _.contactSupportCapability = t2;
+      _.searchForm = t3;
+      _.appGridController = t4;
+      _.onTapApplicationLogoAction = t5;
+      _.onShowAppDashboardAction = t6;
+      _.onTapAvatarAction = t7;
+      _.onTapContactSupportAction = t8;
+      _.key = t9;
     },
     NavigationBarWidget_build_closure: function NavigationBarWidget_build_closure(t0) {
       this.$this = t0;
@@ -710,9 +705,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         if (C.AppConfig_appGridDashboardAvailable() && _this.appGridController != null) {
           t3 = _this.appGridController;
           t3.toString;
-          t1.push(C.AppGridDashboardIcon$(t3, _this.onShowAppDashboardAction));
+          t1.push(new A.Padding(B.EdgeInsetsDirectional_0_0_16_0, new C.AppGridDashboardIcon(_this.imagePaths, t3, _this.onShowAppDashboardAction, _null), _null));
         }
-        t1.push(D.SizedBox_16_null_null_null);
         t3 = new A.AvatarBuilder();
         t3._avatar_builder$_text = _this.avatarUserName;
         t3._bgColor = B.Color_4294967295;
@@ -946,7 +940,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 148
+    $signature: 128
   };
   C._HtmlContentViewerOnWebState_initState__closure.prototype = {
     call$0() {
@@ -972,7 +966,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 395
+    $signature: 623
   };
   C._HtmlContentViewerOnWebState__setUpWeb_closure0.prototype = {
     call$0() {
@@ -995,7 +989,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(D.Align_ChN);
       return new A.Stack(B.AlignmentDirectional_m1_m1, null, B.StackFit_0, B.Clip_1, t2, null);
     },
-    $signature: 143
+    $signature: 152
   };
   C._HtmlContentViewerOnWebState_build__closure.prototype = {
     call$2(context, snapshot) {
@@ -1013,13 +1007,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 1745
+    $signature: 1753
   };
   C.LinkBrowserWidget_build_closure.prototype = {
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1746
+    $signature: 1754
   };
   C.AppGridDashboardIcon_build_closure.prototype = {
     call$0() {
@@ -1034,7 +1028,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A.Bidi_isRtlLanguage(t3.dependOnInheritedWidgetOfExactType$1$0(t4).localizationsState._localizations$_locale.get$languageCode(0)) ? B.Alignment_m1_1 : D.Alignment_1_1;
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(new A.Aligned(_null, _null, t5, t3, B.Alignment_0_0, B.C_AxisFlag, B.C_AxisFlag, B.Offset_0_0, _null), A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t1.onShowAppDashboardAction, B.EdgeInsets_6_6_6_6, _null), new A.Obx(new C.AppGridDashboardIcon_build__closure(t1), _null), isAppGridOpen), t2, isAppGridOpen);
     },
-    $signature: 334
+    $signature: 366
   };
   C.AppGridDashboardIcon_build__closure.prototype = {
     call$0() {
@@ -1058,7 +1052,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null;
       return A.Container$(_null, _null, B.Clip_0, B.Color_4285887861, _null, _null, _null, 42, _null, _null, _null, _null, _null, 42);
     },
-    $signature: 629
+    $signature: 621
   };
   C.AppDashboardOverlay_build_closure0.prototype = {
     call$0() {
@@ -1080,15 +1074,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.NavigationBarWidget_build_closure.prototype = {
     call$2(context, constraint) {
-      var t3,
+      var t3, _null = null,
         t1 = this.$this,
-        t2 = A._setArrayType([new A.SizedBox(constraint.maxWidth / 2, 52, t1.searchForm, null), B.Spacer_null], type$.JSArray_Widget);
+        t2 = A._setArrayType([new A.SizedBox(constraint.maxWidth / 2, 52, t1.searchForm, _null), B.Spacer_null], type$.JSArray_Widget);
       if (C.AppConfig_appGridDashboardAvailable() && t1.appGridController != null) {
         t3 = t1.appGridController;
         t3.toString;
-        t2.push(C.AppGridDashboardIcon$(t3, t1.onShowAppDashboardAction));
+        t2.push(new A.Padding(B.EdgeInsetsDirectional_0_0_16_0, new C.AppGridDashboardIcon(t1.imagePaths, t3, t1.onShowAppDashboardAction, _null), _null));
       }
-      t2.push(D.SizedBox_16_null_null_null);
       t3 = new A.AvatarBuilder();
       t3._avatar_builder$_text = t1.avatarUserName;
       t3._bgColor = B.Color_4294967295;
@@ -1098,9 +1091,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3._onTapAvatarActionWithPositionClick = t1.onTapAvatarAction;
       t3._boxShadows = A._setArrayType([D.BoxShadow_NMc], type$.JSArray_BoxShadow);
       t2.push(t3.build$0());
-      return A.Row$(t2, B.CrossAxisAlignment_2, null, B.MainAxisAlignment_0, B.MainAxisSize_1, null);
+      return A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 340
+    $signature: 365
   };
   C.DefaultLinkDelegate_build_closure.prototype = {
     call$0() {
@@ -1207,5 +1200,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "45BVgNcdfogDGN2498zx2MKLlcw=");
+})($__dart_deferred_initializers__, "EA7yPvwbkuVnePv+EFrp4PRzec0=");
 ;
