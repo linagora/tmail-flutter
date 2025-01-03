@@ -489,7 +489,6 @@ class ThreadController extends BaseController with EmailActionController {
 
   void _getAllEmailAction({
     bool getLatestChanges = true,
-    bool skipCache = false,
   }) {
     log('ThreadController::_getAllEmailAction:');
     if (_session != null &&_accountId != null) {
@@ -506,7 +505,6 @@ class ThreadController extends BaseController with EmailActionController {
         propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
         getLatestChanges: getLatestChanges,
-        skipCache: skipCache,
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
@@ -555,7 +553,7 @@ class ThreadController extends BaseController with EmailActionController {
     if (searchController.isSearchEmailRunning) {
       _searchEmail(limit: limitEmailFetched);
     } else {
-      _getAllEmailAction(skipCache: true);
+      _getAllEmailAction();
     }
   }
 
