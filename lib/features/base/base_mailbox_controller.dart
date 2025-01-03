@@ -20,6 +20,9 @@ import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/action/update_mailbox_properties_action/update_mailbox_name_action.dart';
+import 'package:tmail_ui_user/features/base/action/update_mailbox_properties_action/update_mailbox_total_emails_count_action.dart';
+import 'package:tmail_ui_user/features/base/action/update_mailbox_properties_action/update_mailbox_unread_count_action.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_subscribe_action_state.dart';
@@ -555,36 +558,22 @@ abstract class BaseMailboxController extends BaseController {
   }
 
   void updateMailboxNameById(MailboxId mailboxId, MailboxName mailboxName) {
-    final mailboxTrees = [
-      defaultMailboxTree,
-      personalMailboxTree,
-      teamMailboxesTree,
-    ];
-
-    for (var mailboxTree in mailboxTrees) {
-      if (mailboxTree.value.updateMailboxNameById(mailboxId, mailboxName)) {
-        mailboxTree.refresh();
-        break;
-      }
-    }
+    UpdateMailboxNameAction(
+      mailboxTrees: [defaultMailboxTree, personalMailboxTree, teamMailboxesTree],
+      mailboxId: mailboxId,
+      mailboxName: mailboxName,
+    ).execute();
   }
 
   void updateUnreadCountOfMailboxById(
     MailboxId mailboxId, {
     required int unreadChanges,
   }) {
-    final mailboxTrees = [
-      defaultMailboxTree,
-      personalMailboxTree,
-      teamMailboxesTree,
-    ];
-
-    for (var mailboxTree in mailboxTrees) {
-      if (mailboxTree.value.updateMailboxUnreadCountById(mailboxId, unreadChanges)) {
-        mailboxTree.refresh();
-        break;
-      }
-    }
+    UpdateMailboxUnreadCountAction(
+      mailboxTrees: [defaultMailboxTree, personalMailboxTree, teamMailboxesTree],
+      mailboxId: mailboxId,
+      unreadChanges: unreadChanges,
+    ).execute();
   }
 
   void clearUnreadCount(MailboxId mailboxId) {
@@ -598,26 +587,19 @@ abstract class BaseMailboxController extends BaseController {
       final selectedNode = mailboxTree.value.findNode((node) => node.item.id == mailboxId);
       if (selectedNode == null) continue;
       final currentUnreadCount = selectedNode.item.unreadEmails?.value.value.toInt();
-      teamMailboxesTree.value.updateMailboxUnreadCountById(
+      mailboxTree.value.updateMailboxUnreadCountById(
         mailboxId,
         -(currentUnreadCount ?? 0));
-      teamMailboxesTree.refresh();
+      mailboxTree.refresh();
       break;
     }
   }
 
   void updateMailboxTotalEmailsCountById(MailboxId mailboxId, int totalEmails) {
-    final mailboxTrees = [
-      defaultMailboxTree,
-      personalMailboxTree,
-      teamMailboxesTree,
-    ];
-
-    for (var mailboxTree in mailboxTrees) {
-      if (mailboxTree.value.updateMailboxTotalEmailsCountById(mailboxId, totalEmails)) {
-        mailboxTree.refresh();
-        break;
-      }
-    }
+    UpdateMailboxTotalEmailsCountAction(
+      mailboxTrees: [defaultMailboxTree, personalMailboxTree, teamMailboxesTree],
+      mailboxId: mailboxId,
+      totalEmailsCountChanged: totalEmails,
+    ).execute();
   }
 }
