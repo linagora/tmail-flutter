@@ -95,6 +95,14 @@ class EmailCacheManager {
     return _emailCacheClient.insertItem(keyCache, emailCache);
   }
 
+  Future<void> storeMultipleEmails(AccountId accountId, UserName userName, List<EmailCache> emailsCache) {
+    return Future.wait(emailsCache.map((emailCache) => storeEmail(
+      accountId,
+      userName,
+      emailCache,
+    )));
+  }
+
   Future<EmailCache> getStoredEmail(AccountId accountId, UserName userName, EmailId emailId) async {
     final keyCache = TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey;
     final emailCache = await _emailCacheClient.getItem(keyCache, needToReopen: true);
@@ -103,5 +111,17 @@ class EmailCacheManager {
     } else {
       throw NotFoundStoredEmailException();
     }
+  }
+
+  Future<List<EmailCache>> getMultipleStoredEmails(
+    AccountId accountId,
+    UserName userName,
+    List<EmailId> emailIds,
+  ) async {
+    final keys = emailIds
+      .map((emailId) => TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey)
+      .toList();
+    final emails = await _emailCacheClient.getValuesByListKey(keys);
+    return emails;
   }
 }
