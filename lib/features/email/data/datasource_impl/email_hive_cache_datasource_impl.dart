@@ -153,9 +153,12 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     List<EmailId> emailIds,
     ReadActions readActions,
   ) async {
-    final storedEmails = await Future.wait(emailIds.map(
-      (emailId) => getStoredEmail(session, accountId, emailId),
-    ));
+    final cacheEmails = await _emailCacheManager.getMultipleStoredEmails(
+      accountId,
+      session.username,
+      emailIds,
+    );
+    final storedEmails = cacheEmails.map((emailCache) => emailCache.toEmail()).toList();
     for (var email in storedEmails) {
       if (readActions == ReadActions.markAsUnread) {
         email.keywords?.remove(KeyWordIdentifier.emailSeen);
@@ -163,9 +166,11 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
         email.keywords?[KeyWordIdentifier.emailSeen] = true;
       }
     }
-    await Future.wait(storedEmails.map(
-      (email) => storeEmail(session, accountId, email),
-    ));
+    await _emailCacheManager.storeMultipleEmails(
+      accountId,
+      session.username,
+      storedEmails.map((email) => email.toEmailCache()).toList(),
+    );
     return (
       emailIdsSuccess: emailIds,
       mapErrors: <Id, SetError>{}
@@ -182,9 +187,12 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     List<EmailId> emailIds,
     MarkStarAction markStarAction,
   ) async {
-    final storedEmails = await Future.wait(emailIds.map(
-      (emailId) => getStoredEmail(session, accountId, emailId),
-    ));
+    final cacheEmails = await _emailCacheManager.getMultipleStoredEmails(
+      accountId,
+      session.username,
+      emailIds,
+    );
+    final storedEmails = cacheEmails.map((emailCache) => emailCache.toEmail()).toList();
     for (var email in storedEmails) {
       if (markStarAction == MarkStarAction.unMarkStar) {
         email.keywords?.remove(KeyWordIdentifier.emailFlagged);
@@ -192,9 +200,11 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
         email.keywords?[KeyWordIdentifier.emailFlagged] = true;
       }
     }
-    await Future.wait(storedEmails.map(
-      (email) => storeEmail(session, accountId, email),
-    ));
+    await _emailCacheManager.storeMultipleEmails(
+      accountId,
+      session.username,
+      storedEmails.map((email) => email.toEmailCache()).toList(),
+    );
     return (
       emailIdsSuccess: emailIds,
       mapErrors: <Id, SetError>{}
@@ -210,24 +220,27 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     AccountId accountId,
     MoveToMailboxRequest moveRequest,
   ) async {
-    final emailIds = moveRequest.currentMailboxes.entries.fold(
-      <EmailId>{},
-      (emailIds, entry) {
-        emailIds.addAll(entry.value);
-        return emailIds;
-      },
-    ).toList();
-    final storedEmails = await Future.wait(emailIds.map(
-      (emailId) => getStoredEmail(session, accountId, emailId),
-    ));
+    final emailIds = moveRequest
+      .currentMailboxes
+      .values
+      .expand((emails) => emails)
+      .toList();
+    final cacheEmails = await _emailCacheManager.getMultipleStoredEmails(
+      accountId,
+      session.username,
+      emailIds,
+    );
+    final storedEmails = cacheEmails.map((emailCache) => emailCache.toEmail()).toList();
     for (int i = 0; i < storedEmails.length; i++) {
       storedEmails[i] = storedEmails[i].updatedEmail(
         newMailboxIds: {moveRequest.destinationMailboxId: true},
       );
     }
-    await Future.wait(storedEmails.map(
-      (email) => storeEmail(session, accountId, email),
-    ));
+    await _emailCacheManager.storeMultipleEmails(
+      accountId,
+      session.username,
+      storedEmails.map((email) => email.toEmailCache()).toList(),
+    );
     return (
       emailIdsSuccess: emailIds,
       mapErrors: <Id, SetError>{}
