@@ -10,6 +10,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 
 import 'update_current_emails_flags_extension_test.mocks.dart';
 
@@ -24,6 +25,7 @@ void main() {
       numberOfEmails,
       (index) => EmailId(Id('email-id-$index')),
     );
+    when(mailboxDashBoardController.dashboardRoute).thenReturn(DashboardRoutes.thread.obs);
   });
 
   group('updateEmailFlagByEmailIds test:', () {
