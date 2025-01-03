@@ -18,13 +18,14 @@ extension UpdateEmailsWithNewMailboxIdExtension on MailboxDashBoardController {
         return emailIds;
       },
     ).toList();
-    for (var email in currentEmails) {
-      if (!movedEmailIds.contains(email.id)) continue;
+    for (int i = 0; i < currentEmails.length; i++) {
+      if (!movedEmailIds.contains(currentEmails[i].id)) continue;
 
-      email = email.copyWith(
+      currentEmails[i] = currentEmails[i].copyWith(
         mailboxIds: {destinationMailboxId: true},
         mailboxContain: mapMailboxById[destinationMailboxId],
       );
     }
+    updateEmailList(currentEmails);
   }
 }
