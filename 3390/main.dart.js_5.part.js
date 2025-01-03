@@ -1007,13 +1007,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 1754
+    $signature: 1752
   };
   C.LinkBrowserWidget_build_closure.prototype = {
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1755
+    $signature: 1753
   };
   C.AppGridDashboardIcon_build_closure.prototype = {
     call$0() {
@@ -1200,5 +1200,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "R4MuAgj1J3gEzWVOQRAI0hiVWkU=");
+})($__dart_deferred_initializers__, "K8WuHk6T9x+cDPkEztQqe2pcmwI=");
 ;
