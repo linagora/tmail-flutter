@@ -265,6 +265,7 @@ class SearchEmailController extends BaseController
     );
 
     ever(mailboxDashBoardController.viewState, (viewState) {
+      if (!mailboxDashBoardController.searchController.isSearchEmailRunning) return;
       final reactionState = viewState.getOrElse(() => UIState.idle);
       if (reactionState is MoveToMailboxSuccess) {
         mailboxDashBoardController.handleUpdateEmailsWithNewMailboxId(

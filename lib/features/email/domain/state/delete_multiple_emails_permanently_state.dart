@@ -7,7 +7,7 @@ class LoadingDeleteMultipleEmailsPermanentlyAll extends UIState {}
 
 class DeleteMultipleEmailsPermanentlyAllSuccess extends UIState {
 
-  List<EmailId> emailIds;
+  final List<EmailId> emailIds;
   final MailboxId? mailboxId;
 
   DeleteMultipleEmailsPermanentlyAllSuccess(this.emailIds, this.mailboxId);
@@ -18,7 +18,7 @@ class DeleteMultipleEmailsPermanentlyAllSuccess extends UIState {
 
 class DeleteMultipleEmailsPermanentlyHasSomeEmailFailure extends UIState {
 
-  List<EmailId> emailIds;
+  final List<EmailId> emailIds;
   final MailboxId? mailboxId;
 
   DeleteMultipleEmailsPermanentlyHasSomeEmailFailure(this.emailIds, this.mailboxId);

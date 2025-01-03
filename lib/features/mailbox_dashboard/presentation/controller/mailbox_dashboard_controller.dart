@@ -253,6 +253,7 @@ class MailboxDashBoardController extends ReloadableController
   StreamSubscription? _pendingSharedFileInfoSubscription;
   StreamSubscription? _receivingFileSharingStreamSubscription;
   StreamSubscription? _currentEmailIdInNotificationIOSStreamSubscription;
+  List<PresentationEmail> emailsToBeUndo = [];
 
   final StreamController<Either<Failure, Success>> _progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -836,12 +837,22 @@ class MailboxDashBoardController extends ReloadableController
     MoveToMailboxRequest moveRequest,
     Map<EmailId, bool> emailIdsWithReadStatus,
   ) {
-    consumeState(_moveToMailboxInteractor.execute(
-      session,
-      accountId,
-      moveRequest,
-      emailIdsWithReadStatus,
-    ));
+    final currentMailboxes = moveRequest.currentMailboxes;
+    if (currentMailboxes.length == 1 && currentMailboxes.values.first.length == 1) {
+      consumeState(_moveToMailboxInteractor.execute(
+        session,
+        accountId,
+        moveRequest,
+        emailIdsWithReadStatus,
+      ));
+    } else {
+      consumeState(_moveMultipleEmailToMailboxInteractor.execute(
+        session,
+        accountId,
+        moveRequest,
+        emailIdsWithReadStatus,
+      ));
+    }
   }
 
   void _moveToMailboxSuccess(MoveToMailboxSuccess success) {
@@ -873,12 +884,12 @@ class MailboxDashBoardController extends ReloadableController
     final currentAccountId = accountId.value;
     final session = sessionCurrent;
     if (currentAccountId != null && session != null) {
-      consumeState(_moveToMailboxInteractor.execute(
+      moveToMailbox(
         session,
         currentAccountId,
         newMoveRequest,
         emailIdsWithReadStatus,
-      ));
+      );
     }
   }
 
