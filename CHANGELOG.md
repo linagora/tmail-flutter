@@ -1,3 +1,7 @@
+## [0.14.7] - 2025-01-05
+### Fixed
+- Delegate cache control from Flutter to browser
+
 ## [0.14.6] - 2025-01-03
 ### Fixed
 - #3372 Paging empty trash
