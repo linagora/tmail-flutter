@@ -60,7 +60,7 @@ abstract class PushBaseController {
       .toList();
 
     final listEmailActions = listTypeName
-      .where((typeName) => typeName == TypeName.emailDelivery)
+      .where((typeName) => typeName == TypeName.emailDelivery || typeName == TypeName.emailDelivery)
       .map((typeName) => _toPushNotificationAction(typeName, accountId, userName, mapTypeState, isForeground, session: session))
       .whereNotNull()
       .toList();
