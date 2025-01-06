@@ -356,32 +356,38 @@ class ThreadController extends BaseController with EmailActionController {
         mailboxDashBoardController.handleMoveEmailsToMailbox(
           originalMailboxIdsWithEmailIds: reactionState.originalMailboxIdsWithEmailIds,
           destinationMailboxId: reactionState.destinationMailboxId,
-          moveAction: reactionState.moveAction,
         );
         _checkIfCurrentMailboxCanLoadMore();
       } else if (reactionState is MoveMultipleEmailToMailboxAllSuccess) {
         mailboxDashBoardController.handleMoveEmailsToMailbox(
           originalMailboxIdsWithEmailIds: reactionState.originalMailboxIdsWithEmailIds,
           destinationMailboxId: reactionState.destinationMailboxId,
-          moveAction: reactionState.moveAction,
         );
         _checkIfCurrentMailboxCanLoadMore();
       } else if (reactionState is MoveMultipleEmailToMailboxHasSomeEmailFailure) {
         mailboxDashBoardController.handleMoveEmailsToMailbox(
           originalMailboxIdsWithEmailIds: reactionState.originalMailboxIdsWithMoveSucceededEmailIds,
           destinationMailboxId: reactionState.destinationMailboxId,
-          moveAction: reactionState.moveAction,
         );
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _checkIfCurrentMailboxCanLoadMore();
-        });
-      } else if (reactionState is DeleteEmailPermanentlySuccess
-        || reactionState is DeleteMultipleEmailsPermanentlyAllSuccess
-        || reactionState is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure
-      ) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          _checkIfCurrentMailboxCanLoadMore();
-        });
+        _checkIfCurrentMailboxCanLoadMore();
+      } else if (reactionState is DeleteEmailPermanentlySuccess) {
+        _handleDeleteEmailsPermanentlyFromMailboxId(
+          reactionState.mailboxId,
+          deletedEmailsCount: 1,
+        );
+        _checkIfCurrentMailboxCanLoadMore();
+      } else if (reactionState is DeleteMultipleEmailsPermanentlyAllSuccess) {
+        _handleDeleteEmailsPermanentlyFromMailboxId(
+          reactionState.mailboxId,
+          deletedEmailsCount: reactionState.emailIds.length,
+        );
+        _checkIfCurrentMailboxCanLoadMore();
+      } else if (reactionState is DeleteMultipleEmailsPermanentlyHasSomeEmailFailure) {
+        _handleDeleteEmailsPermanentlyFromMailboxId(
+          reactionState.mailboxId,
+          deletedEmailsCount: reactionState.emailIds.length,
+        );
+        _checkIfCurrentMailboxCanLoadMore();
       }
     });
   }
@@ -395,6 +401,22 @@ class ThreadController extends BaseController with EmailActionController {
       presentationEmail.keywords?[KeyWordIdentifier.emailSeen] = true;
     }
     mailboxDashBoardController.emailsInCurrentMailbox.refresh();
+  }
+
+  void _handleDeleteEmailsPermanentlyFromMailboxId(
+    MailboxId? mailboxId, {
+    required int deletedEmailsCount,
+  }) {
+    if (mailboxDashBoardController.selectedMailbox.value?.id != mailboxId) return;
+    final currentMailbox = mailboxDashBoardController.selectedMailbox.value;
+    final currentTotalEmails = currentMailbox?.totalEmails;
+    if (currentMailbox != null && currentTotalEmails != null) {
+      int newTotalEmails = currentTotalEmails.value.value.toInt() - deletedEmailsCount;
+      if (newTotalEmails < 0) newTotalEmails = 0;
+      mailboxDashBoardController.selectedMailbox.value = currentMailbox.copyWith(
+        totalEmails: TotalEmails(UnsignedInt(newTotalEmails)),
+      );
+    }
   }
 
   void _checkIfCurrentMailboxCanLoadMore() {
