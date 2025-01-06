@@ -262,6 +262,7 @@ class MailboxDashBoardController extends ReloadableController
   StreamSubscription? _currentEmailIdInNotificationIOSStreamSubscription;
   DeepLinksManager? _deepLinksManager;
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
+  bool _isFirstSessionLoad = false;
 
   final StreamController<Either<Failure, Success>> _progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -272,6 +273,10 @@ class MailboxDashBoardController extends ReloadableController
 
   final _notificationManager = LocalNotificationManager.instance;
   final _fcmService = FcmService.instance;
+
+  bool get isFirstSessionLoad => _isFirstSessionLoad;
+
+  bool setIsFirstSessionLoad(bool value) => _isFirstSessionLoad = value;
 
   MailboxDashBoardController(
     this._moveToMailboxInteractor,
@@ -723,6 +728,7 @@ class MailboxDashBoardController extends ReloadableController
 
   void _setUpComponentsFromSession(Session session) {
     final currentAccountId = session.accountId;
+    _isFirstSessionLoad = true;
     sessionCurrent = session;
     accountId.value = currentAccountId;
 
@@ -3229,6 +3235,7 @@ class MailboxDashBoardController extends ReloadableController
     WebSocketController.instance.onClose();
     _currentEmailState = null;
     twakeAppManager.closeComposerOnWeb();
+    _isFirstSessionLoad = false;
     super.onClose();
   }
 }
