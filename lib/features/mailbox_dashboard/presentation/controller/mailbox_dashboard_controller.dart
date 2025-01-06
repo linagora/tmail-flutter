@@ -253,6 +253,7 @@ class MailboxDashBoardController extends ReloadableController
   StreamSubscription? _pendingSharedFileInfoSubscription;
   StreamSubscription? _receivingFileSharingStreamSubscription;
   StreamSubscription? _currentEmailIdInNotificationIOSStreamSubscription;
+  bool _isFirstSessionLoad = false;
 
   final StreamController<Either<Failure, Success>> _progressStateController =
     StreamController<Either<Failure, Success>>.broadcast();
@@ -263,6 +264,10 @@ class MailboxDashBoardController extends ReloadableController
 
   final _notificationManager = LocalNotificationManager.instance;
   final _fcmService = FcmService.instance;
+
+  bool get isFirstSessionLoad => _isFirstSessionLoad;
+
+  bool setIsFirstSessionLoad(bool value) => _isFirstSessionLoad = value;
 
   MailboxDashBoardController(
     this._moveToMailboxInteractor,
@@ -645,6 +650,7 @@ class MailboxDashBoardController extends ReloadableController
 
   void _setUpComponentsFromSession(Session session) {
     final currentAccountId = session.accountId;
+    _isFirstSessionLoad = true;
     sessionCurrent = session;
     accountId.value = currentAccountId;
 
@@ -3140,6 +3146,7 @@ class MailboxDashBoardController extends ReloadableController
     mapDefaultMailboxIdByRole = {};
     WebSocketController.instance.onClose();
     _currentEmailState = null;
+    _isFirstSessionLoad = false;
     super.onClose();
   }
 }
