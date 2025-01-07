@@ -13152,7 +13152,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t1 != null)
         t1.call$1(text);
     },
-    $signature: 9
+    $signature: 8
   };
   B.QuickSearchSuggestionsBox__findRootMediaQuery_closure.prototype = {
     call$1(element) {
@@ -13339,7 +13339,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.setState$1(new B._TypeAheadFieldQuickSearchState_initState__closure());
       }
     },
-    $signature: 8
+    $signature: 9
   };
   B._TypeAheadFieldQuickSearchState_initState__closure.prototype = {
     call$0() {
@@ -13430,7 +13430,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(_) {
       this.$this.scrollDebounceListener$0();
     },
-    $signature: 8
+    $signature: 9
   };
   B.MultiDragGestureRecognizer_acceptGesture_closure.prototype = {
     call$1(initialPosition) {
@@ -13630,7 +13630,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._scheduledSelectionEndEdgeUpdate = false;
       t1._triggerSelectionEndEdgeUpdate$1$textGranularity(this.textGranularity);
     },
-    $signature: 8
+    $signature: 9
   };
   B.SelectableRegionState__onAnyDragEnd_closure.prototype = {
     call$1(context) {
@@ -13647,7 +13647,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._scheduledSelectionStartEdgeUpdate = false;
       t1._triggerSelectionStartEdgeUpdate$1$textGranularity(this.textGranularity);
     },
-    $signature: 8
+    $signature: 9
   };
   B.SelectableRegionState_contextMenuButtonItems_closure.prototype = {
     call$0() {
@@ -15506,7 +15506,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(value) {
       return this.$this.get$_recipient_composer_widget$_handleSubmitTagAction().call$2(value, this.stateSetter);
     },
-    $signature: 9
+    $signature: 8
   };
   B._RecipientComposerWidgetState_build___closure7.prototype = {
     call$1(_) {
@@ -15553,7 +15553,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(value) {
       return this.$this.get$_recipient_composer_widget$_handleOnTagChangeAction().call$2(value, this.stateSetter);
     },
-    $signature: 9
+    $signature: 8
   };
   B._RecipientComposerWidgetState_build___closure8.prototype = {
     call$7(context, tagEditorState, suggestionEmailAddress, index, $length, highlight, suggestionValid) {
@@ -18309,7 +18309,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).onTextChanged$2(C.AdvancedSearchFilterField_2, value);
     },
-    $signature: 9
+    $signature: 8
   };
   B.AdvancedSearchInputForm_build_closure0.prototype = {
     call$1(value) {
@@ -18318,7 +18318,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).onTextChanged$2(C.AdvancedSearchFilterField_3, value);
     },
-    $signature: 9
+    $signature: 8
   };
   B.AdvancedSearchInputForm_build_closure1.prototype = {
     call$1(value) {
@@ -18327,7 +18327,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).onTextChanged$2(C.AdvancedSearchFilterField_4, value);
     },
-    $signature: 9
+    $signature: 8
   };
   B.AdvancedSearchInputForm_build_closure2.prototype = {
     call$0() {
@@ -18492,7 +18492,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.GetNavigation_back($.$get$Get(), false, null);
       }
     },
-    $signature: 9
+    $signature: 8
   };
   B.AutoCompleteSuggestionItemWidgetWeb_build_closure.prototype = {
     call$0() {
@@ -18675,7 +18675,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(value) {
       return this.$this.get$_handleSubmitTagAction().call$2(value, this.setState);
     },
-    $signature: 9
+    $signature: 8
   };
   B._TextFieldAutocompleteEmailAddressWebState_build____closure8.prototype = {
     call$2(context, index) {
@@ -18709,7 +18709,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(tag) {
       return this.$this.get$_handleOnTagChangeAction().call$2(tag, this.setState);
     },
-    $signature: 9
+    $signature: 8
   };
   B._TextFieldAutocompleteEmailAddressWebState_build____closure7.prototype = {
     call$7(context, tagEditorState, suggestionEmailAddress, index, $length, highlight, suggestionValid) {
@@ -19030,7 +19030,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(keyword) {
       return this.$this._invokeSearchEmailAction$1(C.JSString_methods.trim$0(keyword));
     },
-    $signature: 9
+    $signature: 8
   };
   B.SearchInputFormWidget__createConfiguration_closure.prototype = {
     call$0() {
@@ -19202,7 +19202,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).closeSearchView$1$context(this.context);
     },
-    $signature: 8
+    $signature: 9
   };
   B.SearchEmailView_build_closure3.prototype = {
     call$0() {
@@ -19363,7 +19363,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._searchEmailByQueryString$2$context$queryString(this.context, queryString);
       return null;
     },
-    $signature: 9
+    $signature: 8
   };
   B.SearchEmailView__buildSearchInputForm_closure1.prototype = {
     call$0() {
@@ -20099,7 +20099,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return null;
     },
-    $signature: 9
+    $signature: 8
   };
   B.SearchMailboxView__buildMailboxListView_closure.prototype = {
     call$0() {
@@ -22040,5 +22040,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "u8y1NPHA83NIjyvOBW3sNAEv6P8=");
+})($__dart_deferred_initializers__, "fvh9j7rOj/f++hKhXu2RTjzXfS8=");
 ;

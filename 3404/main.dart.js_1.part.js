@@ -554,7 +554,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleLoginPressed$1(this.context);
     },
-    $signature: 9
+    $signature: 8
   };
   B.LoginView__buildMobileForm_closure.prototype = {
     call$0() {
@@ -844,5 +844,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "pNl7tAv07M5XhouDx08mvHyTTSs=");
+})($__dart_deferred_initializers__, "MNQ2lF7RK96LCcEbV8LWQ1PvjEs=");
 ;

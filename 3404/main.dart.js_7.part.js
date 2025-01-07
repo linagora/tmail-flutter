@@ -3693,7 +3693,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(value) {
       return this.$this._addEmailAddressToInputFieldAction$3$context$emailAddress$isClearInput(this.context, new A.EmailAddress(null, value), true);
     },
-    $signature: 9
+    $signature: 8
   };
   C._AutocompleteContactTextFieldWithTagsState_build_closure5.prototype = {
     call$2(context, index) {
@@ -3722,7 +3722,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   C._AutocompleteContactTextFieldWithTagsState_build_closure3.prototype = {
     call$1(_) {
     },
-    $signature: 9
+    $signature: 8
   };
   C._AutocompleteContactTextFieldWithTagsState_build_closure4.prototype = {
     call$7(context, tagEditorState, suggestionEmailAddress, index, $length, highlight, suggestionValid) {
@@ -5860,5 +5860,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_7", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "CeIdLe/gWR2dbkhoExp2SGoHF2o=");
+})($__dart_deferred_initializers__, "fouj0tq7hc/nJLPxG6VMxqVNb7U=");
 ;
