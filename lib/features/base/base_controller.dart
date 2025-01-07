@@ -379,6 +379,7 @@ abstract class BaseController extends GetxController
 
   void injectWebSocket(Session? session, AccountId? accountId) {
     try {
+      log('$runtimeType::injectWebSocket:');
       requireCapability(
         session!,
         accountId!,
