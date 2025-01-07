@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -11,6 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
+import 'package:model/extensions/account_id_extensions.dart';
 import 'package:tmail_ui_user/features/push_notification/data/model/web_socket_echo_request.dart';
 import 'package:tmail_ui_user/features/push_notification/data/model/web_socket_push_enable_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/web_socket_push_state.dart';
@@ -34,6 +36,7 @@ class WebSocketController extends PushBaseController {
   ConnectWebSocketInteractor? _connectWebSocketInteractor;
 
   int _retryRemained = 3;
+  bool _isConnecting = false;
   WebSocketChannel? _webSocketChannel;
   Timer? _webSocketPingTimer;
   StreamSubscription? _webSocketSubscription;
@@ -43,7 +46,6 @@ class WebSocketController extends PushBaseController {
   @override
   void handleFailureViewState(Failure failure) {
     logError('WebSocketController::handleFailureViewState():Failure $failure');
-    _cleanUpWebSocketResources();
     if (failure is WebSocketConnectionFailed) {
       _handleWebSocketConnectionRetry();
     }
@@ -65,12 +67,11 @@ class WebSocketController extends PushBaseController {
 
   @override
   void initialize({AccountId? accountId, Session? session}) {
+    log('WebSocketController::initialize:AccountId = ${accountId?.asString}');
     super.initialize(accountId: accountId, session: session);
 
-    _connectWebSocket(accountId, session);
-    if (PlatformInfo.isMobile) {
-      _listenToAppLifeCycle(accountId, session);
-    }
+    _connectWebSocket();
+    _listenToAppLifeCycle();
   }
 
   @override
@@ -81,30 +82,66 @@ class WebSocketController extends PushBaseController {
     super.onClose();
   }
 
-  void _listenToAppLifeCycle(AccountId? accountId, Session? session) {
+  void _listenToAppLifeCycle() {
     _appLifecycleListener ??= AppLifecycleListener(
-      onStateChange: (appLifecycleState) {
-        switch (appLifecycleState) {
-          case AppLifecycleState.resumed:
-            _connectWebSocket(accountId, session);
-            break;
-          default:
-            _cleanUpWebSocketResources();
-        }
-      },
+      onStateChange: _handleAppLifecycleStateChange,
     );
   }
 
-  void _connectWebSocket(AccountId? accountId, Session? session) {
+  void _handleAppLifecycleStateChange(AppLifecycleState appLifecycleState) async {
+    switch (appLifecycleState) {
+      case AppLifecycleState.resumed:
+        if (PlatformInfo.isMobile) {
+          _connectWebSocket();
+        } else if (PlatformInfo.isWeb) {
+          final isConnected = await _isWebSocketConnected();
+          log('WebSocketController::_handleAppLifecycleStateChange:isWebSocketConnected = $isConnected');
+          if (!isConnected) {
+            _connectWebSocket();
+          }
+        }
+        break;
+      default:
+        if (PlatformInfo.isMobile) {
+          _cleanUpWebSocketResources();
+        }
+        break;
+    }
+  }
+
+  Future<bool> _isWebSocketConnected() async {
+    try {
+      if (_webSocketChannel == null) return false;
+
+      await _webSocketChannel!.ready;
+      log('WebSocketController::_isWebSocketConnected:webSocketChannel ready');
+      return true;
+    } on SocketException catch (e) {
+      logError('WebSocketController::_isWebSocketConnected:SocketException = $e');
+    } on WebSocketChannelException catch (e) {
+      logError('WebSocketController::_isWebSocketConnected:WebSocketChannelException = $e');
+    } catch (e) {
+      logError('WebSocketController::_isWebSocketConnected:Exception = $e');
+    }
+    return false;
+  }
+
+  void _connectWebSocket() {
     _connectWebSocketInteractor = getBinding<ConnectWebSocketInteractor>();
     if (_connectWebSocketInteractor == null || accountId == null || session == null) {
+      logError('WebSocketController::_connectWebSocket: Skipping');
       return;
     }
+    if (_isConnecting) return;
 
-    consumeState(_connectWebSocketInteractor!.execute(session, accountId));
+    _isConnecting = true;
+    log('WebSocketController::_connectWebSocket: Connecting');
+    consumeState(_connectWebSocketInteractor!.execute(session!, accountId!));
   }
 
   void _cleanUpWebSocketResources() {
+    log('WebSocketController::_cleanUpWebSocketResources:');
+    _isConnecting = false;
     _webSocketSubscription?.cancel();
     _webSocketChannel = null;
     _webSocketPingTimer?.cancel();
@@ -125,10 +162,11 @@ class WebSocketController extends PushBaseController {
   }
 
   void _handleWebSocketConnectionRetry() {
+    log('WebSocketController::_handleWebSocketConnectionRetry:_retryRemained = $_retryRemained');
     _cleanUpWebSocketResources();
     if (_retryRemained > 0) {
       _retryRemained--;
-      _connectWebSocket(accountId, session);
+      _connectWebSocket();
     }
   }
 
@@ -139,7 +177,9 @@ class WebSocketController extends PushBaseController {
   }
 
   void _pingWebSocket() {
+    log('WebSocketController::_pingWebSocket:');
     _webSocketPingTimer = Timer.periodic(const Duration(seconds: 10), (_) {
+      log('WebSocketController::_pingWebSocket: Processing');
       _webSocketChannel?.sink.add(jsonEncode(WebSocketEchoRequest().toJson()));
     });
   }
@@ -183,6 +223,7 @@ class WebSocketController extends PushBaseController {
 
   void _handleStateChange(StateChange? stateChange) {
     try {
+      log('WebSocketController::_handleStateChange:stateChange = $stateChange');
       if (stateChange == null || accountId == null || session == null) return;
 
       final mapTypeState = stateChange.getMapTypeState(accountId!);
