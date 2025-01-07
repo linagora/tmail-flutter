@@ -41,7 +41,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_trash": "移动到垃圾箱",
+  "move_to_trash": "移动到已删除邮件",
   "@move_to_trash": {
     "type": "text",
     "placeholders_order": [],
@@ -65,7 +65,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "new_folder_is_created": "{nameMailbox} 已创建",
+  "new_folder_is_created": "已创建 {nameMailbox}",
   "@new_folder_is_created": {
     "type": "text",
     "placeholders_order": [
@@ -75,7 +75,7 @@
       "nameMailbox": {}
     }
   },
-  "this_folder_name_is_already_taken": "文件夹名称已被占用",
+  "this_folder_name_is_already_taken": "此文件夹名称已被占用",
   "@this_folder_name_is_already_taken": {
     "type": "text",
     "placeholders_order": [],
@@ -87,7 +87,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "login_text_slogan": "Twake 邮件",
+  "login_text_slogan": "Twake Mail",
   "@login_text_slogan": {
     "type": "text",
     "placeholders_order": [],
@@ -117,7 +117,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "to_email_address_prefix": "发往",
+  "to_email_address_prefix": "收件人",
   "@to_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
@@ -139,7 +139,7 @@
       "count": {}
     }
   },
-  "count_email_selected": "选中 {count} 封邮件",
+  "count_email_selected": "已选择 {count} 封",
   "@count_email_selected": {
     "type": "text",
     "placeholders_order": [
@@ -149,7 +149,7 @@
       "count": {}
     }
   },
-  "header_email_quoted": "于 {sentDate} 由 {emailAddress} 发出",
+  "header_email_quoted": "{sentDate}，发件人 {emailAddress}",
   "@header_email_quoted": {
     "type": "text",
     "placeholders_order": [
@@ -161,19 +161,19 @@
       "emailAddress": {}
     }
   },
-  "new_folder": "新建文件夹",
+  "new_folder": "新文件夹",
   "@new_folder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requiredEmail": "电子邮箱是必填项",
+  "requiredEmail": "电子邮件必填",
   "@requiredEmail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "no_mail_selected": "未选中任何邮件",
+  "no_mail_selected": "未选择电子邮件",
   "@no_mail_selected": {
     "type": "text",
     "placeholders_order": [],
@@ -197,19 +197,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reply_all": "全部回复",
+  "reply_all": "回复全部",
   "@reply_all": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "loginInputCredentialMessage": "输入登入凭据",
+  "loginInputCredentialMessage": "输入您的凭据以登录",
   "@loginInputCredentialMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "signIn": "登入",
+  "signIn": "登录",
   "@signIn": {
     "type": "text",
     "placeholders_order": [],
@@ -239,19 +239,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "preparing_to_export": "准备导出",
+  "preparing_to_export": "正在准备导出",
   "@preparing_to_export": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "done": "已完成",
+  "done": "完成",
   "@done": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requiredPassword": "密码是必填项",
+  "requiredPassword": "密码必填",
   "@requiredPassword": {
     "type": "text",
     "placeholders_order": [],
@@ -263,13 +263,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "createNewFolderFailure": "新建文件夹失败",
+  "createNewFolderFailure": "创建新文件夹失败",
   "@createNewFolderFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "from_email_address_prefix": "来自",
+  "from_email_address_prefix": "发件人",
   "@from_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
@@ -281,13 +281,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "nameOfFolderIsRequired": "文件夹名称是必填项",
+  "nameOfFolderIsRequired": "文件夹名称必填",
   "@nameOfFolderIsRequired": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_email_being_sent": "正在发送邮件……",
+  "your_email_being_sent": "正在发送您的电子邮件…",
   "@your_email_being_sent": {
     "type": "text",
     "placeholders_order": [],
@@ -335,7 +335,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requiredUrl": "服务器地址是必填项",
+  "requiredUrl": "服务器地址必填",
   "@requiredUrl": {
     "type": "text",
     "placeholders_order": [],
@@ -353,7 +353,7 @@
       "totalSize": {}
     }
   },
-  "movedToFolder": "已移至 {destinationMailboxPath}",
+  "movedToFolder": "已移动到{destinationMailboxPath}",
   "@movedToFolder": {
     "type": "text",
     "placeholders_order": [
@@ -375,13 +375,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "the_feature_is_under_development": "该特性尚在开发中。",
+  "the_feature_is_under_development": "此功能正在开发中。",
   "@the_feature_is_under_development": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unknownError": "发生了未知错误，请再试一次",
+  "unknownError": "出现未知错误，请重试",
   "@unknownError": {
     "type": "text",
     "placeholders_order": [],
@@ -393,13 +393,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "newFolder": "新建文件夹",
+  "newFolder": "新文件夹",
   "@newFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "folderNameCannotContainSpecialCharacters": "文件夹名称不能含有特殊字符",
+  "folderNameCannotContainSpecialCharacters": "文件夹名称不能包含特殊字符",
   "@folderNameCannotContainSpecialCharacters": {
     "type": "text",
     "placeholders_order": [],
@@ -411,19 +411,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "initializing_data": "初始化数据……",
+  "initializing_data": "正在初始化数据…",
   "@initializing_data": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_without_recipient": "您的邮件应该有至少一个收件人",
+  "message_dialog_send_email_without_recipient": "您的电子邮件应至少有一位收件人",
   "@message_dialog_send_email_without_recipient": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "move_to_spam": "标记为垃圾邮件",
+  "move_to_spam": "移动到垃圾邮件",
   "@move_to_spam": {
     "type": "text",
     "placeholders_order": [],
@@ -441,7 +441,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "loginInputUrlMessage": "请登入您的 JMAP 服务器以访问邮件",
+  "loginInputUrlMessage": "要登录和访问邮件，请连接到 JMAP 服务器",
   "@loginInputUrlMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -453,13 +453,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "compose": "写信",
+  "compose": "撰写",
   "@compose": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "login": "登入",
+  "login": "登录",
   "@login": {
     "type": "text",
     "placeholders_order": [],
@@ -475,7 +475,7 @@
       "fileName": {}
     }
   },
-  "can_not_upload_this_file_as_attachments": "无法将此文件上传为附件",
+  "can_not_upload_this_file_as_attachments": "无法将此文件作为附件上传",
   "@can_not_upload_this_file_as_attachments": {
     "type": "text",
     "placeholders_order": [],
@@ -487,13 +487,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "an_error_occurred": "错误！发生了一个错误。请稍后重试。",
+  "an_error_occurred": "错误！出错了，请稍后重试。",
   "@an_error_occurred": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_content_email_composer": "在此处起草邮件",
+  "hint_content_email_composer": "在此处开始撰写电子邮件",
   "@hint_content_email_composer": {
     "type": "text",
     "placeholders_order": [],
@@ -509,19 +509,19 @@
       "count": {}
     }
   },
-  "attach_file_prepare_text": "准备添加文件……",
+  "attach_file_prepare_text": "正在准备附加文件…",
   "@attach_file_prepare_text": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "attachments_uploaded_successfully": "成功上传附件",
+  "attachments_uploaded_successfully": "附件上传成功",
   "@attachments_uploaded_successfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "photos_and_videos": "照片与视频",
+  "photos_and_videos": "照片和视频",
   "@photos_and_videos": {
     "type": "text",
     "placeholders_order": [],
@@ -538,5 +538,1903 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "user_cancel_download_file": "用户取消下载文件",
+  "@user_cancel_download_file": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteFoldersSuccessfully": "删除文件夹成功",
+  "@deleteFoldersSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "move_message": "移动邮件",
+  "@move_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "empty_trash_folder": "清空已删除邮件文件夹",
+  "@empty_trash_folder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveAndClose": "保存并关闭",
+  "@saveAndClose": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "draftsMailboxDisplayName": "草稿",
+  "@draftsMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sending_failed": "发送失败",
+  "@sending_failed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "activated": "已启用",
+  "@activated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "headerRecipients": "收件人",
+  "@headerRecipients": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_search_emails": "搜索邮件和文件",
+  "@hint_search_emails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showingResultsFor": "显示结果：",
+  "@showingResultsFor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "identity_has_been_deleted": "已删除身份",
+  "@identity_has_been_deleted": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_identity": "删除身份",
+  "@delete_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "urlLink": "URL",
+  "@urlLink": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatTextColor": "文本颜色",
+  "@formatTextColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "enterSearchTerm": "输入搜索词",
+  "@enterSearchTerm": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogSendEmailUploadingAttachment": "无法发送邮件，因为它正在上传附件",
+  "@messageDialogSendEmailUploadingAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_messages_forever": "永久删除邮件",
+  "@delete_messages_forever": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteEmailRule": "删除规则",
+  "@deleteEmailRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "email_address_is_not_in_the_correct_format": "邮件地址格式不正确",
+  "@email_address_is_not_in_the_correct_format": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "endTime": "结束时间",
+  "@endTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "all": "全部",
+  "@all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "empty_subject": "空主题",
+  "@empty_subject": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "html_template": "HTML 模板",
+  "@html_template": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_dialog_send_email_with_email_address_invalid": "检查邮件地址是否正确并重试",
+  "@message_dialog_send_email_with_email_address_invalid": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dismiss": "关闭",
+  "@dismiss": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "empty_trash_dialog_message": "您即将永久删除已删除邮件中的全部邮件。是否要继续？",
+  "@empty_trash_dialog_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "preparing_to_save": "正在准备保存",
+  "@preparing_to_save": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "outboxMailboxDisplayName": "发件箱",
+  "@outboxMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "select": "选择",
+  "@select": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "repliedMessage": "已回复邮件",
+  "@repliedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "advancedSearch": "高级搜索",
+  "@advancedSearch": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "archiveMessage": "存档邮件",
+  "@archiveMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "expand": "展开",
+  "@expand": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_text_email_address": "名称或邮件地址",
+  "@hint_text_email_address": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ssoNotAvailable": "单点登录不可用",
+  "@ssoNotAvailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allTime": "全部时间",
+  "@allTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "search": "搜索",
+  "@search": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "files": "文件",
+  "@files": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cannotCompressInlineImage": "无法压缩图片",
+  "@cannotCompressInlineImage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_failed": "删除失败",
+  "@delete_failed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "thisEmailAddressInvalid": "此邮件地址无效",
+  "@thisEmailAddressInvalid": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "canNotGetToken": "无法获取令牌，请与系统管理员联系",
+  "@canNotGetToken": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatBold": "加粗",
+  "@formatBold": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationSettingToggleButtonAutoReply": "收到邮件后自动回复。",
+  "@vacationSettingToggleButtonAutoReply": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "continueAction": "继续",
+  "@continueAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "not_starred": "无星标",
+  "@not_starred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "collapse": "折叠",
+  "@collapse": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatItalic": "倾斜",
+  "@formatItalic": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "alignCenter": "居中对齐",
+  "@alignCenter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bcc_email_address_prefix": "密送",
+  "@bcc_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "prefix_suggestion_search": "搜索",
+  "@prefix_suggestion_search": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no_emails_matching_your_search": "没有与搜索匹配的邮件",
+  "@no_emails_matching_your_search": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attachments": "附件",
+  "@attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "create": "创建",
+  "@create": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_all_as_read": "标记全部为已读",
+  "@mark_all_as_read": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "remove_from_spam": "从垃圾邮件中移除",
+  "@remove_from_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "un_star": "取消星标",
+  "@un_star": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "settings": "设置",
+  "@settings": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "identities": "身份",
+  "@identities": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwarding": "转发",
+  "@forwarding": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorMessageWhenEndDateVacationIsInValid": "结束日期必须晚于开始日期",
+  "@errorMessageWhenEndDateVacationIsInValid": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "startTime": "开始时间",
+  "@startTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleFormat": "格式",
+  "@titleFormat": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "inboxMailboxDisplayName": "收件箱",
+  "@inboxMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sortBy": "排序方式",
+  "@sortBy": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "senderAscending": "发件人名称：A - Z",
+  "@senderAscending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "recoverDeletedMessages": "恢复删除的邮件",
+  "@recoverDeletedMessages": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "with_attachments": "带附件",
+  "@with_attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "edit_identity": "编辑身份",
+  "@edit_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you_are_changed_your_identity_successfully": "您已成功更改身份",
+  "@you_are_changed_your_identity_successfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "save": "保存",
+  "@save": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hasAttachment": "有附件",
+  "@hasAttachment": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "last7Days": "过去 7 天",
+  "@last7Days": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatTextBackgroundColor": "文本背景颜色",
+  "@formatTextBackgroundColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "headerStyle": "样式",
+  "@headerStyle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "fontFamily": "字体系列",
+  "@fontFamily": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteRule": "删除规则",
+  "@deleteRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardingSettingExplanation": "下方列出的邮件地址将接收您的电子邮件。",
+  "@forwardingSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "remove": "移除",
+  "@remove": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moved_to_trash": "已移动到已删除邮件",
+  "@moved_to_trash": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAsSpam": "标记为垃圾邮件",
+  "@markAsSpam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "got_it": "知道了",
+  "@got_it": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "templatesMailboxDisplayName": "模板",
+  "@templatesMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no_internet_connection": "未连接到互联网",
+  "@no_internet_connection": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unread_email_notification": "新邮件",
+  "@unread_email_notification": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mark_as_spam": "标记为垃圾邮件",
+  "@mark_as_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveFolder": "移动文件夹",
+  "@moveFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "with_starred": "有星标",
+  "@with_starred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "contains": "包含",
+  "@contains": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "back": "返回",
+  "@back": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "search_emails": "搜索电子邮件",
+  "@search_emails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "resetToDefault": "重置为默认",
+  "@resetToDefault": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "disable_filter_message_toast": "您已禁用筛选邮件",
+  "@disable_filter_message_toast": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "profiles": "个人资料",
+  "@profiles": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptyTrash": "清空已删除邮件",
+  "@emptyTrash": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "lastYears": "过去 1 年",
+  "@lastYears": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageEnglish": "英语",
+  "@languageEnglish": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bcc_to": "密送至",
+  "@bcc_to": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "where": "何地",
+  "@where": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "time": "时间",
+  "@time": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "conditionValueHintTextInput": "值",
+  "@conditionValueHintTextInput": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unsubscribe": "取消订阅",
+  "@unsubscribe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selected": "已选择",
+  "@selected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "format": "格式",
+  "@format": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "foreground": "前景",
+  "@foreground": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ruleFilterAddressFromField": "发件人",
+  "@ruleFilterAddressFromField": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_permanently": "永久删除",
+  "@delete_permanently": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteFolders": "删除文件夹",
+  "@deleteFolders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "folder": "文件夹",
+  "@folder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageFrench": "法语",
+  "@languageFrench": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "results": "结果",
+  "@results": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "setColor": "设置颜色",
+  "@setColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintMessageBodyVacation": "休假邮件",
+  "@hintMessageBodyVacation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_as_not_spam": "已标记为非垃圾邮件",
+  "@marked_as_not_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "incorrectEmailFormat": "电子邮件格式不正确",
+  "@incorrectEmailFormat": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bannerProgressingRecoveryMessage": "恢复正在进行中。您可以继续使用 Twake Mail",
+  "@bannerProgressingRecoveryMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "location": "地点",
+  "@location": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptySpamFolder": "清空垃圾邮件文件夹",
+  "@emptySpamFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveTo": "移动到",
+  "@moveTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toast_message_delete_a_email_permanently_success": "已永久删除邮件",
+  "@toast_message_delete_a_email_permanently_success": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copy_email_address": "复制邮件地址",
+  "@copy_email_address": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "endNow": "现在结束",
+  "@endNow": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "receptionDate": "接收日期",
+  "@receptionDate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailRules": "电子邮件规则",
+  "@emailRules": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notContains": "不包含",
+  "@notContains": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "duplicatedActionError": "此操作已添加",
+  "@duplicatedActionError": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deletionDate": "删除日期",
+  "@deletionDate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subjectDescending": "主题：Z - A",
+  "@subjectDescending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_message_toast": "您已将邮件标记为“{action}”",
+  "@marked_message_toast": {
+    "type": "text",
+    "placeholders_order": [
+      "action"
+    ],
+    "placeholders": {
+      "action": {}
+    }
+  },
+  "new_message": "新邮件",
+  "@new_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_delete_all_email_in_trash_button": "如果存储空间达到限制，将会删除已删除邮件中的全部邮件。",
+  "@message_delete_all_email_in_trash_button": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageRussian": "俄语",
+  "@languageRussian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bulletedList": "项目符号列表",
+  "@bulletedList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "actionTitleRulesFilter": "执行以下操作：",
+  "@actionTitleRulesFilter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message": "邮件",
+  "@message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "setDefaultIdentity": "设为默认身份",
+  "@setDefaultIdentity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "resend": "重新发送",
+  "@resend": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardEmailHintText": "添加转发地址",
+  "@forwardEmailHintText": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subjectAscending": "主题：A - Z",
+  "@subjectAscending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "status": "状态",
+  "@status": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notification": "通知",
+  "@notification": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "this_field_cannot_be_blank": "此字段不能为空",
+  "@this_field_cannot_be_blank": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "fix_email_addresses": "修复邮件地址",
+  "@fix_email_addresses": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ruleFilterAddressToField": "收件人",
+  "@ruleFilterAddressToField": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorMessageWhenStartDateVacationIsEmpty": "请输入有效的开始日期",
+  "@errorMessageWhenStartDateVacationIsEmpty": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addRecipients": "添加收件人",
+  "@addRecipients": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "background": "背景",
+  "@background": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hintSubjectInputVacationSetting": "输入主题",
+  "@hintSubjectInputVacationSetting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "canNotVerifySSOConfiguration": "无法验证 SSO 配置，请与系统管理员联系",
+  "@canNotVerifySSOConfiguration": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allFolders": "全部文件夹",
+  "@allFolders": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "singleSignOn": "单点登录",
+  "@singleSignOn": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleForeground": "前景",
+  "@titleForeground": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "spamMailboxDisplayName": "垃圾邮件",
+  "@spamMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "archiveMailboxDisplayName": "存档",
+  "@archiveMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attendees": "与会者",
+  "@attendees": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteAllSpamEmails": "删除全部垃圾邮件",
+  "@deleteAllSpamEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteAllSpamEmailsNow": "现在删除全部垃圾邮件",
+  "@deleteAllSpamEmailsNow": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "alignLeft": "左对齐",
+  "@alignLeft": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toast_message_delete_multiple_email_permanently_success": "已永久删除 {count} 封邮件",
+  "@toast_message_delete_multiple_email_permanently_success": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "when": "何时",
+  "@when": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noPreviewAvailable": "无可用预览",
+  "@noPreviewAvailable": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "searchForIdentities": "搜索身份",
+  "@searchForIdentities": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "version": "版本",
+  "@version": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toast_message_empty_trash_folder_success": "已永久删除全部邮件",
+  "@toast_message_empty_trash_folder_success": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sender": "发件人",
+  "@sender": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createNewIdentity": "创建新身份",
+  "@createNewIdentity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "compose_email": "撰写电子邮件",
+  "@compose_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_message_forever": "永久删除邮件",
+  "@delete_message_forever": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deactivated": "已停用",
+  "@deactivated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no_internet_connection_try_again_later": "未连接到互联网，请稍后重试。",
+  "@no_internet_connection_try_again_later": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveChanges": "保存更改",
+  "@saveChanges": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ruleFilterAddressCcField": "抄送",
+  "@ruleFilterAddressCcField": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatStrikethrough": "删除线",
+  "@formatStrikethrough": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insert": "插入",
+  "@insert": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "indent": "增加缩进",
+  "@indent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "no": "否",
+  "@no": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "your_download_has_started": "下载已开始",
+  "@your_download_has_started": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "enterYourPasswordToSignIn": "输入您的密码以登录",
+  "@enterYourPasswordToSignIn": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "page_name": "Twake Mail",
+  "@page_name": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "email_address_copied_to_clipboard": "邮件地址已复制到剪贴板",
+  "@email_address_copied_to_clipboard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "invitationMessageCalendarInformation": " 邀请您参加会议：",
+  "@invitationMessageCalendarInformation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationSettingExplanation": "对收到的邮件发送自动回复。",
+  "@vacationSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardedMessage": "已转发邮件",
+  "@forwardedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addSender": "添加发件人",
+  "@addSender": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "trashMailboxDisplayName": "已删除邮件",
+  "@trashMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorMessageWhenMessageVacationIsEmpty": "邮件正文不能为空",
+  "@errorMessageWhenMessageVacationIsEmpty": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "signature": "签名",
+  "@signature": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationSettingSaved": "休假设置已保存",
+  "@vacationSettingSaved": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subject": "主题",
+  "@subject": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_all": "删除全部",
+  "@delete_all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "error": "错误",
+  "@error": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addAction": "添加操作",
+  "@addAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "filter_message_toast": "您已按“{filterOption}”筛选邮件",
+  "@filter_message_toast": {
+    "type": "text",
+    "placeholders_order": [
+      "filterOption"
+    ],
+    "placeholders": {
+      "filterOption": {}
+    }
+  },
+  "starred": "已加星标",
+  "@starred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "empty_trash_now": "现在清空已删除邮件",
+  "@empty_trash_now": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "select_all": "选择全部",
+  "@select_all": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "app_name": "Twake Mail",
+  "@app_name": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "wrongUrlMessage": "服务器 URL 无效，请重试",
+  "@wrongUrlMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_dialog_send_email_exceeds_maximum_size": "无法发送邮件，因为邮件超过了 {maxSize} 的最大大小",
+  "@message_dialog_send_email_exceeds_maximum_size": {
+    "type": "text",
+    "placeholders_order": [
+      "maxSize"
+    ],
+    "placeholders": {
+      "maxSize": {}
+    }
+  },
+  "link": "链接",
+  "@link": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "there_is_already_folder_with_the_same_name": "已存在同名文件夹",
+  "@there_is_already_folder_with_the_same_name": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "last6Months": "过去 6 个月",
+  "@last6Months": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newFilterWasCreated": "已创建新筛选器",
+  "@newFilterWasCreated": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDisableVacationResponderAutomatically": "休假回复功能已于 {endDate} 停止",
+  "@messageDisableVacationResponderAutomatically": {
+    "type": "text",
+    "placeholders_order": [
+      "endDate"
+    ],
+    "placeholders": {
+      "endDate": {}
+    }
+  },
+  "profilesSettingExplanation": "关于您的信息以及管理它的选项。",
+  "@profilesSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteFoldersFailure": "删除文件夹失败",
+  "@deleteFoldersFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "download": "下载",
+  "@download": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectAction": "选择操作",
+  "@selectAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cc_email_address_prefix": "抄送",
+  "@cc_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_as_spam": "已标记为垃圾邮件",
+  "@marked_as_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "show": "显示",
+  "@show": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "add_recipients": "添加收件人",
+  "@add_recipients": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "send_anyway": "仍要发送",
+  "@send_anyway": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delete_multiple_messages_dialog": "您即将永久删除{mailboxName}中的 {count} 封邮件。是否要继续？",
+  "@delete_multiple_messages_dialog": {
+    "type": "text",
+    "placeholders_order": [
+      "count",
+      "mailboxName"
+    ],
+    "placeholders": {
+      "count": {},
+      "mailboxName": {}
+    }
+  },
+  "delete_single_message_dialog": "您即将永久删除此邮件。是否要继续？",
+  "@delete_single_message_dialog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "maximum_files_size": "最大文件大小",
+  "@maximum_files_size": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwarded_message": "已转发邮件",
+  "@forwarded_message": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "date": "日期",
+  "@date": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "last30Days": "过去 30 天",
+  "@last30Days": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "loginInputSSOMessage": "使用我的 SSO 账号登录",
+  "@loginInputSSOMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "star": "星标",
+  "@star": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "un_spam": "非垃圾邮件",
+  "@un_spam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "manage_account": "管理账号",
+  "@manage_account": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "default_value": "默认",
+  "@default_value": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_confirmation_dialog_delete_identity": "是否确定要删除此身份？",
+  "@message_confirmation_dialog_delete_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearFilter": "清除筛选",
+  "@clearFilter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "language": "语言",
+  "@language": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageVietnamese": "越南语",
+  "@languageVietnamese": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "justifyFull": "两端对齐",
+  "@justifyFull": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "insertImage": "插入图片",
+  "@insertImage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseImage": "选择图片",
+  "@chooseImage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "chooseAColor": "选择颜色",
+  "@chooseAColor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "orderList": "顺序列表",
+  "@orderList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editRule": "编辑规则",
+  "@editRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "recipient": "收件人",
+  "@recipient": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationDialogDeleteAllRecipientForward": "是否确定要移除这些收件人？这样做会将这些收件人从邮件链中移除。",
+  "@messageConfirmationDialogDeleteAllRecipientForward": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationStopsAt": "休假结束于",
+  "@vacationStopsAt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yourVacationResponderIsDisabledSuccessfully": "已成功禁用休假回复功能",
+  "@yourVacationResponderIsDisabledSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageSubtitle": "设置您在 Twake Mail 上使用的语言。",
+  "@languageSubtitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "senderDescending": "发件人名称：Z - A",
+  "@senderDescending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notFoundSession": "未找到会话",
+  "@notFoundSession": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "dnsLookupLoginMessage": "要登录和访问邮件，请输入您的电子邮件",
+  "@dnsLookupLoginMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unsubscribeMail": "取消订阅邮件",
+  "@unsubscribeMail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "organizer": "组织者",
+  "@organizer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectFolder": "选择文件夹",
+  "@selectFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "more": "更多",
+  "@more": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "backToSearchResults": "返回搜索结果",
+  "@backToSearchResults": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageGerman": "德语",
+  "@languageGerman": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "with_unread": "有未读",
+  "@with_unread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yes": "是",
+  "@yes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "recoveredMailboxDisplayName": "已恢复邮件",
+  "@recoveredMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "search_mail": "搜索邮件",
+  "@search_mail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageIsRequired": "邮件必填",
+  "@messageIsRequired": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unsubscribedFromThisMailingList": "已取消订阅此邮件列表",
+  "@unsubscribedFromThisMailingList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "minimize": "最小化",
+  "@minimize": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_dialog_send_email_without_a_subject": "是否确定要发送没有主题的邮件？",
+  "@message_dialog_send_email_without_a_subject": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sentMailboxDisplayName": "已发送邮件",
+  "@sentMailboxDisplayName": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAsSpamFailed": "标记为垃圾邮件失败",
+  "@markAsSpamFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveMessage": "移动邮件",
+  "@moveMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageDeleteEmailRuleSuccessfully": "移除了此规则。",
+  "@toastMessageDeleteEmailRuleSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "renameFolder": "重命名文件夹",
+  "@renameFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pleaseAllowNotifications": "请在设备的设置中允许来自 Twake Mail 的通知",
+  "@pleaseAllowNotifications": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allowsTwakeMailToNotifyYouWhenANewMessageArrivesOnYourPhone": "允许 Twake Mail 在您的手机上收到新邮件时通知您",
+  "@allowsTwakeMailToNotifyYouWhenANewMessageArrivesOnYourPhone": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hint_compose_email": "开始写信…",
+  "@hint_compose_email": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "attach_file": "附加文件",
+  "@attach_file": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_dialog_upload_attachments_exceeds_maximum_size": "已达到最大文件大小。请上传总大小小于 {maxSize} 的文件",
+  "@message_dialog_upload_attachments_exceeds_maximum_size": {
+    "type": "text",
+    "placeholders_order": [
+      "maxSize"
+    ],
+    "placeholders": {
+      "maxSize": {}
+    }
+  },
+  "repliedAndForwardedMessage": "已回复并转发邮件",
+  "@repliedAndForwardedMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "nameOrEmailAddress": "名称或邮件地址",
+  "@nameOrEmailAddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "seeAllAttendees": "查看全部与会者",
+  "@seeAllAttendees": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "titleBackground": "背景",
+  "@titleBackground": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailUnsubscribedMessage": "您取消订阅 {senderName}",
+  "@mailUnsubscribedMessage": {
+    "type": "text",
+    "placeholders_order": [
+      "senderName"
+    ],
+    "placeholders": {
+      "senderName": {}
+    }
+  },
+  "print": "打印",
+  "@print": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacation": "休假",
+  "@vacation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "nameToBeDisplayed": "要显示给收件人的名称",
+  "@nameToBeDisplayed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "filter_messages": "筛选邮件",
+  "@filter_messages": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "close": "关闭",
+  "@close": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "send": "发送",
+  "@send": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "name": "名称",
+  "@name": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "save_to_drafts": "保存到草稿",
+  "@save_to_drafts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDialogDeleteSendingEmail": "删除离线邮件将永久擦除其内容。您将无法撤销此操作或从已删除邮件文件夹恢复邮件。",
+  "@messageDialogDeleteSendingEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you_have_created_a_new_identity": "您已创建新身份",
+  "@you_have_created_a_new_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you_need_to_grant_files_permission_to_download_attachments": "您需要授予文件下载附件的权限",
+  "@you_need_to_grant_files_permission_to_download_attachments": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "formatUnderline": "下划线",
+  "@formatUnderline": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "paragraph": "段落",
+  "@paragraph": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "alignRight": "右对齐",
+  "@alignRight": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "numberedList": "编号列表",
+  "@numberedList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "outdent": "减少缩进",
+  "@outdent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addNewRule": "添加规则",
+  "@addNewRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "appTitlePushNotification": "Twake Mail",
+  "@appTitlePushNotification": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "who": "何人",
+  "@who": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "showAll": "显示全部",
+  "@showAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageArabic": "阿拉伯语",
+  "@languageArabic": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reply_to": "回复至",
+  "@reply_to": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "html": "HTML",
+  "@html": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you_have_created_a_new_default_identity": "您已创建新默认身份",
+  "@you_have_created_a_new_default_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageItalian": "意大利语",
+  "@languageItalian": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "renameFolderFailure": "重命名文件夹失败",
+  "@renameFolderFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "notSelected": "未选择",
+  "@notSelected": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteRecipient": "移除收件人",
+  "@deleteRecipient": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageDeleteRecipientSuccessfully": "从收件人列表中移除了此电子邮件。",
+  "@toastMessageDeleteRecipientSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "new_identity": "新身份",
+  "@new_identity": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "all_identities": "全部身份",
+  "@all_identities": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteFolder": "删除文件夹",
+  "@deleteFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "identitiesSettingExplanation": "选择要用于发送电子邮件的身份或邮件地址",
+  "@identitiesSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageAndRegion": "语言和区域",
+  "@languageAndRegion": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yourIdentities": "您的身份",
+  "@yourIdentities": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "vacationSetting": "休假设置",
+  "@vacationSetting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yourVacationResponderIsEnabled": "已启用休假回复功能。",
+  "@yourVacationResponderIsEnabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEnableVacationResponderAutomatically": "休假回复功能将于 {startDate} 激活",
+  "@messageEnableVacationResponderAutomatically": {
+    "type": "text",
+    "placeholders_order": [
+      "startDate"
+    ],
+    "placeholders": {
+      "startDate": {}
+    }
   }
 }
