@@ -9,7 +9,7 @@ import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_ex
 class TokenOidcCacheManager extends CacheManagerInteraction {
   final TokenOidcCacheClient _tokenOidcCacheClient;
 
-  TokenOidcCacheManager(this._tokenOidcCacheClient);
+  const TokenOidcCacheManager(this._tokenOidcCacheClient);
 
   Future<TokenOIDC> getTokenOidc(String tokenIdHash) async {
     log('TokenOidcCacheManager::getTokenOidc(): tokenIdHash: $tokenIdHash');
