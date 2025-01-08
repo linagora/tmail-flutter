@@ -1491,13 +1491,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         .show();
     } else {
       Get.dialog(
-        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
+        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
             ..key(const Key('confirm_dialog_delete_email_permanently'))
             ..title(DeleteActionType.single.getTitleDialog(context))
             ..content(DeleteActionType.single.getContentDialog(context))
-            ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
-            ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-            ..styleTextConfirmButton(const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorActionDeleteConfirmDialog))
             ..onCloseButtonAction(() => popBack())
             ..onConfirmButtonAction(DeleteActionType.single.getConfirmActionName(context), () => _deleteEmailPermanentlyAction(context, email))
             ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))

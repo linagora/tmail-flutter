@@ -8,7 +8,6 @@ import 'package:core/presentation/views/modal_sheets/edit_text_modal_sheet_build
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
@@ -437,17 +436,10 @@ abstract class BaseMailboxController extends BaseController {
     } else {
       Get.dialog(
         PointerInterceptor(
-          child: (ConfirmDialogBuilder(imagePaths)
+          child: (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
           ..key(const Key('confirm_dialog_delete_mailbox'))
           ..title(AppLocalizations.of(context).deleteFolders)
           ..content(AppLocalizations.of(context).message_confirmation_dialog_delete_folder(presentationMailbox.getDisplayName(context)))
-          ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
-          ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-          ..styleTextConfirmButton(const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w500,
-              color: AppColor.colorActionDeleteConfirmDialog
-          ))
           ..onCloseButtonAction(() => popBack())
           ..onConfirmButtonAction(AppLocalizations.of(context).delete, () => onDeleteMailboxAction(presentationMailbox))
           ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack())

@@ -79,7 +79,9 @@ class TopBarThreadSelection extends StatelessWidget{
         icon: isAllEmailStarred
           ? imagePaths.icUnStar
           : imagePaths.icStar,
-        iconColor: TopBarThreadSelectionStyle.iconColor,
+        iconColor: isAllEmailStarred
+          ? TopBarThreadSelectionStyle.iconColor
+          : null,
         tooltipMessage: isAllEmailStarred
           ? AppLocalizations.of(context).un_star
           : AppLocalizations.of(context).star,

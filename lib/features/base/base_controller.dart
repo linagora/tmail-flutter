@@ -241,7 +241,6 @@ abstract class BaseController extends GetxController
       alignCenter: true,
       outsideDismissible: false,
       titleActionButtonMaxLines: 1,
-      marginIcon: EdgeInsetsDirectional.zero,
       icon: SvgPicture.asset(imagePaths.icTMailLogo, width: 64, height: 64),
       onConfirmAction: _performSaveAndReconnection,
       onCancelAction: _performReconnection,

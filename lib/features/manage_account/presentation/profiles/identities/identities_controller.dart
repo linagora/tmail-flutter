@@ -7,7 +7,6 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -313,19 +312,9 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
   void _deleteIdentityFailure(DeleteIdentityFailure failure) {
     if (currentContext != null) {
       Get.dialog(
-        (ConfirmDialogBuilder(imagePaths)
+        (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
             ..key(const Key('dialog_message_delete_identity_failed'))
             ..title(AppLocalizations.of(currentContext!).delete_failed)
-            ..addIcon(SvgPicture.asset(imagePaths.icDeleteDialogFailed, fit: BoxFit.fill))
-            ..marginIcon(EdgeInsets.zero)
-            ..styleTitle(const TextStyle(fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black))
-            ..colorConfirmButton(AppColor.colorTextButton)
-            ..paddingTitle(const EdgeInsets.symmetric(vertical: 12))
-            ..styleTextConfirmButton(const TextStyle(fontSize: 17,
-                fontWeight: FontWeight.w500,
-                color: Colors.white))
             ..onCloseButtonAction(() => popBack())
             ..onConfirmButtonAction('${AppLocalizations.of(currentContext!).got_it}!', () => popBack()))
           .build(),

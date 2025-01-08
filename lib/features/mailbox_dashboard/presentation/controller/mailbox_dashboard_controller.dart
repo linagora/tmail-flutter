@@ -1552,19 +1552,13 @@ class MailboxDashBoardController extends ReloadableController
       .show();
     } else {
       Get.dialog(
-        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
+        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
           ..key(const Key('confirm_dialog_delete_emails_permanently'))
           ..title(actionType.getTitleDialog(context))
           ..content(actionType.getContentDialog(
               context,
               count: listEmails?.length,
               mailboxName: mailboxCurrent?.getDisplayName(context)))
-          ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
-          ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-          ..styleTextConfirmButton(const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w500,
-              color: AppColor.colorActionDeleteConfirmDialog))
           ..onCloseButtonAction(() => popBack())
           ..onConfirmButtonAction(
               actionType.getConfirmActionName(context),
@@ -2695,16 +2689,10 @@ class MailboxDashBoardController extends ReloadableController
           .show();
     } else {
       Get.dialog(
-        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
+        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
           ..key(const Key('confirm_dialog_empty_spam'))
           ..title(AppLocalizations.of(context).emptySpamFolder)
           ..content(AppLocalizations.of(context).emptySpamMessageDialog)
-          ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
-          ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-          ..styleTextConfirmButton(const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w500,
-              color: AppColor.colorActionDeleteConfirmDialog))
           ..onCloseButtonAction(popBack)
           ..onConfirmButtonAction(AppLocalizations.of(context).delete_all, () {
             popBack();

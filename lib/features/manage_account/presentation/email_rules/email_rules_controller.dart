@@ -168,17 +168,9 @@ class EmailRulesController extends BaseController {
     } else {
       Get.dialog(
         PointerInterceptor(
-          child: (ConfirmDialogBuilder(imagePaths)
+          child: (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
             ..title(AppLocalizations.of(context).deleteEmailRule)
             ..content(AppLocalizations.of(context).messageConfirmationDialogDeleteEmailRule(emailRule.name))
-            ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog,
-                fit: BoxFit.fill))
-            ..marginIcon(EdgeInsets.zero)
-            ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-            ..styleTextConfirmButton(const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w500,
-                color: AppColor.colorActionDeleteConfirmDialog))
             ..onCloseButtonAction(() => popBack())
             ..onConfirmButtonAction(AppLocalizations.of(context).delete, () {
               _handleDeleteEmailRuleAction(emailRule);

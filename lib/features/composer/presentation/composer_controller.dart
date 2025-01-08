@@ -2220,7 +2220,6 @@ class ComposerController extends BaseController
           _autoFocusFieldWhenLauncher();
         }
       },
-      marginIcon: EdgeInsets.zero,
       icon: SvgPicture.asset(
         imagePaths.icQuotasWarning,
         width: 40,
