@@ -1,49 +1,91 @@
 
-import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 
 extension PresentationEmailExtension on PresentationEmail {
   Tuple3<List<EmailAddress>, List<EmailAddress>, List<EmailAddress>> generateRecipientsEmailAddressForComposer({
     required EmailActionType emailActionType,
-    Role? mailboxRole,
+    bool isSender = false,
+    String? userName,
     String? listPost,
   }) {
+    final newFromAddress = from.removeDuplicateEmails();
+    final newToAddress = to.removeDuplicateEmails();
+    final newCcAddress = cc.removeDuplicateEmails();
+    final newBccAddress = bcc.removeDuplicateEmails();
+    final newReplyToAddress = replyTo.removeDuplicateEmails();
+
     switch (emailActionType) {
       case EmailActionType.reply:
-        if (mailboxRole == PresentationMailbox.roleSent) {
-          return Tuple3(to.asList(), [], []);
-        } else {
-          final replyToAddress = replyTo.asList().isNotEmpty
-            ? replyTo.asList()
-            : from.asList();
-          return Tuple3(replyToAddress, [], []);
-        }
+        final listReplyAddress = isSender ? newToAddress : newFromAddress;
+        final listReplyAddressWithoutUsername = listReplyAddress.withoutMe(userName);
+
+        return Tuple3(listReplyAddressWithoutUsername, [], []);
       case EmailActionType.replyToList:
-        final listEmailAddress = EmailUtils.parsingListPost(listPost ?? '') ?? [];
-        log('PresentationEmailExtension::generateRecipientsEmailAddressForComposer:listEmailAddress = $listEmailAddress');
-        return Tuple3(listEmailAddress, [], []);
+        final recipientRecord = EmailUtils.extractRecipientsFromListPost(listPost ?? '');
+
+        final listToAddressWithoutUsername = recipientRecord.toMailAddresses
+          .toSet()
+          .removeDuplicateEmails()
+          .withoutMe(userName);
+
+        final listCcAddressWithoutUsername = recipientRecord.ccMailAddresses
+          .toSet()
+          .removeDuplicateEmails()
+          .withoutMe(userName);
+
+        final listBccAddressWithoutUsername = recipientRecord.bccMailAddresses
+          .toSet()
+          .removeDuplicateEmails()
+          .withoutMe(userName);
+
+        return Tuple3(
+          listToAddressWithoutUsername,
+          listCcAddressWithoutUsername,
+          listBccAddressWithoutUsername,
+        );
       case EmailActionType.replyAll:
-        if (mailboxRole == PresentationMailbox.roleSent) {
-          return Tuple3(to.asList(), cc.asList(), bcc.asList());
-        } else {
-          final senderReplyToAddress = replyTo.asList().isNotEmpty
-            ? replyTo.asList()
-            : from.asList();
-          return Tuple3(
-            to.asList() + senderReplyToAddress,
-            cc.asList(),
-            bcc.asList(),
-          );
-        }
+        final recipientRecord = EmailUtils.extractRecipientsFromListPost(listPost ?? '');
+
+        final listToAddress = recipientRecord.toMailAddresses
+          + newReplyToAddress
+          + newFromAddress
+          + newToAddress;
+        final listCcAddress = recipientRecord.ccMailAddresses + newCcAddress;
+        final listBccAddress = recipientRecord.bccMailAddresses + newBccAddress;
+
+        final listToAddressWithoutUsername = listToAddress
+          .toSet()
+          .removeDuplicateEmails()
+          .withoutMe(userName);
+        final listCcAddressWithoutUsername = listCcAddress
+          .toSet()
+          .removeDuplicateEmails()
+          .withoutMe(userName);
+        final listBccAddressWithoutUsername = listBccAddress
+          .toSet()
+          .removeDuplicateEmails()
+          .withoutMe(userName);
+
+        return Tuple3(
+          listToAddressWithoutUsername,
+          listCcAddressWithoutUsername,
+          listBccAddressWithoutUsername,
+        );
       default:
-        return Tuple3(to.asList(), cc.asList(), bcc.asList());
+        final listToAddressWithoutUsername = newToAddress.withoutMe(userName);
+        final listCcAddressWithoutUsername = newCcAddress.withoutMe(userName);
+        final listBccAddressWithoutUsername = newBccAddress.withoutMe(userName);
+
+        return Tuple3(
+          listToAddressWithoutUsername,
+          listCcAddressWithoutUsername,
+          listBccAddressWithoutUsername,
+        );
     }
   }
 }
