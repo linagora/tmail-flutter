@@ -23,7 +23,6 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -669,8 +668,6 @@ class ComposerController extends BaseController
           _initEmailAddress(
             presentationEmail: arguments.presentationEmail!,
             actionType: arguments.emailActionType,
-            mailboxRole: arguments.presentationEmail!.mailboxContain?.role
-                ?? mailboxDashBoardController.selectedMailbox.value?.role,
             listPost: arguments.listPost,
           );
           _initSubjectEmail(
@@ -824,35 +821,24 @@ class ComposerController extends BaseController
   void _initEmailAddress({
     required PresentationEmail presentationEmail,
     required EmailActionType actionType,
-    Role? mailboxRole,
     String? listPost,
   }) {
-    log('ComposerController::_initEmailAddress:listPost = $listPost');
+    final userName = mailboxDashBoardController.sessionCurrent?.username.value;
+    final isSender = presentationEmail.from
+      .asList()
+      .any((element) => element.emailAddress.isNotEmpty && element.emailAddress == userName);
+
     final recipients = presentationEmail.generateRecipientsEmailAddressForComposer(
       emailActionType: actionType,
-      mailboxRole: mailboxRole,
+      isSender: isSender,
+      userName: userName,
       listPost: listPost,
     );
-    final userName = mailboxDashBoardController.sessionCurrent?.username;
-    if (userName != null) {
-      final isSender = presentationEmail.from.asList().every((element) => element.email == userName.value);
-      if (isSender) {
-        listToEmailAddress = List.from(recipients.value1.toSet());
-        listCcEmailAddress = List.from(recipients.value2.toSet());
-        listBccEmailAddress = List.from(recipients.value3.toSet());
-        listReplyToEmailAddress = List.from(recipients.value4.toSet());
-      } else {
-        listToEmailAddress = List.from(recipients.value1.toSet().filterEmailAddress(userName.value));
-        listCcEmailAddress = List.from(recipients.value2.toSet().filterEmailAddress(userName.value));
-        listBccEmailAddress = List.from(recipients.value3.toSet().filterEmailAddress(userName.value));
-        listReplyToEmailAddress = List.from(recipients.value4.toSet());
-      }
-    } else {
-      listToEmailAddress = List.from(recipients.value1.toSet());
-      listCcEmailAddress = List.from(recipients.value2.toSet());
-      listBccEmailAddress = List.from(recipients.value3.toSet());
-      listReplyToEmailAddress = List.from(recipients.value4.toSet());
-    }
+
+    listToEmailAddress = List.from(recipients.value1);
+    listCcEmailAddress = List.from(recipients.value2);
+    listBccEmailAddress = List.from(recipients.value3);
+    listReplyToEmailAddress = List.from(recipients.value4);
 
     if (listToEmailAddress.isNotEmpty || listCcEmailAddress.isNotEmpty || listBccEmailAddress.isNotEmpty || listReplyToEmailAddress.isNotEmpty) {
       isInitialRecipient.value = true;

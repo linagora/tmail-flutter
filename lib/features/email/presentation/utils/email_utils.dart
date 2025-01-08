@@ -87,37 +87,108 @@ class EmailUtils {
     }
   }
 
-  static List<EmailAddress>? parsingListPost(String listPost) {
+  static List<String> extractMailtoLinksFromListPost(String listPost) {
     try {
-      if (listPost.isEmpty) {
-        return null;
+      if (listPost.trim().isEmpty) return [];
+
+      final decodedInput = Uri.decodeComponent(listPost);
+
+      final mailtoRegex = RegExp(r'<(mailto:[^<>]+)>');
+
+      final matches = mailtoRegex.allMatches(decodedInput);
+
+      if (matches.isEmpty) {
+        log('EmailUtils::extractMailtoLinksFromListPost: Not found mailto link');
+        return [];
       }
 
-      final regExpMailtoLinks = RegExp(r'mailto:([^>,]*)');
-      final allMatchesMailtoLinks = regExpMailtoLinks.allMatches(listPost);
-      final listMailtoLinks = allMatchesMailtoLinks
-        .map((match) => match.group(0))
-        .whereNotNull()
-        .toList();
-      log('EmailUtils::parsingListPost:listMailtoLinks: $listMailtoLinks');
-
-      if (listMailtoLinks.isNotEmpty) {
-        return listMailtoLinks
-          .map((mailto) {
-            final mapMailto = RouteUtils.parseMapMailtoFromUri(mailto);
-            final emailAddress = mapMailto[RouteUtils.paramMailtoAddress];
-            return emailAddress != null
-              ? EmailAddress(null, emailAddress)
-              : null;
-          })
-          .whereNotNull()
-          .toList();
-      } else {
-        return null;
-      }
+      return matches.map((match) => match.group(1)!).toList();
     } catch (e) {
-      logError('EmailUtils::parsingListPost:Exception = $e');
-      return null;
+      logError('EmailUtils::extractMailtoLinksFromListPost:Exception = $e');
+      return [];
     }
+  }
+
+  static ({
+    List<EmailAddress> toMailAddresses,
+    List<EmailAddress> ccMailAddresses,
+    List<EmailAddress> bccMailAddresses,
+  }) extractRecipientsFromListMailtoLink(List<String> mailtoLinks) {
+    try {
+      log('EmailUtils::extractRecipientsFromListMailtoLink: mailtoLinks: $mailtoLinks:');
+      if (mailtoLinks.isEmpty) {
+        return (
+          toMailAddresses: [],
+          ccMailAddresses: [],
+          bccMailAddresses: [],
+        );
+      }
+
+      final toMailAddresses = <EmailAddress>[];
+      final ccMailAddresses = <EmailAddress>[];
+      final bccMailAddresses = <EmailAddress>[];
+
+      for (var mailtoLink in mailtoLinks) {
+        final recipientRecord = extractRecipientsFromMailtoLink(mailtoLink);
+        toMailAddresses.addAll(recipientRecord.toMailAddresses);
+        ccMailAddresses.addAll(recipientRecord.ccMailAddresses);
+        bccMailAddresses.addAll(recipientRecord.bccMailAddresses);
+      }
+
+      return (
+        toMailAddresses: toMailAddresses,
+        ccMailAddresses: ccMailAddresses,
+        bccMailAddresses: bccMailAddresses
+      );
+    } catch (e) {
+      logError('EmailUtils::extractRecipientsFromListMailtoLink:Exception = $e');
+      return (
+        toMailAddresses: [],
+        ccMailAddresses: [],
+        bccMailAddresses: [],
+      );
+    }
+  }
+
+  static ({
+    List<EmailAddress> toMailAddresses,
+    List<EmailAddress> ccMailAddresses,
+    List<EmailAddress> bccMailAddresses,
+  }) extractRecipientsFromMailtoLink(String mailtoLink) {
+    try {
+      log('EmailUtils::extractRecipientsFromMailtoLink:mailtoLink: $mailtoLink:');
+      if (mailtoLink.isEmpty) {
+        return (
+          toMailAddresses: [],
+          ccMailAddresses: [],
+          bccMailAddresses: [],
+        );
+      }
+
+      final navigationRouter =
+          RouteUtils.generateNavigationRouterFromMailtoLink(mailtoLink);
+      log('EmailUtils::extractRecipientsFromMailtoLink:navigationRouter = $navigationRouter');
+      return (
+        toMailAddresses: navigationRouter.listEmailAddress ?? [],
+        ccMailAddresses: navigationRouter.cc ?? [],
+        bccMailAddresses: navigationRouter.bcc ?? [],
+      );
+    } catch (e) {
+      logError('EmailUtils::extractRecipientsFromMailtoLink:Exception = $e');
+      return (
+        toMailAddresses: [],
+        ccMailAddresses: [],
+        bccMailAddresses: [],
+      );
+    }
+  }
+
+  static ({
+    List<EmailAddress> toMailAddresses,
+    List<EmailAddress> ccMailAddresses,
+    List<EmailAddress> bccMailAddresses,
+  }) extractRecipientsFromListPost(String listPost) {
+    final mailtoLinks = extractMailtoLinksFromListPost(listPost);
+    return extractRecipientsFromListMailtoLink(mailtoLinks);
   }
 }

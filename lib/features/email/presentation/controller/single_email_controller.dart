@@ -1424,6 +1424,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             mailboxRole: presentationEmail.mailboxContain?.role,
             messageId: currentEmailLoaded.value?.emailCurrent?.messageId,
             references: currentEmailLoaded.value?.emailCurrent?.references,
+            listPost: currentEmailLoaded.value?.emailCurrent?.listPost,
           )
         );
         break;
@@ -1450,6 +1451,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             mailboxRole: presentationEmail.mailboxContain?.role,
             messageId: currentEmailLoaded.value?.emailCurrent?.messageId,
             references: currentEmailLoaded.value?.emailCurrent?.references,
+            listPost: currentEmailLoaded.value?.emailCurrent?.listPost,
           )
         );
         break;
