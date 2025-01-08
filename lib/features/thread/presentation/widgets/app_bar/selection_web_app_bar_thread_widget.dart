@@ -4,7 +4,6 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_presentation_email_extension.dart';
@@ -16,9 +15,9 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/app_b
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SelectionWebAppBarThreadWidget extends StatelessWidget {
-  final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
+  final ResponsiveUtils responsiveUtils;
+  final ImagePaths imagePaths;
   final PresentationMailbox? mailboxSelected;
   final List<PresentationEmail> listEmailSelected;
   final FilterMessageOption filterOption;
@@ -28,8 +27,10 @@ class SelectionWebAppBarThreadWidget extends StatelessWidget {
   final OnPopupMenuFilterEmailAction? onPopupMenuFilterEmailAction;
   final OnContextMenuFilterEmailAction? onContextMenuFilterEmailAction;
 
-  SelectionWebAppBarThreadWidget({
+  const SelectionWebAppBarThreadWidget({
     super.key,
+    required this.responsiveUtils,
+    required this.imagePaths,
     required this.listEmailSelected,
     required this.mailboxSelected,
     required this.filterOption,
@@ -44,17 +45,17 @@ class SelectionWebAppBarThreadWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: SelectionWebAppBarThreadWidgetStyle.backgroundColor,
-      padding: SelectionWebAppBarThreadWidgetStyle.getPadding(context, _responsiveUtils),
+      width: double.infinity,
+      padding: SelectionWebAppBarThreadWidgetStyle.getPadding(context, responsiveUtils),
       constraints: const BoxConstraints(minHeight: SelectionWebAppBarThreadWidgetStyle.minHeight),
       child: Row(
         children: [
           TMailButtonWidget.fromIcon(
             key: const Key('cancel_selection_button'),
-            icon: _imagePaths.icClose,
+            icon: imagePaths.icCancel,
             backgroundColor: Colors.transparent,
-            iconColor: SelectionWebAppBarThreadWidgetStyle.cancelButtonColor,
-            iconSize: SelectionWebAppBarThreadWidgetStyle.closeButtonIconSize,
-            padding: SelectionWebAppBarThreadWidgetStyle.closeButtonPadding,
+            iconColor: SelectionWebAppBarThreadWidgetStyle.iconColor,
+            iconSize: SelectionWebAppBarThreadWidgetStyle.iconSize,
             tooltipMessage: AppLocalizations.of(context).cancel,
             onTapActionCallback: cancelEditThreadAction,
           ),
@@ -71,46 +72,51 @@ class SelectionWebAppBarThreadWidget extends StatelessWidget {
             TMailButtonWidget.fromIcon(
               key: const Key('mark_as_read_email_selection_button'),
               icon: listEmailSelected.isAllEmailRead
-                ? _imagePaths.icUnread
-                : _imagePaths.icRead,
-              iconSize: SelectionWebAppBarThreadWidgetStyle.mediumIconSize,
+                  ? imagePaths.icUnread
+                  : imagePaths.icRead,
+              iconColor: SelectionWebAppBarThreadWidgetStyle.iconColor,
+              iconSize: SelectionWebAppBarThreadWidgetStyle.iconSize,
               backgroundColor: Colors.transparent,
               tooltipMessage: listEmailSelected.isAllEmailRead
-                ? AppLocalizations.of(context).unread
-                : AppLocalizations.of(context).read,
+                  ? AppLocalizations.of(context).unread
+                  : AppLocalizations.of(context).read,
               onTapActionCallback: () {
                 return emailSelectionAction(
-                  listEmailSelected.isAllEmailRead
-                    ? EmailActionType.markAsUnread
-                    : EmailActionType.markAsRead,
-                  listEmailSelected
+                    listEmailSelected.isAllEmailRead
+                        ? EmailActionType.markAsUnread
+                        : EmailActionType.markAsRead,
+                    listEmailSelected
                 );
               },
             ),
           TMailButtonWidget.fromIcon(
             key: const Key('mark_as_star_email_selection_button'),
             icon: listEmailSelected.isAllEmailStarred
-              ? _imagePaths.icUnStar
-              : _imagePaths.icStar,
-            iconSize: SelectionWebAppBarThreadWidgetStyle.mediumIconSize,
+                ? imagePaths.icUnStar
+                : imagePaths.icStar,
+            iconColor: listEmailSelected.isAllEmailStarred
+                ? SelectionWebAppBarThreadWidgetStyle.iconColor
+                : null,
+            iconSize: SelectionWebAppBarThreadWidgetStyle.iconSize,
             backgroundColor: Colors.transparent,
             tooltipMessage: listEmailSelected.isAllEmailStarred
-              ? AppLocalizations.of(context).not_starred
-              : AppLocalizations.of(context).starred,
+                ? AppLocalizations.of(context).not_starred
+                : AppLocalizations.of(context).starred,
             onTapActionCallback: () {
               return emailSelectionAction(
-                listEmailSelected.isAllEmailStarred
-                  ? EmailActionType.unMarkAsStarred
-                  : EmailActionType.markAsStarred,
-                listEmailSelected
+                  listEmailSelected.isAllEmailStarred
+                      ? EmailActionType.unMarkAsStarred
+                      : EmailActionType.markAsStarred,
+                  listEmailSelected
               );
             },
           ),
           if (mailboxSelected?.isDrafts == false)
             TMailButtonWidget.fromIcon(
               key: const Key('move_email_selection_button'),
-              icon: _imagePaths.icMove,
+              icon: imagePaths.icMoveMailbox,
               iconSize: SelectionWebAppBarThreadWidgetStyle.iconSize,
+              iconColor: SelectionWebAppBarThreadWidgetStyle.iconColor,
               backgroundColor: Colors.transparent,
               tooltipMessage: AppLocalizations.of(context).move_message,
               onTapActionCallback: () => emailSelectionAction(EmailActionType.moveToMailbox, listEmailSelected),
@@ -119,34 +125,33 @@ class SelectionWebAppBarThreadWidget extends StatelessWidget {
             TMailButtonWidget.fromIcon(
               key: const Key('mark_as_spam_email_selection_button'),
               icon: mailboxSelected?.isSpam == true
-                ? _imagePaths.icNotSpam
-                : _imagePaths.icSpam,
+                  ? imagePaths.icNotSpam
+                  : imagePaths.icSpam,
+              iconColor: SelectionWebAppBarThreadWidgetStyle.iconColor,
               iconSize: SelectionWebAppBarThreadWidgetStyle.iconSize,
               backgroundColor: Colors.transparent,
               tooltipMessage: mailboxSelected?.isSpam == true
-                ? AppLocalizations.of(context).un_spam
-                : AppLocalizations.of(context).mark_as_spam,
+                  ? AppLocalizations.of(context).un_spam
+                  : AppLocalizations.of(context).mark_as_spam,
               onTapActionCallback: () {
                 return mailboxSelected?.isSpam == true
-                  ? emailSelectionAction(EmailActionType.unSpam, listEmailSelected)
-                  : emailSelectionAction(EmailActionType.moveToSpam, listEmailSelected);
+                    ? emailSelectionAction(EmailActionType.unSpam, listEmailSelected)
+                    : emailSelectionAction(EmailActionType.moveToSpam, listEmailSelected);
               },
             ),
           TMailButtonWidget.fromIcon(
             key: const Key('delete_email_selection_button'),
-            icon: _deletePermanentlyValid
-              ? _imagePaths.icDeleteComposer
-              : _imagePaths.icDelete,
+            icon: imagePaths.icDeleteComposer,
+            iconColor: SelectionWebAppBarThreadWidgetStyle.iconColor,
             iconSize: SelectionWebAppBarThreadWidgetStyle.iconSize,
-            iconColor: SelectionWebAppBarThreadWidgetStyle.getDeleteButtonColor(_deletePermanentlyValid),
             backgroundColor: Colors.transparent,
             tooltipMessage: _deletePermanentlyValid
-              ? AppLocalizations.of(context).delete_permanently
-              : AppLocalizations.of(context).move_to_trash,
+                ? AppLocalizations.of(context).delete_permanently
+                : AppLocalizations.of(context).move_to_trash,
             onTapActionCallback: () {
               return _deletePermanentlyValid
-                ? emailSelectionAction(EmailActionType.deletePermanently, listEmailSelected)
-                : emailSelectionAction(EmailActionType.moveToTrash, listEmailSelected);
+                  ? emailSelectionAction(EmailActionType.deletePermanently, listEmailSelected)
+                  : emailSelectionAction(EmailActionType.moveToTrash, listEmailSelected);
             },
           ),
         ]

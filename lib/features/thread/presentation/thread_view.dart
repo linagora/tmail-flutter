@@ -71,6 +71,8 @@ class ThreadView extends GetWidget<ThreadController>
                         ... [
                           Obx(() {
                             return AppBarThreadWidget(
+                              responsiveUtils: controller.responsiveUtils,
+                              imagePaths: controller.imagePaths,
                               mailboxSelected: controller.selectedMailbox,
                               listEmailSelected: controller.mailboxDashBoardController.emailsInCurrentMailbox.listEmailSelected,
                               selectMode: controller.mailboxDashBoardController.currentSelectMode.value,

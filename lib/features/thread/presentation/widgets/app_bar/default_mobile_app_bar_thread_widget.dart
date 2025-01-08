@@ -3,7 +3,6 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
@@ -14,9 +13,9 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/app_b
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class DefaultMobileAppBarThreadWidget extends StatelessWidget {
-  final _imagePaths = Get.find<ImagePaths>();
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
 
+  final ResponsiveUtils responsiveUtils;
+  final ImagePaths imagePaths;
   final PresentationMailbox? mailboxSelected;
   final List<PresentationEmail> listEmailSelected;
   final SelectMode selectMode;
@@ -26,8 +25,10 @@ class DefaultMobileAppBarThreadWidget extends StatelessWidget {
   final OnContextMenuFilterEmailAction? onContextMenuFilterEmailAction;
   final OnCancelEditThreadAction cancelEditThreadAction;
 
-  DefaultMobileAppBarThreadWidget({
+  const DefaultMobileAppBarThreadWidget({
     super.key,
+    required this.responsiveUtils,
+    required this.imagePaths,
     required this.listEmailSelected,
     required this.mailboxSelected,
     required this.selectMode,
@@ -43,13 +44,13 @@ class DefaultMobileAppBarThreadWidget extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
         color: MobileAppBarThreadWidgetStyle.backgroundColor,
-        padding: MobileAppBarThreadWidgetStyle.getPadding(context, _responsiveUtils),
+        padding: MobileAppBarThreadWidgetStyle.getPadding(context, responsiveUtils),
         constraints: const BoxConstraints(minHeight: MobileAppBarThreadWidgetStyle.minHeight),
         child: Row(
           children: [
             TMailButtonWidget.fromIcon(
               key: const Key('mobile_mailbox_menu_button'),
-              icon: _imagePaths.icMenuDrawer,
+              icon: imagePaths.icMenuDrawer,
               backgroundColor: Colors.transparent,
               padding: MobileAppBarThreadWidgetStyle.mailboxMenuPadding,
               maxWidth: MobileAppBarThreadWidgetStyle.buttonMaxWidth,
@@ -69,7 +70,7 @@ class DefaultMobileAppBarThreadWidget extends StatelessWidget {
             ),
             TMailButtonWidget.fromIcon(
               key: const Key('mobile_filter_message_button'),
-              icon: _imagePaths.icFilter,
+              icon: imagePaths.icFilter,
               iconColor: MobileAppBarThreadWidgetStyle.getFilterButtonColor(filterOption),
               backgroundColor: Colors.transparent,
               maxWidth: MobileAppBarThreadWidgetStyle.buttonMaxWidth,

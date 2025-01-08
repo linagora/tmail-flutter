@@ -53,11 +53,12 @@ class BottomBarThreadSelectionWidget extends StatelessWidget{
                   icon: _listSelectionEmail.isAllEmailRead ? _imagePaths.icUnread : _imagePaths.icRead,
                   borderRadius: 0,
                   iconSize: 20,
+                  iconColor: AppColor.steelGrayA540,
                   flexibleText: true,
                   textAlign: TextAlign.center,
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
                   backgroundColor: Colors.transparent,
-                  textStyle: const TextStyle(fontSize: 12, color: AppColor.colorTextButton),
+                  textStyle: const TextStyle(fontSize: 12, color: AppColor.steelGrayA540),
                   verticalDirection: _verticalDirection(context),
                   onTapActionCallback: () {
                     onPressEmailSelectionActionClick?.call(
@@ -76,11 +77,14 @@ class BottomBarThreadSelectionWidget extends StatelessWidget{
                 icon: _listSelectionEmail.isAllEmailStarred ? _imagePaths.icUnStar : _imagePaths.icStar,
                 borderRadius: 0,
                 iconSize: 20,
+                iconColor: _listSelectionEmail.isAllEmailStarred
+                  ? AppColor.steelGrayA540
+                  : null,
                 flexibleText: true,
                 textAlign: TextAlign.center,
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
                 backgroundColor: Colors.transparent,
-                textStyle: const TextStyle(fontSize: 12, color: AppColor.colorTextButton),
+                textStyle: const TextStyle(fontSize: 12, color: AppColor.steelGrayA540),
                 verticalDirection: _verticalDirection(context),
                 onTapActionCallback: () {
                   onPressEmailSelectionActionClick?.call(
@@ -95,14 +99,15 @@ class BottomBarThreadSelectionWidget extends StatelessWidget{
                 child: TMailButtonWidget(
                   key: const Key('move_selected_email_to_mailbox_button'),
                   text: AppLocalizations.of(context).move,
-                  icon: _imagePaths.icMove,
+                  icon: _imagePaths.icMoveMailbox,
                   borderRadius: 0,
                   iconSize: 20,
+                  iconColor: AppColor.steelGrayA540,
                   textAlign: TextAlign.center,
                   flexibleText: true,
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
                   backgroundColor: Colors.transparent,
-                  textStyle: const TextStyle(fontSize: 12, color: AppColor.colorTextButton),
+                  textStyle: const TextStyle(fontSize: 12, color: AppColor.steelGrayA540),
                   verticalDirection: _verticalDirection(context),
                   onTapActionCallback: () {
                     onPressEmailSelectionActionClick?.call(EmailActionType.moveToMailbox, _listSelectionEmail);
@@ -119,11 +124,12 @@ class BottomBarThreadSelectionWidget extends StatelessWidget{
                   icon: _currentMailbox?.isSpam == true ? _imagePaths.icNotSpam : _imagePaths.icSpam,
                   borderRadius: 0,
                   iconSize: 20,
+                  iconColor: AppColor.steelGrayA540,
                   flexibleText: true,
                   textAlign: TextAlign.center,
                   padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
                   backgroundColor: Colors.transparent,
-                  textStyle: const TextStyle(fontSize: 12, color: AppColor.colorTextButton),
+                  textStyle: const TextStyle(fontSize: 12, color: AppColor.steelGrayA540),
                   verticalDirection: _verticalDirection(context),
                   onTapActionCallback: () {
                     if (_currentMailbox?.isSpam == true) {
@@ -138,15 +144,15 @@ class BottomBarThreadSelectionWidget extends StatelessWidget{
               child: TMailButtonWidget(
                 key: const Key('delete_selected_email_button'),
                 text: AppLocalizations.of(context).delete,
-                icon: canDeletePermanently ? _imagePaths.icDeleteComposer : _imagePaths.icDelete,
-                iconColor: canDeletePermanently ? AppColor.colorDeletePermanentlyButton : AppColor.primaryColor,
+                icon: _imagePaths.icDeleteComposer,
                 borderRadius: 0,
                 iconSize: 20,
+                iconColor: AppColor.steelGrayA540,
                 flexibleText: true,
                 textAlign: TextAlign.center,
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
                 backgroundColor: Colors.transparent,
-                textStyle: const TextStyle(fontSize: 12, color: AppColor.colorTextButton),
+                textStyle: const TextStyle(fontSize: 12, color: AppColor.steelGrayA540),
                 verticalDirection: _verticalDirection(context),
                 onTapActionCallback: () {
                   if (canDeletePermanently) {
