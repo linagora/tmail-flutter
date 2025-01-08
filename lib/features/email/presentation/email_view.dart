@@ -80,9 +80,8 @@ class EmailView extends GetWidget<SingleEmailController> {
           child: Container(
             clipBehavior: Clip.antiAlias,
             decoration: controller.responsiveUtils.isWebDesktop(context)
-              ? BoxDecoration(
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
+              ? const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
                   color: Colors.white)
               : const BoxDecoration(color: Colors.white),
             margin: _getMarginEmailView(context),
