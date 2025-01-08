@@ -65,7 +65,7 @@ extension QuotasExtensions on Quota {
     } else if (isWarnLimitReached) {
       return AppColor.colorBackgroundQuotasWarning;
     } else {
-      return AppColor.primaryColor;
+      return AppColor.blue400;
     }
   }
 
