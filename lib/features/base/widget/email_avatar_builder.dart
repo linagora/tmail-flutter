@@ -18,7 +18,7 @@ class EmailAvatarBuilder extends StatelessWidget {
   Widget build(BuildContext context) {
     return (AvatarBuilder()
       ..text(emailSelected.getAvatarText())
-      ..size(48)
+      ..size(50)
       ..addTextStyle(const TextStyle(
           fontWeight: FontWeight.bold,
           fontSize: 21,

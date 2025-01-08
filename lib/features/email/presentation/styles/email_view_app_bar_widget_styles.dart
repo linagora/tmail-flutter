@@ -10,7 +10,6 @@ class EmailViewAppBarWidgetStyles {
   static const double radius = 20;
   static double buttonIconSize = IconUtils.defaultIconSize;
   static const double deleteButtonIconSize = 20;
-  static const double space = 5;
   static double? heightIOS(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isLandscapeMobile(context)) {
       return 60;
@@ -24,6 +23,7 @@ class EmailViewAppBarWidgetStyles {
   static const Color deletePermanentButtonColor = AppColor.colorDeletePermanentlyButton;
   static const Color buttonActivatedColor = AppColor.primaryColor;
   static const Color buttonDeactivatedColor = AppColor.colorAttachmentIcon;
+  static const Color iconColor = AppColor.steelGrayA540;
 
   static EdgeInsetsGeometry paddingIOS(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isLandscapeMobile(context)) {
@@ -35,5 +35,4 @@ class EmailViewAppBarWidgetStyles {
     }
   }
   static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.symmetric(horizontal: 16);
-  static const EdgeInsetsGeometry buttonPadding = EdgeInsets.all(5);
 }

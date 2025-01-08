@@ -94,7 +94,9 @@ class HtmlUtils {
     String? styleCSS,
     String? javaScripts,
     bool hideScrollBar = true,
-    TextDirection? direction
+    bool useDefaultFont = false,
+    TextDirection? direction,
+    double? contentPadding,
   }) {
     return '''
       <!DOCTYPE html>
@@ -103,6 +105,13 @@ class HtmlUtils {
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
       <style>
+        ${useDefaultFont ? '''
+          body {
+            font-family: Arial, 'Inter', sans-serif; /* Fall back to sans-serif if fonts aren't available */
+            font-size: 16pt;
+            line-height: 24pt;
+          }
+        ''' : ''}
         .tmail-content {
           min-height: ${minHeight ?? 0}px;
           min-width: ${minWidth ?? 0}px;
@@ -120,7 +129,7 @@ class HtmlUtils {
         ${styleCSS ?? ''}
       </style>
       </head>
-      <body ${direction == TextDirection.rtl ? 'dir="rtl"' : ''} style = "overflow-x: hidden">
+      <body ${direction == TextDirection.rtl ? 'dir="rtl"' : ''} style = "overflow-x: hidden; ${contentPadding != null ? 'margin: $contentPadding;' : ''}";>
       <div class="tmail-content">$content</div>
       ${javaScripts ?? ''}
       </body>
