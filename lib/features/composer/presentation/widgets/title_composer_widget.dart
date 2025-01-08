@@ -20,7 +20,6 @@ class TitleComposerWidget extends StatelessWidget {
         ? emailSubject
         : AppLocalizations.of(context).new_message.capitalizeFirstEach,
       maxLines: 1,
-      textAlign: TextAlign.center,
       overflow: CommonTextStyle.defaultTextOverFlow,
       softWrap: CommonTextStyle.defaultSoftWrap,
       style: TitleComposerWidgetStyle.textStyle,
