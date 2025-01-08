@@ -122,6 +122,7 @@ class ComposerArguments extends RouterArguments {
     Role? mailboxRole,
     MessageIdsHeaderValue? messageId,
     MessageIdsHeaderValue? references,
+    String? listPost,
   }) => ComposerArguments(
     emailActionType: EmailActionType.reply,
     presentationEmail: presentationEmail,
@@ -130,6 +131,7 @@ class ComposerArguments extends RouterArguments {
     mailboxRole: mailboxRole,
     messageId: messageId,
     references: references,
+    listPost: listPost,
   );
 
   factory ComposerArguments.replyToListEmail({
@@ -158,6 +160,7 @@ class ComposerArguments extends RouterArguments {
     Role? mailboxRole,
     MessageIdsHeaderValue? messageId,
     MessageIdsHeaderValue? references,
+    String? listPost,
   }) => ComposerArguments(
     emailActionType: EmailActionType.replyAll,
     presentationEmail: presentationEmail,
@@ -166,6 +169,7 @@ class ComposerArguments extends RouterArguments {
     mailboxRole: mailboxRole,
     messageId: messageId,
     references: references,
+    listPost: listPost,
   );
 
   factory ComposerArguments.forwardEmail({

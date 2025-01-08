@@ -52,7 +52,7 @@ extension PresentationEmailExtension on PresentationEmail {
 
   PresentationEmail toggleSelect() {
     return PresentationEmail(
-      id: this.id,
+      id: id,
       blobId: blobId,
       keywords: keywords,
       size: size,
@@ -78,7 +78,7 @@ extension PresentationEmailExtension on PresentationEmail {
 
   PresentationEmail toSelectedEmail({required SelectMode selectMode}) {
     return PresentationEmail(
-      id: this.id,
+      id: id,
       blobId: blobId,
       keywords: keywords,
       size: size,
@@ -104,7 +104,7 @@ extension PresentationEmailExtension on PresentationEmail {
 
   Email toEmail() {
     return Email(
-      id: this.id,
+      id: id,
       blobId: blobId,
       keywords: keywords,
       size: size,
@@ -137,7 +137,7 @@ extension PresentationEmailExtension on PresentationEmail {
     final matchedMailbox = findMailboxContain(mapMailboxes);
 
     return PresentationEmail(
-      id: this.id,
+      id: id,
       blobId: blobId,
       keywords: keywords,
       size: size,
@@ -176,7 +176,7 @@ extension PresentationEmailExtension on PresentationEmail {
 
   PresentationEmail withRouteWeb(Uri routeWeb) {
     return PresentationEmail(
-      id: this.id,
+      id: id,
       blobId: blobId,
       keywords: keywords,
       size: size,
@@ -205,7 +205,7 @@ extension PresentationEmailExtension on PresentationEmail {
     combinedMap.removeWhere((key, value) => !value);
     log('PresentationEmailExtension::updateKeywords:combinedMap = $combinedMap');
     return PresentationEmail(
-      id: this.id,
+      id: id,
       blobId: blobId,
       keywords: combinedMap,
       size: size,
@@ -231,7 +231,7 @@ extension PresentationEmailExtension on PresentationEmail {
 
   PresentationEmail syncPresentationEmail({PresentationMailbox? mailboxContain, Uri? routeWeb}) {
     return PresentationEmail(
-      id: this.id,
+      id: id,
       blobId: blobId,
       keywords: keywords,
       size: size,
