@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-12-31T12:11:05.777668",
+  "@@last_modified": "2025-01-09T04:35:09.125475",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4080,6 +4080,12 @@
   },
   "getHelpOrReportABug": "Get help or report a bug",
   "@getHelpOrReportABug": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "replyToList": "Reply to list",
+  "@replyToList": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

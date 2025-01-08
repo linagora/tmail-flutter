@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_bottom_bar_widget_styles.dart';
@@ -67,6 +68,37 @@ class EmailViewBottomBarWidget extends StatelessWidget {
                     textStyle: EmailViewBottomBarWidgetStyles.getButtonTextStyle(context, _responsiveUtils),
                     verticalDirection: _responsiveUtils.isPortraitMobile(context),
                     onTapActionCallback: () => emailActionCallback.call(EmailActionType.replyAll, presentationEmail),
+                  ),
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            }),
+            Obx(() {
+              final currentEmailLoaded = _singleEmailController.currentEmailLoaded.value;
+
+              if (currentEmailLoaded != null &&
+                  currentEmailLoaded.emailCurrent?.hasListPost == true) {
+                return Expanded(
+                  child: TMailButtonWidget(
+                    key: const Key('reply_to_list_email_button'),
+                    text: AppLocalizations.of(context).replyToList,
+                    icon: _imagePaths.icReply,
+                    borderRadius: EmailViewBottomBarWidgetStyles.buttonRadius,
+                    iconSize: EmailViewBottomBarWidgetStyles.buttonIconSize,
+                    textAlign: TextAlign.center,
+                    flexibleText: true,
+                    padding: EmailViewBottomBarWidgetStyles.buttonPadding,
+                    backgroundColor: EmailViewBottomBarWidgetStyles.buttonBackgroundColor,
+                    textStyle: EmailViewBottomBarWidgetStyles.getButtonTextStyle(
+                      context,
+                      _responsiveUtils,
+                    ),
+                    verticalDirection: _responsiveUtils.isPortraitMobile(context),
+                    onTapActionCallback: () => emailActionCallback.call(
+                      EmailActionType.replyToList,
+                      presentationEmail,
+                    ),
                   ),
                 );
               } else {
