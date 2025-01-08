@@ -222,9 +222,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
   Widget _buildThreadViewForWebDesktop(BuildContext context) {
     return Container(
       margin: const EdgeInsetsDirectional.only(end: 16, bottom: 16),
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(20)),
-        border: Border.all(color: AppColor.colorBorderBodyThread, width: 1),
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(20)),
         color: Colors.white),
       child: ClipRRect(
         borderRadius: const BorderRadius.all(Radius.circular(20)),
