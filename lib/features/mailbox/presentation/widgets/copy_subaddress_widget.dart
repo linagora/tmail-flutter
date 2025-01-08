@@ -23,28 +23,26 @@ class CopySubaddressWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Text(
-              subaddress,
-              style: const TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog),
-            ),
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Flexible(
+          child: Text(
+            subaddress,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: const TextStyle(fontSize: 17.0, color: AppColor.colorMessageDialog),
           ),
-          TMailButtonWidget.fromIcon(
-              icon: imagePath.icCopy,
-              iconSize: 30,
-              padding: const EdgeInsets.all(3),
-              backgroundColor: Colors.transparent,
-              margin: const EdgeInsetsDirectional.only(top: 16, end: 16),
-              onTapActionCallback: onCopyButtonAction
-          )
-        ],
-      ),
+        ),
+        TMailButtonWidget.fromIcon(
+            icon: imagePath.icCopy,
+            iconSize: 30,
+            padding: const EdgeInsets.all(5),
+            backgroundColor: Colors.transparent,
+            onTapActionCallback: onCopyButtonAction,
+        )
+      ],
     );
   }
 }

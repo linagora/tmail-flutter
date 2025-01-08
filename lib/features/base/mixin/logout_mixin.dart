@@ -19,12 +19,6 @@ mixin LogoutMixin implements MessageDialogActionMixin {
       alignCenter: true,
       outsideDismissible: false,
       titleActionButtonMaxLines: 1,
-      titlePadding: const EdgeInsetsDirectional.only(
-        start: 24,
-        top: 24,
-        end: 24,
-        bottom: 12,
-      ),
       messageStyle: const TextStyle(
         color: AppColor.colorTextBody,
         fontSize: 15,
