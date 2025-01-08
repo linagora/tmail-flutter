@@ -10,6 +10,7 @@ class EmailViewBottomBarWidgetStyles {
   static const double buttonIconSize = 20;
   static const double radius = 20;
 
+  static const Color iconColor = AppColor.steelGrayA540;
   static const Color topBorderColor = AppColor.colorDividerHorizontal;
   static const Color backgroundColor = Colors.white;
   static const Color buttonBackgroundColor =  Colors.transparent;
@@ -29,7 +30,7 @@ class EmailViewBottomBarWidgetStyles {
   ) {
     return TextStyle(
       fontSize: responsiveUtils.isPortraitMobile(context) ? 12 : 16,
-      color: AppColor.colorTextButton
+      color: EmailViewBottomBarWidgetStyles.iconColor,
     );
   }
 }

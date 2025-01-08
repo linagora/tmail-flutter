@@ -236,8 +236,9 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
           ? emailAddress.asString()
           : '${emailAddress.asString()},',
         textStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: Colors.black,
+          color: AppColor.steelGray400,
           fontSize: 16,
+          fontWeight: FontWeight.w500,
         ),
         padding: const EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8),
         backgroundColor: Colors.transparent,
