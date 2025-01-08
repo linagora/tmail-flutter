@@ -51,8 +51,27 @@ extension SetEmailAddressExtension on Set<EmailAddress>? {
   Set<EmailAddress> withoutMe(String userName) {
     return filterEmailAddress(userName).toSet();
   }
+
+  List<EmailAddress> removeDuplicateEmails() {
+    final seenEmails = <String>{};
+    return this?.where((emailAddress) {
+      if (emailAddress.emailAddress.isEmpty ||
+          seenEmails.contains(emailAddress.emailAddress)) {
+        return false;
+      } else {
+        seenEmails.add(emailAddress.emailAddress);
+        return true;
+      }
+    }).toList() ?? [];
+  }
 }
 
 extension ListEmailAddressExtension on List<EmailAddress> {
   Set<String> asSetAddress() => map((emailAddress) => emailAddress.emailAddress).toSet();
+
+  List<EmailAddress> withoutMe(String? userName) {
+    if (userName == null) return this;
+
+    return where((emailAddress) => emailAddress.emailAddress != userName).toList();
+  }
 }

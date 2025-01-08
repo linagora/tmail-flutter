@@ -4,7 +4,6 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_address_extension.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 
 void main() {
@@ -30,7 +29,8 @@ void main() {
 
         final result = emailToReply.generateRecipientsEmailAddressForComposer(
           emailActionType: EmailActionType.reply,
-          mailboxRole: PresentationMailbox.roleSent
+          isSender: true,
+          userName: userAEmailAddress.emailAddress,
         );
 
         expect(result.value1, containsAll(expectedResult.value1));
@@ -50,7 +50,8 @@ void main() {
 
         final result = emailToReply.generateRecipientsEmailAddressForComposer(
           emailActionType: EmailActionType.replyAll,
-          mailboxRole: PresentationMailbox.roleSent
+          isSender: true,
+          userName: userAEmailAddress.emailAddress,
         );
 
         expect(result.value1, containsAll(expectedResult.value1));
@@ -61,7 +62,7 @@ void main() {
 
     group('GIVEN user B is the sender, SENDER configured the replyTo email AND send an email to user A and user E, cc to user C, bcc to user D', () {
       test('THEN user A click reply, generateRecipientsEmailAddressForComposer SHOULD return only replyToEmailAddress email to reply' , () {
-        final expectedResult = Tuple3([replyToEmailAddress], <EmailAddress>[], <EmailAddress>[]);
+        final expectedResult = Tuple3([userBEmailAddress], <EmailAddress>[], <EmailAddress>[]);
 
         final emailToReply = PresentationEmail(
           from: {userBEmailAddress},
@@ -73,7 +74,7 @@ void main() {
 
         final result = emailToReply.generateRecipientsEmailAddressForComposer(
           emailActionType: EmailActionType.reply,
-          mailboxRole: PresentationMailbox.roleInbox
+          isSender: false,
         );
 
         expect(result.value1, containsAll(expectedResult.value1));
@@ -94,7 +95,7 @@ void main() {
 
         final result = emailToReply.generateRecipientsEmailAddressForComposer(
           emailActionType: EmailActionType.replyAll,
-          mailboxRole: PresentationMailbox.roleInbox
+          isSender: false,
         );
 
         expect(result.value1, containsAll(expectedResult.value1));
@@ -116,7 +117,7 @@ void main() {
 
         final result = emailToReply.generateRecipientsEmailAddressForComposer(
           emailActionType: EmailActionType.reply,
-          mailboxRole: PresentationMailbox.roleInbox
+          isSender: false,
         );
 
         expect(result.value1, containsAll(expectedResult.value1));
@@ -136,7 +137,7 @@ void main() {
 
         final result = emailToReply.generateRecipientsEmailAddressForComposer(
           emailActionType: EmailActionType.replyAll,
-          mailboxRole: PresentationMailbox.roleInbox
+          isSender: false,
         );
 
         expect(result.value1, containsAll(expectedResult.value1));
@@ -160,7 +161,7 @@ void main() {
 
         final result = emailToReplyToList.generateRecipientsEmailAddressForComposer(
           emailActionType: EmailActionType.replyToList,
-          mailboxRole: PresentationMailbox.roleInbox,
+          isSender: false,
           listPost: '<mailto:${replyToListEmailAddress.emailAddress}>',
         );
 
@@ -183,7 +184,7 @@ void main() {
 
         final result = emailToReply.generateRecipientsEmailAddressForComposer(
           emailActionType: EmailActionType.forward,
-          mailboxRole: PresentationMailbox.roleInbox
+          isSender: false,
         );
 
         expect(result.value1, containsAll(expectedResult.value1));
