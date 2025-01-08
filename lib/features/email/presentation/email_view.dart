@@ -278,10 +278,9 @@ class EmailView extends GetWidget<SingleEmailController> {
           : controller.imagePaths.icNewer,
         iconColor: controller.emailSupervisorController.nextEmailActivated
           ? AppColor.primaryColor
-          : AppColor.colorAttachmentIcon,
+          : EmailViewStyles.iconColor,
         iconSize: EmailViewStyles.pageViewIconSize,
         backgroundColor: Colors.transparent,
-        padding: EmailViewStyles.pageViewButtonPadding,
         tooltipMessage: AppLocalizations.of(context).newer,
         onTapActionCallback: controller.emailSupervisorController.moveToNextEmail
       ),
@@ -291,9 +290,8 @@ class EmailView extends GetWidget<SingleEmailController> {
           : controller.imagePaths.icOlder,
         iconColor: controller.emailSupervisorController.previousEmailActivated
           ? AppColor.primaryColor
-          : AppColor.colorAttachmentIcon,
+          : EmailViewStyles.iconColor,
         iconSize: EmailViewStyles.pageViewIconSize,
-        padding: EmailViewStyles.pageViewButtonPadding,
         backgroundColor: Colors.transparent,
         tooltipMessage: AppLocalizations.of(context).older,
         onTapActionCallback: controller.emailSupervisorController.backToPreviousEmail
@@ -390,7 +388,7 @@ class EmailView extends GetWidget<SingleEmailController> {
               if (PlatformInfo.isWeb) {
                 return Expanded(
                   child: Padding(
-                    padding: const EdgeInsetsDirectional.only(start: 16, bottom: 16),
+                    padding: EmailViewStyles.emailContentPadding,
                     child: LayoutBuilder(builder: (context, constraints) {
                       return Obx(() {
                         return Stack(
@@ -401,6 +399,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                               contentHtml: allEmailContents,
                               mailtoDelegate: controller.openMailToLink,
                               direction: AppUtils.getCurrentDirection(context),
+                              contentPadding: 0,
+                              useDefaultFont: true,
                             ),
                             if (controller.mailboxDashBoardController.isAttachmentDraggableAppActive)
                               PointerInterceptor(
@@ -438,6 +438,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                           contentHtml: allEmailContents,
                           initialWidth: constraints.maxWidth,
                           direction: AppUtils.getCurrentDirection(context),
+                          contentPadding: 0,
+                          useDefaultFont: true,
                           onMailtoDelegateAction: controller.openMailToLink,
                           onScrollHorizontalEnd: controller.toggleScrollPhysicsPagerView,
                           onLoadWidthHtmlViewer: controller.emailSupervisorController.updateScrollPhysicPageView,
@@ -457,6 +459,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                       contentHtml: allEmailContents,
                       initialWidth: constraints.maxWidth,
                       direction: AppUtils.getCurrentDirection(context),
+                      contentPadding: 0,
+                      useDefaultFont: true,
                       onMailtoDelegateAction: controller.openMailToLink,
                       onScrollHorizontalEnd: controller.toggleScrollPhysicsPagerView,
                       onLoadWidthHtmlViewer: controller.emailSupervisorController.updateScrollPhysicPageView,
