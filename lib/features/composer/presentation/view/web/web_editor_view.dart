@@ -145,6 +145,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           }
         );
       case EmailActionType.reply:
+      case EmailActionType.replyToList:
       case EmailActionType.replyAll:
       case EmailActionType.forward:
         if (contentViewState == null) {

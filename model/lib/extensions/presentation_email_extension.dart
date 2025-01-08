@@ -6,11 +6,9 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/email/email_action_type.dart';
 import 'package:model/email/eml_attachment.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_address_extension.dart';
@@ -131,30 +129,6 @@ extension PresentationEmailExtension on PresentationEmail {
   String recipientsName() {
     final allEmailAddress = to.emailAddressToListString() + cc.emailAddressToListString() + bcc.emailAddressToListString();
     return allEmailAddress.isNotEmpty ? allEmailAddress.join(', ') : '';
-  }
-
-  Tuple3<List<EmailAddress>, List<EmailAddress>, List<EmailAddress>> generateRecipientsEmailAddressForComposer({
-    required EmailActionType emailActionType,
-    Role? mailboxRole
-  }) {
-    switch(emailActionType) {
-      case EmailActionType.reply:
-        if (mailboxRole == PresentationMailbox.roleSent) {
-          return Tuple3(to.asList(), [], []);
-        } else {
-          final replyToAddress = replyTo.asList().isNotEmpty ? replyTo.asList() : from.asList();
-          return Tuple3(replyToAddress, [], []);
-        }
-      case EmailActionType.replyAll:
-        if (mailboxRole == PresentationMailbox.roleSent) {
-          return Tuple3(to.asList(), cc.asList(), bcc.asList());
-        } else {
-          final senderReplyToAddress = replyTo.asList().isNotEmpty ? replyTo.asList() : from.asList();
-          return Tuple3(to.asList() + senderReplyToAddress, cc.asList(), bcc.asList());
-        }
-      default:
-        return Tuple3(to.asList(), cc.asList(), bcc.asList());
-    }
   }
 
   PresentationEmail toSearchPresentationEmail(Map<MailboxId, PresentationMailbox> mapMailboxes) {

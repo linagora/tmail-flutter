@@ -1,6 +1,7 @@
 
 enum EmailActionType {
   reply,
+  replyToList,
   forward,
   replyAll,
   compose,
