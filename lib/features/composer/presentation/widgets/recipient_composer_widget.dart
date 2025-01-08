@@ -147,7 +147,11 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
             child: Text(
               '${widget.prefix.asName(context)}:',
               key: Key('prefix_${widget.prefix.name}_recipient_composer_widget'),
-              style: RecipientComposerWidgetStyle.labelTextStyle
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: AppColor.m3Tertiary,
+              ),
             ),
           ),
           const SizedBox(width: RecipientComposerWidgetStyle.space),

@@ -28,7 +28,10 @@ class MobileEditorWidget extends StatelessWidget {
       minHeight: 550,
       addDefaultSelectionMenuItems: false,
       initialContent: content,
-      customStyleCss: HtmlUtils.customCssStyleHtmlEditor(direction: direction),
+      customStyleCss: HtmlUtils.customCssStyleHtmlEditor(
+        direction: direction,
+        useDefaultFont: true,
+      ),
       onCreated: (editorApi) => onCreatedEditorAction.call(context, editorApi, content),
       onCompleted: onLoadCompletedEditorAction,
     );

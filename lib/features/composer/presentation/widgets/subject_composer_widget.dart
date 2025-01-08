@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
@@ -38,7 +39,11 @@ class SubjectComposerWidget extends StatelessWidget {
         children: [
           Text(
             '${AppLocalizations.of(context).subject_email}:',
-            style: SubjectComposerWidgetStyle.labelTextStyle
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: AppColor.m3Tertiary,
+            ),
           ),
           const SizedBox(width:SubjectComposerWidgetStyle.space),
           Expanded(

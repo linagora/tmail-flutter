@@ -147,7 +147,7 @@ class RecipientTagItemWidget extends StatelessWidget {
     if (isLatestTagFocused && isLatestEmail) {
       return AppColor.colorItemRecipientSelected;
     } else if (EmailUtils.isEmailAddressValid(currentEmailAddress.emailAddress)) {
-      return AppColor.colorEmailAddressTag;
+      return AppColor.colorF3F6F9;
     } else {
       return Colors.white;
     }
