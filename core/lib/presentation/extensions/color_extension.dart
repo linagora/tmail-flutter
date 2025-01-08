@@ -103,7 +103,7 @@ extension AppColor on Color {
   static const colorTextSettingDescriptions = colorTextButtonHeaderThread;
   static const colorButtonHeaderThread = Color(0x99EBEDF0);
   static const colorBorderBodyThread = Color(0x5CB8C1CC);
-  static const colorBgDesktop = Color(0xFFF6F6F6);
+  static const colorBgDesktop = Color(0xFFF3F6F9);
   static const colorItemEmailSelectedDesktop = Color(0xFFDFEEFF);
   static const colorAvatar = Color(0xFFDE5E5E);
   static const colorFocusButton = Color(0x14818C99);
@@ -242,6 +242,8 @@ extension AppColor on Color {
   static const steelGray200 = Color(0xFFAEB7C2);
   static const blue700 = Color(0xFF208BFF);
   static const steelGray400 = Color(0xFF818C99);
+  static const blue700 = Color(0xFF208BFF);
+  static const blue100 = Color(0xFFDFEEFF);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

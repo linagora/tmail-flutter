@@ -193,7 +193,7 @@ class MailboxView extends BaseMailboxView {
                   child: Text(
                     AppLocalizations.of(context).folders,
                     style: const TextStyle(
-                      fontSize: 17,
+                      fontSize: 15,
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
@@ -207,14 +207,16 @@ class MailboxView extends BaseMailboxView {
                     TMailButtonWidget.fromIcon(
                       icon: controller.imagePaths.icSearchBar,
                       backgroundColor: Colors.transparent,
-                      iconColor: AppColor.primaryColor,
+                      iconColor: AppColor.steelGrayA540,
+                      iconSize: 20,
                       tooltipMessage: AppLocalizations.of(context).searchForFolders,
                       onTapActionCallback: () => controller.openSearchViewAction(context)
                     ),
                     TMailButtonWidget.fromIcon(
                       icon: controller.imagePaths.icAddNewFolder,
                       backgroundColor: Colors.transparent,
-                      iconColor: AppColor.primaryColor,
+                      iconColor: AppColor.steelGrayA540,
+                      iconSize: 20,
                       tooltipMessage: AppLocalizations.of(context).newFolder,
                       onTapActionCallback: () => controller.goToCreateNewMailboxView(context)
                     ),
