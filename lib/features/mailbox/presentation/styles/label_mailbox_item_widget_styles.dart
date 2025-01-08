@@ -14,4 +14,5 @@ class LabelMailboxItemWidgetStyles {
   static const FontWeight labelTeamMailboxTextFontWeight = FontWeight.bold;
   static const FontWeight labelFolderTextFontWeight = FontWeight.normal;
   static const FontWeight teamMailboxTextFontWeight = FontWeight.w400;
+  static const FontWeight labelFolderSelectedFontWeight = FontWeight.bold;
 }

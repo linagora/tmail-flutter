@@ -3,7 +3,6 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
@@ -13,6 +12,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method
 
 class MailboxIconWidget extends StatelessWidget {
 
+  final ImagePaths imagePaths;
   final MailboxNode mailboxNode;
   final SelectMode selectionMode;
   final OnSelectMailboxNodeAction? onSelectMailboxFolderClick;
@@ -20,14 +20,13 @@ class MailboxIconWidget extends StatelessWidget {
   const MailboxIconWidget({
     super.key,
     required this.mailboxNode,
+    required this.imagePaths,
     this.selectionMode = SelectMode.INACTIVE,
     this.onSelectMailboxFolderClick,
   });
 
   @override
   Widget build(BuildContext context) {
-    final imagePaths = Get.find<ImagePaths>();
-
     if (_isSelectionActivatedOnMobile) {
       return InkWell(
         onTap: () => onSelectMailboxFolderClick?.call(mailboxNode),

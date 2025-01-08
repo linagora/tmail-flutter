@@ -476,7 +476,7 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
       MailboxId? mailboxIdSelected
   ) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
@@ -491,26 +491,30 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
           customBorder: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
           hoverColor: AppColor.colorMailboxHovered,
           child: Obx(() => Container(
-            padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 8),
+            padding: const EdgeInsetsDirectional.symmetric(
+              horizontal: 8,
+              vertical: 10,
+            ),
             color: controller.mailboxDestination.value == PresentationMailbox.unifiedMailbox
               ? AppColor.colorItemSelected
               : Colors.transparent,
             child: Row(children: [
+              const SizedBox(width: 26),
               SvgPicture.asset(
                 controller.imagePaths.icFolderMailbox,
-                width: PlatformInfo.isWeb ? 24 : 20,
-                height: PlatformInfo.isWeb ? 24 : 20,
+                width: 20,
+                height: 20,
                 fit: BoxFit.fill
               ),
-              const SizedBox(width: 8),
+              const SizedBox(width: 10),
               Expanded(child: Text(
                 AppLocalizations.of(context).allFolders,
                 maxLines: 1,
                 softWrap: CommonTextStyle.defaultSoftWrap,
                 overflow: CommonTextStyle.defaultTextOverFlow,
                 style: const TextStyle(
-                  fontSize: 15,
-                  color: AppColor.colorNameEmail,
+                  fontSize: 14,
+                  color: Colors.black,
                   fontWeight: FontWeight.normal
                 ),
               )),

@@ -35,9 +35,7 @@ class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
         onTap: () {},
         borderRadius: const BorderRadius.all(Radius.circular(8)),
         child: Padding(
-          padding: _mailboxNode.hasChildren()
-            ? const EdgeInsets.symmetric(horizontal: 8, vertical: 5)
-            : const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           child: Row(
             children: [
               _buildLeadingMailboxItem(context),
@@ -56,21 +54,22 @@ class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (_mailboxNode.hasChildren() && _mailboxNode.item.isPersonal)
-          TMailButtonWidget.fromIcon(
+        Visibility.maintain(
+          visible: _mailboxNode.hasChildren() && _mailboxNode.item.isPersonal,
+          child: TMailButtonWidget.fromIcon(
             icon: _getExpandIcon(context, _imagePaths),
             iconColor: _mailboxNode.item.allowedToDisplay
-              ? AppColor.primaryColor
+              ? Colors.black
               : AppColor.colorIconUnSubscribedMailbox,
-            padding: EdgeInsets.zero,
+            padding: const EdgeInsets.all(5),
+            iconSize: 20,
             backgroundColor: Colors.transparent,
             tooltipMessage: _mailboxNode.expandMode == ExpandMode.EXPAND
               ? AppLocalizations.of(context).collapse
               : AppLocalizations.of(context).expand,
             onTapActionCallback: () => onClickExpandMailboxNodeAction?.call(_mailboxNode)
-          )
-        else
-          const SizedBox(width: 28),
+          ),
+        ),
         if (!_mailboxNode.item.isTeamMailboxes)
           _buildMailboxIcon(context),
       ]
@@ -97,7 +96,7 @@ class MailBoxVisibilityFolderTileBuilder extends StatelessWidget {
           softWrap: CommonTextStyle.defaultSoftWrap,
           overflow: CommonTextStyle.defaultTextOverFlow,
           style: TextStyle(
-            fontSize: _mailboxNode.item.isTeamMailboxes ? 16 : 15,
+            fontSize: _mailboxNode.item.isTeamMailboxes ? 16 : 14,
             color: _mailboxNode.item.allowedToDisplay
               ? Colors.black
               : AppColor.colorTitleAUnSubscribedMailbox,
