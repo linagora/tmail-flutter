@@ -244,6 +244,7 @@ extension AppColor on Color {
   static const steelGray400 = Color(0xFF818C99);
   static const blue700 = Color(0xFF208BFF);
   static const blue100 = Color(0xFFDFEEFF);
+  static const blue400 = Color(0xFF80BDFF);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
