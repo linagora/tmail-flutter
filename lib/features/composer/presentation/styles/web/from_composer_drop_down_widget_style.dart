@@ -60,12 +60,6 @@ class FromComposerDropDownWidgetStyle {
     height: 72,
     overlayColor: WidgetStateProperty.resolveWith<Color>((Set<WidgetState> states) => Colors.white)
   );
-
-  static const TextStyle prefixTextStyle = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    color: AppColor.colorLabelComposer,
-  );
   static const TextStyle avatarTextStyle = TextStyle(
     fontSize: 16,
     fontWeight: FontWeight.w600,

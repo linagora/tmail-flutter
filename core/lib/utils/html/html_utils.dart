@@ -38,10 +38,22 @@ class HtmlUtils {
       editor.parentNode.replaceChild(newEditor, editor);''',
     name: 'unregisterDropListener');
 
-  static String customCssStyleHtmlEditor({TextDirection direction = TextDirection.ltr}) {
+  static String customCssStyleHtmlEditor({
+    TextDirection direction = TextDirection.ltr,
+    bool useDefaultFont = false,
+  }) {
     if (PlatformInfo.isWeb) {
       return '''
         <style>
+          ${useDefaultFont ? '''
+            body {
+              font-family: Arial, 'Inter', sans-serif;
+              font-weight: 500;
+              font-size: 16px;
+              line-height: 24px;
+            }
+          ''' : ''}
+        
           .note-editable {
             direction: ${direction.name};
           }
@@ -53,6 +65,15 @@ class HtmlUtils {
       ''';
     } else if (PlatformInfo.isMobile) {
       return '''
+        ${useDefaultFont ? '''
+          body {
+            font-family: Arial, 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 24px;
+          }
+        ''' : ''}
+        
         #editor {
           direction: ${direction.name};
         }
@@ -104,12 +125,14 @@ class HtmlUtils {
       <head>
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      ${useDefaultFont ? '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">' : ''}
       <style>
         ${useDefaultFont ? '''
           body {
-            font-family: Arial, 'Inter', sans-serif; /* Fall back to sans-serif if fonts aren't available */
-            font-size: 16pt;
-            line-height: 24pt;
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 24px;
           }
         ''' : ''}
         .tmail-content {

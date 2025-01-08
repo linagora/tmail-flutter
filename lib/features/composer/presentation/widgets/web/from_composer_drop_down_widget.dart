@@ -55,7 +55,11 @@ class FromComposerDropDownWidget extends StatelessWidget {
             padding: FromComposerDropDownWidgetStyle.prefixPadding,
             child: Text(
               '${PrefixEmailAddress.from.asName(context)}:',
-              style: FromComposerDropDownWidgetStyle.prefixTextStyle,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+                color: AppColor.m3Tertiary,
+              ),
             ),
           ),
           const SizedBox(width: FromComposerDropDownWidgetStyle.space),
