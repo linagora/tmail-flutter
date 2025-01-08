@@ -1427,6 +1427,20 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           )
         );
         break;
+      case EmailActionType.replyToList:
+        log('SingleEmailController::pressEmailAction:replyToList');
+        mailboxDashBoardController.goToComposer(
+          ComposerArguments.replyToListEmail(
+            presentationEmail: presentationEmail,
+            content: currentEmailLoaded.value?.htmlContent ?? '',
+            inlineImages: currentEmailLoaded.value?.inlineImages ?? [],
+            mailboxRole: presentationEmail.mailboxContain?.role,
+            messageId: currentEmailLoaded.value?.emailCurrent?.messageId,
+            references: currentEmailLoaded.value?.emailCurrent?.references,
+            listPost: currentEmailLoaded.value?.emailCurrent?.listPost,
+          )
+        );
+        break;
       case EmailActionType.replyAll:
         mailboxDashBoardController.goToComposer(
           ComposerArguments.replyAllEmail(

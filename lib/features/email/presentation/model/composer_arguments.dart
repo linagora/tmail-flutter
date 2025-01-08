@@ -32,6 +32,7 @@ class ComposerArguments extends RouterArguments {
   final ScreenDisplayMode displayMode;
   final List<EmailAddress>? cc;
   final List<EmailAddress>? bcc;
+  final String? listPost;
 
   ComposerArguments({
     this.emailActionType = EmailActionType.compose,
@@ -54,6 +55,7 @@ class ComposerArguments extends RouterArguments {
     this.displayMode = ScreenDisplayMode.normal,
     this.cc,
     this.bcc,
+    this.listPost,
   });
 
   factory ComposerArguments.fromSendingEmail(SendingEmail sendingEmail) =>
@@ -128,6 +130,25 @@ class ComposerArguments extends RouterArguments {
     mailboxRole: mailboxRole,
     messageId: messageId,
     references: references,
+  );
+
+  factory ComposerArguments.replyToListEmail({
+    required PresentationEmail presentationEmail,
+    required String content,
+    required List<Attachment> inlineImages,
+    Role? mailboxRole,
+    MessageIdsHeaderValue? messageId,
+    MessageIdsHeaderValue? references,
+    String? listPost,
+  }) => ComposerArguments(
+    emailActionType: EmailActionType.replyToList,
+    presentationEmail: presentationEmail,
+    emailContents: content,
+    inlineImages: inlineImages,
+    mailboxRole: mailboxRole,
+    messageId: messageId,
+    references: references,
+    listPost: listPost,
   );
 
   factory ComposerArguments.replyAllEmail({
@@ -206,6 +227,7 @@ class ComposerArguments extends RouterArguments {
     displayMode,
     cc,
     bcc,
+    listPost,
   ];
 
   ComposerArguments copyWith({
@@ -229,6 +251,7 @@ class ComposerArguments extends RouterArguments {
     ScreenDisplayMode? displayMode,
     List<EmailAddress>? cc,
     List<EmailAddress>? bcc,
+    String? listPost,
   }) {
     return ComposerArguments(
       emailActionType: emailActionType ?? this.emailActionType,
@@ -251,6 +274,7 @@ class ComposerArguments extends RouterArguments {
       displayMode: displayMode ?? this.displayMode,
       cc: cc ?? this.cc,
       bcc: bcc ?? this.bcc,
+      listPost: listPost ?? this.listPost,
     );
   }
 }

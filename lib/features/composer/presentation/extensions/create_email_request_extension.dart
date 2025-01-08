@@ -76,6 +76,7 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
 
   MessageIdsHeaderValue? createInReplyTo() {
     if (emailActionType == EmailActionType.reply ||
+        emailActionType == EmailActionType.replyToList ||
         emailActionType == EmailActionType.replyAll
     ) {
       return messageId;
@@ -85,6 +86,7 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
 
   MessageIdsHeaderValue? createReferences() {
     if (emailActionType == EmailActionType.reply ||
+        emailActionType == EmailActionType.replyToList ||
         emailActionType == EmailActionType.replyAll ||
         emailActionType == EmailActionType.forward
     ) {

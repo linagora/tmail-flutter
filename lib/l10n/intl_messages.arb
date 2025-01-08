@@ -4211,5 +4211,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "replyToList": "Reply to list",
+  "@replyToList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

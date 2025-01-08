@@ -4422,4 +4422,12 @@ class AppLocalizations {
     );
   }
 
+
+  String get replyToList {
+    return Intl.message(
+      'Reply to list',
+      name: 'replyToList',
+    );
+  }
+
 }

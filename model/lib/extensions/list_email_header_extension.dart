@@ -24,4 +24,9 @@ extension ListEmailHeaderExtension on Set<EmailHeader>? {
     logger.log('ListEmailHeaderExtension::sMimeStatus: $sMimeStatus');
     return sMimeStatus?.value.trim() ?? '';
   }
+
+  String get listPost {
+    final listPost = this?.firstWhereOrNull((header) => header.name == EmailProperty.headerListPostKey);
+    return listPost?.value ?? '';
+  }
 }

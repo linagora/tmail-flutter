@@ -3,8 +3,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
-import 'package:model/extensions/presentation_email_extension.dart';
+import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 
 void main() {
   group('presentation email extension test', () {
@@ -14,6 +15,7 @@ void main() {
     final userDEmailAddress = EmailAddress('User D', 'userD@domain.com');
     final userEEmailAddress = EmailAddress('User E', 'userE@domain.com');
     final replyToEmailAddress = EmailAddress('Reply To', 'replyToThis@domain.com');
+    final replyToListEmailAddress = EmailAddress(null, 'replyToList@domain.com');
 
     group('GIVEN user A is the sender AND sends an email to user B and user E, cc to user C, bcc to user D', () {
       test('THEN user A clicks reply, generateRecipientsEmailAddressForComposer SHOULD return user B email + user E email to reply', () {
@@ -146,6 +148,31 @@ void main() {
         expect(result.value2, containsAll(expectedResult.value2));
         expect(result.value3, containsAll(expectedResult.value3));
         expect(result.value4, containsAll(expectedResult.value4));
+      });
+
+      test(
+        'THEN user A click reply to list, generateRecipientsEmailAddressForComposer\n'
+        'SHOULD return email address in mailto of List-Post to reply\n',
+      () {
+        final expectedResult = Tuple3([replyToListEmailAddress], [], []);
+
+        final emailToReplyToList = PresentationEmail(
+          from: {userBEmailAddress},
+          replyTo: {replyToEmailAddress},
+          to: {userAEmailAddress, userEEmailAddress},
+          cc: {userCEmailAddress},
+          bcc: {userDEmailAddress},
+        );
+
+        final result = emailToReplyToList.generateRecipientsEmailAddressForComposer(
+          emailActionType: EmailActionType.replyToList,
+          mailboxRole: PresentationMailbox.roleInbox,
+          listPost: '<mailto:${replyToListEmailAddress.emailAddress}>',
+        );
+
+        expect(result.value1, containsAll(expectedResult.value1));
+        expect(result.value2, containsAll(expectedResult.value2));
+        expect(result.value3, containsAll(expectedResult.value3));
       });
     });
 

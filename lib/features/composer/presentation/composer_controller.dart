@@ -75,6 +75,7 @@ import 'package:tmail_ui_user/features/email/domain/state/get_email_content_stat
 import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
@@ -662,11 +663,15 @@ class ComposerController extends BaseController
           _updateStatusEmailSendButton();
           break;
         case EmailActionType.reply:
+        case EmailActionType.replyToList:
         case EmailActionType.replyAll:
+          log('ComposerController::_initEmail:listPost = ${arguments.listPost}');
           _initEmailAddress(
             presentationEmail: arguments.presentationEmail!,
             actionType: arguments.emailActionType,
-            mailboxRole: arguments.presentationEmail!.mailboxContain?.role ?? mailboxDashBoardController.selectedMailbox.value?.role
+            mailboxRole: arguments.presentationEmail!.mailboxContain?.role
+                ?? mailboxDashBoardController.selectedMailbox.value?.role,
+            listPost: arguments.listPost,
           );
           _initSubjectEmail(
             presentationEmail: arguments.presentationEmail!,
@@ -820,12 +825,15 @@ class ComposerController extends BaseController
     required PresentationEmail presentationEmail,
     required EmailActionType actionType,
     Role? mailboxRole,
+    String? listPost,
   }) {
+    log('ComposerController::_initEmailAddress:listPost = $listPost');
     final recipients = presentationEmail.generateRecipientsEmailAddressForComposer(
       emailActionType: actionType,
-      mailboxRole: mailboxRole
+      mailboxRole: mailboxRole,
+      listPost: listPost,
     );
-    final userName =  mailboxDashBoardController.sessionCurrent?.username;
+    final userName = mailboxDashBoardController.sessionCurrent?.username;
     if (userName != null) {
       final isSender = presentationEmail.from.asList().every((element) => element.email == userName.value);
       if (isSender) {

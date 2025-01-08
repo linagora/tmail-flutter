@@ -12,6 +12,7 @@ extension EmailActionTypeExtension on EmailActionType {
   String getSubjectComposer(BuildContext? context, String subject) {
     switch(this) {
       case EmailActionType.reply:
+      case EmailActionType.replyToList:
       case EmailActionType.replyAll:
         if (subject.toLowerCase().startsWith('re:')) {
           return subject;
@@ -60,6 +61,7 @@ extension EmailActionTypeExtension on EmailActionType {
     final languageTag = locale.toLanguageTag();
     switch(this) {
       case EmailActionType.reply:
+      case EmailActionType.replyToList:
       case EmailActionType.replyAll:
         final receivedAt = presentationEmail.receivedAt;
         final emailAddress = presentationEmail.from.toEscapeHtmlStringUseCommaSeparator();

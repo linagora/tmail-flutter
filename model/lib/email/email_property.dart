@@ -24,4 +24,5 @@ class EmailProperty {
   static const String references = 'references';
   static const String headerUnsubscribeKey = 'List-Unsubscribe';
   static const String headerSMimeStatusKey = 'X-SMIME-Status';
+  static const String headerListPostKey = 'List-Post';
 }
