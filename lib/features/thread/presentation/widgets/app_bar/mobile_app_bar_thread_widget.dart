@@ -1,3 +1,5 @@
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -8,6 +10,9 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/defau
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/selection_mobile_app_bar_thread_widget.dart';
 
 class MobileAppBarThreadWidget extends StatelessWidget {
+
+  final ResponsiveUtils responsiveUtils;
+  final ImagePaths imagePaths;
   final PresentationMailbox? mailboxSelected;
   final List<PresentationEmail> listEmailSelected;
   final SelectMode selectMode;
@@ -19,6 +24,8 @@ class MobileAppBarThreadWidget extends StatelessWidget {
 
   const MobileAppBarThreadWidget({
     super.key,
+    required this.responsiveUtils,
+    required this.imagePaths,
     required this.listEmailSelected,
     required this.mailboxSelected,
     required this.selectMode,
@@ -34,6 +41,8 @@ class MobileAppBarThreadWidget extends StatelessWidget {
     if (selectMode == SelectMode.ACTIVE) {
       return SelectionMobileAppBarThreadWidget(
         key: const Key('selection_mobile_app_bar_thread_widget'),
+        imagePaths: imagePaths,
+        responsiveUtils: responsiveUtils,
         listEmailSelected: listEmailSelected,
         mailboxSelected: mailboxSelected,
         selectMode: selectMode,
@@ -45,6 +54,8 @@ class MobileAppBarThreadWidget extends StatelessWidget {
     } else {
       return DefaultMobileAppBarThreadWidget(
         key: const Key('default_mobile_app_bar_thread_widget'),
+        imagePaths: imagePaths,
+        responsiveUtils: responsiveUtils,
         listEmailSelected: listEmailSelected,
         mailboxSelected: mailboxSelected,
         selectMode: selectMode,

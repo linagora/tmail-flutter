@@ -89,7 +89,9 @@ class EmailViewAppBarWidget extends StatelessWidget {
                     ? _imagePaths.icStar
                     : _imagePaths.icUnStar,
                   iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
-                  iconColor: EmailViewAppBarWidgetStyles.iconColor,
+                  iconColor: presentationEmail.hasStarred
+                    ? null
+                    : EmailViewAppBarWidgetStyles.iconColor,
                   backgroundColor: Colors.transparent,
                   tooltipMessage: presentationEmail.hasStarred
                     ? AppLocalizations.of(context).not_starred
@@ -99,26 +101,21 @@ class EmailViewAppBarWidget extends StatelessWidget {
                     presentationEmail.hasStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred
                   )
                 ),
-                Obx(() {
-                  if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit) {
-                    return AbsorbPointer(
-                      absorbing: _singleEmailController.currentEmailLoaded.value == null,
-                      child: TMailButtonWidget.fromIcon(
-                        icon: _imagePaths.icPrinter,
-                        iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
-                        iconColor: EmailViewAppBarWidgetStyles.iconColor,
-                        backgroundColor: Colors.transparent,
-                        tooltipMessage: AppLocalizations.of(context).printAll,
-                        onTapActionCallback: () => onEmailActionClick?.call(
-                          presentationEmail,
-                          EmailActionType.printAll,
-                        ),
+                if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit)
+                  Obx(() => AbsorbPointer(
+                    absorbing: _singleEmailController.currentEmailLoaded.value == null,
+                    child: TMailButtonWidget.fromIcon(
+                      icon: _imagePaths.icPrinter,
+                      iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
+                      iconColor: EmailViewAppBarWidgetStyles.iconColor,
+                      backgroundColor: Colors.transparent,
+                      tooltipMessage: AppLocalizations.of(context).printAll,
+                      onTapActionCallback: () => onEmailActionClick?.call(
+                        presentationEmail,
+                        EmailActionType.printAll,
                       ),
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                }),
+                    ),
+                  )),
                 TMailButtonWidget.fromIcon(
                   icon: _imagePaths.icDeleteComposer,
                   iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,

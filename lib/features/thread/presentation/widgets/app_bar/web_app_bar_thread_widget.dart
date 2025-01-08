@@ -1,4 +1,6 @@
 
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -10,6 +12,8 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/selec
 
 class WebAppBarThreadWidget extends StatelessWidget {
 
+  final ResponsiveUtils responsiveUtils;
+  final ImagePaths imagePaths;
   final PresentationMailbox? mailboxSelected;
   final List<PresentationEmail> listEmailSelected;
   final SelectMode selectMode;
@@ -22,6 +26,8 @@ class WebAppBarThreadWidget extends StatelessWidget {
 
   const WebAppBarThreadWidget({
     super.key,
+    required this.responsiveUtils,
+    required this.imagePaths,
     required this.listEmailSelected,
     required this.mailboxSelected,
     required this.selectMode,
@@ -38,6 +44,8 @@ class WebAppBarThreadWidget extends StatelessWidget {
     if (selectMode == SelectMode.INACTIVE) {
       return DefaultWebAppBarThreadWidget(
         key: const Key('default_web_app_bar_thread_widget'),
+        imagePaths: imagePaths,
+        responsiveUtils: responsiveUtils,
         mailboxSelected: mailboxSelected,
         filterOption: filterOption,
         openMailboxAction: openMailboxAction,
@@ -47,6 +55,8 @@ class WebAppBarThreadWidget extends StatelessWidget {
     } else {
       return SelectionWebAppBarThreadWidget(
         key: const Key('selection_web_app_bar_thread_widget'),
+        imagePaths: imagePaths,
+        responsiveUtils: responsiveUtils,
         listEmailSelected: listEmailSelected,
         mailboxSelected: mailboxSelected,
         filterOption: filterOption,

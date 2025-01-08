@@ -288,31 +288,33 @@ class MailboxView extends BaseMailboxView {
                 child: Text(
                   AppLocalizations.of(context).folders,
                   style: const TextStyle(
-                    fontSize: 17,
+                    fontSize: 15,
                     color: Colors.black,
-                    fontWeight: FontWeight.bold
-                  )
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               Row(children: [
                 TMailButtonWidget.fromIcon(
                   icon: controller.imagePaths.icSearchBar,
-                  iconColor: AppColor.primaryColor,
+                  iconColor: AppColor.steelGrayA540,
+                  iconSize: 20,
                   backgroundColor: Colors.transparent,
                   tooltipMessage: AppLocalizations.of(context).searchForFolders,
                   onTapActionCallback: () => controller.openSearchViewAction(context)
                 ),
                 TMailButtonWidget.fromIcon(
                   icon: controller.imagePaths.icAddNewFolder,
-                  iconColor: AppColor.primaryColor,
+                  iconColor: AppColor.steelGrayA540,
+                  iconSize: 20,
                   backgroundColor: Colors.transparent,
                   tooltipMessage: AppLocalizations.of(context).newFolder,
                   onTapActionCallback: () => controller.goToCreateNewMailboxView(context)
                 ),
               ]),
-            ]),
+            ],
           ),
-        const SizedBox(height: 8),
+        ),
         Obx(() {
           if (controller.personalMailboxIsNotEmpty) {
             return _buildMailboxCategory(
@@ -354,8 +356,9 @@ class MailboxView extends BaseMailboxView {
                   : controller.imagePaths.icArrowRight,
             tooltipMessage: AppLocalizations.of(context).collapse,
             backgroundColor: Colors.transparent,
-            padding: EdgeInsets.zero,
-            iconColor: AppColor.primaryColor,
+            padding: const EdgeInsets.all(5),
+            iconColor: Colors.black,
+            iconSize: 20,
             onTapActionCallback: () => controller.toggleMailboxCategories(categories)
           ),
           Expanded(
@@ -363,10 +366,10 @@ class MailboxView extends BaseMailboxView {
               categories.getTitle(context),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 17,
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                fontSize: 14,
                 color: Colors.black,
-                fontWeight: FontWeight.bold
+                fontWeight: FontWeight.w400,
               )
             )
           ),
