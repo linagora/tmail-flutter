@@ -1,7 +1,6 @@
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -12,19 +11,21 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/trailing_mai
 
 class LabelMailboxItemWidget extends StatelessWidget {
 
+  final ResponsiveUtils responsiveUtils;
   final MailboxNode mailboxNode;
   final bool showTrailing;
   final bool isItemHovered;
+  final bool isSelected;
   final OnClickOpenMenuMailboxNodeAction? onMenuActionClick;
   final OnEmptyMailboxActionCallback? onEmptyMailboxActionCallback;
 
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-
-  LabelMailboxItemWidget({
+  const LabelMailboxItemWidget({
     super.key,
     required this.mailboxNode,
+    required this.responsiveUtils,
     this.showTrailing = true,
     this.isItemHovered = false,
+    this.isSelected = false,
     this.onMenuActionClick,
     this.onEmptyMailboxActionCallback,
   });
@@ -47,7 +48,7 @@ class LabelMailboxItemWidget extends StatelessWidget {
                   ),
                 ),
               ),
-              if (_responsiveUtils.isWebDesktop(context) && mailboxNode.item.allowedHasEmptyAction)
+              if (responsiveUtils.isWebDesktop(context) && mailboxNode.item.allowedHasEmptyAction)
                 EmptyMailboxPopupDialogWidget(
                   mailboxNode: mailboxNode,
                   onEmptyMailboxActionCallback: (mailboxNode) => onEmptyMailboxActionCallback?.call(mailboxNode),
@@ -89,7 +90,13 @@ class LabelMailboxItemWidget extends StatelessWidget {
     ? LabelMailboxItemWidgetStyles.labelTeamMailboxTextColor
     : LabelMailboxItemWidgetStyles.labelFolderTextColor;
 
-  FontWeight get _mailboxNameTextFontWeight => mailboxNode.item.isTeamMailboxes
-    ? LabelMailboxItemWidgetStyles.labelTeamMailboxTextFontWeight
-    : LabelMailboxItemWidgetStyles.labelFolderTextFontWeight;
+  FontWeight get _mailboxNameTextFontWeight {
+    if (isSelected) {
+      return LabelMailboxItemWidgetStyles.labelFolderSelectedFontWeight;
+    } else {
+      return mailboxNode.item.isTeamMailboxes
+        ? LabelMailboxItemWidgetStyles.labelTeamMailboxTextFontWeight
+        : LabelMailboxItemWidgetStyles.labelFolderTextFontWeight;
+    }
+  }
 }

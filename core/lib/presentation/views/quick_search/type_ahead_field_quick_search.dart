@@ -660,7 +660,7 @@ class _TypeAheadFieldQuickSearchState<T, P, R>
               )
             : const BoxDecoration(
                 borderRadius: BorderRadius.all(Radius.circular(12)),
-                color: AppColor.colorBgSearchBar,
+                color: AppColor.colorBgDesktop,
               ),
         height: widget.maxHeight,
         child: Row(

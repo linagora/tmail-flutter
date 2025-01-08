@@ -716,13 +716,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         iconSize: 24,
         iconColor: Colors.white,
         padding: const EdgeInsetsDirectional.symmetric(vertical: 8),
-        backgroundColor: AppColor.colorTextButton,
-        boxShadow: const [
-          BoxShadow(
-            blurRadius: 12.0,
-            color: AppColor.colorShadowComposerButton
-          )
-        ],
+        backgroundColor: AppColor.blue700,
         textStyle: const TextStyle(
           fontSize: 15,
           color: Colors.white,

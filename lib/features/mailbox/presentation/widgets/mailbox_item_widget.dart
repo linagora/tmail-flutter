@@ -75,15 +75,15 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                 borderRadius: const BorderRadius.all(Radius.circular(MailboxItemWidgetStyles.borderRadius)),
                 color: backgroundColorItem
               ),
-              padding: widget.mailboxNode.hasChildren()
-                ? const EdgeInsetsDirectional.symmetric(
-                    horizontal: MailboxItemWidgetStyles.padding,
-                    vertical: MailboxItemWidgetStyles.space
-                  )
-                : const EdgeInsets.all(MailboxItemWidgetStyles.padding),
+              padding: const EdgeInsetsDirectional.symmetric(
+                horizontal: MailboxItemWidgetStyles.padding,
+                vertical: MailboxItemWidgetStyles.space,
+              ),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   LeadingMailboxItemWidget(
+                    imagePaths: _imagePaths,
                     mailboxNode: widget.mailboxNode,
                     selectionMode: widget.selectionMode,
                     onSelectMailboxFolderClick: widget.onSelectMailboxFolderClick,
@@ -92,8 +92,10 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                   const SizedBox(width: MailboxItemWidgetStyles.space),
                   Expanded(
                     child: LabelMailboxItemWidget(
+                      responsiveUtils: _responsiveUtils,
                       mailboxNode: widget.mailboxNode,
                       isItemHovered: _isItemHovered,
+                      isSelected: _isSelected,
                       onMenuActionClick: widget.onMenuActionClick,
                       onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback
                     )
@@ -116,15 +118,14 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                 borderRadius: const BorderRadius.all(Radius.circular(MailboxItemWidgetStyles.borderRadius)),
                 color: backgroundColorItem
               ),
-              padding: widget.mailboxNode.hasChildren()
-                ? const EdgeInsetsDirectional.symmetric(
-                    horizontal: MailboxItemWidgetStyles.padding,
-                    vertical: MailboxItemWidgetStyles.space
-                  )
-                : const EdgeInsets.all(MailboxItemWidgetStyles.padding),
+              padding: const EdgeInsetsDirectional.symmetric(
+                horizontal: MailboxItemWidgetStyles.padding,
+                vertical: MailboxItemWidgetStyles.space,
+              ),
               child: Row(
                 children: [
                   LeadingMailboxItemWidget(
+                    imagePaths: _imagePaths,
                     mailboxNode: widget.mailboxNode,
                     selectionMode: widget.selectionMode,
                     onSelectMailboxFolderClick: widget.onSelectMailboxFolderClick,
@@ -133,8 +134,10 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                   const SizedBox(width: MailboxItemWidgetStyles.space),
                   Expanded(
                     child: LabelMailboxItemWidget(
+                      responsiveUtils: _responsiveUtils,
                       mailboxNode: widget.mailboxNode,
                       isItemHovered: _isItemHovered,
+                      isSelected: _isSelected,
                       onMenuActionClick: widget.onMenuActionClick,
                       onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback
                     )
@@ -157,12 +160,10 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                   borderRadius: const BorderRadius.all(Radius.circular(MailboxItemWidgetStyles.borderRadius)),
                   color: backgroundColorItem
                 ),
-                padding: widget.mailboxNode.hasChildren()
-                  ? const EdgeInsetsDirectional.symmetric(
-                      horizontal: MailboxItemWidgetStyles.padding,
-                      vertical: MailboxItemWidgetStyles.space
-                    )
-                  : const EdgeInsets.all(MailboxItemWidgetStyles.padding),
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: MailboxItemWidgetStyles.padding,
+                  vertical: MailboxItemWidgetStyles.space,
+                ),
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -170,6 +171,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                     Row(
                       children: [
                         LeadingMailboxItemWidget(
+                          imagePaths: _imagePaths,
                           mailboxNode: widget.mailboxNode,
                           selectionMode: widget.selectionMode,
                           onSelectMailboxFolderClick: widget.onSelectMailboxFolderClick,
@@ -178,8 +180,10 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                         const SizedBox(width: MailboxItemWidgetStyles.padding),
                         Expanded(
                           child: LabelMailboxItemWidget(
+                            responsiveUtils: _responsiveUtils,
                             mailboxNode: widget.mailboxNode,
                             isItemHovered: _isItemHovered,
+                            isSelected: _isSelected,
                             onMenuActionClick: widget.onMenuActionClick,
                             onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback
                         )
@@ -213,18 +217,17 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                 customBorder: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
                 hoverColor: AppColor.colorMailboxHovered,
                 child: Container(
-                  padding: widget.mailboxNode.hasChildren()
-                    ? const EdgeInsetsDirectional.symmetric(
-                        horizontal: MailboxItemWidgetStyles.padding,
-                        vertical: MailboxItemWidgetStyles.space
-                      )
-                    : const EdgeInsets.all(MailboxItemWidgetStyles.padding),
+                  padding: const EdgeInsetsDirectional.symmetric(
+                    horizontal: MailboxItemWidgetStyles.padding,
+                    vertical: MailboxItemWidgetStyles.space,
+                  ),
                   color: widget.mailboxNode.isSelected
                       ? AppColor.colorItemSelected
                       : Colors.transparent,
                   child: Row(
                     children: [
                       LeadingMailboxItemWidget(
+                        imagePaths: _imagePaths,
                         mailboxNode: widget.mailboxNode,
                         selectionMode: widget.selectionMode,
                         onSelectMailboxFolderClick: widget.onSelectMailboxFolderClick,
@@ -233,8 +236,10 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                       const SizedBox(width: MailboxItemWidgetStyles.padding),
                       Expanded(
                         child: LabelMailboxItemWidget(
+                          responsiveUtils: _responsiveUtils,
                           mailboxNode: widget.mailboxNode,
                           showTrailing: false,
+                          isSelected: _isSelected,
                           isItemHovered: _isItemHovered,
                           onMenuActionClick: widget.onMenuActionClick,
                           onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback
@@ -259,12 +264,15 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
     }
   }
 
+  bool get _isSelected =>
+      widget.mailboxNodeSelected?.id == widget.mailboxNode.item.id;
+
   Color get backgroundColorItem {
     if (widget.mailboxDisplayed == MailboxDisplayed.destinationPicker) {
       return Colors.white;
     } else {
-      if (widget.mailboxNodeSelected?.id == widget.mailboxNode.item.id || _isItemHovered) {
-        return AppColor.colorBgMailboxSelected;
+      if (_isSelected || _isItemHovered) {
+        return AppColor.blue100;
       } else {
         return Colors.transparent;
       }
