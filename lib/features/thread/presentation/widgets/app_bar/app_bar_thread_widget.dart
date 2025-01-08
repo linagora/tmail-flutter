@@ -1,4 +1,6 @@
 
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/email_action_type.dart';
@@ -16,6 +18,9 @@ typedef OnCancelEditThreadAction = void Function();
 typedef OnEmailSelectionAction = void Function(EmailActionType, List<PresentationEmail>);
 
 class AppBarThreadWidget extends StatelessWidget {
+
+  final ResponsiveUtils responsiveUtils;
+  final ImagePaths imagePaths;
   final OnPopupMenuFilterEmailAction? onPopupMenuFilterEmailAction;
   final OnContextMenuFilterEmailAction? onContextMenuFilterEmailAction;
   final OnOpenMailboxMenuActionClick openMailboxAction;
@@ -28,6 +33,8 @@ class AppBarThreadWidget extends StatelessWidget {
 
   const AppBarThreadWidget({
     Key? key,
+    required this.responsiveUtils,
+    required this.imagePaths,
     required this.mailboxSelected,
     required this.listEmailSelected,
     required this.selectMode,
@@ -44,6 +51,8 @@ class AppBarThreadWidget extends StatelessWidget {
     if (PlatformInfo.isWeb) {
       return WebAppBarThreadWidget(
         key: const Key('web_app_bar_thread_widget'),
+        imagePaths: imagePaths,
+        responsiveUtils: responsiveUtils,
         listEmailSelected: listEmailSelected,
         mailboxSelected: mailboxSelected,
         selectMode: selectMode,
@@ -57,6 +66,8 @@ class AppBarThreadWidget extends StatelessWidget {
     } else {
       return MobileAppBarThreadWidget(
         key: const Key('mobile_app_bar_thread_widget'),
+        imagePaths: imagePaths,
+        responsiveUtils: responsiveUtils,
         listEmailSelected: listEmailSelected,
         mailboxSelected: mailboxSelected,
         selectMode: selectMode,

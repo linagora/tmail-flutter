@@ -10,7 +10,7 @@ class MobileAppBarThreadWidgetStyle {
   static const double minHeight = 56;
 
   static const Color backgroundColor = Colors.white;
-  static const Color backButtonColor = AppColor.primaryColor;
+  static const Color backButtonColor = AppColor.steelGrayA540;
 
   static EdgeInsetsGeometry getPadding(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isPortraitMobile(context) || responsiveUtils.isLandscapeTablet(context)) {
@@ -23,8 +23,9 @@ class MobileAppBarThreadWidgetStyle {
   static const EdgeInsetsGeometry titlePadding = EdgeInsets.symmetric(horizontal: 16);
 
   static const TextStyle emailCounterTitleStyle = TextStyle(
-    fontSize: 17,
-    color: AppColor.primaryColor
+    fontSize: 15,
+    fontWeight: FontWeight.w400,
+    color: AppColor.steelGrayA540,
   );
   static const TextStyle titleTextStyle = TextStyle(
     fontSize: 21,

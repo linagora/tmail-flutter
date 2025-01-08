@@ -206,7 +206,6 @@ extension AppColor on Color {
   static const colorLineComposer = Color(0xFFF4F4F4);
   static const colorPrefixButtonComposer = Color(0xFF8B9CAF);
   static const colorRichButtonComposer = Color(0xFFAEAEC0);
-  static const colorMobileRichButtonComposer = Color(0xFF8C9CAF);
   static const colorSelected = Color(0xFFE3F1FF);
   static const colorAttachmentBorder = Color(0xFFE5ECF3);
   static const colorProgressLoadingBackground = Color(0xFFE3F1FF);
