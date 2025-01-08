@@ -4286,4 +4286,12 @@ class AppLocalizations {
       name: 'getHelpOrReportABug',
     );
   }
+
+  String get replyToList {
+    return Intl.message(
+      'Reply to list',
+      name: 'replyToList',
+    );
+  }
+
 }

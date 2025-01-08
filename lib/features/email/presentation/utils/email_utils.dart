@@ -9,10 +9,12 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 class EmailUtils {
 
@@ -81,6 +83,40 @@ class EmailUtils {
     } catch(e) {
       logError('EmailUtils::isEmailAddressValid: Exception = $e');
       return false;
+    }
+  }
+
+  static List<EmailAddress>? parsingListPost(String listPost) {
+    try {
+      if (listPost.isEmpty) {
+        return null;
+      }
+
+      final regExpMailtoLinks = RegExp(r'mailto:([^>,]*)');
+      final allMatchesMailtoLinks = regExpMailtoLinks.allMatches(listPost);
+      final listMailtoLinks = allMatchesMailtoLinks
+        .map((match) => match.group(0))
+        .whereNotNull()
+        .toList();
+      log('EmailUtils::parsingListPost:listMailtoLinks: $listMailtoLinks');
+
+      if (listMailtoLinks.isNotEmpty) {
+        return listMailtoLinks
+          .map((mailto) {
+            final mapMailto = RouteUtils.parseMapMailtoFromUri(mailto);
+            final emailAddress = mapMailto[RouteUtils.paramMailtoAddress];
+            return emailAddress != null
+              ? EmailAddress(null, emailAddress)
+              : null;
+          })
+          .whereNotNull()
+          .toList();
+      } else {
+        return null;
+      }
+    } catch (e) {
+      logError('EmailUtils::parsingListPost:Exception = $e');
+      return null;
     }
   }
 }

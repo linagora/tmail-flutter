@@ -40,7 +40,9 @@ class EmailRequest with EquatableMixin {
   ];
 
   bool get isEmailAnswered => emailIdAnsweredOrForwarded != null &&
-    (emailActionType == EmailActionType.reply || emailActionType == EmailActionType.replyAll);
+    (emailActionType == EmailActionType.reply
+      || emailActionType == EmailActionType.replyToList
+      || emailActionType == EmailActionType.replyAll);
 
   bool get isEmailForwarded => emailIdAnsweredOrForwarded != null && emailActionType == EmailActionType.forward;
 }

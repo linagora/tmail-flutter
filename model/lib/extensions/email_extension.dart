@@ -36,6 +36,10 @@ extension EmailExtension on Email {
 
   String get sMimeStatusHeaderParsed => sMimeStatusHeader?[IndividualHeaderIdentifier.sMimeStatusHeader]?.trim() ?? '';
 
+  String get listPost => headers.listPost;
+
+  bool get hasListPost => listPost.isNotEmpty;
+
   IdentityId? get identityIdFromHeader {
     final rawIdentityId = identityHeader?[IndividualHeaderIdentifier.identityHeader];
     if (rawIdentityId == null) return null;
