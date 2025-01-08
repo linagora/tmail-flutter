@@ -6,7 +6,6 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -78,16 +77,10 @@ mixin MailboxActionHandlerMixin {
       .show();
     } else {
       Get.dialog(
-        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
+        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
             ..key(const Key('confirm_dialog_empty_trash'))
             ..title(AppLocalizations.of(context).emptyTrash)
             ..content(AppLocalizations.of(context).empty_trash_dialog_message)
-            ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
-            ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-            ..styleTextConfirmButton(const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w500,
-                color: AppColor.colorActionDeleteConfirmDialog))
             ..onCloseButtonAction(popBack)
             ..onConfirmButtonAction(AppLocalizations.of(context).delete, () {
                 popBack();
@@ -142,16 +135,10 @@ mixin MailboxActionHandlerMixin {
       .show();
     } else {
       Get.dialog(
-        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
+        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
           ..key(const Key('confirm_dialog_empty_spam'))
           ..title(AppLocalizations.of(context).emptySpamFolder)
           ..content(AppLocalizations.of(context).emptySpamMessageDialog)
-          ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
-          ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-          ..styleTextConfirmButton(const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w500,
-              color: AppColor.colorActionDeleteConfirmDialog))
           ..onCloseButtonAction(popBack)
           ..onConfirmButtonAction(AppLocalizations.of(context).delete_all, () {
             popBack();

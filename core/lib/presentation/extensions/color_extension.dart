@@ -242,12 +242,14 @@ extension AppColor on Color {
   static const steelGray200 = Color(0xFFAEB7C2);
   static const blue700 = Color(0xFF208BFF);
   static const steelGray400 = Color(0xFF818C99);
+  static const steelGray600 = Color(0xFF4E5966);
   static const blue700 = Color(0xFF208BFF);
   static const blue100 = Color(0xFFDFEEFF);
   static const blue400 = Color(0xFF80BDFF);
   static const m3Tertiary = Color(0xFF8C9CAF);
   static const m3Neutral70 = Color(0xFFAEAAAE);
   static const colorF3F6F9 = Color(0xFFF3F6F9);
+  static const m3SurfaceBackground = Color(0xFF1C1B1F);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
