@@ -1,30 +1,29 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/top_bar_thread_selection_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnEmailActionTypeAction = Function(List<PresentationEmail> listEmail, EmailActionType actionType);
 
 class TopBarThreadSelection extends StatelessWidget{
 
-  final imagePaths = Get.find<ImagePaths>();
-
   final List<PresentationEmail> listEmail;
   final Map<MailboxId, PresentationMailbox> mapMailbox;
   final OnEmailActionTypeAction? onEmailActionTypeAction;
   final VoidCallback? onCancelSelection;
+  final ImagePaths imagePaths;
 
-  TopBarThreadSelection(
+  const TopBarThreadSelection (
     this.listEmail,
     this.mapMailbox,
+    this.imagePaths,
     {
       super.key,
       this.onEmailActionTypeAction,
@@ -38,59 +37,67 @@ class TopBarThreadSelection extends StatelessWidget{
     final canSpamAndMove = listEmail.isAllCanSpamAndMove(mapMailbox);
     final isAllSpam = listEmail.isAllSpam(mapMailbox);
     final isAllBelongToTheSameMailbox = listEmail.isAllBelongToTheSameMailbox(mapMailbox);
+    final isAllEmailRead = listEmail.isAllEmailRead;
+    final isAllEmailStarred = listEmail.isAllEmailStarred;
 
     return Row(children: [
-      TMailButtonWidget.fromIcon(
-        icon: imagePaths.icClose,
-        iconColor: AppColor.primaryColor,
-        tooltipMessage: AppLocalizations.of(context).cancel,
-        backgroundColor: Colors.transparent,
-        iconSize: 28,
-        padding: const EdgeInsets.all(3),
-        onTapActionCallback: onCancelSelection
-      ),
       Text(
         AppLocalizations.of(context).count_email_selected(listEmail.length),
         style: const TextStyle(
-          fontSize: 17,
-          fontWeight: FontWeight.w500,
-          color: AppColor.colorTextButton
+          fontSize: 15,
+          fontWeight: FontWeight.w400,
+          color: TopBarThreadSelectionStyle.iconColor,
         )
+      ),
+      TMailButtonWidget.fromIcon(
+        icon: imagePaths.icCancel,
+        iconColor: TopBarThreadSelectionStyle.iconColor,
+        tooltipMessage: AppLocalizations.of(context).cancel,
+        backgroundColor: Colors.transparent,
+        iconSize: TopBarThreadSelectionStyle.iconSize,
+        onTapActionCallback: onCancelSelection,
       ),
       const SizedBox(width: 30),
       TMailButtonWidget.fromIcon(
-        icon:  listEmail.isAllEmailRead
+        icon: isAllEmailRead
           ? imagePaths.icUnread
           : imagePaths.icRead,
-        tooltipMessage: listEmail.isAllEmailRead
+        iconColor: TopBarThreadSelectionStyle.iconColor,
+        tooltipMessage: isAllEmailRead
           ? AppLocalizations.of(context).mark_as_unread
           : AppLocalizations.of(context).mark_as_read,
         backgroundColor: Colors.transparent,
-        iconSize: 24,
+        iconSize: TopBarThreadSelectionStyle.iconSize,
         onTapActionCallback: () => onEmailActionTypeAction?.call(
           List.from(listEmail),
-          listEmail.isAllEmailRead ? EmailActionType.markAsUnread : EmailActionType.markAsRead
+          isAllEmailRead
+            ? EmailActionType.markAsUnread
+            : EmailActionType.markAsRead
         )
       ),
       TMailButtonWidget.fromIcon(
-        icon: listEmail.isAllEmailStarred
+        icon: isAllEmailStarred
           ? imagePaths.icUnStar
           : imagePaths.icStar,
-        tooltipMessage: listEmail.isAllEmailStarred
+        iconColor: TopBarThreadSelectionStyle.iconColor,
+        tooltipMessage: isAllEmailStarred
           ? AppLocalizations.of(context).un_star
           : AppLocalizations.of(context).star,
         backgroundColor: Colors.transparent,
-        iconSize: 24,
+        iconSize: TopBarThreadSelectionStyle.iconSize,
         onTapActionCallback: () => onEmailActionTypeAction?.call(
           List.from(listEmail),
-          listEmail.isAllEmailStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred
+          isAllEmailStarred
+            ? EmailActionType.unMarkAsStarred
+            : EmailActionType.markAsStarred
         )
       ),
     if (canSpamAndMove)
      ...[
        TMailButtonWidget.fromIcon(
-         icon: imagePaths.icMove,
-         iconSize: 22,
+         icon: imagePaths.icMoveMailbox,
+         iconSize: TopBarThreadSelectionStyle.iconSize,
+         iconColor: TopBarThreadSelectionStyle.iconColor,
          tooltipMessage: AppLocalizations.of(context).move,
          backgroundColor: Colors.transparent,
          onTapActionCallback: () => onEmailActionTypeAction?.call(
@@ -101,7 +108,8 @@ class TopBarThreadSelection extends StatelessWidget{
        TMailButtonWidget.fromIcon(
          icon: isAllSpam ? imagePaths.icNotSpam : imagePaths.icSpam,
          backgroundColor: Colors.transparent,
-         iconSize: 24,
+         iconSize: TopBarThreadSelectionStyle.iconSize,
+         iconColor: TopBarThreadSelectionStyle.iconColor,
          tooltipMessage: isAllSpam
            ? AppLocalizations.of(context).un_spam
            : AppLocalizations.of(context).mark_as_spam,
@@ -124,10 +132,8 @@ class TopBarThreadSelection extends StatelessWidget{
         TMailButtonWidget.fromIcon(
           icon: imagePaths.icDeleteComposer,
           backgroundColor: Colors.transparent,
-          iconSize: 20,
-          iconColor: canDeletePermanently
-            ? AppColor.colorDeletePermanentlyButton
-            : AppColor.primaryColor,
+          iconSize: TopBarThreadSelectionStyle.iconSize,
+          iconColor: TopBarThreadSelectionStyle.iconColor,
           tooltipMessage: canDeletePermanently
             ? AppLocalizations.of(context).delete_permanently
             : AppLocalizations.of(context).move_to_trash,
