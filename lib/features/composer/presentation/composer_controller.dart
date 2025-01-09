@@ -199,6 +199,7 @@ class ComposerController extends BaseController
   SignatureStatus _identityContentOnOpenPolicy = SignatureStatus.editedAvailable;
   int? _savedEmailDraftHash;
   bool _restoringSignatureButton = false;
+  GlobalKey? responsiveContainerKey;
   
   @visibleForTesting
   bool get restoringSignatureButton => _restoringSignatureButton;
@@ -230,6 +231,7 @@ class ComposerController extends BaseController
     super.onInit();
     if (PlatformInfo.isWeb) {
       richTextWebController = getBinding<RichTextWebController>();
+      responsiveContainerKey = GlobalKey();
     } else {
       richTextMobileTabletController = getBinding<RichTextMobileTabletController>();
     }
@@ -269,6 +271,7 @@ class ComposerController extends BaseController
     _beforeReconnectManager.removeListener(onBeforeReconnect);
     if (PlatformInfo.isWeb) {
       richTextWebController = null;
+      responsiveContainerKey = null;
     } else {
       richTextMobileTabletController = null;
     }
@@ -392,12 +395,6 @@ class ComposerController extends BaseController
         }
       });
     });
-
-    if (richTextWebController != null) {
-      ever(richTextWebController!.formattingOptionsState, (_) {
-        richTextWebController!.editorController.setFocus();
-      });
-    }
   }
 
   void _triggerBrowserEventListener() {
@@ -525,6 +522,7 @@ class ComposerController extends BaseController
 
   KeyEventResult _subjectEmailInputOnKeyListener(FocusNode node, KeyEvent event) {
     if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.tab) {
+      subjectEmailInputFocusNode?.unfocus();
       richTextWebController?.editorController.setFocus();
       return KeyEventResult.handled;
     }
@@ -1486,6 +1484,9 @@ class ComposerController extends BaseController
   }
 
   void displayScreenTypeComposerAction(ScreenDisplayMode displayMode) async {
+    if (screenDisplayMode.value == ScreenDisplayMode.minimize) {
+      _isEmailBodyLoaded = false;
+    }
     if (richTextWebController != null && screenDisplayMode.value != ScreenDisplayMode.minimize) {
       final textCurrent = await richTextWebController!.editorController.getText();
       richTextWebController!.editorController.setText(textCurrent);
@@ -1955,7 +1956,6 @@ class ComposerController extends BaseController
     return false;
   }
 
-
   void handleInitHtmlEditorWeb(String initContent) async {
     if (_isEmailBodyLoaded) return;
     log('ComposerController::handleInitHtmlEditorWeb:');
@@ -1980,9 +1980,7 @@ class ComposerController extends BaseController
     richTextWebController?.closeAllMenuPopup();
   }
 
-  void handleOnMouseDownHtmlEditorWeb(BuildContext context) {
-    Navigator.maybePop(context);
-    FocusScope.of(context).unfocus();
+  void handleOnMouseDownHtmlEditorWeb() {
     _collapseAllRecipient();
     _autoCreateEmailTag();
   }
