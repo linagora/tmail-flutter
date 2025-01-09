@@ -33,7 +33,7 @@ dependencies:
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: main
+      ref: upgrade_flutter_3.24.5
 
   ### Dependencies from pub.dev ###
   cupertino_icons: 1.0.6
@@ -62,7 +62,7 @@ dev_dependencies:
 
   flutter_lints: 2.0.1
 
-  build_runner: 2.3.3
+  build_runner: 2.4.9
 
   json_serializable: 6.6.1
 # For information on the generic Dart part of this file, see the

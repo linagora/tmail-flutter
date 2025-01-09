@@ -60,12 +60,12 @@ dependencies:
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: main
+      ref: upgrade_flutter_3.24.5
 
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: main
+      ref: upgrade_flutter_3.24.5
 
   contacts_service:
     git:
@@ -145,7 +145,7 @@ dependencies:
 
   path_provider: 2.1.1
 
-  device_info_plus: 8.1.0
+  device_info_plus: 9.0.1
 
   permission_handler: 10.2.0
 
@@ -153,7 +153,7 @@ dependencies:
 
   hive: 2.2.3
 
-  pointer_interceptor: 0.10.1
+  pointer_interceptor: 0.10.1+2
 
   rxdart: 0.27.7
 
@@ -191,7 +191,7 @@ dependencies:
 
   firebase_messaging: 14.2.5
 
-  flutter_local_notifications: 16.2.0
+  flutter_local_notifications: 17.2.1
 
   fading_edge_scrollview: 4.1.1
 
@@ -215,7 +215,7 @@ dependencies:
 
   flutter_keyboard_visibility: 6.0.0
 
-  extended_text: 13.0.2
+  extended_text: 14.0.0
 
   date_format: 2.0.7
 
@@ -241,11 +241,11 @@ dependencies:
 
   future_loading_dialog: 0.3.0
 
-  file_picker: 5.3.1
+  file_picker: 8.0.5
 
   app_settings: 5.1.1
 
-  web_socket_channel: 2.4.3
+  web_socket_channel: 2.4.4
 
   flutter_web_auth_2: 3.1.1
 
@@ -255,11 +255,13 @@ dependencies:
 
   flutter_smart_dialog: 4.9.8+5
 
+  win32: 5.5.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  build_runner: 2.3.3
+  build_runner: 2.4.9
 
   mockito: 5.4.4
 
@@ -283,13 +285,6 @@ dev_dependencies:
 
 dependency_overrides:
   firebase_core_platform_interface: 4.6.0
-
-  # TODO: replace when upstream PR is merged:
-  # https://github.com/miguelpruivo/flutter_file_picker/pull/1482
-  file_picker:
-    git:
-      url: https://github.com/linagora/flutter_file_picker
-      ref: email_supported_5.3.1
 
   json_annotation: 4.8.1
 

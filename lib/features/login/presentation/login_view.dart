@@ -28,7 +28,7 @@ class LoginView extends BaseLoginView {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (didPop) => !didPop
+      onPopInvokedWithResult: (didPop, _) => !didPop
         ? controller.handleBackButtonAction(context)
         : null,
       child: Scaffold(

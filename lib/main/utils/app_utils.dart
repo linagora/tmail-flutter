@@ -52,6 +52,7 @@ class AppUtils {
 
   static void copyEmailAddressToClipboard(BuildContext context, String emailAddress) {
     Clipboard.setData(ClipboardData(text: emailAddress)).then((_){
+      if (!context.mounted) return;
       ScaffoldMessenger.maybeOf(context)?.showSnackBar(
         SnackBar(content: Text(AppLocalizations.of(context).email_address_copied_to_clipboard))
       );

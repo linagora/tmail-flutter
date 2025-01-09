@@ -6,7 +6,7 @@ on:
 name: Release
 
 env:
-  FLUTTER_VERSION: 3.22.2
+  FLUTTER_VERSION: 3.24.5
   XCODE_VERSION: ^15.0.1
 
 jobs:

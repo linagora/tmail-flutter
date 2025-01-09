@@ -34,7 +34,7 @@ class TabletContainerView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PopScope(
-      onPopInvoked: (didPop) {
+      onPopInvokedWithResult: (didPop, _) {
         log('TabletContainerView::build:onPopInvoked: didPop = $didPop');
         if (!didPop) {
           onCloseViewAction.call();
