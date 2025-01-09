@@ -43,6 +43,8 @@ class NetworkConnectionController extends GetxController {
     super.onClose();
   }
 
+  Connectivity get connectivity => _connectivity;
+
   void _getCurrentNetworkConnectionState() async {
     final connectionResult = await _connectivity.checkConnectivity();
     log('NetworkConnectionController::_getCurrentNetworkConnectionState():connectionResult: $connectionResult');
