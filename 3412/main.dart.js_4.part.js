@@ -20123,7 +20123,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchEmailView__buildListEmailBody___closure0.prototype = {
     call$2(email, position) {
-      var t3, t4, t5, _null = null,
+      var t3, t4, t5, t6, _null = null,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -20133,11 +20133,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = this.context;
       if (A.InheritedModel_inheritFrom(t4, C._MediaQueryAspect_0, type$.MediaQuery).data.size.get$shortestSide() < 600) {
         A.Expando__checkType(t1);
-        t3._as(t2.get(t1)).openContextMenuAction$2(t4, A._setArrayType([t1._markAsEmailSpamOrUnSpamAction$2(t4, email), t1._search_email_view$_editAsNewEmailContextMenuItemAction$2(t4, email)], type$.JSArray_Widget));
+        t2 = t3._as(t2.get(t1));
+        t3 = A._setArrayType([t1._markAsEmailSpamOrUnSpamAction$2(t4, email)], type$.JSArray_Widget);
+        t5 = email.mailboxContain;
+        if ((t5 == null ? _null : J.$eq$(t5.role, $.$get$PresentationMailbox_roleDrafts())) === false)
+          t3.push(t1._search_email_view$_editAsNewEmailContextMenuItemAction$2(t4, email));
+        t2.openContextMenuAction$2(t4, t3);
       } else {
         A.Expando__checkType(t1);
-        t5 = type$.dynamic;
-        t3._as(t2.get(t1)).openPopupMenuAction$3(t4, position, A._setArrayType([A.PopupMenuItem$(t1._markAsEmailSpamOrUnSpamAction$2(t4, email), true, 48, _null, C.EdgeInsets_8_0_8_0, _null, t5), A.PopupMenuItem$(t1._search_email_view$_editAsNewEmailContextMenuItemAction$2(t4, email), true, 48, _null, C.EdgeInsets_8_0_8_0, _null, t5)], type$.JSArray_PopupMenuEntry_dynamic));
+        t2 = t3._as(t2.get(t1));
+        t3 = type$.dynamic;
+        t5 = A._setArrayType([A.PopupMenuItem$(t1._markAsEmailSpamOrUnSpamAction$2(t4, email), true, 48, _null, C.EdgeInsets_8_0_8_0, _null, t3)], type$.JSArray_PopupMenuEntry_dynamic);
+        t6 = email.mailboxContain;
+        if ((t6 == null ? _null : J.$eq$(t6.role, $.$get$PresentationMailbox_roleDrafts())) === false)
+          t5.push(A.PopupMenuItem$(t1._search_email_view$_editAsNewEmailContextMenuItemAction$2(t4, email), true, 48, _null, C.EdgeInsets_8_0_8_0, _null, t3));
+        t2.openPopupMenuAction$3(t4, position, t5);
       }
     },
     $signature: 353
@@ -21074,7 +21084,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t4.push(t1._markAsEmailSpamOrUnSpamContextMenuItemAction$3(t2, email, mailboxContain));
         if ((t5 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleArchive())) === false)
           t4.push(t1._archiveMessageContextMenuItemAction$2(t2, email));
-        t4.push(t1._editAsNewEmailContextMenuItemAction$2(t2, email));
+        if ((t5 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleDrafts())) === false)
+          t4.push(t1._editAsNewEmailContextMenuItemAction$2(t2, email));
         t3.openContextMenuAction$2(t2, t4);
       } else {
         A.Expando__checkType(t1);
@@ -21095,9 +21106,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t4.push(t1._buildMarkAsSpamPopupMenuItem$3(t2, email, mailboxContain));
         if ((t5 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleArchive())) === false)
           t4.push(t1._buildArchiveMessagePopupMenuItem$2(t2, email));
-        t5 = A.Localizations_of(t2, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
-        t5.toString;
-        t4.push(t1._buildEditAsNewEmailPopupMenuItem$2(t5, email));
+        if ((t5 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleDrafts())) === false) {
+          t5 = A.Localizations_of(t2, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
+          t5.toString;
+          t4.push(t1._buildEditAsNewEmailPopupMenuItem$2(t5, email));
+        }
         t3.openPopupMenuAction$3(t2, position, t4);
       }
       return _null;
@@ -22423,5 +22436,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "RF0FVlCxxY/9GlOurRI9VbcGzWM=");
+})($__dart_deferred_initializers__, "suI2bozCxpGA9KEpVG9QYARyebk=");
 ;
