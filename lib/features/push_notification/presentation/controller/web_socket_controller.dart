@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -13,6 +14,8 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/push/state_change.dart';
 import 'package:model/extensions/account_id_extensions.dart';
+import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
+  if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/data/model/web_socket_echo_request.dart';
 import 'package:tmail_ui_user/features/push_notification/data/model/web_socket_push_enable_request.dart';
 import 'package:tmail_ui_user/features/push_notification/domain/state/web_socket_push_state.dart';
@@ -34,6 +37,8 @@ class WebSocketController extends PushBaseController {
   static WebSocketController get instance => _instance;
 
   ConnectWebSocketInteractor? _connectWebSocketInteractor;
+  NetworkConnectionController? _networkConnectionController;
+  StreamSubscription<ConnectivityResult>? _connectivitySubscription;
 
   int _retryRemained = 3;
   bool _isConnecting = false;
@@ -72,11 +77,16 @@ class WebSocketController extends PushBaseController {
 
     _connectWebSocket();
     _listenToAppLifeCycle();
+    if (PlatformInfo.isWeb) {
+      _monitorNetwork();
+    }
   }
 
   @override
   void onClose() {
     _cleanUpWebSocketResources();
+    _connectivitySubscription?.cancel();
+    _connectivitySubscription = null;
     _appLifecycleListener?.dispose();
     _appLifecycleListener = null;
     super.onClose();
@@ -89,6 +99,7 @@ class WebSocketController extends PushBaseController {
   }
 
   void _handleAppLifecycleStateChange(AppLifecycleState appLifecycleState) async {
+    log('WebSocketController::_handleAppLifecycleStateChange:appLifecycleState = $appLifecycleState');
     switch (appLifecycleState) {
       case AppLifecycleState.resumed:
         if (PlatformInfo.isMobile) {
@@ -143,6 +154,7 @@ class WebSocketController extends PushBaseController {
     log('WebSocketController::_cleanUpWebSocketResources:');
     _isConnecting = false;
     _webSocketSubscription?.cancel();
+    _webSocketChannel?.sink.close();
     _webSocketChannel = null;
     _webSocketPingTimer?.cancel();
     _stateChangeDebouncer?.cancel();
@@ -238,5 +250,20 @@ class WebSocketController extends PushBaseController {
     } catch (e) {
       logError('WebSocketController::_handleStateChange:Exception = $e');
     }
+  }
+
+  void _monitorNetwork() {
+    _networkConnectionController = getBinding<NetworkConnectionController>();
+    _connectivitySubscription = _networkConnectionController
+      ?.connectivity
+      .onConnectivityChanged.listen((status) {
+        if (status == ConnectivityResult.none) {
+          log('WebSocketController::_monitorNetwork:No network connection');
+          _cleanUpWebSocketResources();
+        } else {
+          log('WebSocketController::_monitorNetwork:Network connection restore');
+          _connectWebSocket();
+        }
+      });
   }
 }
