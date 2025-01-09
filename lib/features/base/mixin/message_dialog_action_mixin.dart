@@ -34,7 +34,7 @@ mixin MessageDialogActionMixin {
         Color? cancelButtonColor,
         EdgeInsetsGeometry? marginIcon,
         EdgeInsetsGeometry? paddingButton,
-        PopInvokedCallback? onPopInvoked,
+        PopInvokedWithResultCallback? onPopInvoked,
         bool isArrangeActionButtonsVertical = false,
         int? titleActionButtonMaxLines,
         EdgeInsetsGeometry? titlePadding,
@@ -92,7 +92,7 @@ mixin MessageDialogActionMixin {
       );
       return await Get.dialog(
         usePopScope && PlatformInfo.isMobile
-          ? PopScope(onPopInvoked: onPopInvoked, canPop: false, child: childWidget)
+          ? PopScope(onPopInvokedWithResult: onPopInvoked, canPop: false, child: childWidget)
           : childWidget,
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
         barrierDismissible: outsideDismissible
@@ -146,7 +146,7 @@ mixin MessageDialogActionMixin {
         if (showAsBottomSheet) {
           return await Get.bottomSheet(
             usePopScope && PlatformInfo.isMobile
-              ? PopScope(onPopInvoked: onPopInvoked, canPop: false, child: childWidget)
+              ? PopScope(onPopInvokedWithResult: onPopInvoked, canPop: false, child: childWidget)
               : childWidget,
             isScrollControlled: true,
             barrierColor: AppColor.colorDefaultCupertinoActionSheet,
@@ -222,7 +222,7 @@ mixin MessageDialogActionMixin {
         );
         return await Get.dialog(
           usePopScope && PlatformInfo.isMobile
-            ? PopScope(onPopInvoked: onPopInvoked, canPop: false, child: childWidget)
+            ? PopScope(onPopInvokedWithResult: onPopInvoked, canPop: false, child: childWidget)
             : childWidget,
           barrierColor: AppColor.colorDefaultCupertinoActionSheet,
           barrierDismissible: outsideDismissible

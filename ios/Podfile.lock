@@ -346,11 +346,11 @@ SPEC CHECKSUMS:
   CocoaAsyncSocket: 065fd1e645c7abab64f7a6a2007a48038fdc6a99
   connectivity_plus: 413a8857dd5d9f1c399a39130850d02fe0feaf7e
   contacts_service: 849e1f84281804c8bfbec1b4c3eedcb23c5d3eca
-  device_info_plus: e5c5da33f982a436e103237c0c85f9031142abed
+  device_info_plus: 7545d84d8d1b896cb16a4ff98c19f07ec4b298ea
   DKImagePickerController: b512c28220a2b8ac7419f21c491fc8534b7601ac
   DKPhotoGallery: fdfad5125a9fdda9cc57df834d49df790dbb4179
   external_app_launcher: ad55ac844aa21f2d2197d7cec58ff0d0dc40bbc0
-  file_picker: ce3938a0df3cc1ef404671531facef740d03f920
+  file_picker: 09aa5ec1ab24135ccd7a1621c46c84134bfd6655
   Firebase: f92fc551ead69c94168d36c2b26188263860acd9
   firebase_core: 128d8c43c3a453a4a67463314fc3761bedff860b
   firebase_messaging: 8ac28baba96e69a58ad26b4bb5f9ee67c3e5efe2
@@ -366,7 +366,7 @@ SPEC CHECKSUMS:
   flutter_image_compress_common: ec1d45c362c9d30a3f6a0426c297f47c52007e3e
   flutter_inappwebview_ios: 97215cf7d4677db55df76782dbd2930c5e1c1ea0
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
-  flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
+  flutter_local_notifications: 4cde75091f6327eb8517fa068a0a5950212d2086
   flutter_native_splash: 52501b97d1c0a5f898d687f1646226c1f93c56ef
   flutter_secure_storage: 23fc622d89d073675f2eaa109381aefbcf5a49be
   flutter_web_auth_2: 051cf9f5dc366f31b5dcc4e2952c2b954767be8a
@@ -398,4 +398,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: f2eb8f5a17c320a935d112236893d073c572e17e
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.15.2
