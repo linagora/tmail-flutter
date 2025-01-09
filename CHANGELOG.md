@@ -1,3 +1,11 @@
+## [0.14.8] - 2025-01-09
+### Fiexed
+- #3396 Fetch latest change when open the app 
+- #3385 Fix loading forever after delete all email in one folder
+- #3323 Handle reconnect websocket in somecases: laptop in sleep, network change
+- #3413 Add Reply to list button
+- #3399 Fix focus in composer in mobile browser
+
 ## [0.14.7] - 2025-01-05
 ### Fixed
 - Delegate cache control from Flutter to browser
