@@ -2199,7 +2199,7 @@ class ComposerController extends BaseController
         popBack();
         _autoFocusFieldWhenLauncher();
       },
-      onPopInvoked: (didPop) {
+      onPopInvoked: (didPop, _) {
         log('ComposerController::_showConfirmDialogSaveMessage: didPop = $didPop');
         if (!didPop) {
           _closeComposerButtonState = ButtonState.enabled;

@@ -154,7 +154,7 @@ class _WebEditorState extends State<WebEditorWidget> {
           }
         },
         onFocus: widget.onFocus,
-        onUnFocus: widget.onUnFocus,
+        onBlur: widget.onUnFocus,
         onMouseDown:widget.onMouseDown,
         onChangeSelection: widget.onEditorSettings,
         onChangeCodeview: widget.onChangeContent,

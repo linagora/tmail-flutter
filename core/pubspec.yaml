@@ -53,7 +53,7 @@ dependencies:
 
   get: 4.6.6
 
-  device_info_plus: 8.1.0
+  device_info_plus: 9.0.1
 
   flutter_inappwebview: 6.0.0
 
@@ -63,7 +63,7 @@ dependencies:
 
   http: ^1.1.0
 
-  pointer_interceptor: 0.10.1
+  pointer_interceptor: 0.10.1+2
 
   flutter_keyboard_visibility: 6.0.0
 
@@ -103,7 +103,7 @@ dev_dependencies:
 
   plugin_platform_interface: 2.1.8
 
-  build_runner: 2.3.3
+  build_runner: 2.4.9
 
   mockito: 5.4.4
 # For information on the generic Dart part of this file, see the

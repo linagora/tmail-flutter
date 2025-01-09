@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:core/utils/application_manager.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:ui';
 
 import 'package:core/core.dart';
-import 'package:core/utils/application_manager.dart';
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';

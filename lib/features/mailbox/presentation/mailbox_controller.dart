@@ -153,6 +153,7 @@ class MailboxController extends BaseMailboxController
   @override
   void onReady() {
     _openMailboxEventController.stream.debounceTime(const Duration(milliseconds: 500)).listen((event) {
+      if (!event.buildContext.mounted) return;
       _handleOpenMailbox(event.buildContext, event.presentationMailbox);
     });
     _initCollapseMailboxCategories();

@@ -4,7 +4,7 @@ import flutter_downloader
 import receive_sharing_intent
 import flutter_local_notifications
 
-@UIApplicationMain
+@main
 @objc class AppDelegate: FlutterAppDelegate {
 
     var notificationInteractionChannel: FlutterMethodChannel?

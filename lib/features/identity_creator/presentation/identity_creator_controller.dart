@@ -886,9 +886,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     clearFocusEditor(context);
 
     final listFileInfo = await onDragDone(context: context, details: details);
-
     if (!context.mounted) return;
-
     await _uploadMultipleFilesToPublicAsset(
       context,
       listFileInfo,
@@ -934,12 +932,15 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
 
       await Future.forEach(
         listCompressedImages,
-        (platformFile) => _insertInlineImage(
-          context,
-          platformFile,
-          maxWidth.toInt(),
-          compressedFile: platformFile
-        )
+        (platformFile) {
+          if (!context.mounted) return null;
+          return _insertInlineImage(
+            context,
+            platformFile,
+            maxWidth.toInt(),
+            compressedFile: platformFile
+          );
+        }
       );
     } catch (e) {
       logError("IdentityCreatorController::_uploadMultipleFilesToPublicAsset: error: $e");
