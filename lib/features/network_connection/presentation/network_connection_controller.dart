@@ -46,6 +46,8 @@ class NetworkConnectionController extends GetxController {
     super.onClose();
   }
 
+  Connectivity get connectivity => _connectivity;
+
   void _getCurrentNetworkConnectionState() async {
     final listConnectionResult = await Future.wait([
       _connectivity.checkConnectivity(),
