@@ -1,3 +1,7 @@
+## [0.14.10] - 2025-01-10
+### Fixed
+- Editor height is infinite
+
 ## [0.14.9] - 2025-01-10
 ### Fixed
 - #3396 Call latest change and update relevant state (ca51f78f0)
