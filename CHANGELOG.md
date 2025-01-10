@@ -1,5 +1,9 @@
+## [0.14.9] - 2025-01-10
+### Fixed
+- #3396 Call latest change and update relevant state (ca51f78f0)
+
 ## [0.14.8] - 2025-01-09
-### Fiexed
+### Fixed
 - #3396 Fetch latest change when open the app 
 - #3385 Fix loading forever after delete all email in one folder
 - #3323 Handle reconnect websocket in somecases: laptop in sleep, network change
