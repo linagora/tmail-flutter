@@ -1259,11 +1259,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: bb4ffba9e3aba2cbb60c1173663abf975b521199
+      ref: "feature/implement-email-parse"
+      resolved-ref: fbbbb2f69861719b7634b49193d9a8d2fa4e0c34
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
-    version: "0.3.0"
+    version: "0.3.2"
   js:
     dependency: transitive
     description:
