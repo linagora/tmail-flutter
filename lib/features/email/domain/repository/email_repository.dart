@@ -179,4 +179,6 @@ abstract class EmailRepository {
     AccountId accountId,
     EmailId emailId,
     EventActionType eventActionType);
+
+  Future<List<Email>> parseEmailByBlobIds(AccountId accountId, Set<Id> blobIds);
 }

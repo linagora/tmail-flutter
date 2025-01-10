@@ -378,4 +378,11 @@ class EmailDataSourceImpl extends EmailDataSource {
   Future<void> markAsForwarded(Session session, AccountId accountId, List<EmailId> emailIds) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<List<Email>> parseEmailByBlobIds(AccountId accountId, Set<Id> blobIds) {
+    return Future.sync(() async {
+      return await emailAPI.parseEmailByBlobIds(accountId, blobIds);
+    }).catchError(_exceptionThrower.throwException);
+  }
 }

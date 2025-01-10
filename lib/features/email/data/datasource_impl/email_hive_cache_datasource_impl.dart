@@ -526,4 +526,9 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
 
     return Future.value();
   }
+
+  @override
+  Future<List<Email>> parseEmailByBlobIds(AccountId accountId, Set<Id> blobIds) {
+    throw UnimplementedError();
+  }
 }
