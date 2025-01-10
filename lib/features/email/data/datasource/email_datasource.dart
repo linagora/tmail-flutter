@@ -185,4 +185,6 @@ abstract class EmailDataSource {
     Session session,
     AccountId accountId,
     List<EmailId> emailIds);
+
+  Future<List<Email>> parseEmailByBlobIds(AccountId accountId, Set<Id> blobIds);
 }

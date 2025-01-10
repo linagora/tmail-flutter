@@ -31,6 +31,8 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:jmap_dart_client/jmap/mail/email/parse/parse_email_method.dart';
+import 'package:jmap_dart_client/jmap/mail/email/parse/parse_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/set/set_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/set/set_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/submission/address.dart';
@@ -895,6 +897,31 @@ class EmailAPI with HandleSetErrorMixin {
 
     if (emailIdUpdated.isEmpty) {
       throw SetMethodException(mapErrors);
+    }
+  }
+
+  Future<List<Email>> parseEmailByBlobIds(AccountId accountId, Set<Id> blobIds) async {
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    final parseEmailMethod = ParseEmailMethod(accountId, blobIds);
+    final parseEmailInvocation = requestBuilder.invocation(parseEmailMethod);
+
+    final response = await (requestBuilder
+        ..usings(parseEmailMethod.requiredCapabilities))
+      .build()
+      .execute();
+
+    final parseEmailResponse = response.parse<ParseEmailResponse>(
+      parseEmailInvocation.methodCallId,
+      ParseEmailResponse.deserialize);
+
+    if (parseEmailResponse?.parsed?.isNotEmpty == true) {
+      return parseEmailResponse!.parsed!.values.toList();
+    } else if (parseEmailResponse?.notParsable?.isNotEmpty == true) {
+      throw NotParsableBlobIdToEmailException(ids: parseEmailResponse!.notParsable!);
+    } else if (parseEmailResponse?.notFound?.isNotEmpty == true) {
+      throw NotFoundBlobIdException(parseEmailResponse!.notFound!);
+    } else {
+      throw NotParsableBlobIdToEmailException();
     }
   }
 }
