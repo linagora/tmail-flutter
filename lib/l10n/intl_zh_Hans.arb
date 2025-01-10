@@ -447,7 +447,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "manageEmailAsATeam": "以团队身份管理电子邮件",
+  "manageEmailAsATeam": "作为团队管理电子邮件",
   "@manageEmailAsATeam": {
     "type": "text",
     "placeholders_order": [],
@@ -3319,6 +3319,12 @@
   },
   "titleQuickStyles": "快速样式",
   "@titleQuickStyles": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "multipleIntegrations": "多种集成",
+  "@multipleIntegrations": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
