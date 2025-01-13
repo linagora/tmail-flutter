@@ -10,12 +10,12 @@ class MovePreviewEmlContentFromPersistentToMemoryInteractor {
 
   const MovePreviewEmlContentFromPersistentToMemoryInteractor(this._emailRepository);
 
-  Stream<Either<Failure, Success>> execute(String keyStored, EMLPreviewer emlPreviewer) async* {
+  Stream<Either<Failure, Success>> execute(EMLPreviewer emlPreviewer) async* {
     try {
       yield Right<Failure, Success>(MovingPreviewEmailEMLContentFromPersistentToMemory());
       await Future.wait([
-        _emailRepository.removePreviewEmailEMLContentShared(keyStored),
-        _emailRepository.storePreviewEMLContentToSessionStorage(keyStored, emlPreviewer),
+        _emailRepository.removePreviewEmailEMLContentShared(emlPreviewer.id),
+        _emailRepository.storePreviewEMLContentToSessionStorage(emlPreviewer),
       ]);
       yield Right<Failure, Success>(MovePreviewEmailEMLContentFromPersistentToMemorySuccess());
     } catch (e) {

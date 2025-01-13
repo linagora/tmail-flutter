@@ -166,7 +166,7 @@ class EmailSessionStorageDatasourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> sharePreviewEmailEMLContent(String keyStored, EMLPreviewer emlPreviewer) {
+  Future<void> sharePreviewEmailEMLContent(EMLPreviewer emlPreviewer) {
     throw UnimplementedError();
   }
 
@@ -221,9 +221,12 @@ class EmailSessionStorageDatasourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> storePreviewEMLContentToSessionStorage(String keyStored, EMLPreviewer emlPreviewer) {
+  Future<void> storePreviewEMLContentToSessionStorage(EMLPreviewer emlPreviewer) {
     return Future.sync(() async {
-      return _sessionStorageManager.save(keyStored, jsonEncode(emlPreviewer.toJson()));
+      return _sessionStorageManager.save(
+        emlPreviewer.id,
+        jsonEncode(emlPreviewer.toJson()),
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 
