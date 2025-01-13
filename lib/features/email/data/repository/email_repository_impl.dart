@@ -497,8 +497,8 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<void> sharePreviewEmailEMLContent(String keyStored, EMLPreviewer emlPreviewer) {
-    return emailDataSource[DataSourceType.local]!.sharePreviewEmailEMLContent(keyStored, emlPreviewer);
+  Future<void> sharePreviewEmailEMLContent(EMLPreviewer emlPreviewer) {
+    return emailDataSource[DataSourceType.local]!.sharePreviewEmailEMLContent(emlPreviewer);
   }
 
   @override
@@ -512,8 +512,8 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<void> storePreviewEMLContentToSessionStorage(String keyStored, EMLPreviewer emlPreviewer) {
-    return emailDataSource[DataSourceType.session]!.storePreviewEMLContentToSessionStorage(keyStored, emlPreviewer);
+  Future<void> storePreviewEMLContentToSessionStorage(EMLPreviewer emlPreviewer) {
+    return emailDataSource[DataSourceType.session]!.storePreviewEMLContentToSessionStorage(emlPreviewer);
   }
 
   @override
