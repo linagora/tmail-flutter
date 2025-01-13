@@ -14,9 +14,7 @@ class SupportedPreviewFileTypes {
     'application/msword',
     'application/vnd.ms-works'];
 
-  static const pdfMimeTypes = [
-    'application/pdf',
-    'application/rtf'];
+  static const rtfMimeTypes = ['application/rtf'];
 
   static const xlsMimeTypes = [
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',

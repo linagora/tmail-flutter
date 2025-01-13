@@ -3,7 +3,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:linagora_design_flutter/linagora_design_flutter.dart';
-import 'package:tip_dialog/tip_dialog.dart';
 import 'package:tmail_ui_user/features/starting_page/presentation/twake_welcome/twake_welcome_controller.dart';
 import 'package:tmail_ui_user/features/starting_page/presentation/twake_welcome/twake_welcome_view_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -19,42 +18,29 @@ class TwakeWelcomeView extends GetWidget<TwakeWelcomeController> {
       DeviceOrientation.portraitDown
     ]);
 
-    return Stack(
-      children: [
-        TwakeWelcomeScreen(
-          logo: Padding(
-            padding: const EdgeInsetsDirectional.only(bottom: 16),
-            child: SvgPicture.asset(
-              controller.imagePaths.icLogoTwakeWelcome,
-              fit: BoxFit.fill,
-            ),
-          ),
-          focusColor: Colors.transparent,
-          hoverColor: Colors.transparent,
-          highlightColor: Colors.transparent,
-          overlayColor: WidgetStateProperty.all(Colors.transparent),
-          signInTitle: AppLocalizations.of(context).signIn.capitalizeFirst ?? '',
-          onSignInOnTap: () => controller.onClickSignIn(context),
-          onCreateTwakeIdOnTap: () => controller.onSignUpTwakeWorkplace(context),
-          createTwakeIdTitle: AppLocalizations.of(context).createTwakeId,
-          useCompanyServerTitle: AppLocalizations.of(context).useCompanyServer,
-          description: AppLocalizations.of(context).descriptionWelcomeTo,
-          descriptionTextStyle: TwakeWelcomeViewStyle.descriptionTextStyle,
-          privacyPolicy: AppLocalizations.of(context).privacyPolicy,
-          descriptionPrivacyPolicy: AppLocalizations.of(context).byContinuingYouAreAgreeingToOur,
-          onPrivacyPolicyOnTap: controller.onClickPrivacyPolicy,
-          onUseCompanyServerOnTap: controller.handleUseCompanyServer,
+    return TwakeWelcomeScreen(
+      logo: Padding(
+        padding: const EdgeInsetsDirectional.only(bottom: 16),
+        child: SvgPicture.asset(
+          controller.imagePaths.icLogoTwakeWelcome,
+          fit: BoxFit.fill,
         ),
-        TipDialogContainer(
-          duration: const Duration(seconds: 2),
-          outsideTouchable: true,
-          onOutsideTouch: (tipDialog) {
-            if (tipDialog is TipDialog && tipDialog.type == TipDialogType.LOADING) {
-              TipDialogHelper.dismiss();
-            }
-          }
-        )
-      ],
+      ),
+      focusColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      overlayColor: WidgetStateProperty.all(Colors.transparent),
+      signInTitle: AppLocalizations.of(context).signIn.capitalizeFirst ?? '',
+      onSignInOnTap: () => controller.onClickSignIn(context),
+      onCreateTwakeIdOnTap: () => controller.onSignUpTwakeWorkplace(context),
+      createTwakeIdTitle: AppLocalizations.of(context).createTwakeId,
+      useCompanyServerTitle: AppLocalizations.of(context).useCompanyServer,
+      description: AppLocalizations.of(context).descriptionWelcomeTo,
+      descriptionTextStyle: TwakeWelcomeViewStyle.descriptionTextStyle,
+      privacyPolicy: AppLocalizations.of(context).privacyPolicy,
+      descriptionPrivacyPolicy: AppLocalizations.of(context).byContinuingYouAreAgreeingToOur,
+      onPrivacyPolicyOnTap: controller.onClickPrivacyPolicy,
+      onUseCompanyServerOnTap: controller.handleUseCompanyServer,
     );
   }
 }

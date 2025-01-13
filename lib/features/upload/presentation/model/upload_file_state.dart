@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/extensions/media_type_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
@@ -6,7 +7,6 @@ import 'package:equatable/equatable.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/upload/file_info.dart';
-import 'package:tmail_ui_user/features/upload/domain/extensions/media_type_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/presentation/model/upload_file_status.dart';
 

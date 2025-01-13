@@ -1,9 +1,11 @@
+import 'package:core/presentation/extensions/media_type_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:model/email/attachment.dart';
-import 'package:tmail_ui_user/features/upload/domain/extensions/media_type_extension.dart';
 
 extension AttachmentExtension on Attachment {
   String getIcon(ImagePaths imagePaths) => type?.getIcon(imagePaths, fileName: name) ?? imagePaths.icFileEPup;
 
-  bool validatePDFIcon() => type?.validatePDFIcon(fileName: name) ?? false;
+  bool get isPDFFile => type?.isPDFFile(fileName: name) ?? false;
+
+  bool get isEMLFile => type?.isEMLFile ?? false;
 }

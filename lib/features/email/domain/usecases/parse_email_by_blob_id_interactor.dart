@@ -20,7 +20,10 @@ class ParseEmailByBlobIdInteractor {
         {blobId},
       );
 
-      yield Right<Failure, Success>(ParseEmailByBlobIdSuccess(emailParsed.first));
+      yield Right<Failure, Success>(ParseEmailByBlobIdSuccess(
+        emailParsed.first,
+        blobId,
+      ));
     } catch (e) {
       yield Left<Failure, Success>(ParseEmailByBlobIdFailure(e));
     }

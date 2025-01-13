@@ -2,10 +2,10 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
-import 'package:tip_dialog/tip_dialog.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.dart';
@@ -44,7 +44,7 @@ class TwakeWelcomeController extends ReloadableController {
   }
 
   void onClickSignIn(BuildContext context) {
-    TipDialogHelper.loading(AppLocalizations.of(context).loadingPleaseWait);
+    SmartDialog.showLoading(msg: AppLocalizations.of(context).loadingPleaseWait);
 
     final baseUri = Uri.tryParse(AppConfig.saasJmapServerUrl);
 
@@ -64,7 +64,7 @@ class TwakeWelcomeController extends ReloadableController {
   }
 
   void onSignUpTwakeWorkplace(BuildContext context) {
-    TipDialogHelper.loading(AppLocalizations.of(context).loadingPleaseWait);
+    SmartDialog.showLoading(msg: AppLocalizations.of(context).loadingPleaseWait);
 
     final baseUri = Uri.tryParse(AppConfig.saasJmapServerUrl);
 
@@ -115,7 +115,7 @@ class TwakeWelcomeController extends ReloadableController {
 
   @override
   void handleReloaded(Session session) {
-    TipDialogHelper.dismiss();
+    SmartDialog.dismiss();
 
     popAndPush(
       RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
@@ -124,7 +124,7 @@ class TwakeWelcomeController extends ReloadableController {
 
   @override
   void handleGetSessionFailure(GetSessionFailure failure) {
-    TipDialogHelper.dismiss();
+    SmartDialog.dismiss();
 
     toastManager.showMessageFailure(failure);
   }
@@ -147,13 +147,13 @@ class TwakeWelcomeController extends ReloadableController {
   }
 
   void _handleSignInTwakeWorkplaceFailure(SignInTwakeWorkplaceFailure failure) {
-    TipDialogHelper.dismiss();
+    SmartDialog.dismiss();
 
     toastManager.showMessageFailure(failure);
   }
 
   void _handleSignUpTwakeWorkplaceFailure(SignUpTwakeWorkplaceFailure failure) {
-    TipDialogHelper.dismiss();
+    SmartDialog.dismiss();
 
     toastManager.showMessageFailure(failure);
   }

@@ -47,7 +47,7 @@ void main() {
         result,
         emitsInOrder([
           Right<Failure, Success>(ParsingEmailByBlobId()),
-          Right<Failure, Success>(ParseEmailByBlobIdSuccess(parsedEmail)),
+          Right<Failure, Success>(ParseEmailByBlobIdSuccess(parsedEmail, blobId)),
         ]),
       );
 
