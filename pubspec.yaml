@@ -256,6 +256,11 @@ dependencies:
 
   flutter_smart_dialog: 4.9.8+5
 
+  # The following is a workarounds for the updated mac SDKs
+  # see: https://github.com/pichillilorenzo/flutter_inappwebview/issues/2221
+  # and the overrides below: flutter_inappwebview_ios and flutter_inappwebview_macos
+  flutter_inappwebview: ^6.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -293,6 +298,17 @@ dependency_overrides:
       ref: email_supported_5.3.1
 
   json_annotation: 4.8.1
+
+  flutter_inappwebview_ios:
+    git:
+      url: https://github.com/andychucs/flutter_inappwebview.git
+      ref: master
+      path: flutter_inappwebview_ios
+  flutter_inappwebview_macos:
+    git:
+      url: https://github.com/andychucs/flutter_inappwebview.git
+      ref: master
+      path: flutter_inappwebview_macos
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

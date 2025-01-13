@@ -817,7 +817,7 @@ packages:
     source: hosted
     version: "0.1.3+2"
   flutter_inappwebview:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_inappwebview
       sha256: "3e9a443a18ecef966fb930c3a76ca5ab6a7aafc0c7b5e14a4a850cf107b09959"
@@ -841,13 +841,14 @@ packages:
     source: hosted
     version: "1.1.1"
   flutter_inappwebview_ios:
-    dependency: transitive
+    dependency: "direct overridden"
     description:
-      name: flutter_inappwebview_ios
-      sha256: f363577208b97b10b319cd0c428555cd8493e88b468019a8c5635a0e4312bd0f
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.13"
+      path: flutter_inappwebview_ios
+      ref: master
+      resolved-ref: "615214fb2fd3f830955d526cfb6698d6e20b7b7a"
+      url: "https://github.com/andychucs/flutter_inappwebview.git"
+    source: git
+    version: "1.0.14"
   flutter_inappwebview_macos:
     dependency: transitive
     description:
