@@ -2047,8 +2047,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         builder: (_) {
           return DraggableScrollableSheet(
             initialChildSize: 1.0,
-            builder: (__, ___) =>
-                EmailPreviewerDialogView(emlPreviewer: success.emlPreviewer)
+            builder: (__, ___) => EmailPreviewerDialogView(
+              emlPreviewer: success.emlPreviewer,
+              onMailtoDelegateAction: openMailToLink,
+            )
           );
         },
       );
