@@ -84,4 +84,28 @@ class ThreadConstants {
 
   static const int defaultMaxHeightEmailItemOnBrowser = 40;
   static const int defaultMaxHeightBrowser = 1200;
+
+  static final propertiesParseEmailByBlobId = Properties({
+    EmailProperty.id,
+    EmailProperty.blobId,
+    EmailProperty.subject,
+    EmailProperty.from,
+    EmailProperty.to,
+    EmailProperty.cc,
+    EmailProperty.bcc,
+    EmailProperty.keywords,
+    EmailProperty.size,
+    EmailProperty.receivedAt,
+    EmailProperty.sentAt,
+    EmailProperty.preview,
+    EmailProperty.hasAttachment,
+    EmailProperty.replyTo,
+    EmailProperty.mailboxIds,
+    EmailProperty.bodyValues,
+    EmailProperty.htmlBody,
+    EmailProperty.attachments,
+    EmailProperty.headers,
+    EmailProperty.messageId,
+    EmailProperty.references,
+  });
 }

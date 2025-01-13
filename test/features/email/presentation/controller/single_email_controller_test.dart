@@ -39,6 +39,8 @@ import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_event_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/parse_email_by_blob_id_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/preview_email_from_eml_file_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_event_attendance_status_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
@@ -98,6 +100,8 @@ const fallbackGenerators = {
   MockSpec<MaybeCalendarEventInteractor>(),
   MockSpec<RejectCalendarEventInteractor>(),
   MockSpec<StoreEventAttendanceStatusInteractor>(),
+  MockSpec<ParseEmailByBlobIdInteractor>(),
+  MockSpec<PreviewEmailFromEmlFileInteractor>(),
   MockSpec<PrintUtils>(),
   MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
@@ -134,6 +138,8 @@ void main() {
   final uuid = MockUuid();
   final printEmailInteractor = MockPrintEmailInteractor();
   final storeEventAttendanceStatusInteractor = MockStoreEventAttendanceStatusInteractor();
+  final parseEmailByBlobIdInteractor = MockParseEmailByBlobIdInteractor();
+  final previewEmailFromEmlFileInteractor = MockPreviewEmailFromEmlFileInteractor();
   final printUtils = MockPrintUtils();
   final applicationManager = MockApplicationManager();
   final mockToastManager = MockToastManager();
@@ -191,6 +197,8 @@ void main() {
       storeOpenedEmailInteractor,
       printEmailInteractor,
       storeEventAttendanceStatusInteractor,
+      parseEmailByBlobIdInteractor,
+      previewEmailFromEmlFileInteractor,
     );
   });
 
