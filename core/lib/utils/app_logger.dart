@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 final logHistory = _Dispatcher('');
 
 void log(String? value, {Level level = Level.info}) {
-  if (!kDebugMode) return;
+  // if (!kDebugMode) return;
 
   String logsStr = value ?? '';
   logHistory.value = '$logsStr\n${logHistory.value}';

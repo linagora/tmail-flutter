@@ -504,4 +504,19 @@ class EmailRepositoryImpl extends EmailRepository {
   Future<String> getPreviewEmailEMLContentShared(String keyStored) {
     return emailDataSource[DataSourceType.local]!.getPreviewEmailEMLContentShared(keyStored);
   }
+
+  @override
+  Future<void> removePreviewEmailEMLContentShared(String keyStored) {
+    return emailDataSource[DataSourceType.local]!.removePreviewEmailEMLContentShared(keyStored);
+  }
+
+  @override
+  Future<void> movePreviewEMLContentFromPersistentToMemory(String keyStored, String content) {
+    return emailDataSource[DataSourceType.session]!.storePreviewEMLContentToSessionStorage(keyStored, content);
+  }
+
+  @override
+  Future<String> getPreviewEMLContentInMemory(String keyStored) {
+    return emailDataSource[DataSourceType.session]!.getPreviewEMLContentInMemory(keyStored);
+  }
 }
