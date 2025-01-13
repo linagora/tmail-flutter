@@ -1,3 +1,4 @@
+import 'package:core/domain/exceptions/web_session_exception.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
@@ -89,7 +90,11 @@ class ToastManager {
     } else if (failure is ParseEmailByBlobIdFailure) {
       message = AppLocalizations.of(currentContext!).parseEmailByBlobIdFailed;
     } else if (failure is PreviewEmailFromEmlFileFailure) {
-      message = AppLocalizations.of(currentContext!).previewEmailFromEMLFileFailed;
+      if (failure.exception is CannotOpenNewWindowException) {
+        message = AppLocalizations.of(currentContext!).cannotOpenNewWindow;
+      } else {
+        message = AppLocalizations.of(currentContext!).previewEmailFromEMLFileFailed;
+      }
     }
 
     if (message?.isNotEmpty == true) {

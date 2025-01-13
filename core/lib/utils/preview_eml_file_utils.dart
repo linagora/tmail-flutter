@@ -1,5 +1,5 @@
 
-import 'package:core/data/model/print_attachment.dart';
+import 'package:core/data/model/preview_attachment.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
@@ -26,7 +26,7 @@ class PreviewEmlFileUtils {
     String? dateTime,
     String? attachmentIcon,
     String? emailContent,
-    List<PrintAttachment>? listAttachment,
+    List<PreviewAttachment>? listAttachment,
   }) {
     try {
       return Element.html('''
@@ -83,23 +83,38 @@ class PreviewEmlFileUtils {
     }
   }
 
-  String _createAttachmentHtmlTag(PrintAttachment printAttachment) {
+  String _createAttachmentHtmlTag(PreviewAttachment previewAttachment) {
     return '''
-      <div class="attachment-item">
-        <div class="icon">
-          <img width="16" height="16" src="${HtmlUtils.generateSVGImageData(printAttachment.iconBase64Data)}"  alt="attachment-icon"/>
-        </div>
-        <div class="file-details">
-          <div class="file-name">${printAttachment.name}</div>
-          <div class="file-size">${printAttachment.size}</div>
-        </div>
-      </div>
+      ${previewAttachment.link?.isNotEmpty == true
+          ? '''
+              <a href="${previewAttachment.link}" class="attachment-item">
+                <div class="icon">
+                  <img width="16" height="16" src="${HtmlUtils.generateSVGImageData(previewAttachment.iconBase64Data)}"  alt="attachment-icon"/>
+                </div>
+                <div class="file-details">
+                  <div class="file-name">${previewAttachment.name}</div>
+                  <div class="file-size">${previewAttachment.size}</div>
+                </div>
+              </a>
+            '''
+          : '''
+              <div class="attachment-item">
+                <div class="icon">
+                  <img width="16" height="16" src="${HtmlUtils.generateSVGImageData(previewAttachment.iconBase64Data)}"  alt="attachment-icon"/>
+                </div>
+                <div class="file-details">
+                  <div class="file-name">${previewAttachment.name}</div>
+                  <div class="file-size">${previewAttachment.size}</div>
+                </div>
+              </div>
+            '''}
+      
     ''';
   }
 
   String _createAttachmentsElement({
     required String titleAttachment,
-    required List<PrintAttachment> listAttachment
+    required List<PreviewAttachment> listAttachment
   }) {
     try {
       return '''
@@ -137,7 +152,7 @@ class PreviewEmlFileUtils {
     String? ccAddress,
     String? bccAddress,
     String? replyToAddress,
-    List<PrintAttachment>? listAttachment,
+    List<PreviewAttachment>? listAttachment,
   }) {
     Document document = parse(HtmlUtils.createTemplateHtmlDocument(title: '$subject - $userName'));
 

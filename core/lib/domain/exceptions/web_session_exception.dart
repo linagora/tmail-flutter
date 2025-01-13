@@ -24,3 +24,5 @@ class SaveToWebSessionFailException with EquatableMixin implements Exception {
   @override
   List<Object> get props => [];
 }
+
+class CannotOpenNewWindowException implements Exception {}

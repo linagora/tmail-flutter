@@ -2016,12 +2016,16 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     SmartDialog.dismiss();
 
     if (PlatformInfo.isWeb) {
-      HtmlUtils.openNewWindowByUrl(
+      bool isOpen = HtmlUtils.openNewWindowByUrl(
         RouteUtils.createUrlWebLocationBar(
           AppRoutes.emailEMLPreviewer,
           previewId: success.storeKey
         ).toString(),
       );
+
+      if (!isOpen) {
+        toastManager.showMessageFailure(PreviewEmailFromEmlFileFailure(CannotOpenNewWindowException()));
+      }
     }
   }
 

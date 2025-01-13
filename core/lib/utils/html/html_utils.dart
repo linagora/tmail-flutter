@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'js_interop_stub.dart' if (dart.library.html) 'dart:js_interop';
 import 'dart:typed_data';
@@ -11,6 +12,8 @@ import 'package:flutter/material.dart';
 import 'package:universal_html/html.dart' as html;
 
 class HtmlUtils {
+  static final random = Random();
+
   static const lineHeight100Percent = (
     script: '''
       document.querySelectorAll("*")
@@ -422,27 +425,62 @@ class HtmlUtils {
       fileSizeSpan.textContent = formatFileSize(bytesJs.length);''';
   }
 
-  static void openNewWindowByUrl(
+  static bool openNewWindowByUrl(
     String url,
     {
       int width = 800,
       int height = 600,
+      bool isFullScreen = false,
+      bool isCenter = true,
     }
-  ) async {
+  ) {
     try {
+      if (isFullScreen) {
+        final screenWidth = html.window.screen?.width;
+        final screenHeight = html.window.screen?.height;
+
+        final options = 'width=$screenWidth,height=$screenHeight';
+
+        html.window.open(url, '_blank', options);
+
+        html.Url.revokeObjectUrl(url);
+        return true;
+      }
+
       final screenWidth = html.window.screen?.width ?? width;
       final screenHeight = html.window.screen?.height ?? height;
 
-      final left = (screenWidth - width) ~/ 2;
-      final top = (screenHeight - height) ~/ 2;
+      int left, top;
+
+      if (isCenter) {
+        left = (screenWidth - width) ~/ 2;
+        top = (screenHeight - height) ~/ 2;
+      } else {
+        left = random.nextInt(screenWidth ~/ 2);
+        top = random.nextInt(screenHeight ~/ 2);
+      }
 
       final options = 'width=$width,height=$height,top=$top,left=$left';
 
       html.window.open(url, '_blank', options);
 
       html.Url.revokeObjectUrl(url);
+
+      return true;
     } catch (e) {
       logError('AppUtils::openNewWindowByUrl:Exception = $e');
+      return false;
+    }
+  }
+
+  static void setWindowBrowserTitle(String title) {
+    try {
+      final titleElements = html.window.document.getElementsByTagName('title');
+      if (titleElements.isNotEmpty) {
+        titleElements.first.text = title;
+      }
+    } catch (e) {
+      logError('AppUtils::setWindowBrowserTitle:Exception = $e');
     }
   }
 }

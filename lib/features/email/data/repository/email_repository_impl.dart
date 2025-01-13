@@ -35,6 +35,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_reques
 import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/eml_previewer.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
@@ -496,12 +497,12 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<void> sharePreviewEmailEMLContent(String keyStored, String previewEMLContent) {
-    return emailDataSource[DataSourceType.local]!.sharePreviewEmailEMLContent(keyStored, previewEMLContent);
+  Future<void> sharePreviewEmailEMLContent(String keyStored, EMLPreviewer emlPreviewer) {
+    return emailDataSource[DataSourceType.local]!.sharePreviewEmailEMLContent(keyStored, emlPreviewer);
   }
 
   @override
-  Future<String> getPreviewEmailEMLContentShared(String keyStored) {
+  Future<EMLPreviewer> getPreviewEmailEMLContentShared(String keyStored) {
     return emailDataSource[DataSourceType.local]!.getPreviewEmailEMLContentShared(keyStored);
   }
 
@@ -511,12 +512,12 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
-  Future<void> movePreviewEMLContentFromPersistentToMemory(String keyStored, String content) {
-    return emailDataSource[DataSourceType.session]!.storePreviewEMLContentToSessionStorage(keyStored, content);
+  Future<void> storePreviewEMLContentToSessionStorage(String keyStored, EMLPreviewer emlPreviewer) {
+    return emailDataSource[DataSourceType.session]!.storePreviewEMLContentToSessionStorage(keyStored, emlPreviewer);
   }
 
   @override
-  Future<String> getPreviewEMLContentInMemory(String keyStored) {
+  Future<EMLPreviewer> getPreviewEMLContentInMemory(String keyStored) {
     return emailDataSource[DataSourceType.session]!.getPreviewEMLContentInMemory(keyStored);
   }
 }

@@ -252,4 +252,7 @@ abstract class RouteUtils {
       || navigationRouter.subject?.isNotEmpty == true
       || navigationRouter.body?.isNotEmpty == true;
   }
+
+  static String get emailEMLPreviewerRoutePath =>
+      _createEmailEMLPreviewerServicePath('$baseOriginUrl${AppRoutes.emailEMLPreviewer}').path;
 }
