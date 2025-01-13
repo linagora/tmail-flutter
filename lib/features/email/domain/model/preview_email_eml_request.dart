@@ -14,6 +14,7 @@ class PreviewEmailEMLRequest with EquatableMixin {
   final Locale locale;
   final AppLocalizations appLocalizations;
   final String baseDownloadUrl;
+  final bool isShared;
 
   PreviewEmailEMLRequest({
     required this.accountId,
@@ -23,9 +24,12 @@ class PreviewEmailEMLRequest with EquatableMixin {
     required this.locale,
     required this.appLocalizations,
     required this.baseDownloadUrl,
+    this.isShared = true,
   });
 
   String get keyStored => blobId.value;
+
+  String get title => '${email.subject?.trim().isNotEmpty == true ? email.subject : appLocalizations.app_name} - ${userName.value}';
 
   @override
   List<Object?> get props => [
@@ -36,5 +40,6 @@ class PreviewEmailEMLRequest with EquatableMixin {
     locale,
     appLocalizations,
     baseDownloadUrl,
+    isShared,
   ];
 }

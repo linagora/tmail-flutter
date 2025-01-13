@@ -12,10 +12,13 @@ class GetPreviewEmlContentInMemoryInteractor {
   Stream<Either<Failure, Success>> execute(String keyStored) async* {
     try {
       yield Right<Failure, Success>(GettingPreviewEMLContentInMemory());
-      final previewEMLContent = await _emailRepository.getPreviewEMLContentInMemory(keyStored);
-      yield Right<Failure, Success>(GetPreviewEMLContentInMemorySuccess(previewEMLContent));
+      final emlPreviewer = await _emailRepository.getPreviewEMLContentInMemory(keyStored);
+      yield Right<Failure, Success>(GetPreviewEMLContentInMemorySuccess(emlPreviewer));
     } catch (e) {
-      yield Left<Failure, Success>(GetPreviewEMLContentInMemoryFailure(e));
+      yield Left<Failure, Success>(GetPreviewEMLContentInMemoryFailure(
+        keyStored: keyStored,
+        exception: e,
+      ));
     }
   }
 }
