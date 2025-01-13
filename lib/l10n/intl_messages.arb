@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-01-09T04:35:09.125475",
+  "@@last_modified": "2025-01-10T23:14:09.007935",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4086,6 +4086,18 @@
   },
   "replyToList": "Reply to list",
   "@replyToList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "parseEmailByBlobIdFailed": "Cannot parse email by blob id",
+  "@parseEmailByBlobIdFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "previewEmailFromEMLFileFailed": "Cannot preview this eml file",
+  "@previewEmailFromEMLFileFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

@@ -421,4 +421,28 @@ class HtmlUtils {
       const fileSizeSpan = document.getElementById('file-size');
       fileSizeSpan.textContent = formatFileSize(bytesJs.length);''';
   }
+
+  static void openNewWindowByUrl(
+    String url,
+    {
+      int width = 800,
+      int height = 600,
+    }
+  ) async {
+    try {
+      final screenWidth = html.window.screen?.width ?? width;
+      final screenHeight = html.window.screen?.height ?? height;
+
+      final left = (screenWidth - width) ~/ 2;
+      final top = (screenHeight - height) ~/ 2;
+
+      final options = 'width=$width,height=$height,top=$top,left=$left';
+
+      html.window.open(url, '_blank', options);
+
+      html.Url.revokeObjectUrl(url);
+    } catch (e) {
+      logError('AppUtils::openNewWindowByUrl:Exception = $e');
+    }
+  }
 }

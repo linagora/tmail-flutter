@@ -1,13 +1,23 @@
 import 'dart:async';
 import 'dart:typed_data';
 
+import 'package:core/data/model/print_attachment.dart';
 import 'package:core/data/network/download/downloaded_response.dart';
+import 'package:core/domain/extensions/datetime_extension.dart';
+import 'package:core/presentation/extensions/html_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
+import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/file_utils.dart';
+import 'package:core/utils/platform_info.dart';
+import 'package:core/utils/preview_eml_file_utils.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action.dart';
 import 'package:email_recovery/email_recovery/email_recovery_action_id.dart';
+import 'package:filesize/filesize.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
@@ -19,11 +29,14 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
+import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
@@ -34,6 +47,10 @@ class EmailDataSourceImpl extends EmailDataSource {
   final EmailAPI emailAPI;
   final ExceptionThrower _exceptionThrower;
   final ExceptionThrower _sendEmailExceptionThrower = Get.find<SendEmailExceptionThrower>();
+  final PreviewEmlFileUtils _previewEmailUtils = Get.find<PreviewEmlFileUtils>();
+  final HtmlAnalyzer _htmlAnalyzer = Get.find<HtmlAnalyzer>();
+  final FileUtils _fileUtils = Get.find<FileUtils>();
+  final ImagePaths _imagePaths = Get.find<ImagePaths>();
 
   EmailDataSourceImpl(this.emailAPI, this._exceptionThrower);
 
@@ -384,5 +401,126 @@ class EmailDataSourceImpl extends EmailDataSource {
     return Future.sync(() async {
       return await emailAPI.parseEmailByBlobIds(accountId, blobIds);
     }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<String> generatePreviewEmailEMLContent(PreviewEmailEMLRequest previewEmailEMLRequest) {
+    return Future.sync(() async {
+      final email = previewEmailEMLRequest.email;
+      final appLocalizations = previewEmailEMLRequest.appLocalizations;
+      final locale = previewEmailEMLRequest.locale.toLanguageTag();
+
+      final listAttachments = email
+        .allAttachments
+        .getListAttachmentsDisplayedOutside(email.htmlBodyAttachments);
+
+      final listInlineImages = email
+        .allAttachments
+        .listAttachmentsDisplayedInContent;
+
+      final mapCidImageDownloadUrl = listInlineImages.toMapCidImageDownloadUrl(
+        accountId: previewEmailEMLRequest.accountId,
+        downloadUrl: previewEmailEMLRequest.baseDownloadUrl,
+      );
+
+      final emailContentEscaped = await _transformEmailContent(
+        email.emailContentList,
+        mapCidImageDownloadUrl,
+      );
+
+      final sender = email.from?.isNotEmpty == true
+        ? email.from!.first
+        : null;
+
+      final receiveTime = email.getReceivedAt(
+        newLocale: locale,
+        pattern: email.receivedAt?.value.toLocal().toPatternForPrinting(locale)
+      );
+
+      final sentTime = email.getSentAt(
+        newLocale: locale,
+        pattern: email.sentAt?.value.toLocal().toPatternForPrinting(locale)
+      );
+
+      final List<PrintAttachment> listPrintAttachment = [];
+
+      if (listAttachments.isNotEmpty) {
+        await Future.forEach<Attachment>(listAttachments, (attachment) async {
+          final iconBase64Data = await _fileUtils.convertImageAssetToBase64(
+            attachment.getIcon(_imagePaths));
+
+          final printAttachment = PrintAttachment(
+            iconBase64Data: iconBase64Data,
+            name: attachment.name.escapeLtGtHtmlString(),
+            size: filesize(attachment.size?.value),
+          );
+
+          listPrintAttachment.add(printAttachment);
+        });
+      }
+
+      final attachmentIconBase64Data = email.hasAttachment == true
+          ? await _fileUtils.convertImageAssetToBase64(_imagePaths.icAttachment)
+          : '';
+
+      final previewEmlHtmlDocument = _previewEmailUtils.generatePreviewEml(
+        appName: appLocalizations.app_name,
+        userName: previewEmailEMLRequest.userName.value,
+        subjectPrefix: appLocalizations.subject,
+        subject: previewEmailEMLRequest.email.subject?.escapeLtGtHtmlString() ?? '',
+        emailContent: emailContentEscaped,
+        senderName: sender?.name.escapeLtGtHtmlString() ?? '',
+        senderEmailAddress: sender?.email ?? '',
+        dateTime: receiveTime.isNotEmpty ? receiveTime : sentTime,
+        fromPrefix: appLocalizations.from_email_address_prefix,
+        toPrefix: appLocalizations.to_email_address_prefix,
+        ccPrefix: appLocalizations.cc_email_address_prefix,
+        bccPrefix: appLocalizations.bcc_email_address_prefix,
+        replyToPrefix: appLocalizations.replyToEmailAddressPrefix,
+        titleAttachment: appLocalizations.attachments.toLowerCase(),
+        attachmentIcon: attachmentIconBase64Data,
+        toAddress: email.to?.listEmailAddressToString(isFullEmailAddress: true),
+        ccAddress: email.cc?.listEmailAddressToString(isFullEmailAddress: true),
+        bccAddress: email.bcc?.listEmailAddressToString(isFullEmailAddress: true),
+        replyToAddress: email.replyTo?.listEmailAddressToString(isFullEmailAddress: true),
+        listAttachment: listPrintAttachment,
+      );
+
+      return previewEmlHtmlDocument;
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  Future<String> _transformEmailContent(
+    List<EmailContent> emailContents,
+    Map<String, String> mapCidImageDownloadUrl,
+  ) async {
+    try {
+      final transformConfiguration = PlatformInfo.isWeb
+        ? TransformConfiguration.forPreviewEmailOnWeb()
+        : TransformConfiguration.forPreviewEmail();
+
+      final listEmailContent = await Future.wait(emailContents
+        .map((emailContent) async => await _htmlAnalyzer.transformEmailContent(
+          emailContent,
+          mapCidImageDownloadUrl,
+          transformConfiguration,
+        ))
+        .toList());
+
+      return listEmailContent.asHtmlString;
+    } catch (e) {
+      logError('EmailDataSourceImpl::_transformEmailContent:Exception = $e');
+      return '';
+    }
+  }
+
+  @override
+  Future<void> sharePreviewEmailEMLContent(String keyStored, String previewEMLContent) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> getPreviewEmailEMLContentShared(String keyStored) {
+    throw UnimplementedError();
   }
 }

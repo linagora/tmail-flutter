@@ -64,6 +64,16 @@ extension EmailExtension on Email {
     return '';
   }
 
+  String getSentAt({required String newLocale, String? pattern}) {
+    if (sentAt != null) {
+      return sentAt!.formatDateToLocal(
+        pattern: pattern ?? sentAt!.value.toLocal().toPattern(),
+        locale: newLocale
+      );
+    }
+    return '';
+  }
+
   Set<String> getRecipientEmailAddressList() {
     final listEmailAddress = <String>{};
     final listToAddress = to.getListAddress() ?? [];
