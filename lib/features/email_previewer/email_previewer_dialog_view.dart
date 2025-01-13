@@ -8,8 +8,13 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 class EmailPreviewerDialogView extends StatelessWidget {
 
   final EMLPreviewer emlPreviewer;
+  final OnMailtoDelegateAction onMailtoDelegateAction;
 
-  const EmailPreviewerDialogView({super.key, required this.emlPreviewer});
+  const EmailPreviewerDialogView({
+    super.key,
+    required this.emlPreviewer,
+    required this.onMailtoDelegateAction,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,6 +25,7 @@ class EmailPreviewerDialogView extends StatelessWidget {
           contentHtml: emlPreviewer.content,
           initialWidth: context.width,
           direction: AppUtils.getCurrentDirection(context),
+          onMailtoDelegateAction: onMailtoDelegateAction,
         ),
       ),
     );
