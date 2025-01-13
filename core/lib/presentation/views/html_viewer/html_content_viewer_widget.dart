@@ -6,6 +6,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:core/utils/preview_eml_file_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -16,6 +17,7 @@ import 'package:url_launcher/url_launcher_string.dart';
 typedef OnScrollHorizontalEndAction = Function(bool leftDirection);
 typedef OnLoadWidthHtmlViewerAction = Function(bool isScrollPageViewActivated);
 typedef OnMailtoDelegateAction = Future<void> Function(Uri? uri);
+typedef OnPreviewEMLDelegateAction = Future<void> Function(Uri? uri);
 
 class HtmlContentViewer extends StatefulWidget {
 
@@ -26,6 +28,7 @@ class HtmlContentViewer extends StatefulWidget {
   final OnLoadWidthHtmlViewerAction? onLoadWidthHtmlViewer;
   final OnMailtoDelegateAction? onMailtoDelegateAction;
   final OnScrollHorizontalEndAction? onScrollHorizontalEnd;
+  final OnPreviewEMLDelegateAction? onPreviewEMLDelegateAction;
 
   const HtmlContentViewer({
     Key? key,
@@ -34,7 +37,8 @@ class HtmlContentViewer extends StatefulWidget {
     this.direction,
     this.onLoadWidthHtmlViewer,
     this.onMailtoDelegateAction,
-    this.onScrollHorizontalEnd
+    this.onScrollHorizontalEnd,
+    this.onPreviewEMLDelegateAction,
   }) : super(key: key);
 
   @override
@@ -246,7 +250,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     NavigationAction navigationAction
   ) async {
     final url = navigationAction.request.url?.toString();
-
+    log('_HtmlContentViewState::_shouldOverrideUrlLoading: URL = $url');
     if (url == null) {
       return NavigationActionPolicy.CANCEL;
     }
@@ -256,9 +260,15 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     }
 
     final requestUri = Uri.parse(url);
-    final mailtoHandler = widget.onMailtoDelegateAction;
-    if (mailtoHandler != null && requestUri.isScheme('mailto')) {
-      await mailtoHandler(requestUri);
+    if (widget.onMailtoDelegateAction != null &&
+        requestUri.isScheme('mailto')) {
+      await widget.onMailtoDelegateAction?.call(requestUri);
+      return NavigationActionPolicy.CANCEL;
+    }
+
+    if (widget.onPreviewEMLDelegateAction != null &&
+        requestUri.isScheme(PreviewEmlFileUtils.emlPreviewerScheme)) {
+      await widget.onPreviewEMLDelegateAction?.call(requestUri);
       return NavigationActionPolicy.CANCEL;
     }
 
