@@ -5,11 +5,15 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/mail/mail_address.dart';
 import 'package:get/get_utils/src/get_utils/get_utils.dart';
 import 'package:dartz/dartz.dart';
+import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
@@ -190,5 +194,25 @@ class EmailUtils {
   }) extractRecipientsFromListPost(String listPost) {
     final mailtoLinks = extractMailtoLinksFromListPost(listPost);
     return extractRecipientsFromListMailtoLink(mailtoLinks);
+  }
+
+  static Attachment? parsingAttachmentByUri(Uri uri) {
+    try {
+      final blobId = uri.path;
+      final queryParams = uri.queryParameters;
+      final name = queryParams['name'];
+      final size = queryParams['size'];
+      final type = queryParams['type'];
+      log('EmailUtils::parsingAttachmentByUri:blobId = $blobId | name = $name | size = $size | type = $type');
+      return Attachment(
+        blobId: Id(blobId),
+        name: name,
+        size: size?.isNotEmpty == true ? UnsignedInt(int.parse(size!)) : null,
+        type: type?.isNotEmpty == true ? MediaType.parse(type!) : null,
+      );
+    } catch (e) {
+      logError('EmailUtils::parsingAttachmentByUri:Exception = $e:');
+      return null;
+    }
   }
 }
