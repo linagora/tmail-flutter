@@ -15,6 +15,7 @@ import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';
+import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
@@ -94,5 +95,6 @@ class CoreBindings extends Bindings {
       )
     ));
     Get.put(LocalStorageManager());
+    Get.put(SessionStorageManager());
   }
 }

@@ -2,7 +2,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
-import 'package:tmail_ui_user/features/email/domain/state/get_preview_email_content_shared_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_preview_email_eml_content_shared_state.dart';
 
 class GetPreviewEmailEMLContentSharedInteractor {
   final EmailRepository _emailRepository;
@@ -16,9 +16,12 @@ class GetPreviewEmailEMLContentSharedInteractor {
       final previewEMLContent = await _emailRepository
         .getPreviewEmailEMLContentShared(keyStored);
 
-      yield Right<Failure, Success>(GetPreviewEmailEMLContentSharedSuccess(previewEMLContent));
+      yield Right<Failure, Success>(GetPreviewEmailEMLContentSharedSuccess(keyStored, previewEMLContent));
     } catch (e) {
-      yield Left<Failure, Success>(GetPreviewEmailEMLContentSharedFailure(e));
+      yield Left<Failure, Success>(GetPreviewEmailEMLContentSharedFailure(
+        keyStored: keyStored,
+        exception: e,
+      ));
     }
   }
 }
