@@ -21,7 +21,7 @@ import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
-import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';
+import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
@@ -33,13 +33,13 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
-class EmailLocalStorageDataSourceImpl extends EmailDataSource {
+class EmailSessionStorageDatasourceImpl extends EmailDataSource {
 
-  final LocalStorageManager _localStorageManager;
+  final SessionStorageManager _sessionStorageManager;
   final ExceptionThrower _exceptionThrower;
 
-  EmailLocalStorageDataSourceImpl(
-    this._localStorageManager,
+  EmailSessionStorageDatasourceImpl(
+    this._sessionStorageManager,
     this._exceptionThrower,
   );
 
@@ -165,9 +165,7 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
 
   @override
   Future<void> sharePreviewEmailEMLContent(String keyStored, String previewEMLContent) {
-    return Future.sync(() async {
-      return _localStorageManager.save(keyStored, previewEMLContent);
-    }).catchError(_exceptionThrower.throwException);
+    throw UnimplementedError();
   }
 
   @override
@@ -217,25 +215,25 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
 
   @override
   Future<String> getPreviewEmailEMLContentShared(String keyStored) {
-    return Future.sync(() async {
-      return _localStorageManager.get(keyStored);
-    }).catchError(_exceptionThrower.throwException);
+    throw UnimplementedError();
   }
 
   @override
   Future<void> storePreviewEMLContentToSessionStorage(String keyStored, String content) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<void> removePreviewEmailEMLContentShared(String keyStored) {
     return Future.sync(() async {
-      return _localStorageManager.remove(keyStored);
+      return _sessionStorageManager.save(keyStored, content);
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<String> getPreviewEMLContentInMemory(String keyStored) {
+  Future<void> removePreviewEmailEMLContentShared(String keyStored) {
     throw UnimplementedError();
+  }
+
+  @override
+  Future<String> getPreviewEMLContentInMemory(String keyStored) {
+    return Future.sync(() async {
+      return _sessionStorageManager.get(keyStored);
+    }).catchError(_exceptionThrower.throwException);
   }
 }

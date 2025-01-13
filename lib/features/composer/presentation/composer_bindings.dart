@@ -3,6 +3,7 @@ import 'package:core/utils/application_manager.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';
+import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource/contact_datasource.dart';
 import 'package:tmail_ui_user/features/composer/data/datasource_impl/composer_datasource_impl.dart';
@@ -26,6 +27,7 @@ import 'package:tmail_ui_user/features/email/data/datasource/print_file_datasour
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_hive_cache_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_local_storage_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/email_session_storage_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/html_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/print_file_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
@@ -136,6 +138,9 @@ class ComposerBindings extends BaseBindings {
     Get.lazyPut(() => EmailLocalStorageDataSourceImpl(
       Get.find<LocalStorageManager>(),
       Get.find<CacheExceptionThrower>()));
+    Get.lazyPut(() => EmailSessionStorageDatasourceImpl(
+      Get.find<SessionStorageManager>(),
+      Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => RemoteServerSettingsDataSourceImpl(
       Get.find<ServerSettingsAPI>(),
       Get.find<RemoteExceptionThrower>()));
@@ -177,6 +182,7 @@ class ComposerBindings extends BaseBindings {
         DataSourceType.network: Get.find<EmailDataSource>(),
         DataSourceType.hiveCache: Get.find<EmailHiveCacheDataSourceImpl>(),
         DataSourceType.local: Get.find<EmailLocalStorageDataSourceImpl>(),
+        DataSourceType.session: Get.find<EmailSessionStorageDatasourceImpl>(),
       },
       Get.find<HtmlDataSource>(),
       Get.find<StateDataSource>(),
