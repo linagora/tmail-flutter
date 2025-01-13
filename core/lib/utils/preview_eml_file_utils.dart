@@ -7,8 +7,6 @@ import 'package:html/dom.dart';
 import 'package:html/parser.dart';
 
 class PreviewEmlFileUtils {
-  static const String emlPreviewerScheme = 'eml-previewer';
-
   Element? _createEmailElement({
     required String subjectPrefix,
     required String fromPrefix,

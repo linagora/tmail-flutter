@@ -10,12 +10,14 @@ class EmailPreviewerDialogView extends StatelessWidget {
   final EMLPreviewer emlPreviewer;
   final OnMailtoDelegateAction onMailtoDelegateAction;
   final OnPreviewEMLDelegateAction onPreviewEMLDelegateAction;
+  final OnDownloadAttachmentDelegateAction onDownloadAttachmentDelegateAction;
 
   const EmailPreviewerDialogView({
     super.key,
     required this.emlPreviewer,
     required this.onMailtoDelegateAction,
     required this.onPreviewEMLDelegateAction,
+    required this.onDownloadAttachmentDelegateAction,
   });
 
   @override
@@ -29,6 +31,7 @@ class EmailPreviewerDialogView extends StatelessWidget {
           direction: AppUtils.getCurrentDirection(context),
           onMailtoDelegateAction: onMailtoDelegateAction,
           onPreviewEMLDelegateAction: onPreviewEMLDelegateAction,
+          onDownloadAttachmentDelegateAction: onDownloadAttachmentDelegateAction,
         ),
       ),
     );
