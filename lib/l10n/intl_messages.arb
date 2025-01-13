@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-01-10T23:14:09.007935",
+  "@@last_modified": "2025-01-13T15:53:39.843822",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4098,6 +4098,12 @@
   },
   "previewEmailFromEMLFileFailed": "Cannot preview this eml file",
   "@previewEmailFromEMLFileFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cannotOpenNewWindow": "Cannot open new window",
+  "@cannotOpenNewWindow": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
