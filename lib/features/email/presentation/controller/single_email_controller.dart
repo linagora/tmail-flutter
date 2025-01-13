@@ -95,6 +95,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_ev
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/eml_previewer.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_dialog_builder.dart';
@@ -1921,7 +1922,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit && attachment.isPDFFile) {
       previewPDFFileAction(context, attachment);
     } else if (attachment.isEMLFile) {
-      previewEMLFileAction(attachment, AppLocalizations.of(context));
+      previewEMLFileAction(attachment.blobId, AppLocalizations.of(context));
     } else {
       handleDownloadAttachmentAction(context, attachment);
     }
@@ -1954,7 +1955,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
   }
 
-  void previewEMLFileAction(Attachment attachment, AppLocalizations appLocalizations) {
+  void previewEMLFileAction(Id? blobId, AppLocalizations appLocalizations) {
     SmartDialog.showLoading(
       msg: appLocalizations.loadingPleaseWait,
       maskColor: Colors.black38,
@@ -1965,15 +1966,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       return;
     }
 
-    if (attachment.blobId == null) {
+    if (blobId == null) {
       consumeState(Stream.value(Left(ParseEmailByBlobIdFailure(NotFoundBlobIdException([])))));
       return;
     }
 
-    consumeState(_parseEmailByBlobIdInteractor.execute(
-      accountId!,
-      attachment.blobId!,
-    ));
+    consumeState(_parseEmailByBlobIdInteractor.execute(accountId!, blobId));
   }
 
   void _handleParseEmailByBlobIdSuccess(ParseEmailByBlobIdSuccess success) {
@@ -2035,28 +2033,49 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         return;
       }
 
-      showModalBottomSheet(
-        context: currentContext!,
-        showDragHandle: true,
-        useSafeArea: true,
-        isScrollControlled: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20.0),
-            topRight: Radius.circular(20.0),
-          ),
-        ),
-        builder: (_) {
-          return DraggableScrollableSheet(
-            initialChildSize: 1.0,
-            builder: (__, ___) => EmailPreviewerDialogView(
-              emlPreviewer: success.emlPreviewer,
-              onMailtoDelegateAction: openMailToLink,
-            )
-          );
-        },
-      );
+      showModalSheetToPreviewEMLAttachment(
+        currentContext!,
+        success.emlPreviewer);
     }
+  }
+
+  void showModalSheetToPreviewEMLAttachment(
+    BuildContext context,
+    EMLPreviewer emlPreviewer,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      useSafeArea: true,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
+        ),
+      ),
+      builder: (_) {
+        return DraggableScrollableSheet(
+          initialChildSize: 1.0,
+          builder: (context, ___) => EmailPreviewerDialogView(
+            emlPreviewer: emlPreviewer,
+            onMailtoDelegateAction: openMailToLink,
+            onPreviewEMLDelegateAction: (uri) => _openEMLPreviewer(context, uri),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _openEMLPreviewer(BuildContext context, Uri? uri) async {
+    log('SingleEmailController::_openEMLPreviewer:uri = $uri');
+    if (uri == null) return;
+
+    final blobId = uri.authority;
+    log('SingleEmailController::_openEMLPreviewer:blobId = $blobId');
+    if (blobId.isEmpty) return;
+
+    previewEMLFileAction(Id(blobId), AppLocalizations.of(context));
   }
 
   void handleMailToAttendees(CalendarOrganizer? organizer, List<CalendarAttendee>? attendees) {
