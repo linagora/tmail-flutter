@@ -16,7 +16,7 @@ class GetPreviewEmailEMLContentSharedInteractor {
       final previewEMLContent = await _emailRepository
         .getPreviewEmailEMLContentShared(keyStored);
 
-      yield Right<Failure, Success>(GetPreviewEmailEMLContentSharedSuccess(keyStored, previewEMLContent));
+      yield Right<Failure, Success>(GetPreviewEmailEMLContentSharedSuccess(previewEMLContent));
     } catch (e) {
       yield Left<Failure, Success>(GetPreviewEmailEMLContentSharedFailure(
         keyStored: keyStored,

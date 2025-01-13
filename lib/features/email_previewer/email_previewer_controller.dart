@@ -88,9 +88,7 @@ class EmailPreviewerController extends ReloadableController {
     } else if (success is GetPreviewEmailEMLContentSharedSuccess) {
       emlContentViewState.value = Right(success);
       _updateWindowBrowserTitle(success.emlPreviewer.title);
-      _movePreviewEmlContentFromPersistentToMemory(
-          success.keyStored,
-          success.emlPreviewer);
+      _movePreviewEmlContentFromPersistentToMemory(success.emlPreviewer);
     } else if (success is ParseEmailByBlobIdSuccess) {
       _handleParseEmailByBlobIdSuccess(success);
     } else if (success is PreviewEmailFromEmlFileSuccess) {
@@ -162,15 +160,9 @@ class EmailPreviewerController extends ReloadableController {
     }
   }
 
-  void _movePreviewEmlContentFromPersistentToMemory(
-    String keyStored,
-    EMLPreviewer emlPreviewer,
-  ) {
+  void _movePreviewEmlContentFromPersistentToMemory(EMLPreviewer emlPreviewer) {
     consumeState(
-      _movePreviewEmlContentFromPersistentToMemoryInteractor.execute(
-        keyStored,
-        emlPreviewer,
-      ),
+      _movePreviewEmlContentFromPersistentToMemoryInteractor.execute(emlPreviewer),
     );
   }
 

@@ -6,13 +6,12 @@ class GettingPreviewEmailEMLContentShared extends LoadingState {}
 
 class GetPreviewEmailEMLContentSharedSuccess extends UIState {
 
-  final String keyStored;
   final EMLPreviewer emlPreviewer;
 
-  GetPreviewEmailEMLContentSharedSuccess(this.keyStored, this.emlPreviewer);
+  GetPreviewEmailEMLContentSharedSuccess(this.emlPreviewer);
 
   @override
-  List<Object?> get props => [keyStored, emlPreviewer];
+  List<Object?> get props => [emlPreviewer];
 }
 
 class GetPreviewEmailEMLContentSharedFailure extends FeatureFailure {

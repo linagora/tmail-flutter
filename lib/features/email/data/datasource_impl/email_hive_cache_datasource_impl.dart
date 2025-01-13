@@ -540,7 +540,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> sharePreviewEmailEMLContent(String keyStored, EMLPreviewer emlPreviewer) {
+  Future<void> sharePreviewEmailEMLContent(EMLPreviewer emlPreviewer) {
     throw UnimplementedError();
   }
 
@@ -555,7 +555,7 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> storePreviewEMLContentToSessionStorage(String keyStored, EMLPreviewer emlPreviewer) {
+  Future<void> storePreviewEMLContentToSessionStorage(EMLPreviewer emlPreviewer) {
     throw UnimplementedError();
   }
 
