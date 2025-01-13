@@ -1,5 +1,6 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
@@ -20,20 +21,21 @@ class PreviewEmailFromEmlFileInteractor {
       final previewEMLContent = await _emailRepository
         .generatePreviewEmailEMLContent(previewEmailEMLRequest);
 
-      final keyStored = previewEmailEMLRequest.keyStored;
-
       final emlPreviewer = EMLPreviewer(
+        id: previewEmailEMLRequest.keyStored,
         title: previewEmailEMLRequest.title,
         content: previewEMLContent,
       );
 
-      if (previewEmailEMLRequest.isShared) {
-        await _emailRepository.sharePreviewEmailEMLContent(keyStored, emlPreviewer);
-      } else {
-        await _emailRepository.storePreviewEMLContentToSessionStorage(keyStored, emlPreviewer);
+      if (PlatformInfo.isWeb) {
+        if (previewEmailEMLRequest.isShared) {
+          await _emailRepository.sharePreviewEmailEMLContent(emlPreviewer);
+        } else {
+          await _emailRepository.storePreviewEMLContentToSessionStorage(emlPreviewer);
+        }
       }
 
-      yield Right<Failure, Success>(PreviewEmailFromEmlFileSuccess(keyStored, emlPreviewer));
+      yield Right<Failure, Success>(PreviewEmailFromEmlFileSuccess(emlPreviewer));
     } catch (e) {
       yield Left<Failure, Success>(PreviewEmailFromEmlFileFailure(e));
     }

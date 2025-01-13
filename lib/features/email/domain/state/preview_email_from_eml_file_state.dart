@@ -6,13 +6,12 @@ class PreviewingEmailFromEmlFile extends LoadingState {}
 
 class PreviewEmailFromEmlFileSuccess extends UIState {
 
-  final String storeKey;
   final EMLPreviewer emlPreviewer;
 
-  PreviewEmailFromEmlFileSuccess(this.storeKey, this.emlPreviewer);
+  PreviewEmailFromEmlFileSuccess(this.emlPreviewer);
 
   @override
-  List<Object?> get props => [storeKey, emlPreviewer];
+  List<Object?> get props => [emlPreviewer];
 }
 
 class PreviewEmailFromEmlFileFailure extends FeatureFailure {

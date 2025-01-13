@@ -6,15 +6,20 @@ part 'eml_previewer.g.dart';
 
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
 class EMLPreviewer with EquatableMixin {
+  final String id;
   final String title;
   final String content;
 
-  EMLPreviewer({required this.title, required this.content});
+  EMLPreviewer({
+    required this.id,
+    required this.title,
+    required this.content,
+  });
 
   factory EMLPreviewer.fromJson(Map<String, dynamic> json) => _$EMLPreviewerFromJson(json);
 
   Map<String, dynamic> toJson() => _$EMLPreviewerToJson(this);
   
   @override
-  List<Object?> get props => [title, content];
+  List<Object?> get props => [id, title, content];
 }

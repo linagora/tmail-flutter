@@ -99,6 +99,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_lis
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/pdf_viewer.dart';
+import 'package:tmail_ui_user/features/email_previewer/email_previewer_dialog_view.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -2019,13 +2020,38 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       bool isOpen = HtmlUtils.openNewWindowByUrl(
         RouteUtils.createUrlWebLocationBar(
           AppRoutes.emailEMLPreviewer,
-          previewId: success.storeKey
+          previewId: success.emlPreviewer.id
         ).toString(),
       );
 
       if (!isOpen) {
         toastManager.showMessageFailure(PreviewEmailFromEmlFileFailure(CannotOpenNewWindowException()));
       }
+    } else if (PlatformInfo.isMobile) {
+      if (currentContext == null) {
+        toastManager.showMessageFailure(PreviewEmailFromEmlFileFailure(NotFoundContextException()));
+        return;
+      }
+
+      showModalBottomSheet(
+        context: currentContext!,
+        showDragHandle: true,
+        useSafeArea: true,
+        isScrollControlled: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
+          ),
+        ),
+        builder: (_) {
+          return DraggableScrollableSheet(
+            initialChildSize: 1.0,
+            builder: (__, ___) =>
+                EmailPreviewerDialogView(emlPreviewer: success.emlPreviewer)
+          );
+        },
+      );
     }
   }
 

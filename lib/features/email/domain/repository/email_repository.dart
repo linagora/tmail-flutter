@@ -186,13 +186,13 @@ abstract class EmailRepository {
 
   Future<String> generatePreviewEmailEMLContent(PreviewEmailEMLRequest previewEmailEMLRequest);
 
-  Future<void> sharePreviewEmailEMLContent(String keyStored, EMLPreviewer emlPreviewer);
+  Future<void> sharePreviewEmailEMLContent(EMLPreviewer emlPreviewer);
 
   Future<EMLPreviewer> getPreviewEmailEMLContentShared(String keyStored);
 
   Future<void> removePreviewEmailEMLContentShared(String keyStored);
 
-  Future<void> storePreviewEMLContentToSessionStorage(String keyStored, EMLPreviewer emlPreviewer);
+  Future<void> storePreviewEMLContentToSessionStorage(EMLPreviewer emlPreviewer);
 
   Future<EMLPreviewer> getPreviewEMLContentInMemory(String keyStored);
 }
