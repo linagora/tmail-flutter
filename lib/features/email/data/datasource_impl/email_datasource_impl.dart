@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:core/data/model/print_attachment.dart';
+import 'package:core/data/model/preview_attachment.dart';
 import 'package:core/data/network/download/downloaded_response.dart';
 import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:core/presentation/extensions/html_extension.dart';
@@ -37,10 +37,13 @@ import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_reques
 import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/eml_previewer.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/send_email_exception_thrower.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
+import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 class EmailDataSourceImpl extends EmailDataSource {
 
@@ -442,20 +445,28 @@ class EmailDataSourceImpl extends EmailDataSource {
         pattern: email.sentAt?.value.toLocal().toPatternForPrinting(locale)
       );
 
-      final List<PrintAttachment> listPrintAttachment = [];
+      final List<PreviewAttachment> listPreviewAttachment = [];
 
       if (listAttachments.isNotEmpty) {
         await Future.forEach<Attachment>(listAttachments, (attachment) async {
           final iconBase64Data = await _fileUtils.convertImageAssetToBase64(
             attachment.getIcon(_imagePaths));
 
-          final printAttachment = PrintAttachment(
+          final link = attachment.isEMLFile
+            ? RouteUtils.createUrlWebLocationBar(
+                AppRoutes.emailEMLPreviewer,
+                previewId: attachment.blobId?.value,
+              ).toString()
+            : null;
+
+          final previewAttachment = PreviewAttachment(
             iconBase64Data: iconBase64Data,
             name: attachment.name.escapeLtGtHtmlString(),
             size: filesize(attachment.size?.value),
+            link: link,
           );
 
-          listPrintAttachment.add(printAttachment);
+          listPreviewAttachment.add(previewAttachment);
         });
       }
 
@@ -483,7 +494,7 @@ class EmailDataSourceImpl extends EmailDataSource {
         ccAddress: email.cc?.listEmailAddressToString(isFullEmailAddress: true),
         bccAddress: email.bcc?.listEmailAddressToString(isFullEmailAddress: true),
         replyToAddress: email.replyTo?.listEmailAddressToString(isFullEmailAddress: true),
-        listAttachment: listPrintAttachment,
+        listAttachment: listPreviewAttachment,
       );
 
       return previewEmlHtmlDocument;
@@ -515,17 +526,17 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> sharePreviewEmailEMLContent(String keyStored, String previewEMLContent) {
+  Future<void> sharePreviewEmailEMLContent(String keyStored, EMLPreviewer emlPreviewer) {
     throw UnimplementedError();
   }
 
   @override
-  Future<String> getPreviewEmailEMLContentShared(String keyStored) {
+  Future<EMLPreviewer> getPreviewEmailEMLContentShared(String keyStored) {
     throw UnimplementedError();
   }
 
   @override
-  Future<void> storePreviewEMLContentToSessionStorage(String keyStored, String content) {
+  Future<void> storePreviewEMLContentToSessionStorage(String keyStored, EMLPreviewer emlPreviewer) {
     throw UnimplementedError();
   }
 
@@ -535,7 +546,7 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<String> getPreviewEMLContentInMemory(String keyStored) {
+  Future<EMLPreviewer> getPreviewEMLContentInMemory(String keyStored) {
     throw UnimplementedError();
   }
 }

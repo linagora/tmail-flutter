@@ -36,6 +36,7 @@ import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/eml_previewer.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/offline_mode/extensions/list_sending_email_hive_cache_extension.dart';
 import 'package:tmail_ui_user/features/offline_mode/extensions/sending_email_hive_cache_extension.dart';
@@ -539,12 +540,12 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> sharePreviewEmailEMLContent(String keyStored, String previewEMLContent) {
+  Future<void> sharePreviewEmailEMLContent(String keyStored, EMLPreviewer emlPreviewer) {
     throw UnimplementedError();
   }
 
   @override
-  Future<String> getPreviewEmailEMLContentShared(String keyStored) {
+  Future<EMLPreviewer> getPreviewEmailEMLContentShared(String keyStored) {
     throw UnimplementedError();
   }
 
@@ -554,12 +555,12 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> storePreviewEMLContentToSessionStorage(String keyStored, String content) {
+  Future<void> storePreviewEMLContentToSessionStorage(String keyStored, EMLPreviewer emlPreviewer) {
     throw UnimplementedError();
   }
 
   @override
-  Future<String> getPreviewEMLContentInMemory(String keyStored) {
+  Future<EMLPreviewer> getPreviewEMLContentInMemory(String keyStored) {
     throw UnimplementedError();
   }
 }

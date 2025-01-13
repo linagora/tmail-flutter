@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:core/data/network/download/downloaded_response.dart';
@@ -29,6 +30,7 @@ import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/eml_previewer.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
@@ -164,9 +166,9 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<void> sharePreviewEmailEMLContent(String keyStored, String previewEMLContent) {
+  Future<void> sharePreviewEmailEMLContent(String keyStored, EMLPreviewer emlPreviewer) {
     return Future.sync(() async {
-      return _localStorageManager.save(keyStored, previewEMLContent);
+      return _localStorageManager.save(keyStored, jsonEncode(emlPreviewer.toJson()));
     }).catchError(_exceptionThrower.throwException);
   }
 
@@ -216,14 +218,15 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<String> getPreviewEmailEMLContentShared(String keyStored) {
+  Future<EMLPreviewer> getPreviewEmailEMLContentShared(String keyStored) {
     return Future.sync(() async {
-      return _localStorageManager.get(keyStored);
+      final data = _localStorageManager.get(keyStored);
+      return EMLPreviewer.fromJson(jsonDecode(data));
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<void> storePreviewEMLContentToSessionStorage(String keyStored, String content) {
+  Future<void> storePreviewEMLContentToSessionStorage(String keyStored, EMLPreviewer emlPreviewer) {
     throw UnimplementedError();
   }
 
@@ -235,7 +238,7 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
   }
 
   @override
-  Future<String> getPreviewEMLContentInMemory(String keyStored) {
+  Future<EMLPreviewer> getPreviewEMLContentInMemory(String keyStored) {
     throw UnimplementedError();
   }
 }

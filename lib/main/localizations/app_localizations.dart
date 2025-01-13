@@ -4443,4 +4443,11 @@ class AppLocalizations {
       name: 'previewEmailFromEMLFileFailed',
     );
   }
+
+  String get cannotOpenNewWindow {
+    return Intl.message(
+      'Cannot open new window',
+      name: 'cannotOpenNewWindow',
+    );
+  }
 }

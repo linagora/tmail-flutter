@@ -1,18 +1,26 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/eml_previewer.dart';
 
 class GettingPreviewEMLContentInMemory extends LoadingState {}
 
 class GetPreviewEMLContentInMemorySuccess extends UIState {
-  final String previewEMLContent;
+  final EMLPreviewer emlPreviewer;
 
-  GetPreviewEMLContentInMemorySuccess(this.previewEMLContent);
+  GetPreviewEMLContentInMemorySuccess(this.emlPreviewer);
 
   @override
-  List<Object?> get props => [previewEMLContent];
+  List<Object?> get props => [emlPreviewer];
 }
 
 class GetPreviewEMLContentInMemoryFailure extends FeatureFailure {
+  final String? keyStored;
 
-  GetPreviewEMLContentInMemoryFailure(dynamic exception) : super(exception: exception);
+  GetPreviewEMLContentInMemoryFailure({
+    this.keyStored,
+    dynamic exception,
+  }) : super(exception: exception);
+
+  @override
+  List<Object?> get props => [keyStored, exception];
 }

@@ -11,6 +11,8 @@ import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:universal_html/html.dart' as html;
 
+typedef OnClickHyperLinkAction = Function(Uri?);
+
 class HtmlContentViewerOnWeb extends StatefulWidget {
 
   final String contentHtml;
@@ -20,6 +22,8 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
 
   /// Handler for mailto: links
   final Function(Uri?)? mailtoDelegate;
+
+  final OnClickHyperLinkAction? onClickHyperLinkAction;
 
   // if widthContent is bigger than width of htmlContent, set this to true let widget able to resize to width of htmlContent 
   final bool allowResizeToDocumentSize;
@@ -32,6 +36,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     this.allowResizeToDocumentSize = true,
     this.mailtoDelegate,
     this.direction,
+    this.onClickHyperLinkAction,
   }) : super(key: key);
 
   @override
@@ -55,6 +60,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   late final StreamSubscription<html.MessageEvent> sizeListener;
   bool _iframeLoaded = false;
   static const String iframeOnLoadMessage = 'iframeHasBeenLoaded';
+  static const String onClickHyperLinkName = 'onClickHyperLink';
 
   @override
   void initState() {
@@ -111,6 +117,13 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           if (urlString.startsWith('mailto:')) {
             widget.mailtoDelegate?.call(Uri.parse(urlString));
           }
+        }
+      }
+
+      if (data['type'] != null && data['type'].contains('toDart: $onClickHyperLinkName')) {
+        final link = data['url'] as String?;
+        if (link != null && mounted) {
+          widget.onClickHyperLinkAction?.call(Uri.parse(link));
         }
       }
     });
@@ -173,21 +186,50 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           }
         }
         
-        function handleOnClickEmailLink(e) {
-           var href = this.href;
-           window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: OpenLink", "url": "" + href}), "*");
-           e.preventDefault();
-        }
+        ${widget.mailtoDelegate != null
+            ? '''
+                function handleOnClickEmailLink(e) {
+                   var href = this.href;
+                   window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: OpenLink", "url": "" + href}), "*");
+                   e.preventDefault();
+                }
+              '''
+            : ''}
+        
+        
+        
+        ${widget.onClickHyperLinkAction != null
+            ? '''
+                function onClickHyperLink(e) {
+                   var href = this.href;
+                   window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: $onClickHyperLinkName", "url": "" + href}), "*");
+                   e.preventDefault();
+                }
+              '''
+            : ''}
         
         function handleOnLoad() {
           window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "message": "$iframeOnLoadMessage"}), "*");
           window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toIframe: getHeight"}), "*");
           window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toIframe: getWidth"}), "*");
           
-          var emailLinks = document.querySelectorAll('a[href^="mailto:"]');
-          for(var i=0; i < emailLinks.length; i++){
-              emailLinks[i].addEventListener('click', handleOnClickEmailLink);
-          }
+          ${widget.onClickHyperLinkAction != null
+              ? '''
+                  var hyperLinks = document.querySelectorAll('a');
+                  for (var i=0; i < hyperLinks.length; i++){
+                      hyperLinks[i].addEventListener('click', onClickHyperLink);
+                  }
+                '''
+              : ''}
+          
+          ${widget.mailtoDelegate != null
+              ? '''
+                  var emailLinks = document.querySelectorAll('a[href^="mailto:"]');
+                  for (var i=0; i < emailLinks.length; i++){
+                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);
+                  }
+                '''
+              : ''}
         }
       </script>
     ''';
