@@ -83,12 +83,22 @@ abstract class RouteUtils {
     return servicePath;
   }
 
+  static ServicePath _createEmailEMLPreviewerServicePath(String route, {String? previewId}) {
+    ServicePath servicePath = ServicePath(route);
+    if (previewId?.trim().isNotEmpty == true) {
+      servicePath = servicePath.withQueryParameters([
+        StringQueryParameter(paramID, previewId!)
+      ]);
+    }
+    return servicePath;
+  }
+
   static ServicePath _createServicePath(String route) {
     ServicePath servicePath = ServicePath(route);
     return servicePath;
   }
 
-  static Uri createUrlWebLocationBar(String route, {NavigationRouter? router}) {
+  static Uri createUrlWebLocationBar(String route, {NavigationRouter? router, String? previewId}) {
     if (route == AppRoutes.dashboard) {
       final servicePath = _createDashboardServicePath(
         '$baseOriginUrl$route',
@@ -97,6 +107,12 @@ abstract class RouteUtils {
       return Uri.parse(servicePath.path);
     } else if (route == AppRoutes.settings) {
       final servicePath = _createSettingServicePath('$baseOriginUrl$route', router: router);
+      return Uri.parse(servicePath.path);
+    } else if (route == AppRoutes.emailEMLPreviewer) {
+      final servicePath = _createEmailEMLPreviewerServicePath(
+        '$baseOriginUrl$route',
+        previewId: previewId,
+      );
       return Uri.parse(servicePath.path);
     } else {
       final servicePath = _createServicePath('$baseOriginUrl$route');

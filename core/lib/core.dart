@@ -14,9 +14,9 @@ export 'presentation/extensions/compare_string_extension.dart';
 export 'presentation/extensions/compare_list_extensions.dart';
 export 'presentation/extensions/string_extension.dart';
 export 'presentation/extensions/tap_down_details_extension.dart';
-export 'domain/extensions/media_type_extension.dart';
 export 'presentation/extensions/map_extensions.dart';
 export 'presentation/extensions/either_view_state_extension.dart';
+export 'presentation/extensions/media_type_extension.dart';
 
 // Exceptions
 export 'domain/exceptions/download_file_exception.dart';
@@ -52,6 +52,7 @@ export 'utils/list_utils.dart';
 export 'utils/mail/domain.dart';
 export 'utils/mail/mail_address.dart';
 export 'utils/application_manager.dart';
+export 'utils/preview_eml_file_utils.dart';
 
 // Views
 export 'presentation/views/text/slogan_builder.dart';

@@ -32,6 +32,7 @@ import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
@@ -486,6 +487,21 @@ class EmailRepositoryImpl extends EmailRepository {
 
   @override
   Future<List<Email>> parseEmailByBlobIds(AccountId accountId, Set<Id> blobIds) {
-    throw UnimplementedError();
+    return emailDataSource[DataSourceType.network]!.parseEmailByBlobIds(accountId, blobIds);
+  }
+
+  @override
+  Future<String> generatePreviewEmailEMLContent(PreviewEmailEMLRequest previewEmailEMLRequest) {
+    return emailDataSource[DataSourceType.network]!.generatePreviewEmailEMLContent(previewEmailEMLRequest);
+  }
+
+  @override
+  Future<void> sharePreviewEmailEMLContent(String keyStored, String previewEMLContent) {
+    return emailDataSource[DataSourceType.local]!.sharePreviewEmailEMLContent(keyStored, previewEMLContent);
+  }
+
+  @override
+  Future<String> getPreviewEmailEMLContentShared(String keyStored) {
+    return emailDataSource[DataSourceType.local]!.getPreviewEmailEMLContentShared(keyStored);
   }
 }

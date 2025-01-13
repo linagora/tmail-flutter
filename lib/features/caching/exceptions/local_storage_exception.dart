@@ -1,0 +1,1 @@
+class NotFoundDataWithThisKeyException implements Exception {}

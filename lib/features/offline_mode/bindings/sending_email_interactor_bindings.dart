@@ -4,12 +4,14 @@ import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/interactors_bindings.dart';
+import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/print_file_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/email_hive_cache_datasource_impl.dart';
+import 'package:tmail_ui_user/features/email/data/datasource_impl/email_local_storage_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/html_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/datasource_impl/print_file_datasource_impl.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
@@ -89,6 +91,9 @@ class SendEmailInteractorBindings extends InteractorsBindings {
       Get.find<SendingEmailCacheManager>(),
       Get.find<FileUtils>(),
       Get.find<CacheExceptionThrower>()));
+    Get.lazyPut(() => EmailLocalStorageDataSourceImpl(
+      Get.find<LocalStorageManager>(),
+      Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => RemoteServerSettingsDataSourceImpl(
       Get.find<ServerSettingsAPI>(),
       Get.find<RemoteExceptionThrower>()));
@@ -111,7 +116,8 @@ class SendEmailInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => EmailRepositoryImpl(
       {
         DataSourceType.network: Get.find<EmailDataSource>(),
-        DataSourceType.hiveCache: Get.find<EmailHiveCacheDataSourceImpl>()
+        DataSourceType.hiveCache: Get.find<EmailHiveCacheDataSourceImpl>(),
+        DataSourceType.local: Get.find<EmailLocalStorageDataSourceImpl>(),
       },
       Get.find<HtmlDataSource>(),
       Get.find<StateDataSource>(),

@@ -7,12 +7,14 @@ import 'package:core/utils/application_manager.dart';
 import 'package:core/utils/config/app_config_loader.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:core/utils/preview_eml_file_utils.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
+import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/utils/sending_queue_isolate_manager.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
@@ -74,6 +76,7 @@ class CoreBindings extends Bindings {
       Get.put(IOSNotificationManager());
     }
     Get.put(TwakeAppManager());
+    Get.put(PreviewEmlFileUtils());
   }
 
   void _bindingIsolate() {
@@ -90,5 +93,6 @@ class CoreBindings extends Bindings {
         accessibility: KeychainAccessibility.first_unlock_this_device
       )
     ));
+    Get.put(LocalStorageManager());
   }
 }

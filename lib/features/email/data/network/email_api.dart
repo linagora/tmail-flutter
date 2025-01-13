@@ -902,7 +902,9 @@ class EmailAPI with HandleSetErrorMixin {
 
   Future<List<Email>> parseEmailByBlobIds(AccountId accountId, Set<Id> blobIds) async {
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
-    final parseEmailMethod = ParseEmailMethod(accountId, blobIds);
+    final parseEmailMethod = ParseEmailMethod(accountId, blobIds)
+      ..addProperties(ThreadConstants.propertiesParseEmailByBlobId)
+      ..addFetchHTMLBodyValues(true);
     final parseEmailInvocation = requestBuilder.invocation(parseEmailMethod);
 
     final response = await (requestBuilder

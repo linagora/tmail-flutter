@@ -4217,5 +4217,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "parseEmailByBlobIdFailed": "Cannot parse email by blob id",
+  "@parseEmailByBlobIdFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "previewEmailFromEMLFileFailed": "Cannot preview this eml file",
+  "@previewEmailFromEMLFileFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
