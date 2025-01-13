@@ -120,6 +120,16 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "unexpectedError": "Unexpected error: {errorMessage}",
+  "@unexpectedError": {
+    "type": "text",
+    "placeholders_order": [
+      "errorMessage"
+    ],
+    "placeholders": {
+      "errorMessage": {}
+    }
+  },
   "search_folder": "Search folder",
   "@search_folder": {
     "type": "text",
