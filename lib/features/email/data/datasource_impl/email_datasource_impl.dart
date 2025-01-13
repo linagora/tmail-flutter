@@ -42,8 +42,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_r
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/send_email_exception_thrower.dart';
-import 'package:tmail_ui_user/main/routes/app_routes.dart';
-import 'package:tmail_ui_user/main/routes/route_utils.dart';
 
 class EmailDataSourceImpl extends EmailDataSource {
 
@@ -452,15 +450,11 @@ class EmailDataSourceImpl extends EmailDataSource {
           final iconBase64Data = await _fileUtils.convertImageAssetToBase64(
             attachment.getIcon(_imagePaths));
 
-          final link = attachment.isEMLFile
-            ? _generateEMLAttachmentLink(attachment.blobId?.value)
-            : null;
-
           final previewAttachment = PreviewAttachment(
             iconBase64Data: iconBase64Data,
             name: attachment.name.escapeLtGtHtmlString(),
             size: filesize(attachment.size?.value),
-            link: link,
+            link: attachment.hyperLink,
           );
 
           listPreviewAttachment.add(previewAttachment);
@@ -496,21 +490,6 @@ class EmailDataSourceImpl extends EmailDataSource {
 
       return previewEmlHtmlDocument;
     }).catchError(_exceptionThrower.throwException);
-  }
-
-  String _generateEMLAttachmentLink(String? blobId) {
-    if (blobId == null) return '';
-
-    if (PlatformInfo.isWeb) {
-      return RouteUtils.createUrlWebLocationBar(
-        AppRoutes.emailEMLPreviewer,
-        previewId: blobId,
-      ).toString();
-    } else if (PlatformInfo.isMobile) {
-      return '${PreviewEmlFileUtils.emlPreviewerScheme}://$blobId';
-    } else {
-      return '';
-    }
   }
 
   Future<String> _transformEmailContent(

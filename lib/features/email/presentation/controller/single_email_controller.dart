@@ -2059,6 +2059,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             emlPreviewer: emlPreviewer,
             onMailtoDelegateAction: openMailToLink,
             onPreviewEMLDelegateAction: (uri) => _openEMLPreviewer(context, uri),
+            onDownloadAttachmentDelegateAction: (uri) =>
+                _downloadAttachmentInEMLPreview(context, uri),
           ),
         );
       },
@@ -2069,11 +2071,21 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     log('SingleEmailController::_openEMLPreviewer:uri = $uri');
     if (uri == null) return;
 
-    final blobId = uri.authority;
+    final blobId = uri.path;
     log('SingleEmailController::_openEMLPreviewer:blobId = $blobId');
     if (blobId.isEmpty) return;
 
     previewEMLFileAction(Id(blobId), AppLocalizations.of(context));
+  }
+
+  Future<void> _downloadAttachmentInEMLPreview(BuildContext context, Uri? uri) async {
+    log('SingleEmailController::_downloadAttachmentInEMLPreview:uri = $uri');
+    if (uri == null) return;
+
+    final attachment = EmailUtils.parsingAttachmentByUri(uri);
+    if (attachment == null) return;
+
+    handleDownloadAttachmentAction(context, attachment);
   }
 
   void handleMailToAttendees(CalendarOrganizer? organizer, List<CalendarAttendee>? attendees) {
