@@ -452,11 +452,8 @@ class EmailDataSourceImpl extends EmailDataSource {
           final iconBase64Data = await _fileUtils.convertImageAssetToBase64(
             attachment.getIcon(_imagePaths));
 
-          final link = attachment.isEMLFile && PlatformInfo.isWeb
-            ? RouteUtils.createUrlWebLocationBar(
-                AppRoutes.emailEMLPreviewer,
-                previewId: attachment.blobId?.value,
-              ).toString()
+          final link = attachment.isEMLFile
+            ? _generateEMLAttachmentLink(attachment.blobId?.value)
             : null;
 
           final previewAttachment = PreviewAttachment(
@@ -499,6 +496,21 @@ class EmailDataSourceImpl extends EmailDataSource {
 
       return previewEmlHtmlDocument;
     }).catchError(_exceptionThrower.throwException);
+  }
+
+  String _generateEMLAttachmentLink(String? blobId) {
+    if (blobId == null) return '';
+
+    if (PlatformInfo.isWeb) {
+      return RouteUtils.createUrlWebLocationBar(
+        AppRoutes.emailEMLPreviewer,
+        previewId: blobId,
+      ).toString();
+    } else if (PlatformInfo.isMobile) {
+      return '${PreviewEmlFileUtils.emlPreviewerScheme}://$blobId';
+    } else {
+      return '';
+    }
   }
 
   Future<String> _transformEmailContent(
