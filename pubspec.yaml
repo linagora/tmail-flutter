@@ -86,9 +86,11 @@ dependencies:
     git:
       url: https://github.com/linagora/flutter-date-range-picker.git
       ref: main
-  # TODO: Move back to master after sprint 25 released
 
-  super_tag_editor: 0.3.0
+  super_tag_editor:
+    git:
+      url: https://github.com/dab246/super_tag_editor.git
+      ref: fix-some-issue-with-suggestion-box
 
   # TODO: We will change it when the PR in upstream repository will be merged
   # https://github.com/dietfriends/dns_client/pull/9

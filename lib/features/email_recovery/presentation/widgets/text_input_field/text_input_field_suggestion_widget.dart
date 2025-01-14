@@ -17,7 +17,7 @@ import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/text_
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/suggesstion_email_address.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
-typedef OnSuggestionEmailAddress = Future<List<EmailAddress>> Function(String word);
+typedef OnSuggestionEmailAddress = Future<List<EmailAddress>> Function(String word, {int? limit});
 typedef OnUpdateListEmailAddressAction = void Function(EmailRecoveryField field, List<EmailAddress> newDate);
 typedef OnDeleteEmailAddressTypeAction = void Function(EmailRecoveryField field, EmailAddress emailAddress);
 typedef OnShowFullListEmailAddressAction = void Function(EmailRecoveryField field);
@@ -160,7 +160,13 @@ class _TextInputFieldSuggestionWidgetState extends State<TextInputFieldSuggestio
                   );
                 },
                 onTagChanged: (tag) => _handleOnTagChangeAction.call(tag, setState),
-                findSuggestions: _findSuggestions,
+                findSuggestions: (queryString) => _findSuggestions(
+                  queryString,
+                  limit: AppConfig.defaultLimitAutocomplete,
+                ),
+                isLoadMoreOnlyOnce: true,
+                isLoadMoreReplaceAllOld: false,
+                loadMoreSuggestions: _findSuggestions,
                 suggestionBuilder: (context, tagEditorState, suggestionEmailAddress, index, length, highlight, suggestionValid) {
                   return SuggestionItemWidget(
                     suggestionState: suggestionEmailAddress.state,
@@ -315,7 +321,7 @@ class _TextInputFieldSuggestionWidgetState extends State<TextInputFieldSuggestio
     log('_TextFieldAutocompleteEmailAddressWebState::_handleGapBetweenTagChangedAndFindSuggestion:Timeout');
   }
 
-  FutureOr<List<SuggestionEmailAddress>> _findSuggestions(String query) async {
+  FutureOr<List<SuggestionEmailAddress>> _findSuggestions(String query, {int? limit}) async {
     if (_gapBetweenTagChangedAndFindSuggestion?.isActive ?? false) {
       return [];
     }
@@ -330,7 +336,10 @@ class _TextInputFieldSuggestionWidgetState extends State<TextInputFieldSuggestio
       processedQuery.length >= widget.minInputLengthAutocomplete
       && widget.onSuggestionEmailAddress != null
     ) {
-      final listEmailAddress = await widget.onSuggestionEmailAddress!(processedQuery);
+      final listEmailAddress = await widget.onSuggestionEmailAddress!(
+        processedQuery,
+        limit: limit,
+      );
       log('_TextFieldAutocompleteEmailAddressWebState::_findSuggestions: listEmailAddress: $listEmailAddress');
       final listSuggestionEmailAddress =  listEmailAddress.map((emailAddress) => _toSuggestionEmailAddress(emailAddress, _currentListEmailAddress));
       tmailSuggestion.addAll(listSuggestionEmailAddress);

@@ -1110,14 +1110,15 @@ class ComposerController extends BaseController
     }
   }
 
-  Future<List<EmailAddress>> getAutoCompleteSuggestion(String queryString) async {
-    log('ComposerController::getAutoCompleteSuggestion(): $queryString | $_contactSuggestionSource');
+  Future<List<EmailAddress>> getAutoCompleteSuggestion(String queryString, {int? limit}) async {
+    log('ComposerController::getAutoCompleteSuggestion():queryString = $queryString | limit = $limit | $_contactSuggestionSource');
     _getAllAutoCompleteInteractor = getBinding<GetAllAutoCompleteInteractor>();
     _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
     _getDeviceContactSuggestionsInteractor = getBinding<GetDeviceContactSuggestionsInteractor>();
 
     final autoCompletePattern = AutoCompletePattern(
       word: queryString,
+      limit: limit,
       accountId: mailboxDashBoardController.accountId.value);
 
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
