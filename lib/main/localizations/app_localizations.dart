@@ -4314,4 +4314,11 @@ class AppLocalizations {
       name: 'cannotOpenNewWindow',
     );
   }
+
+  String get downloadAttachmentInEMLPreviewWarningMessage {
+    return Intl.message(
+      'Downloading attachment. You can only download one file at a time.',
+      name: 'downloadAttachmentInEMLPreviewWarningMessage',
+    );
+  }
 }
