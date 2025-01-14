@@ -6,7 +6,10 @@
 })(self, "$__dart_deferred_initializers__", "eventLog");
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var A, C,
-  B = {
+  B = {DownloadAttachmentLoadingBar: function DownloadAttachmentLoadingBar(t0, t1) {
+      this.viewState = t0;
+      this.key = t1;
+    },
     EmailPreviewerView$() {
       return new B.EmailPreviewerView(null);
     },
@@ -23,6 +26,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     EmailPreviewerView_build__closure0: function EmailPreviewerView_build__closure0(t0, t1) {
       this.$this = t0;
       this.context = t1;
+    },
+    EmailPreviewerView_build_closure0: function EmailPreviewerView_build_closure0(t0) {
+      this.$this = t0;
     }
   },
   D, E, F;
@@ -32,10 +38,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   D = holdersList[12];
   E = holdersList[13];
   F = holdersList[11];
+  B.DownloadAttachmentLoadingBar.prototype = {
+    build$1(context) {
+      var t1 = this.viewState;
+      if (t1 instanceof A.StartDownloadAttachmentForWeb)
+        return D.LinearProgressIndicator_UVb;
+      if (t1 instanceof A.DownloadingAttachmentForWeb)
+        return A.LinearPercentIndicator$(E.Color_4293128703, C.Radius_1_1, 5, C.EdgeInsets_0_0_0_0, t1.progress / 100, C.Color_4278221567);
+      else
+        return C.SizedBox_0_0_null_null;
+    }
+  };
   B.EmailPreviewerView.prototype = {
     build$1(context) {
       var _null = null;
-      return A.Scaffold$(_null, C.Color_4294967295, new A.Obx(new B.EmailPreviewerView_build_closure(this, context), _null), _null, _null, true, _null, _null, _null);
+      return A.Scaffold$(_null, C.Color_4294967295, new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([new A.Obx(new B.EmailPreviewerView_build_closure(this, context), _null), new A.Align(C.AlignmentDirectional_0_m1, _null, _null, new A.Obx(new B.EmailPreviewerView_build_closure0(this), _null), _null)], type$.JSArray_Widget), _null), _null, _null, true, _null, _null, _null);
     },
     _buildEMLPreviewerWidget$2(context, emlPreviewer) {
       var t3, t4,
@@ -50,7 +67,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return F.HtmlContentViewerOnWeb$(true, emlPreviewer.content, t3, t1.size._dy, null, A._instanceType(this)._eval$1("GetWidget.S")._as(t4._jsWeakMap.get(this)).get$onClickHyperLink(), t2.size._dx);
     }
   };
-  var typesOffset = hunkHelpers.updateTypes([]);
+  var typesOffset = hunkHelpers.updateTypes(["DownloadAttachmentLoadingBar()"]);
   B.EmailPreviewerView_build_closure.prototype = {
     call$0() {
       var t3,
@@ -82,27 +99,39 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return D.Center_yTp;
     },
-    $signature: 51
+    $signature: 52
+  };
+  B.EmailPreviewerView_build_closure0.prototype = {
+    call$0() {
+      var t1 = this.$this,
+        t2 = $.$get$GetWidget__cache();
+      A.Expando__checkType(t1);
+      return new B.DownloadAttachmentLoadingBar(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).downloadAttachmentState.get$value(0), null);
+    },
+    $signature: typesOffset + 0
   };
   (function inheritance() {
     var _inherit = hunkHelpers.inherit,
       _inheritMany = hunkHelpers.inheritMany;
+    _inherit(B.DownloadAttachmentLoadingBar, A.StatelessWidget);
     _inherit(B.EmailPreviewerView, A.GetWidget);
-    _inherit(B.EmailPreviewerView_build_closure, A.Closure0Args);
+    _inheritMany(A.Closure0Args, [B.EmailPreviewerView_build_closure, B.EmailPreviewerView_build_closure0]);
     _inheritMany(A.Closure, [B.EmailPreviewerView_build__closure, B.EmailPreviewerView_build__closure0]);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"EmailPreviewerView":{"GetWidget":["EmailPreviewerController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"EmailPreviewerController"}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"DownloadAttachmentLoadingBar":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailPreviewerView":{"GetWidget":["EmailPreviewerController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"EmailPreviewerController"}}'));
   var type$ = {
     AppLocalizations: A.findType("AppLocalizations"),
+    JSArray_Widget: A.findType("JSArray<Widget>"),
     MediaQuery: A.findType("MediaQuery")
   };
   (function constants() {
     D.Center_yTp = new A.Center(C.Alignment_0_0, null, null, E.CupertinoLoadingWidget_null_null_null, null);
+    D.LinearProgressIndicator_UVb = new A.LinearProgressIndicator(5, C.BorderRadius_ww8, null, E.Color_4293128703, C.Color_4278221567, null, null, null, null);
   })();
 };
 ;
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_11", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "oe5zPUnemhI8Ii3U+OZzwTqk0Jg=");
+})($__dart_deferred_initializers__, "D+e6veS4/ZKDXfo1vYsyJGGO9CU=");
 ;
