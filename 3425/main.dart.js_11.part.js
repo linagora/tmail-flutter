@@ -25,17 +25,29 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.context = t1;
     }
   },
-  E, F, D;
+  D, E, F;
   A = holdersList[0];
   C = holdersList[2];
   B = hunkHelpers.updateHolder(holdersList[8], B);
-  E = holdersList[12];
-  F = holdersList[13];
-  D = holdersList[11];
+  D = holdersList[12];
+  E = holdersList[13];
+  F = holdersList[11];
   B.EmailPreviewerView.prototype = {
     build$1(context) {
       var _null = null;
       return A.Scaffold$(_null, C.Color_4294967295, new A.Obx(new B.EmailPreviewerView_build_closure(this, context), _null), _null, _null, true, _null, _null, _null);
+    },
+    _buildEMLPreviewerWidget$2(context, emlPreviewer) {
+      var t3, t4,
+        t1 = type$.MediaQuery,
+        t2 = A.InheritedModel_inheritFrom(context, null, t1).data;
+      t1 = A.InheritedModel_inheritFrom(context, null, t1).data;
+      t3 = A.Directionality_maybeOf(context);
+      if (t3 == null)
+        t3 = C.TextDirection_1;
+      t4 = $.$get$GetWidget__cache();
+      A.Expando__checkType(this);
+      return F.HtmlContentViewerOnWeb$(true, emlPreviewer.content, t3, t1.size._dy, null, A._instanceType(this)._eval$1("GetWidget.S")._as(t4._jsWeakMap.get(this)).get$onClickHyperLink(), t2.size._dx);
     }
   };
   var typesOffset = hunkHelpers.updateTypes([]);
@@ -60,45 +72,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.EmailPreviewerView_build__closure0.prototype = {
     call$1(success) {
-      var t1, t2, t3, t4, t5, _this = this, _null = null;
-      if (success instanceof A.GetPreviewEmailEMLContentSharedSuccess) {
-        t1 = _this.context;
-        t2 = type$.MediaQuery;
-        t3 = A.InheritedModel_inheritFrom(t1, _null, t2).data;
-        t2 = A.InheritedModel_inheritFrom(t1, _null, t2).data;
-        t1 = A.Directionality_maybeOf(t1);
-        if (t1 == null)
-          t1 = C.TextDirection_1;
-        t4 = _this.$this;
-        t5 = $.$get$GetWidget__cache();
-        A.Expando__checkType(t4);
-        return D.HtmlContentViewerOnWeb$(true, success.emlPreviewer.content, t1, t2.size._dy, _null, A._instanceType(t4)._eval$1("GetWidget.S")._as(t5._jsWeakMap.get(t4)).get$onClickHyperLink(), t3.size._dx);
-      } else if (success instanceof A.GetPreviewEMLContentInMemorySuccess) {
-        t1 = _this.context;
-        t2 = type$.MediaQuery;
-        t3 = A.InheritedModel_inheritFrom(t1, _null, t2).data;
-        t2 = A.InheritedModel_inheritFrom(t1, _null, t2).data;
-        t1 = A.Directionality_maybeOf(t1);
-        if (t1 == null)
-          t1 = C.TextDirection_1;
-        t4 = _this.$this;
-        t5 = $.$get$GetWidget__cache();
-        A.Expando__checkType(t4);
-        return D.HtmlContentViewerOnWeb$(true, success.emlPreviewer.content, t1, t2.size._dy, _null, A._instanceType(t4)._eval$1("GetWidget.S")._as(t5._jsWeakMap.get(t4)).get$onClickHyperLink(), t3.size._dx);
-      } else if (success instanceof A.PreviewEmailFromEmlFileSuccess) {
-        t1 = _this.context;
-        t2 = type$.MediaQuery;
-        t3 = A.InheritedModel_inheritFrom(t1, _null, t2).data;
-        t2 = A.InheritedModel_inheritFrom(t1, _null, t2).data;
-        t1 = A.Directionality_maybeOf(t1);
-        if (t1 == null)
-          t1 = C.TextDirection_1;
-        t4 = _this.$this;
-        t5 = $.$get$GetWidget__cache();
-        A.Expando__checkType(t4);
-        return D.HtmlContentViewerOnWeb$(true, success.emlPreviewer.content, t1, t2.size._dy, _null, A._instanceType(t4)._eval$1("GetWidget.S")._as(t5._jsWeakMap.get(t4)).get$onClickHyperLink(), t3.size._dx);
-      } else
-        return E.Center_yTp;
+      var _this = this;
+      if (success instanceof A.GetPreviewEmailEMLContentSharedSuccess)
+        return _this.$this._buildEMLPreviewerWidget$2(_this.context, success.emlPreviewer);
+      else if (success instanceof A.GetPreviewEMLContentInMemorySuccess)
+        return _this.$this._buildEMLPreviewerWidget$2(_this.context, success.emlPreviewer);
+      else if (success instanceof A.PreviewEmailFromEmlFileSuccess)
+        return _this.$this._buildEMLPreviewerWidget$2(_this.context, success.emlPreviewer);
+      else
+        return D.Center_yTp;
     },
     $signature: 51
   };
@@ -115,12 +97,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     MediaQuery: A.findType("MediaQuery")
   };
   (function constants() {
-    E.Center_yTp = new A.Center(C.Alignment_0_0, null, null, F.CupertinoLoadingWidget_null_null_null, null);
+    D.Center_yTp = new A.Center(C.Alignment_0_0, null, null, E.CupertinoLoadingWidget_null_null_null, null);
   })();
 };
 ;
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_11", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "3PnrDxbCZVd7vIAxfmDb5FbHbcs=");
+})($__dart_deferred_initializers__, "oe5zPUnemhI8Ii3U+OZzwTqk0Jg=");
 ;
