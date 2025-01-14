@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-01-13T15:53:39.843822",
+  "@@last_modified": "2025-01-14T12:52:43.828907",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4104,6 +4104,12 @@
   },
   "cannotOpenNewWindow": "Cannot open new window",
   "@cannotOpenNewWindow": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "downloadAttachmentInEMLPreviewWarningMessage": "Downloading attachment. You can only download one file at a time.",
+  "@downloadAttachmentInEMLPreviewWarningMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
