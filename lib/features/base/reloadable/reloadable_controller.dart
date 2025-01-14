@@ -24,7 +24,7 @@ import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 
 abstract class ReloadableController extends BaseController {
   final GetSessionInteractor getSessionInteractor = Get.find<GetSessionInteractor>();
-  final GetAuthenticatedAccountInteractor _getAuthenticatedAccountInteractor = Get.find<GetAuthenticatedAccountInteractor>();
+  final GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor = Get.find<GetAuthenticatedAccountInteractor>();
   final UpdateAccountCacheInteractor _updateAccountCacheInteractor = Get.find<UpdateAccountCacheInteractor>();
 
   @override
@@ -76,7 +76,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   void getAuthenticatedAccountAction() {
-    consumeState(_getAuthenticatedAccountInteractor.execute());
+    consumeState(getAuthenticatedAccountInteractor.execute());
   }
 
   void _handleGetCredentialSuccess(GetCredentialViewState success) {

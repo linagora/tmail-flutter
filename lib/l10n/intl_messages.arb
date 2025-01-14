@@ -4235,5 +4235,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "downloadAttachmentInEMLPreviewWarningMessage": "Downloading attachment. You can only download one file at a time.",
+  "@downloadAttachmentInEMLPreviewWarningMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

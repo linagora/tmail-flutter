@@ -80,7 +80,7 @@ class FCMRepositoryImpl extends FCMRepository {
     if (listEmails.isNotEmpty) {
       return EmailsResponse(emailList: listEmails);
     } else {
-      return EmailsResponse();
+      return const EmailsResponse();
     }
   }
 

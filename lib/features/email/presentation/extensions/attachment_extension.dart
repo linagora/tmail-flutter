@@ -2,6 +2,7 @@ import 'package:core/data/constants/constant.dart';
 import 'package:core/presentation/extensions/media_type_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -35,4 +36,6 @@ extension AttachmentExtension on Attachment {
 
     return '${Constant.attachmentScheme}:${blobId!.value}?name=${name ?? ''}&size=${size?.value ?? ''}&type=${type?.mimeType ?? ''}';
   }
+
+  DownloadTaskId get downloadTaskId => DownloadTaskId(blobId!.value);
 }
