@@ -23,8 +23,8 @@ import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 
 abstract class ReloadableController extends BaseController {
-  final GetSessionInteractor _getSessionInteractor = Get.find<GetSessionInteractor>();
-  final GetAuthenticatedAccountInteractor _getAuthenticatedAccountInteractor = Get.find<GetAuthenticatedAccountInteractor>();
+  final GetSessionInteractor getSessionInteractor = Get.find<GetSessionInteractor>();
+  final GetAuthenticatedAccountInteractor getAuthenticatedAccountInteractor = Get.find<GetAuthenticatedAccountInteractor>();
   final UpdateAccountCacheInteractor _updateAccountCacheInteractor = Get.find<UpdateAccountCacheInteractor>();
 
   @override
@@ -78,11 +78,11 @@ abstract class ReloadableController extends BaseController {
   }
 
   void getAuthenticatedAccountAction() {
-    consumeState(_getAuthenticatedAccountInteractor.execute());
+    consumeState(getAuthenticatedAccountInteractor.execute());
   }
 
   void _handleGetCredentialSuccess(GetCredentialViewState success) {
-    _setDataToInterceptors(
+    setDataToInterceptors(
       baseUrl: success.baseUrl.toString(),
       userName: success.userName,
       password: success.password);
@@ -90,7 +90,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   void _handleGetStoredTokenOidcSuccess(GetStoredTokenOidcSuccess success) {
-    _setDataToInterceptors(
+    setDataToInterceptors(
       baseUrl: success.baseUrl.toString(),
       tokenOIDC: success.tokenOidc,
       oidcConfiguration: success.oidcConfiguration);
@@ -102,7 +102,7 @@ abstract class ReloadableController extends BaseController {
     handleReloaded(session);
   }
 
-  void _setDataToInterceptors({
+  void setDataToInterceptors({
     required String baseUrl,
     UserName? userName,
     Password? password,
@@ -124,7 +124,7 @@ abstract class ReloadableController extends BaseController {
   }
 
   void getSessionAction() {
-    consumeState(_getSessionInteractor.execute());
+    consumeState(getSessionInteractor.execute());
   }
 
   void handleGetSessionFailure(GetSessionFailure failure) {
