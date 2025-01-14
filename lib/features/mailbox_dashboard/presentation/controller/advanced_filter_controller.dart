@@ -222,14 +222,15 @@ class AdvancedFilterController extends BaseController {
     _mailboxDashBoardController.handleAdvancedSearchEmail();
   }
 
-  Future<List<EmailAddress>> getAutoCompleteSuggestion(String word) async {
-    log('AdvancedFilterController::getAutoCompleteSuggestion():  word = $word');
+  Future<List<EmailAddress>> getAutoCompleteSuggestion(String word, {int? limit}) async {
+    log('AdvancedFilterController::getAutoCompleteSuggestion():word = $word | limit = $limit');
     _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
 
     return await _getAutoCompleteInteractor
       ?.execute(AutoCompletePattern(
           word: word,
-          accountId: _mailboxDashBoardController.accountId.value
+          limit: limit,
+          accountId: _mailboxDashBoardController.accountId.value,
       )).then((value) => value.fold(
         (failure) => <EmailAddress>[],
         (success) => success is GetAutoCompleteSuccess

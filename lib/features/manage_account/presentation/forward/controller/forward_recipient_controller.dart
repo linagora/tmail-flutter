@@ -52,16 +52,21 @@ class ForwardRecipientController {
     }
   }
 
-  Future<List<EmailAddress>> getAutoCompleteSuggestion(String word) async {
-    log('ForwardRecipientController::getAutoCompleteSuggestion(): $word');
+  Future<List<EmailAddress>> getAutoCompleteSuggestion(String word, {int? limit}) async {
+    log('ForwardRecipientController::getAutoCompleteSuggestion():word = $word | limit = $limit');
     _getAllAutoCompleteInteractor = getBinding<GetAllAutoCompleteInteractor>();
     _getAutoCompleteInteractor = getBinding<GetAutoCompleteInteractor>();
     _getDeviceContactSuggestionsInteractor = getBinding<GetDeviceContactSuggestionsInteractor>();
 
+    final autoCompletePattern = AutoCompletePattern(
+      word: word,
+      limit: limit,
+      accountId: _accountId,
+    );
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
       if (_getAllAutoCompleteInteractor != null) {
         return await _getAllAutoCompleteInteractor!
-          .execute(AutoCompletePattern(word: word, accountId: _accountId))
+          .execute(autoCompletePattern)
           .then((value) => value.fold(
             (failure) => <EmailAddress>[],
             (success) => success is GetAutoCompleteSuccess
@@ -70,7 +75,7 @@ class ForwardRecipientController {
           ));
       } else if (_getDeviceContactSuggestionsInteractor != null) {
         return await _getDeviceContactSuggestionsInteractor!
-          .execute(AutoCompletePattern(word: word, accountId: _accountId))
+          .execute(autoCompletePattern)
           .then((value) => value.fold(
             (failure) => <EmailAddress>[],
             (success) => success is GetDeviceContactSuggestionsSuccess
@@ -85,7 +90,7 @@ class ForwardRecipientController {
         return <EmailAddress>[];
       } else {
         return await _getAutoCompleteInteractor!
-          .execute(AutoCompletePattern(word: word, accountId: _accountId))
+          .execute(autoCompletePattern)
           .then((value) => value.fold(
             (failure) => <EmailAddress>[],
             (success) => success is GetAutoCompleteSuccess
