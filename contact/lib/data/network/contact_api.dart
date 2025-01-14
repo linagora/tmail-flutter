@@ -22,7 +22,9 @@ class ContactAPI {
         autoCompletePattern.accountId!,
         ContactFilter(autoCompletePattern.word));
 
-    autoCompleteMethod.addLimit(UnsignedInt(autoCompletePattern.limit ?? 5));
+    if (autoCompletePattern.limit != null) {
+      autoCompleteMethod.addLimit(UnsignedInt(autoCompletePattern.limit!));
+    }
 
     final autoCompleteInvocation = requestBuilder.invocation(autoCompleteMethod);
     final response = await (requestBuilder
