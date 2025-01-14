@@ -8,7 +8,7 @@ class RecipientComposerWidgetStyle {
   static const double enableBorderRadius = 10;
   static const double suggestionsBoxElevation = 20.0;
   static const double suggestionsBoxRadius = 20;
-  static const double suggestionsBoxMaxHeight = 350;
+  static const double suggestionsBoxMaxHeight = 300;
   static const double suggestionBoxWidth = 300;
   static const double minTextFieldWidth = 20;
   static const double tagSpacing = 8;

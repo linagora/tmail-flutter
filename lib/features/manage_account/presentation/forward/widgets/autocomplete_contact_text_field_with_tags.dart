@@ -26,7 +26,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-typedef OnSuggestionContactCallbackAction = Future<List<EmailAddress>> Function(String query);
+typedef OnSuggestionContactCallbackAction = Future<List<EmailAddress>> Function(String query, {int? limit});
 typedef OnAddListContactCallbackAction = Function(List<EmailAddress> listEmailAddress);
 typedef OnExceptionAddListContactCallbackAction = Function(Exception exception);
 
@@ -140,7 +140,13 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
         }
       ),
       onTagChanged: (_) {},
-      findSuggestions: _findSuggestions,
+      findSuggestions: (queryString) => _findSuggestions(
+        queryString,
+        limit: AppConfig.defaultLimitAutocomplete,
+      ),
+      isLoadMoreOnlyOnce: true,
+      isLoadMoreReplaceAllOld: false,
+      loadMoreSuggestions: _findSuggestions,
       suggestionBuilder: (context, tagEditorState, suggestionEmailAddress, index, length, highlight, suggestionValid) {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -200,7 +206,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       .contains(inputEmail);
   }
 
-  FutureOr<List<SuggestionEmailAddress>> _findSuggestions(String query) async {
+  FutureOr<List<SuggestionEmailAddress>> _findSuggestions(String query, {int? limit}) async {
     final processedQuery = query.trim();
 
     if (processedQuery.isEmpty) {
@@ -212,7 +218,10 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
         && processedQuery.length >= widget.minInputLengthAutocomplete
         && widget.onSuggestionCallback != null
     ) {
-      final addedEmailAddresses = await widget.onSuggestionCallback!(processedQuery);
+      final addedEmailAddresses = await widget.onSuggestionCallback!(
+        processedQuery,
+        limit: limit,
+      );
       final listSuggestionEmailAddress = addedEmailAddresses
         .map((emailAddress) => _toSuggestionEmailAddress(emailAddress, listEmailAddress))
         .toList();
