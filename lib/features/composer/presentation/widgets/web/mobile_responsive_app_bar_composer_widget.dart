@@ -1,7 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile_app_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -9,6 +8,7 @@ typedef OnOpenContextMenuAction = Function(RelativeRect position);
 
 class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
 
+  final ImagePaths imagePaths;
   final bool isCodeViewEnabled;
   final bool isSendButtonEnabled;
   final bool isFormattingOptionsEnabled;
@@ -19,10 +19,9 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
   final OnOpenContextMenuAction openContextMenuAction;
   final VoidCallback openRichToolbarAction;
 
-  final _imagePaths = Get.find<ImagePaths>();
-
-  MobileResponsiveAppBarComposerWidget({
+  const MobileResponsiveAppBarComposerWidget({
     super.key,
+    required this.imagePaths,
     required this.isCodeViewEnabled,
     required this.isFormattingOptionsEnabled,
     required this.isSendButtonEnabled,
@@ -43,7 +42,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
       child: Row(
         children: [
           TMailButtonWidget.fromIcon(
-            icon: _imagePaths.icCancel,
+            icon: imagePaths.icCancel,
             backgroundColor: Colors.transparent,
             tooltipMessage: AppLocalizations.of(context).saveAndClose,
             iconSize: MobileAppBarComposerWidgetStyle.iconSize,
@@ -52,7 +51,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
           ),
           const Spacer(),
           TMailButtonWidget.fromIcon(
-            icon: _imagePaths.icRichToolbar,
+            icon: imagePaths.icRichToolbar,
             padding: MobileAppBarComposerWidgetStyle.richTextIconPadding,
             backgroundColor: isFormattingOptionsEnabled
               ? MobileAppBarComposerWidgetStyle.selectedBackgroundColor
@@ -66,7 +65,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
           ),
           const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
           TMailButtonWidget.fromIcon(
-            icon: _imagePaths.icAttachFile,
+            icon: imagePaths.icAttachFile,
             iconColor: MobileAppBarComposerWidgetStyle.iconColor,
             backgroundColor: Colors.transparent,
             iconSize: MobileAppBarComposerWidgetStyle.iconSize,
@@ -76,7 +75,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
           const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
           if (!isCodeViewEnabled)
             TMailButtonWidget.fromIcon(
-              icon: _imagePaths.icInsertImage,
+              icon: imagePaths.icInsertImage,
               iconColor: MobileAppBarComposerWidgetStyle.iconColor,
               backgroundColor: Colors.transparent,
               iconSize: MobileAppBarComposerWidgetStyle.iconSize,
@@ -86,8 +85,8 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
           const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
           TMailButtonWidget.fromIcon(
             icon: isSendButtonEnabled
-              ? _imagePaths.icSendMobile
-              : _imagePaths.icSendDisable,
+              ? imagePaths.icSendMobile
+              : imagePaths.icSendDisable,
             backgroundColor: Colors.transparent,
             padding: MobileAppBarComposerWidgetStyle.iconPadding,
             iconSize: MobileAppBarComposerWidgetStyle.sendButtonIconSize,
@@ -96,7 +95,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
           ),
           const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
           TMailButtonWidget.fromIcon(
-            icon: _imagePaths.icMore,
+            icon: imagePaths.icMore,
             iconColor: MobileAppBarComposerWidgetStyle.iconColor,
             backgroundColor: Colors.transparent,
             iconSize: MobileAppBarComposerWidgetStyle.iconSize,

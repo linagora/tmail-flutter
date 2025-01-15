@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +7,7 @@ import 'package:model/email/prefix_email_address.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/composer_print_draft_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/web/desktop_responsive_container_view.dart';
@@ -43,6 +45,7 @@ class ComposerView extends GetWidget<ComposerController> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Obx(() => MobileResponsiveAppBarComposerWidget(
+                  imagePaths: controller.imagePaths,
                   isCodeViewEnabled: controller.richTextWebController!.codeViewEnabled,
                   isFormattingOptionsEnabled: controller.richTextWebController!.isFormattingOptionsEnabled,
                   openRichToolbarAction: controller.richTextWebController!.toggleFormattingOptions,
@@ -509,6 +512,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               ),
                             ),
                             Obx(() => BottomBarComposerWidget(
+                              imagePaths: controller.imagePaths,
                               isCodeViewEnabled: controller.richTextWebController!.codeViewEnabled,
                               isFormattingOptionsEnabled: controller.richTextWebController!.isFormattingOptionsEnabled,
                               hasReadReceipt: controller.hasRequestReadReceipt.value,
@@ -520,6 +524,8 @@ class ComposerView extends GetWidget<ComposerController> {
                               saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
                               sendMessageAction: () => controller.handleClickSendButton(context),
                               requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
+                              isPrintDraftEnabled: controller.isEmailChanged.isTrue,
+                              onPrintDraftAction: () => controller.printDraft(context),
                             )),
                           ],
                         ),
@@ -788,6 +794,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               ),
                             ),
                             Obx(() => BottomBarComposerWidget(
+                              imagePaths: controller.imagePaths,
                               isCodeViewEnabled: controller.richTextWebController!.codeViewEnabled,
                               isFormattingOptionsEnabled: controller.richTextWebController!.isFormattingOptionsEnabled,
                               hasReadReceipt: controller.hasRequestReadReceipt.value,
@@ -799,6 +806,8 @@ class ComposerView extends GetWidget<ComposerController> {
                               saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
                               sendMessageAction: () => controller.handleClickSendButton(context),
                               requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
+                              isPrintDraftEnabled: controller.isEmailChanged.isTrue,
+                              onPrintDraftAction: () => controller.printDraft(context),
                             )),
                           ],
                         ),
@@ -893,6 +902,21 @@ class ComposerView extends GetWidget<ComposerController> {
           }
         )
       ),
+      if (controller.isEmailChanged.isTrue)
+        PopupMenuItem(
+          padding: EdgeInsets.zero,
+          child: PopupItemWidget(
+            controller.imagePaths.icPrinter,
+            AppLocalizations.of(context).print,
+            colorIcon: AppColor.steelGrayA540,
+            styleName: ComposerStyle.popupItemTextStyle,
+            padding: ComposerStyle.popupItemPadding,
+            onCallbackAction: () {
+              popBack();
+              controller.printDraft(context);
+            },
+          ),
+        ),
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
