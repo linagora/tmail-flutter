@@ -175,4 +175,14 @@ abstract class EmailDataSource {
     AccountId accountId,
     EmailId emailId,
     EventActionType eventActionType);
+
+  Future<void> markAsAnswered(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds);
+
+  Future<void> markAsForwarded(
+    Session session,
+    AccountId accountId,
+    List<EmailId> emailIds);
 }

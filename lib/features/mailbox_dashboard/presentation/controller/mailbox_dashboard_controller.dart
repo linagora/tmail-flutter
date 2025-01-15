@@ -2722,6 +2722,14 @@ class MailboxDashBoardController extends ReloadableController
         success.emailRequest.previousEmailId != null) {
       unsubscribeMail(success.emailRequest.previousEmailId!);
     }
+
+    if (success.emailRequest.isEmailAnswered) {
+      updateEmailAnswered(success.emailRequest.emailIdAnsweredOrForwarded!);
+    }
+
+    if (success.emailRequest.isEmailForwarded) {
+      updateEmailForwarded(success.emailRequest.emailIdAnsweredOrForwarded!);
+    }
   }
 
   Future<List<EmailAddress>> getContactSuggestion(String query) async {
