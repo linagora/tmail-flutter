@@ -72,6 +72,7 @@ import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -127,6 +128,7 @@ class ComposerController extends BaseController
   final bccRecipientState = PrefixRecipientState.disabled.obs;
   final identitySelected = Rxn<Identity>();
   final listFromIdentities = RxList<Identity>();
+  final isEmailChanged = Rx<bool>(false);
 
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final LocalImagePickerInteractor _localImagePickerInteractor;
@@ -140,6 +142,7 @@ class ComposerController extends BaseController
   final GetAlwaysReadReceiptSettingInteractor _getAlwaysReadReceiptSettingInteractor;
   final CreateNewAndSendEmailInteractor _createNewAndSendEmailInteractor;
   final CreateNewAndSaveEmailToDraftsInteractor _createNewAndSaveEmailToDraftsInteractor;
+  final PrintEmailInteractor printEmailInteractor;
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
@@ -196,6 +199,7 @@ class ComposerController extends BaseController
   ButtonState _closeComposerButtonState = ButtonState.enabled;
   ButtonState _saveToDraftButtonState = ButtonState.enabled;
   ButtonState _sendButtonState = ButtonState.enabled;
+  ButtonState printDraftButtonState = ButtonState.enabled;
   SignatureStatus _identityContentOnOpenPolicy = SignatureStatus.editedAvailable;
   int? _savedEmailDraftHash;
   bool _restoringSignatureButton = false;
@@ -224,6 +228,7 @@ class ComposerController extends BaseController
     this._getAlwaysReadReceiptSettingInteractor,
     this._createNewAndSendEmailInteractor,
     this._createNewAndSaveEmailToDraftsInteractor,
+    this.printEmailInteractor,
   );
 
   @override
@@ -452,7 +457,7 @@ class ComposerController extends BaseController
       return null;
     }
     
-    final emailContent = await _getContentInEditor();
+    final emailContent = await getContentInEditor();
     
     return CreateEmailRequest(
       session: mailboxDashBoardController.sessionCurrent!,
@@ -968,7 +973,7 @@ class ComposerController extends BaseController
     _handleSendMessages(context);
   }
 
-  Future<String> _getContentInEditor() async {
+  Future<String> getContentInEditor() async {
     try {
       final htmlTextEditor = PlatformInfo.isWeb
         ? _textEditorWeb
@@ -977,7 +982,7 @@ class ComposerController extends BaseController
         ? htmlTextEditor!.removeEditorStartTag()
         : '';
     } catch (e) {
-      logError('ComposerController::_getContentInEditor:Exception = $e');
+      logError('ComposerController::getContentInEditor:Exception = $e');
       return '';
     }
   }
@@ -997,7 +1002,7 @@ class ComposerController extends BaseController
       popBack();
     }
 
-    final emailContent = await _getContentInEditor();
+    final emailContent = await getContentInEditor();
     final cancelToken = CancelToken();
     final resultState = await _showSendingMessageDialog(
       emailContent: emailContent,
@@ -1239,7 +1244,7 @@ class ComposerController extends BaseController
   }
 
   Future<int> _hashDraftEmail() async {
-    final emailContent = await _getContentInEditor();
+    final emailContent = await getContentInEditor();
 
     final savedEmailDraft = SavedEmailDraft(
       subject: subjectEmail.value ?? '',
@@ -1255,18 +1260,21 @@ class ComposerController extends BaseController
     return savedEmailDraft.hashCode;
   }
 
+  int get emptyDraftEmailHash => SavedEmailDraft.empty().hashCode;
+
   Future<void> _updateSavedEmailDraftHash() async {
     _savedEmailDraftHash = await _hashDraftEmail();
   }
 
   Future<void> _initEmailDraftHash() async {
-    if (composerArguments.value?.emailActionType != EmailActionType.compose
-      && composerArguments.value?.emailActionType != EmailActionType.editDraft
-    ) {
-      return;
-    }
+    final draftEmailHash = await _hashDraftEmail();
 
-    _savedEmailDraftHash = await _hashDraftEmail();
+    isEmailChanged.value = draftEmailHash != emptyDraftEmailHash;
+
+    if (composerArguments.value?.emailActionType == EmailActionType.compose ||
+        composerArguments.value?.emailActionType == EmailActionType.editDraft) {
+      _savedEmailDraftHash = await _hashDraftEmail();
+    }
   }
 
   void handleClickSaveAsDraftsButton(BuildContext context) async {
@@ -1287,7 +1295,7 @@ class ComposerController extends BaseController
       return;
     }
 
-    final emailContent = await _getContentInEditor();
+    final emailContent = await getContentInEditor();
     final cancelToken = CancelToken();
     final resultState = await _showSavingMessageToDraftsDialog(
       emailContent: emailContent,
@@ -2268,7 +2276,7 @@ class ComposerController extends BaseController
 
     popBack();
 
-    final emailContent = await _getContentInEditor();
+    final emailContent = await getContentInEditor();
     final draftEmailId = _getDraftEmailId();
     log('ComposerController::_handleSaveMessageToDraft: draftEmailId = $draftEmailId');
     final cancelToken = CancelToken();

@@ -1,5 +1,4 @@
 import 'package:core/data/model/print_attachment.dart';
-import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:core/presentation/extensions/html_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
@@ -8,7 +7,6 @@ import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:filesize/filesize.dart';
 import 'package:model/email/attachment.dart';
-import 'package:model/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/print_file_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
@@ -37,14 +35,6 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
       final emailContentEscaped = await _transformHtmlEmailContent(
           emailPrint.emailContent);
 
-      final sender = emailPrint.emailInformation.from?.isNotEmpty == true
-        ? emailPrint.emailInformation.from!.first
-        : null;
-      final receiveTime = emailPrint.emailInformation.getReceivedAt(
-        newLocale: emailPrint.locale,
-        pattern: emailPrint.emailInformation.receivedAt?.value.toLocal().toPatternForPrinting(emailPrint.locale)
-      );
-
       final List<PrintAttachment> listPrintAttachment = [];
 
       if (emailPrint.attachments?.isNotEmpty == true) {
@@ -62,11 +52,11 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
       return await _printUtils.printEmail(
         appName: emailPrint.appName,
         userName: emailPrint.userName,
-        subject: emailPrint.emailInformation.subject?.escapeLtGtHtmlString() ?? '',
+        subject: emailPrint.subject?.escapeLtGtHtmlString() ?? '',
         emailContent: emailContentEscaped,
-        senderName: sender?.name.escapeLtGtHtmlString() ?? '',
-        senderEmailAddress: sender?.email ?? '',
-        dateTime: receiveTime,
+        senderName: emailPrint.sender?.name.escapeLtGtHtmlString() ?? '',
+        senderEmailAddress: emailPrint.sender?.email ?? '',
+        dateTime: emailPrint.receiveTime,
         fromPrefix: emailPrint.fromPrefix,
         toPrefix: emailPrint.toPrefix,
         ccPrefix: emailPrint.ccPrefix,
