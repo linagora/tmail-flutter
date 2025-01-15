@@ -25,7 +25,20 @@ class SavedEmailDraft with EquatableMixin {
     required this.identity,
     required this.hasReadReceipt,
   });
-  
+
+  factory SavedEmailDraft.empty() {
+    return SavedEmailDraft(
+      subject: '',
+      content: '',
+      toRecipients: {},
+      ccRecipients: {},
+      bccRecipients: {},
+      attachments: [],
+      identity: null,
+      hasReadReceipt: false,
+    );
+  }
+
   @override
   List<Object?> get props => [
     content,

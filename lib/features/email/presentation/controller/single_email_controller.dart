@@ -1744,25 +1744,38 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     _printEmailButtonState = ButtonState.disabled;
 
+    final locale = Localizations.localeOf(context);
+    final appLocalizations = AppLocalizations.of(context);
+
     consumeState(
       _printEmailInteractor.execute(
         EmailPrint(
-          appName: AppLocalizations.of(context).app_name,
+          appName: appLocalizations.app_name,
           userName: mailboxDashBoardController.userEmail,
-          emailInformation: email.toEmail(),
           attachments: currentEmailLoaded.value!.attachments,
           emailContent: currentEmailLoaded.value!.htmlContent,
-          locale: Localizations.localeOf(context).toLanguageTag(),
-          fromPrefix: AppLocalizations.of(context).from_email_address_prefix,
-          toPrefix: AppLocalizations.of(context).to_email_address_prefix,
-          ccPrefix: AppLocalizations.of(context).cc_email_address_prefix,
-          bccPrefix: AppLocalizations.of(context).bcc_email_address_prefix,
-          replyToPrefix: AppLocalizations.of(context).replyToEmailAddressPrefix,
-          titleAttachment: AppLocalizations.of(context).attachments.toLowerCase(),
+          locale: locale.toLanguageTag(),
+          fromPrefix: appLocalizations.from_email_address_prefix,
+          toPrefix: appLocalizations.to_email_address_prefix,
+          ccPrefix: appLocalizations.cc_email_address_prefix,
+          bccPrefix: appLocalizations.bcc_email_address_prefix,
+          replyToPrefix: appLocalizations.replyToEmailAddressPrefix,
+          titleAttachment: appLocalizations.attachments.toLowerCase(),
           toAddress: email.to?.listEmailAddressToString(isFullEmailAddress: true),
           ccAddress: email.cc?.listEmailAddressToString(isFullEmailAddress: true),
           bccAddress: email.bcc?.listEmailAddressToString(isFullEmailAddress: true),
           replyToAddress: email.replyTo?.listEmailAddressToString(isFullEmailAddress: true),
+          sender: email.from?.isNotEmpty == true
+            ? email.from!.first
+            : null,
+          receiveTime: email.getReceivedAt(
+            locale.toLanguageTag(),
+            pattern: email.receivedAt
+              ?.value
+              .toLocal()
+              .toPatternForPrinting(locale.toLanguageTag()),
+          ),
+          subject: email.subject,
         )
       )
     );
