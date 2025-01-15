@@ -476,4 +476,54 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   Future<Email> storeEventAttendanceStatus(Session session, AccountId accountId, EmailId emailId, EventActionType eventActionType) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> markAsAnswered(Session session, AccountId accountId, List<EmailId> emailIds) async {
+    final cacheEmails = await _emailCacheManager.getMultipleStoredEmails(
+      accountId,
+      session.username,
+      emailIds,
+    );
+
+    final storedEmails = cacheEmails
+      .map((emailCache) => emailCache.toEmail())
+      .toList();
+
+    for (var email in storedEmails) {
+      email.keywords?[KeyWordIdentifier.emailAnswered] = true;
+    }
+
+    await _emailCacheManager.storeMultipleEmails(
+      accountId,
+      session.username,
+      storedEmails.map((email) => email.toEmailCache()).toList(),
+    );
+
+    return Future.value();
+  }
+
+  @override
+  Future<void> markAsForwarded(Session session, AccountId accountId, List<EmailId> emailIds) async {
+    final cacheEmails = await _emailCacheManager.getMultipleStoredEmails(
+      accountId,
+      session.username,
+      emailIds,
+    );
+
+    final storedEmails = cacheEmails
+      .map((emailCache) => emailCache.toEmail())
+      .toList();
+
+    for (var email in storedEmails) {
+      email.keywords?[KeyWordIdentifier.emailForwarded] = true;
+    }
+
+    await _emailCacheManager.storeMultipleEmails(
+      accountId,
+      session.username,
+      storedEmails.map((email) => email.toEmailCache()).toList(),
+    );
+
+    return Future.value();
+  }
 }
