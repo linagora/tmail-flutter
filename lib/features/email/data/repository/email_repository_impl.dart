@@ -75,14 +75,38 @@ class EmailRepositoryImpl extends EmailRepository {
       CreateNewMailboxRequest? mailboxRequest,
       CancelToken? cancelToken
     }
-  ) {
-    return emailDataSource[DataSourceType.network]!.sendEmail(
+  ) async {
+    await emailDataSource[DataSourceType.network]!.sendEmail(
       session,
       accountId,
       emailRequest,
       mailboxRequest: mailboxRequest,
       cancelToken: cancelToken,
     );
+
+    if (emailRequest.isEmailAnswered) {
+      try {
+        await emailDataSource[DataSourceType.hiveCache]!.markAsAnswered(
+          session,
+          accountId,
+          [emailRequest.emailIdAnsweredOrForwarded!],
+        );
+      } catch (e) {
+        logError('EmailRepositoryImpl::sendEmail::markAsAnswered:Exception $e');
+      }
+    } else if (emailRequest.isEmailForwarded) {
+      try {
+        await emailDataSource[DataSourceType.hiveCache]!.markAsForwarded(
+          session,
+          accountId,
+          [emailRequest.emailIdAnsweredOrForwarded!],
+        );
+      } catch (e) {
+        logError('EmailRepositoryImpl::sendEmail::markAsForwarded:Exception $e');
+      }
+    }
+
+    return Future.value();
   }
 
   @override
