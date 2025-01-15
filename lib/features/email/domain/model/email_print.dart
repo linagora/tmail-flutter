@@ -1,11 +1,10 @@
 import 'package:equatable/equatable.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/attachment.dart';
 
 class EmailPrint with EquatableMixin {
   final String appName;
   final String userName;
-  final Email emailInformation;
   final String emailContent;
   final String locale;
   final String toPrefix;
@@ -14,16 +13,18 @@ class EmailPrint with EquatableMixin {
   final String bccPrefix;
   final String replyToPrefix;
   final String titleAttachment;
+  final String receiveTime;
   final List<Attachment>? attachments;
   final String? toAddress;
   final String? ccAddress;
   final String? bccAddress;
   final String? replyToAddress;
+  final EmailAddress? sender;
+  final String? subject;
 
   EmailPrint({
     required this.appName,
     required this.userName,
-    required this.emailInformation,
     required this.emailContent,
     required this.locale,
     required this.fromPrefix,
@@ -32,18 +33,20 @@ class EmailPrint with EquatableMixin {
     required this.bccPrefix,
     required this.replyToPrefix,
     required this.titleAttachment,
+    required this.receiveTime,
     this.attachments,
     this.toAddress,
     this.ccAddress,
     this.bccAddress,
     this.replyToAddress,
+    this.sender,
+    this.subject,
   });
 
   @override
   List<Object?> get props => [
     appName,
     userName,
-    emailInformation,
     emailContent,
     locale,
     fromPrefix,
@@ -52,11 +55,14 @@ class EmailPrint with EquatableMixin {
     bccPrefix,
     replyToPrefix,
     titleAttachment,
+    receiveTime,
     attachments,
     toAddress,
     ccAddress,
     bccAddress,
     replyToAddress,
+    sender,
+    subject,
   ];
 }
 
@@ -65,9 +71,9 @@ extension EmailPrintExtension on EmailPrint {
     return EmailPrint(
       appName: appName,
       userName: userName,
-      emailInformation: emailInformation,
       emailContent: newEmailContent,
       titleAttachment: titleAttachment,
+      receiveTime: receiveTime,
       locale: locale,
       fromPrefix: fromPrefix,
       toPrefix: toPrefix,
@@ -79,6 +85,8 @@ extension EmailPrintExtension on EmailPrint {
       ccAddress: ccAddress,
       bccAddress: bccAddress,
       replyToAddress: replyToAddress,
+      sender: sender,
+      subject: subject,
     );
   }
 }

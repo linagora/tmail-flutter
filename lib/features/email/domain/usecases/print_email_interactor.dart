@@ -12,6 +12,7 @@ class PrintEmailInteractor {
 
   Stream<Either<Failure, Success>> execute(EmailPrint emailPrint) async* {
     try {
+      yield Right(PrintEmailLoading());
       await emailRepository.printEmail(emailPrint);
       yield Right(PrintEmailSuccess());
     } catch (e) {
