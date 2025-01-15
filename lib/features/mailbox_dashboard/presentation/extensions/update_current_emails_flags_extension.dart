@@ -3,6 +3,7 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
+import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 
@@ -11,12 +12,19 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
     List<EmailId> emailIds, {
     ReadActions? readAction,
     MarkStarAction? markStarAction,
+    bool markAsAnswered = false,
+    bool markAsForwarded = false,
   }) {
-    if (readAction == null && markStarAction == null) return;
+    if (readAction == null &&
+        markStarAction == null &&
+        !markAsAnswered &&
+        !markAsForwarded) return;
 
     final currentEmails = dashboardRoute.value == DashboardRoutes.searchEmail
       ? listResultSearch
       : emailsInCurrentMailbox;
+
+    if (currentEmails.isEmpty) return;
 
     for (var email in currentEmails) {
       if (!emailIds.contains(email.id)) continue;
@@ -42,6 +50,14 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
         default:
           break;
       }
+
+      if (markAsAnswered) {
+        _updateKeyword(email, KeyWordIdentifier.emailAnswered, true);
+      }
+
+      if (markAsForwarded) {
+        _updateKeyword(email, KeyWordIdentifier.emailForwarded, true);
+      }
     }
 
     currentEmails.refresh();
@@ -57,5 +73,29 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
     } else {
       presentationEmail.keywords?.remove(keyword);
     }
+  }
+
+  void updateEmailAnswered(EmailId emailId) {
+    if (selectedEmail.value != null) {
+      final newEmail = selectedEmail.value!.updateKeywords({
+        KeyWordIdentifier.emailAnswered: true,
+      });
+      setSelectedEmail(newEmail);
+    }
+
+    if (emailsInCurrentMailbox.isNotEmpty) {
+      updateEmailFlagByEmailIds([emailId], markAsAnswered: true);
+    }
+  }
+
+  void updateEmailForwarded(EmailId emailId) {
+    if (selectedEmail.value != null) {
+      final newEmail = selectedEmail.value!.updateKeywords({
+        KeyWordIdentifier.emailForwarded: true,
+      });
+      setSelectedEmail(newEmail);
+    }
+
+    updateEmailFlagByEmailIds([emailId], markAsForwarded: true);
   }
 }
