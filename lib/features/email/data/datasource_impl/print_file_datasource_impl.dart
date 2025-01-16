@@ -7,6 +7,7 @@ import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:filesize/filesize.dart';
 import 'package:model/email/attachment.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/draft_email_print.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/print_file_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
@@ -32,8 +33,7 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
   @override
   Future<void> printEmail(EmailPrint emailPrint) {
     return Future.sync(() async {
-      final emailContentEscaped = await _transformHtmlEmailContent(
-          emailPrint.emailContent);
+      final emailContentEscaped = await _transformHtmlEmailContent(emailPrint);
 
       final List<PrintAttachment> listPrintAttachment = [];
 
@@ -72,16 +72,23 @@ class PrintFileDataSourceImpl extends PrintFileDataSource {
     }).catchError(_exceptionThrower.throwException);
   }
 
-  Future<String> _transformHtmlEmailContent(String emailContent) async {
+  Future<String> _transformHtmlEmailContent(EmailPrint emailPrint) async {
     try {
-      final htmlContentTransformed = await _htmlAnalyzer.transformHtmlEmailContent(
-        emailContent,
-        TransformConfiguration.forPrintEmail(),
-      );
+      if (emailPrint.emailContent.isEmpty) return '';
+
+      final htmlContentTransformed = emailPrint is DraftEmailPrint
+        ? await _htmlAnalyzer.removeCollapsedExpandedSignatureEffect(
+            emailContent: emailPrint.emailContent,
+          )
+        : await _htmlAnalyzer.transformHtmlEmailContent(
+            emailPrint.emailContent,
+            TransformConfiguration.forPrintEmail(),
+          );
+
       return htmlContentTransformed;
     } catch (e) {
       logError('PrintFileDataSourceImpl::_transformHtmlEmailContent: Exception: $e');
-      return emailContent;
+      return '';
     }
   }
 }
