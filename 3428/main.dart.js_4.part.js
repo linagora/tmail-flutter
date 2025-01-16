@@ -11675,11 +11675,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = A._instanceType(_this)._eval$1("GetWidget.S");
       t3 = t2._as(t1.get(_this)).dashboardController.sessionCurrent;
       A.Expando__checkType(_this);
-      subaddressingSupported = A.MailboxWidgetMixin_isSubaddressingSupported(t3, t2._as(t1.get(_this)).dashboardController.accountId.get$value(0));
+      subaddressingSupported = A.MailboxUtils_isSubaddressingSupported(t3, t2._as(t1.get(_this)).dashboardController.accountId.get$value(0));
       A.Expando__checkType(_this);
       t3 = t2._as(t1.get(_this)).dashboardController.sessionCurrent;
       A.Expando__checkType(_this);
-      deletedMessageVaultSupported = A.MailboxWidgetMixin_isDeletedMessageVaultSupported(t3, t2._as(t1.get(_this)).dashboardController.accountId.get$value(0));
+      deletedMessageVaultSupported = A.MailboxUtils_isDeletedMessageVaultSupported(t3, t2._as(t1.get(_this)).dashboardController.accountId.get$value(0));
       A.Expando__checkType(_this);
       contextMenuActions = _this.listContextMenuItemAction$4(mailbox, t2._as(t1.get(_this)).dashboardController.spamReportController.spamReportState.get$value(0) === C.SpamReportState_0, subaddressingSupported, deletedMessageVaultSupported);
       t1 = A._arrayInstanceType(contextMenuActions)._eval$1("MappedListIterable<1,FocusedMenuItem>");
@@ -11702,11 +11702,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = A._instanceType(_this)._eval$1("GetWidget.S");
       t3 = t2._as(t1.get(_this)).dashboardController.sessionCurrent;
       A.Expando__checkType(_this);
-      subaddressingSupported = A.MailboxWidgetMixin_isSubaddressingSupported(t3, t2._as(t1.get(_this)).dashboardController.accountId.get$value(0));
+      subaddressingSupported = A.MailboxUtils_isSubaddressingSupported(t3, t2._as(t1.get(_this)).dashboardController.accountId.get$value(0));
       A.Expando__checkType(_this);
       t3 = t2._as(t1.get(_this)).dashboardController.sessionCurrent;
       A.Expando__checkType(_this);
-      deletedMessageVaultSupported = A.MailboxWidgetMixin_isDeletedMessageVaultSupported(t3, t2._as(t1.get(_this)).dashboardController.accountId.get$value(0));
+      deletedMessageVaultSupported = A.MailboxUtils_isDeletedMessageVaultSupported(t3, t2._as(t1.get(_this)).dashboardController.accountId.get$value(0));
       A.Expando__checkType(_this);
       contextMenuActions = _this.listContextMenuItemAction$4(mailbox, t2._as(t1.get(_this)).dashboardController.spamReportController.spamReportState.get$value(0) === C.SpamReportState_0, subaddressingSupported, deletedMessageVaultSupported);
       if (contextMenuActions.length === 0)
@@ -22172,5 +22172,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "oF1WnMD/xFPqO+90VDii7qlZ9gI=");
+})($__dart_deferred_initializers__, "iXEekHBzjtzqcbNuBDxea8uDLs8=");
 ;
