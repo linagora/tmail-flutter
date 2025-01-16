@@ -1956,7 +1956,7 @@ packages:
     description:
       path: "."
       ref: fix-some-issue-with-suggestion-box
-      resolved-ref: "2d6bc8b1481f555e4aa29f744d1a7168641aed8b"
+      resolved-ref: "3ac885e6416f61f5888e5b9c5e8e07c182b57e71"
       url: "https://github.com/dab246/super_tag_editor.git"
     source: git
     version: "0.3.0"
