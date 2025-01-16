@@ -1,8 +1,10 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 
 class SuggestionItemWidgetStyles {
   static const double iconSelectedSize = 24.0;
+  static const double suggestionItemHeight = ComposerStyle.suggestionItemHeight;
 
   static const EdgeInsetsGeometry margin = EdgeInsets.all(8.0);
   static const EdgeInsetsGeometry contentPaddingDuplicated = EdgeInsets.symmetric(

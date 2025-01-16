@@ -17,6 +17,7 @@ import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/material_text_icon_button.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_input_tag_item.dart';
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_suggestion_box_item.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
@@ -62,6 +63,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
   final _responsiveUtils = Get.find<ResponsiveUtils>();
   final _imagePaths = Get.find<ImagePaths>();
   final GlobalKey<TagsEditorState> keyToEmailTagEditor = GlobalKey<TagsEditorState>();
+  final FocusNode _focusNodeKeyboard = FocusNode();
 
   late List<EmailAddress> listEmailAddress;
 
@@ -74,11 +76,18 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
   }
 
   @override
+  void dispose() {
+    _focusNodeKeyboard.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final itemTagEditor = TagEditor<SuggestionEmailAddress>(
       key: keyToEmailTagEditor,
       length: listEmailAddress.length,
       controller: widget.controller,
+      focusNodeKeyboard: _focusNodeKeyboard,
       borderRadius: 12,
       backgroundColor: AppColor.colorInputBackgroundCreateMailbox,
       focusedBorderColor: AppColor.colorTextButton,
@@ -144,14 +153,16 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
         queryString,
         limit: AppConfig.defaultLimitAutocomplete,
       ),
+      suggestionItemHeight: ComposerStyle.suggestionItemHeight,
       isLoadMoreOnlyOnce: true,
       isLoadMoreReplaceAllOld: false,
       loadMoreSuggestions: _findSuggestions,
       suggestionBuilder: (context, tagEditorState, suggestionEmailAddress, index, length, highlight, suggestionValid) {
-        return Container(
+        return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12),
           child: ContactSuggestionBoxItem(
             suggestionEmailAddress,
+            _imagePaths,
             shapeBorder: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(12))),
             selectedContactCallbackAction: (contact) {

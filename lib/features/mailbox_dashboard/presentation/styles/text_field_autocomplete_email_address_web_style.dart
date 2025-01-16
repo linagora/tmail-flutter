@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 
 class TextFieldAutoCompleteEmailAddressWebStyles {
   static const EdgeInsetsGeometry padding = EdgeInsets.symmetric(vertical: 8);
@@ -15,6 +16,7 @@ class TextFieldAutoCompleteEmailAddressWebStyles {
 
   static const double suggestionBoxElevation = 20.0;
   static const double suggestionBoxMaxHeight = 350.0;
+  static const double suggestionBoxItemHeight = ComposerStyle.suggestionItemHeight;
 
   static const double fieldTitleWidth = 112.0;
   static const double space = 8.0;
