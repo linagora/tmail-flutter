@@ -1,20 +1,22 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:super_tag_editor/tag_editor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_suggestion_item_widget.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_field.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/styles/text_input_field/text_input_suggestion_field_widget_styles.dart';
-import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/text_input_field/suggestion_item_widget.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/widgets/text_input_field/suggestion_tag_item_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/suggesstion_email_address.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 typedef OnSuggestionEmailAddress = Future<List<EmailAddress>> Function(String word, {int? limit});
@@ -68,6 +70,8 @@ class TextInputFieldSuggestionWidget extends StatefulWidget {
 }
 
 class _TextInputFieldSuggestionWidgetState extends State<TextInputFieldSuggestionWidget> {
+  final _imagePaths = Get.find<ImagePaths>();
+
   bool _lastTagFocused = false;
   late List<EmailAddress> _currentListEmailAddress;
   Timer? _gapBetweenTagChangedAndFindSuggestion;
@@ -138,6 +142,7 @@ class _TextInputFieldSuggestionWidgetState extends State<TextInputFieldSuggestio
                 suggestionsBoxBackgroundColor: Colors.white,
                 suggestionsBoxRadius: TextInputSuggestionFieldWidgetStyles.suggestionsBoxRadius,
                 suggestionsBoxMaxHeight: TextInputSuggestionFieldWidgetStyles.suggestionsBoxMaxHeight,
+                suggestionItemHeight: TextInputSuggestionFieldWidgetStyles.suggestionBoxItemHeight,
                 suggestionBoxWidth: _getSuggestionBoxWidth(constraints.maxWidth),
                 textStyle: TextInputSuggestionFieldWidgetStyles.inputFieldTextStyle,
                 onFocusTagAction: (focused) => _handleFocusTagAction.call(focused, setState),
@@ -168,7 +173,8 @@ class _TextInputFieldSuggestionWidgetState extends State<TextInputFieldSuggestio
                 isLoadMoreReplaceAllOld: false,
                 loadMoreSuggestions: _findSuggestions,
                 suggestionBuilder: (context, tagEditorState, suggestionEmailAddress, index, length, highlight, suggestionValid) {
-                  return SuggestionItemWidget(
+                  return RecipientSuggestionItemWidget(
+                    imagePaths: _imagePaths,
                     suggestionState: suggestionEmailAddress.state,
                     emailAddress: suggestionEmailAddress.emailAddress,
                     suggestionValid: suggestionValid,

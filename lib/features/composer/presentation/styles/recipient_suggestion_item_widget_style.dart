@@ -6,7 +6,6 @@ class RecipientSuggestionItemWidgetStyle {
   static const double selectedIconSize = 24;
 
   static const EdgeInsetsGeometry suggestionDuplicatedMargin = EdgeInsets.all(8.0);
-  static const EdgeInsetsGeometry labelDuplicatedPadding = EdgeInsets.symmetric(horizontal: 8.0);
   static const EdgeInsetsGeometry labelPadding = EdgeInsets.symmetric(horizontal: 16.0);
 
   static const TextStyle labelTextStyle = TextStyle(

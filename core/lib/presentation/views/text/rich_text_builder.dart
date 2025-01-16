@@ -8,7 +8,6 @@ class RichTextBuilder extends StatefulWidget {
   final TextStyle styleWord;
   final String? preMarkedText;
   final bool ensureHighlightVisible;
-  final bool? softWrap;
 
   const RichTextBuilder({
     super.key,
@@ -18,7 +17,6 @@ class RichTextBuilder extends StatefulWidget {
     required this.styleWord,
     this.preMarkedText,
     this.ensureHighlightVisible = false,
-    this.softWrap,
   });
 
   @override
@@ -65,7 +63,6 @@ class _RichTextBuilderState extends State<RichTextBuilder> with AutomaticKeepAli
       ),
       style: widget.styleOrigin,
       maxLines: 1,
-      softWrap: widget.softWrap,
       overflow: TextOverflow.ellipsis
     );
 

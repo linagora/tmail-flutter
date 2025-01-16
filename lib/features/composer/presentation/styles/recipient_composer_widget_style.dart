@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 
 class RecipientComposerWidgetStyle {
   static const double deleteRecipientFieldIconSize = 20;
@@ -10,6 +11,7 @@ class RecipientComposerWidgetStyle {
   static const double suggestionsBoxRadius = 20;
   static const double suggestionsBoxMaxHeight = 300;
   static const double suggestionBoxWidth = 300;
+  static const double suggestionBoxItemHeight = ComposerStyle.suggestionItemHeight;
   static const double minTextFieldWidth = 20;
   static const double tagSpacing = 8;
 

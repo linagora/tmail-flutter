@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 
 class TextInputSuggestionFieldWidgetStyles {
   static const double titleWidth = 112.0;
@@ -8,6 +9,7 @@ class TextInputSuggestionFieldWidgetStyles {
   static const double suggestionsBoxElevation = 20.0;
   static const double suggestionsBoxRadius = 20.0;
   static const double suggestionsBoxMaxHeight = 350.0;
+  static const double suggestionBoxItemHeight = ComposerStyle.suggestionItemHeight;
   static const double space = 12.0;
   static const double spaceMobile = 8.0;
 

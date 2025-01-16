@@ -5,31 +5,32 @@ import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/avatar/gradient_circle_avatar_icon.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 
 typedef SelectedContactCallbackAction = Function(EmailAddress contactSelected);
 
 class ContactSuggestionBoxItem extends StatelessWidget {
 
+  final ImagePaths imagePaths;
   final SuggestionEmailAddress suggestionEmailAddress;
   final SelectedContactCallbackAction? selectedContactCallbackAction;
-  final EdgeInsets? padding;
   final ShapeBorder? shapeBorder;
 
-  const ContactSuggestionBoxItem(this.suggestionEmailAddress, {
-    Key? key,
-    this.padding,
-    this.shapeBorder,
-    this.selectedContactCallbackAction
-  }) : super(key: key);
+  const ContactSuggestionBoxItem(
+    this.suggestionEmailAddress,
+    this.imagePaths,
+    {
+      Key? key,
+      this.shapeBorder,
+      this.selectedContactCallbackAction,
+    }
+  ) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final imagePaths = Get.find<ImagePaths>();
-
     final itemChild = Row(children: [
       GradientCircleAvatarIcon(
         colors: suggestionEmailAddress.emailAddress.avatarColors,
@@ -82,8 +83,9 @@ class ContactSuggestionBoxItem extends StatelessWidget {
         child: InkWell(
           onTap: () => selectedContactCallbackAction?.call(suggestionEmailAddress.emailAddress),
           customBorder: shapeBorder,
-          child: Padding(
-            padding: padding ?? const EdgeInsets.all(12),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            height: ComposerStyle.suggestionItemHeight,
             child: itemChild,
           ),
         ),
@@ -91,8 +93,9 @@ class ContactSuggestionBoxItem extends StatelessWidget {
     } else {
       return Material(
         color: Colors.transparent,
-        child: Padding(
-          padding: padding ?? const EdgeInsets.all(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          height: ComposerStyle.suggestionItemHeight,
           child: itemChild,
         ),
       );
