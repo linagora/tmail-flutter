@@ -471,6 +471,11 @@ class UploadController extends BaseController {
     return mapInlineAttachments;
   }
 
+  List<Attachment> get allAttachmentsUploaded => [
+    ...attachmentsUploaded,
+    ...inlineAttachmentsUploaded,
+  ];
+
   void _handleUploadAttachmentFailure(UploadAttachmentFailure failure) {
     if (currentContext != null && currentOverlayContext != null) {
       appToast.showToastErrorMessage(

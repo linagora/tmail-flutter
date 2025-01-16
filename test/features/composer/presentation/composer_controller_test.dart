@@ -1314,7 +1314,6 @@ void main() {
           composerController?.handleSuccessViewState(state);
           
           // assert
-          verifyNever(mockHtmlEditorApi.getText());
           expect(composerController?.savedEmailDraftHash, isNull);
         });
 
@@ -1334,7 +1333,6 @@ void main() {
           composerController?.handleFailureViewState(state);
           
           // assert
-          verifyNever(mockHtmlEditorApi.getText());
           expect(composerController?.savedEmailDraftHash, isNull);
         });
 

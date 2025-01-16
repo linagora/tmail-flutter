@@ -14,7 +14,7 @@ class ComposerStyle {
   static const Color backgroundEditorColor = Colors.white;
   static const Color richToolbarColor = Colors.white;
   static const Color mobileBackgroundColor = Colors.white;
-  static const Color popupItemIconColor = AppColor.primaryColor;
+  static const Color popupItemIconColor = AppColor.steelGrayA540;
 
   static const EdgeInsetsGeometry richToolbarPadding = EdgeInsetsDirectional.symmetric(horizontal: 24, vertical: 8);
   static const EdgeInsetsGeometry desktopRecipientPadding = EdgeInsetsDirectional.only(end: 24);

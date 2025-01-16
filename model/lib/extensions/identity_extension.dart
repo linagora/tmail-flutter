@@ -6,6 +6,8 @@ import 'package:model/identity/identity_request_dto.dart';
 extension IdentityExtension on Identity {
   EmailAddress toEmailAddressNoName() => EmailAddress(null, email);
 
+  EmailAddress toEmailAddress() => EmailAddress(name, email);
+
   IdentityRequestDto toIdentityRequest() => IdentityRequestDto(
     name: name,
     replyTo: replyTo,

@@ -1308,7 +1308,7 @@ class ComposerController extends BaseController
 
     if (composerArguments.value?.emailActionType == EmailActionType.compose ||
         composerArguments.value?.emailActionType == EmailActionType.editDraft) {
-      _savedEmailDraftHash = await _hashDraftEmail();
+      _savedEmailDraftHash = draftEmailHash;
     }
   }
 
