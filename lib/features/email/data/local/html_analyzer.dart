@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:core/data/constants/constant.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
+import 'package:core/presentation/utils/html_transformer/text/persist_preformatted_text_transformer.dart';
 import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/app_logger.dart';
@@ -37,7 +38,8 @@ class HtmlAnalyzer {
         final message = _htmlTransform.transformToTextPlain(
           content: emailContent.content,
           transformConfiguration: TransformConfiguration.fromTextTransformers([
-            const SanitizeAutolinkHtmlTransformers()
+            const SanitizeAutolinkHtmlTransformers(),
+            const PersistPreformattedTextTransformer(),
           ]),
         );
         return EmailContent(emailContent.type, message);
