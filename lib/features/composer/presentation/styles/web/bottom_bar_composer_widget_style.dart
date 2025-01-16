@@ -13,10 +13,10 @@ class BottomBarComposerWidgetStyle {
   static const double height = 60;
 
   static const Color backgroundColor = Colors.white;
-  static const Color iconColor = AppColor.colorRichButtonComposer;
-  static const Color sendButtonBackgroundColor = AppColor.primaryColor;
-  static const Color selectedBackgroundColor = AppColor.colorSelected;
-  static const Color selectedIconColor = AppColor.primaryColor;
+  static const Color iconColor = AppColor.steelGrayA540;
+  static const Color sendButtonBackgroundColor = AppColor.blue700;
+  static const Color selectedIconColor = AppColor.blue700;
+  static const Color disabledIconColor = AppColor.colorRichButtonComposer;
 
   static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.symmetric(horizontal: 32);
   static const EdgeInsetsGeometry iconPadding = EdgeInsetsDirectional.all(5);
