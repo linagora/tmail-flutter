@@ -3,21 +3,23 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_suggestion_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/suggesstion_email_address.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/advanced_search_input_form_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/text_field_autocomplete_email_address_web_style.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/autocomplete_suggestion_item_widget_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/autocomplete_tag_item_widget_web.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
@@ -73,6 +75,8 @@ class TextFieldAutocompleteEmailAddressWeb extends StatefulWidget {
 }
 
 class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocompleteEmailAddressWeb> {
+  final _imagePaths = Get.find<ImagePaths>();
+
   bool _lastTagFocused = false;
   bool _isDragging = false;
   late List<EmailAddress> _currentListEmailAddress;
@@ -166,6 +170,7 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
                           suggestionsBoxBackgroundColor: TextFieldAutoCompleteEmailAddressWebStyles.suggestionBoxBackgroundColor,
                           suggestionsBoxRadius: TextFieldAutoCompleteEmailAddressWebStyles.suggestionBoxRadius,
                           suggestionsBoxMaxHeight: TextFieldAutoCompleteEmailAddressWebStyles.suggestionBoxMaxHeight,
+                          suggestionItemHeight: TextFieldAutoCompleteEmailAddressWebStyles.suggestionBoxItemHeight,
                           suggestionBoxWidth: _getSuggestionBoxWidth(constraints.maxWidth),
                           textStyle: AdvancedSearchInputFormStyle.inputTextStyle,
                           onFocusTagAction: (focused) => _handleFocusTagAction.call(focused, setState),
@@ -196,7 +201,8 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
                           isLoadMoreReplaceAllOld: false,
                           loadMoreSuggestions: _findSuggestions,
                           suggestionBuilder: (context, tagEditorState, suggestionEmailAddress, index, length, highlight, suggestionValid) {
-                            return AutoCompleteSuggestionItemWidgetWeb(
+                            return RecipientSuggestionItemWidget(
+                              imagePaths: _imagePaths,
                               suggestionState: suggestionEmailAddress.state,
                               emailAddress: suggestionEmailAddress.emailAddress,
                               suggestionValid: suggestionValid,
