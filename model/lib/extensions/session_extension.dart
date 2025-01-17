@@ -9,15 +9,22 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_properties.dart
 import 'package:jmap_dart_client/jmap/core/capability/empty_capability.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/error_type_handler/account_exception.dart';
+import 'package:model/error_type_handler/unknown_uri_exception.dart';
 import 'package:model/model.dart';
 import 'package:uri/uri.dart';
 
 extension SessionExtension on Session {
 
   String getDownloadUrl({String? jmapUrl}) {
-    final downloadUrlValid = jmapUrl != null
-      ? downloadUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl))
-      : downloadUrl;
+    final Uri downloadUrlValid;
+    if (jmapUrl != null) {
+      downloadUrlValid = downloadUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl));
+    } else if (downloadUrl.hasOrigin) {
+      downloadUrlValid = downloadUrl;
+    } else {
+      throw UnknownUriException();
+    }
+
     var baseUrl = '${downloadUrlValid.origin}${downloadUrlValid.path}?${downloadUrlValid.query}';
     if (baseUrl.endsWith('/')) {
       baseUrl = baseUrl.substring(0, baseUrl.length - 1);
@@ -27,9 +34,15 @@ extension SessionExtension on Session {
   }
 
   Uri getUploadUri(AccountId accountId, {String? jmapUrl}) {
-    final uploadUrlValid = jmapUrl != null
-      ? uploadUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl))
-      : uploadUrl;
+    final Uri uploadUrlValid;
+    if (jmapUrl != null) {
+      uploadUrlValid = uploadUrl.toQualifiedUrl(baseUrl: Uri.parse(jmapUrl));
+    } else if (uploadUrl.hasOrigin) {
+      uploadUrlValid = uploadUrl;
+    } else {
+      throw UnknownUriException();
+    }
+
     final baseUrl = '${uploadUrlValid.origin}${uploadUrlValid.path}';
     final uploadUriTemplate = UriTemplate(Uri.decodeFull(baseUrl));
     final uploadUri = uploadUriTemplate.expand({

@@ -66,6 +66,7 @@ import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/parse_email_by_blob_id_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/preview_email_from_eml_file_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/preview_pdf_file_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/print_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/send_receipt_to_sender_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/store_event_attendance_status_state.dart';
@@ -314,6 +315,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _handlePreviewEmailFromEMLFileFailure(failure);
     } else if (failure is GetHtmlContentFromAttachmentFailure) {
       _handleGetHtmlContentFromAttachmentFailure(failure);
+    } else if (failure is PreviewPDFFileFailure) {
+      _handlePreviewPDFFileFailure(failure);
     }
   }
 
@@ -530,18 +533,23 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       )));
     } else {
       if (session != null && accountId != null) {
-        final baseDownloadUrl = session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
-        TransformConfiguration transformConfiguration = PlatformInfo.isWeb
-          ? TransformConfiguration.forPreviewEmailOnWeb()
-          : TransformConfiguration.forPreviewEmail();
+        try {
+          final baseDownloadUrl = session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
+          TransformConfiguration transformConfiguration = PlatformInfo.isWeb
+            ? TransformConfiguration.forPreviewEmailOnWeb()
+            : TransformConfiguration.forPreviewEmail();
 
-        consumeState(_getEmailContentInteractor.execute(
-          session!,
-          accountId!,
-          emailId,
-          baseDownloadUrl,
-          transformConfiguration
-        ));
+          consumeState(_getEmailContentInteractor.execute(
+            session!,
+            accountId!,
+            emailId,
+            baseDownloadUrl,
+            transformConfiguration
+          ));
+        } catch (e) {
+          logError('SingleEmailController::_getEmailContentAction(): $e');
+          consumeState(Stream.value(Left(GetEmailContentFailure(e))));
+        }
       }
     }
   }
@@ -767,14 +775,19 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _downloadAttachmentsAction(List<Attachment> attachments) {
     if (accountId != null && session != null) {
-      final baseDownloadUrl = session!.getDownloadUrl(
-        jmapUrl: dynamicUrlInterceptors.jmapUrl,
-      );
-      consumeState(_downloadAttachmentsInteractor.execute(
-        attachments,
-        accountId!,
-        baseDownloadUrl,
-      ));
+      try {
+        final baseDownloadUrl = session!.getDownloadUrl(
+          jmapUrl: dynamicUrlInterceptors.jmapUrl,
+        );
+        consumeState(_downloadAttachmentsInteractor.execute(
+          attachments,
+          accountId!,
+          baseDownloadUrl,
+        ));
+      } catch (e) {
+        logError('SingleEmailController::_downloadAttachmentsAction(): $e');
+        consumeState(Stream.value(Left(DownloadAttachmentsFailure(e))));
+      }
     }
   }
 
@@ -821,15 +834,20 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _exportAttachmentAction(Attachment attachment, CancelToken cancelToken) {
     if (accountId != null && session != null) {
-      final baseDownloadUrl = session!.getDownloadUrl(
-        jmapUrl: dynamicUrlInterceptors.jmapUrl,
-      );
-      consumeState(_exportAttachmentInteractor.execute(
-        attachment,
-        accountId!,
-        baseDownloadUrl,
-        cancelToken,
-      ));
+      try {
+        final baseDownloadUrl = session!.getDownloadUrl(
+          jmapUrl: dynamicUrlInterceptors.jmapUrl,
+        );
+        consumeState(_exportAttachmentInteractor.execute(
+          attachment,
+          accountId!,
+          baseDownloadUrl,
+          cancelToken,
+        ));
+      } catch (e) {
+        logError('SingleEmailController::_exportAttachmentAction(): $e');
+        consumeState(Stream.value(Left(ExportAttachmentFailure(e))));
+      }
     }
   }
 
@@ -873,16 +891,21 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void downloadAttachmentForWeb(Attachment attachment) {
     if (accountId != null && session != null) {
-      final baseDownloadUrl = session!.getDownloadUrl(
-        jmapUrl: dynamicUrlInterceptors.jmapUrl,
-      );
       final generateTaskId = DownloadTaskId(uuid.v4());
-      consumeState(_downloadAttachmentForWebInteractor.execute(
-          generateTaskId,
-          attachment,
-          accountId!,
-          baseDownloadUrl,
-          _downloadProgressStateController));
+      try {
+        final baseDownloadUrl = session!.getDownloadUrl(
+          jmapUrl: dynamicUrlInterceptors.jmapUrl,
+        );
+        consumeState(_downloadAttachmentForWebInteractor.execute(
+            generateTaskId,
+            attachment,
+            accountId!,
+            baseDownloadUrl,
+            _downloadProgressStateController));
+      } catch (e) {
+        logError('SingleEmailController::downloadAttachmentForWeb(): $e');
+        consumeState(Stream.value(Left(DownloadAttachmentForWebFailure(attachment: attachment, taskId: generateTaskId, exception: e))));
+      }
     } else {
       consumeState(Stream.value(
         Left(DownloadAttachmentForWebFailure(
@@ -2002,8 +2025,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     Attachment attachment,
   ) {
     final accountId = mailboxDashBoardController.accountId.value;
-    final downloadUrl = mailboxDashBoardController.sessionCurrent
+    dynamic downloadUrl;
+    try {
+      downloadUrl = mailboxDashBoardController.sessionCurrent
         ?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
+    } catch (e) {
+      logError('SingleEmailController::_getEmailContentAction(): $e');
+      downloadUrl = null;
+    }
     final blobId = attachment.blobId;
 
     if (accountId == null || downloadUrl == null || blobId == null) {
@@ -2030,24 +2059,30 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         AppLocalizations.of(context).noPreviewAvailable);
       return;
     }
-    final downloadUrl = session!.getDownloadUrl(
-      jmapUrl: dynamicUrlInterceptors.jmapUrl,
-    );
 
-    await Get.generalDialog(
-      barrierColor: Colors.black.withOpacity(0.8),
-      pageBuilder: (_, __, ___) {
-        return PointerInterceptor(
-          child: PDFViewer(
-            attachment: attachment,
-            accountId: accountId!,
-            downloadUrl: downloadUrl,
-            downloadAction: _downloadPDFFile,
-            printAction: _printPDFFile,
-          )
-        );
-      },
-    );
+    try {
+      final downloadUrl = session!.getDownloadUrl(
+        jmapUrl: dynamicUrlInterceptors.jmapUrl,
+      );
+
+      await Get.generalDialog(
+        barrierColor: Colors.black.withOpacity(0.8),
+        pageBuilder: (_, __, ___) {
+          return PointerInterceptor(
+            child: PDFViewer(
+              attachment: attachment,
+              accountId: accountId!,
+              downloadUrl: downloadUrl,
+              downloadAction: _downloadPDFFile,
+              printAction: _printPDFFile,
+            )
+          );
+        },
+      );
+    } catch (e) {
+      logError('SingleEmailController::previewPDFFileAction(): $e');
+      consumeState(Stream.value(Left(PreviewEmailFromEmlFileFailure(e))));
+    }
   }
 
   void previewEMLFileAction(Id? blobId, AppLocalizations appLocalizations) {
@@ -2085,20 +2120,30 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       return;
     }
 
-    consumeState(_previewEmailFromEmlFileInteractor.execute(
-      PreviewEmailEMLRequest(
-        accountId: accountId!,
-        userName: userName!,
-        blobId: success.blobId,
-        email: success.email,
-        locale: Localizations.localeOf(currentContext!),
-        appLocalizations: AppLocalizations.of(currentContext!),
-        baseDownloadUrl: session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl),
-      ),
-    ));
+    try {
+      consumeState(_previewEmailFromEmlFileInteractor.execute(
+        PreviewEmailEMLRequest(
+          accountId: accountId!,
+          userName: userName!,
+          blobId: success.blobId,
+          email: success.email,
+          locale: Localizations.localeOf(currentContext!),
+          appLocalizations: AppLocalizations.of(currentContext!),
+          baseDownloadUrl: session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl),
+        ),
+      ));
+    } catch (e) {
+      logError('SingleEmailController::_handleParseEmailByBlobIdSuccess(): $e');
+      consumeState(Stream.value(Left(PreviewEmailFromEmlFileFailure(e))));
+    }
   }
 
   void _handleParseEmailByBlobIdFailure(ParseEmailByBlobIdFailure failure) {
+    SmartDialog.dismiss();
+    toastManager.showMessageFailure(failure);
+  }
+
+  void _handlePreviewPDFFileFailure(PreviewPDFFileFailure failure) {
     SmartDialog.dismiss();
     toastManager.showMessageFailure(failure);
   }
