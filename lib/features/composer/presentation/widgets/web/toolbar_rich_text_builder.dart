@@ -212,6 +212,7 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
                       _imagePaths,
                       (paragraph) => richTextWebController.applyParagraphType(paragraph)))
                     .toList(),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
                   iconButton: buildWrapIconStyleText(
                     padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                     spacing: 3,
@@ -235,6 +236,7 @@ class ToolbarRichTextWebBuilder extends StatelessWidget with RichTextButtonMixin
                       _imagePaths,
                       (orderType) => richTextWebController.applyOrderListType(orderType)))
                     .toList(),
+                  padding: const EdgeInsets.symmetric(horizontal: 5),
                   iconButton: buildWrapIconStyleText(
                     padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                     spacing: 3,
