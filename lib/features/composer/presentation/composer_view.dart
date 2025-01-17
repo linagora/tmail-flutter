@@ -48,6 +48,7 @@ class ComposerView extends GetWidget<ComposerController> {
               children: [
                 if (controller.responsiveUtils.isLandscapeMobile(context))
                   Obx(() => LandscapeAppBarComposerWidget(
+                    imagePaths: controller.imagePaths,
                     isSendButtonEnabled: controller.isEnableEmailSendButton.value,
                     onCloseViewAction: () => controller.handleClickCloseComposer(context),
                     sendMessageAction: () => controller.handleClickSendButton(context),
@@ -73,6 +74,7 @@ class ComposerView extends GetWidget<ComposerController> {
                   ))
                 else
                   Obx(() => AppBarComposerWidget(
+                    imagePaths: controller.imagePaths,
                     isSendButtonEnabled: controller.isEnableEmailSendButton.value,
                     onCloseViewAction: () => controller.handleClickCloseComposer(context),
                     sendMessageAction: () => controller.handleClickSendButton(context),

@@ -4,6 +4,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/identity_extension.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
@@ -13,6 +14,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_controller
 import 'package:tmail_ui_user/features/composer/presentation/model/draft_email_print.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/print_draft_dialog_view.dart';
 import 'package:tmail_ui_user/features/email/domain/state/print_email_state.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 extension ComposerPrintDraftExtension on ComposerController {
@@ -59,8 +61,26 @@ extension ComposerPrintDraftExtension on ComposerController {
     required Locale locale,
     required String emailContent,
   }) {
-    final presentationEmail = composerArguments.value!.presentationEmail;
+    final presentationEmail = composerArguments.value?.presentationEmail;
+    final emailActionType = composerArguments.value?.emailActionType;
 
+    String receiveTime = '';
+    if (emailActionType == EmailActionType.editDraft) {
+      receiveTime = presentationEmail?.getReceivedAt(
+        locale.toLanguageTag(),
+        pattern: presentationEmail.receivedAt
+          ?.value
+          .toLocal()
+          .toPatternForPrinting(locale.toLanguageTag()),
+      ) ?? '';
+    } else {
+      final currentTime = DateTime.now();
+      receiveTime = currentTime.formatDate(
+        locale: locale.toLanguageTag(),
+        pattern: currentTime.toPatternForPrinting(locale.toLanguageTag()),
+      );
+    }
+    log('ComposerPrintDraftExtension::_showPrintDraftsDialog:receiveTime = $receiveTime | emailActionType = $emailActionType');
     final childWidget = PointerInterceptor(
       child: PrintDraftDialogView(
         emailPrint: DraftEmailPrint(
@@ -68,7 +88,6 @@ extension ComposerPrintDraftExtension on ComposerController {
           userName: mailboxDashBoardController.userEmail,
           attachments: uploadController.allAttachmentsUploaded,
           emailContent: emailContent,
-          locale: locale.toLanguageTag(),
           fromPrefix: appLocalizations.from_email_address_prefix,
           toPrefix: appLocalizations.to_email_address_prefix,
           ccPrefix: appLocalizations.cc_email_address_prefix,
@@ -79,14 +98,8 @@ extension ComposerPrintDraftExtension on ComposerController {
           ccAddress: listCcEmailAddress.toSet().toEscapeHtmlStringUseCommaSeparator(),
           bccAddress: listBccEmailAddress.toSet().toEscapeHtmlStringUseCommaSeparator(),
           sender: identitySelected.value?.toEmailAddress(),
-          receiveTime: presentationEmail?.getReceivedAt(
-            locale.toLanguageTag(),
-            pattern: presentationEmail.receivedAt
-              ?.value
-              .toLocal()
-              .toPatternForPrinting(locale.toLanguageTag()),
-          ) ?? '',
-          subject: presentationEmail?.subject,
+          receiveTime: receiveTime,
+          subject: subjectEmail.value ?? '',
         ),
         printEmailInteractor: printEmailInteractor,
       ),

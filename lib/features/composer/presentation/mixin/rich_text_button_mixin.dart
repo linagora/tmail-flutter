@@ -324,6 +324,7 @@ mixin RichTextButtonMixin {
                   _imagePaths,
                   (paragraph) => richTextController.applyParagraphType(paragraph)))
               .toList(),
+          padding: const EdgeInsets.symmetric(horizontal: 5),
           iconButton: buildWrapIconStyleText(
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
               spacing: 3,
@@ -344,6 +345,7 @@ mixin RichTextButtonMixin {
                   _imagePaths,
                   (orderType) => richTextController.applyOrderListType(orderType)))
               .toList(),
+          padding: const EdgeInsets.symmetric(horizontal: 5),
           iconButton: buildWrapIconStyleText(
               padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 5),
               spacing: 3,

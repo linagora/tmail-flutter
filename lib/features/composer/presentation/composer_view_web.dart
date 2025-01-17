@@ -1,11 +1,9 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/composer_print_draft_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
@@ -26,8 +24,6 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/from_co
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/local_file_drop_zone_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/mobile_responsive_app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/toolbar_rich_text_builder.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ComposerView extends GetWidget<ComposerController> {
 
@@ -50,18 +46,18 @@ class ComposerView extends GetWidget<ComposerController> {
                   isFormattingOptionsEnabled: controller.richTextWebController!.isFormattingOptionsEnabled,
                   openRichToolbarAction: controller.richTextWebController!.toggleFormattingOptions,
                   isSendButtonEnabled: controller.isEnableEmailSendButton.value,
+                  hasRequestReadReceipt: controller.hasRequestReadReceipt.value,
+                  isPrintDraftEnabled: controller.isEmailChanged.value,
+                  menuMoreOptionController: controller.menuMoreOptionController!,
                   onCloseViewAction: () => controller.handleClickCloseComposer(context),
                   attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
                   insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
                   sendMessageAction: () => controller.handleClickSendButton(context),
-                  openContextMenuAction: (position) {
-                    controller.openPopupMenuAction(
-                      context,
-                      position,
-                      _createMoreOptionPopupItems(context),
-                      radius: ComposerStyle.popupMenuRadius
-                    );
-                  },
+                  toggleCodeViewAction: controller.richTextWebController!.toggleCodeView,
+                  printDraftAction: () => controller.printDraft(context),
+                  toggleRequestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
+                  saveToDraftsAction: () => controller.handleClickSaveAsDraftsButton(context),
+                  deleteComposerAction: () => controller.handleClickDeleteComposer(context),
                 )),
                 ConstrainedBox(
                   constraints: BoxConstraints(
@@ -573,14 +569,10 @@ class ComposerView extends GetWidget<ComposerController> {
                               saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
                               sendMessageAction: () => controller.handleClickSendButton(context),
                               isPrintDraftEnabled: controller.isEmailChanged.isTrue,
-                              openContextMenuAction: (position) {
-                                controller.openPopupMenuAction(
-                                  context,
-                                  position,
-                                  _createMoreOptionPopupItemsOnDesktop(context),
-                                  radius: ComposerStyle.popupMenuRadius,
-                                );
-                              },
+                              toggleCodeViewAction: controller.richTextWebController!.toggleCodeView,
+                              menuMoreOptionController: controller.menuMoreOptionController!,
+                              printDraftAction: () => controller.printDraft(context),
+                              toggleRequestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
                             )),
                           ],
                         ),
@@ -885,14 +877,10 @@ class ComposerView extends GetWidget<ComposerController> {
                               saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
                               sendMessageAction: () => controller.handleClickSendButton(context),
                               isPrintDraftEnabled: controller.isEmailChanged.isTrue,
-                              openContextMenuAction: (position) {
-                                controller.openPopupMenuAction(
-                                  context,
-                                  position,
-                                  _createMoreOptionPopupItemsOnDesktop(context),
-                                  radius: ComposerStyle.popupMenuRadius,
-                                );
-                              },
+                              toggleCodeViewAction: controller.richTextWebController!.toggleCodeView,
+                              menuMoreOptionController: controller.menuMoreOptionController!,
+                              printDraftAction: () => controller.printDraft(context),
+                              toggleRequestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
                             )),
                           ],
                         ),
@@ -951,137 +939,5 @@ class ComposerView extends GetWidget<ComposerController> {
         },
       )
     );
-  }
-
-  List<PopupMenuEntry> _createMoreOptionPopupItems(BuildContext context) {
-    return [
-      PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          controller.imagePaths.icStyleCodeView,
-          AppLocalizations.of(context).embedCode,
-          styleName: ComposerStyle.popupItemTextStyle,
-          colorIcon: ComposerStyle.popupItemIconColor,
-          padding: ComposerStyle.popupItemPadding,
-          selectedIcon: controller.imagePaths.icFilterSelected,
-          isSelected: controller.richTextWebController?.codeViewEnabled,
-          onCallbackAction: () {
-            popBack();
-            controller.richTextWebController?.toggleCodeView();
-          }
-        )
-      ),
-      PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          controller.imagePaths.icReadReceipt,
-          AppLocalizations.of(context).requestReadReceipt,
-          styleName: ComposerStyle.popupItemTextStyle,
-          padding: ComposerStyle.popupItemPadding,
-          colorIcon: ComposerStyle.popupItemIconColor,
-          selectedIcon: controller.imagePaths.icFilterSelected,
-          isSelected: controller.hasRequestReadReceipt.value,
-          onCallbackAction: () {
-            popBack();
-            controller.toggleRequestReadReceipt(context);
-          }
-        )
-      ),
-      if (controller.isEmailChanged.isTrue)
-        PopupMenuItem(
-          padding: EdgeInsets.zero,
-          child: PopupItemWidget(
-            controller.imagePaths.icPrinter,
-            AppLocalizations.of(context).print,
-            colorIcon: AppColor.steelGrayA540,
-            styleName: ComposerStyle.popupItemTextStyle,
-            padding: ComposerStyle.popupItemPadding,
-            onCallbackAction: () {
-              popBack();
-              controller.printDraft(context);
-            },
-          ),
-        ),
-      PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          controller.imagePaths.icSaveToDraft,
-          AppLocalizations.of(context).saveAsDraft,
-          colorIcon: ComposerStyle.popupItemIconColor,
-          styleName: ComposerStyle.popupItemTextStyle,
-          padding: ComposerStyle.popupItemPadding,
-          onCallbackAction: () {
-            popBack();
-            controller.handleClickSaveAsDraftsButton(context);
-          }
-        )
-      ),
-      PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          controller.imagePaths.icDeleteMailbox,
-          AppLocalizations.of(context).delete,
-          colorIcon: ComposerStyle.popupItemIconColor,
-          styleName: ComposerStyle.popupItemTextStyle,
-          padding: ComposerStyle.popupItemPadding,
-          onCallbackAction: () {
-            popBack();
-            controller.handleClickDeleteComposer(context);
-          },
-        )
-      ),
-    ];
-  }
-
-  List<PopupMenuEntry> _createMoreOptionPopupItemsOnDesktop(BuildContext context) {
-    return [
-      PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          controller.imagePaths.icStyleCodeView,
-          AppLocalizations.of(context).embedCode,
-          styleName: ComposerStyle.popupItemTextStyle,
-          colorIcon: ComposerStyle.popupItemIconColor,
-          padding: ComposerStyle.popupItemPadding,
-          selectedIcon: controller.imagePaths.icFilterSelected,
-          isSelected: controller.richTextWebController?.codeViewEnabled,
-          onCallbackAction: () {
-            popBack();
-            controller.richTextWebController?.toggleCodeView();
-          },
-        ),
-      ),
-      PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: PopupItemWidget(
-          controller.imagePaths.icReadReceipt,
-          AppLocalizations.of(context).requestReadReceipt,
-          styleName: ComposerStyle.popupItemTextStyle,
-          padding: ComposerStyle.popupItemPadding,
-          colorIcon: ComposerStyle.popupItemIconColor,
-          selectedIcon: controller.imagePaths.icFilterSelected,
-          isSelected: controller.hasRequestReadReceipt.value,
-          onCallbackAction: () {
-            popBack();
-            controller.toggleRequestReadReceipt(context);
-          },
-        ),
-      ),
-      if (controller.isEmailChanged.isTrue)
-        PopupMenuItem(
-          padding: EdgeInsets.zero,
-          child: PopupItemWidget(
-            controller.imagePaths.icPrinter,
-            AppLocalizations.of(context).print,
-            colorIcon: ComposerStyle.popupItemIconColor,
-            styleName: ComposerStyle.popupItemTextStyle,
-            padding: ComposerStyle.popupItemPadding,
-            onCallbackAction: () {
-              popBack();
-              controller.printDraft(context);
-            },
-          ),
-        ),
-    ];
   }
 }

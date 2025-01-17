@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:collection/collection.dart';
 import 'package:core/core.dart';
+import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:dartz/dartz.dart';
 import 'package:desktop_drop/desktop_drop.dart';
 import 'package:dio/dio.dart';
@@ -192,6 +193,7 @@ class ComposerController extends BaseController
 
   RichTextMobileTabletController? richTextMobileTabletController;
   RichTextWebController? richTextWebController;
+  CustomPopupMenuController? menuMoreOptionController;
 
   final ScrollController scrollController = ScrollController();
   final ScrollController scrollControllerEmailAddress = ScrollController();
@@ -246,6 +248,7 @@ class ComposerController extends BaseController
       responsiveContainerKey = GlobalKey();
       richTextWebController = getBinding<RichTextWebController>();
       responsiveContainerKey = GlobalKey();
+      menuMoreOptionController = CustomPopupMenuController();
     } else {
       richTextMobileTabletController = getBinding<RichTextMobileTabletController>();
     }
@@ -286,6 +289,8 @@ class ComposerController extends BaseController
     if (PlatformInfo.isWeb) {
       richTextWebController = null;
       responsiveContainerKey = null;
+      menuMoreOptionController?.dispose();
+      menuMoreOptionController = null;
     } else {
       richTextMobileTabletController = null;
     }
@@ -492,7 +497,7 @@ class ComposerController extends BaseController
       outboxMailboxId: mailboxDashBoardController.outboxMailbox?.mailboxId,
       sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
       draftsMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts],
-      draftsEmailId: _getDraftEmailId(),
+      draftsEmailId: getDraftEmailId(),
       answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
       unsubscribeEmailId: composerArguments.value!.previousEmailId,
       messageId: composerArguments.value!.messageId,
@@ -1080,7 +1085,7 @@ class ComposerController extends BaseController
           inlineAttachments: uploadController.mapInlineAttachments,
           outboxMailboxId: mailboxDashBoardController.outboxMailbox?.mailboxId,
           sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
-          draftsEmailId: _getDraftEmailId(),
+          draftsEmailId: getDraftEmailId(),
           answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
           unsubscribeEmailId: composerArguments.value!.previousEmailId,
           messageId: composerArguments.value!.messageId,
@@ -2041,6 +2046,9 @@ class ComposerController extends BaseController
     FocusManager.instance.primaryFocus?.unfocus();
     richTextWebController?.editorController.setFocus();
     richTextWebController?.closeAllMenuPopup();
+    if (menuMoreOptionController?.menuIsShowing == true) {
+      menuMoreOptionController?.hideMenu();
+    }
   }
 
   void handleOnMouseDownHtmlEditorWeb() {
@@ -2340,7 +2348,7 @@ class ComposerController extends BaseController
     popBack();
 
     final emailContent = await getContentInEditor();
-    final draftEmailId = _getDraftEmailId();
+    final draftEmailId = getDraftEmailId();
     log('ComposerController::_handleSaveMessageToDraft: draftEmailId = $draftEmailId');
     final cancelToken = CancelToken();
     final resultState = await _showSavingMessageToDraftsDialog(
@@ -2369,7 +2377,7 @@ class ComposerController extends BaseController
     }
   }
 
-  EmailId? _getDraftEmailId() {
+  EmailId? getDraftEmailId() {
     if (_emailIdEditing != null &&
         _emailIdEditing != composerArguments.value!.presentationEmail?.id) {
       return _emailIdEditing;

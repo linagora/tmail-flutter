@@ -1754,7 +1754,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           userName: mailboxDashBoardController.userEmail,
           attachments: currentEmailLoaded.value!.attachments,
           emailContent: currentEmailLoaded.value!.htmlContent,
-          locale: locale.toLanguageTag(),
           fromPrefix: appLocalizations.from_email_address_prefix,
           toPrefix: appLocalizations.to_email_address_prefix,
           ccPrefix: appLocalizations.cc_email_address_prefix,

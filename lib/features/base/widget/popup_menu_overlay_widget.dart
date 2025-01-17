@@ -11,6 +11,9 @@ class PopupMenuOverlayWidget extends StatelessWidget {
   final double? borderRadius;
   final Color? backgroundColor;
   final CustomPopupMenuController? controller;
+  final bool arrangeAsList;
+  final PreferredPosition? position;
+  final EdgeInsetsGeometry? padding;
 
   const PopupMenuOverlayWidget({
     Key? key,
@@ -20,6 +23,9 @@ class PopupMenuOverlayWidget extends StatelessWidget {
     this.borderRadius,
     this.backgroundColor,
     this.controller,
+    this.position = PreferredPosition.bottom,
+    this.arrangeAsList = false,
+    this.padding,
   }) : super(key: key);
 
   @override
@@ -36,14 +42,17 @@ class PopupMenuOverlayWidget extends StatelessWidget {
               decoration: BoxDecoration(
                   color: backgroundColor ?? Colors.white,
                   borderRadius: BorderRadius.circular(borderRadius ?? 12)),
-              padding: const EdgeInsets.symmetric(horizontal: 5),
-              child: Wrap(children: listButtonAction),
+              padding: padding,
+              clipBehavior: Clip.antiAlias,
+              child: arrangeAsList
+                ? IntrinsicWidth(child: Column(children: listButtonAction))
+                : Wrap(children: listButtonAction)
             ),
           ),
         );
       },
       pressType: PressType.singleClick,
-      position: PreferredPosition.bottom,
+      position: position,
       barrierColor: Colors.transparent,
       arrowSize: 0.0,
       verticalMargin: 8,
