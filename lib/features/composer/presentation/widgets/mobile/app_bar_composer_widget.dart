@@ -1,13 +1,14 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile_app_bar_composer_widget_style.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/web/mobile_responsive_app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+
+typedef OnOpenContextMenuAction = Function(RelativeRect position);
 
 class AppBarComposerWidget extends StatelessWidget {
 
+  final ImagePaths imagePaths;
   final bool isSendButtonEnabled;
   final bool isNetworkConnectionAvailable;
   final VoidCallback onCloseViewAction;
@@ -17,10 +18,9 @@ class AppBarComposerWidget extends StatelessWidget {
   final VoidCallback openRichToolbarAction;
   final OnOpenContextMenuAction openContextMenuAction;
 
-  final _imagePaths = Get.find<ImagePaths>();
-
-  AppBarComposerWidget({
+  const AppBarComposerWidget({
     super.key,
+    required this.imagePaths,
     required this.isSendButtonEnabled,
     required this.onCloseViewAction,
     required this.sendMessageAction,
@@ -40,7 +40,7 @@ class AppBarComposerWidget extends StatelessWidget {
       child: Row(
         children: [
           TMailButtonWidget.fromIcon(
-            icon: _imagePaths.icCancel,
+            icon: imagePaths.icCancel,
             backgroundColor: Colors.transparent,
             tooltipMessage: AppLocalizations.of(context).saveAndClose,
             iconSize: MobileAppBarComposerWidgetStyle.iconSize,
@@ -49,7 +49,7 @@ class AppBarComposerWidget extends StatelessWidget {
           ),
           const Spacer(),
           TMailButtonWidget.fromIcon(
-            icon: _imagePaths.icRichToolbar,
+            icon: imagePaths.icRichToolbar,
             iconColor: MobileAppBarComposerWidgetStyle.iconColor,
             backgroundColor: Colors.transparent,
             iconSize: MobileAppBarComposerWidgetStyle.richTextIconSize,
@@ -61,7 +61,7 @@ class AppBarComposerWidget extends StatelessWidget {
             ...[
               const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
               TMailButtonWidget.fromIcon(
-                icon: _imagePaths.icAttachFile,
+                icon: imagePaths.icAttachFile,
                 iconColor: MobileAppBarComposerWidgetStyle.iconColor,
                 backgroundColor: Colors.transparent,
                 iconSize: MobileAppBarComposerWidgetStyle.iconSize,
@@ -70,7 +70,7 @@ class AppBarComposerWidget extends StatelessWidget {
               ),
               const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
               TMailButtonWidget.fromIcon(
-                icon: _imagePaths.icInsertImage,
+                icon: imagePaths.icInsertImage,
                 iconColor: MobileAppBarComposerWidgetStyle.iconColor,
                 backgroundColor: Colors.transparent,
                 iconSize: MobileAppBarComposerWidgetStyle.iconSize,
@@ -81,8 +81,8 @@ class AppBarComposerWidget extends StatelessWidget {
             ],
           TMailButtonWidget.fromIcon(
             icon: isSendButtonEnabled
-              ? _imagePaths.icSendMobile
-              : _imagePaths.icSendDisable,
+              ? imagePaths.icSendMobile
+              : imagePaths.icSendDisable,
             backgroundColor: Colors.transparent,
             padding: MobileAppBarComposerWidgetStyle.iconPadding,
             iconSize: MobileAppBarComposerWidgetStyle.sendButtonIconSize,
@@ -91,7 +91,7 @@ class AppBarComposerWidget extends StatelessWidget {
           ),
           const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
           TMailButtonWidget.fromIcon(
-            icon: _imagePaths.icMore,
+            icon: imagePaths.icMore,
             iconColor: MobileAppBarComposerWidgetStyle.iconColor,
             backgroundColor: Colors.transparent,
             padding: MobileAppBarComposerWidgetStyle.iconPadding,
