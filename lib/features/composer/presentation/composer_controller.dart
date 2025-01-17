@@ -44,6 +44,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/restore_email_inlin
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/upload_attachment_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
@@ -709,8 +710,15 @@ class ComposerController extends BaseController
             inlineImages: arguments.inlineImages);
 
           final accountId = mailboxDashBoardController.accountId.value;
-          final downloadUrl = mailboxDashBoardController.sessionCurrent
-            ?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
+          dynamic downloadUrl;
+          try {
+            downloadUrl = mailboxDashBoardController.sessionCurrent
+              ?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
+          } catch (e) {
+            logError('ComposerController::_initEmail(): $e');
+            downloadUrl = null;
+          }
+
           if (accountId == null || downloadUrl == null) return;
           _getEmailContentFromSessionStorageBrowser(
             htmlContent: arguments.emailContents ?? '',
@@ -1226,15 +1234,21 @@ class ComposerController extends BaseController
     );
   }
 
+
   void _uploadAttachmentsAction({required List<FileInfo> pickedFiles}) {
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     if (session != null && accountId != null) {
-      final uploadUri = session.getUploadUri(accountId, jmapUrl: dynamicUrlInterceptors.jmapUrl);
-      uploadController.justUploadAttachmentsAction(
-        uploadFiles: pickedFiles,
-        uploadUri: uploadUri,
-      );
+      try {
+        final uploadUri = session.getUploadUri(accountId, jmapUrl: dynamicUrlInterceptors.jmapUrl);
+        uploadController.justUploadAttachmentsAction(
+          uploadFiles: pickedFiles,
+          uploadUri: uploadUri,
+        );
+      } catch (e) {
+        log('ComposerController::_uploadAttachmentsAction: $e');
+        uploadController.consumeState(Stream.value(Left(UploadAttachmentFailure(e, pickedFiles[0]))));
+      }
     } else {
       log('ComposerController::_uploadAttachmentsAction: SESSION OR ACCOUNT_ID is NULL');
     }
@@ -1407,15 +1421,20 @@ class ComposerController extends BaseController
       return;
     }
 
-    consumeState(_getEmailContentInteractor.execute(
-      session,
-      accountId,
-      emailId,
-      mailboxDashBoardController.baseDownloadUrl,
-      TransformConfiguration.forEditDraftsEmail(),
-      additionalProperties: Properties({
-        IndividualHeaderIdentifier.identityHeader.value}),
-    ));
+    try {
+      consumeState(_getEmailContentInteractor.execute(
+        session,
+        accountId,
+        emailId,
+        mailboxDashBoardController.baseDownloadUrl,
+        TransformConfiguration.forEditDraftsEmail(),
+        additionalProperties: Properties({
+          IndividualHeaderIdentifier.identityHeader.value}),
+      ));
+    } catch (e) {
+      logError('ComposerController::_handleUploadInlineSuccess(): $e');
+      consumeState(Stream.value(Left(GetEmailContentFailure(e))));
+    }
   }
 
   void _getEmailContentOffLineSuccess(GetEmailContentFromCacheSuccess success) {
@@ -1855,7 +1874,12 @@ class ComposerController extends BaseController
   void _handleUploadInlineSuccess(SuccessAttachmentUploadState uploadState) {
     uploadController.clearUploadInlineViewState();
 
-    final baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
+    String? baseDownloadUrl;
+    try {
+      baseDownloadUrl = mailboxDashBoardController.sessionCurrent?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
+    } catch (e) {
+      logError('ComposerController::_handleUploadInlineSuccess(): $e');
+    }
     final accountId = mailboxDashBoardController.accountId.value;
 
     if (baseDownloadUrl != null && accountId != null) {
@@ -1867,6 +1891,9 @@ class ComposerController extends BaseController
         uploadState.fileInfo,
         maxWidth: maxWithEditor,
       ));
+    } else {
+      log('ComposerController::_handleUploadInlineFailure(): baseDownloadUrl: $baseDownloadUrl, accountId: $accountId');
+      consumeState(Stream.value(Left(DownloadImageAsBase64Failure(e))));
     }
   }
 

@@ -1,0 +1,1 @@
+class UnknownUriException implements Exception {}

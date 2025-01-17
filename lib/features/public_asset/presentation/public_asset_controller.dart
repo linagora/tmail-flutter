@@ -9,6 +9,7 @@ import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -126,6 +127,8 @@ class PublicAssetController extends BaseController {
       _handleCreatePublicAssetFailureState();
     } else if (failure is PublicAssetOverQuotaFailureState) {
       _handlePublicAssetOverQuotaFailureState(failure);
+    } else if (failure is UploadAttachmentFailure) {
+      _handleUploadAttachmentFailure(failure);
     }
   }
 
@@ -153,6 +156,21 @@ class PublicAssetController extends BaseController {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).generalSignatureImageUploadError);
+    }
+  }
+
+  void _handleUploadAttachmentFailure(UploadAttachmentFailure failure) {
+    if (currentContext != null && currentOverlayContext != null) {
+      appToast.showToastErrorMessage(
+          currentOverlayContext!,
+          failure.fileInfo.isInline == true
+              ? AppLocalizations.of(currentContext!).thisImageCannotBeAdded
+              : AppLocalizations.of(currentContext!).can_not_upload_this_file_as_attachments,
+          leadingSVGIconColor: Colors.white,
+          leadingSVGIcon: failure.fileInfo.isInline == true
+              ? imagePaths.icInsertImage
+              : imagePaths.icAttachment
+      );
     }
   }
 
@@ -206,8 +224,13 @@ class PublicAssetController extends BaseController {
     if (session == null || accountId == null) return;
 
     final fileInfo = platformFile.toFileInfo();
-    final uploadUri = session!.getUploadUri(accountId!, jmapUrl: dynamicUrlInterceptors.jmapUrl);
-    consumeState(_uploadAttachmentInteractor.execute(fileInfo, uploadUri));
+    try {
+      final uploadUri = session!.getUploadUri(accountId!, jmapUrl: dynamicUrlInterceptors.jmapUrl);
+      consumeState(_uploadAttachmentInteractor.execute(fileInfo, uploadUri));
+    } catch (e) {
+      log('PublicAssetController::_uploadFileToBlobAction: $e');
+      consumeState(Stream.value(Left(UploadAttachmentFailure(e, fileInfo))));
+    }
   }
 
   void discardChanges() {

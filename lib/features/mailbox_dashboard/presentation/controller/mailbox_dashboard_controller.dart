@@ -2755,7 +2755,14 @@ class MailboxDashBoardController extends ReloadableController
     dispatchAction(SelectionAllEmailAction());
   }
 
-  String get baseDownloadUrl => sessionCurrent?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl) ?? '';
+  String get baseDownloadUrl {
+    try {
+      return sessionCurrent?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl) ?? '';
+    } catch (e) {
+      logError('MailboxDashboardController::baseDownloadUrl(): $e');
+      return '';
+    }
+  }
 
   void redirectToInboxAction() {
     log('MailboxDashBoardController::redirectToInboxAction:');
