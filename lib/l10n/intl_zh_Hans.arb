@@ -129,7 +129,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_multiple_item_as_read": "已将 {count} 封邮件标记为已读",
+  "marked_multiple_item_as_read": "已将 {count} 项标记为已读",
   "@marked_multiple_item_as_read": {
     "type": "text",
     "placeholders_order": [
@@ -167,7 +167,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requiredEmail": "邮件地址必填",
+  "requiredEmail": "请填写电子邮件",
   "@requiredEmail": {
     "type": "text",
     "placeholders_order": [],
@@ -185,7 +185,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "discard": "丢弃",
+  "discard": "舍弃",
   "@discard": {
     "type": "text",
     "placeholders_order": [],
@@ -251,7 +251,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requiredPassword": "密码必填",
+  "requiredPassword": "请填写密码",
   "@requiredPassword": {
     "type": "text",
     "placeholders_order": [],
@@ -281,13 +281,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "nameOfFolderIsRequired": "文件夹名称必填",
+  "nameOfFolderIsRequired": "请填写文件夹名称",
   "@nameOfFolderIsRequired": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "your_email_being_sent": "正在发送您的电子邮件…",
+  "your_email_being_sent": "正在发送您的邮件…",
   "@your_email_being_sent": {
     "type": "text",
     "placeholders_order": [],
@@ -335,7 +335,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requiredUrl": "服务器地址必填",
+  "requiredUrl": "请填写服务器地址",
   "@requiredUrl": {
     "type": "text",
     "placeholders_order": [],
@@ -417,7 +417,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_without_recipient": "您的电子邮件应至少有一位收件人",
+  "message_dialog_send_email_without_recipient": "您的邮件应至少有一位收件人",
   "@message_dialog_send_email_without_recipient": {
     "type": "text",
     "placeholders_order": [],
@@ -435,7 +435,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_as_starred": "添加星标",
+  "mark_as_starred": "标记为星标邮件",
   "@mark_as_starred": {
     "type": "text",
     "placeholders_order": [],
@@ -453,7 +453,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "compose": "撰写",
+  "compose": "写邮件",
   "@compose": {
     "type": "text",
     "placeholders_order": [],
@@ -493,13 +493,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_content_email_composer": "在此处开始撰写电子邮件",
+  "hint_content_email_composer": "在此处开始写邮件",
   "@hint_content_email_composer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "marked_multiple_item_as_unread": "已将 {count} 封邮件标记为未读",
+  "marked_multiple_item_as_unread": "已将 {count} 项标记为未读",
   "@marked_multiple_item_as_unread": {
     "type": "text",
     "placeholders_order": [
@@ -695,7 +695,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "empty_trash_dialog_message": "您即将永久删除已删除邮件中的全部邮件。是否要继续？",
+  "empty_trash_dialog_message": "您即将永久删除已删除邮件中的全部内容。是否要继续？",
   "@empty_trash_dialog_message": {
     "type": "text",
     "placeholders_order": [],
@@ -731,7 +731,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "archiveMessage": "存档邮件",
+  "archiveMessage": "归档邮件",
   "@archiveMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -815,7 +815,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "not_starred": "无星标",
+  "not_starred": "非星标邮件",
   "@not_starred": {
     "type": "text",
     "placeholders_order": [],
@@ -881,7 +881,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "un_star": "取消星标",
+  "un_star": "移除星标",
   "@un_star": {
     "type": "text",
     "placeholders_order": [],
@@ -1085,7 +1085,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "search_emails": "搜索电子邮件",
+  "search_emails": "搜索邮件",
   "@search_emails": {
     "type": "text",
     "placeholders_order": [],
@@ -1467,7 +1467,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "archiveMailboxDisplayName": "存档",
+  "archiveMailboxDisplayName": "归档",
   "@archiveMailboxDisplayName": {
     "type": "text",
     "placeholders_order": [],
@@ -1715,7 +1715,7 @@
       "filterOption": {}
     }
   },
-  "starred": "已加星标",
+  "starred": "星标邮件",
   "@starred": {
     "type": "text",
     "placeholders_order": [],
@@ -1727,7 +1727,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "select_all": "选择全部",
+  "select_all": "全选",
   "@select_all": {
     "type": "text",
     "placeholders_order": [],
@@ -1843,7 +1843,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "delete_multiple_messages_dialog": "您即将永久删除{mailboxName}中的 {count} 封邮件。是否要继续？",
+  "delete_multiple_messages_dialog": "您即将永久删除{mailboxName}中的 {count} 项。是否要继续？",
   "@delete_multiple_messages_dialog": {
     "type": "text",
     "placeholders_order": [
@@ -1891,7 +1891,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "star": "星标",
+  "star": "加注星标",
   "@star": {
     "type": "text",
     "placeholders_order": [],
@@ -2083,7 +2083,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageIsRequired": "邮件必填",
+  "messageIsRequired": "请填写邮件",
   "@messageIsRequired": {
     "type": "text",
     "placeholders_order": [],
@@ -2835,7 +2835,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailReadReceipts": "电子邮件已读回执",
+  "emailReadReceipts": "邮件已读回执",
   "@emailReadReceipts": {
     "type": "text",
     "placeholders_order": [],
@@ -3325,6 +3325,106 @@
   },
   "multipleIntegrations": "多种集成",
   "@multipleIntegrations": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptySpamMessageDialog": "您即将永久删除垃圾邮件中的全部内容。是否要继续？",
+  "@emptySpamMessageDialog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "teamMailBoxes": "团队邮箱",
+  "@teamMailBoxes": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageCannotFoundEmailIdWhenSendReceipt": "无法找到给定的电子邮件 ID",
+  "@toastMessageCannotFoundEmailIdWhenSendReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "marked_unstar_multiple_item": "已为 {count} 项移除星标",
+  "@marked_unstar_multiple_item": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "discardChanges": "舍弃更改",
+  "@discardChanges": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageCannotFoundIdentityWhenSendReceipt": "无法找到给定的身份 ID",
+  "@toastMessageCannotFoundIdentityWhenSendReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAsMailboxReadSuccess": "您已将“{mailboxName}”中的全部邮件标记为已读",
+  "@toastMessageMarkAsMailboxReadSuccess": {
+    "type": "text",
+    "placeholders_order": [
+      "mailboxName"
+    ],
+    "placeholders": {
+      "mailboxName": {}
+    }
+  },
+  "totalEmailSelected": "取消全选 ({count})",
+  "@totalEmailSelected": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "toastMsgHideFolderSuccess": "此文件夹已从主文件夹中隐藏",
+  "@toastMsgHideFolderSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAsMailboxReadHasSomeEmailFailure": "您已将“{mailboxName}”中的 {count} 封邮件标记为已读",
+  "@toastMessageMarkAsMailboxReadHasSomeEmailFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "mailboxName",
+      "count"
+    ],
+    "placeholders": {
+      "mailboxName": {},
+      "count": {}
+    }
+  },
+  "marked_star_multiple_item": "已为 {count} 项加注星标",
+  "@marked_star_multiple_item": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "addRecipientButton": "添加收件人",
+  "@addRecipientButton": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageShowFolderSuccess": "此文件夹已显示在您的主文件夹中",
+  "@toastMessageShowFolderSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
