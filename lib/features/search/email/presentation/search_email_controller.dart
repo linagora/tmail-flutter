@@ -215,7 +215,9 @@ class SearchEmailController extends BaseController
       currentSearchText.value = value;
       _updateSimpleSearchFilter(
         textOption: option(value.isNotEmpty, SearchQuery(value)),
-        beforeOption: const None(),
+          beforeOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
+              ? const None()
+              : null,
         positionOption: option(searchEmailFilter.value.sortOrderType.isScrollByPosition(), 0)
       );
       if (value.isNotEmpty && session != null && accountId != null) {
@@ -319,7 +321,9 @@ class SearchEmailController extends BaseController
         : ThreadConstants.defaultLimit;
 
       _updateSimpleSearchFilter(
-        beforeOption: const None(),
+        beforeOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
+            ? const None()
+            : null,
         positionOption: option(searchEmailFilter.value.sortOrderType.isScrollByPosition(), 0),
       );
 
@@ -435,7 +439,9 @@ class SearchEmailController extends BaseController
 
     _updateSimpleSearchFilter(
       positionOption: option(searchEmailFilter.value.sortOrderType.isScrollByPosition(), 0),
-      beforeOption: const None(),
+      beforeOption: !searchEmailFilter.value.sortOrderType.isScrollByPosition()
+          ? const None()
+          : null,
     );
 
     consumeState(_searchEmailInteractor.execute(
@@ -484,10 +490,7 @@ class SearchEmailController extends BaseController
       final lastEmail = listResultSearch.last;
 
       if (searchEmailFilter.value.sortOrderType.isScrollByPosition()) {
-        _updateSimpleSearchFilter(
-          positionOption: Some(listResultSearch.length),
-          beforeOption: const None()
-        );
+        _updateSimpleSearchFilter(positionOption: Some(listResultSearch.length));
       } else if (searchEmailFilter.value.sortOrderType == EmailSortOrderType.oldest) {
         _updateSimpleSearchFilter(startDateOption: optionOf(lastEmail.receivedAt));
       } else {
