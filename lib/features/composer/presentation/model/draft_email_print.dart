@@ -6,7 +6,6 @@ class DraftEmailPrint extends EmailPrint {
     required super.appName,
     required super.userName,
     required super.emailContent,
-    required super.locale,
     required super.fromPrefix,
     required super.toPrefix,
     required super.ccPrefix,

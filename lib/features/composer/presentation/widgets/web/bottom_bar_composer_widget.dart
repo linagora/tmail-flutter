@@ -1,8 +1,11 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/base/widget/highlight_svg_icon_on_hover.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_menu_overlay_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/web/bottom_bar_composer_widget_style.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/web/mobile_responsive_app_bar_composer_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class BottomBarComposerWidget extends StatelessWidget {
@@ -12,13 +15,16 @@ class BottomBarComposerWidget extends StatelessWidget {
   final bool isPrintDraftEnabled;
   final bool isFormattingOptionsEnabled;
   final bool hasReadReceipt;
+  final CustomPopupMenuController menuMoreOptionController;
   final VoidCallback openRichToolbarAction;
   final VoidCallback attachFileAction;
   final VoidCallback insertImageAction;
   final VoidCallback deleteComposerAction;
   final VoidCallback saveToDraftAction;
   final VoidCallback sendMessageAction;
-  final OnOpenContextMenuAction openContextMenuAction;
+  final VoidCallback toggleCodeViewAction;
+  final VoidCallback toggleRequestReadReceiptAction;
+  final VoidCallback printDraftAction;
 
   const BottomBarComposerWidget({
     super.key,
@@ -27,13 +33,16 @@ class BottomBarComposerWidget extends StatelessWidget {
     required this.isPrintDraftEnabled,
     required this.isFormattingOptionsEnabled,
     required this.hasReadReceipt,
+    required this.menuMoreOptionController,
     required this.openRichToolbarAction,
     required this.attachFileAction,
     required this.insertImageAction,
     required this.deleteComposerAction,
     required this.saveToDraftAction,
     required this.sendMessageAction,
-    required this.openContextMenuAction,
+    required this.toggleCodeViewAction,
+    required this.toggleRequestReadReceiptAction,
+    required this.printDraftAction,
   });
 
   @override
@@ -84,13 +93,56 @@ class BottomBarComposerWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(width: BottomBarComposerWidgetStyle.space),
-          TMailButtonWidget.fromIcon(
-            icon: imagePaths.icMore,
-            iconColor: BottomBarComposerWidgetStyle.iconColor,
-            backgroundColor: Colors.transparent,
-            iconSize: BottomBarComposerWidgetStyle.iconSize,
-            tooltipMessage: AppLocalizations.of(context).more,
-            onTapActionAtPositionCallback: openContextMenuAction,
+          PopupMenuOverlayWidget(
+            controller: menuMoreOptionController,
+            iconButton: HighlightSVGIconOnHover(
+              icon: imagePaths.icMore,
+              size: BottomBarComposerWidgetStyle.iconSize,
+              iconColor: BottomBarComposerWidgetStyle.iconColor,
+              tooltipMessage: AppLocalizations.of(context).more,
+            ),
+            listButtonAction: [
+              PopupItemWidget(
+                imagePaths.icStyleCodeView,
+                AppLocalizations.of(context).embedCode,
+                styleName: BottomBarComposerWidgetStyle.popupItemTextStyle,
+                colorIcon: BottomBarComposerWidgetStyle.iconColor,
+                padding: BottomBarComposerWidgetStyle.popupItemPadding,
+                selectedIcon: imagePaths.icFilterSelected,
+                isSelected: isCodeViewEnabled,
+                onCallbackAction: () {
+                  menuMoreOptionController.hideMenu();
+                  toggleCodeViewAction();
+                },
+              ),
+              PopupItemWidget(
+                imagePaths.icReadReceipt,
+                AppLocalizations.of(context).requestReadReceipt,
+                styleName: BottomBarComposerWidgetStyle.popupItemTextStyle,
+                padding: BottomBarComposerWidgetStyle.popupItemPadding,
+                colorIcon: BottomBarComposerWidgetStyle.iconColor,
+                selectedIcon: imagePaths.icFilterSelected,
+                isSelected: hasReadReceipt,
+                onCallbackAction: () {
+                  menuMoreOptionController.hideMenu();
+                  toggleRequestReadReceiptAction();
+                },
+              ),
+              if (isPrintDraftEnabled)
+                PopupItemWidget(
+                  imagePaths.icPrinter,
+                  AppLocalizations.of(context).print,
+                  colorIcon: BottomBarComposerWidgetStyle.iconColor,
+                  styleName: BottomBarComposerWidgetStyle.popupItemTextStyle,
+                  padding: BottomBarComposerWidgetStyle.popupItemPadding,
+                  onCallbackAction: () {
+                    menuMoreOptionController.hideMenu();
+                    printDraftAction();
+                  },
+                ),
+            ],
+            arrangeAsList: true,
+            position: null,
           ),
           const Spacer(),
           TMailButtonWidget.fromIcon(

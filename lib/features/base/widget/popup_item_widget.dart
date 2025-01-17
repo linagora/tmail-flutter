@@ -34,37 +34,40 @@ class PopupItemWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return PointerInterceptor(
-      child: InkWell(
-        onTap: onCallbackAction,
-        child: Container(
-          height: PopupItemWidgetStyle.height,
-          constraints: const BoxConstraints(minWidth: PopupItemWidgetStyle.minWidth),
-          padding: padding,
-          child: Row(children: [
-            SvgPicture.asset(
-              _iconAction,
-              width: iconSize ?? PopupItemWidgetStyle.iconSize,
-              height: iconSize ?? PopupItemWidgetStyle.iconSize,
-              fit: BoxFit.fill,
-              colorFilter: colorIcon?.asFilter()
-            ),
-            const SizedBox(width: PopupItemWidgetStyle.space),
-            Expanded(child: Text(
-              _nameAction,
-              style: styleName ?? PopupItemWidgetStyle.labelTextStyle
-            )),
-            if (isSelected == true && selectedIcon != null)
-              Padding(
-                padding: PopupItemWidgetStyle.iconSelectedPadding,
-                child: SvgPicture.asset(
-                  selectedIcon!,
-                  width: PopupItemWidgetStyle.selectedIconSize,
-                  height: PopupItemWidgetStyle.selectedIconSize,
-                  fit: BoxFit.fill
-                ),
-              )
-          ]),
-        )
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: onCallbackAction,
+          child: Container(
+            height: PopupItemWidgetStyle.height,
+            constraints: const BoxConstraints(minWidth: PopupItemWidgetStyle.minWidth),
+            padding: padding,
+            child: Row(children: [
+              SvgPicture.asset(
+                _iconAction,
+                width: iconSize ?? PopupItemWidgetStyle.iconSize,
+                height: iconSize ?? PopupItemWidgetStyle.iconSize,
+                fit: BoxFit.fill,
+                colorFilter: colorIcon?.asFilter()
+              ),
+              const SizedBox(width: PopupItemWidgetStyle.space),
+              Expanded(child: Text(
+                _nameAction,
+                style: styleName ?? PopupItemWidgetStyle.labelTextStyle
+              )),
+              if (isSelected == true && selectedIcon != null)
+                Padding(
+                  padding: PopupItemWidgetStyle.iconSelectedPadding,
+                  child: SvgPicture.asset(
+                    selectedIcon!,
+                    width: PopupItemWidgetStyle.selectedIconSize,
+                    height: PopupItemWidgetStyle.selectedIconSize,
+                    fit: BoxFit.fill
+                  ),
+                )
+            ]),
+          )
+        ),
       ),
     );
   }
