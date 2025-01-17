@@ -163,7 +163,6 @@ class ContactController extends BaseController with AutoCompleteResultMixin {
 
     final autoCompletePattern = AutoCompletePattern(
       word: queryString,
-      limit: 30,
       accountId: _accountId);
 
     if (_contactSuggestionSource == ContactSuggestionSource.all) {
