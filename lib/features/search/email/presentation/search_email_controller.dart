@@ -490,10 +490,7 @@ class SearchEmailController extends BaseController
       final lastEmail = listResultSearch.last;
 
       if (searchEmailFilter.value.sortOrderType.isScrollByPosition()) {
-        _updateSimpleSearchFilter(
-          positionOption: Some(listResultSearch.length),
-          beforeOption: const None()
-        );
+        _updateSimpleSearchFilter(positionOption: Some(listResultSearch.length));
       } else if (searchEmailFilter.value.sortOrderType == EmailSortOrderType.oldest) {
         _updateSimpleSearchFilter(startDateOption: optionOf(lastEmail.receivedAt));
       } else {

@@ -666,7 +666,9 @@ class ThreadController extends BaseController with EmailActionController {
         _searchEmailFilter.sortOrderType.isScrollByPosition(),
         0,
       ),
-      beforeOption: const None(),
+      beforeOption: !_searchEmailFilter.sortOrderType.isScrollByPosition()
+          ? const None()
+          : null,
     );
     final searchViewState = await _searchEmailInteractor.execute(
       _session!,
