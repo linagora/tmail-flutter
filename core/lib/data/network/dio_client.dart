@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:core/data/extensions/options_extensions.dart';
 import 'package:dio/dio.dart';
+import 'package:dio/io.dart';
 
 class DioClient {
   static const jmapHeader = 'application/json;jmapVersion=rfc-8621';
@@ -97,5 +98,14 @@ class DioClient {
         onReceiveProgress: onReceiveProgress)
       .then((value) => value.data)
       .catchError((error) => throw(error));
+  }
+
+  void acceptSelfSignedCertificates(bool accept) {
+    _dio.httpClientAdapter = IOHttpClientAdapter()..onHttpClientCreate = (HttpClient client) {
+      client.badCertificateCallback = (X509Certificate cert, String host, int port) => accept;
+      return client;
+    };
+
+    _dio.interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
   }
 }

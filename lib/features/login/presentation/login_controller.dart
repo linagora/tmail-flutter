@@ -88,6 +88,7 @@ class LoginController extends ReloadableController {
   UserName? _username;
   Password? _password;
   Uri? _baseUri;
+  RxBool acceptSelfSigned = false.obs;
 
   LoginController(
     this._authenticationInteractor,
@@ -253,7 +254,8 @@ class LoginController extends ReloadableController {
       consumeState(_checkOIDCIsAvailableInteractor.execute(
         OIDCRequest(
           baseUrl: _currentBaseUrl!.toString(),
-          resourceUrl: _currentBaseUrl!.origin
+          resourceUrl: _currentBaseUrl!.origin,
+          acceptSelfSigned: acceptSelfSigned.value
         )
       ));
     }
@@ -280,6 +282,7 @@ class LoginController extends ReloadableController {
       case LoginFormType.passwordForm:
         _password = null;
         _baseUri = null;
+        acceptSelfSigned = false.obs;
         urlInputController.clear();
         passwordInputController.clear();
         loginFormType.value = LoginFormType.dnsLookupForm;
@@ -549,6 +552,11 @@ class LoginController extends ReloadableController {
       }
       _baseUri = Uri.tryParse(value.formatURLValid());
     }
+  }
+
+  void onAcceptSelfSignedChange(bool? value) {
+    log('LoginController::onAcceptSelfSignedChange:value: $value');
+    acceptSelfSigned.value = value ?? false;
   }
 
   void _clearTextInputField() {

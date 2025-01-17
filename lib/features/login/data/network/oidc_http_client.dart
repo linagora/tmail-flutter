@@ -23,6 +23,7 @@ class OIDCHttpClient {
 
   Future<OIDCResponse> checkOIDCIsAvailable(OIDCRequest oidcRequest) async {
     try {
+      _dioClient.acceptSelfSignedCertificates(oidcRequest.acceptSelfSigned);
       final result = await _dioClient.get(
         Endpoint.webFinger
           .generateOIDCPath(Uri.parse(oidcRequest.baseUrl))

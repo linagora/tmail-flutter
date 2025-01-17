@@ -1389,6 +1389,12 @@ class AppLocalizations {
         name: 'hasAttachment');
   }
 
+  String get acceptSelfSignedCertificates {
+    return Intl.message(
+        'Accept self-signed certificates',
+        name: 'acceptSelfSignedCertificates');
+  }
+
   String get last7Days {
     return Intl.message(
         'Last 7 days',
@@ -1578,6 +1584,13 @@ class AppLocalizations {
     return Intl.message(
       'Advanced search',
       name: 'advancedSearch',
+    );
+  }
+
+  String get advancedOptions {
+    return Intl.message(
+      'Advanced options',
+      name: 'advancedOptions',
     );
   }
 

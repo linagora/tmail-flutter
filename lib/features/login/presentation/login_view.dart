@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart'
 import 'package:tmail_ui_user/features/login/presentation/base_login_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/privacy_link_widget.dart';
+import 'package:tmail_ui_user/features/login/presentation/widgets/accept_self_signed_checkbox_widget.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/dns_lookup_input_form.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/horizontal_progress_loading_button.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/login_back_button.dart';
@@ -114,7 +115,12 @@ class LoginView extends BaseLoginView {
                     onTextSubmitted: (_) => controller.handleLoginPressed(context),
                   );
                 case LoginFormType.baseUrlForm:
-                  return _buildUrlInput(context);
+                  return Column(
+                    children: [
+                      _buildUrlInput(context),
+                      _buildAdvancedOptions(context)
+                    ],
+                  );
                 case LoginFormType.credentialForm:
                   return buildInputCredentialForm(context);
                 default:
@@ -131,6 +137,19 @@ class LoginView extends BaseLoginView {
         ),
       )
     );
+  }
+
+  Widget _buildAdvancedOptions(context) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 24, left: 24, bottom: 24, top: 240),
+      child: ExpansionTile(
+        title: Text(AppLocalizations.of(context).advancedOptions),
+        initiallyExpanded: controller.acceptSelfSigned.value,
+        children: [Obx(() => AcceptSelfSignedCheckBoxWidget(
+          acceptSelfSignedValue: controller.acceptSelfSigned.value,
+          onChanged: controller.onAcceptSelfSignedChange
+        ))],
+    ));
   }
 
   Widget _buildUrlInput(BuildContext context) {
