@@ -2002,12 +2002,11 @@ packages:
   super_tag_editor:
     dependency: "direct main"
     description:
-      path: "."
-      ref: fix-some-issue-with-suggestion-box
-      resolved-ref: "3ac885e6416f61f5888e5b9c5e8e07c182b57e71"
-      url: "https://github.com/dab246/super_tag_editor.git"
-    source: git
-    version: "0.3.0"
+      name: super_tag_editor
+      sha256: d49a4100253de1d46d2c9b20cd7f215129f105028f6ad8a7fba388a4e3b4df9d
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.1"
   syncfusion_flutter_core:
     dependency: transitive
     description:

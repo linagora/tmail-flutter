@@ -87,11 +87,6 @@ dependencies:
       url: https://github.com/linagora/flutter-date-range-picker.git
       ref: main
 
-  super_tag_editor:
-    git:
-      url: https://github.com/dab246/super_tag_editor.git
-      ref: fix-some-issue-with-suggestion-box
-
   # TODO: We will change it when the PR in upstream repository will be merged
   # https://github.com/dietfriends/dns_client/pull/9
   dns_client:
@@ -112,6 +107,8 @@ dependencies:
       ref: master
 
   ### Dependencies from pub.dev ###
+  super_tag_editor: 0.3.1
+
   cupertino_icons: 1.0.6
 
   get: 4.6.6
