@@ -436,12 +436,7 @@ class HtmlUtils {
   ) {
     try {
       if (isFullScreen) {
-        final screenWidth = html.window.screen?.width;
-        final screenHeight = html.window.screen?.height;
-
-        final options = 'width=$screenWidth,height=$screenHeight';
-
-        html.window.open(url, '_blank', options);
+        html.window.open(url, '_blank');
 
         html.Url.revokeObjectUrl(url);
         return true;
