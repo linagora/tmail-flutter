@@ -43,6 +43,12 @@ mixin EmailActionController {
     mailboxDashBoardController.goToComposer(ComposerArguments.editDraftEmail(presentationEmail));
   }
 
+  void editAsNewEmail(PresentationEmail presentationEmail) {
+    mailboxDashBoardController.goToComposer(
+      ComposerArguments.fromPresentationEmail(presentationEmail),
+    );
+  }
+
   void previewEmail(PresentationEmail presentationEmail) {
     log('EmailActionController::previewEmail():presentationEmailId: ${presentationEmail.id}');
     mailboxDashBoardController.openEmailDetailedView(presentationEmail);

@@ -50,6 +50,7 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
       case EmailActionType.reopenComposerBrowser:
       case EmailActionType.composeFromMailtoUri:
       case EmailActionType.composeFromUnsubscribeMailtoLink:
+      case EmailActionType.composeFromPresentationEmail:
         if (contentViewState == null) {
           return const SizedBox.shrink();
         }
@@ -64,9 +65,12 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
             if (success is GetEmailContentLoading) {
               return const CupertinoLoadingWidget(padding: EdgeInsets.all(16.0));
             } else {
-              var newContent = success is GetEmailContentSuccess
-                ? success.htmlEmailContent
-                : HtmlExtension.editorStartTags;
+              var newContent = HtmlExtension.editorStartTags;
+              if (success is GetEmailContentSuccess) {
+                newContent = success.htmlEmailContent;
+              } else if (success is GetEmailContentFromCacheSuccess) {
+                newContent = success.htmlEmailContent;
+              }
               if (newContent.isEmpty) {
                 newContent = HtmlExtension.editorStartTags;
               }

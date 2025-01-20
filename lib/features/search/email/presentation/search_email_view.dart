@@ -39,6 +39,7 @@ import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_til
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class SearchEmailView extends GetWidget<SearchEmailController>
     with AppLoaderMixin {
@@ -746,6 +747,8 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   List<Widget> _contextMenuActionTile(BuildContext context, PresentationEmail email) {
     return <Widget>[
       _markAsEmailSpamOrUnSpamAction(context, email),
+      if (email.mailboxContain?.isDrafts == false)
+        _editAsNewEmailContextMenuItemAction(context, email),
     ];
   }
 
@@ -778,11 +781,44 @@ class SearchEmailView extends GetWidget<SearchEmailController>
       .build();
   }
 
+  Widget _editAsNewEmailContextMenuItemAction(
+    BuildContext context,
+    PresentationEmail email,
+  ) {
+    return (
+      EmailActionCupertinoActionSheetActionBuilder(
+        const Key('edit_as_new_email_action'),
+        SvgPicture.asset(
+          controller.imagePaths.icEdit,
+          width: 24,
+          height: 24,
+          fit: BoxFit.fill,
+          colorFilter: AppColor.colorTextButton.asFilter()
+        ),
+        AppLocalizations.of(context).editAsNewEmail,
+        email,
+        iconLeftPadding: controller.responsiveUtils.isMobile(context)
+          ? const EdgeInsetsDirectional.only(start: 12, end: 16)
+          : const EdgeInsetsDirectional.only(end: 12),
+        iconRightPadding: controller.responsiveUtils.isMobile(context)
+          ? const EdgeInsetsDirectional.only(start: 12)
+          : EdgeInsets.zero)
+      ..onActionClick((email) {
+        popBack();
+        controller.editAsNewEmail(email);
+      })
+    ).build();
+  }
+
   List<PopupMenuEntry> _popupMenuActionTile(BuildContext context, PresentationEmail email) {
     return [
       PopupMenuItem(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: _markAsEmailSpamOrUnSpamAction(context, email)),
+      if (email.mailboxContain?.isDrafts == false)
+        PopupMenuItem(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: _editAsNewEmailContextMenuItemAction(context, email)),
     ];
   }
 
