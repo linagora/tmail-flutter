@@ -244,4 +244,14 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
   Future<EMLPreviewer> getPreviewEMLContentInMemory(String keyStored) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<void> markAsAnswered(Session session, AccountId accountId, List<EmailId> emailIds) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> markAsForwarded(Session session, AccountId accountId, List<EmailId> emailIds) {
+    throw UnimplementedError();
+  }
 }
