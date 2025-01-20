@@ -102,6 +102,12 @@ class ComposerArguments extends RouterArguments {
       emailActionType: EmailActionType.editDraft,
       presentationEmail: presentationEmail,
     );
+  
+  factory ComposerArguments.fromPresentationEmail(PresentationEmail presentationEmail) =>
+    ComposerArguments(
+      emailActionType: EmailActionType.composeFromPresentationEmail,
+      presentationEmail: presentationEmail,
+    );
 
   factory ComposerArguments.fromSessionStorageBrowser(ComposerCache composerCache) =>
     ComposerArguments(

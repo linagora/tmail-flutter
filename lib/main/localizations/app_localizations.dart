@@ -4321,4 +4321,10 @@ class AppLocalizations {
       name: 'downloadAttachmentInEMLPreviewWarningMessage',
     );
   }
+  String get editAsNewEmail {
+    return Intl.message(
+      'Edit as new email',
+      name: 'editAsNewEmail',
+    );
+  }
 }

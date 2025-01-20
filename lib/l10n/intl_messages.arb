@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-01-14T12:52:43.828907",
+  "@@last_modified": "2025-01-20T18:53:16.325121",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4110,6 +4110,12 @@
   },
   "downloadAttachmentInEMLPreviewWarningMessage": "Downloading attachment. You can only download one file at a time.",
   "@downloadAttachmentInEMLPreviewWarningMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editAsNewEmail": "Edit as new email",
+  "@editAsNewEmail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

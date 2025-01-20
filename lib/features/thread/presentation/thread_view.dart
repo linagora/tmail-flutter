@@ -697,6 +697,8 @@ class ThreadView extends GetWidget<ThreadController>
         _markAsEmailSpamOrUnSpamContextMenuItemAction(context, email, mailboxContain),
       if (mailboxContain?.isArchive == false)
         _archiveMessageContextMenuItemAction(context, email),
+      if (mailboxContain?.isDrafts == false)
+        _editAsNewEmailContextMenuItemAction(context, email),
     ];
   }
 
@@ -770,12 +772,41 @@ class ThreadView extends GetWidget<ThreadController>
         email,
         iconLeftPadding: controller.responsiveUtils.isMobile(context)
           ? const EdgeInsetsDirectional.only(start: 12, end: 16)
-          : const EdgeInsetsDirectional.only(start: 12),
+          : const EdgeInsetsDirectional.only(end: 12),
         iconRightPadding: controller.responsiveUtils.isMobile(context)
           ? const EdgeInsetsDirectional.only(start: 12)
           : EdgeInsets.zero
       )
       ..onActionClick((email) => controller.archiveMessage(context, email))
+    ).build();
+  }
+
+  Widget _editAsNewEmailContextMenuItemAction(
+    BuildContext context,
+    PresentationEmail email,
+  ) {
+    return (
+      EmailActionCupertinoActionSheetActionBuilder(
+        const Key('edit_as_new_email_action'),
+        SvgPicture.asset(
+          controller.imagePaths.icEdit,
+          width: 24,
+          height: 24,
+          fit: BoxFit.fill,
+          colorFilter: AppColor.colorTextButton.asFilter()
+        ),
+        AppLocalizations.of(context).editAsNewEmail,
+        email,
+        iconLeftPadding: controller.responsiveUtils.isMobile(context)
+          ? const EdgeInsetsDirectional.only(start: 12, end: 16)
+          : const EdgeInsetsDirectional.only(end: 12),
+        iconRightPadding: controller.responsiveUtils.isMobile(context)
+          ? const EdgeInsetsDirectional.only(start: 12)
+          : EdgeInsets.zero)
+      ..onActionClick((email) {
+        popBack();
+        controller.editAsNewEmail(email);
+      })
     ).build();
   }
 
@@ -788,6 +819,8 @@ class ThreadView extends GetWidget<ThreadController>
         _buildMarkAsSpamPopupMenuItem(context, email, mailboxContain),
       if (mailboxContain?.isArchive == false)
         _buildArchiveMessagePopupMenuItem(context, email),
+      if (mailboxContain?.isDrafts == false)
+        _buildEditAsNewEmailPopupMenuItem(AppLocalizations.of(context), email),
     ];
   }
 
@@ -860,6 +893,29 @@ class ThreadView extends GetWidget<ThreadController>
         onCallbackAction: () {
           popBack();
           controller.archiveMessage(context, email);
+        }
+      )
+    );
+  }
+
+  PopupMenuEntry _buildEditAsNewEmailPopupMenuItem(
+    AppLocalizations appLocalizations,
+    PresentationEmail email,
+  ) {
+    return PopupMenuItem(
+      padding: EdgeInsets.zero,
+      child: popupItem(
+        controller.imagePaths.icEdit,
+        appLocalizations.editAsNewEmail,
+        colorIcon: AppColor.colorTextButton,
+        styleName: const TextStyle(
+          fontWeight: FontWeight.w500,
+          fontSize: 16,
+          color: Colors.black
+        ),
+        onCallbackAction: () {
+          popBack();
+          controller.editAsNewEmail(email);
         }
       )
     );

@@ -88,6 +88,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
       case EmailActionType.reopenComposerBrowser:
       case EmailActionType.composeFromUnsubscribeMailtoLink:
       case EmailActionType.composeFromMailtoUri:
+      case EmailActionType.composeFromPresentationEmail:
         if (contentViewState == null) {
           return const SizedBox.shrink();
         }
