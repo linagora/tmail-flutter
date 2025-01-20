@@ -5,19 +5,35 @@
   s[d][e].push({p: "main.dart.js_8", e: "beginPart"});
 })(self, "$__dart_deferred_initializers__", "eventLog");
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
-  var A,
-  B = {
-    ContactView$() {
-      return new A.ContactView(null);
+  var B, C,
+  A = {
+    MailtoUrlView$() {
+      return new A.MailtoUrlView(null);
+    },
+    MailtoUrlView: function MailtoUrlView(t0) {
+      this.key = t0;
     }
   };
-  A = holdersList[0];
-  B = hunkHelpers.updateHolder(holdersList[7], B);
+  B = holdersList[0];
+  C = holdersList[2];
+  A = hunkHelpers.updateHolder(holdersList[5], A);
+  A.MailtoUrlView.prototype = {
+    build$1(context) {
+      var _null = null;
+      B.SystemChrome_setSystemUIOverlayStyle(C.SystemUiOverlayStyle_Esk);
+      return B.Container$(_null, C.SizedBox_0, C.Clip_0, C.Color_4294967295, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
+    }
+  };
   var typesOffset = hunkHelpers.updateTypes([]);
+  (function inheritance() {
+    var _inherit = hunkHelpers.inherit;
+    _inherit(A.MailtoUrlView, B.GetWidget);
+  })();
+  B._Universe_addRules(init.typeUniverse, JSON.parse('{"MailtoUrlView":{"GetWidget":["MailtoUrlController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailtoUrlController"}}'));
 };
 ;
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_8", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "01MsoPas14aLYsN/RhRL1nJbb7E=");
+})($__dart_deferred_initializers__, "V2GNH3JeOqKKvyR/A+p3lGVZS/0=");
 ;
