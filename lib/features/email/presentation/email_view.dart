@@ -503,7 +503,8 @@ class EmailView extends GetWidget<SingleEmailController> {
       if (mailboxContain?.isArchive == false)
         EmailActionType.archiveMessage,
       if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit)
-        EmailActionType.downloadMessageAsEML
+        EmailActionType.downloadMessageAsEML,
+      EmailActionType.composeFromPresentationEmail,
     ];
 
     if (position == null) {
