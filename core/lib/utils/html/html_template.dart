@@ -94,18 +94,19 @@ class HtmlTemplate {
         align-items: flex-start;
         gap: 10px;
       }
-  
-      .placeholder-icon {
-        width: 32px;
-        height: 32px;
+      
+      .circle {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        background-color: #f2f2f2;
-        border-radius: 50%;
-        color: #d9534f;
+        background: linear-gradient(to bottom, #a8e4d1, #56c2a6);
         font-size: 18px;
         font-weight: bold;
+        color: white;
+        text-transform: uppercase;
         flex-shrink: 0;
       }
   
