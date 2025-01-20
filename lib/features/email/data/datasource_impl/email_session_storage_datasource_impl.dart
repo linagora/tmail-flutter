@@ -242,4 +242,14 @@ class EmailSessionStorageDatasourceImpl extends EmailDataSource {
       return EMLPreviewer.fromJson(jsonDecode(data));
     }).catchError(_exceptionThrower.throwException);
   }
+
+  @override
+  Future<void> markAsAnswered(Session session, AccountId accountId, List<EmailId> emailIds) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> markAsForwarded(Session session, AccountId accountId, List<EmailId> emailIds) {
+    throw UnimplementedError();
+  }
 }
