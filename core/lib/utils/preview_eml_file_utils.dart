@@ -1,5 +1,6 @@
 
 import 'package:core/data/model/preview_attachment.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
@@ -36,7 +37,7 @@ class PreviewEmlFileUtils {
           <!-- Email Header -->
           <div class="email-header">
             <!-- Placeholder icon -->
-            <div class="placeholder-icon">?</div>
+            <div class="circle">${(senderName ?? senderEmailAddress ?? '?').firstLetterToUpperCase}</div>
       
             <!-- Email information -->
             <div class="email-info">
