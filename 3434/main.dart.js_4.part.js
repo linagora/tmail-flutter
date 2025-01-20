@@ -4845,7 +4845,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               if (resultState instanceof A.PrintEmailFailure) {
                 _this.printDraftButtonState = C.ButtonState_0;
                 if (context._widget != null)
-                  _this.appToast.showToastErrorMessage$2(context, A.Intl__message("Print draft failed", null, "printDraftFailed", null, null));
+                  _this.appToast.showToastErrorMessage$2(context, A.Intl__message("Printing failed", null, "printingFailed", null, null));
               } else if (resultState instanceof A.PrintEmailSuccess)
                 _this.printDraftButtonState = C.ButtonState_0;
             case 1:
@@ -8841,7 +8841,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = A._setArrayType([t4, A.PopupItemWidget$("assets/images/ic_read_receipt.svg", A.Intl__message("Request read receipt", _null, "requestReadReceipt", _null, _null), D.Color_4283787389, _null, _this.hasReadReceipt, new B.BottomBarComposerWidget_build_closure0(_this), C.EdgeInsetsDirectional_12_0_12_0, _s36_, C.TextStyle_69t6)], t7);
       if (_this.isPrintDraftEnabled) {
         A.Localizations_of(context, C.Type_AppLocalizations_CTL, t2).toString;
-        t4.push(A.PopupItemWidget$("assets/images/ic_printer.svg", A.Intl__message("Print draft", _null, "printDraft", _null, _null), D.Color_4283787389, _null, _null, new B.BottomBarComposerWidget_build_closure1(_this), C.EdgeInsetsDirectional_12_0_12_0, _null, C.TextStyle_69t6));
+        t4.push(A.PopupItemWidget$("assets/images/ic_printer.svg", A.Intl__message("Print", _null, "print", _null, _null), D.Color_4283787389, _null, _null, new B.BottomBarComposerWidget_build_closure1(_this), C.EdgeInsetsDirectional_12_0_12_0, _null, C.TextStyle_69t6));
       }
       t4 = A.PopupMenuOverlayWidget$(true, _this.menuMoreOptionController, t6, t4, _null, _null);
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, t2).toString;
@@ -8957,7 +8957,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = A._setArrayType([t2, A.PopupItemWidget$("assets/images/ic_read_receipt.svg", A.Intl__message("Request read receipt", _null, "requestReadReceipt", _null, _null), D.Color_4283787389, _null, _this.hasRequestReadReceipt, new B.MobileResponsiveAppBarComposerWidget_build_closure0(_this), C.EdgeInsetsDirectional_12_0_12_0, _s36_, C.TextStyle_69t6)], t4);
       if (_this.isPrintDraftEnabled) {
         A.Localizations_of(context, C.Type_AppLocalizations_CTL, t1).toString;
-        t4.push(A.PopupItemWidget$("assets/images/ic_printer.svg", A.Intl__message("Print draft", _null, "printDraft", _null, _null), D.Color_4283787389, _null, _null, new B.MobileResponsiveAppBarComposerWidget_build_closure1(_this), C.EdgeInsetsDirectional_12_0_12_0, _null, C.TextStyle_69t6));
+        t4.push(A.PopupItemWidget$("assets/images/ic_printer.svg", A.Intl__message("Print", _null, "print", _null, _null), D.Color_4283787389, _null, _null, new B.MobileResponsiveAppBarComposerWidget_build_closure1(_this), C.EdgeInsetsDirectional_12_0_12_0, _null, C.TextStyle_69t6));
       }
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, t1).toString;
       t4.push(A.PopupItemWidget$("assets/images/ic_save_to_draft.svg", A.Intl__message("Save as draft", _null, "saveAsDraft", _null, _null), D.Color_4283787389, _null, _null, new B.MobileResponsiveAppBarComposerWidget_build_closure2(_this), C.EdgeInsetsDirectional_12_0_12_0, _null, C.TextStyle_69t6));
@@ -8992,7 +8992,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = Math.min(A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data.size._dx, 400),
         t2 = type$.AppLocalizations;
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, t2).toString;
-      t3 = A.Intl__message("Print draft", _null, "printDraft", _null, _null);
+      t3 = A.Intl__message("Print", _null, "print", _null, _null);
       t4 = A.Theme_of(context).textTheme.labelLarge;
       t3 = A.Container$(C.Alignment_0_0, A.Text$(t3, _null, _null, _null, _null, _null, _null, _null, _null, t4 == null ? _null : t4.copyWith$3$color$fontSize$fontWeight(C.Color_4278190080, 17, C.FontWeight_6_700), _null, _null, _null, _null, _null), C.Clip_2, _null, _null, C.BoxDecoration_46y, _null, _null, _null, _null, C.EdgeInsetsDirectional_12_8_12_8, _null, _null, 1 / 0);
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, t2).toString;
@@ -9020,7 +9020,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else {
         t2.toString;
         A.Localizations_of(t2, C.Type_AppLocalizations_CTL, t1).toString;
-        return A.Intl__message("Print draft failed", _null, "printDraftFailed", _null, _null);
+        return A.Intl__message("Printing failed", _null, "printingFailed", _null, _null);
       }
     },
     dispose$0() {
@@ -22205,5 +22205,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "LmJCorDpC68DVecY1sUPsMnHneg=");
+})($__dart_deferred_initializers__, "zb/nUlpbzmM+PCpnfWtq84hLttc=");
 ;
