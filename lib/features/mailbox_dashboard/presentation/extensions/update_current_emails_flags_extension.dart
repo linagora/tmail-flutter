@@ -83,9 +83,7 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
       setSelectedEmail(newEmail);
     }
 
-    if (emailsInCurrentMailbox.isNotEmpty) {
-      updateEmailFlagByEmailIds([emailId], markAsAnswered: true);
-    }
+    updateEmailFlagByEmailIds([emailId], markAsAnswered: true);
   }
 
   void updateEmailForwarded(EmailId emailId) {

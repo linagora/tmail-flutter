@@ -32,6 +32,7 @@ extension EmailActionTypeExtension on EmailActionType {
       case EmailActionType.editDraft:
       case EmailActionType.editSendingEmail:
       case EmailActionType.reopenComposerBrowser:
+      case EmailActionType.composeFromPresentationEmail:
         return subject;
       default:
         return '';
@@ -138,6 +139,8 @@ extension EmailActionTypeExtension on EmailActionType {
         return imagePaths.icMailboxArchived;
       case EmailActionType.downloadMessageAsEML:
         return imagePaths.icDownloadAttachment;
+      case EmailActionType.composeFromPresentationEmail:
+        return imagePaths.icEdit;
       default:
         return '';
     }
@@ -159,6 +162,8 @@ extension EmailActionTypeExtension on EmailActionType {
         return AppLocalizations.of(context).archiveMessage;
       case EmailActionType.downloadMessageAsEML:
         return AppLocalizations.of(context).downloadMessageAsEML;
+      case EmailActionType.composeFromPresentationEmail:
+        return AppLocalizations.of(context).editAsNewEmail;
       default:
         return '';
     }
