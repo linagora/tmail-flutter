@@ -127,16 +127,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.softWrap = t10;
       _.key = t11;
     },
-    SuggestionEmailAddress0: function SuggestionEmailAddress0(t0, t1) {
-      this.emailAddress = t0;
-      this.state = t1;
-    },
-    SuggestionEmailState0: function SuggestionEmailState0(t0, t1) {
-      this.index = t0;
-      this._core$_name = t1;
-    },
-    _SuggestionEmailAddress_Object_EquatableMixin0: function _SuggestionEmailAddress_Object_EquatableMixin0() {
-    },
     UserInformationWidget$(border, onSubtitleClick, padding, subtitle, titlePadding, userName) {
       return new C.UserInformationWidget(userName, subtitle, onSubtitleClick, padding, border, null);
     },
@@ -462,17 +452,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.Material$(B.Duration_200000, true, _null, A.InkWell$(false, _null, true, new A.Padding(_this.padding, A.Text$(_this.label, _null, _null, _null, _this.overflow, _null, _null, _this.softWrap, _null, t2, _null, _null, _null, _null, _null), _null), new A.RoundedRectangleBorder(t1, B.BorderSide_Q1M), true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onLongPress, _this.onTap, _null, _null, _null, _null, _null, _null, _null), B.Clip_0, B.Color_0, 0, _null, _null, _null, _null, _null, B.MaterialType_0);
     }
   };
-  C.SuggestionEmailAddress0.prototype = {
-    get$props() {
-      return [this.emailAddress, this.state];
-    }
-  };
-  C.SuggestionEmailState0.prototype = {
-    _enumToString$0() {
-      return "SuggestionEmailState." + this._core$_name;
-    }
-  };
-  C._SuggestionEmailAddress_Object_EquatableMixin0.prototype = {};
   C.UserInformationWidget.prototype = {
     build$1(context) {
       var t2, t3, t4, t5, _this = this, _null = null,
@@ -746,7 +725,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1780
+    $signature: 1783
   };
   C.AppGridDashboardIcon_build_closure.prototype = {
     call$0() {
@@ -761,7 +740,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A.Bidi_isRtlLanguage(t3.dependOnInheritedWidgetOfExactType$1$0(t4).localizationsState._localizations$_locale.get$languageCode(0)) ? B.Alignment_m1_1 : B.Alignment_1_1;
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(new A.Aligned(_null, _null, t5, t3, B.Alignment_0_0, B.C_AxisFlag, B.C_AxisFlag, B.Offset_0_0, _null), A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t1.onShowAppDashboardAction, B.EdgeInsets_6_6_6_6, _null), new A.Obx(new C.AppGridDashboardIcon_build__closure(t1), _null), isAppGridOpen), t2, isAppGridOpen);
     },
-    $signature: 367
+    $signature: 331
   };
   C.AppGridDashboardIcon_build__closure.prototype = {
     call$0() {
@@ -785,7 +764,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null;
       return A.Container$(_null, _null, B.Clip_0, B.Color_4285887861, _null, _null, _null, 42, _null, _null, _null, _null, _null, 42);
     },
-    $signature: 640
+    $signature: 483
   };
   C.AppDashboardOverlay_build_closure0.prototype = {
     call$0() {
@@ -826,7 +805,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.push(t3.build$0());
       return A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 366
+    $signature: 335
   };
   C.DefaultLinkDelegate_build_closure.prototype = {
     call$0() {
@@ -841,25 +820,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _static_1(C, "link_DefaultLinkDelegate_create$closure", "DefaultLinkDelegate_create", 2);
   })();
   (function inheritance() {
-    var _mixin = hunkHelpers.mixin,
-      _inherit = hunkHelpers.inherit,
+    var _inherit = hunkHelpers.inherit,
       _inheritMany = hunkHelpers.inheritMany;
     _inherit(C._ElevatedButtonWithIcon, A.ElevatedButton);
     _inheritMany(A.StatelessWidget, [C._ElevatedButtonWithIconChild, C.LinkBrowserWidget, C.MaterialTextButton, C.UserInformationWidget, C.AppGridDashboardIcon, C.AppGridDashboardItem, C.AppDashboardOverlay, C.NavigationBarWidget, C.VacationNotificationMessageWidget, C.Link, C.DefaultLinkDelegate]);
     _inherit(C.Portal, A.StatefulWidget);
     _inherit(C._PortalState, A.State0);
-    _inheritMany(A.Object, [C.PortalLink, C.PopupMenuWidgetMixin, C._SuggestionEmailAddress_Object_EquatableMixin0]);
+    _inheritMany(A.Object, [C.PortalLink, C.PopupMenuWidgetMixin]);
     _inherit(C.PortalLinkScope, A.InheritedWidget);
     _inherit(C.PortalTheater, A.SingleChildRenderObjectWidget);
     _inherit(C.RenderPortalTheater, A.RenderProxyBox);
     _inheritMany(A.Closure2Args, [C.LinkBrowserWidget_build_closure, C.NavigationBarWidget_build_closure]);
-    _inherit(C.SuggestionEmailAddress0, C._SuggestionEmailAddress_Object_EquatableMixin0);
-    _inherit(C.SuggestionEmailState0, A._Enum);
     _inheritMany(A.Closure0Args, [C.AppGridDashboardIcon_build_closure, C.AppGridDashboardIcon_build__closure, C.AppGridDashboardItem_build_closure0, C.AppDashboardOverlay_build_closure0, C.DefaultLinkDelegate_build_closure]);
     _inheritMany(A.Closure, [C.AppGridDashboardItem_build_closure, C.AppDashboardOverlay_build_closure]);
-    _mixin(C._SuggestionEmailAddress_Object_EquatableMixin0, A.EquatableMixin);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"_ElevatedButtonWithIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ElevatedButtonWithIconChild":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"LinkBrowserWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SuggestionEmailAddress0":{"EquatableMixin":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppGridDashboardIcon":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppGridDashboardItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppDashboardOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"NavigationBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DefaultLinkDelegate":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Link":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[],"LinkInfo":[]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"_ElevatedButtonWithIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ElevatedButtonWithIconChild":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"LinkBrowserWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppGridDashboardIcon":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppGridDashboardItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppDashboardOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"NavigationBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DefaultLinkDelegate":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Link":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[],"LinkInfo":[]}}'));
   var type$ = (function rtii() {
     var findType = A.findType;
     return {
@@ -910,8 +885,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.PageStorageKey_mailbox_list = new A.PageStorageKey("mailbox_list", A.findType("PageStorageKey<String>"));
     D.SizedBox_16_null_null_null = new A.SizedBox(16, null, null, null);
     D.SizedBox_24_null_null_null = new A.SizedBox(24, null, null, null);
-    D.SuggestionEmailState_00 = new C.SuggestionEmailState0(0, "valid");
-    D.SuggestionEmailState_10 = new C.SuggestionEmailState0(1, "duplicated");
     D.TextStyle_69t9 = new A.TextStyle(true, B.Color_4278190080, null, null, null, null, 17, B.FontWeight_5_600, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_69t12 = new A.TextStyle(true, B.Color_4278190080, null, null, null, null, 20, B.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_e3y0 = new A.TextStyle(true, B.Color_4286680217, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -925,5 +898,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "ewSD6ZDxv0BIF99Y1chzV6gM+0k=");
+})($__dart_deferred_initializers__, "HRt1ewvZdCvHE82m5J+dM7rJVC0=");
 ;
