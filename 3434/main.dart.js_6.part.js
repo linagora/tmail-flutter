@@ -7,7 +7,7 @@
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var A, B;
   A = holdersList[0];
-  B = holdersList[13];
+  B = holdersList[12];
   var typesOffset = hunkHelpers.updateTypes([]);
   (function constants() {
     B.CupertinoLoadingWidget_null_null_null = new A.CupertinoLoadingWidget(null, null, null);
@@ -18,5 +18,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "UUFpfsatncNQfu2uxHrUEH9ZirI=");
+})($__dart_deferred_initializers__, "AKDhIztYfn/zoDNyDsj+YbtE29A=");
 ;
