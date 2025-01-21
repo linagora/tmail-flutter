@@ -1,3 +1,16 @@
+## [0.14.11] - 2025-01-21
+### Fixed
+- #3430 Reply/Forward indicator will be synced after sent email
+- #3408 Support load more in auto complete
+- #3337 Reduce unnessary JMAP request for vacation when open Setting pages
+- #3424 Preserve format for text/plain email
+
+### Added
+- #3416 Preview EML
+- #3267 Preview HTML
+- #3406 Edit as a email
+- #3427 Print composing
+
 ## [0.14.10] - 2025-01-10
 ### Fixed
 - Editor height is infinite
