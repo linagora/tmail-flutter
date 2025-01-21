@@ -43,8 +43,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   D;
   B = holdersList[0];
   C = holdersList[2];
-  A = hunkHelpers.updateHolder(holdersList[9], A);
-  D = holdersList[12];
+  A = hunkHelpers.updateHolder(holdersList[10], A);
+  D = holdersList[15];
   A.ApplicationLogoWidthTextWidget.prototype = {
     build$1(context) {
       var _null = null,
@@ -99,7 +99,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1785
+    $signature: 1795
   };
   (function inheritance() {
     var _inherit = hunkHelpers.inherit;
@@ -122,5 +122,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_2", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "aTUvu0AYd6ZGkItvF2UOKPhFP0g=");
+})($__dart_deferred_initializers__, "AhWaFP5au80CoKVAgsWQdzyYApc=");
 ;
