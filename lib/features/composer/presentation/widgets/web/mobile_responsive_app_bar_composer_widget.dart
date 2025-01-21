@@ -1,5 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/widget/highlight_svg_icon_on_hover.dart';
@@ -15,7 +16,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
   final bool isSendButtonEnabled;
   final bool isFormattingOptionsEnabled;
   final bool hasRequestReadReceipt;
-  final bool isPrintDraftEnabled;
+  final bool isEmailChanged;
   final CustomPopupMenuController menuMoreOptionController;
   final VoidCallback onCloseViewAction;
   final VoidCallback attachFileAction;
@@ -35,7 +36,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
     required this.isFormattingOptionsEnabled,
     required this.isSendButtonEnabled,
     required this.hasRequestReadReceipt,
-    required this.isPrintDraftEnabled,
+    required this.isEmailChanged,
     required this.menuMoreOptionController,
     required this.openRichToolbarAction,
     required this.onCloseViewAction,
@@ -145,7 +146,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
                     toggleRequestReadReceiptAction();
                   },
               ),
-              if (isPrintDraftEnabled)
+              if (_isPrintEnabled)
                 PopupItemWidget(
                   imagePaths.icPrinter,
                   AppLocalizations.of(context).print,
@@ -187,4 +188,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
       ),
     );
   }
+
+  bool get _isPrintEnabled =>
+      isEmailChanged && PlatformInfo.isWeb && PlatformInfo.isCanvasKit;
 }

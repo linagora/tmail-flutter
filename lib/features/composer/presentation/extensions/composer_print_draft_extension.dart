@@ -94,9 +94,15 @@ extension ComposerPrintDraftExtension on ComposerController {
           bccPrefix: appLocalizations.bcc_email_address_prefix,
           replyToPrefix: appLocalizations.replyToEmailAddressPrefix,
           titleAttachment: appLocalizations.attachments.toLowerCase(),
-          toAddress: listToEmailAddress.toSet().toEscapeHtmlStringUseCommaSeparator(),
-          ccAddress: listCcEmailAddress.toSet().toEscapeHtmlStringUseCommaSeparator(),
-          bccAddress: listBccEmailAddress.toSet().toEscapeHtmlStringUseCommaSeparator(),
+          toAddress: listToEmailAddress.toSet().listEmailAddressToString(
+            isFullEmailAddress: true,
+          ),
+          ccAddress: listCcEmailAddress.toSet().listEmailAddressToString(
+            isFullEmailAddress: true,
+          ),
+          bccAddress: listBccEmailAddress.toSet().listEmailAddressToString(
+            isFullEmailAddress: true,
+          ),
           sender: identitySelected.value?.toEmailAddress(),
           receiveTime: receiveTime,
           subject: subjectEmail.value ?? '',
