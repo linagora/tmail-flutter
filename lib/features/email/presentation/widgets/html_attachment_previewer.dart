@@ -52,7 +52,7 @@ class HtmlAttachmentPreviewer extends StatelessWidget {
                             responsiveUtils: responsiveUtils,
                             desktop: _buildHtmlViewerWith(
                               context,
-                              width: constraints.maxWidth * 0.4,
+                              width: constraints.maxWidth * 0.8,
                               height: constraints.maxHeight - _verticalMargin * 2
                             ),
                             tablet: _buildHtmlViewerWith(
