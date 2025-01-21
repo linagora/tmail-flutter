@@ -1,5 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:custom_pop_up_menu/custom_pop_up_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/widget/highlight_svg_icon_on_hover.dart';
@@ -12,7 +13,7 @@ class BottomBarComposerWidget extends StatelessWidget {
 
   final ImagePaths imagePaths;
   final bool isCodeViewEnabled;
-  final bool isPrintDraftEnabled;
+  final bool isEmailChanged;
   final bool isFormattingOptionsEnabled;
   final bool hasReadReceipt;
   final CustomPopupMenuController menuMoreOptionController;
@@ -30,7 +31,7 @@ class BottomBarComposerWidget extends StatelessWidget {
     super.key,
     required this.imagePaths,
     required this.isCodeViewEnabled,
-    required this.isPrintDraftEnabled,
+    required this.isEmailChanged,
     required this.isFormattingOptionsEnabled,
     required this.hasReadReceipt,
     required this.menuMoreOptionController,
@@ -128,7 +129,7 @@ class BottomBarComposerWidget extends StatelessWidget {
                   toggleRequestReadReceiptAction();
                 },
               ),
-              if (isPrintDraftEnabled)
+              if (_isPrintEnabled)
                 PopupItemWidget(
                   imagePaths.icPrinter,
                   AppLocalizations.of(context).print,
@@ -183,4 +184,7 @@ class BottomBarComposerWidget extends StatelessWidget {
       ),
     );
   }
+
+  bool get _isPrintEnabled =>
+      isEmailChanged && PlatformInfo.isWeb && PlatformInfo.isCanvasKit;
 }
