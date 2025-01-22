@@ -1,7 +1,8 @@
-
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
+import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/top_bar_attachment_viewer.dart';
@@ -79,21 +80,30 @@ class HtmlAttachmentPreviewer extends StatelessWidget {
     );
   }
 
-  HtmlContentViewerOnWeb _buildHtmlViewerWith(
+  Widget _buildHtmlViewerWith(
     BuildContext context, {
     required double width,
     required double height,
   }) {
-    return HtmlContentViewerOnWeb(
-      contentHtml: htmlContent,
-      widthContent: width,
-      heightContent: height,
-      direction: AppUtils.getCurrentDirection(context),
-      mailtoDelegate: (uri) {
-        popBack();
-        mailToClicked(uri);
-      },
-      keepWidthWhileLoading: true,
-    );
+    return PlatformInfo.isWeb
+      ? HtmlContentViewerOnWeb(
+          contentHtml: htmlContent,
+          widthContent: width,
+          heightContent: height,
+          direction: AppUtils.getCurrentDirection(context),
+          mailtoDelegate: (uri) {
+            popBack();
+            mailToClicked(uri);
+          },
+          keepWidthWhileLoading: true,
+      )
+      : HtmlContentViewer(
+          contentHtml: htmlContent,
+          initialWidth: width,
+          direction: AppUtils.getCurrentDirection(context),
+          onMailtoDelegateAction: (uri) async {
+            mailToClicked(uri);
+          },
+      );
   }
 }
