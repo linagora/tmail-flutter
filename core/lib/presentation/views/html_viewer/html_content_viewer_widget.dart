@@ -25,6 +25,7 @@ class HtmlContentViewer extends StatefulWidget {
   final String contentHtml;
   final double? initialWidth;
   final TextDirection? direction;
+  final bool keepWidthWhileLoading;
 
   final OnLoadWidthHtmlViewerAction? onLoadWidthHtmlViewer;
   final OnMailtoDelegateAction? onMailtoDelegateAction;
@@ -37,6 +38,7 @@ class HtmlContentViewer extends StatefulWidget {
     required this.contentHtml,
     this.initialWidth,
     this.direction,
+    this.keepWidthWhileLoading = false,
     this.onLoadWidthHtmlViewer,
     this.onMailtoDelegateAction,
     this.onScrollHorizontalEnd,
@@ -109,7 +111,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: [
+    final child = Stack(children: [
       if (_htmlData == null)
         const SizedBox.shrink()
       else
@@ -138,6 +140,12 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
         }
       ),
     ]);
+
+    if (!widget.keepWidthWhileLoading) return child;
+    return SizedBox(
+      width: widget.initialWidth,
+      child: child,
+    );
   }
 
   void _onWebViewCreated(InAppWebViewController controller) async {
