@@ -95,6 +95,8 @@ class _HtmlAttachmentPreviewerState extends State<HtmlAttachmentPreviewer> {
       ],
     );
 
+    if (PlatformInfo.isMobile) return child;
+
     return KeyboardListener(
       focusNode: focusNode,
       onKeyEvent: (event) {
