@@ -294,46 +294,50 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraint) {
       minHeight = math.max(constraint.maxHeight, minHeight);
-      return SizedBox(
-        width: _actualWidth,
-        child: Stack(
-          children: [
-            if (_htmlData?.isNotEmpty == false)
-              const SizedBox.shrink()
-            else
-              FutureBuilder<bool>(
-                future: _webInit,
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return SizedBox(
-                      height: _actualHeight,
-                      width: _actualWidth,
-                      child: HtmlElementView(
-                        key: ValueKey(_htmlData),
-                        viewType: _createdViewId,
-                      ),
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
+      final child = Stack(
+        children: [
+          if (_htmlData?.isNotEmpty == false)
+            const SizedBox.shrink()
+          else
+            FutureBuilder<bool>(
+              future: _webInit,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  return SizedBox(
+                    height: _actualHeight,
+                    width: _actualWidth,
+                    child: HtmlElementView(
+                      key: ValueKey(_htmlData),
+                      viewType: _createdViewId,
+                    ),
+                  );
+                } else {
+                  return const SizedBox.shrink();
                 }
-              ),
-            if (_isLoading)
-              const Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                  padding: EdgeInsets.all(16),
-                  child: SizedBox(
-                    width: 30,
-                    height: 30,
-                    child: CupertinoActivityIndicator(
-                      color: AppColor.colorLoading
-                    )
+              }
+            ),
+          if (_isLoading)
+            const Align(
+              alignment: Alignment.topCenter,
+              child: Padding(
+                padding: EdgeInsets.all(16),
+                child: SizedBox(
+                  width: 30,
+                  height: 30,
+                  child: CupertinoActivityIndicator(
+                    color: AppColor.colorLoading
                   )
                 )
               )
-          ],
-        ),
+            )
+        ],
+      );
+
+      if (!widget.keepWidthWhileLoading) return child;
+
+      return SizedBox(
+        width: _actualWidth,
+        child: child,
       );
     });
   }

@@ -106,6 +106,7 @@ class HtmlAttachmentPreviewer extends StatelessWidget {
           onMailtoDelegateAction: (uri) async {
             mailToClicked(uri);
           },
+          keepWidthWhileLoading: true,
       );
   }
 }

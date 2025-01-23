@@ -25,6 +25,7 @@ class HtmlContentViewer extends StatefulWidget {
   final String contentHtml;
   final double? initialWidth;
   final TextDirection? direction;
+  final bool keepWidthWhileLoading;
 
   final OnLoadWidthHtmlViewerAction? onLoadWidthHtmlViewer;
   final OnMailtoDelegateAction? onMailtoDelegateAction;
@@ -37,6 +38,7 @@ class HtmlContentViewer extends StatefulWidget {
     required this.contentHtml,
     this.initialWidth,
     this.direction,
+    this.keepWidthWhileLoading = false,
     this.onLoadWidthHtmlViewer,
     this.onMailtoDelegateAction,
     this.onScrollHorizontalEnd,
@@ -109,37 +111,40 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
 
   @override
   Widget build(BuildContext context) {
+    final child = Stack(children: [
+      if (_htmlData == null)
+        const SizedBox.shrink()
+      else
+        SizedBox(
+          height: _actualHeight,
+          width: widget.initialWidth,
+          child: InAppWebView(
+            key: ValueKey(_htmlData),
+            initialSettings: _webViewSetting,
+            onWebViewCreated: _onWebViewCreated,
+            onLoadStop: _onLoadStop,
+            onContentSizeChanged: _onContentSizeChanged,
+            shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
+            gestureRecognizers: _gestureRecognizers,
+            onScrollChanged: (controller, x, y) => controller.scrollTo(x: 0, y: 0)
+          )
+        ),
+      ValueListenableBuilder(
+        valueListenable: _loadingBarNotifier,
+        builder: (context, loading, child) {
+          if (loading) {
+            return const CupertinoLoadingWidget(isCenter: false);
+          } else {
+            return const SizedBox.shrink();
+          }
+        }
+      ),
+    ]);
+
+    if (!widget.keepWidthWhileLoading) return child;
     return SizedBox(
       width: widget.initialWidth,
-      child: Stack(children: [
-        if (_htmlData == null)
-          const SizedBox.shrink()
-        else
-          SizedBox(
-            height: _actualHeight,
-            width: widget.initialWidth,
-            child: InAppWebView(
-              key: ValueKey(_htmlData),
-              initialSettings: _webViewSetting,
-              onWebViewCreated: _onWebViewCreated,
-              onLoadStop: _onLoadStop,
-              onContentSizeChanged: _onContentSizeChanged,
-              shouldOverrideUrlLoading: _shouldOverrideUrlLoading,
-              gestureRecognizers: _gestureRecognizers,
-              onScrollChanged: (controller, x, y) => controller.scrollTo(x: 0, y: 0)
-            )
-          ),
-        ValueListenableBuilder(
-          valueListenable: _loadingBarNotifier,
-          builder: (context, loading, child) {
-            if (loading) {
-              return const CupertinoLoadingWidget(isCenter: false);
-            } else {
-              return const SizedBox.shrink();
-            }
-          }
-        ),
-      ]),
+      child: child,
     );
   }
 
