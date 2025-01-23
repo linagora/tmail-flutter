@@ -294,7 +294,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraint) {
       minHeight = math.max(constraint.maxHeight, minHeight);
-      return Stack(
+      final child = Stack(
         children: [
           if (_htmlData?.isNotEmpty == false)
             const SizedBox.shrink()
@@ -331,6 +331,13 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
               )
             )
         ],
+      );
+
+      if (!widget.keepWidthWhileLoading) return child;
+
+      return SizedBox(
+        width: _actualWidth,
+        child: child,
       );
     });
   }
