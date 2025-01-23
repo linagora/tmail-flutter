@@ -1,3 +1,7 @@
+## [0.14.12] - 2025-01-23
+### Fixed 
+- #3267 Preview HTML for mobile
+
 ## [0.14.11] - 2025-01-21
 ### Fixed
 - #3430 Reply/Forward indicator will be synced after sent email
