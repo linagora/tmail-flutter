@@ -869,7 +869,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_all_as_read": "标记全部为已读",
+  "mark_all_as_read": "全部标记为已读",
   "@mark_all_as_read": {
     "type": "text",
     "placeholders_order": [],
@@ -3425,6 +3425,30 @@
   },
   "toastMessageShowFolderSuccess": "此文件夹已显示在您的主文件夹中",
   "@toastMessageShowFolderSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subTitlePageNotFound": "您的目标页面可能已消失或属于其他账号。",
+  "@subTitlePageNotFound": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "storageQuotas": "存储",
+  "@storageQuotas": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textQuotasOutOfStorage": "存储不足",
+  "@textQuotasOutOfStorage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sendingQueue": "发送队列",
+  "@sendingQueue": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
