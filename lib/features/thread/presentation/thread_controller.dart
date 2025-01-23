@@ -566,6 +566,15 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
+  @visibleForTesting
+  EmailFilterCondition getFilterCondition({
+    PresentationEmail? oldestEmail,
+    MailboxId? mailboxIdSelected,
+  }) => _getFilterCondition(
+    oldestEmail: oldestEmail,
+    mailboxIdSelected: mailboxIdSelected,
+  );
+
   EmailFilterCondition _getFilterCondition({PresentationEmail? oldestEmail, MailboxId? mailboxIdSelected}) {
     switch(mailboxDashBoardController.filterMessageOption.value) {
       case FilterMessageOption.all:
@@ -655,6 +664,9 @@ class ThreadController extends BaseController with EmailActionController {
       }
     }
   }
+
+  @visibleForTesting
+  Future<void> refreshChangeSearchEmail() => _refreshChangeSearchEmail();
 
   Future<void> _refreshChangeSearchEmail() async {
     await _refreshChangeListEmailCache();
@@ -938,6 +950,15 @@ class ThreadController extends BaseController with EmailActionController {
     searchController.clearTextSearch();
   }
 
+  @visibleForTesting
+  void searchEmail({
+    UnsignedInt? limit,
+    bool needRefreshSearchState = false,
+  }) => _searchEmail(
+    limit: limit,
+    needRefreshSearchState: needRefreshSearchState,
+  );
+
   void _searchEmail({UnsignedInt? limit, bool needRefreshSearchState = false}) {
     if (_session != null && _accountId != null) {
       if (!needRefreshSearchState && listEmailController.hasClients) {
@@ -1017,6 +1038,9 @@ class ThreadController extends BaseController with EmailActionController {
       _validateBrowserHeight();
     }
   }
+
+  @visibleForTesting
+  void searchMoreEmails() => _searchMoreEmails();
 
   void _searchMoreEmails() {
     log('ThreadController::_searchMoreEmails:');
