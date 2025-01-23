@@ -5,11 +5,12 @@ import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/isolate/background_isolate_binary_messenger/background_isolate_binary_messenger_mobile.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/top_bar_attachment_viewer.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-class HtmlAttachmentPreviewer extends StatelessWidget {
+class HtmlAttachmentPreviewer extends StatefulWidget {
   const HtmlAttachmentPreviewer({
     super.key,
     required this.htmlContent,
@@ -25,16 +26,29 @@ class HtmlAttachmentPreviewer extends StatelessWidget {
   final VoidCallback downloadAttachmentClicked;
   final ResponsiveUtils responsiveUtils;
 
+  @override
+  State<HtmlAttachmentPreviewer> createState() => _HtmlAttachmentPreviewerState();
+}
+
+class _HtmlAttachmentPreviewerState extends State<HtmlAttachmentPreviewer> {
+  final focusNode = FocusNode();
+
   static const double _verticalMargin = 16;
 
   @override
+  void dispose() {
+    focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Column(
+    final child = Column(
       children: [
         TopBarAttachmentViewer(
-          title: title,
+          title: widget.title,
           closeAction: popBack,
-          downloadAction: downloadAttachmentClicked,
+          downloadAction: widget.downloadAttachmentClicked,
         ),
         Expanded(
           child: LayoutBuilder(
@@ -51,7 +65,7 @@ class HtmlAttachmentPreviewer extends StatelessWidget {
                             margin: const EdgeInsets.symmetric(vertical: _verticalMargin),
                             color: Colors.white,
                             child: ResponsiveWidget(
-                              responsiveUtils: responsiveUtils,
+                              responsiveUtils: widget.responsiveUtils,
                               desktop: _buildHtmlViewerWith(
                                 context,
                                 width: constraints.maxWidth * 0.8,
@@ -80,6 +94,17 @@ class HtmlAttachmentPreviewer extends StatelessWidget {
         ),
       ],
     );
+
+    return KeyboardListener(
+      focusNode: focusNode,
+      onKeyEvent: (event) {
+        if (!mounted) return;
+        if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
+          popBack();
+        }
+      },
+      child: child,
+    );
   }
 
   Widget _buildHtmlViewerWith(
@@ -89,22 +114,22 @@ class HtmlAttachmentPreviewer extends StatelessWidget {
   }) {
     return PlatformInfo.isWeb
       ? HtmlContentViewerOnWeb(
-          contentHtml: htmlContent,
+          contentHtml: widget.htmlContent,
           widthContent: width,
           heightContent: height,
           direction: AppUtils.getCurrentDirection(context),
           mailtoDelegate: (uri) {
             popBack();
-            mailToClicked(uri);
+            widget.mailToClicked(uri);
           },
           keepWidthWhileLoading: true,
       )
       : HtmlContentViewer(
-          contentHtml: htmlContent,
+          contentHtml: widget.htmlContent,
           initialWidth: width,
           direction: AppUtils.getCurrentDirection(context),
           onMailtoDelegateAction: (uri) async {
-            mailToClicked(uri);
+            widget.mailToClicked(uri);
           },
           keepWidthWhileLoading: true,
       );
