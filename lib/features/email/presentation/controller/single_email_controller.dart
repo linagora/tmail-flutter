@@ -277,7 +277,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mailToClicked: openMailToLink,
         downloadAttachmentClicked: () {
           if (currentContext == null || attachments.isEmpty) return;
-          handleDownloadAttachmentAction(currentContext!, attachments.first);
+          handleDownloadAttachmentAction(currentContext!, success.attachment);
         },
         responsiveUtils: responsiveUtils,
       ));
