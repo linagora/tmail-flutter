@@ -39,32 +39,34 @@ class HtmlAttachmentPreviewer extends StatelessWidget {
         Expanded(
           child: LayoutBuilder(
             builder: (context, constraints) {
-              return SingleChildScrollView(
-                child: GestureDetector(
-                  onTap: popBack,
-                  child: PointerInterceptor(
-                    child: ColoredBox(
-                      color: Colors.transparent,
-                      child: Center(
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: _verticalMargin),
-                          color: Colors.white,
-                          child: ResponsiveWidget(
-                            responsiveUtils: responsiveUtils,
-                            desktop: _buildHtmlViewerWith(
-                              context,
-                              width: constraints.maxWidth * 0.8,
-                              height: constraints.maxHeight - _verticalMargin * 2
-                            ),
-                            tablet: _buildHtmlViewerWith(
-                              context,
-                              width: constraints.maxWidth * 0.8,
-                              height: constraints.maxHeight - _verticalMargin * 2
-                            ),
-                            mobile: _buildHtmlViewerWith(
-                              context,
-                              width: constraints.maxWidth,
-                              height: constraints.maxHeight - _verticalMargin * 2
+              return Center(
+                child: SingleChildScrollView(
+                  child: GestureDetector(
+                    onTap: popBack,
+                    child: PointerInterceptor(
+                      child: ColoredBox(
+                        color: Colors.transparent,
+                        child: Center(
+                          child: Container(
+                            margin: const EdgeInsets.symmetric(vertical: _verticalMargin),
+                            color: Colors.white,
+                            child: ResponsiveWidget(
+                              responsiveUtils: responsiveUtils,
+                              desktop: _buildHtmlViewerWith(
+                                context,
+                                width: constraints.maxWidth * 0.8,
+                                height: constraints.maxHeight - _verticalMargin * 2
+                              ),
+                              tablet: _buildHtmlViewerWith(
+                                context,
+                                width: constraints.maxWidth * 0.8,
+                                height: constraints.maxHeight - _verticalMargin * 2
+                              ),
+                              mobile: _buildHtmlViewerWith(
+                                context,
+                                width: constraints.maxWidth,
+                                height: constraints.maxHeight - _verticalMargin * 2
+                              ),
                             ),
                           ),
                         ),
