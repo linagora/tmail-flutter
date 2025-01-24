@@ -250,7 +250,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
       final searchEmailFilter = controller.searchEmailFilter.value;
       final sortOrderType = controller.emailSortOrderType.value;
       final listAddressOfFrom = controller.listAddressOfFromFiltered;
-      final userName = controller.session?.username;
+      final currentUserEmail = controller.session?.getOwnEmailAddress();
       final startDate = controller.startDateFiltered;
       final endDate = controller.endDateFiltered;
       final receiveTimeType = controller.receiveTimeFiltered;
@@ -261,7 +261,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         context,
         searchEmailFilter,
         sortOrderType,
-        userName);
+        currentUserEmail);
 
       return SearchFilterButton(
         key: Key('mobile_${searchFilter.name}_search_filter_button'),
@@ -275,7 +275,6 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         sortOrderType: sortOrderType,
         listAddressOfFrom: listAddressOfFrom,
         listAddressOfTo: listAddressOfTo,
-        userName: userName,
         mailbox: mailbox,
         backgroundColor: searchFilter.getMobileBackgroundColor(isSelected: isSelected),
         onSelectSearchFilterAction: _onSelectSearchFilterAction,

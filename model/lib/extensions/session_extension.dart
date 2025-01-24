@@ -2,15 +2,20 @@
 import 'dart:ui';
 
 import 'package:core/presentation/extensions/uri_extension.dart';
+import 'package:get/get_utils/src/extensions/string_extensions.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/calendar_event_capability.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_properties.dart';
+import 'package:jmap_dart_client/jmap/core/capability/default_capability.dart';
 import 'package:jmap_dart_client/jmap/core/capability/empty_capability.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/error_type_handler/account_exception.dart';
+import 'package:model/error_type_handler/unknown_address_exception.dart';
 import 'package:model/error_type_handler/unknown_uri_exception.dart';
 import 'package:model/model.dart';
+import 'package:model/principals/capability_principals.dart';
 import 'package:uri/uri.dart';
 
 extension SessionExtension on Session {
@@ -64,6 +69,38 @@ extension SessionExtension on Session {
     } else {
       return null;
     }
+  }
+
+  String getOwnEmailAddress() {
+    return username.value.isEmail ? username.value
+        : _getOwnEmailAddressFromPersonalAccount()
+        ?? _getOwnEmailAddressFromPrincipalsCapability()
+        ?? (throw UnknownAddressException());
+  }
+
+  String? _getOwnEmailAddressFromPersonalAccount() {
+    try {
+      return personalAccount.name.value.isEmail ? personalAccount.name.value : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  String? _getOwnEmailAddressFromPrincipalsCapability() {
+    try {
+      var principalsCapability = getCapabilityProperties<DefaultCapability>(AccountId(Id(username.value)), capabilityPrincipals);
+      final sendTo = principalsCapability?.properties?['urn:ietf:params:jmap:calendars']?['sendTo'];
+      if (sendTo is Map<String, dynamic>) {
+        final wrappedAddress = sendTo['imip'];
+        if (wrappedAddress is String && wrappedAddress.startsWith('mailto:')) {
+          String address = wrappedAddress.substring("mailto:".length);
+          return address.isEmail ? address : null;
+        }
+      }
+    } catch (_) {
+      return null;
+    }
+    return null;
   }
 
   JmapAccount get personalAccount {
