@@ -96,6 +96,37 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                        const Padding(
                            padding: EdgeInsets.symmetric(vertical: 16),
                            child: Divider()),
+                       if (controller.dashBoardController.isContactSupportCapabilitySupported)
+                         Padding(
+                             padding: const EdgeInsetsDirectional.only(start: 20, end: 10),
+                             child: Material(
+                               color: Colors.transparent,
+                               child: InkWell(
+                                   onTap: () {
+                                     controller.onGetHelpOrReportBug(
+                                         controller.dashBoardController.contactSupportCapability!,
+                                         controller.mailboxDashBoardController
+                                     );
+                                   },
+                                   borderRadius: BorderRadius.circular(10),
+                                   child: Padding(
+                                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                     child: Row(children: [
+                                       SvgPicture.asset(controller.imagePaths.icHelp, width: 20, height: 20, fit: BoxFit.fill),
+                                       const SizedBox(width: 12),
+                                       Expanded(child: Text(
+                                           AppLocalizations.of(context).contactSupport,
+                                           style: const TextStyle(
+                                               fontWeight: FontWeight.normal,
+                                               fontSize: 15,
+                                               color: Colors.black
+                                           )
+                                       ))
+                                     ]),
+                                   )
+                               ),
+                             )
+                         ),
                        Padding(
                          padding: const EdgeInsetsDirectional.only(start: 20, end: 10),
                          child: Material(
@@ -111,7 +142,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                              child: Padding(
                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                child: Row(children: [
-                                 SvgPicture.asset(controller.imagePaths.icSignOut, fit: BoxFit.fill),
+                                 SvgPicture.asset(controller.imagePaths.icSignOut, width: 20, height: 20, fit: BoxFit.fill),
                                  const SizedBox(width: 12),
                                  Expanded(child: Text(
                                    AppLocalizations.of(context).sign_out,

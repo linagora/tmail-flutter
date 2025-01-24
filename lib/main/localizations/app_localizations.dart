@@ -2424,6 +2424,13 @@ class AppLocalizations {
     );
   }
 
+  String get contactSupport {
+    return Intl.message(
+      'Contact support',
+      name: 'contactSupport',
+    );
+  }
+
   String get subTitleReadReceiptRequestNotificationMessage {
     return Intl.message(
       'The sender has requested a Read receipt for this email. Send Read receipt?',
