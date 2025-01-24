@@ -153,6 +153,26 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
             subtitle: AppLocalizations.of(context).allowsTwakeMailToNotifyYouWhenANewMessageArrivesOnYourPhone,
           )
         ],
+        Obx(() {
+          if (controller.manageAccountDashboardController.isContactSupportCapabilitySupported) {
+            return Column(children: [
+              Divider(
+                  color: AppColor.colorDividerHorizontal,
+                  height: 1,
+                  indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
+                  endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
+              ),
+              SettingFirstLevelTileBuilder(
+                AccountMenuItem.contactSupport.getName(context),
+                AccountMenuItem.contactSupport.getIcon(controller.imagePaths),
+                () => controller.onGetHelpOrReportBug(
+                        controller.manageAccountDashboardController.contactSupportCapability!,
+                        controller.mailboxDashBoardController)),
+            ]);
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
         Divider(
           color: AppColor.colorDividerHorizontal,
           height: 1,

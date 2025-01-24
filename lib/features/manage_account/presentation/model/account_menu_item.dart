@@ -12,6 +12,7 @@ enum AccountMenuItem {
   vacation,
   mailboxVisibility,
   notification,
+  contactSupport,
   none;
 
   String getIcon(ImagePaths imagePaths) {
@@ -32,6 +33,8 @@ enum AccountMenuItem {
         return imagePaths.icMailboxVisibility;
       case AccountMenuItem.notification:
         return imagePaths.icNotification;
+      case AccountMenuItem.contactSupport:
+        return imagePaths.icHelp;
       case AccountMenuItem.none:
         return imagePaths.icProfiles;
     }
@@ -55,6 +58,8 @@ enum AccountMenuItem {
         return AppLocalizations.of(context).folderVisibility;
       case AccountMenuItem.notification:
         return AppLocalizations.of(context).notification;
+      case AccountMenuItem.contactSupport:
+        return AppLocalizations.of(context).contactSupport;
       case AccountMenuItem.none:
         return AppLocalizations.of(context).profiles;
     }
@@ -78,6 +83,8 @@ enum AccountMenuItem {
         return 'folder-visibility';
       case AccountMenuItem.notification:
         return 'notification';
+      case AccountMenuItem.contactSupport:
+        return 'contact-support';
       case AccountMenuItem.none:
         return 'profiles';
     }
