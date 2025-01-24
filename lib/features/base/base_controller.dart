@@ -451,7 +451,7 @@ abstract class BaseController extends GetxController
     if (PlatformInfo.isMobile) {
       showLogoutConfirmDialog(
         context: context,
-        username: session?.username.value ?? '',
+        userAddress: session?.getOwnEmailAddress() ?? '',
         onConfirmAction: () => _handleLogoutAction(session, accountId),
       );
     } else {

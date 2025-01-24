@@ -6,7 +6,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 mixin LogoutMixin implements MessageDialogActionMixin {
   void showLogoutConfirmDialog({
     required BuildContext context,
-    required String username,
+    required String userAddress,
     required Function? onConfirmAction,
   }) {
     final appLocalizations = AppLocalizations.of(context);
@@ -33,7 +33,7 @@ mixin LogoutMixin implements MessageDialogActionMixin {
       listTextSpan: [
         TextSpan(text: AppLocalizations.of(context).messageConfirmationLogout),
         TextSpan(
-          text: ' $username',
+          text: ' $userAddress',
           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
             color: AppColor.colorTextBody,
             fontSize: 15,

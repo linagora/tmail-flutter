@@ -2,6 +2,7 @@ import 'package:core/core.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
@@ -141,7 +142,7 @@ class MailboxView extends BaseMailboxView {
         if (!controller.responsiveUtils.isDesktop(context))
           Obx(() => UserInformationWidget(
             userName: controller.mailboxDashBoardController.accountId.value != null
-              ? controller.mailboxDashBoardController.sessionCurrent?.username
+              ? UserName(controller.mailboxDashBoardController.sessionCurrent!.getOwnEmailAddress())
               : null,
             subtitle: AppLocalizations.of(context).manage_account,
             onSubtitleClick: controller.mailboxDashBoardController.goToSettings,

@@ -4,7 +4,6 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
@@ -31,7 +30,6 @@ class SearchFilterButton extends StatelessWidget {
   final DateTime? endDate;
   final Set<String>? listAddressOfFrom;
   final Set<String>? listAddressOfTo;
-  final UserName? userName;
   final PresentationMailbox? mailbox;
   final Color? backgroundColor;
   final EdgeInsetsGeometry? buttonPadding;
@@ -50,7 +48,6 @@ class SearchFilterButton extends StatelessWidget {
     this.endDate,
     this.listAddressOfFrom,
     this.listAddressOfTo,
-    this.userName,
     this.mailbox,
     this.backgroundColor,
     this.buttonPadding,
@@ -67,7 +64,6 @@ class SearchFilterButton extends StatelessWidget {
       endDate: startDate,
       sortOrderType: sortOrderType,
       listAddressOfFrom: listAddressOfFrom,
-      userName: userName,
       mailbox: mailbox,
       listAddressOfTo: listAddressOfTo,
     );

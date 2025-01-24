@@ -9,7 +9,6 @@ import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
@@ -17,6 +16,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_filter_condition_extension.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/date_range_picker_mixin.dart';
@@ -98,7 +98,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
       sort: <Comparator>{}..add(
         EmailComparator(EmailComparatorProperty.receivedAt)
           ..setIsAscending(false)),
-      filter: _mappingToFilterOnSuggestionForm(userName: session.username, query: query),
+      filter: _mappingToFilterOnSuggestionForm(currentUserEmail: session.getOwnEmailAddress(), query: query),
       properties: EmailUtils.getPropertiesForEmailGetMethod(session, accountId),
     ).then((result) => result.fold(
       (failure) => <PresentationEmail>[],
@@ -108,7 +108,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
     ));
   }
 
-  Filter? _mappingToFilterOnSuggestionForm({required String query, required UserName userName}) {
+  Filter? _mappingToFilterOnSuggestionForm({required String query, required String currentUserEmail}) {
     log('SearchController::_mappingToFilterOnSuggestionForm():query: $query');
     final filterCondition = EmailFilterCondition(
       text: query.isNotEmpty == true ? query : null,
@@ -122,7 +122,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
         ? true
         : null,
       from: listFilterOnSuggestionForm.contains(QuickSearchFilter.fromMe)
-        ? userName.value
+        ? currentUserEmail
         : null,
       hasKeyword: listFilterOnSuggestionForm.contains(QuickSearchFilter.starred)
         ? KeyWordIdentifier.emailFlagged.value
@@ -134,7 +134,7 @@ class SearchController extends BaseController with DateRangePickerMixin {
       : null;
   }
 
-  void applyFilterSuggestionToSearchFilter(UserName? userName) {
+  void applyFilterSuggestionToSearchFilter(String? currentUserEmail) {
     final receiveTime = listFilterOnSuggestionForm.contains(QuickSearchFilter.last7Days)
       ? EmailReceiveTimeType.last7Days
       : EmailReceiveTimeType.allTime;
@@ -142,11 +142,11 @@ class SearchController extends BaseController with DateRangePickerMixin {
     final hasAttachment = listFilterOnSuggestionForm.contains(QuickSearchFilter.hasAttachment) ? true : false;
 
     var listFromAddress = searchEmailFilter.value.from;
-    if (userName != null) {
+    if (currentUserEmail != null) {
       if (listFilterOnSuggestionForm.contains(QuickSearchFilter.fromMe)) {
-        listFromAddress.add(userName.value);
+        listFromAddress.add(currentUserEmail);
       } else {
-        listFromAddress.remove(userName.value);
+        listFromAddress.remove(currentUserEmail);
       }
     }
 
