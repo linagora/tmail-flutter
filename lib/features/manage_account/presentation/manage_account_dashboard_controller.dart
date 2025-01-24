@@ -15,6 +15,7 @@ import 'package:server_settings/server_settings/capability_server_settings.dart'
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/base/state/banner_state.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
@@ -196,6 +197,7 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
         NotificationBinding().dependencies();
         break;
       case AccountMenuItem.vacation:
+      case AccountMenuItem.contactSupport:
       case AccountMenuItem.none:
         break;
     }
@@ -251,6 +253,23 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
       return [capabilityForward].isSupported(sessionCurrent!, accountId.value!);
     } else {
       return false;
+    }
+  }
+
+  bool get isContactSupportCapabilitySupported {
+    if (accountId.value != null && sessionCurrent != null) {
+      final isSupported = [SessionExtensions.linagoraContactSupportCapability].isSupported(sessionCurrent!, accountId.value!);
+      return isSupported && contactSupportCapability != null;
+    } else {
+      return false;
+    }
+  }
+
+  ContactSupportCapability? get contactSupportCapability {
+    if (accountId.value != null && sessionCurrent != null) {
+      return sessionCurrent!.getContactSupportCapability(accountId.value!);
+    } else {
+      return null;
     }
   }
 

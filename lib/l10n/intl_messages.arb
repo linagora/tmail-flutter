@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2024-12-12T15:50:46.911821",
+  "@@last_modified": "2025-01-28T10:49:54.473622",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2346,6 +2346,12 @@
   },
   "titleReadReceiptRequestNotificationMessage": "Read receipt request",
   "@titleReadReceiptRequestNotificationMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "contactSupport": "Contact support",
+  "@contactSupport": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
