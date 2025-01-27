@@ -120,6 +120,13 @@ class AppLocalizations {
         args: [errorMessage]);
   }
 
+  String handshakeException(String errorMessage) {
+    return Intl.message(
+      'Handshake error in client: $errorMessage',
+      name: 'handshakeException',
+      args: [errorMessage]);
+  }
+
   String get search_folder {
     return Intl.message(
       'Search folder',

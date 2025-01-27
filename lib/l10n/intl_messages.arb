@@ -130,6 +130,16 @@
       "errorMessage": {}
     }
   },
+  "handshakeException": "Handshake error in client: {errorMessage}",
+  "@handshakeException": {
+    "type": "text",
+    "placeholders_order": [
+      "errorMessage"
+    ],
+    "placeholders": {
+      "errorMessage": {}
+    }
+  },
   "search_folder": "Search folder",
   "@search_folder": {
     "type": "text",
