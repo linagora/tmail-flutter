@@ -274,7 +274,7 @@ class LoginController extends ReloadableController {
   }
 
   void _handleCheckOIDCIsAvailableFailure(CheckOIDCIsAvailableFailure failure) {
-    if (failure.exception is CanNotFoundOIDCLinks) {
+    if (failure.exception is CanNotFoundOIDCLinks || failure.exception is InvalidOIDCResponseException) {
       _handleCommonOIDCFailure();
     } else {
       loginFormType.value = LoginFormType.retry;
