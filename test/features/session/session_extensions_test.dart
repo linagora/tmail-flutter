@@ -1,6 +1,7 @@
 import 'package:contact/contact_module.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/core/account/account.dart';
+import 'package:jmap_dart_client/jmap/core/capability/default_capability.dart';
 import 'package:jmap_dart_client/jmap/core/capability/empty_capability.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
@@ -142,7 +143,46 @@ void main() {
       expect(result?.httpLink, equals(contactSupportCapability.httpLink));
     });
 
-    test('SHOULD return null WHEN ContactSupportCapability is not available', () {
+    test('SHOULD return ContactSupportCapability WHEN DefaultCapability is available ', () {
+      // Arrange
+      const supportMailAddress = 'contact.support@example.com';
+      const httpLink = 'https://contact.support';
+      final defaultCapability = DefaultCapability({
+        'supportMailAddress': supportMailAddress,
+        'httpLink': httpLink,
+      });
+      final session = Session(
+        {
+          SessionExtensions.linagoraContactSupportCapability: defaultCapability
+        },
+        {
+          AccountFixtures.aliceAccountId: Account(
+            AccountName('Alice'),
+            true,
+            false,
+            {
+              SessionExtensions.linagoraContactSupportCapability: defaultCapability
+            },
+          )
+        },
+        {},
+        UserName(''),
+        Uri(),
+        Uri(),
+        Uri(),
+        Uri(),
+        State(''),
+      );
+
+      // Act
+      final result = session.getContactSupportCapability(AccountFixtures.aliceAccountId);
+
+      // Assert
+      expect(result?.supportMailAddress, equals(supportMailAddress));
+      expect(result?.httpLink, equals(httpLink));
+    });
+
+    test('SHOULD return null WHEN ContactSupportCapability is not available (EmptyCapability)', () {
       // Arrange
       final session = Session(
           {
@@ -165,6 +205,70 @@ void main() {
           Uri(),
           Uri(),
           State(''),
+      );
+
+      // Act
+      final result = session.getContactSupportCapability(AccountFixtures.aliceAccountId);
+
+      // Assert
+      expect(result, isNull);
+    });
+
+    test('SHOULD return null WHEN ContactSupportCapability is not available (empty ContactSupportCapability)', () {
+      // Arrange
+      final session = Session(
+        {
+          SessionExtensions.linagoraContactSupportCapability: ContactSupportCapability()
+        },
+        {
+          AccountFixtures.aliceAccountId: Account(
+            AccountName('Alice'),
+            true,
+            false,
+            {
+              SessionExtensions.linagoraContactSupportCapability: EmptyCapability()
+            },
+          )
+        },
+        {},
+        UserName(''),
+        Uri(),
+        Uri(),
+        Uri(),
+        Uri(),
+        State(''),
+      );
+
+      // Act
+      final result = session.getContactSupportCapability(AccountFixtures.aliceAccountId);
+
+      // Assert
+      expect(result, isNull);
+    });
+
+    test('SHOULD return null WHEN ContactSupportCapability is not available (empty DefaultCapability)', () {
+      // Arrange
+      final session = Session(
+        {
+          SessionExtensions.linagoraContactSupportCapability: DefaultCapability({})
+        },
+        {
+          AccountFixtures.aliceAccountId: Account(
+            AccountName('Alice'),
+            true,
+            false,
+            {
+              SessionExtensions.linagoraContactSupportCapability: EmptyCapability()
+            },
+          )
+        },
+        {},
+        UserName(''),
+        Uri(),
+        Uri(),
+        Uri(),
+        Uri(),
+        State(''),
       );
 
       // Act
