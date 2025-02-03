@@ -104,7 +104,6 @@ class MailboxView extends BaseMailboxView {
                       onTapActionCallback: () =>
                         controller.onGetHelpOrReportBug(
                           controller.contactSupportCapability!,
-                          controller.mailboxDashBoardController,
                         ),
                     ),
                   ),

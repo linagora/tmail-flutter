@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
@@ -154,24 +155,39 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           )
         ],
         Obx(() {
-          if (controller.manageAccountDashboardController.isContactSupportCapabilitySupported) {
-            return Column(children: [
-              Divider(
-                  color: AppColor.colorDividerHorizontal,
-                  height: 1,
-                  indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-                  endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
+          final accountId = controller
+            .manageAccountDashboardController
+            .accountId
+            .value;
+
+          if (accountId == null) return const SizedBox.shrink();
+
+          final contactSupportCapability = controller
+            .manageAccountDashboardController
+            .sessionCurrent
+            ?.getContactSupportCapability(accountId);
+
+          if (contactSupportCapability == null) return const SizedBox.shrink();
+
+          return Column(children: [
+            Divider(
+              color: AppColor.colorDividerHorizontal,
+              height: 1,
+              indent: SettingsUtils.getHorizontalPadding(
+                context,
+                controller.responsiveUtils,
               ),
-              SettingFirstLevelTileBuilder(
-                AccountMenuItem.contactSupport.getName(context),
-                AccountMenuItem.contactSupport.getIcon(controller.imagePaths),
-                () => controller.onGetHelpOrReportBug(
-                        controller.manageAccountDashboardController.contactSupportCapability!,
-                        controller.mailboxDashBoardController)),
-            ]);
-          } else {
-            return const SizedBox.shrink();
-          }
+              endIndent: SettingsUtils.getHorizontalPadding(
+                context,
+                controller.responsiveUtils,
+              ),
+            ),
+            SettingFirstLevelTileBuilder(
+              AccountMenuItem.contactSupport.getName(context),
+              AccountMenuItem.contactSupport.getIcon(controller.imagePaths),
+              () => controller.onGetHelpOrReportBug(contactSupportCapability),
+            ),
+          ]);
         }),
         Divider(
           color: AppColor.colorDividerHorizontal,
