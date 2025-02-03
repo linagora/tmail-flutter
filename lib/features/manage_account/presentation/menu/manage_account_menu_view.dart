@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/widgets/account_menu_item_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -96,37 +97,57 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                        const Padding(
                            padding: EdgeInsets.symmetric(vertical: 16),
                            child: Divider()),
-                       if (controller.dashBoardController.isContactSupportCapabilitySupported)
-                         Padding(
-                             padding: const EdgeInsetsDirectional.only(start: 20, end: 10),
-                             child: Material(
-                               color: Colors.transparent,
-                               child: InkWell(
-                                   onTap: () {
-                                     controller.onGetHelpOrReportBug(
-                                         controller.dashBoardController.contactSupportCapability!,
-                                         controller.mailboxDashBoardController
-                                     );
-                                   },
-                                   borderRadius: BorderRadius.circular(10),
-                                   child: Padding(
-                                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                                     child: Row(children: [
-                                       SvgPicture.asset(controller.imagePaths.icHelp, width: 20, height: 20, fit: BoxFit.fill),
-                                       const SizedBox(width: 12),
-                                       Expanded(child: Text(
-                                           AppLocalizations.of(context).contactSupport,
-                                           style: const TextStyle(
-                                               fontWeight: FontWeight.normal,
-                                               fontSize: 15,
-                                               color: Colors.black
-                                           )
-                                       ))
-                                     ]),
+                       Obx(() {
+                         final accountId = controller
+                           .dashBoardController
+                           .accountId
+                           .value;
+
+                         if (accountId == null) return const SizedBox.shrink();
+
+                         final contactSupportCapability = controller
+                           .dashBoardController
+                           .sessionCurrent
+                           ?.getContactSupportCapability(accountId);
+
+                         if (contactSupportCapability == null) return const SizedBox.shrink();
+
+                         return Padding(
+                           padding: const EdgeInsetsDirectional.only(start: 20, end: 10),
+                           child: Material(
+                             color: Colors.transparent,
+                             child: InkWell(
+                               onTap: () => controller.onGetHelpOrReportBug(contactSupportCapability),
+                               borderRadius: const BorderRadius.all(Radius.circular(10)),
+                               child: Padding(
+                                 padding: const EdgeInsets.symmetric(
+                                   horizontal: 12,
+                                   vertical: 6,
+                                 ),
+                                 child: Row(children: [
+                                   SvgPicture.asset(
+                                     controller.imagePaths.icHelp,
+                                     width: 20,
+                                     height: 20,
+                                     fit: BoxFit.fill,
+                                   ),
+                                   const SizedBox(width: 12),
+                                   Expanded(
+                                     child: Text(
+                                       AppLocalizations.of(context).contactSupport,
+                                       style: const TextStyle(
+                                         fontWeight: FontWeight.normal,
+                                         fontSize: 15,
+                                         color: Colors.black,
+                                       ),
+                                     ),
                                    )
-                               ),
-                             )
-                         ),
+                                 ]),
+                               )
+                             ),
+                           ),
+                         );
+                       }),
                        Padding(
                          padding: const EdgeInsetsDirectional.only(start: 20, end: 10),
                          child: Material(
