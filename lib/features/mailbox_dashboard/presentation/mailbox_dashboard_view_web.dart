@@ -76,10 +76,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                           onTapApplicationLogoAction: controller.redirectToInboxAction,
                           onTapAvatarAction: (position) => controller.handleClickAvatarAction(context, position),
                           onTapContactSupportAction: (contactSupport) =>
-                            controller.onGetHelpOrReportBug(
-                              contactSupport,
-                              controller,
-                            ),
+                            controller.onGetHelpOrReportBug(contactSupport),
                         );
                       }
                     }),
