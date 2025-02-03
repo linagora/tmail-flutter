@@ -167,7 +167,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
             .sessionCurrent
             ?.getContactSupportCapability(accountId);
 
-          if (contactSupportCapability == null) return const SizedBox.shrink();
+          if (contactSupportCapability?.isAvailable != true) return const SizedBox.shrink();
 
           return Column(children: [
             Divider(
@@ -185,7 +185,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
             SettingFirstLevelTileBuilder(
               AccountMenuItem.contactSupport.getName(context),
               AccountMenuItem.contactSupport.getIcon(controller.imagePaths),
-              () => controller.onGetHelpOrReportBug(contactSupportCapability),
+              () => controller.onGetHelpOrReportBug(contactSupportCapability!),
             ),
           ]);
         }),

@@ -110,14 +110,14 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                            .sessionCurrent
                            ?.getContactSupportCapability(accountId);
 
-                         if (contactSupportCapability == null) return const SizedBox.shrink();
+                         if (contactSupportCapability?.isAvailable != true) return const SizedBox.shrink();
 
                          return Padding(
                            padding: const EdgeInsetsDirectional.only(start: 20, end: 10),
                            child: Material(
                              color: Colors.transparent,
                              child: InkWell(
-                               onTap: () => controller.onGetHelpOrReportBug(contactSupportCapability),
+                               onTap: () => controller.onGetHelpOrReportBug(contactSupportCapability!),
                                borderRadius: const BorderRadius.all(Radius.circular(10)),
                                child: Padding(
                                  padding: const EdgeInsets.symmetric(
