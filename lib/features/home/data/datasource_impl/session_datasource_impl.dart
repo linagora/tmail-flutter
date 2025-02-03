@@ -1,6 +1,7 @@
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:tmail_ui_user/features/home/data/datasource/session_datasource.dart';
 import 'package:tmail_ui_user/features/home/data/network/session_api.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class SessionDataSourceImpl extends SessionDataSource {
@@ -13,7 +14,9 @@ class SessionDataSourceImpl extends SessionDataSource {
   @override
   Future<Session> getSession() {
     return Future.sync(() async {
-      return await _sessionAPI.getSession();
+      return await _sessionAPI.getSession(
+        converters: SessionExtensions.customMapCapabilitiesConverter,
+      );
     }).catchError(_exceptionThrower.throwException);
   }
 

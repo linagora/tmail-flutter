@@ -10,7 +10,7 @@ import 'package:jmap_dart_client/http/converter/state_converter.dart';
 import 'package:jmap_dart_client/http/converter/user_name_converter.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
-import 'package:jmap_dart_client/jmap/core/capability/default_capability.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:model/model.dart';
@@ -21,6 +21,11 @@ import 'package:tmail_ui_user/features/home/domain/converter/session_primary_acc
 
 extension SessionExtensions on Session {
   static final CapabilityIdentifier linagoraContactSupportCapability = CapabilityIdentifier(Uri.parse('com:linagora:params:jmap:contact:support'));
+
+  static final Map<CapabilityIdentifier, CapabilityProperties Function(Map<String, dynamic>)> customMapCapabilitiesConverter = {
+    linagoraContactSupportCapability: ContactSupportCapability.deserialize,
+    tmailContactCapabilityIdentifier: AutocompleteCapability.deserialize,
+  };
 
   Map<String, dynamic> toJson() {
     final val = <String, dynamic>{};
@@ -85,26 +90,12 @@ extension SessionExtensions on Session {
 
   ContactSupportCapability? getContactSupportCapability(AccountId accountId) {
     try {
-      final contactSupportCapability = getCapabilityProperties<ContactSupportCapability>(accountId, linagoraContactSupportCapability);
-      if (contactSupportCapability != null) {
-        if (contactSupportCapability != ContactSupportCapability(httpLink: null, supportMailAddress: null)) {
-          log('SessionExtensions::getContactSupportCapability:contactSupportCapability = $contactSupportCapability');
-          return contactSupportCapability;
-        } else {
-          log('SessionExtensions::getContactSupportCapability:contactSupportCapability = null');
-          return null;
-        }
-      } else {
-        final defaultCapability = getCapabilityProperties<DefaultCapability>(accountId, linagoraContactSupportCapability);
-        if (defaultCapability != null && defaultCapability != DefaultCapability({})) {
-          final contactSupportCapability = ContactSupportCapability.deserialize(defaultCapability.properties!);
-          log('SessionExtensions::getContactSupportCapability:contactSupportCapability = $contactSupportCapability');
-          return contactSupportCapability;
-        } else {
-          log('SessionExtensions::getContactSupportCapability:contactSupportCapability = null');
-          return null;
-        }
-      }
+      final contactSupportCapability = getCapabilityProperties<ContactSupportCapability>(
+        accountId,
+        linagoraContactSupportCapability,
+      );
+      log('SessionExtensions::getContactSupportCapability:contactSupportCapability = $contactSupportCapability');
+      return contactSupportCapability;
     } catch (e) {
       logError('SessionExtensions::getContactSupportCapability():[Exception] $e');
       return null;

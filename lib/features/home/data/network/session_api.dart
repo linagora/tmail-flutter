@@ -15,6 +15,10 @@ class SessionAPI {
   Future<Session> getSession({Map<CapabilityIdentifier, CapabilityProperties Function(Map<String, dynamic>)>? converters}) async {
     final getSessionBuilder = GetSessionBuilder(httpClient);
 
+    if (converters != null) {
+      getSessionBuilder.registerCapabilityConverter(converters);
+    }
+
     final result = await getSessionBuilder.build().execute();
 
     return result;
