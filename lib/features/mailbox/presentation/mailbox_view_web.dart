@@ -60,7 +60,7 @@ class MailboxView extends BaseMailboxView {
             )),
             const Divider(color: AppColor.colorDividerHorizontal),
             if (controller.responsiveUtils.isWebDesktop(context) ||
-                controller.contactSupportCapability == null)
+                controller.contactSupportCapability?.isAvailable != true)
               const QuotasView(
                 padding: EdgeInsetsDirectional.only(
                   start: QuotasViewStyles.padding,
