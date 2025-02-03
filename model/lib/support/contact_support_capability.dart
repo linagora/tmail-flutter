@@ -19,6 +19,10 @@ class ContactSupportCapability extends CapabilityProperties {
     return ContactSupportCapability.fromJson(json);
   }
 
+  bool get isAvailable =>
+      httpLink?.trim().isNotEmpty == true ||
+      supportMailAddress?.trim().isNotEmpty == true;
+
   @override
   List<Object?> get props => [httpLink, supportMailAddress];
 }
