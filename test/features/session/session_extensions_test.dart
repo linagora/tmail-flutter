@@ -145,26 +145,26 @@ void main() {
     test('SHOULD return null WHEN ContactSupportCapability is not available', () {
       // Arrange
       final session = Session(
-        {
-          SessionExtensions.linagoraContactSupportCapability: EmptyCapability()
-        },
-        {
-          AccountFixtures.aliceAccountId: Account(
-            AccountName('Alice'),
-            true,
-            false,
-            {
-              SessionExtensions.linagoraContactSupportCapability: EmptyCapability()
-            },
-          )
-        },
-        {},
-        UserName(''),
-        Uri(),
-        Uri(),
-        Uri(),
-        Uri(),
-        State(''),
+          {
+            SessionExtensions.linagoraContactSupportCapability: EmptyCapability()
+          },
+          {
+            AccountFixtures.aliceAccountId: Account(
+              AccountName('Alice'),
+              true,
+              false,
+              {
+                SessionExtensions.linagoraContactSupportCapability: EmptyCapability()
+              },
+            )
+          },
+          {},
+          UserName(''),
+          Uri(),
+          Uri(),
+          Uri(),
+          Uri(),
+          State(''),
       );
 
       // Act
