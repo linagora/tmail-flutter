@@ -89,7 +89,7 @@ class MailboxView extends BaseMailboxView {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               const Divider(color: AppColor.colorDividerHorizontal),
-                              if (controller.contactSupportCapability == null)
+                              if (controller.contactSupportCapability?.isAvailable != true)
                                 const QuotasView()
                               else
                                 Row(
