@@ -1084,10 +1084,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.NavigationBarWidget_build_closure.prototype = {
     call$2(context, constraint) {
-      var t3, _null = null,
+      var _null = null,
         t1 = this.$this,
-        t2 = A._setArrayType([new A.SizedBox(constraint.maxWidth / 2, 52, t1.searchForm, _null), B.Spacer_null], type$.JSArray_Widget);
-      if (t1.contactSupportCapability != null) {
+        t2 = A._setArrayType([new A.SizedBox(constraint.maxWidth / 2, 52, t1.searchForm, _null), B.Spacer_null], type$.JSArray_Widget),
+        t3 = t1.contactSupportCapability;
+      if ((t3 == null ? _null : t3.get$isAvailable()) === true) {
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
         t2.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build__closure(t1), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null)));
       }
@@ -1243,5 +1244,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "oRXZPnFJKwymoyTcO8n7Em197sM=");
+})($__dart_deferred_initializers__, "snkBRe5gGkQJxgn+cSe+hkwA8IE=");
 ;
