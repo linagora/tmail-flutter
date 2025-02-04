@@ -12153,7 +12153,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.GestureDetector$(C.HitTestBehavior_2, B.Draggable$(_this._buildEmailItemNotDraggable$2(context, presentationEmail), t6, t3, B.drag_target__pointerDragAnchorStrategy$closure(), t4, new B.ThreadView__buildEmailItemDraggable_closure(_this), new B.ThreadView__buildEmailItemDraggable_closure0(_this, presentationEmail), new B.ThreadView__buildEmailItemDraggable_closure1(_this), type$.List_PresentationEmail), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.ThreadView__buildEmailItemDraggable_closure2(), _null, _null, _null, new B.ThreadView__buildEmailItemDraggable_closure3(), _null, _null, _null, _null, _null, false, C.Offset_7BT);
     },
     _buildEmailItemNotDraggable$2(context, presentationEmail) {
-      var t2, t3, t4, isShowingEmailContent, selectModeAll, t5, t6, t7, t8, t9, _this = this, _null = null,
+      var t2, t3, t4, isShowingEmailContent, selectModeAll, t5, t6, t7, t8, _this = this, _null = null,
         t1 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
       t1 = t1._jsWeakMap;
@@ -12193,38 +12193,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       if (!t2._as(t1.get(_this)).isInArchiveMailbox$1(presentationEmail)) {
         A.Expando__checkType(_this);
-        if (t2._as(t1.get(_this)).isInTrashMailbox$1(presentationEmail)) {
-          A.Expando__checkType(_this);
-          t5 = t2._as(t1.get(_this)).EmailActionController_mailboxDashBoardController;
-          t9 = $.$get$PresentationMailbox_roleArchive();
-          t9 = t5.mapDefaultMailboxIdByRole.$index(0, t9) == null;
-          t5 = t9;
-        } else
-          t5 = false;
+        t2._as(t1.get(_this)).toString;
+        t5 = A.CircleAvatar$(D.Color_4290764543, A.SvgPicture$asset("assets/images/ic_mailbox_archived.svg", C.Alignment_0_0, _null, C.BoxFit_0, _null, _null, _null, _null), 24);
+        A.Localizations_of(context, C.Type_AppLocalizations_CTL, t6).toString;
+        t8 = A.Container$(C.AlignmentDirectional_1_0, A.Row$(A._setArrayType([C.Spacer_null, t5, D.SizedBox_11_null_null_null, A.Text$(A.Intl__message("Archive message", _null, "archiveMessage", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_OkG3, _null, _null, _null, _null, _null)], t8), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_4292865791, _null, _null, _null, _null, _null, _null, C.EdgeInsetsDirectional_0_0_16_0, _null, _null, _null);
+        t5 = t8;
       } else
-        t5 = true;
-      if (t5)
         t5 = _null;
-      else {
-        A.Expando__checkType(_this);
-        t5 = t2._as(t1.get(_this)).EmailActionController_mailboxDashBoardController;
-        t9 = $.$get$PresentationMailbox_roleArchive();
-        if (t5.mapDefaultMailboxIdByRole.$index(0, t9) != null) {
-          A.Expando__checkType(_this);
-          t2._as(t1.get(_this)).toString;
-          t5 = A.CircleAvatar$(D.Color_4290764543, A.SvgPicture$asset("assets/images/ic_mailbox_archived.svg", C.Alignment_0_0, _null, C.BoxFit_0, _null, _null, _null, _null), 24);
-          A.Localizations_of(context, C.Type_AppLocalizations_CTL, t6).toString;
-          t8 = A.Container$(C.AlignmentDirectional_1_0, A.Row$(A._setArrayType([C.Spacer_null, t5, D.SizedBox_11_null_null_null, A.Text$(A.Intl__message("Archive message", _null, "archiveMessage", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_OkG3, _null, _null, _null, _null, _null)], t8), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_4292865791, _null, _null, _null, _null, _null, _null, C.EdgeInsetsDirectional_0_0_16_0, _null, _null, _null);
-          t5 = t8;
-        } else {
-          A.Expando__checkType(_this);
-          t2._as(t1.get(_this)).toString;
-          t5 = A.CircleAvatar$(C.Color_4294967295, A.SvgPicture$asset("assets/images/ic_delete_mailbox.svg", C.Alignment_0_0, _null, C.BoxFit_0, _null, _null, _null, _null), 24);
-          A.Localizations_of(context, C.Type_AppLocalizations_CTL, t6).toString;
-          t8 = A.Container$(C.AlignmentDirectional_1_0, A.Row$(A._setArrayType([C.Spacer_null, t5, D.SizedBox_11_null_null_null, A.Text$(A.Intl__message("Move to trash", _null, "move_to_trash", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_6nc1, _null, _null, _null, _null, _null)], t8), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, C.Color_4293281350, _null, _null, _null, _null, _null, _null, C.EdgeInsetsDirectional_0_0_16_0, _null, _null, _null);
-          t5 = t8;
-        }
-      }
       t6 = t4 == null ? _null : t4.id.value;
       A.Expando__checkType(_this);
       t8 = t2._as(t1.get(_this)).EmailActionController_mailboxDashBoardController.searchController.searchEmailFilter.get$value(0).text;
@@ -22095,7 +22070,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.TextStyle_69t22 = new A.TextStyle(true, D.Color_4287339695, null, null, null, null, 16, C.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_6nc0 = new A.TextStyle(true, C.Color_4294967295, null, null, null, null, 12, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_6nc = new A.TextStyle(true, C.Color_4294967295, null, null, null, null, 14, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.TextStyle_6nc1 = new A.TextStyle(true, C.Color_4294967295, null, null, null, null, 15, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.Color_4279773522 = new A.Color(4279773522);
     D.TextStyle_82N0 = new A.TextStyle(true, D.Color_4279773522, null, null, null, null, 10, C.FontWeight_6_700, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_82N = new A.TextStyle(true, D.Color_4279773522, null, null, null, null, 25, C.FontWeight_6_700, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -22191,5 +22165,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "cUKNY3xLcl6YG2tBA3+xj+wViDs=");
+})($__dart_deferred_initializers__, "6jgpRmBYOY/sQj9BCwkjbvkViK8=");
 ;
