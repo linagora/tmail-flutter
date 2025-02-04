@@ -33,6 +33,7 @@ class SavedEmailDraft with EquatableMixin {
       toRecipients: {},
       ccRecipients: {},
       bccRecipients: {},
+      replyToRecipients: {},
       attachments: [],
       identity: null,
       hasReadReceipt: false,

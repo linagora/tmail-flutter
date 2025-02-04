@@ -76,7 +76,7 @@ void main() {
 
         final result = emailToReply.generateRecipientsEmailAddressForComposer(
           emailActionType: EmailActionType.reply,
-          isSender: false,
+          isSender: true,
         );
 
         expect(result.value1, containsAll(expectedResult.value1));
