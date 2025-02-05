@@ -63,8 +63,8 @@ void main() {
     });
 
     group('GIVEN user B is the sender, SENDER configured the replyTo email AND sends an email to user A and user E, cc to user C, bcc to user D', () {
-      test('THEN user A clicks reply, generateRecipientsEmailAddressForComposer SHOULD return only replyToEmailAddress email to reply' , () {
-        final expectedResult = Tuple4([replyToEmailAddress], <EmailAddress>[], <EmailAddress>[], <EmailAddress>[]);
+      test('THEN user A clicks reply, generateRecipientsEmailAddressForComposer SHOULD return user A and E emails to reply WHEN sender is true' , () {
+        final expectedResult = Tuple4([userAEmailAddress, userEEmailAddress], <EmailAddress>[], <EmailAddress>[], <EmailAddress>[]);
 
         final emailToReply = PresentationEmail(
           from: {userBEmailAddress},
@@ -77,6 +77,28 @@ void main() {
         final result = emailToReply.generateRecipientsEmailAddressForComposer(
           emailActionType: EmailActionType.reply,
           isSender: true,
+        );
+
+        expect(result.value1, containsAll(expectedResult.value1));
+        expect(result.value2, containsAll(expectedResult.value2));
+        expect(result.value3, containsAll(expectedResult.value3));
+        expect(result.value4, containsAll(expectedResult.value4));
+      });
+
+      test('THEN user A clicks reply, generateRecipientsEmailAddressForComposer SHOULD return user B email to reply WHEN sender is false' , () {
+        final expectedResult = Tuple4([userBEmailAddress], <EmailAddress>[], <EmailAddress>[], <EmailAddress>[]);
+
+        final emailToReply = PresentationEmail(
+          from: {userBEmailAddress},
+          replyTo: {replyToEmailAddress},
+          to: {userAEmailAddress, userEEmailAddress},
+          cc: {userCEmailAddress},
+          bcc: {userDEmailAddress}
+        );
+
+        final result = emailToReply.generateRecipientsEmailAddressForComposer(
+          emailActionType: EmailActionType.reply,
+          isSender: false,
         );
 
         expect(result.value1, containsAll(expectedResult.value1));

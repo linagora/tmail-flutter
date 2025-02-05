@@ -21,14 +21,7 @@ extension PresentationEmailExtension on PresentationEmail {
 
     switch (emailActionType) {
       case EmailActionType.reply:
-        var listReplyAddress = <EmailAddress>[];
-        if (newReplyToAddress.withoutMe(userName).isNotEmpty) {
-          listReplyAddress = newReplyToAddress;
-        } else if (isSender) {
-          listReplyAddress = newToAddress;
-        } else {
-          listReplyAddress = newFromAddress;
-        }
+        final listReplyAddress = isSender ? newToAddress : newFromAddress;
 
         final listReplyAddressWithoutUsername = listReplyAddress.withoutMe(userName);
 
