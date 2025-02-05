@@ -33,75 +33,53 @@ class SettingsView extends GetWidget<SettingsController> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.white,
-      child: SafeArea(
-        top: controller.manageAccountDashboardController.isVacationCapabilitySupported,
-        bottom: controller.manageAccountDashboardController.isVacationCapabilitySupported,
-        left: controller.manageAccountDashboardController.isVacationCapabilitySupported &&
-          controller.responsiveUtils.isPortraitMobile(context),
-        right: controller.manageAccountDashboardController.isVacationCapabilitySupported &&
-          controller.responsiveUtils.isPortraitMobile(context),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SafeArea(
-              bottom: false,
-              child: SizedBox.fromSize(
-                size: const Size.fromHeight(52),
-                child: Padding(
-                  padding: SettingsUtils.getPaddingAppBar(context, controller.responsiveUtils),
-                  child: _buildAppbar(context))),
-            ),
-            const Divider(color: AppColor.colorDividerComposer, height: 1),
-            Obx(() {
-              if (controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsValid == true) {
-                return SafeArea(
-                  top: false,
-                  bottom: false,
-                  child: VacationNotificationMessageWidget(
-                    margin: const EdgeInsetsDirectional.only(start: 12, end: 12, top: 8),
-                    fromAccountDashBoard: true,
-                    vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
-                    actionGotoVacationSetting: !controller.manageAccountDashboardController.inVacationSettings()
-                      ? () => controller.manageAccountDashboardController.selectAccountMenuItem(AccountMenuItem.vacation)
-                      : null,
-                    actionEndNow: controller.manageAccountDashboardController.disableVacationResponder
-                  ),
-                );
-              } else if ((controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsWaiting == true
-                  || controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsStopped == true)
-                  && controller.manageAccountDashboardController.inVacationSettings()) {
-                return SafeArea(
-                  top: false,
-                  bottom: false,
-                  child: VacationNotificationMessageWidget(
-                    margin: const EdgeInsetsDirectional.only(start: 12, end: 12, top: 8),
-                    fromAccountDashBoard: true,
-                    vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                    leadingIcon: const Padding(
-                      padding: EdgeInsetsDirectional.only(end: 12),
-                      child: Icon(Icons.timer, size: 20),
-                    )
-                  ),
-                );
-              } else {
-                return const SizedBox.shrink();
-              }
-            }),
-            Obx(() {
-              if (controller.manageAccountDashboardController.forwardWarningBannerState.value == BannerState.enabled &&
-                  controller.manageAccountDashboardController.accountMenuItemSelected.value == AccountMenuItem.forward) {
-                return ForwardWarningBanner();
-              } else {
-                return const SizedBox.shrink();
-              }
-            }),
-            Expanded(child: _bodySettingsScreen())
-          ]
-        ),
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox.fromSize(
+          size: const Size.fromHeight(52),
+          child: Padding(
+            padding: SettingsUtils.getPaddingAppBar(context, controller.responsiveUtils),
+            child: _buildAppbar(context))),
+        const Divider(color: AppColor.colorDividerComposer, height: 1),
+        Obx(() {
+          if (controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsValid == true) {
+            return VacationNotificationMessageWidget(
+              margin: const EdgeInsetsDirectional.only(start: 12, end: 12, top: 8),
+              fromAccountDashBoard: true,
+              vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
+              actionGotoVacationSetting: !controller.manageAccountDashboardController.inVacationSettings()
+                ? () => controller.manageAccountDashboardController.selectAccountMenuItem(AccountMenuItem.vacation)
+                : null,
+              actionEndNow: controller.manageAccountDashboardController.disableVacationResponder
+            );
+          } else if ((controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsWaiting == true
+              || controller.manageAccountDashboardController.vacationResponse.value?.vacationResponderIsStopped == true)
+              && controller.manageAccountDashboardController.inVacationSettings()) {
+            return VacationNotificationMessageWidget(
+              margin: const EdgeInsetsDirectional.only(start: 12, end: 12, top: 8),
+              fromAccountDashBoard: true,
+              vacationResponse: controller.manageAccountDashboardController.vacationResponse.value!,
+              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+              leadingIcon: const Padding(
+                padding: EdgeInsetsDirectional.only(end: 12),
+                child: Icon(Icons.timer, size: 20),
+              )
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
+        Obx(() {
+          if (controller.manageAccountDashboardController.forwardWarningBannerState.value == BannerState.enabled &&
+              controller.manageAccountDashboardController.accountMenuItemSelected.value == AccountMenuItem.forward) {
+            return ForwardWarningBanner();
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
+        Expanded(child: _bodySettingsScreen())
+      ]
     );
   }
 
@@ -200,9 +178,7 @@ class SettingsView extends GetWidget<SettingsController> {
     return Obx(() {
       switch (controller.manageAccountDashboardController.settingsPageLevel.value) {
         case SettingsPageLevel.universal:
-          return const SafeArea(
-            top: false,
-            child: SettingsFirstLevelView());
+          return const SettingsFirstLevelView();
         case SettingsPageLevel.level1:
           return _viewDisplayedOfAccountMenuItem();
       }
@@ -213,34 +189,24 @@ class SettingsView extends GetWidget<SettingsController> {
     return Obx(() {
       switch(controller.manageAccountDashboardController.accountMenuItemSelected.value) {
         case AccountMenuItem.profiles:
-          return SafeArea(
-            top: false,
-            child: ProfilesView());
+          return ProfilesView();
         case AccountMenuItem.languageAndRegion:
-          return const SafeArea(
-            top: false,
-            child: LanguageAndRegionView());
+          return const LanguageAndRegionView();
         case AccountMenuItem.emailRules:
           if (controller.manageAccountDashboardController.isRuleFilterCapabilitySupported) {
-            return SafeArea(
-              top: false,
-              child: EmailRulesView());
+            return EmailRulesView();
           } else {
             return const SizedBox.shrink();
           }
         case AccountMenuItem.alwaysReadReceipt:
           if (controller.manageAccountDashboardController.isServerSettingsCapabilitySupported) {
-            return const SafeArea(
-              top: false,
-              child: AlwaysReadReceiptView());
+            return const AlwaysReadReceiptView();
           } else {
             return const SizedBox.shrink();
           }
         case AccountMenuItem.forward:
           if (controller.manageAccountDashboardController.isForwardCapabilitySupported) {
-            return SafeArea(
-              top: false,
-              child: ForwardView());
+            return ForwardView();
           } else {
             return const SizedBox.shrink();
           }
@@ -251,13 +217,9 @@ class SettingsView extends GetWidget<SettingsController> {
             return const SizedBox.shrink();
           }
         case AccountMenuItem.mailboxVisibility:
-          return SafeArea(
-            top: false,
-            child: MailboxVisibilityView());
+          return MailboxVisibilityView();
         case AccountMenuItem.notification:
-          return const SafeArea(
-            top: false,
-            child: NotificationView());
+          return const NotificationView();
         default:
           return const SizedBox.shrink();
       }
