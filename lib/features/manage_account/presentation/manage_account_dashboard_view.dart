@@ -99,7 +99,11 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                 ],
               ))
             ]),
-            mobile: SettingsView(closeAction: () => controller.backToMailboxDashBoard(context: context))
+            mobile: SafeArea(
+              child: SettingsView(
+                closeAction: () =>
+                  controller.backToMailboxDashBoard(context: context)),
+            )
         ),
       ),
     );
