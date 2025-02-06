@@ -195,9 +195,7 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
       case AccountMenuItem.notification:
         NotificationBinding().dependencies();
         break;
-      case AccountMenuItem.vacation:
-      case AccountMenuItem.contactSupport:
-      case AccountMenuItem.none:
+      default:
         break;
     }
   }

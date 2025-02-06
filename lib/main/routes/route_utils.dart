@@ -255,4 +255,8 @@ abstract class RouteUtils {
 
   static String get emailEMLPreviewerRoutePath =>
       _createEmailEMLPreviewerServicePath('$baseOriginUrl${AppRoutes.emailEMLPreviewer}').path;
+
+  static String generateMailtoLink(String mailAddress) {
+    return '$baseOriginUrl/$mailtoPrefix/?uri=$mailtoPrefix:$mailAddress';
+  }
 }

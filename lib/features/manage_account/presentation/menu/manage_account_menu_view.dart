@@ -1,15 +1,17 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/widgets/account_menu_item_tile_builder.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
 
@@ -84,8 +86,10 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                              itemBuilder: (context, index) => Obx(() {
                                final menuItem = controller.listAccountMenuItem[index];
                                return AccountMenuItemTileBuilder(
-                                 menuItem,
-                                 controller.dashBoardController.accountMenuItemSelected.value,
+                                 imagePaths: controller.imagePaths,
+                                 responsiveUtils: controller.responsiveUtils,
+                                 menuItem: menuItem,
+                                 menuItemSelected: controller.dashBoardController.accountMenuItemSelected.value,
                                  onSelectAccountMenuItemAction: controller.selectAccountMenuItem
                                );
                              })
@@ -112,72 +116,31 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
 
                          if (contactSupportCapability?.isAvailable != true) return const SizedBox.shrink();
 
-                         return Padding(
-                           padding: const EdgeInsetsDirectional.only(start: 20, end: 10),
-                           child: Material(
-                             color: Colors.transparent,
-                             child: InkWell(
-                               onTap: () => controller.onGetHelpOrReportBug(contactSupportCapability!),
-                               borderRadius: const BorderRadius.all(Radius.circular(10)),
-                               child: Padding(
-                                 padding: const EdgeInsets.symmetric(
-                                   horizontal: 12,
-                                   vertical: 6,
-                                 ),
-                                 child: Row(children: [
-                                   SvgPicture.asset(
-                                     controller.imagePaths.icHelp,
-                                     width: 20,
-                                     height: 20,
-                                     fit: BoxFit.fill,
-                                   ),
-                                   const SizedBox(width: 12),
-                                   Expanded(
-                                     child: Text(
-                                       AppLocalizations.of(context).contactSupport,
-                                       style: const TextStyle(
-                                         fontWeight: FontWeight.normal,
-                                         fontSize: 15,
-                                         color: Colors.black,
-                                       ),
-                                     ),
-                                   )
-                                 ]),
-                               )
-                             ),
-                           ),
+                         return AccountMenuItemTileBuilder(
+                           imagePaths: controller.imagePaths,
+                           responsiveUtils: controller.responsiveUtils,
+                           menuItem: AccountMenuItem.contactSupport,
+                           padding: const EdgeInsetsDirectional.only(start: 16, end: 8, bottom: 6),
+                           onSelectAccountMenuItemAction: (_) {
+                             controller.onGetHelpOrReportBug(
+                               contactSupportCapability!,
+                               route: AppRoutes.settings,
+                             );
+                           },
                          );
                        }),
-                       Padding(
-                         padding: const EdgeInsetsDirectional.only(start: 20, end: 10),
-                         child: Material(
-                           color: Colors.transparent,
-                           child: InkWell(
-                             onTap: () {
-                               controller.dashBoardController.logout(
-                                 context,
-                                 controller.dashBoardController.sessionCurrent,
-                                 controller.dashBoardController.accountId.value
-                               );
-                             },
-                             borderRadius: BorderRadius.circular(10),
-                             child: Padding(
-                               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                               child: Row(children: [
-                                 SvgPicture.asset(controller.imagePaths.icSignOut, width: 20, height: 20, fit: BoxFit.fill),
-                                 const SizedBox(width: 12),
-                                 Expanded(child: Text(
-                                   AppLocalizations.of(context).sign_out,
-                                   style: const TextStyle(
-                                     fontWeight: FontWeight.normal,
-                                     fontSize: 15,
-                                     color: Colors.black
-                                   )
-                                 ))
-                               ]),
-                             )
-                           ),
-                         )
+                       AccountMenuItemTileBuilder(
+                         imagePaths: controller.imagePaths,
+                         responsiveUtils: controller.responsiveUtils,
+                         menuItem: AccountMenuItem.signOut,
+                         padding: const EdgeInsetsDirectional.only(start: 16, end: 8),
+                         onSelectAccountMenuItemAction: (_) {
+                           controller.dashBoardController.logout(
+                             context,
+                             controller.dashBoardController.sessionCurrent,
+                             controller.dashBoardController.accountId.value,
+                           );
+                         }
                        ),
                      ]
                    ),

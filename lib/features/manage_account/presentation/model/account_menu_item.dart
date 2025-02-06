@@ -13,6 +13,7 @@ enum AccountMenuItem {
   mailboxVisibility,
   notification,
   contactSupport,
+  signOut,
   none;
 
   String getIcon(ImagePaths imagePaths) {
@@ -35,6 +36,8 @@ enum AccountMenuItem {
         return imagePaths.icNotification;
       case AccountMenuItem.contactSupport:
         return imagePaths.icHelp;
+      case AccountMenuItem.signOut:
+        return imagePaths.icSignOut;
       case AccountMenuItem.none:
         return imagePaths.icProfiles;
     }
@@ -60,6 +63,8 @@ enum AccountMenuItem {
         return AppLocalizations.of(context).notification;
       case AccountMenuItem.contactSupport:
         return AppLocalizations.of(context).contactSupport;
+      case AccountMenuItem.signOut:
+        return AppLocalizations.of(context).sign_out;
       case AccountMenuItem.none:
         return AppLocalizations.of(context).profiles;
     }
@@ -85,6 +90,8 @@ enum AccountMenuItem {
         return 'notification';
       case AccountMenuItem.contactSupport:
         return 'contact-support';
+      case AccountMenuItem.signOut:
+        return 'sign-out';
       case AccountMenuItem.none:
         return 'profiles';
     }
