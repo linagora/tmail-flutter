@@ -4547,8 +4547,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Expando__checkType(t1);
         t4 = t3._as(t2.get(t1)).manageAccountDashboardController.sessionCurrent;
         t4.toString;
-        t4 = A.SessionExtension_getEmailAddress(t4);
-        t4 = new A.UserName(t4 == null ? "" : t4);
+        t4 = new A.UserName(A.SessionExtension_getOwnEmailAddress(t4));
       } else
         t4 = _null;
       A.Expando__checkType(t1);
@@ -5880,5 +5879,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_8", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "g+EjlRHnrVgmqLZnCn1NUWTgYoo=");
+})($__dart_deferred_initializers__, "9q6PG2cjTVPUIA9iIVK/6RJXz0U=");
 ;

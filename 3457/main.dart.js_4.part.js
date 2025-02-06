@@ -11072,7 +11072,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t2) {
         t1.searchEmailFilter.set$value(0, A.SearchEmailFilter$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null));
         t2 = t3.sessionCurrent;
-        t1.applyFilterSuggestionToSearchFilter$1(t2 == null ? _null : A.SessionExtension_getEmailAddress(t2));
+        t1.applyFilterSuggestionToSearchFilter$1(t2 == null ? _null : A.SessionExtension_getOwnEmailAddress(t2));
         t3.searchEmailByQueryString$1(queryString);
       } else {
         t1 = new A.ClearSearchEmailAction();
@@ -11105,7 +11105,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.searchEmailFilter.set$value(0, A.SearchEmailFilter$(_null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null));
       t3 = this._search_input_form_widget$_dashBoardController;
       t4 = t3.sessionCurrent;
-      t1.applyFilterSuggestionToSearchFilter$1(t4 == null ? _null : A.SessionExtension_getEmailAddress(t4));
+      t1.applyFilterSuggestionToSearchFilter$1(t4 == null ? _null : A.SessionExtension_getOwnEmailAddress(t4));
       t3.searchEmailByQueryString$1(t2);
     },
     _buildShowAllResultButton$2(context, keyword) {
@@ -17384,8 +17384,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Expando__checkType(t1);
         t4 = t3._as(t2.get(t1)).mailboxDashBoardController.sessionCurrent;
         t4.toString;
-        t4 = A.SessionExtension_getEmailAddress(t4);
-        t4 = new A.UserName(t4 == null ? "" : t4);
+        t4 = new A.UserName(A.SessionExtension_getOwnEmailAddress(t4));
       } else
         t4 = _null;
       A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
@@ -18366,7 +18365,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       listAddressOfFrom = t3._as(t2.get(t1)).searchController.searchEmailFilter.get$value(0).from;
       A.Expando__checkType(t1);
       t4 = t3._as(t2.get(t1)).sessionCurrent;
-      currentUserEmail = t4 == null ? null : A.SessionExtension_getEmailAddress(t4);
+      currentUserEmail = t4 == null ? null : A.SessionExtension_getOwnEmailAddress(t4);
       A.Expando__checkType(t1);
       startDate = t3._as(t2.get(t1)).searchController.get$startDateFiltered();
       A.Expando__checkType(t1);
@@ -19752,7 +19751,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       listAddressOfFrom = t3._as(t2.get(t1)).searchEmailFilter.get$value(0).from;
       A.Expando__checkType(t1);
       t4 = t3._as(t2.get(t1)).EmailActionController_mailboxDashBoardController.sessionCurrent;
-      currentUserEmail = t4 == null ? _null : A.SessionExtension_getEmailAddress(t4);
+      currentUserEmail = t4 == null ? _null : A.SessionExtension_getOwnEmailAddress(t4);
       A.Expando__checkType(t1);
       t4 = t3._as(t2.get(t1)).searchEmailFilter.get$value(0).startDate;
       startDate = t4 == null ? _null : t4.value.toLocal$0();
@@ -22396,5 +22395,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "us76pnqa8fCZmxTwB2t1ix2IIbA=");
+})($__dart_deferred_initializers__, "MqnEoRHNNUHF/xVM7+TWNMRU6Zo=");
 ;
