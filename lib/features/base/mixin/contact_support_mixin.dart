@@ -1,9 +1,11 @@
 
+import 'package:core/utils/platform_info.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/contact_support_capability_extension.dart';
 import 'package:model/support/contact_support_capability.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
@@ -12,22 +14,26 @@ typedef OnTapContactSupportAction = Function(ContactSupportCapability contactSup
 
 mixin ContactSupportMixin {
 
-  void onGetHelpOrReportBug(ContactSupportCapability contactSupport) {
+  void onGetHelpOrReportBug(
+    ContactSupportCapability contactSupport,
+    {String route = AppRoutes.dashboard}
+  ) {
     if (contactSupport.isMailAddressSupported) {
-      _handleMailAddress(contactSupport.supportMailAddress!);
+      _handleMailAddress(contactSupport.supportMailAddress!, route: route);
     } else if (contactSupport.isHttpLinkSupported) {
       _handleHttpLink(contactSupport.httpLink!);
     }
   }
 
-  void _handleMailAddress(String mailAddress) {
-    final mailboxDashBoardController = getBinding<MailboxDashBoardController>();
-    if (mailboxDashBoardController != null) {
-      mailboxDashBoardController.goToComposer(
+  void _handleMailAddress(String mailAddress, {String route = AppRoutes.dashboard}) {
+    if (route == AppRoutes.settings && PlatformInfo.isWeb) {
+      final mailtoLink = RouteUtils.generateMailtoLink(mailAddress);
+      AppUtils.launchLink(mailtoLink);
+    } else {
+      final mailboxDashBoardController = getBinding<MailboxDashBoardController>();
+      mailboxDashBoardController?.goToComposer(
         ComposerArguments.fromEmailAddress(EmailAddress(null, mailAddress)),
       );
-    } else {
-      AppUtils.launchLink('${RouteUtils.mailtoPrefix}:$mailAddress');
     }
   }
 

@@ -1,53 +1,59 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 
 typedef OnSelectAccountMenuItemAction = void Function(AccountMenuItem);
 
 class AccountMenuItemTileBuilder extends StatelessWidget {
 
-  final AccountMenuItem _menuItem;
-  final AccountMenuItem? _menuItemSelected;
-  final OnSelectAccountMenuItemAction? onSelectAccountMenuItemAction;
+  final ImagePaths imagePaths;
+  final ResponsiveUtils responsiveUtils;
+  final AccountMenuItem menuItem;
+  final AccountMenuItem? menuItemSelected;
+  final EdgeInsetsGeometry? padding;
+  final OnSelectAccountMenuItemAction onSelectAccountMenuItemAction;
 
-  const AccountMenuItemTileBuilder(
-    this._menuItem,
-    this._menuItemSelected,
-    {
-      Key? key,
-      this.onSelectAccountMenuItemAction
-    }
-  ) : super(key: key);
+  const AccountMenuItemTileBuilder({
+    Key? key,
+    required this.imagePaths,
+    required this.responsiveUtils,
+    required this.menuItem,
+    required this.onSelectAccountMenuItemAction,
+    this.menuItemSelected,
+    this.padding,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final imagePaths = Get.find<ImagePaths>();
-
     return Padding(
-      key: const Key('account_menu_item_tile'),
-      padding: const EdgeInsets.only(top: 6),
+      key: Key('${menuItem.getAliasBrowser()}_account_menu_item_tile'),
+      padding: padding ?? const EdgeInsets.only(top: 6),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: () => onSelectAccountMenuItemAction?.call(_menuItem),
-          borderRadius: BorderRadius.circular(10),
+          onTap: () => onSelectAccountMenuItemAction.call(menuItem),
+          borderRadius: const BorderRadius.all(Radius.circular(10)),
           child: Container(
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: _getBackgroundColorItem(context)),
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              color: menuItemSelected == menuItem
+                ? AppColor.colorBgMailboxSelected
+                : Colors.transparent,
+            ),
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             child: Column(children: [
               Row(children: [
                 SvgPicture.asset(
-                  _menuItem.getIcon(imagePaths),
+                  menuItem.getIcon(imagePaths),
                   width: 20,
                   height: 20,
                   fit: BoxFit.fill),
                 const SizedBox(width: 12),
                 Expanded(child: Text(
-                  _menuItem.getName(context),
+                  menuItem.getName(context),
                   style: const TextStyle(
                     fontWeight: FontWeight.normal,
                     fontSize: 15,
@@ -59,17 +65,5 @@ class AccountMenuItemTileBuilder extends StatelessWidget {
           )),
       ),
     );
-  }
-
-  Color _getBackgroundColorItem(BuildContext context) {
-    final responsiveUtils = Get.find<ResponsiveUtils>();
-
-    if (_menuItemSelected == _menuItem) {
-      return AppColor.colorBgMailboxSelected;
-    } else {
-      return responsiveUtils.isWebDesktop(context)
-        ? Colors.transparent
-        : Colors.transparent;
-    }
   }
 }

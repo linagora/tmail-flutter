@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/widgets/setting_first_level_tile_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/app_routes.dart';
 
 class SettingsFirstLevelView extends GetWidget<SettingsController> {
   const SettingsFirstLevelView({Key? key}) : super(key: key);
@@ -121,20 +122,18 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
             return const SizedBox.shrink();
           }
         }),
-        Column(children: [
-          SettingFirstLevelTileBuilder(
-            AccountMenuItem.mailboxVisibility.getName(context),
-            AccountMenuItem.mailboxVisibility.getIcon(controller.imagePaths),
-            subtitle: AppLocalizations.of(context).folderVisibilitySubtitle,
-            () => controller.selectSettings(AccountMenuItem.mailboxVisibility)
-          ),
-          Divider(
-            color: AppColor.colorDividerHorizontal,
-            height: 1,
-            indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-            endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
-          ),
-        ]),
+        SettingFirstLevelTileBuilder(
+          AccountMenuItem.mailboxVisibility.getName(context),
+          AccountMenuItem.mailboxVisibility.getIcon(controller.imagePaths),
+          subtitle: AppLocalizations.of(context).folderVisibilitySubtitle,
+          () => controller.selectSettings(AccountMenuItem.mailboxVisibility)
+        ),
+        Divider(
+          color: AppColor.colorDividerHorizontal,
+          height: 1,
+          indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
+          endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
+        ),
         SettingFirstLevelTileBuilder(
           AccountMenuItem.languageAndRegion.getName(context),
           AccountMenuItem.languageAndRegion.getIcon(controller.imagePaths),
@@ -185,7 +184,10 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
             SettingFirstLevelTileBuilder(
               AccountMenuItem.contactSupport.getName(context),
               AccountMenuItem.contactSupport.getIcon(controller.imagePaths),
-              () => controller.onGetHelpOrReportBug(contactSupportCapability!),
+              () => controller.onGetHelpOrReportBug(
+                contactSupportCapability!,
+                route: AppRoutes.settings,
+              ),
             ),
           ]);
         }),
