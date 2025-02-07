@@ -3410,7 +3410,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return B.SizedBox_0_0_null_null;
       return new A.Padding(B.EdgeInsets_0_0_0_8, B.Center_cwU, null);
     },
-    $signature: 104
+    $signature: 103
   };
   C.AlwaysReadReceiptView_build_closure0.prototype = {
     call$0() {
@@ -3545,7 +3545,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return B.SizedBox_0_0_null_null;
     },
-    $signature: 121
+    $signature: 117
   };
   C.ForwardView_build_closure.prototype = {
     call$0() {
@@ -3760,7 +3760,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(emailAddress) {
       return emailAddress.email;
     },
-    $signature: 123
+    $signature: 162
   };
   C._AutocompleteContactTextFieldWithTagsState__findSuggestions_closure.prototype = {
     call$1(emailAddress) {
@@ -3769,7 +3769,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 === $ && A.throwUnnamedLateFieldNI();
       return t1._autocomplete_contact_text_field_with_tags$_toSuggestionEmailAddress$2(emailAddress, t2);
     },
-    $signature: 111
+    $signature: 112
   };
   C._AutocompleteContactTextFieldWithTagsState__matchedSuggestionEmailAddress_closure.prototype = {
     call$1(addedMail) {
@@ -3784,7 +3784,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(emailAddress) {
       return new A.SuggestionEmailAddress(emailAddress, B.SuggestionEmailState_1);
     },
-    $signature: 111
+    $signature: 112
   };
   C._AutocompleteContactTextFieldWithTagsState__buildAddRecipientButton_closure.prototype = {
     call$0() {
@@ -5879,5 +5879,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_8", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "9q6PG2cjTVPUIA9iIVK/6RJXz0U=");
+})($__dart_deferred_initializers__, "bcse2eAVr0JH7sTbBUqpVfIGcA8=");
 ;
