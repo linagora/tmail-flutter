@@ -14,6 +14,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/identity_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/mail_priority_header.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/extensions/sending_email_extension.dart';
@@ -156,7 +157,16 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
         : null,
       identityHeader: withIdentityHeader
         ? {IndividualHeaderIdentifier.identityHeader: identity?.id?.id.value}
-        : null
+        : null,
+      xPriorityHeader: isMarkAsImportant
+        ? {IndividualHeaderIdentifier.xPriorityHeader: MailPriorityHeader.asImportant().xPriority}
+        : null,
+      importanceHeader: isMarkAsImportant
+        ? {IndividualHeaderIdentifier.importanceHeader: MailPriorityHeader.asImportant().importance}
+        : null,
+      priorityHeader: isMarkAsImportant
+        ? {IndividualHeaderIdentifier.priorityHeader: MailPriorityHeader.asImportant().priority}
+        : null,
     );
   }
 
