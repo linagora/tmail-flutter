@@ -2,6 +2,10 @@
 import 'package:equatable/equatable.dart';
 
 class MailPriorityHeader with EquatableMixin {
+  static const String firstXPriority = '1';
+  static const String highImportance = 'high';
+  static const String urgentPriority = 'urgent';
+
   final String? xPriority;
   final String? importance;
   final String? priority;
@@ -11,12 +15,6 @@ class MailPriorityHeader with EquatableMixin {
     this.importance,
     this.priority,
   });
-
-  factory MailPriorityHeader.asImportant() => MailPriorityHeader(
-    xPriority: '1',
-    importance: 'high',
-    priority: 'urgent',
-  );
 
   @override
   List<Object?> get props => [

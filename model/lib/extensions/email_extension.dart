@@ -104,7 +104,10 @@ extension EmailExtension on Email {
       bodyValues: bodyValues,
       headerUserAgent: headerUserAgent,
       attachments: attachments,
-      headerCalendarEvent: headerCalendarEvent
+      headerCalendarEvent: headerCalendarEvent,
+      xPriorityHeader: xPriorityHeader,
+      importanceHeader: importanceHeader,
+      priorityHeader: priorityHeader,
     );
   }
 
@@ -131,7 +134,10 @@ extension EmailExtension on Email {
       mailboxIds: mailboxIds,
       selectMode: selectMode,
       emailHeader: headers?.toList(),
-      headerCalendarEvent: headerCalendarEvent
+      headerCalendarEvent: headerCalendarEvent,
+      xPriorityHeader: xPriorityHeader,
+      importanceHeader: importanceHeader,
+      priorityHeader: priorityHeader,
     )
       ..searchSnippetSubject = searchSnippetSubject
       ..searchSnippetPreview = searchSnippetPreview;
@@ -155,6 +161,15 @@ extension EmailExtension on Email {
       replyTo: updatedProperties.contain(EmailProperty.replyTo) ? newEmail.replyTo : replyTo,
       mailboxIds: updatedProperties.contain(EmailProperty.mailboxIds) ? newEmail.mailboxIds : mailboxIds,
       headerCalendarEvent: updatedProperties.contain(IndividualHeaderIdentifier.headerCalendarEvent.value) ? newEmail.headerCalendarEvent : headerCalendarEvent,
+      xPriorityHeader: updatedProperties.contain(IndividualHeaderIdentifier.xPriorityHeader.value)
+        ? newEmail.xPriorityHeader
+        : xPriorityHeader,
+      importanceHeader: updatedProperties.contain(IndividualHeaderIdentifier.importanceHeader.value)
+        ? newEmail.importanceHeader
+        : importanceHeader,
+      priorityHeader: updatedProperties.contain(IndividualHeaderIdentifier.priorityHeader.value)
+        ? newEmail.priorityHeader
+        : priorityHeader,
     );
   }
 
@@ -215,7 +230,10 @@ extension EmailExtension on Email {
       emailHeader: headers?.toList(),
       bodyValues: bodyValues,
       htmlBody: htmlBody,
-      headerCalendarEvent: headerCalendarEvent
+      headerCalendarEvent: headerCalendarEvent,
+      xPriorityHeader: xPriorityHeader,
+      importanceHeader: importanceHeader,
+      priorityHeader: priorityHeader,
     );
   }
 
@@ -252,6 +270,9 @@ extension EmailExtension on Email {
       headerUserAgent: headerUserAgent,
       headerMdn: value,
       headerCalendarEvent: headerCalendarEvent,
+      xPriorityHeader: xPriorityHeader,
+      importanceHeader: importanceHeader,
+      priorityHeader: priorityHeader,
     );
   }
 }

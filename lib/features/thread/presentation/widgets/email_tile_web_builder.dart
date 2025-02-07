@@ -140,6 +140,8 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                             context: context,
                             presentationEmail: widget.presentationEmail
                           ),
+                        if (widget.presentationEmail.isMarkAsImportant)
+                          buildMarkAsImportantIcon(context),
                         Expanded(
                           child: buildEmailTitle(
                             context,
@@ -257,6 +259,8 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                               context: context,
                               presentationEmail: widget.presentationEmail
                             ),
+                          if (widget.presentationEmail.isMarkAsImportant)
+                            buildMarkAsImportantIcon(context),
                           Expanded(
                             child: buildEmailTitle(
                               context,
@@ -611,6 +615,8 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
       return Row(children: [
         if (widget.presentationEmail.hasCalendarEvent)
           buildCalendarEventIcon(context: context, presentationEmail: widget.presentationEmail),
+        if (widget.presentationEmail.isMarkAsImportant)
+          buildMarkAsImportantIcon(context),
         if (widget.presentationEmail.getEmailTitle().isNotEmpty)
             Container(
               constraints: BoxConstraints(maxWidth: constraints.maxWidth / 2),
