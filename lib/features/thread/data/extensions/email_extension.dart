@@ -26,6 +26,9 @@ extension EmailExtension on Email {
       mailboxIds: mailboxIds?.toMapString(),
       headerCalendarEvent: headerCalendarEvent?.toMapString(),
       blobId: blobId?.value,
+      xPriorityHeader: xPriorityHeader?.toMapString(),
+      importanceHeader: importanceHeader?.toMapString(),
+      priorityHeader: priorityHeader?.toMapString(),
     );
   }
 
