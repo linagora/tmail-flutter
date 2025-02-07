@@ -226,6 +226,7 @@ class ImagePaths {
   String get icCopy => _getImagePath('ic_copy.svg');
   String get icSubaddressingAllow => _getImagePath('ic_subaddressing_allow.svg');
   String get icSubaddressingDisallow => _getImagePath('ic_subaddressing_disallow.svg');
+  String get icMarkAsImportant => _getImagePath('ic_mark_as_important.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

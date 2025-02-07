@@ -4520,4 +4520,39 @@ class AppLocalizations {
       name: 'sizeAscending',
     );
   }
+
+  String get markAsImportant {
+    return Intl.message(
+      'Mark as important',
+      name: 'markAsImportant',
+    );
+  }
+
+  String get markAsImportantIsEnabled {
+    return Intl.message(
+      'Mark as important is enabled',
+      name: 'markAsImportantIsEnabled',
+    );
+  }
+
+  String get markAsImportantIsDisabled {
+    return Intl.message(
+      'Mark as important is disabled',
+      name: 'markAsImportantIsDisabled',
+    );
+  }
+
+  String get turnOnMarkAsImportant {
+    return Intl.message(
+      'Turn on mark as important',
+      name: 'turnOnMarkAsImportant',
+    );
+  }
+
+  String get turnOffMarkAsImportant {
+    return Intl.message(
+      'Turn off mark as important',
+      name: 'turnOffMarkAsImportant',
+    );
+  }
 }

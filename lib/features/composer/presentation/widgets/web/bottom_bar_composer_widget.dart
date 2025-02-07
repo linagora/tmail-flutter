@@ -16,6 +16,7 @@ class BottomBarComposerWidget extends StatelessWidget {
   final bool isEmailChanged;
   final bool isFormattingOptionsEnabled;
   final bool hasReadReceipt;
+  final bool isMarkAsImportant;
   final CustomPopupMenuController menuMoreOptionController;
   final VoidCallback openRichToolbarAction;
   final VoidCallback attachFileAction;
@@ -26,6 +27,7 @@ class BottomBarComposerWidget extends StatelessWidget {
   final VoidCallback toggleCodeViewAction;
   final VoidCallback toggleRequestReadReceiptAction;
   final VoidCallback printDraftAction;
+  final VoidCallback toggleMarkAsImportantAction;
 
   const BottomBarComposerWidget({
     super.key,
@@ -34,6 +36,7 @@ class BottomBarComposerWidget extends StatelessWidget {
     required this.isEmailChanged,
     required this.isFormattingOptionsEnabled,
     required this.hasReadReceipt,
+    required this.isMarkAsImportant,
     required this.menuMoreOptionController,
     required this.openRichToolbarAction,
     required this.attachFileAction,
@@ -44,6 +47,7 @@ class BottomBarComposerWidget extends StatelessWidget {
     required this.toggleCodeViewAction,
     required this.toggleRequestReadReceiptAction,
     required this.printDraftAction,
+    required this.toggleMarkAsImportantAction,
   });
 
   @override
@@ -103,6 +107,19 @@ class BottomBarComposerWidget extends StatelessWidget {
               tooltipMessage: AppLocalizations.of(context).more,
             ),
             listButtonAction: [
+              PopupItemWidget(
+                iconAction: imagePaths.icMarkAsImportant,
+                nameAction: AppLocalizations.of(context).markAsImportant,
+                styleName: BottomBarComposerWidgetStyle.popupItemTextStyle,
+                padding: BottomBarComposerWidgetStyle.popupItemPadding,
+                colorIcon: BottomBarComposerWidgetStyle.iconColor,
+                selectedIcon: imagePaths.icFilterSelected,
+                isSelected: isMarkAsImportant,
+                onCallbackAction: () {
+                  menuMoreOptionController.hideMenu();
+                  toggleMarkAsImportantAction();
+                },
+              ),
               PopupItemWidget(
                 iconAction: imagePaths.icStyleCodeView,
                 nameAction: AppLocalizations.of(context).embedCode,
