@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/mark_as_important_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/mobile_app_bar_composer_widget_style.dart';
@@ -452,11 +453,14 @@ class ComposerView extends GetWidget<ComposerController> {
                 )
               ),
               Obx(() => TabletBottomBarComposerWidget(
+                imagePaths: controller.imagePaths,
                 hasReadReceipt: controller.hasRequestReadReceipt.value,
+                isMarkAsImportant: controller.isMarkAsImportant.value,
                 deleteComposerAction: () => controller.handleClickDeleteComposer(context),
                 saveToDraftAction: () => controller.handleClickSaveAsDraftsButton(context),
                 sendMessageAction: () => controller.handleClickSendButton(context),
                 requestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
+                toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
               )),
             ]
           )
@@ -493,6 +497,22 @@ class ComposerView extends GetWidget<ComposerController> {
 
   List<PopupMenuEntry> _createMoreOptionPopupItems(BuildContext context) {
     return [
+      PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupItemWidget(
+          iconAction: controller.imagePaths.icMarkAsImportant,
+          nameAction: AppLocalizations.of(context).markAsImportant,
+          styleName: ComposerStyle.popupItemTextStyle,
+          padding: ComposerStyle.popupItemPadding,
+          colorIcon: ComposerStyle.popupItemIconColor,
+          selectedIcon: controller.imagePaths.icFilterSelected,
+          isSelected: controller.isMarkAsImportant.value,
+          onCallbackAction: () {
+            popBack();
+            controller.toggleMarkAsImportant(context);
+          },
+        ),
+      ),
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
