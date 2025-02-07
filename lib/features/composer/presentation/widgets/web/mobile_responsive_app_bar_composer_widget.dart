@@ -16,6 +16,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
   final bool isSendButtonEnabled;
   final bool isFormattingOptionsEnabled;
   final bool hasRequestReadReceipt;
+  final bool isMarkAsImportant;
   final bool isEmailChanged;
   final CustomPopupMenuController menuMoreOptionController;
   final VoidCallback onCloseViewAction;
@@ -28,6 +29,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
   final VoidCallback printDraftAction;
   final VoidCallback saveToDraftsAction;
   final VoidCallback deleteComposerAction;
+  final VoidCallback toggleMarkAsImportantAction;
 
   const MobileResponsiveAppBarComposerWidget({
     super.key,
@@ -36,6 +38,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
     required this.isFormattingOptionsEnabled,
     required this.isSendButtonEnabled,
     required this.hasRequestReadReceipt,
+    required this.isMarkAsImportant,
     required this.isEmailChanged,
     required this.menuMoreOptionController,
     required this.openRichToolbarAction,
@@ -48,6 +51,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
     required this.printDraftAction,
     required this.saveToDraftsAction,
     required this.deleteComposerAction,
+    required this.toggleMarkAsImportantAction,
   });
 
   @override
@@ -120,6 +124,19 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
               tooltipMessage: AppLocalizations.of(context).more,
             ),
             listButtonAction: [
+              PopupItemWidget(
+                imagePaths.icMarkAsImportant,
+                AppLocalizations.of(context).markAsImportant,
+                styleName: MobileAppBarComposerWidgetStyle.popupItemTextStyle,
+                padding: MobileAppBarComposerWidgetStyle.popupItemPadding,
+                colorIcon: MobileAppBarComposerWidgetStyle.popupItemIconColor,
+                selectedIcon: imagePaths.icFilterSelected,
+                isSelected: isMarkAsImportant,
+                onCallbackAction: () {
+                  menuMoreOptionController.hideMenu();
+                  toggleMarkAsImportantAction();
+                },
+              ),
               PopupItemWidget(
                   imagePaths.icStyleCodeView,
                   AppLocalizations.of(context).embedCode,

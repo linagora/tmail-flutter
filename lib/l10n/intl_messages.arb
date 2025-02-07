@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-01-28T10:49:54.473622",
+  "@@last_modified": "2025-02-07T14:52:44.257717",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4134,6 +4134,36 @@
   },
   "thisHtmlAttachmentCannotBePreviewed": "This html attachment cannot be previewed",
   "@thisHtmlAttachmentCannotBePreviewed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAsImportant": "Mark as important",
+  "@markAsImportant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAsImportantIsEnabled": "Mark as important is enabled",
+  "@markAsImportantIsEnabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAsImportantIsDisabled": "Mark as important is disabled",
+  "@markAsImportantIsDisabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOnMarkAsImportant": "Turn on mark as important",
+  "@turnOnMarkAsImportant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOffMarkAsImportant": "Turn off mark as important",
+  "@turnOffMarkAsImportant": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
