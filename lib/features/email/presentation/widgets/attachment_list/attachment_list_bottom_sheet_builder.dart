@@ -33,7 +33,7 @@ class AttachmentListBottomSheetBuilder {
     _statusBarHeight = Get.statusBarHeight / MediaQuery.of(_context).devicePixelRatio;
   }
 
-  void onDownloadAllButtonAction(OnDownloadAllButtonAction onDownloadAllButtonAction) {
+  void onDownloadAllButtonAction(OnDownloadAllButtonAction? onDownloadAllButtonAction) {
     _onDownloadAllButtonAction = onDownloadAllButtonAction;
   }
 

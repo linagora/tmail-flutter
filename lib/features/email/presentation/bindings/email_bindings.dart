@@ -16,8 +16,10 @@ import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
 import 'package:tmail_ui_user/features/email/data/repository/email_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/download_all_attachments_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachments_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_state_interactor.dart';
@@ -80,6 +82,8 @@ class EmailBindings extends BaseBindings {
       Get.find<ParseEmailByBlobIdInteractor>(),
       Get.find<PreviewEmailFromEmlFileInteractor>(),
       Get.find<GetHtmlContentFromAttachmentInteractor>(),
+      Get.find<DownloadAllAttachmentsForWebInteractor>(),
+      Get.find<ExportAllAttachmentsInteractor>(),
     ));
   }
 
@@ -168,6 +172,16 @@ class EmailBindings extends BaseBindings {
     Get.lazyPut(() => PreviewEmailFromEmlFileInteractor(Get.find<EmailRepository>()));
     IdentityInteractorsBindings().dependencies();
     Get.lazyPut(() => GetHtmlContentFromAttachmentInteractor(Get.find<DownloadAttachmentForWebInteractor>()));
+    Get.lazyPut(() => DownloadAllAttachmentsForWebInteractor(
+      Get.find<EmailRepository>(),
+      Get.find<AccountRepository>(),
+      Get.find<AuthenticationOIDCRepository>(),
+      Get.find<CredentialRepository>()));
+    Get.lazyPut(() => ExportAllAttachmentsInteractor(
+      Get.find<EmailRepository>(),
+      Get.find<AccountRepository>(),
+      Get.find<AuthenticationOIDCRepository>(),
+      Get.find<CredentialRepository>()));
   }
 
   @override

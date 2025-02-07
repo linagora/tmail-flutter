@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
@@ -118,13 +119,16 @@ class AttachmentListBottomSheetBodyBuilder extends StatelessWidget {
                       Padding(
                         padding: AttachmentListStyles.actionButtonsRowPadding,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [
                             if (onDownloadAllButtonAction != null)
                               AttachmentListActionButtonBuilder(
                                 name: AppLocalizations.of(context).downloadAll,
-                                bgColor: AttachmentListStyles.downloadAllButtonColor,
-                                textStyle: AttachmentListStyles.downloadAllButtonTextStyle
+                                bgColor: AppColor.primaryColor,
+                                  textStyle: AttachmentListStyles.downloadAllButtonTextStyle.copyWith(
+                                    color: Colors.white,
+                                  ),
+                                action: onDownloadAllButtonAction,
                               ),
                             if (onDownloadAllButtonAction != null && onCancelButtonAction != null)
                               const SizedBox(width: AttachmentListStyles.buttonsSpaceBetween),
@@ -132,7 +136,6 @@ class AttachmentListBottomSheetBodyBuilder extends StatelessWidget {
                               AttachmentListActionButtonBuilder(
                                 name: AppLocalizations.of(context).close,
                                 bgColor: AttachmentListStyles.cancelButtonColor,
-                                borderColor: AttachmentListStyles.cancelButtonBorderColor,
                                 textStyle: AttachmentListStyles.cancelButtonTextStyle
                               )
                           ],

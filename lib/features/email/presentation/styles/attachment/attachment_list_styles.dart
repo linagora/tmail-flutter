@@ -42,9 +42,9 @@ class AttachmentListStyles {
   static const Color scrollbarThumbColor = AppColor.colorScrollbarThumbColor;
   static const Color scrollbarTrackBorderColor = Colors.transparent;
   static const Color separatorColor = AppColor.colorAttachmentBorder;
-  static const Color downloadAllButtonColor = AppColor.primaryColor;
+  static const Color downloadAllButtonColor = Colors.transparent;
   static const Color cancelButtonColor = Colors.transparent;
-  static const Color downloadAllButtonTextColor = Colors.white;
+  static const Color downloadAllButtonTextColor = AppColor.textButtonColor;
   static const Color cancelButtonTextColor = AppColor.primaryColor;
   static const Color cancelButtonBorderColor = AppColor.colorButtonBorder;
   static const Color barrierColor = AppColor.colorDefaultCupertinoActionSheet;

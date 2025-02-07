@@ -49,6 +49,7 @@ import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
+import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
@@ -66,11 +67,13 @@ import 'package:tmail_ui_user/features/email/domain/extensions/email_id_extensio
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
+import 'package:tmail_ui_user/features/email/domain/state/download_all_attachments_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:uri/uri.dart';
 import 'package:uuid/uuid.dart';
 
 class EmailAPI with HandleSetErrorMixin {
@@ -400,6 +403,88 @@ class EmailAPI with HandleSetErrorMixin {
     );
 
     return bytesDownloaded;
+  }
+
+  Future<void> downloadAllAttachmentsForWeb(
+    AccountId accountId,
+    EmailId emailId,
+    String baseDownloadAllUrl,
+    String outputFileName,
+    AccountRequest accountRequest,
+    DownloadTaskId taskId,
+    StreamController<Either<Failure, Success>> onReceiveController,
+    {CancelToken? cancelToken}
+  ) async {
+    final authentication = accountRequest.authenticationType == AuthenticationType.oidc
+        ? accountRequest.bearerToken
+        : accountRequest.basicAuth;
+    final headerParam = _dioClient.getHeaders();
+    headerParam[HttpHeaders.authorizationHeader] = authentication;
+    headerParam[HttpHeaders.acceptHeader] = DioClient.jmapHeader;
+    
+    final downloadAllUriTemplate = UriTemplate(Uri.decodeFull(baseDownloadAllUrl));
+    final downloadAllUrl = downloadAllUriTemplate.expand({
+      'accountId': accountId.asString,
+      'emailId': emailId.asString,
+      'name': outputFileName,
+    });
+    final downloadFileName = '$outputFileName.zip';
+
+    final bytesDownloaded = await _dioClient.get(
+      downloadAllUrl,
+      options: Options(
+        headers: headerParam,
+        responseType: ResponseType.bytes),
+      onReceiveProgress: (downloaded, total) {
+        log('EmailAPI::downloadFileForWeb(): downloaded = $downloaded | total: $total');
+        double progress = 0;
+        if (downloaded > 0 && total >= downloaded) {
+          progress = (downloaded / total) * 100;
+        }
+        log('EmailAPI::downloadFileForWeb(): progress = ${progress.round()}%');
+        onReceiveController.add(Right(DownloadingAllAttachmentsForWeb(
+          taskId,
+          downloadFileName,
+          progress,
+          downloaded,
+          total > 0 ? total : 0,
+        )));
+      },
+      cancelToken: cancelToken,
+    );
+
+    _downloadManager.createAnchorElementDownloadFileWeb(
+      bytesDownloaded,
+      downloadFileName,
+    );
+  }
+
+  Future<DownloadedResponse> exportAllAttachments(
+    AccountId accountId,
+    EmailId emailId,
+    String baseDownloadAllUrl,
+    String outputFileName,
+    AccountRequest accountRequest,
+    {CancelToken? cancelToken}
+  ) async {
+    final authentication = accountRequest.authenticationType == AuthenticationType.oidc
+      ? accountRequest.bearerToken
+      : accountRequest.basicAuth;
+
+    final downloadAllUriTemplate = UriTemplate(Uri.decodeFull(baseDownloadAllUrl));
+    final downloadAllUrl = downloadAllUriTemplate.expand({
+      'accountId': accountId.asString,
+      'emailId': emailId.asString,
+      'name': outputFileName,
+    });
+    final downloadFileName = '$outputFileName.zip';
+
+    return _downloadManager.downloadFile(
+      downloadAllUrl,
+      getTemporaryDirectory(),
+      downloadFileName,
+      authentication,
+      cancelToken: cancelToken);
   }
 
   Future<({
