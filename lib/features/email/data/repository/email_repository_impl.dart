@@ -530,4 +530,41 @@ class EmailRepositoryImpl extends EmailRepository {
       htmlContent,
       configuration);
   }
+  
+  @override
+  Future<void> downloadAllAttachmentsForWeb(
+    AccountId accountId,
+    EmailId emailId,
+    String baseDownloadAllUrl,
+    String outputFileName,
+    AccountRequest accountRequest, 
+    DownloadTaskId taskId,
+    StreamController<Either<Failure, Success>> onReceiveController,
+    {CancelToken? cancelToken}
+  ) => emailDataSource[DataSourceType.network]!.downloadAllAttachmentsForWeb(
+    accountId,
+    emailId,
+    baseDownloadAllUrl,
+    outputFileName,
+    accountRequest,
+    taskId,
+    onReceiveController,
+    cancelToken: cancelToken,
+  );
+  
+  @override
+  Future<DownloadedResponse> exportAllAttachments(
+    AccountId accountId,
+    EmailId emailId,
+    String baseDownloadAllUrl,
+    String outputFileName,
+    AccountRequest accountRequest, {
+    CancelToken? cancelToken,
+  }) => emailDataSource[DataSourceType.network]!.exportAllAttachments(
+    accountId,
+    emailId,
+    baseDownloadAllUrl,
+    outputFileName,
+    accountRequest,
+  );
 }

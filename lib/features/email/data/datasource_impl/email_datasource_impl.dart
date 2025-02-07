@@ -540,4 +540,46 @@ class EmailDataSourceImpl extends EmailDataSource {
   Future<EMLPreviewer> getPreviewEMLContentInMemory(String keyStored) {
     throw UnimplementedError();
   }
+  
+  @override
+  Future<void> downloadAllAttachmentsForWeb(
+    AccountId accountId,
+    EmailId emailId,
+    String baseDownloadAllUrl,
+    String outputFileName,
+    AccountRequest accountRequest,
+    DownloadTaskId taskId,
+    StreamController<Either<Failure, Success>> onReceiveController,
+    {CancelToken? cancelToken}
+  ) => Future.sync(() async {
+    return await emailAPI.downloadAllAttachmentsForWeb(
+      accountId,
+      emailId,
+      baseDownloadAllUrl,
+      outputFileName,
+      accountRequest,
+      taskId,
+      onReceiveController,
+      cancelToken: cancelToken,
+    );
+  }).catchError(_exceptionThrower.throwException);
+  
+  @override
+  Future<DownloadedResponse> exportAllAttachments(
+    AccountId accountId,
+    EmailId emailId,
+    String baseDownloadAllUrl,
+    String outputFileName,
+    AccountRequest accountRequest, {
+    CancelToken? cancelToken,
+  }) => Future.sync(() async {
+    return await emailAPI.exportAllAttachments(
+      accountId,
+      emailId,
+      baseDownloadAllUrl,
+      outputFileName,
+      accountRequest,
+      cancelToken: cancelToken,
+    );
+  }).catchError(_exceptionThrower.throwException);
 }

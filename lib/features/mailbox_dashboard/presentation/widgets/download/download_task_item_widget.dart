@@ -76,8 +76,8 @@ class DownloadTaskItemWidget extends StatelessWidget {
                 DefaultTextStyle(
                   style: const TextStyle(color: Colors.white, fontSize: 12),
                   child: Text(
-                    '${ByteConverter(taskState.downloaded.toDouble()).toHumanReadable(SizeUnit.MB)}/'
-                        '${ByteConverter(taskState.total.toDouble()).toHumanReadable(SizeUnit.MB)}',
+                    '${ByteConverter(taskState.downloaded.toDouble()).toHumanReadable(SizeUnit.MB)}'
+                      '${_getTotalSizeText()}',
                     softWrap: CommonTextStyle.defaultSoftWrap,
                     overflow: CommonTextStyle.defaultTextOverFlow,
                     maxLines: 1,
@@ -95,5 +95,13 @@ class DownloadTaskItemWidget extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String _getTotalSizeText() {
+    if (taskState.total == 0) {
+      return '';
+    } else {
+      return '/${ByteConverter(taskState.total.toDouble()).toHumanReadable(SizeUnit.MB)}';
+    }
   }
 }

@@ -31,6 +31,7 @@ class SupportedPreviewFileTypes {
     'application/vnd.ms-powerpoint'];
 
   static const zipMimeTypes = [
+    'application/zip',
     'application/x-tar',
     'application/x-gtar',
     'application/x-gzip',

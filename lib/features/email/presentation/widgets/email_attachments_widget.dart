@@ -1,16 +1,15 @@
 import 'package:core/presentation/action/action_callback_define.dart';
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/extensions/list_attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_attachments_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/attachments_info.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/draggable_attachment_item_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -24,6 +23,8 @@ class EmailAttachmentsWidget extends StatelessWidget {
   final ResponsiveUtils responsiveUtils;
   final ImagePaths imagePaths;
   final OnTapActionCallback? onTapShowAllAttachmentFile;
+  final bool showDownloadAllAttachmentsButton;
+  final OnTapActionCallback? onTapDownloadAllButton;
 
   const EmailAttachmentsWidget({
     super.key,
@@ -35,6 +36,8 @@ class EmailAttachmentsWidget extends StatelessWidget {
     this.downloadAttachmentAction,
     this.viewAttachmentAction,
     this.onTapShowAllAttachmentFile,
+    this.showDownloadAllAttachmentsButton = false,
+    this.onTapDownloadAllButton,
   });
 
   @override
@@ -46,51 +49,14 @@ class EmailAttachmentsWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Row(
-                  children: [
-                    const SizedBox(width: EmailAttachmentsStyles.headerSpace),
-                    SvgPicture.asset(
-                      imagePaths.icAttachment,
-                      width: EmailAttachmentsStyles.headerIconSize,
-                      height: EmailAttachmentsStyles.headerIconSize,
-                      colorFilter: EmailAttachmentsStyles.headerIconColor.asFilter(),
-                      fit: BoxFit.fill
-                    ),
-                    const SizedBox(width: EmailAttachmentsStyles.headerSpace),
-                    Expanded(
-                      child: Text(
-                        AppLocalizations.of(context).titleHeaderAttachment(
-                          attachments.length,
-                          filesize(attachments.totalSize, 1)
-                        ),
-                        style: const TextStyle(
-                          fontSize: EmailAttachmentsStyles.headerTextSize,
-                          fontWeight: EmailAttachmentsStyles.headerFontWeight,
-                          color: EmailAttachmentsStyles.headerTextColor
-                        )
-                      )
-                    ),
-                    const SizedBox(width: EmailAttachmentsStyles.headerSpace),
-                  ]
-                )
-              ),
-              if (attachments.length > 2)
-                TMailButtonWidget(
-                  text: AppLocalizations.of(context).showAll,
-                  backgroundColor: Colors.transparent,
-                  borderRadius: EmailAttachmentsStyles.buttonBorderRadius,
-                  padding: EmailAttachmentsStyles.buttonPadding,
-                  textStyle: const TextStyle(
-                    fontSize: EmailAttachmentsStyles.buttonTextSize,
-                    color: EmailAttachmentsStyles.buttonTextColor,
-                    fontWeight: EmailAttachmentsStyles.buttonFontWeight
-                  ),
-                  onTapActionCallback: onTapShowAllAttachmentFile,
-                )
-            ],
+          AttachmentsInfo(
+            imagePaths: imagePaths,
+            numberOfAttachments: attachments.length,
+            totalSizeInfo: filesize(attachments.totalSize, 1),
+            responsiveUtils: responsiveUtils,
+            onTapShowAllAttachmentFile: onTapShowAllAttachmentFile,
+            downloadAllEnabled: showDownloadAllAttachmentsButton,
+            onTapDownloadAllButton: onTapDownloadAllButton,
           ),
           const SizedBox(height: EmailAttachmentsStyles.marginHeader),
           Row(
@@ -121,7 +87,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
                   }).toList(),
                 ),
               ),
-              if (hideItemsCount > 0)
+              if (hideItemsCount > 0 && !responsiveUtils.isMobile(context))
                 TMailButtonWidget(
                   text: AppLocalizations.of(context).moreAttachments(hideItemsCount),
                   backgroundColor: Colors.transparent,
@@ -137,6 +103,42 @@ class EmailAttachmentsWidget extends StatelessWidget {
                 ),
             ]
           ),
+          const SizedBox(height: EmailAttachmentsStyles.marginHeader),
+          if (responsiveUtils.isMobile(context))
+            Row(
+              children: [
+                if (hideItemsCount > 0)
+                  TMailButtonWidget(
+                    text: AppLocalizations.of(context).moreAttachments(hideItemsCount),
+                    backgroundColor: Colors.transparent,
+                    borderRadius: EmailAttachmentsStyles.buttonBorderRadius,
+                    padding: EdgeInsets.zero,
+                    margin: EmailAttachmentsStyles.moreButtonMargin,
+                    textStyle: const TextStyle(
+                      fontSize: EmailAttachmentsStyles.buttonMoreAttachmentsTextSize,
+                      color: EmailAttachmentsStyles.buttonMoreAttachmentsTextColor,
+                      fontWeight: EmailAttachmentsStyles.buttonMoreAttachmentsFontWeight,
+                    ),
+                    onTapActionCallback: onTapShowAllAttachmentFile,
+                  ),
+                const Spacer(),
+                if (showDownloadAllAttachmentsButton)
+                  TMailButtonWidget(
+                    text: AppLocalizations.of(context).downloadAll,
+                    icon: imagePaths.icDownloadAll,
+                    iconAlignment: TextDirection.rtl,
+                    backgroundColor: Colors.transparent,
+                    borderRadius: EmailAttachmentsStyles.buttonBorderRadius,
+                    padding: EmailAttachmentsStyles.buttonPadding,
+                    textStyle: const TextStyle(
+                      fontSize: EmailAttachmentsStyles.buttonTextSize,
+                      color: EmailAttachmentsStyles.buttonTextColor,
+                      fontWeight: EmailAttachmentsStyles.buttonFontWeight
+                    ),
+                    onTapActionCallback: onTapDownloadAllButton,
+                  ),
+              ]
+            ),
         ],
       ),
     );

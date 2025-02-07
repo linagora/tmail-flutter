@@ -12,18 +12,22 @@ import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart
 import 'package:jmap_dart_client/jmap/core/capability/capability_properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:model/download_all/download_all_capability.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/home/data/model/session_hive_obj.dart';
 import 'package:tmail_ui_user/features/home/domain/converter/session_account_converter.dart';
 import 'package:tmail_ui_user/features/home/domain/converter/session_capabilities_converter.dart';
 import 'package:tmail_ui_user/features/home/domain/converter/session_primary_account_converter.dart';
+import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 extension SessionExtensions on Session {
   static final CapabilityIdentifier linagoraContactSupportCapability = CapabilityIdentifier(Uri.parse('com:linagora:params:jmap:contact:support'));
+  static final CapabilityIdentifier linagoraDownloadAllCapability = CapabilityIdentifier(Uri.parse('com:linagora:params:downloadAll'));
 
   static final Map<CapabilityIdentifier, CapabilityProperties Function(Map<String, dynamic>)> customMapCapabilitiesConverter = {
     linagoraContactSupportCapability: ContactSupportCapability.deserialize,
     tmailContactCapabilityIdentifier: AutocompleteCapability.deserialize,
+    linagoraDownloadAllCapability: DownloadAllCapability.deserialize,
   };
 
   Map<String, dynamic> toJson() {
@@ -93,5 +97,22 @@ extension SessionExtensions on Session {
       logError('SessionExtensions::getContactSupportCapability():[Exception] $e');
       return null;
     }
+  }
+
+  bool isDownloadAllSupported(AccountId? accountId) {
+    if (accountId == null) return false;
+    final isSupported = linagoraDownloadAllCapability.isSupported(this, accountId);
+    if (!isSupported) return false;
+
+    final downloadAllCapability = getDownloadAllCapability(accountId);
+    return downloadAllCapability?.endpoint?.isNotEmpty ?? false;
+  }
+
+  DownloadAllCapability? getDownloadAllCapability(AccountId? accountId) {
+    if (accountId == null) return null;
+    return getCapabilityProperties<DownloadAllCapability>(
+      accountId,
+      linagoraDownloadAllCapability,
+    );
   }
 }
