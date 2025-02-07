@@ -80,7 +80,10 @@ extension PresentationEmailExtension on PresentationEmail {
       selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE,
       routeWeb: routeWeb,
       mailboxContain: mailboxContain,
-      headerCalendarEvent: headerCalendarEvent
+      headerCalendarEvent: headerCalendarEvent,
+      xPriorityHeader: xPriorityHeader,
+      importanceHeader: importanceHeader,
+      priorityHeader: priorityHeader,
     )
       ..searchSnippetSubject = searchSnippetSubject
       ..searchSnippetPreview = searchSnippetPreview;
@@ -106,7 +109,10 @@ extension PresentationEmailExtension on PresentationEmail {
       selectMode: selectMode,
       routeWeb: routeWeb,
       mailboxContain: mailboxContain,
-      headerCalendarEvent: headerCalendarEvent
+      headerCalendarEvent: headerCalendarEvent,
+      xPriorityHeader: xPriorityHeader,
+      importanceHeader: importanceHeader,
+      priorityHeader: priorityHeader,
     )
       ..searchSnippetSubject = searchSnippetSubject
       ..searchSnippetPreview = searchSnippetPreview;
@@ -132,7 +138,10 @@ extension PresentationEmailExtension on PresentationEmail {
       bodyValues: bodyValues,
       mailboxIds: mailboxIds,
       headers: emailHeader?.toSet(),
-      headerCalendarEvent: headerCalendarEvent
+      headerCalendarEvent: headerCalendarEvent,
+      xPriorityHeader: xPriorityHeader,
+      importanceHeader: importanceHeader,
+      priorityHeader: priorityHeader,
     );
   }
 
@@ -165,7 +174,10 @@ extension PresentationEmailExtension on PresentationEmail {
       selectMode: selectMode,
       routeWeb: routeWeb,
       mailboxContain: matchedMailbox,
-      headerCalendarEvent: headerCalendarEvent
+      headerCalendarEvent: headerCalendarEvent,
+      xPriorityHeader: xPriorityHeader,
+      importanceHeader: importanceHeader,
+      priorityHeader: priorityHeader,
     )
       ..searchSnippetSubject = searchSnippetSubject
       ..searchSnippetPreview = searchSnippetPreview;
@@ -204,7 +216,10 @@ extension PresentationEmailExtension on PresentationEmail {
       selectMode: selectMode,
       routeWeb: routeWeb,
       mailboxContain: mailboxContain,
-      headerCalendarEvent: headerCalendarEvent
+      headerCalendarEvent: headerCalendarEvent,
+      xPriorityHeader: xPriorityHeader,
+      importanceHeader: importanceHeader,
+      priorityHeader: priorityHeader,
     )
       ..searchSnippetSubject = searchSnippetSubject
       ..searchSnippetPreview = searchSnippetPreview;
@@ -233,7 +248,10 @@ extension PresentationEmailExtension on PresentationEmail {
       selectMode: selectMode,
       routeWeb: routeWeb,
       mailboxContain: mailboxContain,
-      headerCalendarEvent: headerCalendarEvent
+      headerCalendarEvent: headerCalendarEvent,
+      xPriorityHeader: xPriorityHeader,
+      importanceHeader: importanceHeader,
+      priorityHeader: priorityHeader,
     )
       ..searchSnippetSubject = searchSnippetSubject
       ..searchSnippetPreview = searchSnippetPreview;
@@ -259,7 +277,10 @@ extension PresentationEmailExtension on PresentationEmail {
       selectMode: selectMode,
       routeWeb: routeWeb,
       mailboxContain: mailboxContain,
-      headerCalendarEvent: headerCalendarEvent
+      headerCalendarEvent: headerCalendarEvent,
+      xPriorityHeader: xPriorityHeader,
+      importanceHeader: importanceHeader,
+      priorityHeader: priorityHeader,
     )
       ..searchSnippetSubject = searchSnippetSubject
       ..searchSnippetPreview = searchSnippetPreview;
