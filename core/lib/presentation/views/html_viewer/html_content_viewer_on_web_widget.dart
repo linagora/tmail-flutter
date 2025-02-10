@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:math' as math;
-import 'dart:ui_web';
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/shims/dart_ui.dart' as ui;
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_template.dart';
@@ -281,7 +281,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       ..style.width = '100%'
       ..style.height = '100%';
 
-    platformViewRegistry.registerViewFactory(_createdViewId, (int viewId) => iframe);
+    ui.platformViewRegistry.registerViewFactory(_createdViewId, (int viewId) => iframe);
 
     if (mounted) {
       setState(() {
