@@ -4297,5 +4297,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "sizeDescending": "Size: Big - Small",
+  "@sizeDescending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sizeAscending": "Size: Small - Big",
+  "@sizeAscending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

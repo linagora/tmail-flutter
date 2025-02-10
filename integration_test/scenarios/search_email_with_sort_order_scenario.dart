@@ -76,6 +76,10 @@ class SearchEmailWithSortOrderScenario extends BaseTestScenario {
         break;
       case EmailSortOrderType.relevance:
         break;
+      case EmailSortOrderType.sizeAscending:
+        break;
+      case EmailSortOrderType.sizeDescending:
+        break;
     }
   }
 

@@ -12,7 +12,9 @@ enum EmailSortOrderType {
   senderAscending,
   senderDescending,
   subjectAscending,
-  subjectDescending;
+  subjectDescending,
+  sizeAscending,
+  sizeDescending;
 
   String getTitle(BuildContext context) {
     return getTitleByAppLocalizations(AppLocalizations.of(context));
@@ -34,6 +36,10 @@ enum EmailSortOrderType {
         return appLocalizations.subjectAscending;
       case EmailSortOrderType.subjectDescending:
         return appLocalizations.subjectDescending;
+      case EmailSortOrderType.sizeAscending:
+        return appLocalizations.sizeAscending;
+      case EmailSortOrderType.sizeDescending:
+        return appLocalizations.sizeDescending;
     }
   }
 
@@ -77,6 +83,18 @@ enum EmailSortOrderType {
             ..add(EmailComparator(EmailComparatorProperty.subject)
               ..setIsAscending(false))
         );
+      case EmailSortOrderType.sizeAscending:
+        return Some(
+            <Comparator>{}
+              ..add(EmailComparator(EmailComparatorProperty.size)
+                ..setIsAscending(true))
+        );
+      case EmailSortOrderType.sizeDescending:
+        return Some(
+            <Comparator>{}
+              ..add(EmailComparator(EmailComparatorProperty.size)
+                ..setIsAscending(false))
+        );
     }
   }
 
@@ -93,6 +111,8 @@ enum EmailSortOrderType {
       this == EmailSortOrderType.subjectAscending ||
       this == EmailSortOrderType.senderDescending ||
       this == EmailSortOrderType.senderAscending ||
+      this == EmailSortOrderType.sizeDescending ||
+      this == EmailSortOrderType.sizeAscending ||
       this == EmailSortOrderType.relevance;
   }
 }
