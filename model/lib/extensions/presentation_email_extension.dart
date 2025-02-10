@@ -51,59 +51,17 @@ extension PresentationEmailExtension on PresentationEmail {
   Set<EmailAddress> get listEmailAddressSender => from.asSet()..addAll(replyTo.asSet());
 
   PresentationEmail toggleSelect() {
-    return PresentationEmail(
-      id: id,
-      blobId: blobId,
-      keywords: keywords,
-      size: size,
-      receivedAt: receivedAt,
-      hasAttachment: hasAttachment,
-      preview: preview,
-      subject: subject,
-      sentAt: sentAt,
-      from: from,
-      to: to,
-      cc: cc,
-      bcc: bcc,
-      replyTo: replyTo,
-      mailboxIds: mailboxIds,
-      selectMode: selectMode == SelectMode.INACTIVE ? SelectMode.ACTIVE : SelectMode.INACTIVE,
-      routeWeb: routeWeb,
-      mailboxContain: mailboxContain,
-      headerCalendarEvent: headerCalendarEvent,
-      xPriorityHeader: xPriorityHeader,
-      importanceHeader: importanceHeader,
-      priorityHeader: priorityHeader,
-    )
+    return copyWith(
+        selectMode: selectMode == SelectMode.INACTIVE
+          ? SelectMode.ACTIVE
+          : SelectMode.INACTIVE,
+      )
       ..searchSnippetSubject = searchSnippetSubject
       ..searchSnippetPreview = searchSnippetPreview;
   }
 
   PresentationEmail toSelectedEmail({required SelectMode selectMode}) {
-    return PresentationEmail(
-      id: id,
-      blobId: blobId,
-      keywords: keywords,
-      size: size,
-      receivedAt: receivedAt,
-      hasAttachment: hasAttachment,
-      preview: preview,
-      subject: subject,
-      sentAt: sentAt,
-      from: from,
-      to: to,
-      cc: cc,
-      bcc: bcc,
-      replyTo: replyTo,
-      mailboxIds: mailboxIds,
-      selectMode: selectMode,
-      routeWeb: routeWeb,
-      mailboxContain: mailboxContain,
-      headerCalendarEvent: headerCalendarEvent,
-      xPriorityHeader: xPriorityHeader,
-      importanceHeader: importanceHeader,
-      priorityHeader: priorityHeader,
-    )
+    return copyWith(selectMode: selectMode)
       ..searchSnippetSubject = searchSnippetSubject
       ..searchSnippetPreview = searchSnippetPreview;
   }
@@ -145,30 +103,7 @@ extension PresentationEmailExtension on PresentationEmail {
 
     final matchedMailbox = findMailboxContain(mapMailboxes);
 
-    return PresentationEmail(
-      id: id,
-      blobId: blobId,
-      keywords: keywords,
-      size: size,
-      receivedAt: receivedAt,
-      hasAttachment: hasAttachment,
-      preview: preview,
-      subject: subject,
-      sentAt: sentAt,
-      from: from,
-      to: to,
-      cc: cc,
-      bcc: bcc,
-      replyTo: replyTo,
-      mailboxIds: mailboxIds,
-      selectMode: selectMode,
-      routeWeb: routeWeb,
-      mailboxContain: matchedMailbox,
-      headerCalendarEvent: headerCalendarEvent,
-      xPriorityHeader: xPriorityHeader,
-      importanceHeader: importanceHeader,
-      priorityHeader: priorityHeader,
-    )
+    return copyWith(mailboxContain: matchedMailbox)
       ..searchSnippetSubject = searchSnippetSubject
       ..searchSnippetPreview = searchSnippetPreview;
   }
@@ -187,30 +122,7 @@ extension PresentationEmailExtension on PresentationEmail {
   }
 
   PresentationEmail withRouteWeb(Uri routeWeb) {
-    return PresentationEmail(
-      id: id,
-      blobId: blobId,
-      keywords: keywords,
-      size: size,
-      receivedAt: receivedAt,
-      hasAttachment: hasAttachment,
-      preview: preview,
-      subject: subject,
-      sentAt: sentAt,
-      from: from,
-      to: to,
-      cc: cc,
-      bcc: bcc,
-      replyTo: replyTo,
-      mailboxIds: mailboxIds,
-      selectMode: selectMode,
-      routeWeb: routeWeb,
-      mailboxContain: mailboxContain,
-      headerCalendarEvent: headerCalendarEvent,
-      xPriorityHeader: xPriorityHeader,
-      importanceHeader: importanceHeader,
-      priorityHeader: priorityHeader,
-    )
+    return copyWith(routeWeb: routeWeb)
       ..searchSnippetSubject = searchSnippetSubject
       ..searchSnippetPreview = searchSnippetPreview;
   }
@@ -219,59 +131,13 @@ extension PresentationEmailExtension on PresentationEmail {
     final combinedMap = {...(keywords ?? {}), ...newKeywords};
     combinedMap.removeWhere((key, value) => !value);
     log('PresentationEmailExtension::updateKeywords:combinedMap = $combinedMap');
-    return PresentationEmail(
-      id: id,
-      blobId: blobId,
-      keywords: combinedMap,
-      size: size,
-      receivedAt: receivedAt,
-      hasAttachment: hasAttachment,
-      preview: preview,
-      subject: subject,
-      sentAt: sentAt,
-      from: from,
-      to: to,
-      cc: cc,
-      bcc: bcc,
-      replyTo: replyTo,
-      mailboxIds: mailboxIds,
-      selectMode: selectMode,
-      routeWeb: routeWeb,
-      mailboxContain: mailboxContain,
-      headerCalendarEvent: headerCalendarEvent,
-      xPriorityHeader: xPriorityHeader,
-      importanceHeader: importanceHeader,
-      priorityHeader: priorityHeader,
-    )
+    return copyWith(keywords: combinedMap)
       ..searchSnippetSubject = searchSnippetSubject
       ..searchSnippetPreview = searchSnippetPreview;
   }
 
   PresentationEmail syncPresentationEmail({PresentationMailbox? mailboxContain, Uri? routeWeb}) {
-    return PresentationEmail(
-      id: id,
-      blobId: blobId,
-      keywords: keywords,
-      size: size,
-      receivedAt: receivedAt,
-      hasAttachment: hasAttachment,
-      preview: preview,
-      subject: subject,
-      sentAt: sentAt,
-      from: from,
-      to: to,
-      cc: cc,
-      bcc: bcc,
-      replyTo: replyTo,
-      mailboxIds: mailboxIds,
-      selectMode: selectMode,
-      routeWeb: routeWeb,
-      mailboxContain: mailboxContain,
-      headerCalendarEvent: headerCalendarEvent,
-      xPriorityHeader: xPriorityHeader,
-      importanceHeader: importanceHeader,
-      priorityHeader: priorityHeader,
-    )
+    return copyWith(routeWeb: routeWeb, mailboxContain: mailboxContain)
       ..searchSnippetSubject = searchSnippetSubject
       ..searchSnippetPreview = searchSnippetPreview;
   }

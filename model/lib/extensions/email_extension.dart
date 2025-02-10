@@ -4,9 +4,14 @@ import 'dart:convert';
 import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
+import 'package:jmap_dart_client/jmap/core/utc_date.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_body_value.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_header.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -84,30 +89,9 @@ extension EmailExtension on Email {
   }
 
   Email updatedEmail({Map<KeyWordIdentifier, bool>? newKeywords, Map<MailboxId, bool>? newMailboxIds}) {
-    return Email(
-      id: id,
-      blobId: blobId,
-      keywords: newKeywords ?? keywords,
-      size: size,
-      receivedAt: receivedAt,
-      hasAttachment: hasAttachment,
-      preview: preview,
-      subject: subject,
-      sentAt: sentAt,
-      from: from,
-      to: to,
-      cc: cc,
-      bcc: bcc,
-      replyTo: replyTo,
-      mailboxIds: newMailboxIds ?? mailboxIds,
-      htmlBody: htmlBody,
-      bodyValues: bodyValues,
-      headerUserAgent: headerUserAgent,
-      attachments: attachments,
-      headerCalendarEvent: headerCalendarEvent,
-      xPriorityHeader: xPriorityHeader,
-      importanceHeader: importanceHeader,
-      priorityHeader: priorityHeader,
+    return copyWith(
+      keywords: newKeywords,
+      mailboxIds: newMailboxIds,
     );
   }
 
@@ -115,9 +99,10 @@ extension EmailExtension on Email {
     SelectMode selectMode = SelectMode.INACTIVE,
     String? searchSnippetSubject,
     String? searchSnippetPreview,
+    EmailId? emailId,
   }) {
     return PresentationEmail(
-      id: id,
+      id: emailId ?? id,
       blobId: blobId,
       keywords: keywords,
       size: size,
@@ -210,69 +195,86 @@ extension EmailExtension on Email {
       EmailId? emailId,
     }
   ) {
-    return PresentationEmail(
-      id: emailId ?? id,
-      blobId: blobId,
-      keywords: keywords,
-      size: size,
-      receivedAt: receivedAt,
-      hasAttachment: hasAttachment,
-      preview: preview,
-      subject: subject,
-      sentAt: sentAt,
-      from: from,
-      to: to,
-      cc: cc,
-      bcc: bcc,
-      replyTo: replyTo,
-      mailboxIds: mailboxIds,
-      selectMode: selectMode,
-      emailHeader: headers?.toList(),
-      bodyValues: bodyValues,
-      htmlBody: htmlBody,
-      headerCalendarEvent: headerCalendarEvent,
-      xPriorityHeader: xPriorityHeader,
-      importanceHeader: importanceHeader,
-      priorityHeader: priorityHeader,
-    );
+    return toPresentationEmail(selectMode: selectMode, emailId: emailId);
   }
 
   Email updateEmailHeaderMdn(
     Map<IndividualHeaderIdentifier, String?> value,
   ) {
+    return copyWith(headerMdn: value);
+  }
+
+  Email copyWith({
+    EmailId? id,
+    Id? blobId,
+    ThreadId? threadId,
+    Map<MailboxId, bool>? mailboxIds,
+    Map<KeyWordIdentifier, bool>? keywords,
+    UnsignedInt? size,
+    UTCDate? receivedAt,
+    Set<EmailHeader>? headers,
+    MessageIdsHeaderValue? messageId,
+    MessageIdsHeaderValue? inReplyTo,
+    MessageIdsHeaderValue? references,
+    String? subject,
+    UTCDate? sentAt,
+    bool? hasAttachment,
+    String? preview,
+    Set<EmailAddress>? sender,
+    Set<EmailAddress>? from,
+    Set<EmailAddress>? to,
+    Set<EmailAddress>? cc,
+    Set<EmailAddress>? bcc,
+    Set<EmailAddress>? replyTo,
+    Set<EmailBodyPart>? textBody,
+    Set<EmailBodyPart>? htmlBody,
+    Set<EmailBodyPart>? attachments,
+    EmailBodyPart? bodyStructure,
+    Map<PartId, EmailBodyValue>? bodyValues,
+    Map<IndividualHeaderIdentifier, String?>? headerUserAgent,
+    Map<IndividualHeaderIdentifier, String?>? headerMdn,
+    Map<IndividualHeaderIdentifier, String?>? headerCalendarEvent,
+    Map<IndividualHeaderIdentifier, String?>? sMimeStatusHeader,
+    Map<IndividualHeaderIdentifier, String?>? identityHeader,
+    Map<IndividualHeaderIdentifier, String?>? xPriorityHeader,
+    Map<IndividualHeaderIdentifier, String?>? importanceHeader,
+    Map<IndividualHeaderIdentifier, String?>? priorityHeader,
+  }) {
     return Email(
-      id: id,
-      blobId: blobId,
-      threadId: threadId,
-      mailboxIds: mailboxIds,
-      keywords: keywords,
-      size: size,
-      receivedAt: receivedAt,
-      headers: headers,
-      messageId: messageId,
-      inReplyTo: inReplyTo,
-      references: references,
-      subject: subject,
-      sentAt: sentAt,
-      hasAttachment: hasAttachment,
-      preview: preview,
-      sender: sender,
-      from: from,
-      to: to,
-      cc: cc,
-      bcc: bcc,
-      replyTo: replyTo,
-      textBody: textBody,
-      htmlBody: htmlBody,
-      attachments: attachments,
-      bodyStructure: bodyStructure,
-      bodyValues: bodyValues,
-      headerUserAgent: headerUserAgent,
-      headerMdn: value,
-      headerCalendarEvent: headerCalendarEvent,
-      xPriorityHeader: xPriorityHeader,
-      importanceHeader: importanceHeader,
-      priorityHeader: priorityHeader,
+      id: id ?? this.id,
+      blobId: blobId ?? this.blobId,
+      threadId: threadId ?? this.threadId,
+      mailboxIds: mailboxIds ?? this.mailboxIds,
+      keywords: keywords ?? this.keywords,
+      size: size ?? this.size,
+      receivedAt: receivedAt ?? this.receivedAt,
+      headers: headers ?? this.headers,
+      messageId: messageId ?? this.messageId,
+      inReplyTo: inReplyTo ?? this.inReplyTo,
+      references: references ?? this.references,
+      subject: subject ?? this.subject,
+      sentAt: sentAt ?? this.sentAt,
+      hasAttachment: hasAttachment ?? this.hasAttachment,
+      preview: preview ?? this.preview,
+      sender: sender ?? this.sender,
+      from: from ?? this.from,
+      to: to ?? this.to,
+      cc: cc ?? this.cc,
+      bcc: bcc ?? this.bcc,
+      replyTo: replyTo ?? this.replyTo,
+      textBody: textBody ?? this.textBody,
+      htmlBody: htmlBody ?? this.htmlBody,
+      attachments: attachments ?? this.attachments,
+      bodyStructure: bodyStructure ?? this.bodyStructure,
+      bodyValues: bodyValues ?? this.bodyValues,
+      headerUserAgent: headerUserAgent ?? this.headerUserAgent,
+      headerMdn: headerMdn ?? this.headerMdn,
+      headerCalendarEvent: headerCalendarEvent ?? this.headerCalendarEvent,
+      sMimeStatusHeader: sMimeStatusHeader ?? this.sMimeStatusHeader,
+      identityHeader: identityHeader ?? this.identityHeader,
+      xPriorityHeader: xPriorityHeader ?? this.xPriorityHeader,
+      importanceHeader: importanceHeader ?? this.importanceHeader,
+      priorityHeader: priorityHeader ?? this.priorityHeader,
     );
   }
 }
