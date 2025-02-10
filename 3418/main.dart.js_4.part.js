@@ -9289,7 +9289,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t8 = t2.onMouseDown;
       t9 = t2.onEditorSettings;
       t10 = t2.onEditorTextSizeChanged;
-      return A.HtmlEditor$(A.Callbacks$(t5, t7, t5, t5, t9, t2.onDragEnter, new B._WebEditorState_build_closure(), t2.onDragOver, t6, t2.onPasteImageSuccessAction, t2.onPasteImageFailureAction, new B._WebEditorState_build_closure0(_this), t2.onInitialContentLoadComplete, t8, new B._WebEditorState_build_closure1(_this), t10), t1, t3, C.HtmlToolbarOptions_List_empty_ToolbarType_3, null, new A.OtherOptions(t4));
+      return A.HtmlEditor$(A.Callbacks$(t5, t5, t5, t9, t2.onDragEnter, new B._WebEditorState_build_closure(), t2.onDragOver, t6, t2.onPasteImageSuccessAction, t2.onPasteImageFailureAction, new B._WebEditorState_build_closure0(_this), t2.onInitialContentLoadComplete, t8, new B._WebEditorState_build_closure1(_this), t10, t7), t1, t3, C.HtmlToolbarOptions_List_empty_ToolbarType_3, null, new A.OtherOptions(t4));
     }
   };
   B.EmailView.prototype = {
@@ -22556,5 +22556,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "GAVHAQZ6rqF3LwYp/CjKe4ZdX64=");
+})($__dart_deferred_initializers__, "kZOtrx4EDPUFmLOgZVYtgKQsAGQ=");
 ;
