@@ -55,6 +55,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_ca
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/get_sent_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_shared_media_file_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
@@ -481,7 +482,7 @@ class ComposerController extends BaseController
       attachments: uploadController.attachmentsUploaded,
       inlineAttachments: uploadController.mapInlineAttachments,
       outboxMailboxId: mailboxDashBoardController.outboxMailbox?.mailboxId,
-      sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
+      sentMailboxId: getSentMailboxIdForComposer(),
       draftsMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts],
       draftsEmailId: getDraftEmailId(),
       answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
@@ -1052,7 +1053,7 @@ class ComposerController extends BaseController
           attachments: uploadController.attachmentsUploaded,
           inlineAttachments: uploadController.mapInlineAttachments,
           outboxMailboxId: mailboxDashBoardController.outboxMailbox?.mailboxId,
-          sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
+          sentMailboxId: getSentMailboxIdForComposer(),
           draftsEmailId: getDraftEmailId(),
           answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
           unsubscribeEmailId: composerArguments.value!.previousEmailId,
@@ -2354,7 +2355,7 @@ class ComposerController extends BaseController
           identity: identitySelected.value,
           attachments: uploadController.attachmentsUploaded,
           inlineAttachments: uploadController.mapInlineAttachments,
-          sentMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
+          sentMailboxId: getSentMailboxIdForComposer(),
           draftsMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts],
           draftsEmailId: draftEmailId,
           answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
