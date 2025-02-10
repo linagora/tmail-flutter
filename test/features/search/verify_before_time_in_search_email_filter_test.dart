@@ -79,6 +79,7 @@ import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dar
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
+import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../fixtures/account_fixtures.dart';
@@ -106,6 +107,7 @@ const fallbackGenerators = {
   MockSpec<Uuid>(),
   MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
+  MockSpec<TwakeAppManager>(),
   // Thread controller mock specs
   MockSpec<GetEmailsInMailboxInteractor>(),
   MockSpec<RefreshChangesEmailsInMailboxInteractor>(),
@@ -221,6 +223,7 @@ void main() {
   late MockUuid mockUuid;
   late MockApplicationManager mockApplicationManager;
   late MockToastManager mockToastManager;
+  late MockTwakeAppManager mockTwakeAppManager;
 
   setUpAll(() {
     Get.testMode = true;
@@ -238,6 +241,7 @@ void main() {
     mockUuid = MockUuid();
     mockApplicationManager = MockApplicationManager();
     mockToastManager = MockToastManager();
+    mockTwakeAppManager = MockTwakeAppManager();
 
     Get.put<CachingManager>(mockCachingManager);
     Get.put<LanguageCacheManager>(mockLanguageCacheManager);
@@ -256,6 +260,7 @@ void main() {
     Get.put<Uuid>(mockUuid);
     Get.put<ApplicationManager>(mockApplicationManager);
     Get.put<ToastManager>(mockToastManager);
+    Get.put<TwakeAppManager>(mockTwakeAppManager);
 
     // Mock thread controller
     mockGetEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
