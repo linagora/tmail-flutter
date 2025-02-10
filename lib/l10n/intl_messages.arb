@@ -4298,13 +4298,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sizeDescending": "Size: Big - Small",
+  "sizeDescending": "Size descending",
   "@sizeDescending": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sizeAscending": "Size: Small - Big",
+  "sizeAscending": "Size ascending",
   "@sizeAscending": {
     "type": "text",
     "placeholders_order": [],
