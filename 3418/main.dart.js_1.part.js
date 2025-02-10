@@ -179,10 +179,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   A = holdersList[0];
   C = holdersList[2];
   B = hunkHelpers.updateHolder(holdersList[3], B);
-  D = holdersList[10];
-  E = holdersList[9];
-  G = holdersList[12];
-  F = holdersList[11];
+  D = holdersList[13];
+  E = holdersList[10];
+  G = holdersList[15];
+  F = holdersList[14];
   B._AutofillScopeTextInputConfiguration.prototype = {
     toJson$0() {
       var result = this.super$TextInputConfiguration$toJson(),
@@ -491,31 +491,31 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1778
+    $signature: 1796
   };
   B.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1779
+    $signature: 1797
   };
   B.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1780
+    $signature: 1798
   };
   B.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1781
+    $signature: 1799
   };
   B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure.prototype = {
     call$1(entry) {
       return entry.node === this.node;
     },
-    $signature: 585
+    $signature: 386
   };
   B.BaseLoginView_buildLoginButton_closure.prototype = {
     call$0() {
@@ -541,7 +541,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return C.SizedBox_null_null_null_null;
     },
-    $signature: 500
+    $signature: 518
   };
   B.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(_) {
@@ -550,7 +550,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleLoginPressed$1(this.context);
     },
-    $signature: 9
+    $signature: 8
   };
   B.LoginView__buildMobileForm_closure.prototype = {
     call$0() {
@@ -647,7 +647,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return C.SizedBox_0_0_null_null;
       }
     },
-    $signature: 109
+    $signature: 95
   };
   B.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -698,7 +698,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return A.Intl__message(_s40_, _null, _s12_, _null, _null);
       }
     },
-    $signature: 1782
+    $signature: 1800
   };
   B.LoginMessageWidget_build_closure0.prototype = {
     call$1(success) {
@@ -719,19 +719,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return "";
     },
-    $signature: 1783
+    $signature: 1801
   };
   B.LoginMessageWidget_build_closure1.prototype = {
     call$1(failure) {
       return C.Color_4293281350;
     },
-    $signature: 1784
+    $signature: 1802
   };
   B.LoginMessageWidget_build_closure2.prototype = {
     call$1(success) {
       return C.Color_4278190080;
     },
-    $signature: 1785
+    $signature: 1803
   };
   B._LoginTextInputBuilderState_build_closure.prototype = {
     call$0() {
@@ -840,5 +840,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "75vQAmMHgGLJ7N8UC9fWbJiKR4g=");
+})($__dart_deferred_initializers__, "d90LbJGz0YmkchjtyR0LCc90o5k=");
 ;
