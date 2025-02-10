@@ -2,6 +2,7 @@
 import 'package:collection/collection.dart';
 import 'package:core/domain/extensions/list_datetime_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
@@ -77,8 +78,10 @@ class SearchEmailWithSortOrderScenario extends BaseTestScenario {
       case EmailSortOrderType.relevance:
         break;
       case EmailSortOrderType.sizeAscending:
+        await _expectEmailListSortedCorrectBySizeAscending(listUsername: listUsername);
         break;
       case EmailSortOrderType.sizeDescending:
+        await _expectEmailListSortedCorrectBySizeDescending(listUsername: listUsername);
         break;
     }
   }
@@ -187,5 +190,42 @@ class SearchEmailWithSortOrderScenario extends BaseTestScenario {
       .toList();
 
     expect(listReceiveAtTime.isSortedByOldestFirst(), isTrue);
+  }
+
+  Future<void> _expectEmailListSortedCorrectBySizeAscending({
+    required List<String> listUsername,
+  }) async {
+    final listEmailTile = $.tester
+        .widgetList<EmailTileBuilder>(find.byType(EmailTileBuilder));
+
+    List<UnsignedInt> sizeList = listEmailTile
+      .mapIndexed((index, emailTile) => listEmailTile.elementAt(index).presentationEmail.size)
+      .whereNotNull()
+      .toList();
+
+    expect(_isSortedAscending(sizeList), isTrue);
+  }
+
+  Future<void> _expectEmailListSortedCorrectBySizeDescending({
+    required List<String> listUsername,
+  }) async {
+    final listEmailTile = $.tester
+        .widgetList<EmailTileBuilder>(find.byType(EmailTileBuilder));
+
+    List<UnsignedInt> sizeList = listEmailTile
+      .mapIndexed((index, emailTile) => listEmailTile.elementAt(index).presentationEmail.size)
+      .whereNotNull()
+      .toList();
+
+    expect(_isSortedAscending(sizeList), isFalse);
+  }
+
+  bool _isSortedAscending(List<UnsignedInt> list) {
+    for (int i = 0; i < list.length - 1; i++) {
+      if (list[i].value > list[i + 1].value) {
+        return false;
+      }
+    }
+    return true;
   }
 }
