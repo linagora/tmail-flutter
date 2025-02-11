@@ -20,6 +20,7 @@ import 'package:model/extensions/mailbox_extension.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_restored_deleted_message_interactor.dart';
@@ -180,6 +181,7 @@ const fallbackGenerators = {
   MockSpec<ToastManager>(),
   MockSpec<TwakeAppManager>(),
   MockSpec<GetIdentityCacheOnWebInteractor>(),
+  MockSpec<ComposerManager>(),
 ])
 void main() {
   final moveToMailboxInteractor = MockMoveToMailboxInteractor();
@@ -250,6 +252,7 @@ void main() {
   final refreshAllMailboxInteractor = MockRefreshAllMailboxInteractor();
   final removeComposerCacheOnWebInteractor = MockRemoveComposerCacheOnWebInteractor();
   final getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
+  final composerManager = MockComposerManager();
 
   final getEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
   final refreshChangesEmailsInMailboxInteractor = MockRefreshChangesEmailsInMailboxInteractor();
@@ -312,6 +315,7 @@ void main() {
       Get.put<UpdateAccountCacheInteractor>(updateAccountCacheInteractor);
       Get.put<GetAllIdentitiesInteractor>(getAllIdentitiesInteractor);
       Get.put<RemoveComposerCacheOnWebInteractor>(removeComposerCacheOnWebInteractor);
+      Get.put<ComposerManager>(composerManager);
 
       when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
 
@@ -348,6 +352,7 @@ void main() {
         getRestoredDeletedMessageInteractor,
         removeComposerCacheOnWebInteractor,
         getAllIdentitiesInteractor,
+        composerManager,
       );
       Get.put(mailboxDashboardController);
       mailboxDashboardController.onReady();

@@ -8,14 +8,13 @@ import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
-import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_overlay_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
@@ -198,10 +197,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               }
             }),
         ),
-        Obx(() => controller.composerOverlayState.value == ComposerOverlayState.active
-            ? const ComposerView()
-            : const SizedBox.shrink()
-        ),
+        const ComposerOverlayView(),
         Obx(() => controller.searchMailboxActivated.value == true && !controller.responsiveUtils.isWebDesktop(context)
           ? const SearchMailboxView()
           : const SizedBox.shrink()
