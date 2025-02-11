@@ -16,7 +16,6 @@ import 'package:tmail_ui_user/main/pages/app_pages.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
-import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:worker_manager/worker_manager.dart';
 
@@ -53,7 +52,6 @@ class TMailApp extends StatefulWidget {
 class _TMailAppState extends State<TMailApp> {
 
   DeepLinksManager? _deepLinksManager;
-  final TwakeAppManager _twakeAppManager = Get.find<TwakeAppManager>();
 
   @override
   void initState() {
@@ -107,7 +105,6 @@ class _TMailAppState extends State<TMailApp> {
     if (PlatformInfo.isMobile) {
       _deepLinksManager?.dispose();
     }
-    _twakeAppManager.dispose();
     super.dispose();
   }
 }

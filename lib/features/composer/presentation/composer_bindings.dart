@@ -36,6 +36,7 @@ import 'package:tmail_ui_user/features/email/domain/repository/email_repository.
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/mailbox_cache_datasource_impl.dart';
@@ -47,6 +48,9 @@ import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/session_storage_composer_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/session_storage_composer_datasoure_impl.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -73,8 +77,9 @@ import 'package:uuid/uuid.dart';
 class ComposerBindings extends BaseBindings {
 
   final String? composerId;
+  final ComposerArguments? composerArguments;
 
-  ComposerBindings({this.composerId});
+  ComposerBindings({this.composerId, this.composerArguments});
 
   @override
   void bindingsDataSourceImpl() {
@@ -185,6 +190,10 @@ class ComposerBindings extends BaseBindings {
       Get.find<Uuid>(),
     ), tag: composerId);
     Get.lazyPut(
+      () => ComposerCacheRepositoryImpl(Get.find<SessionStorageComposerDatasource>(tag: composerId)),
+      tag: composerId,
+    );
+    Get.lazyPut(
       () => ContactRepositoryImpl(Get.find<ContactDataSource>(tag: composerId)),
       tag: composerId,
     );
@@ -212,6 +221,10 @@ class ComposerBindings extends BaseBindings {
   void bindingsRepository() {
     Get.lazyPut<ComposerRepository>(
       () => Get.find<ComposerRepositoryImpl>(tag: composerId),
+      tag: composerId,
+    );
+    Get.lazyPut<ComposerCacheRepository>(
+      () => Get.find<ComposerCacheRepositoryImpl>(tag: composerId),
       tag: composerId,
     );
     Get.lazyPut<ContactRepository>(
@@ -308,6 +321,8 @@ class ComposerBindings extends BaseBindings {
       Get.find<CreateNewAndSendEmailInteractor>(tag: composerId),
       Get.find<CreateNewAndSaveEmailToDraftsInteractor>(tag: composerId),
       Get.find<PrintEmailInteractor>(tag: composerId),
+      composerId: composerId,
+      composerArgs: composerArguments,
     ), tag: composerId);
   }
 
