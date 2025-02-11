@@ -744,6 +744,14 @@ class AppLocalizations {
     );
   }
 
+  String message_confirmation_dialog_allow_subaddressing_mobile(String nameMailbox, String address) {
+    return Intl.message(
+        'You are about to allow anyone to send emails directly to your folder "$nameMailbox" using the address <$address>',
+        name: 'message_confirmation_dialog_allow_subaddressing_mobile',
+        args: [nameMailbox, address]
+    );
+  }
+
   String get renameFolder {
     return Intl.message(
       'Rename folder',

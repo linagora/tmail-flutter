@@ -1673,7 +1673,7 @@ class MailboxController extends BaseMailboxController
       }) {
     if (responsiveUtils.isLandscapeMobile(context) || responsiveUtils.isPortraitMobile(context)) {
       (ConfirmationDialogActionSheetBuilder(context)
-        ..messageText(AppLocalizations.of(context).message_confirmation_dialog_allow_subaddressing(mailboxName))
+        ..messageText(AppLocalizations.of(context).message_confirmation_dialog_allow_subaddressing_mobile(mailboxName, subaddress))
         ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
         ..onConfirmAction(AppLocalizations.of(context).allow, () => onAllowSubaddressingAction(mailboxId, currentRights, MailboxActions.allowSubaddressing))
       ).show();
