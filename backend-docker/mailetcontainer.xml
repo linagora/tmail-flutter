@@ -88,9 +88,6 @@
             <mailet match="All" class="Sieve"/>
             <mailet match="All" class="AddDeliveredToHeader"/>
             <mailet match="All" class="org.apache.james.jmap.mailet.filter.JMAPFiltering"/>
-            <mailet match="SenderIsLocal" class="com.linagora.tmail.mailets.ContactsCollection">
-                <attribute>ContactAttribute1</attribute>
-            </mailet>
             <mailet match="All" class="com.linagora.tmail.mailets.TmailLocalDelivery"/>
         </processor>
 
