@@ -2,7 +2,7 @@ version: "3"
 
 services:
   tmail-backend:
-    image: linagora/tmail-backend:memory-1.0.0
+    image: linagora/tmail-backend:memory-1.0.3-rc1
     container_name: tmail-backend
     volumes:
       - ./jwt_publickey:/root/conf/jwt_publickey
