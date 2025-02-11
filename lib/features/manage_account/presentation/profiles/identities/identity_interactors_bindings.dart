@@ -24,6 +24,10 @@ import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
 class IdentityInteractorsBindings extends InteractorsBindings {
 
+  final String? composerId;
+
+  IdentityInteractorsBindings({this.composerId});
+
   @override
   void dependencies() {
     _bindingsUtils();
@@ -32,12 +36,18 @@ class IdentityInteractorsBindings extends InteractorsBindings {
 
   @override
   void bindingsDataSource() {
-    Get.lazyPut<IdentityDataSource>(() => Get.find<IdentityDataSourceImpl>());
-    Get.lazyPut<IdentityCreatorDataSource>(() => Get.find<LocalIdentityCreatorDataSourceImpl>());
+    Get.lazyPut<IdentityDataSource>(
+      () => Get.find<IdentityDataSourceImpl>(tag: composerId),
+      tag: composerId,
+    );
+    Get.lazyPut<IdentityCreatorDataSource>(
+      () => Get.find<LocalIdentityCreatorDataSourceImpl>(tag: composerId),
+      tag: composerId,
+    );
   }
 
   void _bindingsUtils() {
-    Get.lazyPut(() => IdentityUtils());
+    Get.lazyPut(() => IdentityUtils(), tag: composerId);
   }
 
   @override
@@ -45,41 +55,70 @@ class IdentityInteractorsBindings extends InteractorsBindings {
     Get.lazyPut(() => IdentityDataSourceImpl(
       Get.find<HtmlTransform>(),
       Get.find<IdentityAPI>(),
-      Get.find<RemoteExceptionThrower>()));
+      Get.find<RemoteExceptionThrower>()
+    ), tag: composerId);
     Get.lazyPut(() => LocalIdentityCreatorDataSourceImpl(
       Get.find<CacheExceptionThrower>()
-    ));
+    ), tag: composerId);
   }
 
   @override
   void bindingsInteractor() {
     Get.lazyPut(() => GetAllIdentitiesInteractor(
-      Get.find<IdentityRepository>(), 
-      Get.find<IdentityUtils>()));
-    Get.lazyPut(() => CreateNewIdentityInteractor(Get.find<IdentityRepository>()));
+      Get.find<IdentityRepository>(tag: composerId),
+      Get.find<IdentityUtils>(tag: composerId)
+    ), tag: composerId);
+    Get.lazyPut(
+      () => CreateNewIdentityInteractor(Get.find<IdentityRepository>(tag: composerId)),
+      tag: composerId,
+    );
     Get.lazyPut(() => CreateNewDefaultIdentityInteractor(
-      Get.find<IdentityRepository>(), 
-      Get.find<IdentityUtils>()));
-    Get.lazyPut(() => DeleteIdentityInteractor(Get.find<IdentityRepository>()));
-    Get.lazyPut(() => EditIdentityInteractor(Get.find<IdentityRepository>()));
+      Get.find<IdentityRepository>(tag: composerId),
+      Get.find<IdentityUtils>(tag: composerId)
+    ), tag: composerId);
+    Get.lazyPut(
+      () => DeleteIdentityInteractor(Get.find<IdentityRepository>(tag: composerId)),
+      tag: composerId,
+    );
+    Get.lazyPut(
+      () => EditIdentityInteractor(Get.find<IdentityRepository>(tag: composerId)),
+      tag: composerId,
+    );
     Get.lazyPut(() => EditDefaultIdentityInteractor(
-      Get.find<IdentityRepository>(), 
-      Get.find<IdentityUtils>()));
-    Get.lazyPut(() => TransformHtmlSignatureInteractor(Get.find<IdentityRepository>()));
-    Get.lazyPut(() => SaveIdentityCacheOnWebInteractor(Get.find<IdentityCreatorRepository>()));
+      Get.find<IdentityRepository>(tag: composerId),
+      Get.find<IdentityUtils>(tag: composerId)
+    ), tag: composerId);
+    Get.lazyPut(
+      () => TransformHtmlSignatureInteractor(Get.find<IdentityRepository>(tag: composerId)),
+      tag: composerId,
+    );
+    Get.lazyPut(
+      () => SaveIdentityCacheOnWebInteractor(Get.find<IdentityCreatorRepository>(tag: composerId)),
+      tag: composerId,
+    );
   }
 
   @override
   void bindingsRepository() {
-    Get.lazyPut<IdentityRepository>(() => Get.find<IdentityRepositoryImpl>());
-    Get.lazyPut<IdentityCreatorRepository>(() => Get.find<IdentityCreatorRepositoryImpl>());
+    Get.lazyPut<IdentityRepository>(
+      () => Get.find<IdentityRepositoryImpl>(tag: composerId),
+      tag: composerId,
+    );
+    Get.lazyPut<IdentityCreatorRepository>(
+      () => Get.find<IdentityCreatorRepositoryImpl>(tag: composerId),
+      tag: composerId,
+    );
   }
 
   @override
   void bindingsRepositoryImpl() {
-    Get.lazyPut(() => IdentityRepositoryImpl(Get.find<IdentityDataSource>()));
-    Get.lazyPut(() => IdentityCreatorRepositoryImpl(
-      Get.find<IdentityCreatorDataSource>()
-    ));
+    Get.lazyPut(
+      () => IdentityRepositoryImpl(Get.find<IdentityDataSource>(tag: composerId)),
+      tag: composerId,
+    );
+    Get.lazyPut(
+      () => IdentityCreatorRepositoryImpl(Get.find<IdentityCreatorDataSource>(tag: composerId)),
+      tag: composerId,
+    );
   }
 }
