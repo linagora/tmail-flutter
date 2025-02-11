@@ -407,19 +407,36 @@ void main() {
           // arrange
           PlatformInfo.isTestingForWeb = true;
 
+          final selectedIdentity = Identity(id: IdentityId(Id('alice')));
+
+          composerController = ComposerController(
+            mockLocalFilePickerInteractor,
+            mockLocalImagePickerInteractor,
+            mockGetEmailContentInteractor,
+            mockGetAllIdentitiesInteractor,
+            mockUploadController,
+            mockRemoveComposerCacheOnWebInteractor,
+            mockSaveComposerCacheOnWebInteractor,
+            mockDownloadImageAsBase64Interactor,
+            mockTransformHtmlEmailContentInteractor,
+            mockGetAlwaysReadReceiptSettingInteractor,
+            mockCreateNewAndSendEmailInteractor,
+            mockCreateNewAndSaveEmailToDraftsInteractor,
+            mockPrintEmailInteractor,
+            composerArgs: ComposerArguments(
+              selectedIdentityId: selectedIdentity.id,
+              identities: [selectedIdentity],
+            ),
+          );
+
           composerController?.onChangeTextEditorWeb(emailContent);
           composerController?.subjectEmail.value = emailSubject;
           composerController?.listToEmailAddress = [toRecipient];
           composerController?.listCcEmailAddress = [ccRecipient];
           composerController?.listBccEmailAddress = [bccRecipient];
           composerController?.listReplyToEmailAddress = [replyToRecipient];
-          final selectedIdentity = Identity(id: IdentityId(Id('alice')));
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
-          
-          when(mockMailboxDashBoardController.composerArguments).thenReturn(
-            ComposerArguments(
-              selectedIdentityId: selectedIdentity.id,
-              identities: [selectedIdentity]));
+
 
           final savedEmailDraft = SavedEmailDraft(
             content: emailContent,
@@ -452,15 +469,30 @@ void main() {
         () async {
           // arrange
           PlatformInfo.isTestingForWeb = true;
-          
+
+          composerController = ComposerController(
+            mockLocalFilePickerInteractor,
+            mockLocalImagePickerInteractor,
+            mockGetEmailContentInteractor,
+            mockGetAllIdentitiesInteractor,
+            mockUploadController,
+            mockRemoveComposerCacheOnWebInteractor,
+            mockSaveComposerCacheOnWebInteractor,
+            mockDownloadImageAsBase64Interactor,
+            mockTransformHtmlEmailContentInteractor,
+            mockGetAlwaysReadReceiptSettingInteractor,
+            mockCreateNewAndSendEmailInteractor,
+            mockCreateNewAndSaveEmailToDraftsInteractor,
+            mockPrintEmailInteractor,
+            composerArgs: ComposerArguments(identities: [identity]),
+          );
+
           composerController?.onChangeTextEditorWeb(emailContent);
           composerController?.subjectEmail.value = emailSubject;
           composerController?.listToEmailAddress = [toRecipient];
           composerController?.listCcEmailAddress = [ccRecipient];
           composerController?.listBccEmailAddress = [bccRecipient];
           composerController?.listReplyToEmailAddress = [replyToRecipient];
-          when(mockMailboxDashBoardController.composerArguments).thenReturn(
-            ComposerArguments(identities: [identity]));
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
 
           final savedEmailDraft = SavedEmailDraft(
@@ -494,7 +526,29 @@ void main() {
         () async {
           // arrange
           PlatformInfo.isTestingForWeb = true;
-          
+
+          final selectedIdentity = Identity(
+            id: IdentityId(Id('alice')),
+            mayDelete: true,
+          );
+
+          composerController = ComposerController(
+            mockLocalFilePickerInteractor,
+            mockLocalImagePickerInteractor,
+            mockGetEmailContentInteractor,
+            mockGetAllIdentitiesInteractor,
+            mockUploadController,
+            mockRemoveComposerCacheOnWebInteractor,
+            mockSaveComposerCacheOnWebInteractor,
+            mockDownloadImageAsBase64Interactor,
+            mockTransformHtmlEmailContentInteractor,
+            mockGetAlwaysReadReceiptSettingInteractor,
+            mockCreateNewAndSendEmailInteractor,
+            mockCreateNewAndSaveEmailToDraftsInteractor,
+            mockPrintEmailInteractor,
+            composerArgs: ComposerArguments(selectedIdentityId: selectedIdentity.id),
+          );
+
           composerController?.onChangeTextEditorWeb(emailContent);
           composerController?.subjectEmail.value = emailSubject;
           composerController?.listToEmailAddress = [toRecipient];
@@ -503,11 +557,6 @@ void main() {
           composerController?.listReplyToEmailAddress = [replyToRecipient];
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
 
-          final selectedIdentity = Identity(
-            id: IdentityId(Id('alice')),
-            mayDelete: true);
-          when(mockMailboxDashBoardController.composerArguments).thenReturn(
-            ComposerArguments(selectedIdentityId: selectedIdentity.id));
           when(mockGetAllIdentitiesInteractor.execute(any, any)).thenAnswer(
             (_) => Stream.value(
               Right(GetAllIdentitiesSuccess([selectedIdentity], null))));
@@ -543,7 +592,24 @@ void main() {
         () async {
           // arrange
           PlatformInfo.isTestingForWeb = true;
-          
+
+          composerController = ComposerController(
+            mockLocalFilePickerInteractor,
+            mockLocalImagePickerInteractor,
+            mockGetEmailContentInteractor,
+            mockGetAllIdentitiesInteractor,
+            mockUploadController,
+            mockRemoveComposerCacheOnWebInteractor,
+            mockSaveComposerCacheOnWebInteractor,
+            mockDownloadImageAsBase64Interactor,
+            mockTransformHtmlEmailContentInteractor,
+            mockGetAlwaysReadReceiptSettingInteractor,
+            mockCreateNewAndSendEmailInteractor,
+            mockCreateNewAndSaveEmailToDraftsInteractor,
+            mockPrintEmailInteractor,
+            composerArgs: ComposerArguments(),
+          );
+
           composerController?.onChangeTextEditorWeb(emailContent);
           composerController?.subjectEmail.value = emailSubject;
           composerController?.listToEmailAddress = [toRecipient];
@@ -555,8 +621,6 @@ void main() {
           final identity = Identity(
             id: IdentityId(Id('alice')),
             mayDelete: true);
-          when(mockMailboxDashBoardController.composerArguments).thenReturn(
-            ComposerArguments());
           when(mockGetAllIdentitiesInteractor.execute(any, any)).thenAnswer(
             (_) => Stream.value(
               Right(GetAllIdentitiesSuccess([identity], null))));
@@ -829,27 +893,43 @@ void main() {
         () async {
           // arrange
           PlatformInfo.isTestingForWeb = true;
-          
-          composerController?.onChangeTextEditorWeb(emailContent);
 
           final selectedIdentity = Identity(id: IdentityId(Id('alice')));
 
-          when(mockMailboxDashBoardController.composerArguments).thenReturn(
-            ComposerArguments(
-              emailActionType: EmailActionType.editDraft,
-              emailContents: emailContent,
-              presentationEmail: PresentationEmail(
-                id: EmailId(Id('some-email-id')),
-                subject: emailSubject,
-                to: {toRecipient},
-                cc: {ccRecipient},
-                bcc: {bccRecipient},
-                replyTo: {replyToRecipient},
-                mailboxContain: PresentationMailbox(
-                  MailboxId(Id('some-mailbox-id')),
-                  role: PresentationMailbox.roleJunk)),
-              selectedIdentityId: selectedIdentity.id,
-              identities: [selectedIdentity]));
+          composerController = ComposerController(
+            mockLocalFilePickerInteractor,
+            mockLocalImagePickerInteractor,
+            mockGetEmailContentInteractor,
+            mockGetAllIdentitiesInteractor,
+            mockUploadController,
+            mockRemoveComposerCacheOnWebInteractor,
+            mockSaveComposerCacheOnWebInteractor,
+            mockDownloadImageAsBase64Interactor,
+            mockTransformHtmlEmailContentInteractor,
+            mockGetAlwaysReadReceiptSettingInteractor,
+            mockCreateNewAndSendEmailInteractor,
+            mockCreateNewAndSaveEmailToDraftsInteractor,
+            mockPrintEmailInteractor,
+            composerArgs: ComposerArguments(
+                emailActionType: EmailActionType.editDraft,
+                emailContents: emailContent,
+                presentationEmail: PresentationEmail(
+                  id: EmailId(Id('some-email-id')),
+                  subject: emailSubject,
+                  to: {toRecipient},
+                  cc: {ccRecipient},
+                  bcc: {bccRecipient},
+                  mailboxContain: PresentationMailbox(
+                    MailboxId(Id('some-mailbox-id')),
+                    role: PresentationMailbox.roleJunk,
+                  ),
+                ),
+                selectedIdentityId: selectedIdentity.id,
+                identities: [selectedIdentity],
+            ),
+          );
+
+          composerController?.onChangeTextEditorWeb(emailContent);
 
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
 
@@ -884,13 +964,24 @@ void main() {
         () async {
           // arrange
           PlatformInfo.isTestingForWeb = true;
-          
-          composerController?.onChangeTextEditorWeb(emailContent);
-            
+
           final identity = Identity(id: IdentityId(Id('alice')));
-          
-          when(mockMailboxDashBoardController.composerArguments).thenReturn(
-            ComposerArguments(
+
+          composerController = ComposerController(
+            mockLocalFilePickerInteractor,
+            mockLocalImagePickerInteractor,
+            mockGetEmailContentInteractor,
+            mockGetAllIdentitiesInteractor,
+            mockUploadController,
+            mockRemoveComposerCacheOnWebInteractor,
+            mockSaveComposerCacheOnWebInteractor,
+            mockDownloadImageAsBase64Interactor,
+            mockTransformHtmlEmailContentInteractor,
+            mockGetAlwaysReadReceiptSettingInteractor,
+            mockCreateNewAndSendEmailInteractor,
+            mockCreateNewAndSaveEmailToDraftsInteractor,
+            mockPrintEmailInteractor,
+            composerArgs: ComposerArguments(
               emailActionType: EmailActionType.editDraft,
               emailContents: emailContent,
               presentationEmail: PresentationEmail(
@@ -902,8 +993,14 @@ void main() {
                 replyTo: {replyToRecipient},
                 mailboxContain: PresentationMailbox(
                   MailboxId(Id('some-mailbox-id')),
-                  role: PresentationMailbox.roleJunk)),
-              identities: [identity]));
+                  role: PresentationMailbox.roleJunk,
+                ),
+              ),
+              identities: [identity],
+            ),
+          );
+
+          composerController?.onChangeTextEditorWeb(emailContent);
 
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
 
@@ -938,15 +1035,27 @@ void main() {
         () async {
           // arrange
           PlatformInfo.isTestingForWeb = true;
-          
-          composerController?.onChangeTextEditorWeb(emailContent);
 
           final selectedIdentity = Identity(
             id: IdentityId(Id('alice')),
-            mayDelete: true);
+            mayDelete: true,
+          );
 
-          when(mockMailboxDashBoardController.composerArguments).thenReturn(
-            ComposerArguments(
+          composerController = ComposerController(
+            mockLocalFilePickerInteractor,
+            mockLocalImagePickerInteractor,
+            mockGetEmailContentInteractor,
+            mockGetAllIdentitiesInteractor,
+            mockUploadController,
+            mockRemoveComposerCacheOnWebInteractor,
+            mockSaveComposerCacheOnWebInteractor,
+            mockDownloadImageAsBase64Interactor,
+            mockTransformHtmlEmailContentInteractor,
+            mockGetAlwaysReadReceiptSettingInteractor,
+            mockCreateNewAndSendEmailInteractor,
+            mockCreateNewAndSaveEmailToDraftsInteractor,
+            mockPrintEmailInteractor,
+            composerArgs: ComposerArguments(
               emailActionType: EmailActionType.editDraft,
               emailContents: emailContent,
               presentationEmail: PresentationEmail(
@@ -958,8 +1067,15 @@ void main() {
                 replyTo: {replyToRecipient},
                 mailboxContain: PresentationMailbox(
                   MailboxId(Id('some-mailbox-id')),
-                  role: PresentationMailbox.roleJunk)),
-              selectedIdentityId: selectedIdentity.id));
+                  role: PresentationMailbox.roleJunk,
+                ),
+              ),
+              selectedIdentityId: selectedIdentity.id,
+            ),
+          );
+
+          composerController?.onChangeTextEditorWeb(emailContent);
+
           when(mockGetAllIdentitiesInteractor.execute(any, any)).thenAnswer(
             (_) => Stream.value(
               Right(GetAllIdentitiesSuccess([selectedIdentity], null))));
@@ -997,15 +1113,27 @@ void main() {
         () async {
           // arrange
           PlatformInfo.isTestingForWeb = true;
-          
-          composerController?.onChangeTextEditorWeb(emailContent);
-            
+
           final identity = Identity(
             id: IdentityId(Id('alice')),
-            mayDelete: true);
-            
-          when(mockMailboxDashBoardController.composerArguments).thenReturn(
-            ComposerArguments(
+            mayDelete: true,
+          );
+
+          composerController = ComposerController(
+            mockLocalFilePickerInteractor,
+            mockLocalImagePickerInteractor,
+            mockGetEmailContentInteractor,
+            mockGetAllIdentitiesInteractor,
+            mockUploadController,
+            mockRemoveComposerCacheOnWebInteractor,
+            mockSaveComposerCacheOnWebInteractor,
+            mockDownloadImageAsBase64Interactor,
+            mockTransformHtmlEmailContentInteractor,
+            mockGetAlwaysReadReceiptSettingInteractor,
+            mockCreateNewAndSendEmailInteractor,
+            mockCreateNewAndSaveEmailToDraftsInteractor,
+            mockPrintEmailInteractor,
+            composerArgs: ComposerArguments(
               emailActionType: EmailActionType.editDraft,
               emailContents: emailContent,
               presentationEmail: PresentationEmail(
@@ -1017,7 +1145,14 @@ void main() {
                 replyTo: {replyToRecipient},
                 mailboxContain: PresentationMailbox(
                   MailboxId(Id('some-mailbox-id')),
-                  role: PresentationMailbox.roleJunk)),));
+                  role: PresentationMailbox.roleJunk,
+                ),
+              ),
+            ),
+          );
+
+          composerController?.onChangeTextEditorWeb(emailContent);
+
           when(mockGetAllIdentitiesInteractor.execute(any, any)).thenAnswer(
             (_) => Stream.value(
               Right(GetAllIdentitiesSuccess([identity], null))));
@@ -1349,16 +1484,34 @@ void main() {
           PlatformInfo.isTestingForWeb = true;
 
           final selectedIdentity = Identity(id: IdentityId(Id('alice')));
-          when(mockMailboxDashBoardController.composerArguments).thenReturn(
-            ComposerArguments(
+
+          composerController = ComposerController(
+            mockLocalFilePickerInteractor,
+            mockLocalImagePickerInteractor,
+            mockGetEmailContentInteractor,
+            mockGetAllIdentitiesInteractor,
+            mockUploadController,
+            mockRemoveComposerCacheOnWebInteractor,
+            mockSaveComposerCacheOnWebInteractor,
+            mockDownloadImageAsBase64Interactor,
+            mockTransformHtmlEmailContentInteractor,
+            mockGetAlwaysReadReceiptSettingInteractor,
+            mockCreateNewAndSendEmailInteractor,
+            mockCreateNewAndSaveEmailToDraftsInteractor,
+            mockPrintEmailInteractor,
+            composerArgs: ComposerArguments(
               emailActionType: EmailActionType.reply,
               emailContents: emailContent,
               presentationEmail: PresentationEmail(
                 mailboxContain: PresentationMailbox(
                   MailboxId(Id('some-mailbox-id')),
-                  role: PresentationMailbox.roleJunk)),
+                  role: PresentationMailbox.roleJunk,
+                ),
+              ),
               selectedIdentityId: selectedIdentity.id,
-              identities: [selectedIdentity]));
+              identities: [selectedIdentity],
+            ),
+          );
 
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
           
@@ -1383,15 +1536,33 @@ void main() {
           PlatformInfo.isTestingForWeb = true;
 
           final identity = Identity(id: IdentityId(Id('alice')));
-          when(mockMailboxDashBoardController.composerArguments).thenReturn(
-            ComposerArguments(
+
+          composerController = ComposerController(
+            mockLocalFilePickerInteractor,
+            mockLocalImagePickerInteractor,
+            mockGetEmailContentInteractor,
+            mockGetAllIdentitiesInteractor,
+            mockUploadController,
+            mockRemoveComposerCacheOnWebInteractor,
+            mockSaveComposerCacheOnWebInteractor,
+            mockDownloadImageAsBase64Interactor,
+            mockTransformHtmlEmailContentInteractor,
+            mockGetAlwaysReadReceiptSettingInteractor,
+            mockCreateNewAndSendEmailInteractor,
+            mockCreateNewAndSaveEmailToDraftsInteractor,
+            mockPrintEmailInteractor,
+            composerArgs: ComposerArguments(
               emailActionType: EmailActionType.reply,
               emailContents: emailContent,
               presentationEmail: PresentationEmail(
                 mailboxContain: PresentationMailbox(
                   MailboxId(Id('some-mailbox-id')),
-                  role: PresentationMailbox.roleJunk)),
-              identities: [identity]));
+                  role: PresentationMailbox.roleJunk,
+                ),
+              ),
+              identities: [identity],
+            ),
+          );
 
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
           
@@ -1418,15 +1589,34 @@ void main() {
           final selectedIdentity = Identity(
             id: IdentityId(Id('alice')),
             mayDelete: true);
-          when(mockMailboxDashBoardController.composerArguments).thenReturn(
-            ComposerArguments(
+
+          composerController = ComposerController(
+            mockLocalFilePickerInteractor,
+            mockLocalImagePickerInteractor,
+            mockGetEmailContentInteractor,
+            mockGetAllIdentitiesInteractor,
+            mockUploadController,
+            mockRemoveComposerCacheOnWebInteractor,
+            mockSaveComposerCacheOnWebInteractor,
+            mockDownloadImageAsBase64Interactor,
+            mockTransformHtmlEmailContentInteractor,
+            mockGetAlwaysReadReceiptSettingInteractor,
+            mockCreateNewAndSendEmailInteractor,
+            mockCreateNewAndSaveEmailToDraftsInteractor,
+            mockPrintEmailInteractor,
+            composerArgs: ComposerArguments(
               emailActionType: EmailActionType.reply,
               emailContents: emailContent,
               presentationEmail: PresentationEmail(
                 mailboxContain: PresentationMailbox(
                   MailboxId(Id('some-mailbox-id')),
-                  role: PresentationMailbox.roleJunk)),
-              selectedIdentityId: selectedIdentity.id));
+                  role: PresentationMailbox.roleJunk,
+                ),
+              ),
+              selectedIdentityId: selectedIdentity.id,
+            ),
+          );
+
           when(mockGetAllIdentitiesInteractor.execute(any, any)).thenAnswer(
             (_) => Stream.value(
               Right(GetAllIdentitiesSuccess([selectedIdentity], null))));
@@ -1457,14 +1647,32 @@ void main() {
             id: IdentityId(Id('alice')),
             mayDelete: true);
 
-          when(mockMailboxDashBoardController.composerArguments).thenReturn(
-            ComposerArguments(
+          composerController = ComposerController(
+            mockLocalFilePickerInteractor,
+            mockLocalImagePickerInteractor,
+            mockGetEmailContentInteractor,
+            mockGetAllIdentitiesInteractor,
+            mockUploadController,
+            mockRemoveComposerCacheOnWebInteractor,
+            mockSaveComposerCacheOnWebInteractor,
+            mockDownloadImageAsBase64Interactor,
+            mockTransformHtmlEmailContentInteractor,
+            mockGetAlwaysReadReceiptSettingInteractor,
+            mockCreateNewAndSendEmailInteractor,
+            mockCreateNewAndSaveEmailToDraftsInteractor,
+            mockPrintEmailInteractor,
+            composerArgs: ComposerArguments(
               emailActionType: EmailActionType.reply,
               emailContents: emailContent,
               presentationEmail: PresentationEmail(
                 mailboxContain: PresentationMailbox(
                   MailboxId(Id('some-mailbox-id')),
-                  role: PresentationMailbox.roleJunk)),));
+                  role: PresentationMailbox.roleJunk,
+                ),
+              ),
+            ),
+          );
+
           when(mockGetAllIdentitiesInteractor.execute(any, any)).thenAnswer(
             (_) => Stream.value(
               Right(GetAllIdentitiesSuccess([identity], null))));

@@ -20,6 +20,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:rxdart/subjects.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_restored_deleted_message_interactor.dart';
@@ -178,6 +179,7 @@ const fallbackGenerators = {
   MockSpec<TwakeAppManager>(),
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<GetIdentityCacheOnWebInteractor>(),
+  MockSpec<ComposerManager>(),
 ])
 void main() {
   // mock mailbox dashboard controller direct dependencies
@@ -263,6 +265,7 @@ void main() {
   final refreshAllMailboxInteractor = MockRefreshAllMailboxInteractor();
   final removeComposerCacheOnWebInteractor = MockRemoveComposerCacheOnWebInteractor();
   final getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
+  final composerManager = MockComposerManager();
   late MailboxController mailboxController;
 
   // mock thread controller direct dependencies
@@ -314,6 +317,7 @@ void main() {
     Get.put<UpdateAccountCacheInteractor>(updateAccountCacheInteractor);
     Get.put<GetAllIdentitiesInteractor>(getAllIdentitiesInteractor);
     Get.put<RemoveComposerCacheOnWebInteractor>(removeComposerCacheOnWebInteractor);
+    Get.put<ComposerManager>(composerManager);
 
     searchController = SearchController(
       quickSearchEmailInteractor,
@@ -349,6 +353,7 @@ void main() {
       getRestoredDeletedMessageInteractor,
       removeComposerCacheOnWebInteractor,
       getAllIdentitiesInteractor,
+      composerManager,
     );
   });
 
