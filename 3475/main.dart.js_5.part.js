@@ -178,6 +178,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     NavigationBarWidget_build_closure: function NavigationBarWidget_build_closure(t0) {
       this.$this = t0;
     },
+    NavigationBarWidget_build__closure: function NavigationBarWidget_build__closure(t0) {
+      this.$this = t0;
+    },
+    NavigationBarWidget_build_closure0: function NavigationBarWidget_build_closure0(t0) {
+      this.$this = t0;
+    },
     VacationNotificationMessageWidget$(actionEndNow, actionGotoVacationSetting, fromAccountDashBoard, leadingIcon, margin, padding, vacationResponse) {
       return new C.VacationNotificationMessageWidget(vacationResponse, actionEndNow, actionGotoVacationSetting, margin, padding, leadingIcon, fromAccountDashBoard, null);
     },
@@ -529,6 +535,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(A.Expanded$(new A.LayoutBuilder(new C.NavigationBarWidget_build_closure(_this), _null), 1));
       else {
         t1 = A._setArrayType([B.Spacer_null], t1);
+        if (_this.contactSupportCapability != null) {
+          A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+          t1.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build_closure0(_this), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null)));
+        }
         if (C.AppConfig_appGridDashboardAvailable() && _this.appGridController != null) {
           t3 = _this.appGridController;
           t3.toString;
@@ -731,7 +741,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A.Bidi_isRtlLanguage(t3.dependOnInheritedWidgetOfExactType$1$0(t4).localizationsState._localizations$_locale.get$languageCode(0)) ? B.Alignment_m1_1 : B.Alignment_1_1;
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(new A.Aligned(_null, _null, t5, t3, B.Alignment_0_0, B.C_AxisFlag, B.C_AxisFlag, B.Offset_0_0, _null), A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t1.onShowAppDashboardAction, B.EdgeInsets_6_6_6_6, _null), new A.Obx(new C.AppGridDashboardIcon_build__closure(t1), _null), isAppGridOpen), t2, isAppGridOpen);
     },
-    $signature: 375
+    $signature: 376
   };
   C.AppGridDashboardIcon_build__closure.prototype = {
     call$0() {
@@ -755,7 +765,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null;
       return A.Container$(_null, _null, B.Clip_0, B.Color_4285887861, _null, _null, _null, 42, _null, _null, _null, _null, _null, 42);
     },
-    $signature: 416
+    $signature: 430
   };
   C.AppDashboardOverlay_build_closure0.prototype = {
     call$0() {
@@ -777,9 +787,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.NavigationBarWidget_build_closure.prototype = {
     call$2(context, constraint) {
-      var t3, _null = null,
+      var _null = null,
         t1 = this.$this,
-        t2 = A._setArrayType([new A.SizedBox(constraint.maxWidth / 2, 52, t1.searchForm, _null), B.Spacer_null], type$.JSArray_Widget);
+        t2 = A._setArrayType([new A.SizedBox(constraint.maxWidth / 2, 52, t1.searchForm, _null), B.Spacer_null], type$.JSArray_Widget),
+        t3 = t1.contactSupportCapability;
+      if ((t3 == null ? _null : t3.get$isAvailable()) === true) {
+        A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+        t2.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build__closure(t1), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null)));
+      }
       if (C.AppConfig_appGridDashboardAvailable() && t1.appGridController != null) {
         t3 = t1.appGridController;
         t3.toString;
@@ -796,7 +811,37 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.push(t3.build$0());
       return A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 374
+    $signature: 375
+  };
+  C.NavigationBarWidget_build__closure.prototype = {
+    call$0() {
+      var t1 = this.$this,
+        t2 = t1.onTapContactSupportAction;
+      if (t2 == null)
+        t1 = null;
+      else {
+        t1 = t1.contactSupportCapability;
+        t1.toString;
+        t1 = t2.call$1(t1);
+      }
+      return t1;
+    },
+    $signature: 0
+  };
+  C.NavigationBarWidget_build_closure0.prototype = {
+    call$0() {
+      var t1 = this.$this,
+        t2 = t1.onTapContactSupportAction;
+      if (t2 == null)
+        t1 = null;
+      else {
+        t1 = t1.contactSupportCapability;
+        t1.toString;
+        t1 = t2.call$1(t1);
+      }
+      return t1;
+    },
+    $signature: 0
   };
   C.DefaultLinkDelegate_build_closure.prototype = {
     call$0() {
@@ -822,7 +867,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(C.PortalTheater, A.SingleChildRenderObjectWidget);
     _inherit(C.RenderPortalTheater, A.RenderProxyBox);
     _inheritMany(A.Closure2Args, [C.LinkBrowserWidget_build_closure, C.NavigationBarWidget_build_closure]);
-    _inheritMany(A.Closure0Args, [C.AppGridDashboardIcon_build_closure, C.AppGridDashboardIcon_build__closure, C.AppGridDashboardItem_build_closure0, C.AppDashboardOverlay_build_closure0, C.DefaultLinkDelegate_build_closure]);
+    _inheritMany(A.Closure0Args, [C.AppGridDashboardIcon_build_closure, C.AppGridDashboardIcon_build__closure, C.AppGridDashboardItem_build_closure0, C.AppDashboardOverlay_build_closure0, C.NavigationBarWidget_build__closure, C.NavigationBarWidget_build_closure0, C.DefaultLinkDelegate_build_closure]);
     _inheritMany(A.Closure, [C.AppGridDashboardItem_build_closure, C.AppDashboardOverlay_build_closure]);
   })();
   A._Universe_addRules(init.typeUniverse, JSON.parse('{"_ElevatedButtonWithIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ElevatedButtonWithIconChild":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"LinkBrowserWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppGridDashboardIcon":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppGridDashboardItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppDashboardOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"NavigationBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DefaultLinkDelegate":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Link":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[],"LinkInfo":[]}}'));
@@ -888,5 +933,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "zQ0SapCJwYQNYSou7MCE/LDBj9M=");
+})($__dart_deferred_initializers__, "9mH4bBLEqFX1JM6rY48Gi9XV94I=");
 ;
