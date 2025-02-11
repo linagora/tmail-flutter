@@ -27,7 +27,12 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/toolbar
 
 class ComposerView extends GetWidget<ComposerController> {
 
-  const ComposerView({Key? key}) : super(key: key);
+  final String? composerId;
+
+  const ComposerView({super.key, this.composerId});
+
+  @override
+  ComposerController get controller => Get.find<ComposerController>(tag: composerId);
 
   @override
   Widget build(BuildContext context) {
