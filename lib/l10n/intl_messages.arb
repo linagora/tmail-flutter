@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-01-28T10:49:54.473622",
+  "@@last_modified": "2025-02-13T17:07:01.807952",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -732,6 +732,18 @@
     ],
     "placeholders": {
       "nameMailbox": {}
+    }
+  },
+  "message_confirmation_dialog_allow_subaddressing_mobile": "You are about to allow anyone to send emails directly to your folder \"{nameMailbox}\" using the address <{address}>",
+  "@message_confirmation_dialog_allow_subaddressing_mobile": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox",
+      "address"
+    ],
+    "placeholders": {
+      "nameMailbox": {},
+      "address": {}
     }
   },
   "renameFolder": "Rename folder",
@@ -4226,6 +4238,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "Your session expired. We need to take you back to the login page in order to refresh it. You might want to save the email you are currently editing before we do so.",
+  "@messageWarningDialogWhenExpiredOIDCTokenAndReconnection": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "replyToList": "Reply to list",
   "@replyToList": {
     "type": "text",
@@ -4258,8 +4276,6 @@
   },
   "editAsNewEmail": "Edit as new email",
   "@editAsNewEmail": {
-  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "Your session expired. We need to take you back to the login page in order to refresh it. You might want to save the email you are currently editing before we do so.",
-  "@messageWarningDialogWhenExpiredOIDCTokenAndReconnection": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
