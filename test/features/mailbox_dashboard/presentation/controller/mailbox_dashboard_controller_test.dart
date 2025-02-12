@@ -179,7 +179,7 @@ const fallbackGenerators = {
   MockSpec<TwakeAppManager>(),
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<GetIdentityCacheOnWebInteractor>(),
-  MockSpec<ComposerManager>(),
+  MockSpec<ComposerManager>(fallbackGenerators: fallbackGenerators),
 ])
 void main() {
   // mock mailbox dashboard controller direct dependencies
