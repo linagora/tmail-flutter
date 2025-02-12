@@ -181,7 +181,7 @@ const fallbackGenerators = {
   MockSpec<ToastManager>(),
   MockSpec<TwakeAppManager>(),
   MockSpec<GetIdentityCacheOnWebInteractor>(),
-  MockSpec<ComposerManager>(),
+  MockSpec<ComposerManager>(fallbackGenerators: fallbackGenerators),
 ])
 void main() {
   final moveToMailboxInteractor = MockMoveToMailboxInteractor();
@@ -404,6 +404,7 @@ void main() {
         when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
         when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
         when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
+        when(composerManager.composers).thenReturn(RxMap({}));
 
         final widget = makeTestableWidget(child: MailboxDashBoardView());
         await tester.pumpWidget(widget);
@@ -485,6 +486,7 @@ void main() {
         when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
         when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
         when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
+        when(composerManager.composers).thenReturn(RxMap({}));
 
         final widget = makeTestableWidget(child: MailboxDashBoardView());
         await tester.pumpWidget(widget);
@@ -550,6 +552,7 @@ void main() {
         when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
         when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
         when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
+        when(composerManager.composers).thenReturn(RxMap({}));
 
         final widget = makeTestableWidget(child: MailboxDashBoardView());
         await tester.pumpWidget(widget);
@@ -613,6 +616,7 @@ void main() {
         when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
         when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
         when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
+        when(composerManager.composers).thenReturn(RxMap({}));
 
         final widget = makeTestableWidget(child: MailboxDashBoardView());
         await tester.pumpWidget(widget);
@@ -671,6 +675,7 @@ void main() {
         when(mailboxDashboardController.spamReportController.spamReportState).thenReturn(Rx(SpamReportState.disabled));
         when(mailboxDashboardController.spamReportController.presentationSpamMailbox).thenReturn(Rxn(null));
         when(mailboxDashboardController.downloadController.listDownloadTaskState).thenReturn(RxList([]));
+        when(composerManager.composers).thenReturn(RxMap({}));
 
         final widget = makeTestableWidget(child: MailboxDashBoardView());
         await tester.pumpWidget(widget);
