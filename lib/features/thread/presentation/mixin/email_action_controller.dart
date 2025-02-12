@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_reques
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -39,11 +40,11 @@ mixin EmailActionController {
   final imagePaths = Get.find<ImagePaths>();
 
   void editDraftEmail(PresentationEmail presentationEmail) {
-    mailboxDashBoardController.goToComposer(ComposerArguments.editDraftEmail(presentationEmail));
+    mailboxDashBoardController.openComposer(ComposerArguments.editDraftEmail(presentationEmail));
   }
 
   void editAsNewEmail(PresentationEmail presentationEmail) {
-    mailboxDashBoardController.goToComposer(
+    mailboxDashBoardController.openComposer(
       ComposerArguments.editAsNewEmail(presentationEmail),
     );
   }

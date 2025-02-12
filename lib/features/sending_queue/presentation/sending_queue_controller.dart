@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/email/domain/state/delete_sending_email_s
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/sending_state.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/extensions/list_sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/extensions/sending_email_extension.dart';
@@ -230,7 +231,7 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
 
   void _editSendingEmailAction(SendingEmail sendingEmail) {
     disableSelectionMode();
-    dashboardController.goToComposer(ComposerArguments.fromSendingEmail(sendingEmail));
+    dashboardController.openComposer(ComposerArguments.fromSendingEmail(sendingEmail));
   }
 
   void _resendSendingEmailAction(List<SendingEmail> listSendingEmails) async {

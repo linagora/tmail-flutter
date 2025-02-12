@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart'
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filter_email_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
@@ -295,7 +296,7 @@ class ThreadView extends GetWidget<ThreadController>
             : EdgeInsets.zero,
           child: ComposeFloatingButton(
             scrollController: controller.listEmailController,
-            onTap: () => controller.mailboxDashBoardController.goToComposer(ComposerArguments())
+            onTap: () => controller.mailboxDashBoardController.openComposer(ComposerArguments())
           ),
         );
       } else {

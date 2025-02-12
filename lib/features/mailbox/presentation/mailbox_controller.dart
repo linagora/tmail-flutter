@@ -84,6 +84,7 @@ import 'package:tmail_ui_user/features/mailbox_creator/presentation/model/new_ma
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_message.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/websocket/web_socket_queue_handler.dart';
@@ -697,7 +698,7 @@ class MailboxController extends BaseMailboxController
     }
 
     if (_navigationRouter?.routeName == AppRoutes.mailtoURL) {
-      mailboxDashBoardController.goToComposer(
+      mailboxDashBoardController.openComposer(
         ComposerArguments.fromMailtoUri(
           listEmailAddress: _navigationRouter?.listEmailAddress,
           cc: _navigationRouter?.cc,
