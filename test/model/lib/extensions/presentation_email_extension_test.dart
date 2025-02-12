@@ -62,7 +62,7 @@ void main() {
 
     group('GIVEN user B is the sender, SENDER configured the replyTo email AND send an email to user A and user E, cc to user C, bcc to user D', () {
       test('THEN user A click reply, generateRecipientsEmailAddressForComposer SHOULD return only replyToEmailAddress email to reply' , () {
-        final expectedResult = Tuple3([userBEmailAddress], <EmailAddress>[], <EmailAddress>[]);
+        final expectedResult = Tuple3([replyToEmailAddress], <EmailAddress>[], <EmailAddress>[]);
 
         final emailToReply = PresentationEmail(
           from: {userBEmailAddress},
