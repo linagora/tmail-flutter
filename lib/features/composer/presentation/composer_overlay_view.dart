@@ -18,7 +18,7 @@ class _ComposerOverlayViewState extends State<ComposerOverlayView> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      if (!_composerManager.hasComposer) return const SizedBox.shrink();
+      if (_composerManager.composers.isEmpty) return const SizedBox.shrink();
 
       return ComposerView(composerId: _composerManager.singleComposerId);
     });
