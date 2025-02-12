@@ -7,6 +7,7 @@ import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/extensions/list_sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_controller.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/widgets/app_bar_sending_queue_widget.dart';
@@ -98,14 +99,14 @@ class SendingQueueView extends GetWidget<SendingQueueController> with AppLoaderM
       if (controller.isAllUnSelected) {
         return ComposeFloatingButton(
           scrollController: controller.listSendingEmailController,
-          onTap: () => controller.dashboardController.goToComposer(ComposerArguments())
+          onTap: () => controller.dashboardController.openComposer(ComposerArguments())
         );
       } else {
         return Container(
           padding: const EdgeInsets.only(bottom: 70),
           child: ComposeFloatingButton(
             scrollController: controller.listSendingEmailController,
-            onTap: () => controller.dashboardController.goToComposer(ComposerArguments())
+            onTap: () => controller.dashboardController.openComposer(ComposerArguments())
           ),
         );
       }
