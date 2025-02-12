@@ -86,6 +86,7 @@ import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -1563,17 +1564,11 @@ class ComposerController extends BaseController
   }
 
   void _closeComposerAction({dynamic result, bool closeOverlays = false}) {
-    if (PlatformInfo.isWeb) {
-      if (closeOverlays) {
-        popBack();
-      }
-      mailboxDashBoardController.closeComposerOnWeb(
-        composerId: composerId,
-        result: result,
-      );
-    } else {
-      popBack(result: result, closeOverlays: closeOverlays);
-    }
+    mailboxDashBoardController.closeComposer(
+      result: result,
+      closeOverlays: closeOverlays,
+      composerId: composerId,
+    );
   }
 
   void displayScreenTypeComposerAction(ScreenDisplayMode displayMode) async {
