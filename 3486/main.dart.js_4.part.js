@@ -14218,7 +14218,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   C._ComposerOverlayViewState_build_closure.prototype = {
     call$0() {
       var t1 = this.$this._composer_overlay_view$_composerManager.composers;
-      if (!J.get$isNotEmpty$asx(t1.get$keys(0)))
+      if (J.get$isEmpty$asx(t1.get$keys(0)))
         return B.SizedBox_0_0_null_null;
       return new C.ComposerView(J.get$first$ax(J.toList$0$ax(J.get$keys$x(t1.get$value(0)))), null);
     },
@@ -22662,5 +22662,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "BaL8EYFBmZlzM3dcTItUcHUqcMQ=");
+})($__dart_deferred_initializers__, "N2aXJgtRxroGvjUNc0lPz+d49rM=");
 ;
