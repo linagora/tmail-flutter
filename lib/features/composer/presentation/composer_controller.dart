@@ -869,6 +869,7 @@ class ComposerController extends BaseController
     listToEmailAddress = List.from(recipients.value1);
     listCcEmailAddress = List.from(recipients.value2);
     listBccEmailAddress = List.from(recipients.value3);
+    listReplyToEmailAddress = List.from(recipients.value4);
 
     if (listToEmailAddress.isNotEmpty || listCcEmailAddress.isNotEmpty || listBccEmailAddress.isNotEmpty || listReplyToEmailAddress.isNotEmpty) {
       isInitialRecipient.value = true;
