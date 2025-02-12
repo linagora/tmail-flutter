@@ -6,6 +6,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
@@ -32,6 +33,7 @@ import 'package:tmail_ui_user/features/push_notification/presentation/controller
 import 'package:tmail_ui_user/features/push_notification/presentation/extensions/state_change_extension.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/email_change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/mailbox_change_listener.dart';
+import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/utils/fcm_utils.dart';
 import 'package:tmail_ui_user/main/bindings/main_bindings.dart';
@@ -47,6 +49,7 @@ class FcmMessageController extends PushBaseController {
   TokenOidcCacheManager? _tokenOidcCacheManager;
   StateCacheManager? _stateCacheManager;
   AuthenticationInfoCacheManager? _authenticationInfoCacheManager;
+  AppLifecycleListener? _appLifecycleListener;
 
   FcmMessageController._internal();
 
@@ -60,6 +63,24 @@ class FcmMessageController extends PushBaseController {
 
     _listenTokenStream();
     _listenBackgroundMessageStream();
+    LocalNotificationManager.instance.clearAllNotifications();
+    _listenAppLifecycle();
+  }
+  
+  @override
+  void onClose() {
+    _appLifecycleListener?.dispose();
+    super.onClose();
+  }
+
+  void _listenAppLifecycle() {
+    _appLifecycleListener = AppLifecycleListener(
+      onStateChange: (appLifecycleState) {
+        if (appLifecycleState == AppLifecycleState.resumed) {
+          LocalNotificationManager.instance.clearAllNotifications();
+        }
+      },
+    );
   }
 
   void _listenBackgroundMessageStream() {
