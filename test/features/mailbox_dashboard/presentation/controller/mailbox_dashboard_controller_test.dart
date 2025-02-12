@@ -353,7 +353,6 @@ void main() {
       getRestoredDeletedMessageInteractor,
       removeComposerCacheOnWebInteractor,
       getAllIdentitiesInteractor,
-      composerManager,
     );
   });
 
