@@ -1,11 +1,16 @@
+import 'dart:collection';
+
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
-import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
+import 'package:tmail_ui_user/features/composer/presentation/utils/composer_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 
 class ComposerManager extends GetxController {
-  final RxMap<String, ComposerController> composers = <String, ComposerController>{}.obs;
+  final RxMap<String, ComposerView> composers = <String, ComposerView>{}.obs;
+  final Queue<String> composerIdsQueue = Queue<String>();
 
   void addComposer(ComposerArguments composerArguments) {
     final String id = DateTime.now().millisecondsSinceEpoch.toString();
@@ -14,22 +19,36 @@ class ComposerManager extends GetxController {
       composerId: id,
       composerArguments: composerArguments,
     ).dependencies();
-    composers[id] = Get.find<ComposerController>(tag: id);
+    composerIdsQueue.add(id);
+    composers[id] = ComposerView(
+      key: Key(id),
+      composerId: id,
+    );
     log('ComposerManager::addComposer:Success');
   }
 
   void removeComposer(String id) {
     log('ComposerManager::removeComposer:ID = $id');
     if (composers.containsKey(id)) {
-      ComposerBindings(composerId: id).dispose();
+      composerIdsQueue.remove(id);
       composers.remove(id);
+      ComposerBindings(composerId: id).dispose();
       log('ComposerManager::removeComposer:Success');
     }
   }
 
-  bool get hasComposer => composers.isNotEmpty;
+  ({
+    String? previousTargetId,
+    String? targetId,
+    String? nextTargetId,
+  }) findSurroundingComposerIds(String targetId) =>
+      ComposerUtils.findSurroundingElements(composerIdsQueue, targetId);
 
-  List<String> get composerIds => composers.keys.toList();
+  bool get hasComposer => composerIdsQueue.isNotEmpty;
 
-  String get singleComposerId => composerIds.first;
+  List<String> get composerIds => composerIdsQueue.toList();
+
+  String get singleComposerId => composerIdsQueue.first;
+
+  ComposerView getComposerView(String id) => composers[id]!;
 }

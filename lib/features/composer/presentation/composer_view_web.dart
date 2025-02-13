@@ -634,6 +634,7 @@ class ComposerView extends GetWidget<ComposerController> {
             ]),
           );
         },
+        responsiveUtils: controller.responsiveUtils,
         displayMode: controller.screenDisplayMode.value,
         emailSubject: controller.subjectEmail.value ?? '',
         onCloseViewAction: () => controller.handleClickCloseComposer(context),
