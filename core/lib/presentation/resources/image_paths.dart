@@ -227,6 +227,8 @@ class ImagePaths {
   String get icSubaddressingDisallow => _getImagePath('ic_subaddressing_disallow.svg');
   String get icMarkAsImportant => _getImagePath('ic_mark_as_important.svg');
   String get icCloseDialog => _getImagePath('ic_close_dialog.svg');
+  String get icDoubleArrowUp => _getImagePath('ic_double_arrow_up.svg');
+  String get icDoubleArrowDown => _getImagePath('ic_double_arrow_down.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
