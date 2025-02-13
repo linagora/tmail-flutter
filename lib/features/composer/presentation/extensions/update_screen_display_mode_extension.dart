@@ -47,10 +47,7 @@ extension UpdateScreenDisplayModeExtension on ComposerController {
     final composerManager = mailboxDashBoardController.composerManager;
     final screenWidth = responsiveUtils.getSizeScreenWidth(currentContext!);
 
-    if (!composerManager.isExceedsScreenSize(
-        screenWidth: screenWidth,
-        composerIdsQueue: composerManager.composerIdsQueue,
-    )) {
+    if (!composerManager.isExceedsScreenSize(screenWidth: screenWidth)) {
       return;
     }
 
