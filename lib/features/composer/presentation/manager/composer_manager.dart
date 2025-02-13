@@ -70,10 +70,7 @@ class ComposerManager extends GetxController {
       .firstWhereOrNull((id) => getComposerView(id).controller.isNormalScreen);
   }
 
-  bool isExceedsScreenSize({
-    required Queue<String> composerIdsQueue,
-    required double screenWidth,
-  }) {
+  bool isExceedsScreenSize({required double screenWidth}) {
     final availableWidth = screenWidth
       - ComposerUtils.composerExpandMoreButtonMaxWidth
       - ComposerUtils.horizontalPadding * 2;
@@ -141,6 +138,31 @@ class ComposerManager extends GetxController {
 
   ComposerView? get firstFullScreenComposerView => composers.values
     .firstWhereOrNull((composerView) => composerView.controller.isFullScreen);
+
+  ComposerView? get firstComposerViewWhenResponsiveChanged {
+    final conditionsMap = {
+      ScreenDisplayMode.fullScreen: composers.values.where((view) => view.controller.isFullScreen).toList(),
+      ScreenDisplayMode.normal: composers.values.where((view) => view.controller.isNormalScreen).toList(),
+      ScreenDisplayMode.minimize: composers.values.where((view) => view.controller.isMinimizeScreen).toList(),
+      ScreenDisplayMode.hidden: composers.values.where((view) => view.controller.isHiddenScreen).toList(),
+    };
+
+    if (conditionsMap[ScreenDisplayMode.fullScreen]!.isNotEmpty) {
+      return conditionsMap[ScreenDisplayMode.fullScreen]!.first;
+    }
+
+    if (conditionsMap[ScreenDisplayMode.normal]!.isNotEmpty) {
+      return conditionsMap[ScreenDisplayMode.normal]!.first;
+    }
+
+    if (conditionsMap[ScreenDisplayMode.minimize]!.isNotEmpty) {
+      return conditionsMap[ScreenDisplayMode.minimize]!.first;
+    }
+
+    return conditionsMap[ScreenDisplayMode.hidden]!.isNotEmpty
+      ? conditionsMap[ScreenDisplayMode.hidden]!.first
+      : null;
+  }
 
   ComposerView getComposerView(String id) => composers[id]!;
 

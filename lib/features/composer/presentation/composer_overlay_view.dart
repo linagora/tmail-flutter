@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/update_screen_display_mode_extension.dart';
@@ -16,12 +17,14 @@ class ComposerOverlayView extends StatefulWidget {
 class _ComposerOverlayViewState extends State<ComposerOverlayView> {
   late final ComposerManager _composerManager;
   late final ImagePaths _imagePaths;
+  late final ResponsiveUtils _responsiveUtils;
 
   @override
   void initState() {
     super.initState();
     _composerManager = Get.find<ComposerManager>();
     _imagePaths = Get.find<ImagePaths>();
+    _responsiveUtils = Get.find<ResponsiveUtils>();
   }
 
   @override
@@ -31,11 +34,24 @@ class _ComposerOverlayViewState extends State<ComposerOverlayView> {
       final composerIdsQueue = _composerManager.composerIdsQueue;
       if (composers.isEmpty || composerIdsQueue.isEmpty) return const SizedBox.shrink();
 
+      if (!_responsiveUtils.isDesktop(context)) {
+        final firstResponsiveComposerView = _composerManager.firstComposerViewWhenResponsiveChanged;
+        if (firstResponsiveComposerView != null) return firstResponsiveComposerView;
+      }
+
       final fullScreenComposerView = _composerManager.firstFullScreenComposerView;
       if (fullScreenComposerView != null) return fullScreenComposerView;
 
       if (composerIdsQueue.length == 1) {
         return _composerManager.getComposerView(composerIdsQueue.first);
+      }
+
+      final isExceedsScreenSize = _composerManager.isExceedsScreenSize(
+        screenWidth: context.width,
+      );
+
+      if (isExceedsScreenSize) {
+        _composerManager.syncComposerQueue(screenWidth: context.width);
       }
 
       final countComposerHidden = _composerManager.countComposerHidden;
