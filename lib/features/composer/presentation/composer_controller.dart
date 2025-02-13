@@ -262,7 +262,6 @@ class ComposerController extends BaseController
     if (PlatformInfo.isWeb) {
       responsiveContainerKey = GlobalKey();
       richTextWebController = getBinding<RichTextWebController>(tag: composerId);
-      responsiveContainerKey = GlobalKey();
       menuMoreOptionController = CustomPopupMenuController();
     } else {
       richTextMobileTabletController = getBinding<RichTextMobileTabletController>(tag: composerId);
@@ -310,7 +309,6 @@ class ComposerController extends BaseController
       richTextMobileTabletController = null;
     }
     _identityContentOnOpenPolicy = SignatureStatus.editedAvailable;
-    responsiveContainerKey = null;
     super.onClose();
   }
 
