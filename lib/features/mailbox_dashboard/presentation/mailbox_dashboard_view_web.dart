@@ -8,7 +8,7 @@ import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
-import 'package:tmail_ui_user/features/composer/presentation/composer_overlay_view.dart';
+import 'package:tmail_ui_user/features/composer/presentation/view/web/composer_overlay_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
