@@ -353,7 +353,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
       A._instanceType(_this)._eval$1("GetWidget.S")._as(t3._jsWeakMap.get(_this)).toString;
-      return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([new A.ConstrainedBox(D.BoxConstraints_oA88, t1, _null), A.Positioned$fill(24, new A.Align(C.Alignment_0_1, _null, _null, A.SvgPicture$asset("assets/images/power_by_linagora.svg", C.Alignment_0_0, _null, C.BoxFit_0, 44, _null, _null, 97), _null))], t2), _null);
+      return new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([new A.ConstrainedBox(D.BoxConstraints_oA87, t1, _null), A.Positioned$fill(24, new A.Align(C.Alignment_0_1, _null, _null, A.SvgPicture$asset("assets/images/power_by_linagora.svg", C.Alignment_0_0, _null, C.BoxFit_0, 44, _null, _null, 97), _null))], t2), _null);
     },
     _buildWebForm$1(context) {
       var t2, t3, t4, t5, t6, t7, t8, t9, _this = this, _null = null,
@@ -491,31 +491,31 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1811
+    $signature: 1813
   };
   B.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1812
+    $signature: 1814
   };
   B.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1813
+    $signature: 1815
   };
   B.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1814
+    $signature: 1816
   };
   B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure.prototype = {
     call$1(entry) {
       return entry.node === this.node;
     },
-    $signature: 531
+    $signature: 529
   };
   B.BaseLoginView_buildLoginButton_closure.prototype = {
     call$0() {
@@ -647,7 +647,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return C.SizedBox_0_0_null_null;
       }
     },
-    $signature: 97
+    $signature: 103
   };
   B.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -666,7 +666,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 53
+    $signature: 51
   };
   B.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -698,7 +698,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return A.Intl__message(_s40_, _null, _s12_, _null, _null);
       }
     },
-    $signature: 1815
+    $signature: 1817
   };
   B.LoginMessageWidget_build_closure0.prototype = {
     call$1(success) {
@@ -719,19 +719,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return "";
     },
-    $signature: 1816
+    $signature: 1818
   };
   B.LoginMessageWidget_build_closure1.prototype = {
     call$1(failure) {
       return C.Color_4293281350;
     },
-    $signature: 1817
+    $signature: 1819
   };
   B.LoginMessageWidget_build_closure2.prototype = {
     call$1(success) {
       return C.Color_4278190080;
     },
-    $signature: 1818
+    $signature: 1820
   };
   B._LoginTextInputBuilderState_build_closure.prototype = {
     call$0() {
@@ -797,7 +797,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   (function constants() {
     var makeConstList = hunkHelpers.makeConstList;
     D.AutofillContextAction_0 = new B.AutofillContextAction(0, "commit");
-    D.BoxConstraints_oA88 = new A.BoxConstraints(200, 720, 720, 1 / 0);
+    D.BoxConstraints_oA87 = new A.BoxConstraints(200, 720, 720, 1 / 0);
     D.EdgeInsetsDirectional_24_0_24_16 = new A.EdgeInsetsDirectional(24, 0, 24, 16);
     D.EdgeInsetsDirectional_25_15_25_15 = new A.EdgeInsetsDirectional(25, 15, 25, 15);
     D.EdgeInsetsDirectional_25_15_40_15 = new A.EdgeInsetsDirectional(25, 15, 40, 15);
@@ -840,5 +840,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "jQWxzTwNlarZ6eOegd8oNvp+Yl8=");
+})($__dart_deferred_initializers__, "ExBoRmXLGrlsMg6HTHRR6R+maSw=");
 ;
