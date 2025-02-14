@@ -2962,12 +2962,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "errorWhileFetchingSubaddress": "Error while fetching the subaddress",
-  "@errorWhileFetchingSubaddress": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "connectedToTheInternet": "Connected to the internet",
   "@connectedToTheInternet": {
     "type": "text",
@@ -4244,6 +4238,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "Your session expired. We need to take you back to the login page in order to refresh it. You might want to save the email you are currently editing before we do so.",
+  "@messageWarningDialogWhenExpiredOIDCTokenAndReconnection": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "replyToList": "Reply to list",
   "@replyToList": {
     "type": "text",
@@ -4360,6 +4360,12 @@
   },
   "senderImportantSettingToggleDescription": "Display sender-set important flag",
   "@senderImportantSettingToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hideAll": "Hide all",
+  "@hideAll": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

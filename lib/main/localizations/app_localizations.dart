@@ -4583,4 +4583,11 @@ class AppLocalizations {
     name: 'senderImportantSettingToggleDescription',
     );
   }
+
+  String get hideAll {
+    return Intl.message(
+      'Hide all',
+      name: 'hideAll',
+    );
+  }
 }
