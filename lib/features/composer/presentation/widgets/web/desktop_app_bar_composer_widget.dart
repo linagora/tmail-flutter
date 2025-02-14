@@ -50,7 +50,9 @@ class DesktopAppBarComposerWidget extends StatelessWidget {
                       ? imagePaths.icFullScreenExit
                       : imagePaths.icFullScreen,
                     backgroundColor: Colors.transparent,
-                    tooltipMessage: AppLocalizations.of(context).fullscreen,
+                    tooltipMessage: displayMode == ScreenDisplayMode.fullScreen
+                      ? AppLocalizations.of(context).exitFullscreen
+                      : AppLocalizations.of(context).fullscreen,
                     iconSize: AppBarComposerWidgetStyle.iconSize,
                     iconColor: AppBarComposerWidgetStyle.iconColor,
                     padding: AppBarComposerWidgetStyle.iconPadding,

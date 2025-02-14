@@ -33,7 +33,7 @@ class HiddenComposerListViewOverlay extends StatelessWidget {
     final hiddenComposerIds = composerManager.hiddenComposerIds;
     final maxHeight = responsiveUtils.getSizeScreenHeight(context)
       - ComposerUtils.composerExpandMoreButtonMaxHeight
-      - ComposerUtils.padding;
+      - ComposerUtils.padding * 2;
 
     return Container(
       constraints: BoxConstraints(maxHeight: maxHeight),
@@ -41,6 +41,7 @@ class HiddenComposerListViewOverlay extends StatelessWidget {
       child: ListView.builder(
         itemCount: hiddenComposerIds.length,
         shrinkWrap: true,
+        padding: const EdgeInsetsDirectional.only(end: 16),
         itemBuilder: (context, index) {
           final composerId = hiddenComposerIds[index];
           final controller = composerManager.getComposerView(composerId).controller;

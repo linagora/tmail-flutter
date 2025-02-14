@@ -4369,5 +4369,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "exitFullscreen": "Exit fullscreen",
+  "@exitFullscreen": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
