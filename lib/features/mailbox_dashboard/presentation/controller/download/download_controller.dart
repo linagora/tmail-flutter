@@ -9,12 +9,14 @@ typedef UpdateDownloadTaskStateCallback = DownloadTaskState Function(DownloadTas
 class DownloadController extends GetxController {
 
   final listDownloadTaskState = RxList<DownloadTaskState>();
+  final hideDownloadTaskbar = RxBool(false);
 
   bool get notEmptyListDownloadTask => listDownloadTaskState.isNotEmpty;
 
   void addDownloadTask(DownloadTaskState task) {
     log('DownloadController::addDownloadTask(): ${task.taskId}');
     listDownloadTaskState.add(task);
+    hideDownloadTaskbar.value = false;
   }
 
   void updateDownloadTaskByTaskId(
@@ -36,6 +38,9 @@ class DownloadController extends GetxController {
     if (matchIndex >= 0) {
       listDownloadTaskState.removeAt(matchIndex);
       listDownloadTaskState.refresh();
+    }
+    if (listDownloadTaskState.isEmpty) {
+      hideDownloadTaskbar.value = true;
     }
   }
 }
