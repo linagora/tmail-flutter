@@ -121,4 +121,24 @@ class IdentityInteractorsBindings extends InteractorsBindings {
       tag: composerId,
     );
   }
+
+  void dispose() {
+    Get.delete<IdentityUtils>(tag: composerId);
+    Get.delete<IdentityDataSourceImpl>(tag: composerId);
+    Get.delete<LocalIdentityCreatorDataSourceImpl>(tag: composerId);
+    Get.delete<IdentityDataSource>(tag: composerId);
+    Get.delete<IdentityCreatorDataSource>(tag: composerId);
+    Get.delete<IdentityRepositoryImpl>(tag: composerId);
+    Get.delete<IdentityCreatorRepositoryImpl>(tag: composerId);
+    Get.delete<IdentityRepository>(tag: composerId);
+    Get.delete<IdentityCreatorRepository>(tag: composerId);
+    Get.delete<GetAllIdentitiesInteractor>(tag: composerId);
+    Get.delete<CreateNewIdentityInteractor>(tag: composerId);
+    Get.delete<CreateNewDefaultIdentityInteractor>(tag: composerId);
+    Get.delete<DeleteIdentityInteractor>(tag: composerId);
+    Get.delete<EditIdentityInteractor>(tag: composerId);
+    Get.delete<EditDefaultIdentityInteractor>(tag: composerId);
+    Get.delete<TransformHtmlSignatureInteractor>(tag: composerId);
+    Get.delete<SaveIdentityCacheOnWebInteractor>(tag: composerId);
+  }
 }
