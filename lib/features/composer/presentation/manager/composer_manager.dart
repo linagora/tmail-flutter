@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'package:collection/collection.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
@@ -73,23 +74,25 @@ class ComposerManager extends GetxController {
   bool isExceedsScreenSize({required double screenWidth}) {
     final availableWidth = screenWidth
       - ComposerUtils.composerExpandMoreButtonMaxWidth
-      - ComposerUtils.horizontalPadding * 2;
+      - ComposerUtils.padding * 2;
 
     double totalWidth = composerIdsQueue.fold<double>(
       0,
       (sum, id) => sum + getComposerView(id).controller.composerWidth,
     );
 
-    return totalWidth > availableWidth;
+    bool isExceedsScreenSize = totalWidth > availableWidth;
+    log('ComposerManager::isExceedsScreenSize:isExceedsScreenSize = $isExceedsScreenSize');
+    return isExceedsScreenSize;
   }
 
   void syncComposerQueue({required double screenWidth}) {
     if (composerIdsQueue.isEmpty) return;
-
+    log('ComposerManager::syncComposerQueue:screenWidth = $screenWidth');
     final availableWidth = screenWidth
         - ComposerUtils.composerExpandMoreButtonMaxWidth
-        - ComposerUtils.horizontalPadding * 2;
-
+        - ComposerUtils.padding * 2;
+    log('ComposerManager::syncComposerQueue:availableWidth = $availableWidth');
     double totalWidth = 0;
     final composerControllers = <String, ComposerController>{};
 
@@ -99,7 +102,7 @@ class ComposerManager extends GetxController {
       composerControllers[id] = controller;
       totalWidth += composerWidth;
     }
-
+    log('ComposerManager::syncComposerQueue:totalWidth = $totalWidth');
     for (var id in composerIdsQueue) {
       final controller = composerControllers[id]!;
 
@@ -113,6 +116,7 @@ class ComposerManager extends GetxController {
 
       if (totalWidth <= availableWidth) break;
     }
+    log('ComposerManager::syncComposerQueue:totalWidth_after = $totalWidth');
 
     for (var id in composerIdsQueue) {
       final controller = composerControllers[id]!;
@@ -126,8 +130,7 @@ class ComposerManager extends GetxController {
         totalWidth += (ComposerUtils.minimizeWidth - composerWidth);
       }
     }
-
-    composers.refresh();
+    log('ComposerManager::syncComposerQueue:totalWidth_finally = $totalWidth');
   }
 
   bool get hasComposer => composerIdsQueue.isNotEmpty;
@@ -162,6 +165,20 @@ class ComposerManager extends GetxController {
     return conditionsMap[ScreenDisplayMode.hidden]!.isNotEmpty
       ? conditionsMap[ScreenDisplayMode.hidden]!.first
       : null;
+  }
+
+  List<String> get hiddenComposerIds {
+    return composerIdsQueue
+      .where((id) => getComposerView(id).controller.isHiddenScreen)
+      .toList();
+  }
+
+  void showComposerIfHidden(String composerId) {
+    if (!composers.containsKey(composerId)) return;
+    composerIdsQueue.remove(composerId);
+    composerIdsQueue.add(composerId);
+    final composerView = getComposerView(composerId);
+    composerView.controller.setScreenDisplayMode(ScreenDisplayMode.normal);
   }
 
   ComposerView getComposerView(String id) => composers[id]!;

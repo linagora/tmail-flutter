@@ -4406,4 +4406,11 @@ class AppLocalizations {
       name: 'thisHtmlAttachmentCannotBePreviewed',
     );
   }
+
+  String get hideAll {
+    return Intl.message(
+      'Hide all',
+      name: 'hideAll',
+    );
+  }
 }

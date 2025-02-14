@@ -1,11 +1,11 @@
 
-import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/update_screen_display_mode_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
-import 'package:tmail_ui_user/features/composer/presentation/widgets/expand_composer_button.dart';
+import 'package:tmail_ui_user/features/composer/presentation/utils/composer_utils.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/web/expand_composer_button.dart';
 
 class ComposerOverlayView extends StatefulWidget {
   const ComposerOverlayView({super.key});
@@ -16,14 +16,12 @@ class ComposerOverlayView extends StatefulWidget {
 
 class _ComposerOverlayViewState extends State<ComposerOverlayView> {
   late final ComposerManager _composerManager;
-  late final ImagePaths _imagePaths;
   late final ResponsiveUtils _responsiveUtils;
 
   @override
   void initState() {
     super.initState();
     _composerManager = Get.find<ComposerManager>();
-    _imagePaths = Get.find<ImagePaths>();
     _responsiveUtils = Get.find<ResponsiveUtils>();
   }
 
@@ -63,16 +61,17 @@ class _ComposerOverlayViewState extends State<ComposerOverlayView> {
       return Align(
         alignment: AlignmentDirectional.bottomEnd,
         child: Padding(
-          padding: const EdgeInsetsDirectional.symmetric(horizontal: 24, vertical: 16),
+          padding: const EdgeInsetsDirectional.all(ComposerUtils.padding),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
             mainAxisSize: MainAxisSize.min,
             children: [
               if (countComposerHidden > 0)
                 ExpandComposerButton(
-                  imagePaths: _imagePaths,
                   countComposerHidden: countComposerHidden,
-                  onToggleDisplayComposerAction: () {},
+                  onRemoveHiddenComposerItem: (controller) =>
+                      controller.handleClickCloseComposer(context),
+                  onShowComposerAction: _composerManager.showComposerIfHidden,
                 ),
               ...visibleComposers,
             ],
