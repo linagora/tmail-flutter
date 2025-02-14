@@ -1,3 +1,4 @@
+import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/styles/circle_loading_widget_styles.dart';
 
@@ -6,37 +7,44 @@ class CircleLoadingWidget extends StatelessWidget {
   final double? size;
   final double? strokeWidth;
   final EdgeInsetsGeometry? padding;
+  final VoidCallback? onCancel;
 
   const CircleLoadingWidget({
     super.key,
     this.size,
     this.padding,
-    this.strokeWidth
+    this.strokeWidth,
+    this.onCancel,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (padding != null) {
-      return Padding(
-        padding: padding!,
-        child: SizedBox(
-          width: size ?? CircleLoadingWidgetStyles.size,
-          height: size ?? CircleLoadingWidgetStyles.size,
-          child: CircularProgressIndicator(
+    final loadingSize = size ?? CircleLoadingWidgetStyles.size;
+    final loadingStrokeWidth = strokeWidth ?? CircleLoadingWidgetStyles.width;
+
+    return Container(
+      padding: padding,
+      width: loadingSize,
+      height: loadingSize,
+      child: Stack(
+        alignment: AlignmentDirectional.center,
+        children: [
+          CircularProgressIndicator(
             color: CircleLoadingWidgetStyles.progressColor,
-            strokeWidth: strokeWidth ?? CircleLoadingWidgetStyles.width,
-          )
-        ),
-      );
-    } else {
-      return SizedBox(
-        width: size ?? CircleLoadingWidgetStyles.size,
-        height: size ?? CircleLoadingWidgetStyles.size,
-        child: CircularProgressIndicator(
-          color: CircleLoadingWidgetStyles.progressColor,
-          strokeWidth: strokeWidth ?? CircleLoadingWidgetStyles.width,
-        )
-      );
-    }
+            strokeWidth: loadingStrokeWidth,
+          ),
+          if (onCancel != null)
+            Center(
+              child: TMailButtonWidget.fromIcon(
+                icon: ImagePaths().icClose,
+                width: loadingSize - loadingStrokeWidth,
+                padding: const EdgeInsets.all(2),
+                onTapActionCallback: onCancel,
+                backgroundColor: Colors.transparent,
+              ),
+            ),
+        ],
+      )
+    );
   }
 }

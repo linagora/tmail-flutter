@@ -423,9 +423,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           (success) {
             if (success is StartDownloadAttachmentForWeb) {
               emailSupervisorController.mailboxDashBoardController.addDownloadTask(
-                  DownloadTaskState(
-                    taskId: success.taskId,
-                    attachment: success.attachment));
+                DownloadTaskState(
+                  taskId: success.taskId,
+                  attachment: success.attachment,
+                  onCancel: () => success.cancelToken?.cancel(),
+                ),
+              );
 
               if (currentOverlayContext != null && currentContext != null) {
                 appToast.showToastMessage(
@@ -877,12 +880,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         jmapUrl: dynamicUrlInterceptors.jmapUrl,
       );
       final generateTaskId = DownloadTaskId(uuid.v4());
+      final cancelToken = CancelToken();
       consumeState(_downloadAttachmentForWebInteractor.execute(
-          generateTaskId,
-          attachment,
-          accountId!,
-          baseDownloadUrl,
-          _downloadProgressStateController));
+        generateTaskId,
+        attachment,
+        accountId!,
+        baseDownloadUrl,
+        _downloadProgressStateController,
+        cancelToken: cancelToken,
+      ));
     } else {
       consumeState(Stream.value(
         Left(DownloadAttachmentForWebFailure(
