@@ -10,11 +10,20 @@ abstract class ComposerCacheRepository {
     required ComposerCache composerCache,
   });
 
-  Future<ComposerCache> getComposerCacheOnWeb(
+  Future<List<ComposerCache>> getComposerCacheOnWeb(
     AccountId accountId,
     UserName userName);
 
-  Future<void> removeComposerCacheOnWeb();
+  Future<void> removeAllComposerCacheOnWeb(
+    AccountId accountId,
+    UserName userName,
+  );
+
+  Future<void> removeComposerCacheByIdOnWeb(
+    AccountId accountId,
+    UserName userName,
+    String composerId,
+  );
 
   Future<String> restoreEmailInlineImages(
     String htmlContent,

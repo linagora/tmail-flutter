@@ -30,6 +30,20 @@ extension OpenAndCloseComposerExtension on MailboxDashBoardController {
     }
   }
 
+  void openListComposer(List<ComposerArguments> listArguments) {
+    final newListArguments = listArguments
+      .map((argument) => argument.withIdentity(
+        identities: List.from(listIdentities),
+        selectedIdentityId: argument.selectedIdentityId,
+      ))
+      .toList();
+
+    composerManager.addListComposer(newListArguments);
+    if (!twakeAppManager.hasComposer) {
+      twakeAppManager.setHasComposer(true);
+    }
+  }
+
   void _openComposerOnWeb(ComposerArguments composerArguments) {
     composerManager.addComposer(composerArguments);
     if (!twakeAppManager.hasComposer) {
@@ -99,7 +113,9 @@ extension OpenAndCloseComposerExtension on MailboxDashBoardController {
 
     _handleResultAfterCloseComposer(result);
 
-    await removeComposerCacheOnWeb();
+    if (composerId != null) {
+      await removeComposerCacheByIdOnWeb(composerId);
+    }
   }
 
   void _handleResultAfterCloseComposer(dynamic result) {

@@ -36,6 +36,8 @@ class CreateEmailRequest with EquatableMixin {
   final MessageIdsHeaderValue? references;
   final SendingEmail? emailSendingQueue;
   final ScreenDisplayMode displayMode;
+  final int? composerIndex;
+  final String? composerId;
 
   CreateEmailRequest({
     required this.session,
@@ -60,7 +62,9 @@ class CreateEmailRequest with EquatableMixin {
     this.messageId,
     this.references,
     this.emailSendingQueue,
-    this.displayMode = ScreenDisplayMode.normal
+    this.displayMode = ScreenDisplayMode.normal,
+    this.composerIndex,
+    this.composerId,
   });
 
   @override
@@ -88,5 +92,7 @@ class CreateEmailRequest with EquatableMixin {
     references,
     emailSendingQueue,
     displayMode,
+    composerIndex,
+    composerId,
   ];
 }

@@ -28,6 +28,27 @@ class ComposerManager extends GetxController {
     _syncQueueIfNeeded();
   }
 
+  void addListComposer(List<ComposerArguments> listArguments) {
+    for (var argument in listArguments) {
+      final composerId = argument.composerId;
+
+      if (composerId == null) continue;
+
+      ComposerBindings(
+        composerId: composerId,
+        composerArguments: argument,
+      ).dependencies();
+
+      composers[composerId] = ComposerView(
+        key: Key(composerId),
+        composerId: composerId,
+      );
+      composerIdsQueue.add(composerId);
+    }
+
+    _syncQueueIfNeeded();
+  }
+
   void removeComposer(String id) {
     if (!composers.containsKey(id)) return;
 
@@ -44,30 +65,6 @@ class ComposerManager extends GetxController {
         screenWidth: _responsiveUtils.getSizeScreenWidth(currentContext!),
       );
     }
-  }
-
-  ({
-    String? previousTargetId,
-    String? targetId,
-    String? nextTargetId,
-  }) findSurroundingComposerIds(String targetId) {
-    var ids = composerIdsQueue.toList(),
-        index = ids.indexOf(targetId);
-
-    return index == -1
-      ? (previousTargetId: null, targetId: null, nextTargetId: null)
-      : (
-          previousTargetId: index > 0 ? ids[index - 1] : null,
-          targetId: ids[index],
-          nextTargetId: index < ids.length - 1 ? ids[index + 1] : null
-        );
-  }
-
-  String? findFirstNormalComposerIdInQueue() {
-    return composerIdsQueue
-      .toList()
-      .reversed
-      .firstWhereOrNull((id) => getComposerView(id).controller.isNormalScreen);
   }
 
   (
@@ -260,6 +257,8 @@ class ComposerManager extends GetxController {
       .where((id) => getComposerView(id).controller.isNormalScreen)
       .toList();
   }
+
+  int getComposerIndex(String id) => composerIdsQueue.toList().indexOf(id);
 
   void showComposerIfHidden(String composerId) {
     if (!composers.containsKey(composerId)) return;
