@@ -111,6 +111,7 @@ import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.d
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
@@ -1268,7 +1269,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void composeEmailFromEmailAddress(EmailAddress emailAddress) {
     popBack();
-    mailboxDashBoardController.goToComposer(ComposerArguments.fromEmailAddress(emailAddress));
+    mailboxDashBoardController.openComposer(ComposerArguments.fromEmailAddress(emailAddress));
   }
 
   Future<void> openMailToLink(Uri? uri) async {
@@ -1278,7 +1279,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     log('SingleEmailController::openMailToLink(): ${uri.toString()}');
     if (!RouteUtils.canOpenComposerFromNavigationRouter(navigationRouter)) return;
 
-    mailboxDashBoardController.goToComposer(
+    mailboxDashBoardController.openComposer(
       ComposerArguments.fromMailtoUri(
         listEmailAddress: navigationRouter.listEmailAddress,
         cc: navigationRouter.cc,
@@ -1459,10 +1460,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   ) {
     switch(emailActionType) {
       case EmailActionType.compose:
-        mailboxDashBoardController.goToComposer(ComposerArguments());
+        mailboxDashBoardController.openComposer(ComposerArguments());
         break;
       case EmailActionType.reply:
-        mailboxDashBoardController.goToComposer(
+        mailboxDashBoardController.openComposer(
           ComposerArguments.replyEmail(
             presentationEmail: presentationEmail,
             content: currentEmailLoaded.value?.htmlContent ?? '',
@@ -1476,7 +1477,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         break;
       case EmailActionType.replyToList:
         log('SingleEmailController::pressEmailAction:replyToList');
-        mailboxDashBoardController.goToComposer(
+        mailboxDashBoardController.openComposer(
           ComposerArguments.replyToListEmail(
             presentationEmail: presentationEmail,
             content: currentEmailLoaded.value?.htmlContent ?? '',
@@ -1489,7 +1490,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         );
         break;
       case EmailActionType.replyAll:
-        mailboxDashBoardController.goToComposer(
+        mailboxDashBoardController.openComposer(
           ComposerArguments.replyAllEmail(
             presentationEmail: presentationEmail,
             content: currentEmailLoaded.value?.htmlContent ?? '',
@@ -1502,7 +1503,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         );
         break;
       case EmailActionType.forward:
-        mailboxDashBoardController.goToComposer(
+        mailboxDashBoardController.openComposer(
           ComposerArguments.forwardEmail(
             presentationEmail: presentationEmail,
             content: currentEmailLoaded.value?.htmlContent ?? '',
@@ -1634,7 +1635,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void openNewComposerAction(String mailTo) {
     final emailAddress = EmailAddress(mailTo, mailTo);
-    mailboxDashBoardController.goToComposer(ComposerArguments.fromEmailAddress(emailAddress));
+    mailboxDashBoardController.openComposer(ComposerArguments.fromEmailAddress(emailAddress));
   }
 
   void openAttachmentList(BuildContext context, List<Attachment> attachments) {
@@ -1723,7 +1724,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }) {
     log('SingleEmailController::_handleUnsubscribeMailByMailtoLink:mailtoLinks: $mailtoLinks');
     final navigationRouter = RouteUtils.generateNavigationRouterFromMailtoLink(mailtoLinks.first);
-    mailboxDashBoardController.goToComposer(
+    mailboxDashBoardController.openComposer(
       ComposerArguments.fromUnsubscribeMailtoLink(
         listEmailAddress: navigationRouter.listEmailAddress,
         subject: navigationRouter.subject,
@@ -1948,7 +1949,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _composeFromPresentationEmail(PresentationEmail presentationEmail) {
     if (accountId == null || session == null) return;
 
-    mailboxDashBoardController.goToComposer(
+    mailboxDashBoardController.openComposer(
       ComposerArguments.fromPresentationEmail(presentationEmail),
     );
   }
@@ -2201,7 +2202,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     final username = mailboxDashBoardController.sessionCurrent?.username.value ?? '';
     final listEmailAddressMailTo = listEmailAddressAttendees.removeInvalidEmails(username);
     log('SingleEmailController::handleMailToAttendees: listEmailAddressMailTo = $listEmailAddressMailTo');
-    mailboxDashBoardController.goToComposer(
+    mailboxDashBoardController.openComposer(
       ComposerArguments.fromMailtoUri(listEmailAddress: listEmailAddressMailTo)
     );
   }

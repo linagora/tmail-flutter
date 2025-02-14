@@ -40,8 +40,6 @@ import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.da
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
-import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
-import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
@@ -71,7 +69,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/move_to_mailbox_int
 import 'package:tmail_ui_user/features/email/domain/usecases/restore_deleted_message_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/unsubscribe_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
-import 'package:tmail_ui_user/features/email/presentation/extensions/composer_arguments_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email_recovery/presentation/model/email_recovery_arguments.dart';
@@ -104,6 +101,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
@@ -187,6 +185,7 @@ class MailboxDashBoardController extends ReloadableController
   final AppGridDashboardController appGridDashboardController = Get.find<AppGridDashboardController>();
   final SpamReportController spamReportController = Get.find<SpamReportController>();
   final NetworkConnectionController networkConnectionController = Get.find<NetworkConnectionController>();
+  final ComposerManager composerManager = Get.find<ComposerManager>();
 
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
@@ -213,7 +212,6 @@ class MailboxDashBoardController extends ReloadableController
   final GetRestoredDeletedMessageInterator _getRestoredDeletedMessageInteractor;
   final RemoveComposerCacheOnWebInteractor _removeComposerCacheOnWebInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
-  final ComposerManager _composerManager;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -303,7 +301,6 @@ class MailboxDashBoardController extends ReloadableController
     this._getRestoredDeletedMessageInteractor,
     this._removeComposerCacheOnWebInteractor,
     this._getAllIdentitiesInteractor,
-    this._composerManager,
   );
 
   @override
@@ -313,7 +310,7 @@ class MailboxDashBoardController extends ReloadableController
       _registerDeepLinks();
     }
     _registerStreamListener();
-    BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.dashboard);
+    BackButtonInterceptor.add(onBackButtonInterceptor, name: AppRoutes.dashboard);
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       await applicationManager.initUserAgent();
     });
@@ -432,8 +429,8 @@ class MailboxDashBoardController extends ReloadableController
     } else if (success is GetAllIdentitiesSuccess) {
       _handleGetAllIdentitiesSuccess(success);
     } else if (success is GetComposerCacheSuccess) {
-      _removeComposerCacheOnWeb();
-      goToComposer(ComposerArguments.fromSessionStorageBrowser(success.composerCache));
+      removeComposerCacheOnWeb();
+      openComposer(ComposerArguments.fromSessionStorageBrowser(success.composerCache));
     } else if (success is GetIdentityCacheOnWebSuccess) {
       goToSettings();
     } else if (success is MarkAsStarEmailSuccess) {
@@ -481,7 +478,7 @@ class MailboxDashBoardController extends ReloadableController
     SmartDialog.dismiss();
 
     if (failure is SendEmailFailure && exception is NoNetworkError) {
-      _storeSendingEmailInCaseOfSendingFailureInMobile(failure);
+      storeSendingEmailInCaseOfSendingFailureInMobile(failure);
     } else {
       super.handleUrgentExceptionOnMobile(failure: failure, exception: exception);
     }
@@ -530,17 +527,17 @@ class MailboxDashBoardController extends ReloadableController
         case SharedMediaType.image:
         case SharedMediaType.video:
         case SharedMediaType.file:
-          goToComposer(
+          openComposer(
             ComposerArguments.fromFileShared([sharedMediaFile]),
           );
           break;
         case SharedMediaType.text:
           if (sharedMediaFile.mimeType == Constant.textVCardMimeType) {
-            goToComposer(
+            openComposer(
               ComposerArguments.fromFileShared([sharedMediaFile]),
             );
           } else if (sharedMediaFile.mimeType == Constant.textPlainMimeType) {
-            goToComposer(
+            openComposer(
               ComposerArguments.fromContentShared(sharedMediaFile.path.trim()),
             );
           }
@@ -548,7 +545,7 @@ class MailboxDashBoardController extends ReloadableController
         case SharedMediaType.url:
           if (sharedMediaFile.path.startsWith(RouteUtils.mailtoPrefix)) {
             final navigationRouter = RouteUtils.generateNavigationRouterFromMailtoLink(sharedMediaFile.path);
-            goToComposer(
+            openComposer(
               ComposerArguments.fromMailtoUri(
                 listEmailAddress: navigationRouter.listEmailAddress,
                 subject: navigationRouter.subject,
@@ -559,7 +556,7 @@ class MailboxDashBoardController extends ReloadableController
           break;
         case SharedMediaType.mailto:
           if (EmailUtils.isEmailAddressValid(sharedMediaFile.path)) {
-            goToComposer(
+            openComposer(
               ComposerArguments.fromEmailAddress(
                 EmailAddress(null, sharedMediaFile.path),
               ),
@@ -570,7 +567,7 @@ class MailboxDashBoardController extends ReloadableController
       return;
     }
 
-    goToComposer(
+    openComposer(
       ComposerArguments.fromFileShared(listSharedMediaFile),
     );
   }
@@ -1673,27 +1670,6 @@ class MailboxDashBoardController extends ReloadableController
     emailUIAction.value = newAction;
   }
 
-  Future<void> closeComposerOnWeb({
-    required String? composerId,
-    dynamic result,
-  }) async {
-    if (composerId != null) {
-      _composerManager.removeComposer(composerId);
-    }
-    if (!_composerManager.hasComposer) {
-      twakeAppManager.setHasComposer(false);
-    }
-    if (result is SendingEmailArguments) {
-      handleSendEmailAction(result);
-    } else if (result is SendEmailSuccess ||
-        result is SaveEmailAsDraftsSuccess ||
-        result is UpdateEmailDraftsSuccess) {
-      consumeState(Stream.value(Right<Failure, Success>(result)));
-    }
-
-    await _removeComposerCacheOnWeb();
-  }
-
   void dispatchRoute(DashboardRoutes route) {
     log('MailboxDashBoardController::dispatchRoute(): $route');
     dashboardRoute.value = route;
@@ -1810,67 +1786,6 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
-  void goToComposer(ComposerArguments arguments) {
-    final argumentsWithIdentity = arguments.withIdentity(
-      identities: List.from(_identities ?? []),
-      selectedIdentityId: arguments.selectedIdentityId);
-
-    if (PlatformInfo.isWeb) {
-      _openComposerOnWeb(argumentsWithIdentity);
-    } else {
-      _openComposerOnMobile(argumentsWithIdentity);
-    }
-  }
-
-  void _openComposerOnWeb(ComposerArguments composerArguments) {
-    if (_composerManager.composers.isNotEmpty) return;
-
-    _composerManager.addComposer(composerArguments);
-    twakeAppManager.setHasComposer(true);
-  }
-
-  Future<void> _openComposerOnMobile(ComposerArguments arguments) async {
-    BackButtonInterceptor.removeByName(AppRoutes.dashboard);
-
-    bool isTabletPlatform = currentContext != null
-        && !responsiveUtils.isScreenWithShortestSide(currentContext!);
-    dynamic result;
-
-    if (isTabletPlatform) {
-      if (PlatformInfo.isIOS) {
-        dispatchEmailUIAction(HideEmailContentViewAction());
-      }
-
-      result = await Get.to(
-        () => const ComposerView(),
-        binding: ComposerBindings(),
-        opaque: false,
-        arguments: arguments,
-      );
-
-      if (PlatformInfo.isIOS) {
-        await Future.delayed(
-          const Duration(milliseconds: 200),
-          () => dispatchEmailUIAction(ShowEmailContentViewAction()),
-        );
-      }
-    } else {
-      result = await push(AppRoutes.composer, arguments: arguments);
-    }
-
-    BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.dashboard);
-
-    if (result is SendingEmailArguments) {
-      handleSendEmailAction(result);
-    } else if (result is SendEmailSuccess ||
-        result is SaveEmailAsDraftsSuccess ||
-        result is UpdateEmailDraftsSuccess) {
-      consumeState(Stream.value(Right<Failure, Success>(result)));
-    } else if (validateSendingEmailFailedWhenNetworkIsLostOnMobile(result)) {
-      _storeSendingEmailInCaseOfSendingFailureInMobile(result);
-    }
-  }
-
   void clearDashBoardAction() {
     dashBoardAction.value = DashBoardAction.idle;
   }
@@ -1894,7 +1809,7 @@ class MailboxDashBoardController extends ReloadableController
       ),
     );
 
-    BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.dashboard);
+    BackButtonInterceptor.add(onBackButtonInterceptor, name: AppRoutes.dashboard);
 
     if (result is Tuple2) {
       if (result.value1 is VacationResponse) {
@@ -1959,7 +1874,7 @@ class MailboxDashBoardController extends ReloadableController
       )
     );
 
-    BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.dashboard);
+    BackButtonInterceptor.add(onBackButtonInterceptor, name: AppRoutes.dashboard);
 
     if (result is Tuple2) {
       if (result.value1 is VacationResponse) {
@@ -2392,7 +2307,7 @@ class MailboxDashBoardController extends ReloadableController
   void _handleSendEmailFailure(SendEmailFailure failure) {
     logError('MailboxDashBoardController::_handleSendEmailFailure():failure: $failure');
     if (PlatformInfo.isMobile) {
-      _storeSendingEmailInCaseOfSendingFailureInMobile(failure);
+      storeSendingEmailInCaseOfSendingFailureInMobile(failure);
     }
     if (currentContext == null) {
       clearState();
@@ -2522,7 +2437,7 @@ class MailboxDashBoardController extends ReloadableController
     ));
   }
 
-  void _storeSendingEmailInCaseOfSendingFailureInMobile(SendEmailFailure failure) {
+  void storeSendingEmailInCaseOfSendingFailureInMobile(SendEmailFailure failure) {
     if (failure.session != null &&
         failure.accountId != null &&
         failure.emailRequest != null
@@ -2984,8 +2899,8 @@ class MailboxDashBoardController extends ReloadableController
 
   bool get _isDialogViewOpen => Get.isOverlaysOpen == true;
 
-  bool _onBackButtonInterceptor(bool stopDefaultButtonEvent, RouteInfo routeInfo) {
-    log('MailboxDashBoardController::_onBackButtonInterceptor:currentRoute: ${Get.currentRoute} | _isDialogViewOpen: $_isDialogViewOpen');
+  bool onBackButtonInterceptor(bool stopDefaultButtonEvent, RouteInfo routeInfo) {
+    log('MailboxDashBoardController::onBackButtonInterceptor:currentRoute: ${Get.currentRoute} | _isDialogViewOpen: $_isDialogViewOpen');
     if (_isDialogViewOpen) {
       popBack();
       _replaceBrowserHistory();
@@ -3126,7 +3041,7 @@ class MailboxDashBoardController extends ReloadableController
 
   String get userEmail => sessionCurrent?.username.value ?? '';
 
-  Future<void> _removeComposerCacheOnWeb() async {
+  Future<void> removeComposerCacheOnWeb() async {
     await _removeComposerCacheOnWebInteractor.execute();
   }
 
