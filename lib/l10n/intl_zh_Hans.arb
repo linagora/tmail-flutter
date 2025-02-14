@@ -81,7 +81,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "next": "下一个",
+  "next": "下一步",
   "@next": {
     "type": "text",
     "placeholders_order": [],
@@ -653,7 +653,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email_address_is_not_in_the_correct_format": "邮件地址格式不正确",
+  "email_address_is_not_in_the_correct_format": "电子邮件地址格式不正确",
   "@email_address_is_not_in_the_correct_format": {
     "type": "text",
     "placeholders_order": [],
@@ -683,7 +683,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_dialog_send_email_with_email_address_invalid": "检查邮件地址是否正确并重试",
+  "message_dialog_send_email_with_email_address_invalid": "检查电子邮件地址是否正确并重试",
   "@message_dialog_send_email_with_email_address_invalid": {
     "type": "text",
     "placeholders_order": [],
@@ -743,7 +743,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hint_text_email_address": "名称或邮件地址",
+  "hint_text_email_address": "名称或电子邮件地址",
   "@hint_text_email_address": {
     "type": "text",
     "placeholders_order": [],
@@ -785,7 +785,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "thisEmailAddressInvalid": "此邮件地址无效",
+  "thisEmailAddressInvalid": "此电子邮件地址无效",
   "@thisEmailAddressInvalid": {
     "type": "text",
     "placeholders_order": [],
@@ -1007,7 +1007,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "forwardingSettingExplanation": "下方列出的邮件地址将接收您的电子邮件。",
+  "forwardingSettingExplanation": "下方列出的电子邮件地址将接收您的电子邮件。",
   "@forwardingSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
@@ -1217,7 +1217,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintMessageBodyVacation": "休假邮件",
+  "hintMessageBodyVacation": "外出回复邮件",
   "@hintMessageBodyVacation": {
     "type": "text",
     "placeholders_order": [],
@@ -1265,7 +1265,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "copy_email_address": "复制邮件地址",
+  "copy_email_address": "复制电子邮件地址",
   "@copy_email_address": {
     "type": "text",
     "placeholders_order": [],
@@ -1401,7 +1401,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "fix_email_addresses": "修复邮件地址",
+  "fix_email_addresses": "修复电子邮件地址",
   "@fix_email_addresses": {
     "type": "text",
     "placeholders_order": [],
@@ -1627,7 +1627,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "email_address_copied_to_clipboard": "邮件地址已复制到剪贴板",
+  "email_address_copied_to_clipboard": "电子邮件地址已复制到剪贴板",
   "@email_address_copied_to_clipboard": {
     "type": "text",
     "placeholders_order": [],
@@ -1675,7 +1675,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationSettingSaved": "休假设置已保存",
+  "vacationSettingSaved": "外出回复设置已保存",
   "@vacationSettingSaved": {
     "type": "text",
     "placeholders_order": [],
@@ -1779,7 +1779,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageDisableVacationResponderAutomatically": "休假回复功能已于 {endDate} 停止",
+  "messageDisableVacationResponderAutomatically": "外出回复功能已于 {endDate} 停止",
   "@messageDisableVacationResponderAutomatically": {
     "type": "text",
     "placeholders_order": [
@@ -1987,13 +1987,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationStopsAt": "休假结束于",
+  "vacationStopsAt": "外出回复结束于",
   "@vacationStopsAt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yourVacationResponderIsDisabledSuccessfully": "已成功禁用休假回复功能",
+  "yourVacationResponderIsDisabledSuccessfully": "已成功禁用外出回复功能",
   "@yourVacationResponderIsDisabledSuccessfully": {
     "type": "text",
     "placeholders_order": [],
@@ -2177,7 +2177,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "nameOrEmailAddress": "名称或邮件地址",
+  "nameOrEmailAddress": "名称或电子邮件地址",
   "@nameOrEmailAddress": {
     "type": "text",
     "placeholders_order": [],
@@ -2211,7 +2211,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacation": "休假",
+  "vacation": "外出回复",
   "@vacation": {
     "type": "text",
     "placeholders_order": [],
@@ -2373,7 +2373,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageDeleteRecipientSuccessfully": "从收件人列表中移除了此邮件地址。",
+  "toastMessageDeleteRecipientSuccessfully": "从收件人列表中移除了此电子邮件。",
   "@toastMessageDeleteRecipientSuccessfully": {
     "type": "text",
     "placeholders_order": [],
@@ -2397,7 +2397,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "identitiesSettingExplanation": "选择要用于发送电子邮件的身份或邮件地址",
+  "identitiesSettingExplanation": "选择要用于发送电子邮件的身份或电子邮件地址",
   "@identitiesSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
@@ -2415,19 +2415,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "vacationSetting": "休假设置",
+  "vacationSetting": "外出回复设置",
   "@vacationSetting": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yourVacationResponderIsEnabled": "已启用休假回复功能。",
+  "yourVacationResponderIsEnabled": "已启用外出回复功能。",
   "@yourVacationResponderIsEnabled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageEnableVacationResponderAutomatically": "休假回复功能将于 {startDate} 激活",
+  "messageEnableVacationResponderAutomatically": "外出回复功能将于 {startDate} 激活",
   "@messageEnableVacationResponderAutomatically": {
     "type": "text",
     "placeholders_order": [
@@ -2871,7 +2871,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "quickCreatingRule": "使用此邮件地址创建规则",
+  "quickCreatingRule": "使用此电子邮件创建规则",
   "@quickCreatingRule": {
     "type": "text",
     "placeholders_order": [],
@@ -2907,7 +2907,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintInputAutocompleteContact": "输入名称或邮件地址",
+  "hintInputAutocompleteContact": "输入名称或电子邮件地址",
   "@hintInputAutocompleteContact": {
     "type": "text",
     "placeholders_order": [],
@@ -2991,7 +2991,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageConfirmationDialogDeleteRecipientForward": "是否要删除邮件地址 {emailAddress}？",
+  "messageConfirmationDialogDeleteRecipientForward": "是否要删除电子邮件 {emailAddress}？",
   "@messageConfirmationDialogDeleteRecipientForward": {
     "type": "text",
     "placeholders_order": [
@@ -3189,7 +3189,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageAddRecipientsSuccessfully": "从收件人列表中添加了此邮件地址。",
+  "toastMessageAddRecipientsSuccessfully": "从收件人列表中添加了此电子邮件。",
   "@toastMessageAddRecipientsSuccessfully": {
     "type": "text",
     "placeholders_order": [],
@@ -3265,7 +3265,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "hintSearchInputContact": "输入名称或邮件地址",
+  "hintSearchInputContact": "输入名称或电子邮件",
   "@hintSearchInputContact": {
     "type": "text",
     "placeholders_order": [],
@@ -3449,6 +3449,344 @@
   },
   "sendingQueue": "发送队列",
   "@sendingQueue": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "any": "任何",
+  "@any": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clean": "清理",
+  "@clean": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exchange": "交换",
+  "@exchange": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "selectParentFolder": "选择上层文件夹",
+  "@selectParentFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "regards": "此致",
+  "@regards": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "canceling": "正在取消",
+  "@canceling": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "required": "必须",
+  "@required": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "subjectSendReceiptToSender": "已读：{subject}",
+  "@subjectSendReceiptToSender": {
+    "type": "text",
+    "placeholders_order": [
+      "subject"
+    ],
+    "placeholders": {
+      "subject": {}
+    }
+  },
+  "quotaErrorBannerTitle": "您的存储空间用完了",
+  "@quotaErrorBannerTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "starIt": "加星标",
+  "@starIt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hasTheWords": "有文字",
+  "@hasTheWords": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pending": "待处理",
+  "@pending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mostRecent": "最新",
+  "@mostRecent": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageNotSupportMdnWhenSendReceipt": "您的账号不支持 MDN 功能",
+  "@toastMessageNotSupportMdnWhenSendReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "delivering": "正在发送",
+  "@delivering": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaWarningBannerTitle": "您的存储空间即将用完（90%）。",
+  "@quotaWarningBannerTitle": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "conditionTitleRulesFilterBeforeCombiner": "如果",
+  "@conditionTitleRulesFilterBeforeCombiner": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "oldest": "最旧",
+  "@oldest": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailToAttendees": "向参加者发送邮件",
+  "@mailToAttendees": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "savingMessageToDraftFolder": "将邮件保存到草稿文件夹",
+  "@savingMessageToDraftFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "contact": "联系",
+  "@contact": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "older": "较旧",
+  "@older": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addCondition": "添加条件",
+  "@addCondition": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "forwardTo": "转发至",
+  "@forwardTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "maskAsSeen": "标记为已读",
+  "@maskAsSeen": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newer": "较新",
+  "@newer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "proceed": "继续",
+  "@proceed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "doesNotHave": "没有",
+  "@doesNotHave": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "doYouWantToProceed": "是否要继续？",
+  "@doYouWantToProceed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "quotaStateLabel": "已用 {used}（共 {limit}）",
+  "@quotaStateLabel": {
+    "type": "text",
+    "placeholders_order": [
+      "used",
+      "limit"
+    ],
+    "placeholders": {
+      "used": {},
+      "limit": {}
+    }
+  },
+  "notExactlyEquals": "不完全等于",
+  "@notExactlyEquals": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptySpamFolderFailed": "清空垃圾邮件文件夹失败",
+  "@emptySpamFolderFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageDuplicateTagFilterMail": "您已经输入了",
+  "@messageDuplicateTagFilterMail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageHasBeenSavedToTheSendingQueue": "临时网络问题。连接后排队等待重试邮件。",
+  "@messageHasBeenSavedToTheSendingQueue": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "bannerMessageSendingQueueView": "在线后将发送或安排发送队列文件夹中的邮件。",
+  "@bannerMessageSendingQueueView": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "anAttendee": "一位参加者",
+  "@anAttendee": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exactlyEquals": "完全等于",
+  "@exactlyEquals": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sendingMessage": "正在发送邮件",
+  "@sendingMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "creatingMessage": "正在创建邮件",
+  "@creatingMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOnRequestReadReceipt": "打开已读回执请求",
+  "@turnOnRequestReadReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveConversation": "移动 {numberOfConversation} 个对话",
+  "@moveConversation": {
+    "type": "text",
+    "placeholders_order": [
+      "numberOfConversation"
+    ],
+    "placeholders": {
+      "numberOfConversation": {}
+    }
+  },
+  "clearFolder": "清除文件夹",
+  "@clearFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerAttendeeCounter": " 已提议对活动进行更改",
+  "@messageEventActionBannerAttendeeCounter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageEventActionBannerAttendeeCounterDeclined": "您的反建议已被拒绝",
+  "@messageEventActionBannerAttendeeCounterDeclined": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "newSubfolder": "新建子文件夹",
+  "@newSubfolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOffRequestReadReceipt": "关闭已读回执请求",
+  "@turnOffRequestReadReceipt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "you": "您",
+  "@you": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "rejectIt": "拒绝它",
+  "@rejectIt": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "progress": "进度",
+  "@progress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "findEmails": "查找电子邮件",
+  "@findEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sending": "正在发送",
+  "@sending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "fromMe": "来自我",
+  "@fromMe": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "externalDomain": "外部域",
+  "@externalDomain": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "savingMessage": "正在保存邮件",
+  "@savingMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
