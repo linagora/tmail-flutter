@@ -4506,4 +4506,11 @@ class AppLocalizations {
       name: 'downloadAttachmentHasBeenCancelled',
     );
   }
+
+  String get hideAll {
+    return Intl.message(
+      'Hide all',
+      name: 'hideAll',
+    );
+  }
 }
