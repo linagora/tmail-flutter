@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:dio/dio.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 
@@ -10,11 +11,12 @@ class StartDownloadAttachmentForWeb extends UIState {
 
   final DownloadTaskId taskId;
   final Attachment attachment;
+  final CancelToken? cancelToken;
 
-  StartDownloadAttachmentForWeb(this.taskId, this.attachment);
+  StartDownloadAttachmentForWeb(this.taskId, this.attachment, [this.cancelToken]);
 
   @override
-  List<Object> get props => [taskId, attachment];
+  List<Object?> get props => [taskId, attachment, cancelToken];
 }
 
 class DownloadingAttachmentForWeb extends UIState {
@@ -59,13 +61,15 @@ class DownloadAttachmentForWebFailure extends FeatureFailure {
 
   final DownloadTaskId? taskId;
   final Attachment? attachment;
+  final CancelToken? cancelToken;
 
   DownloadAttachmentForWebFailure({
     this.attachment,
     this.taskId,
-    dynamic exception
-  }) : super(exception: exception);
+    this.cancelToken,
+    super.exception
+  });
 
   @override
-  List<Object?> get props => [attachment, taskId, ...super.props];
+  List<Object?> get props => [attachment, taskId, cancelToken, ...super.props];
 }

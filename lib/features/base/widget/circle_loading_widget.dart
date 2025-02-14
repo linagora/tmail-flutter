@@ -11,32 +11,22 @@ class CircleLoadingWidget extends StatelessWidget {
     super.key,
     this.size,
     this.padding,
-    this.strokeWidth
+    this.strokeWidth,
   });
 
   @override
   Widget build(BuildContext context) {
-    if (padding != null) {
-      return Padding(
-        padding: padding!,
-        child: SizedBox(
-          width: size ?? CircleLoadingWidgetStyles.size,
-          height: size ?? CircleLoadingWidgetStyles.size,
-          child: CircularProgressIndicator(
-            color: CircleLoadingWidgetStyles.progressColor,
-            strokeWidth: strokeWidth ?? CircleLoadingWidgetStyles.width,
-          )
-        ),
-      );
-    } else {
-      return SizedBox(
-        width: size ?? CircleLoadingWidgetStyles.size,
-        height: size ?? CircleLoadingWidgetStyles.size,
-        child: CircularProgressIndicator(
-          color: CircleLoadingWidgetStyles.progressColor,
-          strokeWidth: strokeWidth ?? CircleLoadingWidgetStyles.width,
-        )
-      );
-    }
+    final loadingSize = size ?? CircleLoadingWidgetStyles.size;
+    final loadingStrokeWidth = strokeWidth ?? CircleLoadingWidgetStyles.width;
+
+    return Container(
+      padding: padding,
+      width: loadingSize,
+      height: loadingSize,
+      child: CircularProgressIndicator(
+        color: CircleLoadingWidgetStyles.progressColor,
+        strokeWidth: loadingStrokeWidth,
+      )
+    );
   }
 }

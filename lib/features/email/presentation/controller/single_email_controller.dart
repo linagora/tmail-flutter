@@ -426,9 +426,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           (success) {
             if (success is StartDownloadAttachmentForWeb) {
               emailSupervisorController.mailboxDashBoardController.addDownloadTask(
-                  DownloadTaskState(
-                    taskId: success.taskId,
-                    attachment: success.attachment));
+                DownloadTaskState(
+                  taskId: success.taskId,
+                  attachment: success.attachment,
+                  onCancel: () => success.cancelToken?.cancel(),
+                ),
+              );
 
               if (currentOverlayContext != null && currentContext != null) {
                 appToast.showToastMessage(
@@ -896,12 +899,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         final baseDownloadUrl = session!.getDownloadUrl(
           jmapUrl: dynamicUrlInterceptors.jmapUrl,
         );
+        final cancelToken = CancelToken();
         consumeState(_downloadAttachmentForWebInteractor.execute(
-            generateTaskId,
-            attachment,
-            accountId!,
-            baseDownloadUrl,
-            _downloadProgressStateController));
+          generateTaskId,
+          attachment,
+          accountId!,
+          baseDownloadUrl,
+          _downloadProgressStateController,
+          cancelToken: cancelToken,
+        ));
       } catch (e) {
         logError('SingleEmailController::downloadAttachmentForWeb(): $e');
         consumeState(Stream.value(Left(DownloadAttachmentForWebFailure(attachment: attachment, taskId: generateTaskId, exception: e))));
@@ -944,14 +950,17 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     if (failure.attachment != null) {
       _updateAttachmentsViewState(failure.attachment?.blobId, Left(failure));
     }
+    
+    if (currentOverlayContext == null || currentContext == null) return;
 
-    if (currentOverlayContext != null && currentContext != null) {
-      appToast.showToastErrorMessage(
-        currentOverlayContext!,
-        failure.attachment is EMLAttachment
-          ? AppLocalizations.of(currentContext!).downloadMessageAsEMLFailed
-          : AppLocalizations.of(currentContext!).attachment_download_failed);
+    String message = AppLocalizations.of(currentContext!).attachment_download_failed;
+    if (failure.attachment is EMLAttachment) {
+      message = AppLocalizations.of(currentContext!).downloadMessageAsEMLFailed;
+    } else if (failure.cancelToken?.isCancelled == true) {
+      message = AppLocalizations.of(currentContext!).downloadAttachmentHasBeenCancelled;
     }
+
+    appToast.showToastErrorMessage(currentOverlayContext!, message);
   }
 
   void _updateAttachmentsViewState(

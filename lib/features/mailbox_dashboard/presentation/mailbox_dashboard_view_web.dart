@@ -202,7 +202,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           ? const SearchMailboxView()
           : const SizedBox.shrink()
         ),
-        _buildDownloadTaskStateWidget(),
+        _buildDownloadTaskStateWidget(AppLocalizations.of(context)),
       ]),
     );
   }
@@ -413,30 +413,50 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     controller.dispatchAction(FilterMessageAction(FilterMessageOption.all));
   }
 
-  Widget _buildDownloadTaskStateWidget() {
+  Widget _buildDownloadTaskStateWidget(AppLocalizations appLocalizations) {
     return Obx(() {
       final listDownloadTasks = controller.downloadController.listDownloadTaskState;
-      if (listDownloadTasks.isNotEmpty) {
+      final hideDownloadTaskbar = controller.downloadController.hideDownloadTaskbar;
+      if (listDownloadTasks.isNotEmpty && !hideDownloadTaskbar.value) {
         return Align(
           alignment: Alignment.bottomCenter,
           child: Container(
             color: AppColor.colorBackgroundSnackBar,
             height: 60,
             width: double.infinity,
-            child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                padding: EdgeInsets.zero,
-                itemCount: listDownloadTasks.length,
-                separatorBuilder: (context, index) =>
-                  const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 5),
-                    child: VerticalDivider(
-                      color: Colors.grey,
-                      width: 2.5,
-                      thickness: 0.2),
+            child: Row(
+              children: [
+                Expanded(
+                  child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      padding: EdgeInsets.zero,
+                      itemCount: listDownloadTasks.length,
+                      separatorBuilder: (context, index) =>
+                        const Padding(
+                          padding: EdgeInsets.symmetric(vertical: 5),
+                          child: VerticalDivider(
+                            color: Colors.grey,
+                            width: 2.5,
+                            thickness: 0.2),
+                        ),
+                      itemBuilder: (context, index) =>
+                          DownloadTaskItemWidget(listDownloadTasks[index])
                   ),
-                itemBuilder: (context, index) =>
-                    DownloadTaskItemWidget(listDownloadTasks[index])
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: TMailButtonWidget.fromText(
+                    text: appLocalizations.hide,
+                    backgroundColor: Colors.transparent,
+                    textStyle: const TextStyle(
+                      color: AppColor.colorCancelButton,
+                    ),
+                    onTapActionCallback: () {
+                      controller.downloadController.hideDownloadTaskbar.value = true;
+                    },
+                  ),
+                ),
+              ],
             ),
           ),
         );

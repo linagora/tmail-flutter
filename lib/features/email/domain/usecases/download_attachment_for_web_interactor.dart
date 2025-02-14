@@ -38,8 +38,8 @@ class DownloadAttachmentForWebInteractor {
       {CancelToken? cancelToken}
   ) async* {
     try {
-      yield Right<Failure, Success>(StartDownloadAttachmentForWeb(taskId, attachment));
-      onReceiveController.add(Right(StartDownloadAttachmentForWeb(taskId, attachment)));
+      yield Right<Failure, Success>(StartDownloadAttachmentForWeb(taskId, attachment, cancelToken));
+      onReceiveController.add(Right(StartDownloadAttachmentForWeb(taskId, attachment, cancelToken)));
 
       final currentAccount = await _accountRepository.getCurrentAccount();
       AccountRequest? accountRequest;
@@ -77,7 +77,8 @@ class DownloadAttachmentForWebInteractor {
         DownloadAttachmentForWebFailure(
           attachment: attachment,
           taskId: taskId,
-          exception: exception
+          exception: exception,
+          cancelToken: cancelToken,
         )
       );
     }

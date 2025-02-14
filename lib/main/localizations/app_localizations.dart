@@ -4419,4 +4419,11 @@ class AppLocalizations {
       name: 'thisHtmlAttachmentCannotBePreviewed',
     );
   }
+
+  String get downloadAttachmentHasBeenCancelled {
+    return Intl.message(
+      'Download attachment has been cancelled',
+      name: 'downloadAttachmentHasBeenCancelled',
+    );
+  }
 }
