@@ -267,18 +267,23 @@ class EmailPreviewerController extends ReloadableController {
       return;
     }
 
-    consumeState(_previewEmailFromEmlFileInteractor.execute(
-      PreviewEmailEMLRequest(
-        accountId: _accountId!,
-        userName: _session!.username,
-        blobId: success.blobId,
-        email: success.email,
-        locale: Localizations.localeOf(currentContext!),
-        appLocalizations: AppLocalizations.of(currentContext!),
-        baseDownloadUrl: _session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl),
-        isShared: false,
-      ),
-    ));
+    try {
+      consumeState(_previewEmailFromEmlFileInteractor.execute(
+        PreviewEmailEMLRequest(
+          accountId: _accountId!,
+          userName: _session!.username,
+          blobId: success.blobId,
+          email: success.email,
+          locale: Localizations.localeOf(currentContext!),
+          appLocalizations: AppLocalizations.of(currentContext!),
+          baseDownloadUrl: _session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl),
+          isShared: false,
+        ),
+      ));
+    } catch (e) {
+      logError('EmailPreviewerController::_handleParseEmailByBlobIdSuccess(): $e');
+      consumeState(Stream.value(Left(PreviewEmailFromEmlFileFailure(e))));
+    }
   }
 
   void _updateWindowBrowserTitle(String title) {
@@ -308,14 +313,22 @@ class EmailPreviewerController extends ReloadableController {
   }
 
   void _startDownloadAttachment(Attachment attachment) {
-    _downloadInteractorStreamSubscription = _downloadAttachmentForWebInteractor
-        .execute(
-            attachment.downloadTaskId,
-            attachment,
-            _accountId!,
-            _session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl),
-            _downloadAttachmentStreamController!)
-        .listen(_handleDownloadAttachmentViewState);
+    try {
+      _downloadInteractorStreamSubscription = _downloadAttachmentForWebInteractor
+          .execute(
+              attachment.downloadTaskId,
+              attachment,
+              _accountId!,
+              _session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl),
+              _downloadAttachmentStreamController!)
+          .listen(_handleDownloadAttachmentViewState);
+    } catch (e) {
+      logError('EmailPreviewerController::_handleParseEmailByBlobIdSuccess(): $e');
+      consumeState(Stream.value(Left(DownloadAttachmentForWebFailure(
+          attachment: attachment,
+          taskId: attachment.downloadTaskId,
+          exception: e))));
+    }
   }
 
   void _initialDownloadAttachmentStreamListener() {

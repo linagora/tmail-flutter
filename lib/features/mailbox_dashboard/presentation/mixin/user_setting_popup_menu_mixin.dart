@@ -4,7 +4,6 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/popup_menu/popup_menu_item_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 mixin UserSettingPopupMenuMixin {
@@ -12,14 +11,14 @@ mixin UserSettingPopupMenuMixin {
 
   List<PopupMenuEntry> popupMenuUserSettingActionTile(
     BuildContext context,
-    UserName? userName,
+    String? currentUserEmail,
     {
       Function? onLogoutAction,
       Function? onSettingAction
     }
   ) {
     return [
-      if (userName != null)
+      if(currentUserEmail != null)
         PopupMenuItem(
           enabled: false,
           padding: EdgeInsets.zero,
@@ -28,7 +27,7 @@ mixin UserSettingPopupMenuMixin {
             child: ListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 20),
               title: SelectableText(
-                userName.value,
+                currentUserEmail,
                 maxLines: 1,
                 style: const TextStyle(
                   fontSize: 15,

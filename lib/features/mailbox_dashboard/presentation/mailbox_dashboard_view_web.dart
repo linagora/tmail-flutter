@@ -5,6 +5,7 @@ import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:model/extensions/username_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
@@ -540,7 +541,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       final searchEmailFilter = controller.searchController.searchEmailFilter.value;
       final sortOrderType = controller.searchController.sortOrderFiltered;
       final listAddressOfFrom = controller.searchController.listAddressOfFromFiltered;
-      final userName = controller.sessionCurrent?.username;
+      final currentUserEmail = controller.sessionCurrent?.getOwnEmailAddress();
       final startDate = controller.searchController.startDateFiltered;
       final endDate = controller.searchController.endDateFiltered;
       final receiveTimeType = controller.searchController.receiveTimeFiltered;
@@ -551,7 +552,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         context,
         searchEmailFilter,
         sortOrderType,
-        userName);
+        currentUserEmail);
 
       EdgeInsetsGeometry? buttonPadding;
       if (searchFilter != QuickSearchFilter.sortBy) {
@@ -570,7 +571,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         sortOrderType: sortOrderType,
         listAddressOfFrom: listAddressOfFrom,
         listAddressOfTo: listAddressOfTo,
-        userName: userName,
         mailbox: mailbox,
         buttonPadding: buttonPadding,
         onSelectSearchFilterAction: _onSelectSearchFilterAction,

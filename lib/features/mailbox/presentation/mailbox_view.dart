@@ -3,6 +3,7 @@ import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
@@ -224,7 +225,7 @@ class MailboxView extends BaseMailboxView {
           }
           return UserInformationWidget(
             userName: controller.mailboxDashBoardController.accountId.value != null
-              ? controller.mailboxDashBoardController.sessionCurrent?.username
+              ? UserName(controller.mailboxDashBoardController.sessionCurrent!.getOwnEmailAddress())
               : null,
             subtitle: AppLocalizations.of(context).manage_account,
             onSubtitleClick: controller.mailboxDashBoardController.goToSettings,

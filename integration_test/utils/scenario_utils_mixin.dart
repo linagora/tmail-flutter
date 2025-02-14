@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io' hide HttpClient;
 
 import 'package:collection/collection.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -142,33 +143,39 @@ mixin ScenarioUtilsMixin {
         filePath: path,
         fileSize: await file.length(),
       );
-      final uploadUri = mailboxDashBoardController.sessionCurrent!.getUploadUri(
-        mailboxDashBoardController.accountId.value!,
-        jmapUrl: mailboxDashBoardController.dynamicUrlInterceptors.jmapUrl,
-      );
-      
-      final uploadAttachmentInteractor = Get.find<UploadAttachmentInteractor>();
-      final uploadAttachmentState = await uploadAttachmentInteractor
-        .execute(fileInfo, uploadUri)
-        .last;
-      final attachment = await uploadAttachmentState.fold(
-        (failure) => null,
-        (success) async {
-          if (success is UploadAttachmentSuccess) {
-            final uploadAttachment = await success.uploadAttachment.progressState.last;
-            return uploadAttachment.fold(
-              (failure) => null,
-              (success) {
-                if (success is! SuccessAttachmentUploadState) return null;
 
-                return success.attachment;
-              },
-            );
-          }
-        },
-      );
-      if (attachment != null) {
-        attachments.add(attachment);
+      try {
+        final uploadUri = mailboxDashBoardController.sessionCurrent!.getUploadUri(
+          mailboxDashBoardController.accountId.value!,
+          jmapUrl: mailboxDashBoardController.dynamicUrlInterceptors.jmapUrl,
+        );
+
+        final uploadAttachmentInteractor = Get.find<UploadAttachmentInteractor>();
+        final uploadAttachmentState = await uploadAttachmentInteractor
+          .execute(fileInfo, uploadUri)
+          .last;
+        final attachment = await uploadAttachmentState.fold(
+          (failure) => null,
+          (success) async {
+            if (success is UploadAttachmentSuccess) {
+              final uploadAttachment = await success.uploadAttachment.progressState.last;
+              return uploadAttachment.fold(
+                (failure) => null,
+                (success) {
+                  if (success is! SuccessAttachmentUploadState) return null;
+
+                  return success.attachment;
+                },
+              );
+            }
+          },
+        );
+        if (attachment != null) {
+          attachments.add(attachment);
+        }
+      } catch (e) {
+        logError('ScenarioUtilsMixin::uploadAttachments(): $e');
+        return attachments;
       }
     }
 

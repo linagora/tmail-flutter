@@ -1,0 +1,1 @@
+class UnknownAddressException implements Exception {}

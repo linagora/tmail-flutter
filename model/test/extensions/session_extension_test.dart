@@ -5,12 +5,15 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/account/account.dart';
 import 'package:jmap_dart_client/jmap/core/capability/calendar_event_capability.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/core/capability/default_capability.dart';
 import 'package:jmap_dart_client/jmap/core/capability/empty_capability.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/error_type_handler/unknown_address_exception.dart';
 import 'package:model/extensions/session_extension.dart';
+import 'package:model/principals/capability_principals.dart';
 
 void main() {
   final accountId = AccountId(Id('123abc'));
@@ -80,7 +83,7 @@ void main() {
 
     test(
       'should return null '
-      'when calendar event capability supportes no language',
+      'when calendar event capability supports no language',
     () {
       // arrange
       final calendarEventCapability = CalendarEventCapability();
@@ -163,6 +166,124 @@ void main() {
 
       // assert
       expect(calendarEventLanguage, 'vi');
+    });
+  });
+
+  group('getOwnEmailAddress test:', () {
+    test(
+      'should return username.value '
+      'when it is a valid email and principals capability is absent',
+    () {
+      // arrange
+      final session = Session({}, {}, {}, UserName('test@example.com'), Uri(), Uri(), Uri(), Uri(), State(''),);
+
+      // act
+      final emailAddress = session.getOwnEmailAddress();
+
+      // assert
+      expect(emailAddress, 'test@example.com');
+    });
+
+    test(
+      'should return username.value'
+      'when it is a valid email and principals capability is present but has no address',
+    () {
+      // arrange
+      final session = Session(
+        {capabilityPrincipals: DefaultCapability({})},
+        {}, {}, UserName('test@example.com'), Uri(), Uri(), Uri(), Uri(), State(''),
+      );
+
+      // act
+      final emailAddress = session.getOwnEmailAddress();
+
+      // assert
+      expect(emailAddress, 'test@example.com');
+    });
+
+    test(
+      'should return username.value'
+      'when it is a valid email and principals capability is present with an address',
+    () {
+      // arrange
+      final session = Session(
+        {capabilityPrincipals: DefaultCapability({'key': {'subKey': 'mailto:another@example.com'}})},
+        {}, {}, UserName('test@example.com'), Uri(), Uri(), Uri(), Uri(), State(''),
+      );
+
+      // act
+      final emailAddress = session.getOwnEmailAddress();
+
+      // assert
+      expect(emailAddress, 'test@example.com');
+    });
+
+    test(
+      'should throw exception'
+      'when username is not a valid email and principals capability is absent',
+    () {
+      // arrange
+      final session = Session({}, {}, {}, UserName('notAnEmail'), Uri(), Uri(), Uri(), Uri(), State(''));
+
+      // assert
+      expect(() => session.getOwnEmailAddress(), throwsA(isA<UnknownAddressException>()));
+    });
+
+    test(
+      'should return null'
+      'when username is not a valid email and principals capability is present but has no address',
+    () {
+      // arrange
+      final session = Session(
+        {capabilityPrincipals: DefaultCapability({})},
+        {}, {}, UserName('notAnEmail'), Uri(), Uri(), Uri(), Uri(), State(''),
+      );
+
+      // assert
+      expect(() => session.getOwnEmailAddress(), throwsA(isA<UnknownAddressException>()));
+    });
+
+    test(
+      'should return null'
+      'when username is not a valid email and principals capability is present but has no valid address',
+    () {
+      // arrange
+      final session = Session(
+        {capabilityPrincipals: DefaultCapability({'key': {'subKey': 'test@example.com'}})},
+        {}, {}, UserName('notAnEmail'), Uri(), Uri(), Uri(), Uri(), State(''),
+      );
+
+      // assert
+      expect(() => session.getOwnEmailAddress(), throwsA(isA<UnknownAddressException>()));
+    });
+
+    test(
+      'should return email address from principals capability'
+      'when username is not a valid email and principals capability is present with an address',
+    () {
+      // arrange
+      final capability = DefaultCapability({
+        "currentUserPrincipalId": "bob",
+        "urn:ietf:params:jmap:calendars": {
+          "accountId": "bob",
+          "account": null,
+          "mayGetAvailability": true,
+          "sendTo": {
+            "imip": "mailto:bob@example.com"
+          }
+        }
+      });
+
+      final session = Session(
+        {capabilityPrincipals: capability},
+        {}, {}, UserName('notAnEmail'), Uri(), Uri(), Uri(), Uri(), State(''),
+      );
+
+      // act
+      final emailAddress = session.getOwnEmailAddress();
+
+      // assert
+      expect(emailAddress, 'bob@example.com');
     });
   });
 }

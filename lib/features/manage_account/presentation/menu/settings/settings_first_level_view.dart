@@ -2,6 +2,8 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
@@ -20,7 +22,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
       child: Column(children: [
         Obx(() => UserInformationWidget(
           userName: controller.manageAccountDashboardController.accountId.value != null
-            ? controller.manageAccountDashboardController.sessionCurrent?.username
+            ? UserName(controller.manageAccountDashboardController.sessionCurrent!.getOwnEmailAddress())
             : null,
           padding: SettingsUtils.getPaddingInFirstLevel(context, controller.responsiveUtils),
           titlePadding: const EdgeInsetsDirectional.only(start: 16))),

@@ -153,6 +153,9 @@ class ContactController extends BaseController with AutoCompleteResultMixin {
   Future<void> _searchContactByNameOrEmail(String query) async {
     log('ContactController::_searchContactByNameOrEmail(): query: $query');
     final listContact = await _getAutoCompleteSuggestion(query);
+    if (query.isEmail && !listContact.any((emailAddress) => emailAddress.email == query)) {
+      listContact.add(EmailAddress(null, query));
+    }
     searchedContactList.value = listContact;
   }
 

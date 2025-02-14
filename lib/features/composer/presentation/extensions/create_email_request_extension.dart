@@ -9,7 +9,7 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/email_address_extension.dart';
-import 'package:model/extensions/username_extension.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/identity_extension.dart';
@@ -26,7 +26,7 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
     if (identity?.email?.isNotEmpty == true) {
       return { identity!.toEmailAddress() };
     } else {
-      return { session.username.toEmailAddress() };
+      return { EmailAddress(null, session.getOwnEmailAddress()) };
     }
   }
 
@@ -34,7 +34,7 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
     if (emailActionType == EmailActionType.editDraft && fromSender.isNotEmpty) {
       return fromSender.first.emailAddress;
     } else {
-      return session.username.value;
+      return session.getOwnEmailAddress();
     }
   }
 
@@ -42,7 +42,7 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
     if (identity?.replyTo?.isNotEmpty == true) {
       return identity!.replyTo!.toSet();
     } else {
-      return { session.username.toEmailAddress() };
+      return { EmailAddress(null, session.getOwnEmailAddress()) };
     }
   }
 

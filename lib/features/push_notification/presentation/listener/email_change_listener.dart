@@ -4,6 +4,7 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -334,13 +335,18 @@ class EmailChangeListener extends ChangeListener {
     if (_getListDetailedEmailByIdInteractor != null &&
         _dynamicUrlInterceptors != null &&
         session != null) {
-      final baseDownloadUrl = session.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors!.jmapUrl);
-      consumeState(_getListDetailedEmailByIdInteractor!.execute(
-        session,
-        accountId,
-        emailIds,
-        baseDownloadUrl
-      ));
+      try {
+        final baseDownloadUrl = session.getDownloadUrl(jmapUrl: _dynamicUrlInterceptors!.jmapUrl);
+        consumeState(_getListDetailedEmailByIdInteractor!.execute(
+            session,
+            accountId,
+            emailIds,
+            baseDownloadUrl
+        ));
+      } catch (e) {
+        logError('EmailChangeListener::_getListDetailedEmailByIdAction(): $e');
+        consumeState(Stream.value(Left(GetDetailedEmailByIdFailure(e))));
+      }
     }
   }
 

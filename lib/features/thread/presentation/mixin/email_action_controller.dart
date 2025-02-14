@@ -337,4 +337,8 @@ mixin EmailActionController {
   void archiveMessage(BuildContext context, PresentationEmail email) {
     mailboxDashBoardController.archiveMessage(context, email);
   }
+
+  bool hasArchiveMailbox() {
+    return mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleArchive) != null;
+  }
 }
