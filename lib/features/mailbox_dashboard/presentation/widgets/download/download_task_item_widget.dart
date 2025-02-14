@@ -3,10 +3,12 @@ import 'package:byte_converter/byte_converter.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
+import 'package:tmail_ui_user/features/base/widget/circle_loading_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 
@@ -43,7 +45,7 @@ class DownloadTaskItemWidget extends StatelessWidget {
                   fit: BoxFit.fill),
               Center(
                 child: taskState.percentDownloading == 0
-                  ? const CircularProgressIndicator(color: AppColor.primaryColor, strokeWidth: 3)
+                  ? const CircleLoadingWidget(strokeWidth: 3)
                   : CircularPercentIndicator(
                       percent: taskState.percentDownloading,
                       backgroundColor: AppColor.colorBgMailboxSelected,
@@ -83,7 +85,13 @@ class DownloadTaskItemWidget extends StatelessWidget {
                 )
               ],
             ),
-          )
+          ),
+          if (taskState.onCancel != null)
+            TMailButtonWidget.fromIcon(
+              icon: imagePaths.icClose,
+              onTapActionCallback: taskState.onCancel,
+              backgroundColor: Colors.transparent,
+            ),
         ],
       ),
     );

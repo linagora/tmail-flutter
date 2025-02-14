@@ -1,5 +1,6 @@
 
 import 'package:equatable/equatable.dart';
+import 'package:flutter/widgets.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
 
@@ -9,13 +10,15 @@ class DownloadTaskState with EquatableMixin {
   final double progress;
   final int downloaded;
   final int total;
+  final VoidCallback? onCancel;
 
   DownloadTaskState({
     required this.taskId,
     required this.attachment,
     this.progress = 0,
     this.downloaded = 0,
-    this.total = 0
+    this.total = 0,
+    this.onCancel,
   });
 
   DownloadTaskState copyWith({
@@ -23,14 +26,16 @@ class DownloadTaskState with EquatableMixin {
     Attachment? attachment,
     double? progress,
     int? downloaded,
-    int? total
+    int? total,
+    VoidCallback? onCancel
   }) {
     return DownloadTaskState(
       taskId: taskId ?? this.taskId,
       attachment: attachment ?? this.attachment,
       progress: progress ?? this.progress,
       downloaded: downloaded ?? this.downloaded,
-      total: total ?? this.total
+      total: total ?? this.total,
+      onCancel: onCancel ?? this.onCancel,
     );
   }
 
@@ -46,5 +51,5 @@ class DownloadTaskState with EquatableMixin {
   }
 
   @override
-  List<Object?> get props => [taskId, attachment, progress, downloaded, total];
+  List<Object?> get props => [taskId, attachment, progress, downloaded, total, onCancel];
 }
