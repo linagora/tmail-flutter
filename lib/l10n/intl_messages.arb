@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-02-14T03:54:25.566450",
+  "@@last_modified": "2025-02-14T13:45:41.868026",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4192,6 +4192,12 @@
   },
   "hideAll": "Hide all",
   "@hideAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exitFullscreen": "Exit fullscreen",
+  "@exitFullscreen": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

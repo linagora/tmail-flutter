@@ -27,6 +27,9 @@ class _ComposerOverlayViewState extends State<ComposerOverlayView> {
 
   @override
   Widget build(BuildContext context) {
+    _composerManager.syncComposerStateWhenResponsiveChanged(
+      screenWidth: context.width,
+    );
     return Obx(() {
       final composers = _composerManager.composers;
       final composerIdsQueue = _composerManager.composerIdsQueue;
@@ -44,14 +47,6 @@ class _ComposerOverlayViewState extends State<ComposerOverlayView> {
         return _composerManager.getComposerView(composerIdsQueue.first);
       }
 
-      final isExceedsScreenSize = _composerManager.isExceedsScreenSize(
-        screenWidth: context.width,
-      );
-
-      if (isExceedsScreenSize) {
-        _composerManager.syncComposerQueue(screenWidth: context.width);
-      }
-
       final countComposerHidden = _composerManager.countComposerHidden;
       final visibleComposers = composerIdsQueue
           .map(_composerManager.getComposerView)
@@ -60,21 +55,24 @@ class _ComposerOverlayViewState extends State<ComposerOverlayView> {
 
       return Align(
         alignment: AlignmentDirectional.bottomEnd,
-        child: Padding(
-          padding: const EdgeInsetsDirectional.all(ComposerUtils.padding),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (countComposerHidden > 0)
-                ExpandComposerButton(
-                  countComposerHidden: countComposerHidden,
-                  onRemoveHiddenComposerItem: (controller) =>
-                      controller.handleClickCloseComposer(context),
-                  onShowComposerAction: _composerManager.showComposerIfHidden,
-                ),
-              ...visibleComposers,
-            ],
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Padding(
+            padding: const EdgeInsetsDirectional.all(ComposerUtils.padding),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (countComposerHidden > 0)
+                  ExpandComposerButton(
+                    countComposerHidden: countComposerHidden,
+                    onRemoveHiddenComposerItem: (controller) =>
+                        controller.handleClickCloseComposer(context),
+                    onShowComposerAction: _composerManager.showComposerIfHidden,
+                  ),
+                ...visibleComposers,
+              ],
+            ),
           ),
         ),
       );
