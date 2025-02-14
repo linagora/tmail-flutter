@@ -7,4 +7,5 @@ class ComposerUtils {
   static const double composerExpandMoreButtonMaxWidth = 130;
   static const double composerExpandMoreButtonMaxHeight = 52;
   static const double padding = 16;
+  static const double space = 8;
 }
