@@ -30,50 +30,19 @@ extension UpdateScreenDisplayModeExtension on ComposerController {
     }
   }
 
-  void setScreenDisplayMode(ScreenDisplayMode displayMode) =>
-      screenDisplayMode.value = displayMode;
+  void setScreenDisplayMode(ScreenDisplayMode newDisplayMode) =>
+      screenDisplayMode.value = newDisplayMode;
 
-  bool setToMinimizeIfNormal() {
-    if (isNormalScreen) {
-      screenDisplayMode.value = ScreenDisplayMode.minimize;
-      return true;
-    }
-    return false;
-  }
-
-  void updateDisplayModeForComposerQueue(ScreenDisplayMode displayMode) {
+  void updateDisplayModeForComposerQueue(ScreenDisplayMode newDisplayMode) {
     if (composerId == null || currentContext == null) return;
 
     final composerManager = mailboxDashBoardController.composerManager;
     final screenWidth = responsiveUtils.getSizeScreenWidth(currentContext!);
 
-    if (!composerManager.isExceedsScreenSize(screenWidth: screenWidth)) {
-      return;
-    }
-
-    if (displayMode == ScreenDisplayMode.normal) {
-      final recordComposerIds = composerManager.findSurroundingComposerIds(composerId!);
-      final nextComposer = recordComposerIds.nextTargetId;
-      final prevComposer = recordComposerIds.previousTargetId;
-
-      if (nextComposer != null && composerManager.getComposerView(nextComposer).controller.setToMinimizeIfNormal()) {
-        return;
-      }
-      if (prevComposer != null && composerManager.getComposerView(prevComposer).controller.setToMinimizeIfNormal()) {
-        return;
-      }
-
-      final firstNormalComposerId = composerManager.findFirstNormalComposerIdInQueue();
-      if (firstNormalComposerId != null && firstNormalComposerId != composerId) {
-        composerManager
-          .getComposerView(firstNormalComposerId)
-          .controller
-          .setScreenDisplayMode(ScreenDisplayMode.minimize);
-      }
-    } else if (displayMode == ScreenDisplayMode.fullScreen) {
-
-    }
-
-    composerManager.syncComposerQueue(screenWidth: screenWidth);
+    composerManager.syncComposerStateWhenComposerDisplayModeChanged(
+      screenWidth: screenWidth,
+      updatedComposerId: composerId!,
+      newDisplayMode: newDisplayMode,
+    );
   }
 }

@@ -4513,4 +4513,11 @@ class AppLocalizations {
       name: 'hideAll',
     );
   }
+
+  String get exitFullscreen {
+    return Intl.message(
+      'Exit fullscreen',
+      name: 'exitFullscreen',
+    );
+  }
 }
