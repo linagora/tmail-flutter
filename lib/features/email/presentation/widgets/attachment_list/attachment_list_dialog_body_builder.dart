@@ -130,7 +130,8 @@ class AttachmentListDialogBodyBuilder extends StatelessWidget {
                 AttachmentListActionButtonBuilder(
                     name: AppLocalizations.of(context).downloadAll,
                     bgColor: AttachmentListStyles.downloadAllButtonColor,
-                    textStyle: AttachmentListStyles.downloadAllButtonTextStyle
+                    textStyle: AttachmentListStyles.downloadAllButtonTextStyle,
+                    action: onDownloadAllButtonAction,
                 ),
               if (onDownloadAllButtonAction != null && onCancelButtonAction != null)
                 const SizedBox(width: AttachmentListStyles.buttonsSpaceBetween),

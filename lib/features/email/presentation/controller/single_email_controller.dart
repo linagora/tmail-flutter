@@ -1036,6 +1036,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     return session?.isDownloadAllSupported(accountId) ?? false;
   }
 
+  bool downloadAllButtonIsEnabled() {
+    return isDownloadAllSupported() && attachments.length > 1;
+  }
+
   void _downloadAllAttachmentsForWebFailure(
     DownloadAllAttachmentsForWebFailure failure,
   ) {
@@ -1798,6 +1802,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         ..onCloseButtonAction(() => popBack())
         ..onDownloadAttachmentFileAction((attachment) => handleDownloadAttachmentAction(context, attachment))
         ..onViewAttachmentFileAction((attachment) => handleViewAttachmentAction(context, attachment))
+        ..onDownloadAllButtonAction(() => downloadAllAttachmentsForWeb('TwakeMail-${DateTime.now()}'))
       ).show();
     } else {
       Get.dialog(
@@ -1811,6 +1816,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             onCloseButtonAction: () => popBack(),
             onDownloadAttachmentFileAction: (attachment) => handleDownloadAttachmentAction(context, attachment),
             onViewAttachmentFileAction: (attachment) => handleViewAttachmentAction(context, attachment),
+            onDownloadAllButtonAction: () => downloadAllAttachmentsForWeb('TwakeMail-${DateTime.now()}'),
           )
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
