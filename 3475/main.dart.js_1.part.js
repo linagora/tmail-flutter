@@ -647,7 +647,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return C.SizedBox_0_0_null_null;
       }
     },
-    $signature: 94
+    $signature: 95
   };
   B.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -840,5 +840,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "l52WSy6VQB4T/9wEHyiuHCtmdOQ=");
+})($__dart_deferred_initializers__, "pb0JVdcdNoz0Wi4mWOQOelDITH8=");
 ;
