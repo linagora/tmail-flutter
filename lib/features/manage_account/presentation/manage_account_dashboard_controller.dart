@@ -2,6 +2,7 @@
 import 'package:back_button_interceptor/back_button_interceptor.dart';
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart';
+import 'package:fcm/model/firebase_capability.dart';
 import 'package:flutter/material.dart';
 import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
@@ -224,6 +225,14 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
   bool get isVacationCapabilitySupported {
     if (accountId.value != null && sessionCurrent != null) {
       return [CapabilityIdentifier.jmapVacationResponse].isSupported(sessionCurrent!, accountId.value!);
+    } else {
+      return false;
+    }
+  }
+
+  bool get isFcmCapabilitySupported {
+    if (accountId.value != null && sessionCurrent != null) {
+      return [FirebaseCapability.fcmIdentifier].isSupported(sessionCurrent!, accountId.value!);
     } else {
       return false;
     }

@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.d
 import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_dashboard/app_list_dashboard_item.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -27,7 +28,8 @@ mixin MailboxWidgetMixin {
 
   List<MailboxActions> _listActionForDefaultMailbox(
     PresentationMailbox mailbox,
-    bool spamReportEnabled
+    bool spamReportEnabled,
+    bool deletedMessageVaultSupported
   ) {
 
     return [
@@ -38,7 +40,8 @@ mixin MailboxWidgetMixin {
       if (mailbox.isTrash)
         ...[
           MailboxActions.emptyTrash,
-          MailboxActions.recoverDeletedMessages
+          if (deletedMessageVaultSupported)
+            MailboxActions.recoverDeletedMessages,
         ]
       else if (mailbox.isSpam)
         ...[
@@ -84,10 +87,11 @@ mixin MailboxWidgetMixin {
 
   List<MailboxActions> _listActionForAllMailboxType(
     PresentationMailbox mailbox,
-    bool spamReportEnabled
+    bool spamReportEnabled,
+    bool deletedMessageVaultSupported
   ) {
     if (mailbox.isDefault) {
-      return _listActionForDefaultMailbox(mailbox, spamReportEnabled);
+      return _listActionForDefaultMailbox(mailbox, spamReportEnabled, deletedMessageVaultSupported);
     } else if (mailbox.isPersonal) {
       return _listActionForPersonalMailbox(mailbox);
     } else {
@@ -101,9 +105,14 @@ mixin MailboxWidgetMixin {
     PresentationMailbox mailbox,
     MailboxController controller
   ) {
+    final bool deletedMessageVaultSupported = MailboxUtils.isDeletedMessageVaultSupported(
+        controller.mailboxDashBoardController.sessionCurrent,
+        controller.mailboxDashBoardController.accountId.value);
+
     final contextMenuActions = listContextMenuItemAction(
       mailbox,
-      controller.mailboxDashBoardController.enableSpamReport
+      controller.mailboxDashBoardController.enableSpamReport,
+      deletedMessageVaultSupported
     );
 
     if (contextMenuActions.isEmpty) {
@@ -174,9 +183,10 @@ mixin MailboxWidgetMixin {
 
   List<ContextMenuItemMailboxAction> listContextMenuItemAction(
     PresentationMailbox mailbox,
-    bool spamReportEnabled
+    bool spamReportEnabled,
+    bool deletedMessageVaultSupported
   ) {
-    final mailboxActionsSupported = _listActionForAllMailboxType(mailbox, spamReportEnabled);
+    final mailboxActionsSupported = _listActionForAllMailboxType(mailbox, spamReportEnabled, deletedMessageVaultSupported);
 
     final listContextMenuItemAction = mailboxActionsSupported
       .map((action) => ContextMenuItemMailboxAction(action, action.getContextMenuItemState(mailbox)))
@@ -193,9 +203,14 @@ mixin MailboxWidgetMixin {
     PresentationMailbox mailbox,
     MailboxController controller
   ) {
+    final bool deletedMessageVaultSupported = MailboxUtils.isDeletedMessageVaultSupported(
+        controller.mailboxDashBoardController.sessionCurrent,
+        controller.mailboxDashBoardController.accountId.value);
+
     final contextMenuActions = listContextMenuItemAction(
       mailbox,
-      controller.mailboxDashBoardController.enableSpamReport
+      controller.mailboxDashBoardController.enableSpamReport,
+      deletedMessageVaultSupported
     );
 
     if (contextMenuActions.isEmpty) {

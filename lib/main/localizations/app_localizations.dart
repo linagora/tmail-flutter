@@ -114,6 +114,19 @@ class AppLocalizations {
         name: 'unknownError');
   }
 
+  String unexpectedError(String errorMessage) {
+    return Intl.message('Unexpected error: $errorMessage',
+        name: 'unexpectedError',
+        args: [errorMessage]);
+  }
+
+  String handshakeException(String errorMessage) {
+    return Intl.message(
+      'Handshake error in client: $errorMessage',
+      name: 'handshakeException',
+      args: [errorMessage]);
+  }
+
   String get search_folder {
     return Intl.message(
       'Search folder',

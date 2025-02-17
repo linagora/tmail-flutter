@@ -141,20 +141,26 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           AccountMenuItem.languageAndRegion.getIcon(controller.imagePaths),
           () => controller.selectSettings(AccountMenuItem.languageAndRegion)
         ),
-        if (PlatformInfo.isMobile) ...[
-          Divider(
-            color: AppColor.colorDividerHorizontal,
-            height: 1,
-            indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-            endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
-          ),
-          SettingFirstLevelTileBuilder(
-            AppLocalizations.of(context).notification,
-            controller.imagePaths.icNotification,
-            () => controller.selectSettings(AccountMenuItem.notification),
-            subtitle: AppLocalizations.of(context).allowsTwakeMailToNotifyYouWhenANewMessageArrivesOnYourPhone,
-          )
-        ],
+        Obx(() {
+          if (PlatformInfo.isMobile && controller.manageAccountDashboardController.isFcmCapabilitySupported) {
+            return Column(children: [
+              Divider(
+                  color: AppColor.colorDividerHorizontal,
+                  height: 1,
+                  indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
+                  endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
+              ),
+              SettingFirstLevelTileBuilder(
+                AppLocalizations.of(context).notification,
+                controller.imagePaths.icNotification,
+                    () => controller.selectSettings(AccountMenuItem.notification),
+                subtitle: AppLocalizations.of(context).allowsTwakeMailToNotifyYouWhenANewMessageArrivesOnYourPhone,
+              )
+            ]);
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
         Obx(() {
           final accountId = controller
             .manageAccountDashboardController
