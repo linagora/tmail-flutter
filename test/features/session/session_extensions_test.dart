@@ -6,6 +6,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:model/download_all/download_all_capability.dart';
 import 'package:model/support/contact_support_capability.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 
@@ -197,6 +198,229 @@ void main() {
 
       // Act
       final result = session.getContactSupportCapability(AccountFixtures.aliceAccountId);
+
+      // Assert
+      expect(result, isNull);
+    });
+  });
+
+  group('isDownloadAllSupported::test', () {
+    test('SHOULD return false WHEN AccountId is null', () {
+      // Arrange
+      final session = Session(
+          {},
+          {},
+          {},
+          UserName(''),
+          Uri(),
+          Uri(),
+          Uri(),
+          Uri(),
+          State(''),
+      );
+
+      // Act
+      final result = session.isDownloadAllSupported(null);
+
+      // Assert
+      expect(result, isFalse);
+    });
+
+    test('SHOULD return false WHEN isSupported is false', () {
+      // Arrange
+      final session = Session(
+          {},
+          {},
+          {},
+          UserName(''),
+          Uri(),
+          Uri(),
+          Uri(),
+          Uri(),
+          State(''),
+      );
+
+      // Act
+      final result = session.isDownloadAllSupported(AccountFixtures.aliceAccountId);
+
+      // Assert
+      expect(result, isFalse);
+    });
+
+    test('SHOULD return false WHEN isSupported is true but endpoint is null', () {
+      // Arrange
+      final session = Session(
+          {},
+          {
+            AccountFixtures.aliceAccountId: Account(
+              AccountName('Alice'),
+              true,
+              false,
+              {
+                SessionExtensions.linagoraDownloadAllCapability: DownloadAllCapability()
+              },
+            )
+          },
+          {},
+          UserName(''),
+          Uri(),
+          Uri(),
+          Uri(),
+          Uri(),
+          State(''),
+      );
+
+      // Act
+      final result = session.isDownloadAllSupported(AccountFixtures.aliceAccountId);
+
+      // Assert
+      expect(result, isFalse);
+    });
+
+    test('SHOULD return false WHEN isSupported is true but endpoint is empty', () {
+      // Arrange
+      final session = Session(
+          {},
+          {
+            AccountFixtures.aliceAccountId: Account(
+              AccountName('Alice'),
+              true,
+              false,
+              {
+                SessionExtensions.linagoraDownloadAllCapability: DownloadAllCapability(endpoint: '')
+              },
+            )
+          },
+          {},
+          UserName(''),
+          Uri(),
+          Uri(),
+          Uri(),
+          Uri(),
+          State(''),
+      );
+
+      // Act
+      final result = session.isDownloadAllSupported(AccountFixtures.aliceAccountId);
+
+      // Assert
+      expect(result, isFalse);
+    });
+
+    test('SHOULD return true WHEN isSupported is true and endpoint is not empty', () {
+      // Arrange
+      final session = Session(
+          {},
+          {
+            AccountFixtures.aliceAccountId: Account(
+              AccountName('Alice'),
+              true,
+              false,
+              {
+              SessionExtensions.linagoraDownloadAllCapability: DownloadAllCapability(
+                endpoint: 'https://example.com')
+              },
+            )
+          },
+          {},
+          UserName(''),
+          Uri(),
+          Uri(),
+          Uri(),
+          Uri(),
+          State(''),
+      );
+
+      // Act
+      final result = session.isDownloadAllSupported(AccountFixtures.aliceAccountId);
+
+      // Assert
+      expect(result, isTrue);
+    });
+  });
+
+  group('getDownloadAllCapability::test', () {
+    test('SHOULD return DownloadAllCapability WHEN DownloadAllCapability is available', () {
+      // Arrange
+      final session = Session(
+          {},
+          {
+            AccountFixtures.aliceAccountId: Account(
+              AccountName('Alice'),
+              true,
+              false,
+              {
+                SessionExtensions.linagoraDownloadAllCapability: DownloadAllCapability()
+              },
+            )
+          },
+          {},
+          UserName(''),
+          Uri(),
+          Uri(),
+          Uri(),
+          Uri(),
+          State(''),
+      );
+
+      // Act
+      final result = session.getDownloadAllCapability(AccountFixtures.aliceAccountId);
+
+      // Assert
+      expect(result, isNotNull);
+    });
+    test('SHOULD return null WHEN DownloadAllCapability is not available', () {
+      // Arrange
+      final session = Session(
+          {},
+          {
+            AccountFixtures.aliceAccountId: Account(
+              AccountName('Alice'),
+              true,
+              false,
+              {
+                SessionExtensions.linagoraDownloadAllCapability: EmptyCapability()
+              },
+            )
+          },
+          {},
+          UserName(''),
+          Uri(),
+          Uri(),
+          Uri(),
+          Uri(),
+          State(''),
+      );
+
+      // Act
+      final result = session.getDownloadAllCapability(AccountFixtures.aliceAccountId);
+
+      // Assert
+      expect(result, isNull);
+    });
+    test('SHOULD return null WHEN DownloadAllCapability is not supported', () {
+      // Arrange
+      final session = Session(
+          {},
+          {
+            AccountFixtures.aliceAccountId: Account(
+              AccountName('Alice'),
+              true,
+              false,
+              {},
+            )
+          },
+          {},
+          UserName(''),
+          Uri(),
+          Uri(),
+          Uri(),
+          Uri(),
+          State(''),
+      );
+
+      // Act
+      final result = session.getDownloadAllCapability(AccountFixtures.aliceAccountId);
 
       // Assert
       expect(result, isNull);

@@ -199,4 +199,24 @@ abstract class EmailRepository {
   Future<String> sanitizeHtmlContent(
     String htmlContent,
     TransformConfiguration configuration);
+
+  Future<void> downloadAllAttachmentsForWeb(
+    AccountId accountId,
+    EmailId emailId,
+    String baseDownloadAllUrl,
+    String outputFileName,
+    AccountRequest accountRequest,
+    DownloadTaskId taskId,
+    StreamController<Either<Failure, Success>> onReceiveController,
+    {CancelToken? cancelToken}
+  );
+
+  Future<DownloadedResponse> exportAllAttachments(
+    AccountId accountId,
+    EmailId emailId,
+    String baseDownloadAllUrl,
+    String outputFileName,
+    AccountRequest accountRequest,
+    {CancelToken? cancelToken}
+  );
 }

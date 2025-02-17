@@ -201,4 +201,24 @@ abstract class EmailDataSource {
   Future<void> storePreviewEMLContentToSessionStorage(EMLPreviewer emlPreviewer);
 
   Future<EMLPreviewer> getPreviewEMLContentInMemory(String keyStored);
+
+  Future<void> downloadAllAttachmentsForWeb(
+    AccountId accountId,
+    EmailId emailId,
+    String baseDownloadAllUrl,
+    String outputFileName,
+    AccountRequest accountRequest,
+    DownloadTaskId taskId,
+    StreamController<Either<Failure, Success>> onReceiveController,
+    {CancelToken? cancelToken}
+  );
+
+  Future<DownloadedResponse> exportAllAttachments(
+    AccountId accountId,
+    EmailId emailId,
+    String baseDownloadAllUrl,
+    String outputFileName,
+    AccountRequest accountRequest,
+    {CancelToken? cancelToken}
+  );
 }

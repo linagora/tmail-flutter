@@ -563,4 +563,23 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   Future<EMLPreviewer> getPreviewEMLContentInMemory(String keyStored) {
     throw UnimplementedError();
   }
+  
+  @override
+  Future<void> downloadAllAttachmentsForWeb(
+      AccountId accountId,
+      EmailId emailId,
+      String baseDownloadAllUrl,
+      String outputFileName,
+      AccountRequest accountRequest,
+      DownloadTaskId taskId,
+      StreamController<Either<Failure, Success>> onReceiveController,
+      {CancelToken? cancelToken}
+  ) {
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<DownloadedResponse> exportAllAttachments(AccountId accountId, EmailId emailId, String baseDownloadAllUrl, String outputFileName, AccountRequest accountRequest, {CancelToken? cancelToken}) {
+    throw UnimplementedError();
+  }
 }

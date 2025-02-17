@@ -339,6 +339,8 @@ class EmailView extends GetWidget<SingleEmailController> {
               downloadAttachmentAction: (attachment) => controller.handleDownloadAttachmentAction(context, attachment),
               viewAttachmentAction: (attachment) => controller.handleViewAttachmentAction(context, attachment),
               onTapShowAllAttachmentFile: () => controller.openAttachmentList(context, controller.attachments),
+              showDownloadAllAttachmentsButton: controller.downloadAllButtonIsEnabled(),
+              onTapDownloadAllButton: () => controller.handleDownloadAllAttachmentsAction(context, 'TwakeMail-${DateTime.now()}'),
             );
           } else {
             return const SizedBox.shrink();

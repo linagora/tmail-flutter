@@ -257,6 +257,10 @@ dependencies:
 
   win32: 5.5.1
 
+  uri: 1.0.0
+
+  flutter_file_dialog: 3.0.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

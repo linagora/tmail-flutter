@@ -775,6 +775,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.10.2"
+  flutter_file_dialog:
+    dependency: "direct main"
+    description:
+      name: flutter_file_dialog
+      sha256: "9344b8f07be6a1b6f9854b723fb0cf84a8094ba94761af1d213589d3cb087488"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.2"
   flutter_image_compress:
     dependency: "direct main"
     description:
@@ -2095,7 +2103,7 @@ packages:
     source: hosted
     version: "2.2.2"
   uri:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: uri
       sha256: "889eea21e953187c6099802b7b4cf5219ba8f3518f604a1033064d45b1b8268a"
