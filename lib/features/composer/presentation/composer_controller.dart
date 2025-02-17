@@ -55,6 +55,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_ca
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/get_draft_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_sent_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_shared_media_file_extension.dart';
@@ -483,7 +484,7 @@ class ComposerController extends BaseController
       inlineAttachments: uploadController.mapInlineAttachments,
       outboxMailboxId: mailboxDashBoardController.outboxMailbox?.mailboxId,
       sentMailboxId: getSentMailboxIdForComposer(),
-      draftsMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts],
+      draftsMailboxId: getDraftMailboxIdForComposer(),
       draftsEmailId: getDraftEmailId(),
       answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
       unsubscribeEmailId: composerArguments.value!.previousEmailId,
@@ -1296,7 +1297,7 @@ class ComposerController extends BaseController
     if (composerArguments.value == null ||
         mailboxDashBoardController.sessionCurrent == null ||
         mailboxDashBoardController.accountId.value == null ||
-        mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts] == null
+        getDraftMailboxIdForComposer() == null
     ) {
       log('ComposerController::handleClickSaveAsDraftsButton: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
       _saveToDraftButtonState = ButtonState.enabled;
@@ -2283,7 +2284,7 @@ class ComposerController extends BaseController
     if (composerArguments.value == null ||
         mailboxDashBoardController.sessionCurrent == null ||
         mailboxDashBoardController.accountId.value == null ||
-        mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts] == null
+        getDraftMailboxIdForComposer() == null
     ) {
       log('ComposerController::_handleSaveMessageToDraft: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
       _closeComposerButtonState = ButtonState.enabled;
@@ -2356,7 +2357,7 @@ class ComposerController extends BaseController
           attachments: uploadController.attachmentsUploaded,
           inlineAttachments: uploadController.mapInlineAttachments,
           sentMailboxId: getSentMailboxIdForComposer(),
-          draftsMailboxId: mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleDrafts],
+          draftsMailboxId: getDraftMailboxIdForComposer(),
           draftsEmailId: draftEmailId,
           answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
           unsubscribeEmailId: composerArguments.value!.previousEmailId,

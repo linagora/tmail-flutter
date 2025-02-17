@@ -14,7 +14,7 @@ extension GetSentMailboxIdForComposerExtension on ComposerController {
       .firstWhereOrNull((entry) {
         final mailbox = entry.value;
         return mailbox.emailTeamMailBoxes == identitySelected.value?.email &&
-               mailbox.name?.name.toLowerCase() == lowercaseSentRole;
+          mailbox.name?.name.toLowerCase() == lowercaseSentRole;
       })
       ?.key ?? defaultSentMailbox;
   }
