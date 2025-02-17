@@ -61,13 +61,15 @@ class DownloadAttachmentForWebFailure extends FeatureFailure {
 
   final DownloadTaskId? taskId;
   final Attachment? attachment;
+  final CancelToken? cancelToken;
 
   DownloadAttachmentForWebFailure({
     this.attachment,
     this.taskId,
-    dynamic exception
-  }) : super(exception: exception);
+    this.cancelToken,
+    super.exception
+  });
 
   @override
-  List<Object?> get props => [attachment, taskId, ...super.props];
+  List<Object?> get props => [attachment, taskId, cancelToken, ...super.props];
 }

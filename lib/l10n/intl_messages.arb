@@ -4191,5 +4191,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "downloadAttachmentHasBeenCancelled": "Download attachment has been cancelled",
+  "@downloadAttachmentHasBeenCancelled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

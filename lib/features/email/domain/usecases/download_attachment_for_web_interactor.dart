@@ -77,7 +77,8 @@ class DownloadAttachmentForWebInteractor {
         DownloadAttachmentForWebFailure(
           attachment: attachment,
           taskId: taskId,
-          exception: exception
+          exception: exception,
+          cancelToken: cancelToken,
         )
       );
     }

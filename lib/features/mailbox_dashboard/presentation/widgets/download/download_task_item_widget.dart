@@ -45,7 +45,11 @@ class DownloadTaskItemWidget extends StatelessWidget {
                   fit: BoxFit.fill),
               Center(
                 child: taskState.percentDownloading == 0
-                  ? CircleLoadingWidget(onCancel: taskState.onCancel, strokeWidth: 3)
+                  ? CircleLoadingWidget(
+                      onCancel: taskState.onCancel,
+                      strokeWidth: 3,
+                      imagePaths: imagePaths,
+                    )
                   : CircularPercentIndicator(
                       percent: taskState.percentDownloading,
                       backgroundColor: AppColor.colorBgMailboxSelected,
@@ -88,7 +92,7 @@ class DownloadTaskItemWidget extends StatelessWidget {
           ),
           if (taskState.onCancel != null)
             TMailButtonWidget.fromIcon(
-              icon: ImagePaths().icClose,
+              icon: imagePaths.icClose,
               onTapActionCallback: taskState.onCancel,
               backgroundColor: Colors.transparent,
             ),
