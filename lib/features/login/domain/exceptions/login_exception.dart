@@ -5,6 +5,8 @@ class NotFoundDataResourceRecordException implements Exception {}
 
 class NotFoundUrlException implements Exception {}
 
+class InvalidOIDCResponseException implements Exception {}
+
 class NoSuitableBrowserForOIDCException implements Exception {
 
   static const noBrowserAvailableCode = 'no_browser_available';
