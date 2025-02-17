@@ -248,10 +248,15 @@ void main() {
         PresentationMailbox(MailboxId(Id("1")), parentId: null, name: MailboxName('Inbox'), sortOrder: SortOrder(sortValue: 10), role: Role('inbox')),
       ];
 
-      final generatedTree = await TreeBuilder().generateMailboxTreeInUI(testCase);
+      final generatedTree = await TreeBuilder().generateMailboxTreeInUI(
+        allMailboxes: testCase,
+        currentDefaultTree: MailboxTree(MailboxNode.root()),
+        currentPersonalTree: MailboxTree(MailboxNode.root()),
+        currentTeamMailboxTree: MailboxTree(MailboxNode.root()),
+      );
 
       expect(
-        generatedTree.head.root.childrenItems,
+        generatedTree.defaultTree.root.childrenItems,
         equals(expectedTree.root.childrenItems)
       );
     });

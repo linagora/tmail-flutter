@@ -79,32 +79,36 @@ abstract class BaseMailboxController extends BaseController {
       List<PresentationMailbox> allMailbox,
       {MailboxId? mailboxIdSelected}
   ) async {
-    allMailboxes = allMailbox;
-    final tupleTree = await _treeBuilder.generateMailboxTreeInUI(
-        allMailbox,
-        mailboxIdSelected: mailboxIdSelected);
+    final recordTree = await _treeBuilder.generateMailboxTreeInUI(
+      allMailboxes: allMailbox,
+      currentDefaultTree: defaultMailboxTree.value,
+      currentPersonalTree: personalMailboxTree.value,
+      currentTeamMailboxTree: teamMailboxesTree.value,
+      mailboxIdSelected: mailboxIdSelected,
+    );
     defaultMailboxTree.firstRebuild = true;
     personalMailboxTree.firstRebuild = true;
     teamMailboxesTree.firstRebuild = true;
-    defaultMailboxTree.value = tupleTree.value1;
-    personalMailboxTree.value = tupleTree.value2;
-    teamMailboxesTree.value = tupleTree.value3;
-    allMailboxes = tupleTree.value4;
+    defaultMailboxTree.value = recordTree.defaultTree;
+    personalMailboxTree.value = recordTree.personalTree;
+    teamMailboxesTree.value = recordTree.teamMailboxTree;
+    allMailboxes = recordTree.allMailboxes;
   }
 
   Future<void> refreshTree(List<PresentationMailbox> allMailbox) async {
-    allMailboxes = allMailbox;
-    final tupleTree = await _treeBuilder.generateMailboxTreeInUIAfterRefreshChanges(
-      allMailbox, 
-      defaultMailboxTree.value, 
-      personalMailboxTree.value,
-      teamMailboxesTree.value);
+    final recordTree = await _treeBuilder.generateMailboxTreeInUIAfterRefreshChanges(
+      allMailboxes: allMailbox,
+      currentDefaultTree: defaultMailboxTree.value,
+      currentPersonalTree: personalMailboxTree.value,
+      currentTeamMailboxTree: teamMailboxesTree.value,
+    );
     defaultMailboxTree.firstRebuild = true;
     personalMailboxTree.firstRebuild = true;
     teamMailboxesTree.firstRebuild = true;
-    defaultMailboxTree.value = tupleTree.value1;
-    personalMailboxTree.value = tupleTree.value2;
-    teamMailboxesTree.value = tupleTree.value3;
+    defaultMailboxTree.value = recordTree.defaultTree;
+    personalMailboxTree.value = recordTree.personalTree;
+    teamMailboxesTree.value = recordTree.teamMailboxTree;
+    allMailboxes = allMailbox;
   }
 
   void syncAllMailboxWithDisplayName(BuildContext context) {
@@ -201,11 +205,11 @@ abstract class BaseMailboxController extends BaseController {
 
   MailboxNode? findMailboxNodeById(MailboxId mailboxId) {
     final mailboxNode = defaultMailboxTree.value.findNode((node) => node.item.id == mailboxId);
-    final mailboxPersonal = personalMailboxTree.value.findNode((node) => node.item.id == mailboxId);
     if (mailboxNode != null) {
       return mailboxNode;
     }
-    
+
+    final mailboxPersonal = personalMailboxTree.value.findNode((node) => node.item.id == mailboxId);
     if (mailboxPersonal != null) {
       return mailboxPersonal;
     }
