@@ -127,6 +127,9 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
 
   @override
   int get minInputLengthAutocomplete => AppConfig.defaultMinInputLengthAutocomplete;
+
+  @override
+  Map<MailboxId, PresentationMailbox> get mapMailboxById => {};
 }
 
 @GenerateNiceMocks([
