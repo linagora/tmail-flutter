@@ -45,11 +45,7 @@ class DownloadTaskItemWidget extends StatelessWidget {
                   fit: BoxFit.fill),
               Center(
                 child: taskState.percentDownloading == 0
-                  ? CircleLoadingWidget(
-                      onCancel: taskState.onCancel,
-                      strokeWidth: 3,
-                      imagePaths: imagePaths,
-                    )
+                  ? const CircleLoadingWidget(strokeWidth: 3)
                   : CircularPercentIndicator(
                       percent: taskState.percentDownloading,
                       backgroundColor: AppColor.colorBgMailboxSelected,
