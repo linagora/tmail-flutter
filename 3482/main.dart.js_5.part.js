@@ -765,7 +765,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null;
       return A.Container$(_null, _null, B.Clip_0, B.Color_4285887861, _null, _null, _null, 42, _null, _null, _null, _null, _null, 42);
     },
-    $signature: 430
+    $signature: 438
   };
   C.AppDashboardOverlay_build_closure0.prototype = {
     call$0() {
@@ -811,7 +811,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.push(t3.build$0());
       return A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 375
+    $signature: 377
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -933,5 +933,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "I+Lc8QQUmlgfugTMDDR4F1OI+Qw=");
+})($__dart_deferred_initializers__, "HRptC6wT5HwsJW/dVynuGu2mjZE=");
 ;
