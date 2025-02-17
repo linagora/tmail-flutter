@@ -191,6 +191,13 @@ class AppLocalizations {
     );
   }
 
+  String get reply_to_email_address_prefix {
+    return Intl.message(
+      'Reply to',
+      name: 'reply_to_email_address_prefix',
+    );
+  }
+
   String get cc_email_address_prefix {
     return Intl.message(
       'Cc',
@@ -716,6 +723,22 @@ class AppLocalizations {
     );
   }
 
+  String message_confirmation_dialog_allow_subaddressing(String nameMailbox) {
+    return Intl.message(
+        'You are about to allow anyone to send emails directly to your folder "$nameMailbox" using:',
+        name: 'message_confirmation_dialog_allow_subaddressing',
+        args: [nameMailbox]
+    );
+  }
+
+  String message_confirmation_dialog_allow_subaddressing_mobile(String nameMailbox, String address) {
+    return Intl.message(
+        'You are about to allow anyone to send emails directly to your folder "$nameMailbox" using the address <$address>',
+        name: 'message_confirmation_dialog_allow_subaddressing_mobile',
+        args: [nameMailbox, address]
+    );
+  }
+
   String get renameFolder {
     return Intl.message(
       'Rename folder',
@@ -785,6 +808,12 @@ class AppLocalizations {
     return Intl.message(
         'Email address copied to clipboard',
         name: 'email_address_copied_to_clipboard');
+  }
+
+  String get emailSubaddressCopiedToClipboard {
+    return Intl.message(
+        'Email subaddress copied to clipboard',
+        name: 'emailSubaddressCopiedToClipboard');
   }
 
   String get minimize {
@@ -2409,6 +2438,42 @@ class AppLocalizations {
         name: 'selectParentFolder');
   }
 
+  String get allowSubaddressing {
+    return Intl.message(
+        'Allow subaddressing',
+        name: 'allowSubaddressing');
+  }
+
+  String get allow {
+    return Intl.message(
+        'Allow',
+        name: 'allow');
+  }
+
+  String get disallowSubaddressing {
+    return Intl.message(
+        'Disallow subaddressing',
+        name: 'disallowSubaddressing');
+  }
+
+  String get toastMessageAllowSubaddressingSuccess {
+    return Intl.message(
+        'You have successfully allowed subaddressing for this folder',
+        name: 'toastMessageAllowSubaddressingSuccess');
+  }
+
+  String get toastMessageDisallowSubaddressingSuccess {
+    return Intl.message(
+        'You have successfully disallowed subaddressing for this folder',
+        name: 'toastMessageDisallowSubaddressingSuccess');
+  }
+
+  String get toastMessageSubaddressingFailure {
+    return Intl.message(
+        'There was an error dealing with the request',
+        name: 'toastMessageSubaddressingFailure');
+  }
+
   String get requestReadReceipt {
     return Intl.message(
       'Request read receipt',
@@ -2611,6 +2676,13 @@ class AppLocalizations {
     );
   }
 
+  String get copySubaddress {
+    return Intl.message(
+      'Copy subaddress',
+      name: 'copySubaddress',
+    );
+  }
+
   String get regards {
     return Intl.message(
       'Regards',
@@ -2785,6 +2857,7 @@ class AppLocalizations {
       'This folder is already displayed in your primary folder',
       name: 'toastMessageShowFolderSuccess');
   }
+
   String get folderVisibility {
     return Intl.message(
       'Folder visibility',
@@ -2958,6 +3031,13 @@ class AppLocalizations {
     return Intl.message(
       'Error',
       name: 'error',
+    );
+  }
+
+  String get errorWhileFetchingSubaddress {
+    return Intl.message(
+      'Error while fetching the subaddress',
+      name: 'errorWhileFetchingSubaddress',
     );
   }
 

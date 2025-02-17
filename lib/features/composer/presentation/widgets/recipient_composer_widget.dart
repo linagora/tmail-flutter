@@ -8,6 +8,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/mail/mail_address.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:core/utils/string_convert.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +19,7 @@ import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/mail_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/suggestion_email_address.dart';
@@ -47,6 +49,7 @@ class RecipientComposerWidget extends StatefulWidget {
   final PrefixRecipientState fromState;
   final PrefixRecipientState ccState;
   final PrefixRecipientState bccState;
+  final PrefixRecipientState replyToState;
   final bool? isInitial;
   final FocusNode? focusNode;
   final FocusNode? focusNodeKeyboard;
@@ -77,6 +80,7 @@ class RecipientComposerWidget extends StatefulWidget {
     @visibleForTesting this.isTestingForWeb = false,
     this.ccState = PrefixRecipientState.disabled,
     this.bccState = PrefixRecipientState.disabled,
+    this.replyToState = PrefixRecipientState.disabled,
     this.fromState = PrefixRecipientState.disabled,
     this.isInitial,
     this.controller,
@@ -226,7 +230,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                             return RecipientSuggestionItemWidget(
                               imagePaths: widget.imagePaths,
                               suggestionState: suggestionEmailAddress.state,
-                              emailAddress: suggestionEmailAddress.emailAddress,
+                              emailAddress: MailAddress.validateAddress(suggestionEmailAddress.emailAddress.emailAddress).asEmailAddress(),
                               suggestionValid: suggestionValid,
                               highlight: highlight,
                               onSelectedAction: (emailAddress) {
@@ -317,7 +321,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                         return RecipientSuggestionItemWidget(
                           imagePaths: widget.imagePaths,
                           suggestionState: suggestionEmailAddress.state,
-                          emailAddress: suggestionEmailAddress.emailAddress,
+                          emailAddress: MailAddress.validateAddress(suggestionEmailAddress.emailAddress.emailAddress).asEmailAddress(),
                           suggestionValid: suggestionValid,
                           highlight: highlight,
                           onSelectedAction: (emailAddress) {
@@ -368,6 +372,16 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                     margin: RecipientComposerWidgetStyle.recipientMargin,
                     onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.bcc),
                   ),
+                if (widget.replyToState == PrefixRecipientState.disabled)
+                  TMailButtonWidget.fromText(
+                    key: Key('prefix_${widget.prefix.name}_recipient_reply_to_button'),
+                    text: AppLocalizations.of(context).reply_to_email_address_prefix,
+                    textStyle: RecipientComposerWidgetStyle.prefixButtonTextStyle,
+                    backgroundColor: Colors.transparent,
+                    padding: RecipientComposerWidgetStyle.prefixButtonPadding,
+                    margin: RecipientComposerWidgetStyle.recipientMargin,
+                    onTapActionCallback: () => widget.onAddEmailAddressTypeAction?.call(PrefixEmailAddress.replyTo),
+                  ),
               ]
             else if (PlatformInfo.isMobile)
               TMailButtonWidget.fromIcon(
@@ -410,7 +424,8 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
 
   bool get _isAllRecipientInputEnabled => widget.fromState == PrefixRecipientState.enabled
     && widget.ccState == PrefixRecipientState.enabled
-    && widget.bccState == PrefixRecipientState.enabled;
+    && widget.bccState == PrefixRecipientState.enabled
+    && widget.replyToState == PrefixRecipientState.enabled;
 
   List<EmailAddress> get _collapsedListEmailAddress => _isCollapse
     ? _currentListEmailAddress.sublist(0, 1)
@@ -510,8 +525,9 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
     SuggestionEmailAddress suggestionEmailAddress,
     StateSetter stateSetter
   ) {
-    if (!_isDuplicatedRecipient(suggestionEmailAddress.emailAddress.emailAddress)) {
-      stateSetter(() => _currentListEmailAddress.add(suggestionEmailAddress.emailAddress));
+    MailAddress mailAddress = MailAddress.validateAddress(suggestionEmailAddress.emailAddress.emailAddress);
+    if (!_isDuplicatedRecipient(mailAddress.asEncodedString())) {
+      stateSetter(() => _currentListEmailAddress.add(mailAddress.asEmailAddress()));
       _updateListEmailAddressAction();
     }
   }
@@ -523,9 +539,10 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
 
   void _createMailTag(String value, StateSetter stateSetter) {
     final listString = StringConvert.extractStrings(value.trim()).toSet();
+    MailAddress mailAddress = MailAddress.validateAddress(value.trim());
 
-    if (listString.isEmpty && !_isDuplicatedRecipient(value)) {
-      stateSetter(() => _currentListEmailAddress.add(EmailAddress(null, value)));
+    if (listString.isEmpty && !_isDuplicatedRecipient(mailAddress.asEncodedString())) {
+      stateSetter(() => _currentListEmailAddress.add(mailAddress.asEmailAddress()));
       _updateListEmailAddressAction();
     } else if (listString.isNotEmpty) {
       final listStringNotExist = listString
@@ -547,9 +564,9 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
     String value,
     StateSetter stateSetter
   ) {
-    final textTrim = value.trim();
-    if (!_isDuplicatedRecipient(textTrim)) {
-      stateSetter(() => _currentListEmailAddress.add(EmailAddress(null, textTrim)));
+    MailAddress mailAddress = MailAddress.validateAddress(value.trim());
+    if (!_isDuplicatedRecipient(mailAddress.asEncodedString())) {
+      stateSetter(() => _currentListEmailAddress.add(mailAddress.asEmailAddress()));
       _updateListEmailAddressAction();
     }
     _gapBetweenTagChangedAndFindSuggestion = Timer(

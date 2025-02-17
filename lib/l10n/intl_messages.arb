@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-01-28T10:49:54.473622",
+  "@@last_modified": "2025-02-13T17:07:01.807952",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -182,6 +182,12 @@
   },
   "bcc_email_address_prefix": "Bcc",
   "@bcc_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reply_to_email_address_prefix": "Reply to",
+  "@reply_to_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -698,6 +704,28 @@
       "nameMailbox": {}
     }
   },
+  "message_confirmation_dialog_allow_subaddressing": "You are about to allow anyone to send emails directly to your folder \"{nameMailbox}\" using:",
+  "@message_confirmation_dialog_allow_subaddressing": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox"
+    ],
+    "placeholders": {
+      "nameMailbox": {}
+    }
+  },
+  "message_confirmation_dialog_allow_subaddressing_mobile": "You are about to allow anyone to send emails directly to your folder \"{nameMailbox}\" using the address <{address}>",
+  "@message_confirmation_dialog_allow_subaddressing_mobile": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox",
+      "address"
+    ],
+    "placeholders": {
+      "nameMailbox": {},
+      "address": {}
+    }
+  },
   "renameFolder": "Rename folder",
   "@renameFolder": {
     "type": "text",
@@ -760,6 +788,12 @@
   },
   "email_address_copied_to_clipboard": "Email address copied to clipboard",
   "@email_address_copied_to_clipboard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailSubaddressCopiedToClipboard": "Email subaddress copied to clipboard",
+  "@emailSubaddressCopiedToClipboard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -2332,6 +2366,42 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "allowSubaddressing": "Allow subaddressing",
+  "@allowSubaddressing": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allow": "Allow",
+  "@allow": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "disallowSubaddressing": "Disallow subaddressing",
+  "@disallowSubaddressing": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageAllowSubaddressingSuccess": "You have successfully allowed subaddressing for this folder",
+  "@toastMessageAllowSubaddressingSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageDisallowSubaddressingSuccess": "You have successfully disallowed subaddressing for this folder",
+  "@toastMessageDisallowSubaddressingSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageSubaddressingFailure": "There was an error dealing with the request",
+  "@toastMessageSubaddressingFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "requestReadReceipt": "Request read receipt",
   "@requestReadReceipt": {
     "type": "text",
@@ -2538,6 +2608,12 @@
   },
   "openInNewTab": "Open in new tab",
   "@openInNewTab": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copySubaddress": "Copy subaddress",
+  "@copySubaddress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -4142,6 +4218,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "Your session expired. We need to take you back to the login page in order to refresh it. You might want to save the email you are currently editing before we do so.",
+  "@messageWarningDialogWhenExpiredOIDCTokenAndReconnection": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "replyToList": "Reply to list",
   "@replyToList": {
     "type": "text",
@@ -4174,8 +4256,6 @@
   },
   "editAsNewEmail": "Edit as new email",
   "@editAsNewEmail": {
-  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "Your session expired. We need to take you back to the login page in order to refresh it. You might want to save the email you are currently editing before we do so.",
-  "@messageWarningDialogWhenExpiredOIDCTokenAndReconnection": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

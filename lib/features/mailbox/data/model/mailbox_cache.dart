@@ -48,6 +48,9 @@ class MailboxCache extends HiveObject with EquatableMixin {
   @HiveField(12)
   final String? namespace;
 
+  @HiveField(13)
+  final Map<String, List<String>?>? rights;
+
   MailboxCache(
     this.id,
     {
@@ -63,6 +66,7 @@ class MailboxCache extends HiveObject with EquatableMixin {
       this.isSubscribed,
       this.lastOpened,
       this.namespace,
+      this.rights
     }
   );
 
@@ -80,5 +84,6 @@ class MailboxCache extends HiveObject with EquatableMixin {
     myRights,
     isSubscribed,
     namespace,
+    rights
   ];
 }

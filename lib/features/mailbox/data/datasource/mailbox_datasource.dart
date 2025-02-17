@@ -18,6 +18,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/get_mailbox_by_role_
 import 'package:tmail_ui_user/features/mailbox/domain/model/jmap_mailbox_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/move_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/rename_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_right_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
 
@@ -48,6 +49,8 @@ abstract class MailboxDataSource {
   Future<bool> subscribeMailbox(Session session, AccountId accountId, SubscribeMailboxRequest request);
 
   Future<List<MailboxId>> subscribeMultipleMailbox(Session session, AccountId accountId, SubscribeMultipleMailboxRequest subscribeRequest);
+
+  Future<bool> handleMailboxRightRequest(Session session, AccountId accountId, MailboxRightRequest request);
 
   Future<List<Mailbox>> createDefaultMailbox(Session session, AccountId accountId, List<Role> listRole);
 

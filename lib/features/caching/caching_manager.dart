@@ -118,6 +118,12 @@ class CachingManager {
     ], eagerError: true);
   }
 
+  Future<void> clearMailboxCache() {
+    return Future.wait([
+      _mailboxCacheClient.clearAllData(),
+    ], eagerError: true);
+  }
+
   Future<bool> storeCacheVersion(int newVersion) async {
     log('CachingManager::storeCacheVersion():newVersion = $newVersion');
     return _hiveCacheVersionClient.storeVersion(newVersion);

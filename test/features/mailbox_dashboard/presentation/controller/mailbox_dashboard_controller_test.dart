@@ -36,6 +36,8 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oi
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/exceptions/empty_folder_name_exception.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/exceptions/invalid_mail_format_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_default_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
@@ -44,6 +46,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_r
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/move_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/rename_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/subaddressing_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
@@ -147,6 +150,7 @@ const fallbackGenerators = {
   MockSpec<MoveMailboxInteractor>(),
   MockSpec<SubscribeMailboxInteractor>(),
   MockSpec<SubscribeMultipleMailboxInteractor>(),
+  MockSpec<SubaddressingInteractor>(),
   MockSpec<CreateDefaultMailboxInteractor>(),
   MockSpec<TreeBuilder>(),
   MockSpec<VerifyNameInteractor>(),
@@ -251,6 +255,7 @@ void main() {
   final moveMailboxInteractor = MockMoveMailboxInteractor();
   final subscribeMailboxInteractor = MockSubscribeMailboxInteractor();
   final subscribeMultipleMailboxInteractor = MockSubscribeMultipleMailboxInteractor();
+  final subaddressingInteractor = MockSubaddressingInteractor();
   final createDefaultMailboxInteractor = MockCreateDefaultMailboxInteractor();
   final treeBuilder = MockTreeBuilder();
   final verifyNameInteractor = MockVerifyNameInteractor();
@@ -363,6 +368,7 @@ void main() {
         moveMailboxInteractor,
         subscribeMailboxInteractor,
         subscribeMultipleMailboxInteractor,
+        subaddressingInteractor,
         createDefaultMailboxInteractor,
         treeBuilder,
         verifyNameInteractor,
@@ -574,6 +580,83 @@ void main() {
 
       // Assert
       expect(spamId, isNull);
+    });
+  });
+
+  group('getSubaddress:test', () {
+    setUp(() {
+      getEmailsInMailboxInteractor = MockGetEmailsInMailboxInteractor();
+
+      when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
+
+      Get.put(mailboxDashboardController);
+      mailboxDashboardController.onReady();
+
+      mailboxController = MailboxController(
+          createNewMailboxInteractor,
+          deleteMultipleMailboxInteractor,
+          renameMailboxInteractor,
+          moveMailboxInteractor,
+          subscribeMailboxInteractor,
+          subscribeMultipleMailboxInteractor,
+          subaddressingInteractor,
+          createDefaultMailboxInteractor,
+          treeBuilder,
+          verifyNameInteractor,
+          getAllMailboxInteractor,
+          refreshAllMailboxInteractor);
+      mailboxController.onReady();
+
+      threadController = ThreadController(
+          getEmailsInMailboxInteractor,
+          refreshChangesEmailsInMailboxInteractor,
+          loadMoreEmailsInMailboxInteractor,
+          searchEmailInteractor,
+          searchMoreEmailInteractor,
+          getEmailByIdInteractor);
+      Get.put(threadController);
+
+      advancedFilterController = AdvancedFilterController();
+
+      mailboxDashboardController.sessionCurrent = testSession;
+      mailboxDashboardController.filterMessageOption.value = FilterMessageOption.all;
+      mailboxDashboardController.accountId.value = testAccountId;
+    });
+
+    test('should return subaddress with valid email and folder name', () {
+      const String userEmail = 'user@example.com';
+      const String folderName = 'folder';
+      final result = mailboxController.getSubaddress(userEmail, folderName);
+
+      expect(result, equals('user+folder@example.com'));
+    });
+
+    test('should throw an error if empty local part', () {
+      const userEmail = '@example.com';
+      const folderName = 'folder';
+
+      expect(() => mailboxController.getSubaddress(userEmail, folderName), throwsA(isA<InvalidMailFormatException>()));
+    });
+
+    test('should throw an error if empty folder name', () {
+      const userEmail = 'user@example.com';
+      const folderName = '';
+
+      expect(() => mailboxController.getSubaddress(userEmail, folderName), throwsA(isA<EmptyFolderNameException>()));
+    });
+
+    test('should throw an error if empty domain', () {
+      const userEmail = 'user@';
+      const folderName = 'folder';
+
+      expect(() => mailboxController.getSubaddress(userEmail, folderName), throwsA(isA<InvalidMailFormatException>()));
+    });
+
+    test('should throw an error if absent `@`', () {
+      const userEmail = 'invalid-email-format';
+      const folderName = 'folder';
+
+      expect(() => mailboxController.getSubaddress(userEmail, folderName), throwsA(isA<InvalidMailFormatException>()));
     });
   });
 }

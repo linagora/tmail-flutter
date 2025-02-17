@@ -3,5 +3,6 @@ enum PrefixEmailAddress {
   from,
   to,
   cc,
-  bcc
+  bcc,
+  replyTo
 }

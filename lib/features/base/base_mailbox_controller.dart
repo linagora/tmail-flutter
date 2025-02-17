@@ -52,6 +52,11 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
+typedef RenameMailboxActionCallback = void Function(PresentationMailbox mailbox, MailboxName newMailboxName);
+typedef MovingMailboxActionCallback = void Function(PresentationMailbox mailboxSelected, PresentationMailbox? destinationMailbox);
+typedef DeleteMailboxActionCallback = void Function(PresentationMailbox mailbox);
+typedef AllowSubaddressingActionCallback = void Function(MailboxId, Map<String, List<String>?>?, MailboxActions);
+
 abstract class BaseMailboxController extends BaseController {
   final TreeBuilder _treeBuilder;
   final VerifyNameInteractor verifyNameInteractor;
@@ -212,12 +217,16 @@ abstract class BaseMailboxController extends BaseController {
     return teamMailboxesTree.value.findNode((node) => node.item.id == mailboxId);
   }
 
-  String? findNodePath(MailboxId mailboxId) {
-    var mailboxNodePath = defaultMailboxTree.value.getNodePath(mailboxId)
-      ?? personalMailboxTree.value.getNodePath(mailboxId)
-      ?? teamMailboxesTree.value.getNodePath(mailboxId);
+  String? findNodePathWithSeparator(MailboxId mailboxId, String pathSeparator) {
+    var mailboxNodePath = defaultMailboxTree.value.getNodePath(mailboxId, pathSeparator)
+      ?? personalMailboxTree.value.getNodePath(mailboxId, pathSeparator)
+      ?? teamMailboxesTree.value.getNodePath(mailboxId, pathSeparator);
     log('BaseMailboxController::findNodePath():mailboxNodePath: $mailboxNodePath');
     return mailboxNodePath;
+  }
+
+  String? findNodePath(MailboxId mailboxId) {
+    return findNodePathWithSeparator(mailboxId, '/');
   }
 
   MailboxNode? findMailboxNodeByRole(Role role) {
@@ -310,7 +319,7 @@ abstract class BaseMailboxController extends BaseController {
     BuildContext context,
     PresentationMailbox presentationMailbox,
     ResponsiveUtils responsiveUtils, {
-    required Function(PresentationMailbox mailbox, MailboxName newMailboxName) onRenameMailboxAction
+    required RenameMailboxActionCallback onRenameMailboxAction
   }) {
     final listMailboxName = getListMailboxNameInParentMailbox(presentationMailbox);
 
@@ -380,7 +389,7 @@ abstract class BaseMailboxController extends BaseController {
     BuildContext context,
     PresentationMailbox mailboxSelected,
     MailboxDashBoardController dashBoardController, {
-    required Function(PresentationMailbox mailboxSelected, PresentationMailbox? destinationMailbox) onMovingMailboxAction
+    required MovingMailboxActionCallback onMovingMailboxAction
   }) async {
     final accountId = dashBoardController.accountId.value;
     final session = dashBoardController.sessionCurrent;
@@ -413,7 +422,7 @@ abstract class BaseMailboxController extends BaseController {
     ResponsiveUtils responsiveUtils,
     ImagePaths imagePaths,
     PresentationMailbox presentationMailbox, {
-    required Function(PresentationMailbox mailbox) onDeleteMailboxAction
+    required DeleteMailboxActionCallback onDeleteMailboxAction
   }) {
     if (responsiveUtils.isLandscapeMobile(context) || responsiveUtils.isPortraitMobile(context)) {
       (ConfirmationDialogActionSheetBuilder(context)

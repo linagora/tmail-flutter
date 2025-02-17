@@ -12,4 +12,5 @@ class MailboxProperty {
   static const String myRights = 'myRights';
   static const String isSubscribed = 'isSubscribed';
   static const String namespace = 'namespace';
+  static const String rights = 'rights';
 }
