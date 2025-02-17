@@ -21,85 +21,84 @@ extension PresentationEmailExtension on PresentationEmail {
 
     switch (emailActionType) {
       case EmailActionType.reply:
-        List<EmailAddress> listReplyAddress;
-        if (newReplyToAddress.isNotEmpty) {
-          listReplyAddress = newReplyToAddress;
-        } else if (isSender) {
-          listReplyAddress = newToAddress;
-        } else {
-          listReplyAddress = newFromAddress;
-        }
-        final listReplyAddressWithoutUsername = listReplyAddress.withoutMe(userName);
+        return _handleReply(
+          isSender: isSender,
+          newToAddress: newToAddress,
+          newFromAddress: newFromAddress,
+          newReplyToAddress: newReplyToAddress,
+          userName: userName,
+        );
 
-        return Tuple4(listReplyAddressWithoutUsername, [], [], []);
       case EmailActionType.replyToList:
-        final recipientRecord = EmailUtils.extractRecipientsFromListPost(listPost ?? '');
+        return _handleReplyToList(listPost, userName);
 
-        final listToAddressWithoutUsername = recipientRecord.toMailAddresses
-          .toSet()
-          .removeDuplicateEmails()
-          .withoutMe(userName);
-
-        final listCcAddressWithoutUsername = recipientRecord.ccMailAddresses
-          .toSet()
-          .removeDuplicateEmails()
-          .withoutMe(userName);
-
-        final listBccAddressWithoutUsername = recipientRecord.bccMailAddresses
-          .toSet()
-          .removeDuplicateEmails()
-          .withoutMe(userName);
-
-        return Tuple4(
-          listToAddressWithoutUsername,
-          listCcAddressWithoutUsername,
-          listBccAddressWithoutUsername,
-          []
-        );
       case EmailActionType.replyAll:
-        final recipientRecord = EmailUtils.extractRecipientsFromListPost(listPost ?? '');
-
-        final listToAddress = recipientRecord.toMailAddresses
-          + newReplyToAddress
-          + newFromAddress
-          + newToAddress;
-        final listCcAddress = recipientRecord.ccMailAddresses + newCcAddress;
-        final listBccAddress = recipientRecord.bccMailAddresses + newBccAddress;
-
-        final listToAddressWithoutUsername = listToAddress
-          .toSet()
-          .removeDuplicateEmails()
-          .withoutMe(userName);
-        final listCcAddressWithoutUsername = listCcAddress
-          .toSet()
-          .removeDuplicateEmails()
-          .withoutMe(userName);
-        final listBccAddressWithoutUsername = listBccAddress
-          .toSet()
-          .removeDuplicateEmails()
-          .withoutMe(userName);
-
-        return Tuple4(
-          listToAddressWithoutUsername,
-          listCcAddressWithoutUsername,
-          listBccAddressWithoutUsername,
-          []
+        return _handleReplyAll(
+          isSender: isSender,
+          newToAddress: newToAddress,
+          newCcAddress: newCcAddress,
+          newBccAddress: newBccAddress,
+          newReplyToAddress: newReplyToAddress,
+          newFromAddress: newFromAddress,
+          userName: userName,
         );
-
-      case EmailActionType.editDraft:
-        return Tuple4(newToAddress, newCcAddress, newBccAddress, newReplyToAddress);
 
       default:
-        final listToAddressWithoutUsername = newToAddress.withoutMe(userName);
-        final listCcAddressWithoutUsername = newCcAddress.withoutMe(userName);
-        final listBccAddressWithoutUsername = newBccAddress.withoutMe(userName);
-
-        return Tuple4(
-          listToAddressWithoutUsername,
-          listCcAddressWithoutUsername,
-          listBccAddressWithoutUsername,
-          []
-        );
+        return Tuple4(newToAddress, newCcAddress, newBccAddress, newReplyToAddress);
     }
   }
+
+  Tuple4<List<EmailAddress>, List<EmailAddress>, List<EmailAddress>, List<EmailAddress>> _handleReply({
+    required bool isSender,
+    required List<EmailAddress> newToAddress,
+    required List<EmailAddress> newFromAddress,
+    required List<EmailAddress> newReplyToAddress,
+    String? userName,
+  }) {
+    if (isSender) {
+      return Tuple4(newToAddress, [], [], newReplyToAddress);
+    }
+    final listToAddress = newReplyToAddress.isNotEmpty
+        ? newReplyToAddress.withoutMe(userName)
+        : newFromAddress.withoutMe(userName);
+    return Tuple4(listToAddress, [], [], []);
+  }
+
+  Tuple4<List<EmailAddress>, List<EmailAddress>, List<EmailAddress>, List<EmailAddress>> _handleReplyToList(String? listPost, String? userName) {
+    final recipientRecord = EmailUtils.extractRecipientsFromListPost(listPost ?? '');
+
+    return Tuple4(
+      recipientRecord.toMailAddresses.removeDuplicateEmails().withoutMe(userName),
+      recipientRecord.ccMailAddresses.removeDuplicateEmails().withoutMe(userName),
+      recipientRecord.bccMailAddresses.removeDuplicateEmails().withoutMe(userName),
+      [],
+    );
+  }
+
+  Tuple4<List<EmailAddress>, List<EmailAddress>, List<EmailAddress>, List<EmailAddress>> _handleReplyAll({
+    required bool isSender,
+    required List<EmailAddress> newToAddress,
+    required List<EmailAddress> newCcAddress,
+    required List<EmailAddress> newBccAddress,
+    required List<EmailAddress> newReplyToAddress,
+    required List<EmailAddress> newFromAddress,
+    String? userName,
+  }) {
+    if (isSender) {
+      return Tuple4(newToAddress, newCcAddress, newBccAddress, newReplyToAddress);
+    }
+
+    final listToAddress = {
+      ...(newReplyToAddress.isNotEmpty ? newReplyToAddress : newFromAddress),
+      ...newToAddress,
+    }.removeDuplicateEmails().withoutMe(userName);
+
+    return Tuple4(
+      listToAddress,
+      newCcAddress.withoutMe(userName),
+      newBccAddress.withoutMe(userName),
+      [],
+    );
+  }
+
 }

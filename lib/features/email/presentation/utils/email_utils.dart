@@ -218,4 +218,11 @@ class EmailUtils {
       return null;
     }
   }
+
+  static bool isReplyToListEnabled(String listPost) {
+    final recipientRecord = EmailUtils.extractRecipientsFromListPost(listPost);
+    return recipientRecord.toMailAddresses.isNotEmpty ||
+        recipientRecord.ccMailAddresses.isNotEmpty ||
+        recipientRecord.bccMailAddresses.isNotEmpty;
+  }
 }
