@@ -5197,7 +5197,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   C.IdentityLoadingWidget_build__closure2.prototype = {
     call$1(success) {
       if (success instanceof A.GetAllIdentitiesLoading || success instanceof A.GetSessionLoading)
-        return D.CircleLoadingWidget_3uE;
+        return D.CircleLoadingWidget_EyN;
       else
         return B.SizedBox_0_0_null_null;
     },
@@ -5218,7 +5218,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   C.IdentityLoadingWidget_build__closure0.prototype = {
     call$1(success) {
       if (success instanceof A.GetAllIdentitiesLoading || success instanceof A.GetSessionLoading)
-        return D.CircleLoadingWidget_3uE;
+        return D.CircleLoadingWidget_EyN;
       else
         return B.SizedBox_0_0_null_null;
     },
@@ -5836,7 +5836,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Color_4294637559 = new A.Color(4294637559);
     D.BoxDecoration_NYu = new A.BoxDecoration(D.Color_4294637559, null, null, B.BorderRadius_ww810, null, null, null, B.BoxShape_0);
     D.BoxDecoration_eWd = new A.BoxDecoration(E.Color_4294964674, null, null, B.BorderRadius_ww83, null, null, null, B.BoxShape_0);
-    D.CircleLoadingWidget_3uE = new A.CircleLoadingWidget(null, null, B.EdgeInsets_16_16_16_16, null, null);
+    D.CircleLoadingWidget_EyN = new A.CircleLoadingWidget(null, null, B.EdgeInsets_16_16_16_16, null, null, null);
     D.Color_4292665573 = new A.Color(4292665573);
     D.Divider_SfU0 = new A.Divider(1, null, null, null, B.Color_4293190884, null);
     D.EdgeInsetsDirectional_10_0_0_0 = new A.EdgeInsetsDirectional(10, 0, 0, 0);
@@ -5936,5 +5936,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_8", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "CPfpXhcu6NxNhKwohJltcu0qXOg=");
+})($__dart_deferred_initializers__, "be4+k42zhKlQuEaofZ5Y84Oz94Y=");
 ;

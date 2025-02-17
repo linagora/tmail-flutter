@@ -4740,8 +4740,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = _this.name;
       return (t1 == null ? null : t1.name) === "outbox" || J.$eq$(_this.role, $.$get$PresentationMailbox_roleOutbox());
     },
-    CircleLoadingWidget$(onCancel, padding, strokeWidth) {
-      return new A.CircleLoadingWidget(null, strokeWidth, padding, onCancel, null);
+    CircleLoadingWidget$(imagePaths, onCancel, padding, strokeWidth) {
+      return new A.CircleLoadingWidget(null, strokeWidth, padding, onCancel, imagePaths, null);
     },
     ComposerPrintDraftExtension_printDraft(_this, context) {
       var $async$goto = 0,
@@ -11057,26 +11057,27 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.DownloadTaskItemWidget.prototype = {
     build$1(context) {
-      var t1, t2, t3, t4, t5, t6, t7, _null = null;
+      var t1, imagePaths, t2, t3, t4, t5, t6, t7, _null = null;
       $.$get$Get();
       t1 = $.GetInstance__getInstance;
       if (t1 == null)
         t1 = $.GetInstance__getInstance = C.C_GetInstance;
-      t2 = this.taskState;
-      t3 = t2.attachment;
-      t1 = A.SvgPicture$asset(A.AttachmentExtension_getIcon(t3, t1.find$1$1$tag(0, _null, type$.ImagePaths)), C.Alignment_0_0, _null, C.BoxFit_0, 16, _null, _null, 16);
+      imagePaths = t1.find$1$1$tag(0, _null, type$.ImagePaths);
+      t1 = this.taskState;
+      t2 = t1.attachment;
+      t3 = A.SvgPicture$asset(A.AttachmentExtension_getIcon(t2, imagePaths), C.Alignment_0_0, _null, C.BoxFit_0, 16, _null, _null, 16);
       t4 = type$.JSArray_Widget;
-      t1 = A.Container$(_null, new A.Stack(C.Alignment_0_0, _null, C.StackFit_0, C.Clip_1, A._setArrayType([t1, A.Center$(t2.get$percentDownloading() === 0 ? B.CircleLoadingWidget$(t2.onCancel, _null, 3) : A.CircularPercentIndicator$(C.Color_2581915884, _null, 3, t2.get$percentDownloading(), C.Color_4278221567, 14), _null, _null)], t4), _null), C.Clip_0, C.Color_0, _null, _null, _null, 30, _null, _null, _null, _null, _null, 30);
-      t3 = A.DefaultTextStyle$(A.Text$(t3.generateFileName$0(), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, _null, _null, _null, _null, _null, _null), _null, _null, C.TextOverflow_0, true, D.TextStyle_6nc, _null, _null, C.TextWidthBasis_0);
-      t5 = t2.downloaded;
+      t3 = A.Container$(_null, new A.Stack(C.Alignment_0_0, _null, C.StackFit_0, C.Clip_1, A._setArrayType([t3, A.Center$(t1.get$percentDownloading() === 0 ? B.CircleLoadingWidget$(imagePaths, t1.onCancel, _null, 3) : A.CircularPercentIndicator$(C.Color_2581915884, _null, 3, t1.get$percentDownloading(), C.Color_4278221567, 14), _null, _null)], t4), _null), C.Clip_0, C.Color_0, _null, _null, _null, 30, _null, _null, _null, _null, _null, 30);
+      t2 = A.DefaultTextStyle$(A.Text$(t2.generateFileName$0(), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, _null, _null, _null, _null, _null, _null), _null, _null, C.TextOverflow_0, true, D.TextStyle_6nc, _null, _null, C.TextWidthBasis_0);
+      t5 = t1.downloaded;
       t6 = new B.ByteConverter(t5);
       t6._bits = C.JSInt_methods.ceil$0(t5 * 8);
       t6 = t6.toHumanReadable$1(D.SizeUnit_2);
-      t5 = t2.total;
+      t5 = t1.total;
       t7 = new B.ByteConverter(t5);
       t7._bits = C.JSInt_methods.ceil$0(t5 * 8);
-      t4 = A._setArrayType([C.SizedBox_12_null_null_null, t1, C.SizedBox_12_null_null_null, A.Expanded$(A.Column$(A._setArrayType([t3, C.SizedBox_null_4_null_null, A.DefaultTextStyle$(A.Text$(t6 + "/" + t7.toHumanReadable$1(D.SizeUnit_2), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, _null, _null, _null, _null, _null, _null), _null, _null, C.TextOverflow_0, true, D.TextStyle_6nc0, _null, _null, C.TextWidthBasis_0)], t4), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_0, C.VerticalDirection_1), 1)], t4);
-      t4.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_close.svg", _null, _null, _null, _null, 1 / 0, _null, t2.onCancel, _null, _null, _null));
+      t4 = A._setArrayType([C.SizedBox_12_null_null_null, t3, C.SizedBox_12_null_null_null, A.Expanded$(A.Column$(A._setArrayType([t2, C.SizedBox_null_4_null_null, A.DefaultTextStyle$(A.Text$(t6 + "/" + t7.toHumanReadable$1(D.SizeUnit_2), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, _null, _null, _null, _null, _null, _null), _null, _null, C.TextOverflow_0, true, D.TextStyle_6nc0, _null, _null, C.TextWidthBasis_0)], t4), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_0, C.VerticalDirection_1), 1)], t4);
+      t4.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_close.svg", _null, _null, _null, _null, 1 / 0, _null, t1.onCancel, _null, _null, _null));
       return A.Container$(C.Alignment_0_0, A.Row$(t4, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_2, C.MainAxisSize_0, _null), C.Clip_0, _null, _null, _null, _null, _null, _null, _null, C.EdgeInsets_0_0_0_0, _null, _null, 240);
     }
   };
@@ -15771,7 +15772,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(success) {
       var t1 = this.$this;
       if (success instanceof A.UploadingAttachmentUploadState)
-        return B.CircleLoadingWidget$(null, t1.padding, null);
+        return B.CircleLoadingWidget$(null, null, t1.padding, null);
       else
         return t1._viewStateToUI$1(t1.viewState);
     },
@@ -15786,7 +15787,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.InsertImageLoadingBarWidget__viewStateToUI_closure0.prototype = {
     call$1(success) {
       if (success instanceof A.DownloadingImageAsBase64)
-        return B.CircleLoadingWidget$(null, this.$this.padding, null);
+        return B.CircleLoadingWidget$(null, null, this.$this.padding, null);
       else
         return C.SizedBox_0_0_null_null;
     },
@@ -20225,7 +20226,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           lastEmail = t3.get$last(t3);
           t4 = t1.searchEmailFilter;
           if (t4.get$value(0).sortOrderType.isScrollByPosition$0())
-            t1._updateSimpleSearchFilter$2$beforeOption$positionOption(C.C_None, new A.Some(J.get$length$asx(t3.get$value(0)), type$.Some_int));
+            t1._updateSimpleSearchFilter$1$positionOption(new A.Some(J.get$length$asx(t3.get$value(0)), type$.Some_int));
           else {
             t3 = t4.get$value(0).sortOrderType;
             t5 = type$.UTCDate;
@@ -22607,5 +22608,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "qoswMZlOokwWXIxAnHRjtM7MEf8=");
+})($__dart_deferred_initializers__, "i380CFvLL8Ujj39rmWnUsGPSLcU=");
 ;
