@@ -478,6 +478,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
                 DownloadTaskState(
                   taskId: success.taskId,
                   attachment: success.attachment,
+                  onCancel: () => success.cancelToken?.cancel(),
                 ),
               );
 
@@ -1073,11 +1074,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     DownloadAllAttachmentsForWebFailure failure,
   ) {
     mailboxDashBoardController.deleteDownloadTask(failure.taskId);
-    if (currentOverlayContext != null && currentContext != null) {
-      appToast.showToastErrorMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).attachment_download_failed);
-    }  
+    if (currentOverlayContext == null || currentContext == null) return;
+    String message = AppLocalizations.of(currentContext!).attachment_download_failed;
+    if (failure.cancelToken?.isCancelled == true) {
+      message = AppLocalizations.of(currentContext!).downloadAttachmentHasBeenCancelled;
+    }
+    appToast.showToastErrorMessage(currentOverlayContext!, message);
   }
 
   void _downloadAttachmentForWebSuccessAction(DownloadAttachmentForWebSuccess success) {
