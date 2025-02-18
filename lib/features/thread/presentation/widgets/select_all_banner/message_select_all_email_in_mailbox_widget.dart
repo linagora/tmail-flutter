@@ -27,18 +27,7 @@ class MessageSelectAllEmailInMailboxWidget extends StatelessWidget {
         ),
         children: [
           TextSpan(
-            text: AppLocalizations.of(context).all,
-          ),
-          TextSpan(
-            text: ' $totalEmails ',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
-          ),
-          TextSpan(
-            text: AppLocalizations.of(context).mailsInMailboxAreSelected(folderName),
+            text: '${AppLocalizations.of(context).mailsInMailboxAreSelected(totalEmails, folderName)} ',
           ),
           TextSpan(
             text: AppLocalizations.of(context).clearSelection,
@@ -48,9 +37,9 @@ class MessageSelectAllEmailInMailboxWidget extends StatelessWidget {
               fontSize: 14,
             ),
             recognizer: TapGestureRecognizer()..onTap = onClearSelection
-          )
-        ]
-      )
+          ),
+        ],
+      ),
     );
   }
 }

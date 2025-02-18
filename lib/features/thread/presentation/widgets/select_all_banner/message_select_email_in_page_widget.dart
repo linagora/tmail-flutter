@@ -29,18 +29,7 @@ class MessageSelectEmailInPageWidget extends StatelessWidget {
         ),
         children: [
           TextSpan(
-            text: AppLocalizations.of(context).all,
-          ),
-          TextSpan(
-            text: ' $limitEmailsInPage ',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: Colors.black,
-              fontWeight: FontWeight.bold,
-              fontSize: 14,
-            ),
-          ),
-          TextSpan(
-            text: AppLocalizations.of(context).mailsOnThisPageAreSelected,
+            text: '${AppLocalizations.of(context).mailsOnThisPageAreSelected(limitEmailsInPage)} ',
           ),
           TextSpan(
             text: AppLocalizations.of(context).selectAllMailInMailbox(
@@ -53,9 +42,9 @@ class MessageSelectEmailInPageWidget extends StatelessWidget {
               fontSize: 14,
             ),
             recognizer: TapGestureRecognizer()..onTap = onSelectAllEmailAction
-          )
-        ]
-      )
+          ),
+        ],
+      ),
     );
   }
 }

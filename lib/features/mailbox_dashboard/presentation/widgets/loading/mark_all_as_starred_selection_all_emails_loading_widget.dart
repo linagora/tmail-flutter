@@ -6,11 +6,15 @@ import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_all_as_starred_selection_all_emails_state.dart';
 
-class MarkAllAsStarredSelectionAllEmailsLoadingWidget extends StatelessWidget with AppLoaderMixin {
+class MarkAllAsStarredSelectionAllEmailsLoadingWidget extends StatelessWidget
+    with AppLoaderMixin {
 
   final Either<Failure, Success> viewState;
 
-  const MarkAllAsStarredSelectionAllEmailsLoadingWidget({super.key, required this.viewState});
+  const MarkAllAsStarredSelectionAllEmailsLoadingWidget({
+    super.key,
+    required this.viewState,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -19,16 +23,16 @@ class MarkAllAsStarredSelectionAllEmailsLoadingWidget extends StatelessWidget wi
       (success) {
         if (success is MarkAllAsStarredSelectionAllEmailsLoading) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: horizontalLoadingWidget
+            padding: const EdgeInsetsDirectional.only(end: 16, bottom: 16),
+            child: horizontalLoadingWidget,
           );
         } else if (success is MarkAllAsStarredSelectionAllEmailsUpdating) {
           final percent = success.total > 0
             ? success.countStarred / success.total
             : 0.0;
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: horizontalPercentLoadingWidget(percent)
+            padding: const EdgeInsetsDirectional.only(end: 16, bottom: 16),
+            child: horizontalPercentLoadingWidget(percent),
           );
         }
         return const SizedBox.shrink();

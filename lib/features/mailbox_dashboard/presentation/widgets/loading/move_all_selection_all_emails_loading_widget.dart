@@ -19,16 +19,16 @@ class MoveAllSelectionAllEmailsLoadingWidget extends StatelessWidget with AppLoa
       (success) {
         if (success is MoveAllSelectionAllEmailsLoading) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: horizontalLoadingWidget
+            padding: const EdgeInsetsDirectional.only(end: 16, bottom: 16),
+            child: horizontalLoadingWidget,
           );
         } else if (success is MoveAllSelectionAllEmailsUpdating) {
           final percent = success.total > 0
             ? success.countMoved / success.total
             : 0.0;
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: horizontalPercentLoadingWidget(percent)
+            padding: const EdgeInsetsDirectional.only(end: 16, bottom: 16),
+            child: horizontalPercentLoadingWidget(percent),
           );
         }
         return const SizedBox.shrink();
