@@ -49,6 +49,7 @@ class DownloadAllAttachmentsForWebInteractor {
       onReceiveController.add(Right(StartDownloadAllAttachmentsForWeb(
         taskId,
         attachment,
+        cancelToken: cancelToken,
       )));
       final currentAccount = await _accountRepository.getCurrentAccount();
       AccountRequest accountRequest;
@@ -77,7 +78,11 @@ class DownloadAllAttachmentsForWebInteractor {
       yield Right(DownloadAllAttachmentsForWebSuccess(taskId: taskId));
     } catch (e) {
       logError('DownloadAllAttachmentsForWebInteractor::execute():EXCEPTION: $e');
-      yield Left(DownloadAllAttachmentsForWebFailure(exception: e, taskId: taskId));
+      yield Left(DownloadAllAttachmentsForWebFailure(
+        exception: e,
+        taskId: taskId,
+        cancelToken: cancelToken,
+      ));
     }
   }
 }
