@@ -822,7 +822,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.List_1WK = A._setArrayType(makeConstList([D.BoxShadow_c9P]), A.findType("JSArray<BoxShadow>"));
     D.ShapeDecoration_OJ5 = new A.ShapeDecoration(C.Color_4294967295, null, null, D.List_1WK, C.RoundedRectangleBorder_NYu13);
     D.ValueKey_login_loading_icon = new A.ValueKey("login_loading_icon", type$.ValueKey_String);
-    D.SizedBox_gg9 = new A.SizedBox(40, 40, C.CircularProgressIndicator_86y0, D.ValueKey_login_loading_icon);
+    D.SizedBox_gg9 = new A.SizedBox(40, 40, C.CircularProgressIndicator_86y, D.ValueKey_login_loading_icon);
     D.SizedBox_null_40_null_null = new A.SizedBox(null, 40, null, null);
     D.TextStyle_2bL0 = new A.TextStyle(true, C.Color_4286482075, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_69t29 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 24, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
@@ -840,5 +840,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "95BrsbiecWi2UIbdJvJoxIOLA/k=");
+})($__dart_deferred_initializers__, "C06rWLAC3b8ykcdeVp7XqoF6R4s=");
 ;
