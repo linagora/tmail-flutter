@@ -151,4 +151,15 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
   ) {
     throw UnimplementedError();
   }
+
+  @override
+  Future<List<EmailId>> deleteAllPermanentlyEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+  ) {
+    throw UnimplementedError();
+  }
 }

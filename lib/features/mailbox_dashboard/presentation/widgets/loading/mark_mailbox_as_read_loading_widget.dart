@@ -23,7 +23,9 @@ class MarkMailboxAsReadLoadingWidget extends StatelessWidget with AppLoaderMixin
             child: horizontalLoadingWidget
           );
         } else if (success is UpdatingMarkAsMailboxReadState) {
-          final percent = success.countRead / success.totalUnread;
+          final percent = success.totalUnread > 0
+            ? success.countRead / success.totalUnread
+            : 0.0;
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: horizontalPercentLoadingWidget(percent)

@@ -4467,5 +4467,15 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "toastMessageDeleteAllPermanentlyEmailsFailureWithReason": "All mails could not be delete forever. Due \"{reason}\"",
+  "@toastMessageDeleteAllPermanentlyEmailsFailureWithReason": {
+    "type": "text",
+    "placeholders_order": [
+      "reason"
+    ],
+    "placeholders": {
+      "reason": {}
+    }
   }
 }

@@ -189,7 +189,7 @@ class ThreadIsolateWorker {
         }
       }
     } catch (e) {
-      log('ThreadIsolateWorker::_emptyMailboxFolderOnWeb(): ERROR: $e');
+      logError('ThreadIsolateWorker::_emptyMailboxFolderOnWeb(): ERROR: $e');
     }
     log('ThreadIsolateWorker::_emptyMailboxFolderOnWeb(): TOTAL_REMOVE: ${emailListCompleted.length}');
     return emailListCompleted;
@@ -257,7 +257,7 @@ class ThreadIsolateWorker {
         );
       }
     } catch (e) {
-      logError('ThreadIsolateWorker::markAllAsUnreadForSelectionAllEmails():ERROR: $e');
+      logError('ThreadIsolateWorker::markAllAsUnreadForSelectionAllEmails(): ERROR: $e');
     }
     log('ThreadIsolateWorker::markAllAsUnreadForSelectionAllEmails():TOTAL_UNREAD: ${emailIdListCompleted.length}');
     return emailIdListCompleted;
@@ -333,10 +333,52 @@ class ThreadIsolateWorker {
         );
       }
     } catch (e) {
-      log('ThreadIsolateWorker::moveAllSelectionAllEmails(): ERROR: $e');
+      logError('ThreadIsolateWorker::moveAllSelectionAllEmails(): ERROR: $e');
     }
 
     log('ThreadIsolateWorker::moveAllSelectionAllEmails(): TOTAL_MOVED: ${emailIdListCompleted.length}');
+    return emailIdListCompleted;
+  }
+
+  Future<List<EmailId>> deleteAllPermanentlyEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+  ) async {
+    List<EmailId> emailIdListCompleted = List.empty(growable: true);
+    try {
+      bool mailboxHasEmails = true;
+
+      while (mailboxHasEmails) {
+        final listResult = await _threadAPI.deleteAllPermanentlyEmails(
+          session,
+          accountId,
+          mailboxId
+        );
+
+        if (listResult.value1.isNotEmpty) {
+          mailboxHasEmails = true;
+        } else {
+          mailboxHasEmails = false;
+        }
+
+        if (listResult.value2.isNotEmpty) {
+          emailIdListCompleted.addAll(listResult.value2);
+
+          onProgressController.add(
+            dartz.Right(MoveAllSelectionAllEmailsUpdating(
+              total: totalEmails,
+              countMoved: emailIdListCompleted.length
+            ))
+          );
+        }
+      }
+    } catch (e) {
+      logError('ThreadIsolateWorker::deleteAllPermanentlyEmails(): ERROR: $e');
+    }
+    log('ThreadIsolateWorker::deleteAllPermanentlyEmails(): TOTAL_DELETED_PERMANENTLY: ${emailIdListCompleted.length}');
     return emailIdListCompleted;
   }
 }

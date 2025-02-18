@@ -23,7 +23,9 @@ class MoveAllSelectionAllEmailsLoadingWidget extends StatelessWidget with AppLoa
             child: horizontalLoadingWidget
           );
         } else if (success is MoveAllSelectionAllEmailsUpdating) {
-          final percent = success.countMoved / success.total;
+          final percent = success.total > 0
+            ? success.countMoved / success.total
+            : 0.0;
           return Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: horizontalPercentLoadingWidget(percent)

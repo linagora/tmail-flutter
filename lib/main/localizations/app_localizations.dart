@@ -4646,4 +4646,12 @@ class AppLocalizations {
       'Delete all permanently',
       name: 'deleteAllPermanently');
   }
+
+  String toastMessageDeleteAllPermanentlyEmailsFailureWithReason(String reason) {
+    return Intl.message(
+      'All mails could not be delete forever. Due "$reason"',
+      name: 'toastMessageDeleteAllPermanentlyEmailsFailureWithReason',
+      args: [reason]
+    );
+  }
 }
