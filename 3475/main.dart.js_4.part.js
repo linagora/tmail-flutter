@@ -11124,9 +11124,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t6 = new B.ByteConverter(t5);
       t6._bits = C.JSInt_methods.ceil$0(t5 * 8);
       t4 = A._setArrayType([C.SizedBox_12_null_null_null, t1, C.SizedBox_12_null_null_null, A.Expanded$(A.Column$(A._setArrayType([t3, C.SizedBox_null_4_null_null, A.DefaultTextStyle$(A.Text$(t6.toHumanReadable$1(D.SizeUnit_2) + this._getTotalSizeText$0(), _null, _null, 1, C.TextOverflow_2, _null, _null, true, _null, _null, _null, _null, _null, _null, _null), _null, _null, C.TextOverflow_0, true, D.TextStyle_6nc0, _null, _null, C.TextWidthBasis_0)], t4), C.CrossAxisAlignment_0, C.MainAxisAlignment_2, C.MainAxisSize_0, C.VerticalDirection_1), 1)], t4);
-      t1 = t2.onCancel;
-      if (t1 != null)
-        t4.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_close.svg", _null, _null, _null, _null, 1 / 0, _null, t1, _null, _null));
+      t4.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, "assets/images/ic_close.svg", _null, _null, _null, _null, 1 / 0, _null, t2.onCancel, _null, _null));
       return A.Container$(C.Alignment_0_0, A.Row$(t4, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_2, C.MainAxisSize_0, _null), C.Clip_0, _null, _null, _null, _null, _null, _null, _null, C.EdgeInsets_0_0_0_0, _null, _null, 240);
     },
     _getTotalSizeText$0() {
@@ -22696,5 +22694,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "bsQl9OcZJ4O3GmSe2TK4s+Etvbo=");
+})($__dart_deferred_initializers__, "Ylkv2FNA2G0ReYdvdOUD+jLWjDo=");
 ;
