@@ -35,7 +35,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/re
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/filter_message_button.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/search_filter_button.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/top_bar_thread_selection.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_bar/top_bar_thread_selection.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/styles/vacation_notification_message_widget_style.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
@@ -246,22 +246,24 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
           Obx(() {
             final listEmailSelected = controller.listEmailSelected;
             if (controller.isSelectionEnabled() && listEmailSelected.isNotEmpty) {
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8.5, horizontal: 16),
-                child: TopBarThreadSelection(
-                  listEmail: listEmailSelected,
-                  mapMailbox: controller.mapMailboxById,
-                  isSelectAllEmailsEnabled: controller.isSelectAllEmailsEnabled.value,
-                  selectedMailbox: controller.selectedMailbox.value,
-                  onCancelSelection: () =>
-                    controller.dispatchAction(CancelSelectionAllEmailAction()),
-                  onEmailActionTypeAction: (listEmails, actionType) =>
-                    controller.dispatchAction(HandleEmailActionTypeAction(
-                      listEmails,
-                      actionType
-                    )),
-                  onMoreSelectedEmailAction: (position) => controller.dispatchAction(MoreSelectedEmailAction(context, position)),
-                ),
+              return TopBarThreadSelection(
+                imagePaths: controller.imagePaths,
+                listEmail: listEmailSelected,
+                mapMailbox: controller.mapMailboxById,
+                isSelectAllEmailsEnabled: controller.isSelectAllEmailsEnabled.value,
+                selectedMailbox: controller.selectedMailbox.value,
+                onCancelSelection: () =>
+                  controller.dispatchAction(CancelSelectionAllEmailAction()),
+                onEmailActionTypeAction: (listEmails, actionType) =>
+                  controller.dispatchAction(HandleEmailActionTypeAction(
+                    listEmails,
+                    actionType,
+                  )),
+                onMoreSelectedEmailAction: (position) =>
+                  controller.dispatchAction(MoreSelectedEmailAction(
+                    context,
+                    position,
+                  )),
               );
             } else {
               return Padding(

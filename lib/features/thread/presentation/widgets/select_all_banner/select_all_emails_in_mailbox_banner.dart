@@ -36,7 +36,7 @@ class _SelectAllEmailInMailboxBannerState extends State<SelectAllEmailInMailboxB
         horizontal: 16,
         vertical: 12,
       ),
-      alignment: Alignment.center,
+      alignment: AlignmentDirectional.centerStart,
       child: _isSelectAllEmailsEnabled
         ? MessageSelectAllEmailInMailboxWidget(
             totalEmails: widget.totalEmails,

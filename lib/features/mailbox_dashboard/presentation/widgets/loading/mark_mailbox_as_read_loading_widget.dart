@@ -19,16 +19,16 @@ class MarkMailboxAsReadLoadingWidget extends StatelessWidget with AppLoaderMixin
       (success) {
         if (success is MarkAsMailboxReadLoading) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: horizontalLoadingWidget
+            padding: const EdgeInsetsDirectional.only(end: 16, bottom: 16),
+            child: horizontalLoadingWidget,
           );
         } else if (success is UpdatingMarkAsMailboxReadState) {
           final percent = success.totalUnread > 0
             ? success.countRead / success.totalUnread
             : 0.0;
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: horizontalPercentLoadingWidget(percent)
+            padding: const EdgeInsetsDirectional.only(end: 16, bottom: 16),
+            child: horizontalPercentLoadingWidget(percent),
           );
         }
         return const SizedBox.shrink();

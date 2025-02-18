@@ -19,16 +19,16 @@ class MarkAllAsUnreadSelectionAllEmailsLoadingWidget extends StatelessWidget wit
       (success) {
         if (success is MarkAllAsUnreadSelectionAllEmailsLoading) {
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: horizontalLoadingWidget
+            padding: const EdgeInsetsDirectional.only(end: 16, bottom: 16),
+            child: horizontalLoadingWidget,
           );
         } else if (success is MarkAllAsUnreadSelectionAllEmailsUpdating) {
           final percent = success.totalRead > 0
             ? success.countUnread / success.totalRead
             : 0.0;
           return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: horizontalPercentLoadingWidget(percent)
+            padding: const EdgeInsetsDirectional.only(end: 16, bottom: 16),
+            child: horizontalPercentLoadingWidget(percent),
           );
         }
         return const SizedBox.shrink();
