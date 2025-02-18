@@ -2412,15 +2412,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     AttachmentItemWidget_build__closure0: function AttachmentItemWidget_build__closure0(t0) {
       this.$this = t0;
     },
-    AttachmentsInfo: function AttachmentsInfo(t0, t1, t2, t3, t4, t5, t6) {
+    AttachmentsInfo: function AttachmentsInfo(t0, t1, t2, t3, t4, t5, t6, t7) {
       var _ = this;
       _.imagePaths = t0;
       _.numberOfAttachments = t1;
       _.totalSizeInfo = t2;
-      _.onTapShowAllAttachmentFile = t3;
-      _.downloadAllEnabled = t4;
-      _.onTapDownloadAllButton = t5;
-      _.key = t6;
+      _.responsiveUtils = t3;
+      _.onTapShowAllAttachmentFile = t4;
+      _.downloadAllEnabled = t5;
+      _.onTapDownloadAllButton = t6;
+      _.key = t7;
     },
     AttendeeWidget: function AttendeeWidget(t0, t1, t2, t3) {
       var _ = this;
@@ -9413,7 +9414,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         showAllAttachments = A.TMailButtonWidget$(C.Color_0, _null, 8, _null, false, _null, _null, C.TextDirection_1, _null, _null, 8, _null, C.MainAxisSize_1, _null, 1 / 0, _null, 1 / 0, 0, _null, _null, _this.onTapShowAllAttachmentFile, C.EdgeInsets_12_8_12_8, A.Intl__message("Show all", _null, "showAll", _null, _null), _null, _null, C.TextStyle_8aB4, _null, _null, _null, _null, false, _null);
       } else
         showAllAttachments = C.SizedBox_0_0_null_null;
-      if (_this.downloadAllEnabled) {
+      if (_this.downloadAllEnabled && !(A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx < 600)) {
         A.Localizations_of(context, C.Type_AppLocalizations_CTL, t2).toString;
         downloadAllAttachments = A._setArrayType([C.Spacer_null, A.TMailButtonWidget$(C.Color_0, _null, 8, _null, false, _null, "assets/images/ic_download_all.svg", C.TextDirection_0, _null, _null, 8, _null, C.MainAxisSize_1, _null, 1 / 0, _null, 1 / 0, 0, _null, _null, _this.onTapDownloadAllButton, C.EdgeInsets_12_8_12_8, A.Intl__message("Download all", _null, "downloadAll", _null, _null), _null, _null, C.TextStyle_8aB4, _null, _null, _null, _null, false, _null)], t5);
       } else
@@ -9843,7 +9844,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.EmailAttachmentsWidget.prototype = {
     build$1(context) {
-      var t4, t5, t6, _this = this, _null = null,
+      var t4, t5, t6, t7, t8, t9, t10, _this = this, _null = null,
+        _s15_ = "moreAttachments",
         attachmentDisplayed = _this._getAttachmentDisplayed$1(context),
         t1 = _this.attachments,
         t2 = J.getInterceptor$asx(attachmentDisplayed),
@@ -9851,15 +9853,33 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = J.get$length$asx(t1.get$value(0));
       t1 = A.filesize(B.ListAttachmentExtension_get_totalSize(t1), 1);
       t4 = _this.onTapShowAllAttachmentFile;
-      t5 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx < 600 ? C.CrossAxisAlignment_1 : C.CrossAxisAlignment_2;
+      t5 = _this.showDownloadAllAttachmentsButton;
+      t6 = _this.onTapDownloadAllButton;
+      t7 = type$.MediaQuery;
+      t8 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t7).data.size._dx < 600 ? C.CrossAxisAlignment_1 : C.CrossAxisAlignment_2;
       t2 = t2.map$1$1(attachmentDisplayed, new B.EmailAttachmentsWidget_build_closure(_this), type$.StatelessWidget);
-      t6 = type$.JSArray_Widget;
-      t2 = A._setArrayType([new A.Flexible(1, C.FlexFit_1, A.Wrap$(C.WrapAlignment_0, A.List_List$of(t2, true, t2.$ti._eval$1("ListIterable.E")), C.WrapCrossAlignment_0, C.WrapAlignment_0, 8, 8), _null)], t6);
-      if (hideItemsCount > 0) {
+      t9 = type$.JSArray_Widget;
+      t2 = A._setArrayType([new A.Flexible(1, C.FlexFit_1, A.Wrap$(C.WrapAlignment_0, A.List_List$of(t2, true, t2.$ti._eval$1("ListIterable.E")), C.WrapCrossAlignment_0, C.WrapAlignment_0, 8, 8), _null)], t9);
+      t10 = hideItemsCount > 0;
+      if (t10 && !(A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t7).data.size._dx < 600)) {
         A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-        t2.push(A.TMailButtonWidget$(C.Color_0, _null, 8, _null, false, _null, _null, C.TextDirection_1, _null, _null, 8, _null, C.MainAxisSize_1, D.EdgeInsetsDirectional_8_0_0_2, 1 / 0, _null, 1 / 0, 0, _null, _null, t4, C.EdgeInsets_12_8_12_8, A.Intl__message("+ " + hideItemsCount + " more", _null, "moreAttachments", A._setArrayType([hideItemsCount], type$.JSArray_Object), _null), _null, _null, D.TextStyle_mS8, _null, _null, _null, _null, false, _null));
+        t2.push(A.TMailButtonWidget$(C.Color_0, _null, 8, _null, false, _null, _null, C.TextDirection_1, _null, _null, 8, _null, C.MainAxisSize_1, D.EdgeInsetsDirectional_8_0_0_2, 1 / 0, _null, 1 / 0, 0, _null, _null, t4, C.EdgeInsets_12_8_12_8, A.Intl__message("+ " + hideItemsCount + " more", _null, _s15_, A._setArrayType([hideItemsCount], type$.JSArray_Object), _null), _null, _null, D.TextStyle_mS8, _null, _null, _null, _null, false, _null));
       }
-      return new A.Padding(D.EdgeInsetsDirectional_16_0_16_12, A.Column$(A._setArrayType([new B.AttachmentsInfo(_this.imagePaths, t3, t1, t4, _this.showDownloadAllAttachmentsButton, _this.onTapDownloadAllButton, _null), D.SizedBox_null_6_null_null, A.Row$(t2, t5, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), D.SizedBox_null_6_null_null], t6), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null);
+      t1 = A._setArrayType([new B.AttachmentsInfo(_this.imagePaths, t3, t1, _this.responsiveUtils, t4, t5, t6, _null), D.SizedBox_null_6_null_null, A.Row$(t2, t8, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), D.SizedBox_null_6_null_null], t9);
+      if (A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t7).data.size._dx < 600) {
+        t2 = A._setArrayType([], t9);
+        if (t10) {
+          A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+          t2.push(A.TMailButtonWidget$(C.Color_0, _null, 8, _null, false, _null, _null, C.TextDirection_1, _null, _null, 8, _null, C.MainAxisSize_1, D.EdgeInsetsDirectional_8_0_0_2, 1 / 0, _null, 1 / 0, 0, _null, _null, t4, C.EdgeInsets_0_0_0_0, A.Intl__message("+ " + hideItemsCount + " more", _null, _s15_, A._setArrayType([hideItemsCount], type$.JSArray_Object), _null), _null, _null, D.TextStyle_mS8, _null, _null, _null, _null, false, _null));
+        }
+        t2.push(C.Spacer_null);
+        if (t5) {
+          A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
+          t2.push(A.TMailButtonWidget$(C.Color_0, _null, 8, _null, false, _null, "assets/images/ic_download_all.svg", C.TextDirection_0, _null, _null, 8, _null, C.MainAxisSize_1, _null, 1 / 0, _null, 1 / 0, 0, _null, _null, t6, C.EdgeInsets_12_8_12_8, A.Intl__message("Download all", _null, "downloadAll", _null, _null), _null, _null, C.TextStyle_8aB4, _null, _null, _null, _null, false, _null));
+        }
+        t1.push(A.Row$(t2, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null));
+      }
+      return new A.Padding(D.EdgeInsetsDirectional_16_0_16_12, A.Column$(t1, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), _null);
     },
     _getAttachmentDisplayed$1(context) {
       var t2,
@@ -22651,5 +22671,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "pEY/6ZzHS0wRAhoas1WQ3Sn2MZE=");
+})($__dart_deferred_initializers__, "eCS/QSSapoKw/TjGGY0rlTMn6is=");
 ;
