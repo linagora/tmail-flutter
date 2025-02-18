@@ -10,6 +10,7 @@ Accepted
 
 - Team mailboxes were not considered when sending emails
 - Sent emails were saved to default sent mailbox, although selected identity's email was based on team mailbox email
+- User does not have permission to edit mailboxes of team mailboxes
 
 ## Decision
 
