@@ -83,4 +83,17 @@ extension ListEmailAddressExtension on List<EmailAddress> {
 
     return where((emailAddress) => emailAddress.emailAddress != userName).toList();
   }
+
+  List<EmailAddress> removeDuplicateEmails() {
+    final seenEmails = <String>{};
+    return where((emailAddress) {
+      if (emailAddress.emailAddress.isEmpty ||
+          seenEmails.contains(emailAddress.emailAddress)) {
+        return false;
+      } else {
+        seenEmails.add(emailAddress.emailAddress);
+        return true;
+      }
+    }).toList();
+  }
 }
