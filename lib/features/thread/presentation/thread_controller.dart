@@ -1641,6 +1641,14 @@ class ThreadController extends BaseController with EmailActionController, PopupM
           selectedMailbox,
         );
         break;
+      case EmailActionType.deleteAllPermanently:
+        mailboxDashBoardController.deleteAllPermanentlyEmails(
+          context,
+          _session!,
+          _accountId!,
+          selectedMailbox,
+        );
+        break;
       default:
         break;
     }

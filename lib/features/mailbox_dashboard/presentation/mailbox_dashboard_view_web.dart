@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/mai
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/mark_mailbox_as_read_loading_banner.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/loading/delete_all_permanently_emails_loading_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/loading/mark_all_as_unread_selection_all_emails_loading_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/loading/mark_mailbox_as_read_loading_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/loading/move_all_selection_all_emails_loading_widget.dart';
@@ -140,6 +141,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                           viewState: controller.viewStateSelectionActionProgress.value,
                         )),
                         Obx(() => MoveAllSelectionAllEmailsLoadingWidget(viewState: controller.moveAllSelectionAllEmailsViewState.value)),
+                        Obx(() => DeleteAllPermanentlyEmailsLoadingWidget(viewState: controller.deleteAllPermanentlyEmailsViewState.value)),
                         Expanded(child: Obx(() {
                           switch(controller.dashboardRoute.value) {
                             case DashboardRoutes.thread:

@@ -64,6 +64,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/delete_all_permanently_emails_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_spam_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
@@ -157,6 +158,7 @@ const fallbackGenerators = {
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<MarkAllAsUnreadSelectionAllEmailsInteractor>(),
   MockSpec<MoveAllSelectionAllEmailsInteractor>(),
+  MockSpec<DeleteAllPermanentlyEmailsInteractor>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -214,6 +216,7 @@ void main() {
   late MockGetAllIdentitiesInteractor getAllIdentitiesInteractor;
   late MockMarkAllAsUnreadSelectionAllEmailsInteractor markAllAsUnreadSelectionAllEmailsInteractor;
   late MockMoveAllSelectionAllEmailsInteractor moveAllSelectionAllEmailsInteractor;
+  late MockDeleteAllPermanentlyEmailsInteractor deleteAllPermanentlyEmailsInteractor;
 
   // Declaration base controller
   late MockCachingManager mockCachingManager;
@@ -308,6 +311,7 @@ void main() {
     getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
     markAllAsUnreadSelectionAllEmailsInteractor = MockMarkAllAsUnreadSelectionAllEmailsInteractor();
     moveAllSelectionAllEmailsInteractor = MockMoveAllSelectionAllEmailsInteractor();
+    deleteAllPermanentlyEmailsInteractor = MockDeleteAllPermanentlyEmailsInteractor();
 
     searchController = SearchController(
       mockQuickSearchEmailInteractor,
@@ -354,6 +358,7 @@ void main() {
       getAllIdentitiesInteractor,
       markAllAsUnreadSelectionAllEmailsInteractor,
       moveAllSelectionAllEmailsInteractor,
+      deleteAllPermanentlyEmailsInteractor,
     );
 
     when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
