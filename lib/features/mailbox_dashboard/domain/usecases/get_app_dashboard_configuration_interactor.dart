@@ -13,7 +13,7 @@ class GetAppDashboardConfigurationInteractor {
   Stream<Either<Failure, Success>> execute(String path) async* {
     try {
       yield Right(LoadingAppDashboardConfiguration());
-      final linagoraApps = await _appGridRepository.getLinagoraApplications(path);
+      final linagoraApps = await _appGridRepository.getLinagoraApplicationsFromEnvironment(path);
       yield Right(GetAppDashboardConfigurationSuccess(linagoraApps.apps));
     } catch (e) {
       logError('GetAppDashboardConfigurationInteractor::execute(): $e');

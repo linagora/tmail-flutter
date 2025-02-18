@@ -3,7 +3,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/app_dashboard/li
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosystem/linagora_ecosystem.dart';
 
 abstract class AppGridRepository {
-  Future<LinagoraApplications> getLinagoraApplications(String path);
+  Future<LinagoraApplications> getLinagoraApplicationsFromEnvironment(String path);
 
   Future<LinagoraEcosystem> getLinagoraEcosystem(String baseUrl);
 }

@@ -12,8 +12,8 @@ class AppGridRepositoryImpl extends AppGridRepository {
   AppGridRepositoryImpl(this._mapDataSource);
 
   @override
-  Future<LinagoraApplications> getLinagoraApplications(String path) {
-    return _mapDataSource[DataSourceType.local]!.getLinagoraApplications(path);
+  Future<LinagoraApplications> getLinagoraApplicationsFromEnvironment(String path) {
+    return _mapDataSource[DataSourceType.local]!.getLinagoraApplicationsFromEnvironment(path);
   }
 
   @override

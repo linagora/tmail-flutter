@@ -84,5 +84,5 @@ class AppGridScenario extends BaseScenario {
     }
   }
 
-  Future<void> _expectMailboxViewInVisible() => expectViewInVisible($(MailboxView));
+  Future<void> _expectMailboxViewInVisible() => expectViewInvisible($(MailboxView));
 }

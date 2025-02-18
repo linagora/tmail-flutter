@@ -52,5 +52,17 @@ void main() {
       final result = servicePath.usingBaseUrl('');
       expect(result.path, '/');
     });
+
+    test('Should correctly handle baseUrl with port', () {
+      final servicePath = ServicePath('/api/v1/resource');
+      final result = servicePath.usingBaseUrl('https://example.com:8080');
+      expect(result.path, 'https://example.com:8080/api/v1/resource');
+    });
+
+    test('Should correctly handle baseUrl with port and trailing slash', () {
+      final servicePath = ServicePath('/api/v1/resource');
+      final result = servicePath.usingBaseUrl('https://example.com:8080/');
+      expect(result.path, 'https://example.com:8080/api/v1/resource');
+    });
   });
 }
