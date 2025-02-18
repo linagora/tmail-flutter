@@ -13,7 +13,7 @@ class AppGridDatasourceImpl extends AppGridDatasource {
   AppGridDatasourceImpl(this._linagoraEcosystemApi, this._exceptionThrower);
 
   @override
-  Future<LinagoraApplications> getLinagoraApplications(String path) {
+  Future<LinagoraApplications> getLinagoraApplicationsFromEnvironment(String path) {
     throw UnimplementedError();
   }
 

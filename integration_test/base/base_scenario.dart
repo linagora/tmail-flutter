@@ -13,7 +13,7 @@ abstract class BaseScenario {
     expect(patrolFinder, findsWidgets);
   }
 
-  Future<void> expectViewInVisible(PatrolFinder patrolFinder) async {
+  Future<void> expectViewInvisible(PatrolFinder patrolFinder) async {
     expect(patrolFinder, findsNothing);
   }
 }

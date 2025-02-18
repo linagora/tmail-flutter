@@ -14,7 +14,7 @@ class LocalAppGridDatasourceImpl extends AppGridDatasource {
   LocalAppGridDatasourceImpl(this._appConfigLoader, this._exceptionThrower);
 
   @override
-  Future<LinagoraApplications> getLinagoraApplications(String path) {
+  Future<LinagoraApplications> getLinagoraApplicationsFromEnvironment(String path) {
     return Future.sync(() async {
       return await _appConfigLoader.load<LinagoraApplications>(
         path,
