@@ -55,13 +55,13 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/restore_email_in
 import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/auto_create_tag_for_recipients_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_draft_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_outbox_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_sent_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_shared_media_file_extension.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/mail_address_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
@@ -461,7 +461,7 @@ class ComposerController extends BaseController
   }
 
   Future<void> _saveComposerCacheOnWebAction() async {
-    _autoCreateEmailTag();
+    autoCreateEmailTag();
 
     final createEmailRequest = await _generateCreateEmailRequest();
     if (createEmailRequest == null) return;
@@ -551,7 +551,7 @@ class ComposerController extends BaseController
         richTextMobileTabletController?.richTextController.hideRichTextView();
       }
       _collapseAllRecipient();
-      _autoCreateEmailTag();
+      autoCreateEmailTag();
     }
   }
 
@@ -660,7 +660,7 @@ class ComposerController extends BaseController
           listToEmailAddress.addAll(arguments.listEmailAddress ?? []);
           isInitialRecipient.value = true;
           toAddressExpandMode.value = ExpandMode.COLLAPSE;
-          _updateStatusEmailSendButton();
+          updateStatusEmailSendButton();
           break;
         case EmailActionType.composeFromMailtoUri:
           if (arguments.subject != null) {
@@ -683,7 +683,7 @@ class ComposerController extends BaseController
             listBccEmailAddress = arguments.bcc!;
           }
           _getEmailContentFromMailtoUri(arguments.body ?? '');
-          _updateStatusEmailSendButton();
+          updateStatusEmailSendButton();
           break;
         case EmailActionType.reply:
         case EmailActionType.replyToList:
@@ -760,7 +760,7 @@ class ComposerController extends BaseController
             toAddressExpandMode.value = ExpandMode.COLLAPSE;
           }
           _getEmailContentFromUnsubscribeMailtoLink(arguments.body ?? '');
-          _updateStatusEmailSendButton();
+          updateStatusEmailSendButton();
           break;
         default:
           break;
@@ -891,7 +891,7 @@ class ComposerController extends BaseController
       replyToAddressExpandMode.value = ExpandMode.COLLAPSE;
     }
 
-    _updateStatusEmailSendButton();
+    updateStatusEmailSendButton();
   }
 
   void updateListEmailAddress(
@@ -914,10 +914,10 @@ class ComposerController extends BaseController
       default:
         break;
     }
-    _updateStatusEmailSendButton();
+    updateStatusEmailSendButton();
   }
 
-  void _updateStatusEmailSendButton() {
+  void updateStatusEmailSendButton() {
     if (listToEmailAddress.isNotEmpty
         || listCcEmailAddress.isNotEmpty
         || listBccEmailAddress.isNotEmpty
@@ -942,7 +942,7 @@ class ComposerController extends BaseController
         || bccEmailAddressController.text.isNotEmpty
         || replyToEmailAddressController.text.isNotEmpty) {
       _collapseAllRecipient();
-      _autoCreateEmailTag();
+      autoCreateEmailTag();
     }
 
     if (!isEnableEmailSendButton.value) {
@@ -1631,86 +1631,6 @@ class ComposerController extends BaseController
     replyToAddressExpandMode.value = ExpandMode.COLLAPSE;
   }
 
-  void _autoCreateEmailTag() {
-    final inputToEmail = toEmailAddressController.text;
-    final inputCcEmail = ccEmailAddressController.text;
-    final inputBccEmail = bccEmailAddressController.text;
-    final inputReplyToEmail = replyToEmailAddressController.text;
-
-    if (inputToEmail.isNotEmpty) {
-      _autoCreateToEmailTag(MailAddress.validateAddress(inputToEmail));
-    }
-    if (inputCcEmail.isNotEmpty) {
-      _autoCreateCcEmailTag(MailAddress.validateAddress(inputCcEmail));
-    }
-    if (inputBccEmail.isNotEmpty) {
-      _autoCreateBccEmailTag(MailAddress.validateAddress(inputBccEmail));
-    }
-    if (inputReplyToEmail.isNotEmpty) {
-      _autoCreateReplyToEmailTag(MailAddress.validateAddress(inputReplyToEmail));
-    }
-  }
-
-  bool _isDuplicatedRecipient(String inputEmail, List<EmailAddress> listEmailAddress) {
-    return listEmailAddress
-      .map((emailAddress) => emailAddress.email)
-      .whereNotNull()
-      .contains(inputEmail);
-  }
-
-  void _autoCreateToEmailTag(MailAddress inputMailAddress) {
-    if (!_isDuplicatedRecipient(inputMailAddress.asEncodedString(), listToEmailAddress)) {
-      listToEmailAddress.add(inputMailAddress.asEmailAddress());
-      isInitialRecipient.value = true;
-      isInitialRecipient.refresh();
-      _updateStatusEmailSendButton();
-    }
-    log('ComposerController::_autoCreateToEmailTag(): STATE: ${keyToEmailTagEditor.currentState}');
-    keyToEmailTagEditor.currentState?.resetTextField();
-    Future.delayed(const Duration(milliseconds: 300), () {
-      keyToEmailTagEditor.currentState?.closeSuggestionBox();
-    });
-  }
-
-  void _autoCreateCcEmailTag(MailAddress inputMailAddress) {
-    if (!_isDuplicatedRecipient(inputMailAddress.asEncodedString(), listCcEmailAddress)) {
-      listCcEmailAddress.add(inputMailAddress.asEmailAddress());
-      isInitialRecipient.value = true;
-      isInitialRecipient.refresh();
-      _updateStatusEmailSendButton();
-    }
-    keyCcEmailTagEditor.currentState?.resetTextField();
-    Future.delayed(const Duration(milliseconds: 300), () {
-      keyCcEmailTagEditor.currentState?.closeSuggestionBox();
-    });
-  }
-
-  void _autoCreateBccEmailTag(MailAddress inputMailAddress) {
-    if (!_isDuplicatedRecipient(inputMailAddress.asEncodedString(), listBccEmailAddress)) {
-      listBccEmailAddress.add(inputMailAddress.asEmailAddress());
-      isInitialRecipient.value = true;
-      isInitialRecipient.refresh();
-      _updateStatusEmailSendButton();
-    }
-    keyBccEmailTagEditor.currentState?.resetTextField();
-    Future.delayed(const Duration(milliseconds: 300), () {
-      keyBccEmailTagEditor.currentState?.closeSuggestionBox();
-    });
-  }
-
-  void _autoCreateReplyToEmailTag(MailAddress inputMailAddress) {
-    if (!_isDuplicatedRecipient(inputMailAddress.asEncodedString(), listReplyToEmailAddress)) {
-      listReplyToEmailAddress.add(inputMailAddress.asEmailAddress());
-      isInitialRecipient.value = true;
-      isInitialRecipient.refresh();
-      _updateStatusEmailSendButton();
-    }
-    keyReplyToEmailTagEditor.currentState?.resetTextField();
-    Future.delayed(const Duration(milliseconds: 300), () {
-      keyReplyToEmailTagEditor.currentState?.closeSuggestionBox();
-    });
-  }
-
   void _closeSuggestionBox() {
     if (toEmailAddressController.text.isEmpty) {
       keyToEmailTagEditor.currentState?.closeSuggestionBox();
@@ -1778,29 +1698,29 @@ class ComposerController extends BaseController
         case PrefixEmailAddress.to:
           toAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputToEmail = toEmailAddressController.text;
-          if (inputToEmail.isNotEmpty) {
-            _autoCreateToEmailTag(MailAddress.validateAddress(inputToEmail));
+          if (inputToEmail.trim().isNotEmpty) {
+            autoCreateEmailTagForType(PrefixEmailAddress.to, inputToEmail);
           }
           break;
         case PrefixEmailAddress.cc:
           ccAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputCcEmail = ccEmailAddressController.text;
-          if (inputCcEmail.isNotEmpty) {
-            _autoCreateCcEmailTag(MailAddress.validateAddress(inputCcEmail));
+          if (inputCcEmail.trim().isNotEmpty) {
+            autoCreateEmailTagForType(PrefixEmailAddress.cc, inputCcEmail);
           }
           break;
         case PrefixEmailAddress.bcc:
           bccAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputBccEmail = bccEmailAddressController.text;
-          if (inputBccEmail.isNotEmpty) {
-            _autoCreateBccEmailTag(MailAddress.validateAddress(inputBccEmail));
+          if (inputBccEmail.trim().isNotEmpty) {
+            autoCreateEmailTagForType(PrefixEmailAddress.bcc, inputBccEmail);
           }
           break;
         case PrefixEmailAddress.replyTo:
           replyToAddressExpandMode.value = ExpandMode.COLLAPSE;
           final inputReplyToEmail = replyToEmailAddressController.text;
-          if (inputReplyToEmail.isNotEmpty) {
-            _autoCreateReplyToEmailTag(MailAddress.validateAddress(inputReplyToEmail));
+          if (inputReplyToEmail.trim().isNotEmpty) {
+            autoCreateEmailTagForType(PrefixEmailAddress.replyTo, inputReplyToEmail);
           }
           break;
         default:
@@ -1866,7 +1786,7 @@ class ComposerController extends BaseController
     ccAddressExpandMode.value = ExpandMode.COLLAPSE;
     bccAddressExpandMode.value = ExpandMode.COLLAPSE;
     bccAddressExpandMode.refresh();
-    _updateStatusEmailSendButton();
+    updateStatusEmailSendButton();
   }
 
   void _removeBccEmailAddressFromFormerIdentity(Set<EmailAddress> listEmailAddress) {
@@ -1879,7 +1799,7 @@ class ComposerController extends BaseController
     toAddressExpandMode.value = ExpandMode.COLLAPSE;
     ccAddressExpandMode.value = ExpandMode.COLLAPSE;
     bccAddressExpandMode.value = ExpandMode.COLLAPSE;
-    _updateStatusEmailSendButton();
+    updateStatusEmailSendButton();
   }
 
   Future<void> _applySignature(String signature) async {
@@ -1952,7 +1872,7 @@ class ComposerController extends BaseController
         richTextMobileTabletController?.richTextController.showDeviceKeyboard);
     }
     _collapseAllRecipient();
-    _autoCreateEmailTag();
+    autoCreateEmailTag();
   }
 
   void _onChangeCursorOnMobile(List<int>? coordinates, BuildContext context) {
@@ -2083,7 +2003,7 @@ class ComposerController extends BaseController
 
   void handleOnMouseDownHtmlEditorWeb() {
     _collapseAllRecipient();
-    _autoCreateEmailTag();
+    autoCreateEmailTag();
   }
 
   FocusNode? getNextFocusOfToEmailAddress() {
@@ -2117,7 +2037,7 @@ class ComposerController extends BaseController
   }
 
   void handleFocusNextAddressAction() {
-    _autoCreateEmailTag();
+    autoCreateEmailTag();
   }
 
   bool get isNetworkConnectionAvailable => networkConnectionController.isNetworkConnectionAvailable();
@@ -2176,7 +2096,7 @@ class ComposerController extends BaseController
     isInitialRecipient.value = true;
     isInitialRecipient.refresh();
 
-    _updateStatusEmailSendButton();
+    updateStatusEmailSendButton();
   }
 
   void onAttachmentDropZoneListener(Attachment attachment) {

@@ -2,7 +2,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
@@ -230,7 +229,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                             return RecipientSuggestionItemWidget(
                               imagePaths: widget.imagePaths,
                               suggestionState: suggestionEmailAddress.state,
-                              emailAddress: MailAddress.validateAddress(suggestionEmailAddress.emailAddress.emailAddress).asEmailAddress(),
+                              emailAddress: _subAddressingValidatedEmailAddress(suggestionEmailAddress.emailAddress),
                               suggestionValid: suggestionValid,
                               highlight: highlight,
                               onSelectedAction: (emailAddress) {
@@ -321,7 +320,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                         return RecipientSuggestionItemWidget(
                           imagePaths: widget.imagePaths,
                           suggestionState: suggestionEmailAddress.state,
-                          emailAddress: MailAddress.validateAddress(suggestionEmailAddress.emailAddress.emailAddress).asEmailAddress(),
+                          emailAddress: _subAddressingValidatedEmailAddress(suggestionEmailAddress.emailAddress),
                           suggestionValid: suggestionValid,
                           highlight: highlight,
                           onSelectedAction: (emailAddress) {
@@ -466,13 +465,10 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
   }
 
   bool _isDuplicatedRecipient(String inputEmail) {
-    if (inputEmail.isEmpty) {
-      return false;
-    }
+    if (inputEmail.trim().isEmpty) return false;
+
     return _currentListEmailAddress
-      .map((emailAddress) => emailAddress.email)
-      .whereNotNull()
-      .contains(inputEmail);
+      .any((emailAddress) => emailAddress.email?.trim() == inputEmail.trim());
   }
 
   SuggestionEmailAddress _toSuggestionEmailAddress(EmailAddress item, List<EmailAddress> addedEmailAddresses) {
@@ -524,13 +520,10 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
   void _handleSelectOptionAction(
     SuggestionEmailAddress suggestionEmailAddress,
     StateSetter stateSetter
-  ) {
-    MailAddress mailAddress = MailAddress.validateAddress(suggestionEmailAddress.emailAddress.emailAddress);
-    if (!_isDuplicatedRecipient(mailAddress.asEncodedString())) {
-      stateSetter(() => _currentListEmailAddress.add(mailAddress.asEmailAddress()));
-      _updateListEmailAddressAction();
-    }
-  }
+  ) => _onEmailAddressReceived(
+    suggestionEmailAddress.emailAddress.emailAddress,
+    stateSetter,
+  );
 
   void _handleSubmitTagAction(
     String value,
@@ -539,11 +532,9 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
 
   void _createMailTag(String value, StateSetter stateSetter) {
     final listString = StringConvert.extractStrings(value.trim()).toSet();
-    MailAddress mailAddress = MailAddress.validateAddress(value.trim());
 
-    if (listString.isEmpty && !_isDuplicatedRecipient(mailAddress.asEncodedString())) {
-      stateSetter(() => _currentListEmailAddress.add(mailAddress.asEmailAddress()));
-      _updateListEmailAddressAction();
+    if (listString.isEmpty && !_isDuplicatedRecipient(value)) {
+      _onEmailAddressReceived(value, stateSetter);
     } else if (listString.isNotEmpty) {
       final listStringNotExist = listString
         .where((text) => !_isDuplicatedRecipient(text))
@@ -564,11 +555,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
     String value,
     StateSetter stateSetter
   ) {
-    MailAddress mailAddress = MailAddress.validateAddress(value.trim());
-    if (!_isDuplicatedRecipient(mailAddress.asEncodedString())) {
-      stateSetter(() => _currentListEmailAddress.add(mailAddress.asEmailAddress()));
-      _updateListEmailAddressAction();
-    }
+    _onEmailAddressReceived(value, stateSetter);
     _gapBetweenTagChangedAndFindSuggestion = Timer(
       const Duration(seconds: 1),
       _handleGapBetweenTagChangedAndFindSuggestion
@@ -606,6 +593,32 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
       return newWidth;
     } else {
       return null;
+    }
+  }
+
+  void _onEmailAddressReceived(String input, StateSetter stateSetter) {
+    final emailAddressRecord = _generateEmailAddressFromString(input);
+    if (!_isDuplicatedRecipient(emailAddressRecord.$1)) {
+      stateSetter(() => _currentListEmailAddress.add(emailAddressRecord.$2));
+      _updateListEmailAddressAction();
+    }
+  }
+
+  EmailAddress _subAddressingValidatedEmailAddress(EmailAddress emailAddress) {
+    try {
+      final mailAddress = MailAddress.validateAddress(emailAddress.emailAddress);
+      return mailAddress.asEmailAddress();
+    } catch (e) {
+      return emailAddress;
+    }
+  }
+
+  (String email, EmailAddress emailAddress) _generateEmailAddressFromString(String input) {
+    try {
+      final mailAddress = MailAddress.validateAddress(input);
+      return (mailAddress.asEncodedString(), mailAddress.asEmailAddress());
+    } catch (e) {
+      return (input, EmailAddress(null, input));
     }
   }
 }

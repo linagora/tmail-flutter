@@ -9,6 +9,7 @@ import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_bottom_bar_widget_styles.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnEmailActionCallback = void Function(EmailActionType, PresentationEmail);
@@ -76,9 +77,10 @@ class EmailViewBottomBarWidget extends StatelessWidget {
             }),
             Obx(() {
               final currentEmailLoaded = _singleEmailController.currentEmailLoaded.value;
-
-              if (currentEmailLoaded != null &&
-                  currentEmailLoaded.emailCurrent?.hasListPost == true) {
+              final isReplyToListEnabled = EmailUtils.isReplyToListEnabled(
+                currentEmailLoaded?.emailCurrent?.listPost ?? '',
+              );
+              if (currentEmailLoaded != null && isReplyToListEnabled) {
                 return Expanded(
                   child: TMailButtonWidget(
                     key: const Key('reply_to_list_email_button'),
