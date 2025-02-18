@@ -142,7 +142,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           () => controller.selectSettings(AccountMenuItem.languageAndRegion)
         ),
         Obx(() {
-          if (PlatformInfo.isMobile && controller.manageAccountDashboardController.isFcmCapabilitySupported) {
+          if (controller.manageAccountDashboardController.isFcmCapabilitySupported && PlatformInfo.isMobile) {
             return Column(children: [
               Divider(
                   color: AppColor.colorDividerHorizontal,
