@@ -148,6 +148,8 @@ class ComposerController extends BaseController
   final CreateNewAndSendEmailInteractor _createNewAndSendEmailInteractor;
   final CreateNewAndSaveEmailToDraftsInteractor _createNewAndSaveEmailToDraftsInteractor;
   final PrintEmailInteractor printEmailInteractor;
+  final String? composerId;
+  final ComposerArguments? composerArgs;
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
@@ -210,7 +212,7 @@ class ComposerController extends BaseController
   int? _savedEmailDraftHash;
   bool _restoringSignatureButton = false;
   GlobalKey? responsiveContainerKey;
-  
+
   @visibleForTesting
   bool get restoringSignatureButton => _restoringSignatureButton;
 
@@ -235,6 +237,10 @@ class ComposerController extends BaseController
     this._createNewAndSendEmailInteractor,
     this._createNewAndSaveEmailToDraftsInteractor,
     this.printEmailInteractor,
+    {
+      this.composerId,
+      this.composerArgs,
+    }
   );
 
   @override
@@ -242,11 +248,11 @@ class ComposerController extends BaseController
     super.onInit();
     if (PlatformInfo.isWeb) {
       responsiveContainerKey = GlobalKey();
-      richTextWebController = getBinding<RichTextWebController>();
+      richTextWebController = getBinding<RichTextWebController>(tag: composerId);
       responsiveContainerKey = GlobalKey();
       menuMoreOptionController = CustomPopupMenuController();
     } else {
-      richTextMobileTabletController = getBinding<RichTextMobileTabletController>();
+      richTextMobileTabletController = getBinding<RichTextMobileTabletController>(tag: composerId);
     }
     createFocusNodeInput();
     scrollControllerEmailAddress.addListener(_scrollControllerEmailAddressListener);
@@ -573,7 +579,7 @@ class ComposerController extends BaseController
   void _initEmail() {
     _isEmailBodyLoaded = false;
     final arguments = PlatformInfo.isWeb
-      ? mailboxDashBoardController.composerArguments
+      ? composerArgs
       : Get.arguments;
     if (arguments is ComposerArguments) {
       composerArguments.value = arguments;
@@ -1528,7 +1534,10 @@ class ComposerController extends BaseController
       if (closeOverlays) {
         popBack();
       }
-      mailboxDashBoardController.closeComposerOverlay(result: result);
+      mailboxDashBoardController.closeComposerOnWeb(
+        composerId: composerId,
+        result: result,
+      );
     } else {
       popBack(result: result, closeOverlays: closeOverlays);
     }

@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dar
 import 'package:tmail_ui_user/features/composer/data/repository/contact_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/html_datasource.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/print_file_datasource.dart';
@@ -167,6 +168,8 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<GetSpamReportStateInteractor>(),
       Get.find<GetSpamMailboxCachedInteractor>()));
 
+    Get.lazyPut(() => ComposerManager());
+
     Get.put(MailboxDashBoardController(
       Get.find<MoveToMailboxInteractor>(),
       Get.find<DeleteEmailPermanentlyInteractor>(),
@@ -193,6 +196,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<GetRestoredDeletedMessageInterator>(),
       Get.find<RemoveComposerCacheOnWebInteractor>(),
       Get.find<GetAllIdentitiesInteractor>(),
+      Get.find<ComposerManager>(),
     ));
     Get.put(AdvancedFilterController());
   }
