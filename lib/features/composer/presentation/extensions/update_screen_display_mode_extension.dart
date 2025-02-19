@@ -1,7 +1,7 @@
 
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
-import 'package:tmail_ui_user/features/composer/presentation/utils/composer_utils.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension UpdateScreenDisplayModeExtension on ComposerController {
@@ -21,9 +21,9 @@ extension UpdateScreenDisplayModeExtension on ComposerController {
   double get composerWidth {
     switch (screenDisplayMode.value) {
       case ScreenDisplayMode.normal:
-        return ComposerUtils.normalWidth;
+        return ComposerStyle.normalWidth;
       case ScreenDisplayMode.minimize:
-        return ComposerUtils.minimizeWidth;
+        return ComposerStyle.minimizeWidth;
       case ScreenDisplayMode.hidden:
       case ScreenDisplayMode.fullScreen:
         return 0;
