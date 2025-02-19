@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
@@ -9,6 +11,10 @@ import 'package:tmail_ui_user/features/base/isolate/background_isolate_binary_me
 import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/top_bar_attachment_viewer.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
+import 'package:twake_previewer_flutter/core/previewer_options/options/previewer_state.dart';
+import 'package:twake_previewer_flutter/core/previewer_options/previewer_options.dart';
+import 'package:twake_previewer_flutter/twake_html_previewer/options/html_view_options.dart';
+import 'package:twake_previewer_flutter/twake_html_previewer/twake_html_previewer.dart';
 
 class HtmlAttachmentPreviewer extends StatefulWidget {
   const HtmlAttachmentPreviewer({
@@ -115,16 +121,22 @@ class _HtmlAttachmentPreviewerState extends State<HtmlAttachmentPreviewer> {
     required double height,
   }) {
     return PlatformInfo.isWeb
-      ? HtmlContentViewerOnWeb(
-          contentHtml: widget.htmlContent,
-          widthContent: width,
-          heightContent: height,
-          direction: AppUtils.getCurrentDirection(context),
-          mailtoDelegate: (uri) {
-            popBack();
-            widget.mailToClicked(uri);
-          },
-          keepWidthWhileLoading: true,
+      ? TwakeHtmlPreviewer(
+          bytes: utf8.encode(widget.htmlContent),
+          previewerOptions: PreviewerOptions(
+            previewerState: PreviewerState.success,
+            width: width,
+            height: height,
+          ),
+          htmlViewOptions: HtmlViewOptions(
+            contentClassName: 'tmail-content',
+            direction: AppUtils.getCurrentDirection(context),
+            mailtoDelegate: (uri) {
+              popBack();
+              widget.mailToClicked(uri);
+            },
+            keepWidthWhileLoading: true,
+          ),
       )
       : HtmlContentViewer(
           contentHtml: widget.htmlContent,
