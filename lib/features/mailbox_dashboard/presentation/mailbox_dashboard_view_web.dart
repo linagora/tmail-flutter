@@ -198,7 +198,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               }
             }),
         ),
-        const ComposerOverlayView(),
+        ComposerOverlayView(),
         Obx(() => controller.searchMailboxActivated.value == true && !controller.responsiveUtils.isWebDesktop(context)
           ? const SearchMailboxView()
           : const SizedBox.shrink()
