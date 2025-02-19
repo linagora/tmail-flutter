@@ -19,6 +19,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
   final EdgeInsetsGeometry? padding;
   final bool isDrag;
   final bool isShowingEmailContent;
+  final bool isSenderImportantFlagEnabled;
   final OnPressEmailActionClick? emailActionClick;
   final OnMoreActionClick? onMoreActionClick;
 
@@ -29,6 +30,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
     required this.isShowingEmailContent,
     this.searchQuery,
     this.isSearchEmailRunning = false,
+    this.isSenderImportantFlagEnabled = true,
     this.mailboxContain,
     this.padding,
     this.isDrag = false,
@@ -104,7 +106,7 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
                   children: [
                     if (presentationEmail.hasCalendarEvent)
                       buildCalendarEventIcon(context: context, presentationEmail: presentationEmail),
-                    if (presentationEmail.isMarkAsImportant)
+                    if (presentationEmail.isMarkAsImportant && isSenderImportantFlagEnabled)
                       buildMarkAsImportantIcon(context),
                     Expanded(child: buildEmailTitle(
                       context,

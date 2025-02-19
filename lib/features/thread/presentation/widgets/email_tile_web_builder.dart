@@ -24,6 +24,7 @@ class EmailTileBuilder extends StatefulWidget {
   final EdgeInsetsGeometry? padding;
   final bool isDrag;
   final bool isShowingEmailContent;
+  final bool isSenderImportantFlagEnabled;
   final OnPressEmailActionClick? emailActionClick;
   final OnMoreActionClick? onMoreActionClick;
 
@@ -34,6 +35,7 @@ class EmailTileBuilder extends StatefulWidget {
     required this.isShowingEmailContent,
     this.searchQuery,
     this.isSearchEmailRunning = false,
+    this.isSenderImportantFlagEnabled = true,
     this.mailboxContain,
     this.padding,
     this.isDrag = false,
@@ -140,7 +142,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                             context: context,
                             presentationEmail: widget.presentationEmail
                           ),
-                        if (widget.presentationEmail.isMarkAsImportant)
+                        if (widget.presentationEmail.isMarkAsImportant && widget.isSenderImportantFlagEnabled)
                           buildMarkAsImportantIcon(context),
                         Expanded(
                           child: buildEmailTitle(
@@ -259,7 +261,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                               context: context,
                               presentationEmail: widget.presentationEmail
                             ),
-                          if (widget.presentationEmail.isMarkAsImportant)
+                          if (widget.presentationEmail.isMarkAsImportant && widget.isSenderImportantFlagEnabled)
                             buildMarkAsImportantIcon(context),
                           Expanded(
                             child: buildEmailTitle(
@@ -615,7 +617,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
       return Row(children: [
         if (widget.presentationEmail.hasCalendarEvent)
           buildCalendarEventIcon(context: context, presentationEmail: widget.presentationEmail),
-        if (widget.presentationEmail.isMarkAsImportant)
+        if (widget.presentationEmail.isMarkAsImportant && widget.isSenderImportantFlagEnabled)
           buildMarkAsImportantIcon(context),
         if (widget.presentationEmail.getEmailTitle().isNotEmpty)
             Container(

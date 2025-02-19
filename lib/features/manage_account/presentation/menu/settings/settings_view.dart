@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/state/banner_state.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/always_read_receipt/always_read_receipt_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
@@ -19,6 +18,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/notification/notification_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/preferences/preferences_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
@@ -228,11 +228,11 @@ class SettingsView extends GetWidget<SettingsController> {
           } else {
             return const SizedBox.shrink();
           }
-        case AccountMenuItem.alwaysReadReceipt:
+        case AccountMenuItem.preferences:
           if (controller.manageAccountDashboardController.isServerSettingsCapabilitySupported) {
             return const SafeArea(
               top: false,
-              child: AlwaysReadReceiptView());
+              child: PreferencesView());
           } else {
             return const SizedBox.shrink();
           }

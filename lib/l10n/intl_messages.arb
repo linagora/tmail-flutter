@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-02-07T14:52:44.257717",
+  "@@last_modified": "2025-02-19T18:24:04.689367",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4164,6 +4164,30 @@
   },
   "turnOffMarkAsImportant": "Turn off mark as important",
   "@turnOffMarkAsImportant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "preferences": "Preferences",
+  "@preferences": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "senderSetImportantFlag": "Sender-set important flag",
+  "@senderSetImportantFlag": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "senderImportantSettingExplanation": "Enables display of important emails flag in your inbox. This feature is controlled by the sender and thus could result in abuses.",
+  "@senderImportantSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "senderImportantSettingToggleDescription": "Display sender-set important flag",
+  "@senderImportantSettingToggleDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

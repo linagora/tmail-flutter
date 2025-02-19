@@ -99,6 +99,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preferences_setting_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
@@ -141,6 +142,8 @@ import 'package:tmail_ui_user/features/sending_queue/domain/usecases/get_all_sen
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/store_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_sending_email_interactor.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_setting_state.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
@@ -168,6 +171,7 @@ import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/email_receive_manager.dart';
 import 'package:tmail_ui_user/main/utils/ios_notification_manager.dart';
+import 'package:server_settings/server_settings/tmail_server_settings_extension.dart';
 import 'package:uuid/uuid.dart';
 
 class MailboxDashBoardController extends ReloadableController
@@ -215,6 +219,7 @@ class MailboxDashBoardController extends ReloadableController
   DeleteMailboxStateToRefreshInteractor? _deleteMailboxStateToRefreshInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
   IOSNotificationManager? _iosNotificationManager;
+  GetServerSettingInteractor? getServerSettingInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -239,6 +244,7 @@ class MailboxDashBoardController extends ReloadableController
   final attachmentDraggableAppState = Rxn<DraggableAppState>();
   final isRecoveringDeletedMessage = RxBool(false);
   final localFileDraggableAppState = Rxn<DraggableAppState>();
+  final isSenderImportantFlagEnabled = RxBool(true);
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
@@ -430,6 +436,8 @@ class MailboxDashBoardController extends ReloadableController
         [success.emailId],
         markStarAction: success.markStarAction,
       );
+    } else if (success is GetServerSettingSuccess) {
+      isSenderImportantFlagEnabled.value = success.settingOption.isDisplaySenderPriority;
     }
   }
 
@@ -462,6 +470,8 @@ class MailboxDashBoardController extends ReloadableController
       toastManager.showMessageFailure(failure);
     } else if (failure is GetComposerCacheFailure) {
       _handleIdentityCache();
+    } else if (failure is GetServerSettingFailure) {
+      isSenderImportantFlagEnabled.value = true;
     }
   }
 
@@ -658,6 +668,7 @@ class MailboxDashBoardController extends ReloadableController
     injectRuleFilterBindings(session, currentAccountId);
     injectVacationBindings(session, currentAccountId);
     injectWebSocket(session, currentAccountId);
+    injectPreferencesBindings();
     if (PlatformInfo.isMobile) {
       injectFCMBindings(session, currentAccountId);
     }
@@ -665,6 +676,7 @@ class MailboxDashBoardController extends ReloadableController
     _getVacationResponse();
     spamReportController.getSpamReportStateAction();
     _getAllIdentities();
+    getServerSetting();
 
     if (PlatformInfo.isMobile) {
       getAllSendingEmails();
@@ -1816,6 +1828,7 @@ class MailboxDashBoardController extends ReloadableController
     }
 
     _getAllIdentities();
+    getServerSetting();
   }
 
   Future<List<PresentationEmail>> quickSearchEmails(String query) async {
@@ -1881,6 +1894,7 @@ class MailboxDashBoardController extends ReloadableController
     }
 
     _getAllIdentities();
+    getServerSetting();
   }
 
   void _handleUpdateVacationSuccess(UpdateVacationSuccess success) {
