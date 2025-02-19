@@ -6747,9 +6747,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.ComposerOverlayView.prototype = {
     build$1(context) {
-      var t1 = this._composerManager;
-      if (J.get$isNotEmpty$asx(t1.composers.get$keys(0)))
-        t1.syncComposerStateWhenComposerQueueChanged$1$screenWidth(A.InheritedModel_inheritFrom(context, null, type$.MediaQuery).data.size._dx);
+      var t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data,
+        t2 = this._composerManager;
+      if (J.get$isNotEmpty$asx(t2.composers.get$keys(0)))
+        t2.syncComposerStateWhenComposerQueueChanged$1$screenWidth(t1.size._dx);
       return new A.Obx(new C.ComposerOverlayView_build_closure(this, context), null);
     }
   };
@@ -17864,5 +17865,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_4", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "S37t8QdDF7YoiFWtF4VmsFkCOV4=");
+})($__dart_deferred_initializers__, "hqEveY+mLSbHZ/w9EBdpZMkHttk=");
 ;
