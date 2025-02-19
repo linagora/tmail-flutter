@@ -52,6 +52,12 @@ dependencies:
     path: server_settings
 
   ### Dependencies from git ###
+
+  sievescript_dart:
+    git:
+      url: https://github.com/viethoang99/sievescript_dart.git
+      ref: main  # or specify a tag/commit
+      
   rich_text_composer:
     git:
       url: https://github.com/linagora/rich-text-composer.git
