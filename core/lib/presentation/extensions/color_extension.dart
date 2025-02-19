@@ -178,9 +178,13 @@ extension AppColor on Color {
   static const colorCalendarEventRead = Color(0xFF818C99);
   static const colorCalendarEventUnread = Color(0xFF1C1B1F);
   static const colorMaybeEventActionText = Color(0xFFFFC107);
+  static const colorMaybeEventActionBanner = Color(0xFFFFF5C2);
   static const colorInvitedEventActionText = Color(0xFF007AFF);
+  static const colorInvitedEventActionBanner = Color(0xFFEBF4FF);
   static const colorUpdatedEventActionText = Color(0xFF4BB34B);
+  static const colorUpdatedEventActionBanner = Color(0xFFECF8E5);
   static const colorCanceledEventActionText = Color(0xFFFF3347);
+  static const colorCanceledEventActionBanner = Color(0xFFF5EBEB);
   static const colorSubTitleEventActionText = Color(0xFF939393);
   static const colorCalendarEventInformationBackground = Color(0x0A000000);
   static const colorCalendarEventInformationStroke = Color(0x1F000000);

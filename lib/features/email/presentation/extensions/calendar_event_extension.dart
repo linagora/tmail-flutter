@@ -25,30 +25,34 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 extension CalendarEventExtension on CalendarEvent {
 
-  Color getColorEventActionBanner(List<String> listEmailAddressSender) {
+  static const String acceptedParticipationStatus = 'ACCEPTED';
+  static const String tentativeParticipationStatus = 'TENTATIVE';
+  static const String declinedParticipationStatus = 'DECLINED';
+
+  Color? getColorEventActionBanner(List<String> listEmailAddressSender) {
     switch(method) {
       case EventMethod.request:
       case EventMethod.add:
-        return AppColor.colorInvitedEventActionText;
+        return AppColor.colorInvitedEventActionBanner;
       case EventMethod.refresh:
       case EventMethod.counter:
-        return AppColor.colorUpdatedEventActionText;
+        return AppColor.colorUpdatedEventActionBanner;
       case EventMethod.cancel:
       case EventMethod.declineCounter:
-        return AppColor.colorCanceledEventActionText;
+        return AppColor.colorCanceledEventActionBanner;
       case EventMethod.reply:
         final matchedAttendee = findAttendeeHasUpdatedStatus(listEmailAddressSender);
         if (matchedAttendee != null) {
-          return getAttendeeMessageTextColor(matchedAttendee.participationStatus);
+          return getAttendeeMessageBannerColor(matchedAttendee.participationStatus);
         } else {
-          return Colors.transparent;
+          return null;
         }
       default:
-        return Colors.transparent;
+        return null;
     }
   }
 
-  Color getColorEventActionText(List<String> listEmailAddressSender) {
+  Color? getColorEventActionText(List<String> listEmailAddressSender) {
     switch(method) {
       case EventMethod.request:
       case EventMethod.add:
@@ -64,10 +68,10 @@ extension CalendarEventExtension on CalendarEvent {
         if (matchedAttendee != null) {
           return getAttendeeMessageTextColor(matchedAttendee.participationStatus);
         } else {
-          return Colors.transparent;
+          return null;
         }
       default:
-        return Colors.transparent;
+        return null;
     }
   }
 
@@ -155,26 +159,38 @@ extension CalendarEventExtension on CalendarEvent {
   }
 
   String getAttendeeMessageStatus(BuildContext context, CalendarAttendeeParticipationStatus? status) {
-    if (status == CalendarAttendeeParticipationStatus('ACCEPTED')) {
+    if (status == CalendarAttendeeParticipationStatus(acceptedParticipationStatus)) {
       return AppLocalizations.of(context).messageEventActionBannerAttendeeAccepted;
-    } else if (status == CalendarAttendeeParticipationStatus('TENTATIVE')) {
+    } else if (status == CalendarAttendeeParticipationStatus(tentativeParticipationStatus)) {
       return AppLocalizations.of(context).messageEventActionBannerAttendeeTentative;
-    } else if (status == CalendarAttendeeParticipationStatus('DECLINED')) {
+    } else if (status == CalendarAttendeeParticipationStatus(declinedParticipationStatus)) {
       return AppLocalizations.of(context).messageEventActionBannerAttendeeDeclined;
     } else {
       return '';
     }
   }
 
-  Color getAttendeeMessageTextColor(CalendarAttendeeParticipationStatus? status) {
-    if (status == CalendarAttendeeParticipationStatus('ACCEPTED')) {
+  Color? getAttendeeMessageBannerColor(CalendarAttendeeParticipationStatus? status) {
+    if (status == CalendarAttendeeParticipationStatus(acceptedParticipationStatus)) {
+      return AppColor.colorUpdatedEventActionBanner;
+    } else if (status == CalendarAttendeeParticipationStatus(tentativeParticipationStatus)) {
+      return AppColor.colorMaybeEventActionBanner;
+    } else if (status == CalendarAttendeeParticipationStatus(declinedParticipationStatus)) {
+      return AppColor.colorCanceledEventActionBanner;
+    } else {
+      return null;
+    }
+  }
+
+  Color? getAttendeeMessageTextColor(CalendarAttendeeParticipationStatus? status) {
+    if (status == CalendarAttendeeParticipationStatus(acceptedParticipationStatus)) {
       return AppColor.colorUpdatedEventActionText;
-    } else if (status == CalendarAttendeeParticipationStatus('TENTATIVE')) {
+    } else if (status == CalendarAttendeeParticipationStatus(tentativeParticipationStatus)) {
       return AppColor.colorMaybeEventActionText;
-    } else if (status == CalendarAttendeeParticipationStatus('DECLINED')) {
+    } else if (status == CalendarAttendeeParticipationStatus(declinedParticipationStatus)) {
       return AppColor.colorCanceledEventActionText;
     } else {
-      return Colors.transparent;
+      return null;
     }
   }
 
