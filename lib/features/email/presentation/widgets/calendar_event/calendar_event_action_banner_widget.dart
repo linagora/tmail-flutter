@@ -24,7 +24,7 @@ class CalendarEventActionBannerWidget extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         borderRadius: const BorderRadius.all(Radius.circular(CalendarEventActionBannerStyles.borderRadius)),
-        color: calendarEvent.getColorEventActionBanner(listEmailAddressSender).withOpacity(0.12)
+        color: calendarEvent.getColorEventActionBanner(listEmailAddressSender),
       ),
       padding: const EdgeInsets.all(CalendarEventActionBannerStyles.contentPadding),
       margin: const EdgeInsets.symmetric(
@@ -44,35 +44,29 @@ class CalendarEventActionBannerWidget extends StatelessWidget {
                 fit: BoxFit.fill,
               ),
             ),
-          Expanded(child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Text.rich(
-                TextSpan(
-                  style: TextStyle(
-                    fontSize: CalendarEventActionBannerStyles.titleTextSize,
-                    fontWeight: FontWeight.w400,
-                    color: calendarEvent.getColorEventActionText(listEmailAddressSender)
-                  ),
-                  children: [
-                    TextSpan(
-                      text: calendarEvent.getUserNameEventAction(
-                        context: context,
-                        imagePaths: imagePaths,
-                        listEmailAddressSender: listEmailAddressSender
-                      ),
-                      style: TextStyle(
-                        color: calendarEvent.getColorEventActionText(listEmailAddressSender),
-                        fontSize: CalendarEventActionBannerStyles.titleTextSize,
-                        fontWeight: FontWeight.w700
-                      ),
-                    ),
-                    TextSpan(text: calendarEvent.getTitleEventAction(context, listEmailAddressSender))
-                  ]
-                )
+          Expanded(child: Text.rich(
+            TextSpan(
+              style: TextStyle(
+                fontSize: CalendarEventActionBannerStyles.titleTextSize,
+                fontWeight: FontWeight.w400,
+                color: calendarEvent.getColorEventActionText(listEmailAddressSender)
               ),
-            ]
+              children: [
+                TextSpan(
+                  text: calendarEvent.getUserNameEventAction(
+                    context: context,
+                    imagePaths: imagePaths,
+                    listEmailAddressSender: listEmailAddressSender
+                  ),
+                  style: TextStyle(
+                    color: calendarEvent.getColorEventActionText(listEmailAddressSender),
+                    fontSize: CalendarEventActionBannerStyles.titleTextSize,
+                    fontWeight: FontWeight.w700
+                  ),
+                ),
+                TextSpan(text: calendarEvent.getTitleEventAction(context, listEmailAddressSender))
+              ]
+            )
           ))
         ]
       ),
