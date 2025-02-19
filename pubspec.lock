@@ -1601,14 +1601,13 @@ packages:
     source: hosted
     version: "3.10.8"
   pdf_render:
-    dependency: "direct main"
+    dependency: transitive
     description:
-      path: "."
-      ref: main
-      resolved-ref: "5ee423463cbeee302400d5e7fdae1a83c7fe1720"
-      url: "https://github.com/linagora/flutter_pdf_render.git"
-    source: git
-    version: "2.0.0"
+      name: pdf_render
+      sha256: bacd2ad8f4f4c9821827003065f5c2f9ca474dd418ff29c68272aab4c0e1e88b
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.12"
   pdf_widget_wrapper:
     dependency: transitive
     description:
@@ -2079,6 +2078,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
+  twake_previewer_flutter:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: main
+      resolved-ref: "220f06b97ecbfd0b155852754e33388d64367853"
+      url: "https://github.com/linagora/twake-previewer-flutter"
+    source: git
+    version: "0.0.6"
   typed_data:
     dependency: transitive
     description:
@@ -2328,5 +2336,5 @@ packages:
     source: hosted
     version: "3.1.2"
 sdks:
-  dart: ">=3.5.0 <4.0.0"
+  dart: ">=3.5.4 <4.0.0"
   flutter: ">=3.24.0"
