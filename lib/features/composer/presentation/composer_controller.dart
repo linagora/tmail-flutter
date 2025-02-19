@@ -29,6 +29,7 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
+import 'package:server_settings/server_settings/tmail_server_settings_extension.dart';
 import 'package:super_tag_editor/tag_editor.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_handler.dart';
@@ -93,8 +94,8 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/id
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/network_connection/presentation/web_network_connection_controller.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
-import 'package:tmail_ui_user/features/server_settings/domain/state/get_always_read_receipt_setting_state.dart';
-import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_always_read_receipt_setting_interactor.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_setting_state.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/pick_file_exception.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/list_file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/extensions/file_info_extension.dart';
@@ -148,7 +149,7 @@ class ComposerController extends BaseController
   final SaveComposerCacheOnWebInteractor _saveComposerCacheOnWebInteractor;
   final DownloadImageAsBase64Interactor _downloadImageAsBase64Interactor;
   final TransformHtmlEmailContentInteractor _transformHtmlEmailContentInteractor;
-  final GetAlwaysReadReceiptSettingInteractor _getAlwaysReadReceiptSettingInteractor;
+  final GetServerSettingInteractor _getServerSettingInteractor;
   final CreateNewAndSendEmailInteractor _createNewAndSendEmailInteractor;
   final CreateNewAndSaveEmailToDraftsInteractor _createNewAndSaveEmailToDraftsInteractor;
   final PrintEmailInteractor printEmailInteractor;
@@ -240,7 +241,7 @@ class ComposerController extends BaseController
     this._saveComposerCacheOnWebInteractor,
     this._downloadImageAsBase64Interactor,
     this._transformHtmlEmailContentInteractor,
-    this._getAlwaysReadReceiptSettingInteractor,
+    this._getServerSettingInteractor,
     this._createNewAndSendEmailInteractor,
     this._createNewAndSaveEmailToDraftsInteractor,
     this.printEmailInteractor,
@@ -367,8 +368,8 @@ class ComposerController extends BaseController
         richTextMobileTabletController?.insertImage(inlineImage);
       }
       maxWithEditor = null;
-    } else if (success is GetAlwaysReadReceiptSettingSuccess) {
-      hasRequestReadReceipt.value = success.alwaysReadReceiptEnabled;
+    } else if (success is GetServerSettingSuccess) {
+      hasRequestReadReceipt.value = success.settingOption.isAlwaysReadReceipts;
       _initEmailDraftHash();
     } else if (success is RestoreEmailInlineImagesSuccess) {
       _updateEditorContent(success);
@@ -396,7 +397,7 @@ class ComposerController extends BaseController
       if (identitySelected.value == null) {
         _autoFocusFieldWhenLauncher();
       }
-    } else if (failure is GetAlwaysReadReceiptSettingFailure) {
+    } else if (failure is GetServerSettingFailure) {
       hasRequestReadReceipt.value = false;
       _initEmailDraftHash();
     }
@@ -772,7 +773,7 @@ class ComposerController extends BaseController
         log('ComposerController::_initEmail: hasRequestReadReceipt = ${arguments.hasRequestReadReceipt}');
         hasRequestReadReceipt.value = arguments.hasRequestReadReceipt ?? false;
       } else if (composerArguments.value?.emailActionType != EmailActionType.editDraft) {
-        _getAlwaysReadReceiptSetting();
+        _getServerSetting();
       }
     }
   }
@@ -2242,11 +2243,10 @@ class ComposerController extends BaseController
     );
   }
 
-  void _getAlwaysReadReceiptSetting() {
-    log('ComposerController::_getAlwaysReadReceiptSetting:');
+  void _getServerSetting() {
     final accountId = mailboxDashBoardController.accountId.value;
     if (accountId != null) {
-      consumeState(_getAlwaysReadReceiptSettingInteractor.execute(accountId));
+      consumeState(_getServerSettingInteractor.execute(accountId));
     }
   }
 
@@ -2447,7 +2447,7 @@ class ComposerController extends BaseController
   void _handleGetEmailContentFailure(GetEmailContentFailure failure) {
     emailContentsViewState.value = Left(failure);
     if (composerArguments.value?.emailActionType == EmailActionType.editDraft) {
-      _getAlwaysReadReceiptSetting();
+      _getServerSetting();
     }
   }
 
@@ -2456,7 +2456,7 @@ class ComposerController extends BaseController
       hasRequestReadReceipt.value = true;
       _initEmailDraftHash();
     } else {
-      _getAlwaysReadReceiptSetting();
+      _getServerSetting();
     }
   }
   

@@ -68,10 +68,10 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           if (controller.manageAccountDashboardController.isServerSettingsCapabilitySupported) {
             return Column(children: [
               SettingFirstLevelTileBuilder(
-                AccountMenuItem.alwaysReadReceipt.getName(context),
-                AccountMenuItem.alwaysReadReceipt.getIcon(controller.imagePaths),
+                AccountMenuItem.preferences.getName(context),
+                AccountMenuItem.preferences.getIcon(controller.imagePaths),
                 subtitle: AppLocalizations.of(context).emailReadReceiptsSettingExplanation,
-                () => controller.selectSettings(AccountMenuItem.alwaysReadReceipt)
+                () => controller.selectSettings(AccountMenuItem.preferences)
               ),
               Divider(
                 color: AppColor.colorDividerHorizontal,

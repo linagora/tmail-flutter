@@ -4555,4 +4555,32 @@ class AppLocalizations {
       name: 'turnOffMarkAsImportant',
     );
   }
+
+  String get preferences {
+    return Intl.message(
+      'Preferences',
+      name: 'preferences',
+    );
+  }
+
+  String get senderSetImportantFlag {
+    return Intl.message(
+      'Sender-set important flag',
+      name: 'senderSetImportantFlag',
+    );
+  }
+
+  String get senderImportantSettingExplanation {
+    return Intl.message(
+      'Enables display of important emails flag in your inbox. This feature is controlled by the sender and thus could result in abuses.',
+      name: 'senderImportantSettingExplanation',
+    );
+  }
+
+  String get senderImportantSettingToggleDescription {
+    return Intl.message(
+    'Display sender-set important flag',
+    name: 'senderImportantSettingToggleDescription',
+    );
+  }
 }

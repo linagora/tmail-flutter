@@ -2,14 +2,17 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/exceptions/server_settings_exception.dart';
-import 'package:tmail_ui_user/features/server_settings/domain/state/update_always_read_receipt_setting_state.dart';
-import 'package:tmail_ui_user/features/server_settings/domain/usecases/update_always_read_receipt_setting_interactor.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/repository/server_settings_repository.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/state/update_server_setting_state.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/usecases/update_server_setting_interactor.dart';
 
-import 'get_always_read_receipt_setting_interactor_test.mocks.dart';
+import 'update_server_setting_interactor_test.mocks.dart';
 
+@GenerateNiceMocks([MockSpec<ServerSettingsRepository>()])
 void main() {
   final accountId = AccountId(Id('123'));
   const alwaysReadReceipts = false;
@@ -17,8 +20,7 @@ void main() {
     settings: TMailServerSettingOptions(alwaysReadReceipts: alwaysReadReceipts)
   );
   final serverSettingsRepository = MockServerSettingsRepository();
-  final updateAlwaysReadReceiptSettingInteractor = 
-    UpdateAlwaysReadReceiptSettingInteractor(serverSettingsRepository);
+  final updateServerSettingInteractor = UpdateServerSettingInteractor(serverSettingsRepository);
   group('update always read receipt setting interactor', () {
     test('should return right with value returned from repository', () {
       // arrange
@@ -27,11 +29,13 @@ void main() {
       
       // assert
       expect(
-        updateAlwaysReadReceiptSettingInteractor
-          .execute(accountId, alwaysReadReceipts),
+        updateServerSettingInteractor.execute(
+          accountId,
+          TMailServerSettingOptions(alwaysReadReceipts: alwaysReadReceipts),
+        ),
         emitsInOrder([
-          Right(UpdatingAlwaysReadReceiptSetting()),
-          Right(UpdateAlwaysReadReceiptSettingSuccess(alwaysReadReceiptIsEnabled: alwaysReadReceipts)),
+          Right(UpdatingServerSetting()),
+          Right(UpdateServerSettingSuccess(TMailServerSettingOptions(alwaysReadReceipts: alwaysReadReceipts))),
         ])
       );
     });
@@ -44,10 +48,13 @@ void main() {
       
       // assert
       expect(
-        updateAlwaysReadReceiptSettingInteractor.execute(accountId, alwaysReadReceipts),
+        updateServerSettingInteractor.execute(
+          accountId,
+          TMailServerSettingOptions(alwaysReadReceipts: alwaysReadReceipts),
+        ),
         emitsInOrder([
-          Right(UpdatingAlwaysReadReceiptSetting()),
-          Left(UpdateAlwaysReadReceiptSettingFailure(exception)),
+          Right(UpdatingServerSetting()),
+          Left(UpdateServerSettingFailure(exception)),
         ])
       );
     });

@@ -6,7 +6,6 @@ import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/state/banner_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/always_read_receipt/always_read_receipt_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
@@ -17,6 +16,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/manage_accoun
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/preferences/preferences_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
@@ -117,19 +117,19 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
         case AccountMenuItem.languageAndRegion:
           return const LanguageAndRegionView();
         case AccountMenuItem.emailRules:
-          if(controller.isRuleFilterCapabilitySupported){
+          if (controller.isRuleFilterCapabilitySupported){
             return EmailRulesView();
           } else {
             return const SizedBox.shrink();
           }
-        case AccountMenuItem.alwaysReadReceipt:
-          if(controller.isServerSettingsCapabilitySupported){
-            return const AlwaysReadReceiptView();
+        case AccountMenuItem.preferences:
+          if (controller.isServerSettingsCapabilitySupported){
+            return const PreferencesView();
           } else {
             return const SizedBox.shrink();
           }
         case AccountMenuItem.forward:
-          if(controller.isForwardCapabilitySupported){
+          if (controller.isForwardCapabilitySupported){
             return ForwardView();
           } else {
             return const SizedBox.shrink();

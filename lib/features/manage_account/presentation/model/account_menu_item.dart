@@ -1,12 +1,12 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum AccountMenuItem {
   profiles,
   languageAndRegion,
-  alwaysReadReceipt,
+  preferences,
   emailRules,
   forward,
   vacation,
@@ -22,8 +22,8 @@ enum AccountMenuItem {
         return imagePaths.icProfiles;
       case AccountMenuItem.languageAndRegion:
         return imagePaths.icLanguage;
-      case AccountMenuItem.alwaysReadReceipt:
-        return imagePaths.icAlwaysReadReceipt;
+      case AccountMenuItem.preferences:
+        return imagePaths.icPreferences;
       case AccountMenuItem.emailRules:
         return imagePaths.icEmailRules;
       case AccountMenuItem.forward:
@@ -51,8 +51,8 @@ enum AccountMenuItem {
         return AppLocalizations.of(context).language;
       case AccountMenuItem.emailRules:
         return AppLocalizations.of(context).emailRules;
-      case AccountMenuItem.alwaysReadReceipt:
-        return AppLocalizations.of(context).emailReadReceipts;
+      case AccountMenuItem.preferences:
+        return AppLocalizations.of(context).preferences;
       case AccountMenuItem.forward:
         return AppLocalizations.of(context).forwarding;
       case AccountMenuItem.vacation:
@@ -78,8 +78,8 @@ enum AccountMenuItem {
         return 'language-region';
       case AccountMenuItem.emailRules:
         return 'email-rules';
-      case AccountMenuItem.alwaysReadReceipt:
-        return 'email-read-receipts';
+      case AccountMenuItem.preferences:
+        return 'preferences';
       case AccountMenuItem.forward:
         return 'forwarding';
       case AccountMenuItem.vacation:

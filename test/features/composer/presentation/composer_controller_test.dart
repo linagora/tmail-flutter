@@ -28,6 +28,7 @@ import 'package:model/email/email_property.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
+import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:tmail_ui_user/features/base/before_reconnect_manager.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
@@ -58,8 +59,8 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_ident
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_controller.dart';
-import 'package:tmail_ui_user/features/server_settings/domain/state/get_always_read_receipt_setting_state.dart';
-import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_always_read_receipt_setting_interactor.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_setting_state.dart';
+import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_image_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
@@ -159,7 +160,7 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   MockSpec<SaveComposerCacheOnWebInteractor>(),
   MockSpec<DownloadImageAsBase64Interactor>(),
   MockSpec<TransformHtmlEmailContentInteractor>(),
-  MockSpec<GetAlwaysReadReceiptSettingInteractor>(),
+  MockSpec<GetServerSettingInteractor>(),
   MockSpec<CreateNewAndSendEmailInteractor>(),
   MockSpec<CreateNewAndSaveEmailToDraftsInteractor>(),
   MockSpec<PrintEmailInteractor>(),
@@ -202,7 +203,7 @@ void main() {
   late MockSaveComposerCacheOnWebInteractor mockSaveComposerCacheOnWebInteractor;
   late MockDownloadImageAsBase64Interactor mockDownloadImageAsBase64Interactor;
   late MockTransformHtmlEmailContentInteractor mockTransformHtmlEmailContentInteractor;
-  late MockGetAlwaysReadReceiptSettingInteractor mockGetAlwaysReadReceiptSettingInteractor;
+  late MockGetServerSettingInteractor mockGetServerSettingInteractor;
   late MockCreateNewAndSendEmailInteractor mockCreateNewAndSendEmailInteractor;
   late MockCreateNewAndSaveEmailToDraftsInteractor mockCreateNewAndSaveEmailToDraftsInteractor;
   late MockPrintEmailInteractor mockPrintEmailInteractor;
@@ -270,7 +271,7 @@ void main() {
     mockSaveComposerCacheOnWebInteractor = MockSaveComposerCacheOnWebInteractor();
     mockDownloadImageAsBase64Interactor = MockDownloadImageAsBase64Interactor();
     mockTransformHtmlEmailContentInteractor = MockTransformHtmlEmailContentInteractor();
-    mockGetAlwaysReadReceiptSettingInteractor = MockGetAlwaysReadReceiptSettingInteractor();
+    mockGetServerSettingInteractor = MockGetServerSettingInteractor();
     mockCreateNewAndSendEmailInteractor = MockCreateNewAndSendEmailInteractor();
     mockCreateNewAndSaveEmailToDraftsInteractor = MockCreateNewAndSaveEmailToDraftsInteractor();
     mockPrintEmailInteractor = MockPrintEmailInteractor();
@@ -285,7 +286,7 @@ void main() {
       mockSaveComposerCacheOnWebInteractor,
       mockDownloadImageAsBase64Interactor,
       mockTransformHtmlEmailContentInteractor,
-      mockGetAlwaysReadReceiptSettingInteractor,
+      mockGetServerSettingInteractor,
       mockCreateNewAndSendEmailInteractor,
       mockCreateNewAndSaveEmailToDraftsInteractor,
       mockPrintEmailInteractor,
@@ -335,8 +336,7 @@ void main() {
           composerController?.listReplyToEmailAddress = [replyToRecipient];
           composerController?.identitySelected.value = identity;
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
-          final state = GetAlwaysReadReceiptSettingSuccess(
-            alwaysReadReceiptEnabled: alwaysReadReceiptEnabled);
+          final state = GetServerSettingSuccess(TMailServerSettingOptions(alwaysReadReceipts: alwaysReadReceiptEnabled));
 
           final savedEmailDraft = SavedEmailDraft(
             content: emailContent,
@@ -376,7 +376,7 @@ void main() {
           composerController?.listReplyToEmailAddress = [replyToRecipient];
           composerController?.identitySelected.value = identity;
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
-          final state = GetAlwaysReadReceiptSettingFailure(Exception());
+          final state = GetServerSettingFailure(Exception());
 
           final savedEmailDraft = SavedEmailDraft(
             content: emailContent,
@@ -757,8 +757,7 @@ void main() {
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
 
           const alwaysReadReceiptEnabled = true;
-          final state = GetAlwaysReadReceiptSettingSuccess(
-            alwaysReadReceiptEnabled: alwaysReadReceiptEnabled);
+          final state = GetServerSettingSuccess(TMailServerSettingOptions(alwaysReadReceipts: alwaysReadReceiptEnabled));
 
           final savedEmailDraft = SavedEmailDraft(
             content: emailContent,
@@ -799,7 +798,7 @@ void main() {
           composerController?.identitySelected.value = identity;
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
 
-          final state = GetAlwaysReadReceiptSettingFailure(Exception());
+          final state = GetServerSettingFailure(Exception());
 
           final savedEmailDraft = SavedEmailDraft(
             content: emailContent,
@@ -1310,8 +1309,7 @@ void main() {
           when(mockRichTextMobileTabletController.htmlEditorApi).thenReturn(
             mockHtmlEditorApi);
 
-          final state = GetAlwaysReadReceiptSettingSuccess(
-            alwaysReadReceiptEnabled: true);
+          final state = GetServerSettingSuccess(TMailServerSettingOptions(alwaysReadReceipts: true));
           
           // act
           composerController?.handleSuccessViewState(state);
@@ -1330,7 +1328,7 @@ void main() {
           when(mockRichTextMobileTabletController.htmlEditorApi).thenReturn(
             mockHtmlEditorApi);
 
-          final state = GetAlwaysReadReceiptSettingFailure(Exception());
+          final state = GetServerSettingFailure(Exception());
           
           // act
           composerController?.handleFailureViewState(state);
