@@ -1,3 +1,32 @@
+## [0.14.13] - 2025-01-27
+### Fixed
+- #3298 blink when refresh mail list
+- #3291 Search with multiple from address
+- #3264 Fix composer drag n drop
+- #3292 Search by date and sort with relevance is not working
+- #3294 Fix duplicate email in Blue bar: Mail to attendee
+- #3295 Clickable in mail address in Blue bar
+- #3296 Search with star filter
+- #3315 Email display table correctly
+- #3219 Display limit of email recovery
+- #3275 iOS foreground desync
+- #3312 Fix logout dialog for mobile app
+- #3181 Display contact support for mobile
+- #3290 Only show reconnection confirm dialog when composer is opened
+- #3189 new option to enable/disable subaddressing for a personal folder
+- #3260 Display App Grid Linagora Ecosystem
+- #3454 Download all attachments as ZIP
+- #2469 Fix email set into root mailbox's SENT instead of team mailbox's SENT (#3482)
+- #3488 Add hide download taskbar feature
+- #3466 Fix refresh folds folder
+- #3444 Fix could not expand folder tree in folder visibility on iOS
+- #2305 Cyrus support
+- #3345 Fix sort order blinks when deleting emails in search
+
+### Added
+- #3278 Handle open app from TWP page
+- Upgrade with Flutter 3.24.5
+
 ## [0.14.12] - 2025-01-23
 ### Fixed 
 - #3267 Preview HTML for mobile
