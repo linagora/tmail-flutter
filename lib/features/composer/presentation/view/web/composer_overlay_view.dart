@@ -4,32 +4,23 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/update_screen_display_mode_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
-import 'package:tmail_ui_user/features/composer/presentation/utils/composer_utils.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/expand_composer_button.dart';
 
-class ComposerOverlayView extends StatefulWidget {
-  const ComposerOverlayView({super.key});
+class ComposerOverlayView extends StatelessWidget {
+  final ComposerManager _composerManager = Get.find<ComposerManager>();
+  final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
 
-  @override
-  State<ComposerOverlayView> createState() => _ComposerOverlayViewState();
-}
-
-class _ComposerOverlayViewState extends State<ComposerOverlayView> {
-  late final ComposerManager _composerManager;
-  late final ResponsiveUtils _responsiveUtils;
-
-  @override
-  void initState() {
-    super.initState();
-    _composerManager = Get.find<ComposerManager>();
-    _responsiveUtils = Get.find<ResponsiveUtils>();
-  }
+  ComposerOverlayView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    _composerManager.syncComposerStateWhenResponsiveChanged(
-      screenWidth: context.width,
-    );
+    if (_composerManager.composers.isNotEmpty) {
+      _composerManager.syncComposerStateWhenResponsiveChanged(
+        screenWidth: context.width,
+      );
+    }
+
     return Obx(() {
       final composers = _composerManager.composers;
       final composerIdsQueue = _composerManager.composerIdsQueue;
@@ -58,7 +49,7 @@ class _ComposerOverlayViewState extends State<ComposerOverlayView> {
         child: SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           child: Padding(
-            padding: const EdgeInsetsDirectional.all(ComposerUtils.padding),
+            padding: const EdgeInsetsDirectional.all(ComposerStyle.padding),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               mainAxisSize: MainAxisSize.min,

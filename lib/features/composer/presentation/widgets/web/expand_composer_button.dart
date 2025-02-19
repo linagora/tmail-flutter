@@ -6,7 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
-import 'package:tmail_ui_user/features/composer/presentation/utils/composer_utils.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/hidden_composer_list_view_overlay.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -57,8 +57,8 @@ class _ExpandComposerButtonState extends State<ExpandComposerButton> {
           borderRadius: const BorderRadius.all(Radius.circular(12)),
           child: Container(
             color: Colors.white,
-            width: ComposerUtils.composerExpandMoreButtonMaxWidth,
-            height: ComposerUtils.composerExpandMoreButtonMaxHeight,
+            width: ComposerStyle.composerExpandMoreButtonMaxWidth,
+            height: ComposerStyle.composerExpandMoreButtonMaxHeight,
             padding: const EdgeInsetsDirectional.symmetric(horizontal: 8),
             child: Row(
               children: [
