@@ -1,13 +1,13 @@
 import 'package:json_annotation/json_annotation.dart';
 
-class AlwaysReadReceiptNullableConverter implements JsonConverter<bool?, String?> {
-  const AlwaysReadReceiptNullableConverter();
+class BooleanNullableConverter implements JsonConverter<bool?, String?> {
+  const BooleanNullableConverter();
 
   @override
   bool? fromJson(String? json) {
     if (json == null) {
       return null;
-    } else if (json == 'true') {
+    } else if (json.trim().toLowerCase() == 'true') {
       return true;
     } else {
       return false;

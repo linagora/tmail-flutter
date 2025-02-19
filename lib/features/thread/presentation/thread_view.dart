@@ -497,6 +497,8 @@ class ThreadView extends GetWidget<ThreadController>
   Widget _buildEmailItemWhenDragging(BuildContext context, PresentationEmail presentationEmail) {
     final isShowingEmailContent = controller.mailboxDashBoardController.selectedEmail.value?.id == presentationEmail.id;
     final selectModeAll = controller.mailboxDashBoardController.currentSelectMode.value;
+    final isSenderImportantFlagEnabled =
+        controller.mailboxDashBoardController.isSenderImportantFlagEnabled.value;
 
     return EmailTileBuilder(
       key: Key('email_tile_builder_${presentationEmail.id?.asString}'),
@@ -506,13 +508,16 @@ class ThreadView extends GetWidget<ThreadController>
       searchQuery: controller.searchQuery,
       mailboxContain: presentationEmail.mailboxContain,
       isSearchEmailRunning: controller.searchController.isSearchEmailRunning,
-      isDrag: true
+      isDrag: true,
+      isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
     );
   }
 
   Widget _buildEmailItemNotDraggable(BuildContext context, PresentationEmail presentationEmail) {
     final isShowingEmailContent = controller.mailboxDashBoardController.selectedEmail.value?.id == presentationEmail.id;
     final selectModeAll = controller.mailboxDashBoardController.currentSelectMode.value;
+    final isSenderImportantFlagEnabled =
+      controller.mailboxDashBoardController.isSenderImportantFlagEnabled.value;
 
     return Dismissible(
       key: ValueKey<EmailId?>(presentationEmail.id),
@@ -588,6 +593,7 @@ class ThreadView extends GetWidget<ThreadController>
         presentationEmail: presentationEmail,
         selectAllMode: selectModeAll,
         isShowingEmailContent: isShowingEmailContent,
+        isSenderImportantFlagEnabled: isSenderImportantFlagEnabled,
         searchQuery: controller.searchQuery,
         mailboxContain: presentationEmail.mailboxContain,
         isSearchEmailRunning: controller.searchController.isSearchEmailRunning,
