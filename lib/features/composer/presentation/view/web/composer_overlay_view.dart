@@ -15,10 +15,10 @@ class ComposerOverlayView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.sizeOf(context).width;
+
     if (_composerManager.composers.isNotEmpty) {
-      _composerManager.syncComposerStateWhenResponsiveChanged(
-        screenWidth: context.width,
-      );
+      _composerManager.syncComposerStateWhenResponsiveChanged(screenWidth: screenWidth);
     }
 
     return Obx(() {
