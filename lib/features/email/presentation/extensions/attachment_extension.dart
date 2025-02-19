@@ -40,4 +40,6 @@ extension AttachmentExtension on Attachment {
   DownloadTaskId get downloadTaskId => DownloadTaskId(blobId!.value);
 
   bool get isHTMLFile => type?.isHTMLFile(fileName: name) ?? false;
+
+  bool get isImage => type?.isImageFile() ?? false;
 }
