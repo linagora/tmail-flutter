@@ -235,6 +235,7 @@ extension AppColor on Color {
   static const colorMobileSearchFilterButton = Color(0xFFEBEDF0);
   static const colorContactViewClearFilterButton = Color(0x001C3D0D);
   static const steelGrayA540 = Color(0xFF55687D);
+  static const steelGray200 = Color(0xFFAEB7C2);
   static const blue700 = Color(0xFF208BFF);
 
   static const mapGradientColor = [

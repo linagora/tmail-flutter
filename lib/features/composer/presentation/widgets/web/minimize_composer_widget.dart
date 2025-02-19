@@ -37,52 +37,40 @@ class MinimizeComposerWidget extends StatelessWidget {
         width: MinimizeComposerWidgetStyle.width,
         height: MinimizeComposerWidgetStyle.height,
         padding: MinimizeComposerWidgetStyle.padding,
-        child: Stack(
+        child: Row(
           children: [
-            Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: MinimizeComposerWidgetStyle.width / 2),
-                child: TitleComposerWidget(emailSubject: emailSubject),
-              ),
+            TMailButtonWidget.fromIcon(
+              icon: _imagePaths.icCancel,
+              backgroundColor: Colors.transparent,
+              tooltipMessage: AppLocalizations.of(context).saveAndClose,
+              iconSize: MinimizeComposerWidgetStyle.iconSize,
+              iconColor: MinimizeComposerWidgetStyle.iconColor,
+              padding: MinimizeComposerWidgetStyle.iconPadding,
+              onTapActionCallback: onCloseViewAction
             ),
-            Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  TMailButtonWidget.fromIcon(
-                    icon: _imagePaths.icCancel,
-                    backgroundColor: Colors.transparent,
-                    tooltipMessage: AppLocalizations.of(context).saveAndClose,
-                    iconSize: MinimizeComposerWidgetStyle.iconSize,
-                    iconColor: MinimizeComposerWidgetStyle.iconColor,
-                    padding: MinimizeComposerWidgetStyle.iconPadding,
-                    onTapActionCallback: onCloseViewAction
-                  ),
-                  const SizedBox(width: MinimizeComposerWidgetStyle.space),
-                  TMailButtonWidget.fromIcon(
-                    icon: _imagePaths.icFullScreen,
-                    backgroundColor: Colors.transparent,
-                    tooltipMessage: AppLocalizations.of(context).fullscreen,
-                    iconSize: MinimizeComposerWidgetStyle.iconSize,
-                    iconColor: MinimizeComposerWidgetStyle.iconColor,
-                    padding: MinimizeComposerWidgetStyle.iconPadding,
-                    onTapActionCallback: () => onChangeDisplayModeAction(ScreenDisplayMode.fullScreen)
-                  ),
-                  const SizedBox(width: MinimizeComposerWidgetStyle.space),
-                  TMailButtonWidget.fromIcon(
-                    icon: _imagePaths.icChevronUp,
-                    backgroundColor: Colors.transparent,
-                    tooltipMessage: AppLocalizations.of(context).show,
-                    iconSize: MinimizeComposerWidgetStyle.iconSize,
-                    iconColor: MinimizeComposerWidgetStyle.iconColor,
-                    padding: MinimizeComposerWidgetStyle.iconPadding,
-                    onTapActionCallback: () => onChangeDisplayModeAction(ScreenDisplayMode.normal)
-                  ),
-                ]
-              ),
-            )
-          ],
+            const SizedBox(width: MinimizeComposerWidgetStyle.space),
+            TMailButtonWidget.fromIcon(
+              icon: _imagePaths.icFullScreen,
+              backgroundColor: Colors.transparent,
+              tooltipMessage: AppLocalizations.of(context).fullscreen,
+              iconSize: MinimizeComposerWidgetStyle.iconSize,
+              iconColor: MinimizeComposerWidgetStyle.iconColor,
+              padding: MinimizeComposerWidgetStyle.iconPadding,
+              onTapActionCallback: () => onChangeDisplayModeAction(ScreenDisplayMode.fullScreen)
+            ),
+            const SizedBox(width: MinimizeComposerWidgetStyle.space),
+            TMailButtonWidget.fromIcon(
+              icon: _imagePaths.icChevronUp,
+              backgroundColor: Colors.transparent,
+              tooltipMessage: AppLocalizations.of(context).show,
+              iconSize: MinimizeComposerWidgetStyle.iconSize,
+              iconColor: MinimizeComposerWidgetStyle.iconColor,
+              padding: MinimizeComposerWidgetStyle.iconPadding,
+              onTapActionCallback: () => onChangeDisplayModeAction(ScreenDisplayMode.normal)
+            ),
+            const SizedBox(width: MinimizeComposerWidgetStyle.space),
+            Expanded(child: TitleComposerWidget(emailSubject: emailSubject)),
+          ]
         )
       ),
     );

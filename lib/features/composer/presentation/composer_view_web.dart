@@ -586,6 +586,8 @@ class ComposerView extends GetWidget<ComposerController> {
             ]),
           );
         },
+        composerManager: controller.mailboxDashBoardController.composerManager,
+        responsiveUtils: controller.responsiveUtils,
         displayMode: controller.screenDisplayMode.value,
         emailSubject: controller.subjectEmail.value ?? '',
         onCloseViewAction: () => controller.handleClickCloseComposer(context),

@@ -186,7 +186,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<GetRestoredDeletedMessageInterator>(),
       Get.find<RemoveComposerCacheOnWebInteractor>(),
       Get.find<GetAllIdentitiesInteractor>(),
-      Get.find<ComposerManager>(),
     ));
     Get.put(AdvancedFilterController());
   }

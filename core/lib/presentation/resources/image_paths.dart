@@ -222,6 +222,8 @@ class ImagePaths {
   String get icDeleteSelection => _getImagePath('ic_delete_selection.svg');
   String get icLogoTwakeWelcome => _getImagePath('ic_logo_twake_welcome.svg');
   String get icHelp => _getImagePath('ic_help.svg');
+  String get icDoubleArrowUp => _getImagePath('ic_double_arrow_up.svg');
+  String get icDoubleArrowDown => _getImagePath('ic_double_arrow_down.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
