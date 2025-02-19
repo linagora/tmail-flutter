@@ -94,13 +94,6 @@ dependencies:
       url: https://github.com/linagora/dns_client.git
       ref: twake-supported
 
-  # TODO: We will change it when the PR in upstream repository will be merged
-  # https://github.com/espresso3389/flutter_pdf_render/pull/148
-  pdf_render:
-    git:
-      url: https://github.com/linagora/flutter_pdf_render.git
-      ref: main
-
   linagora_design_flutter:
     git:
       url: https://github.com/linagora/linagora-design-flutter.git
@@ -150,7 +143,7 @@ dependencies:
 
   external_path: 1.0.3
 
-  path_provider: 2.1.1
+  path_provider: 2.1.5
 
   device_info_plus: 9.0.1
 
@@ -192,7 +185,7 @@ dependencies:
 
   json_annotation: 4.8.0
 
-  url_launcher: 6.1.10
+  url_launcher: 6.3.1
 
   firebase_core: 2.7.0
 
@@ -263,6 +256,11 @@ dependencies:
   uri: 1.0.0
 
   flutter_file_dialog: 3.0.2
+
+  twake_previewer_flutter:
+    git:
+      url: https://github.com/linagora/twake-previewer-flutter.git
+      ref: main
 
 dev_dependencies:
   flutter_test:
