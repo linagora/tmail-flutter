@@ -12,14 +12,40 @@ done
 # Create folders for user Bob
 for folderName in "${bobFolders[@]}"; do
   echo "Creating $folderName folder for user bob"
-  james-cli CreateMailbox \#private "bob@example.com" "$folderName" &
+  james-cli CreateMailbox \#private "bob@example.com" "$folderName"
+done
+
+# Function to check if mailbox exists
+function wait_for_mailbox() {
+  local email="$1"
+  local folder="$2"
+  local retries=10
+  local count=0
+
+  while [ $count -lt $retries ]; do
+    if james-cli ListUserMailboxes "$email" | grep -q "$folder"; then
+      echo "Mailbox '$folder' for user '$email' is ready."
+      return 0
+    fi
+    echo "Waiting for mailbox '$folder' to be created..."
+    sleep 2
+    ((count++))
+  done
+
+  echo "Error: Mailbox '$folder' for user '$email' was not created in time."
+  return 1
+}
+
+# Ensure all mailboxes exist before importing emails
+for folderName in "${bobFolders[@]}"; do
+  wait_for_mailbox "bob@example.com" "$folderName" || exit 1
 done
 
 # For test search email with sort order
 # Import emails into 'Search Emails' folder for user Bob
 for eml in {0..4}; do
   echo "Importing $eml.eml into 'Search Emails' folder for user bob"
-  james-cli ImportEml \#private "bob@example.com" "Search Emails" "/root/conf/integration_test/eml/search_email_with_sort_order/$eml.eml" &
+  james-cli ImportEml \#private "bob@example.com" "Search Emails" "/root/conf/integration_test/eml/search_email_with_sort_order/$eml.eml"
 done
 
 # For test forward email
