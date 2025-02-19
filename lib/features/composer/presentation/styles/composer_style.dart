@@ -9,6 +9,14 @@ class ComposerStyle {
   static const double keyboardToolBarHeight = 200;
   static const double popupMenuRadius = 8;
   static const double suggestionItemHeight = 60;
+  static const double normalWidth = 725;
+  static const double normalHeight = 525;
+  static const double minimizeWidth = 400;
+  static const double minimizeHeight = 52;
+  static const double composerExpandMoreButtonMaxWidth = 130;
+  static const double composerExpandMoreButtonMaxHeight = 52;
+  static const double padding = 16;
+  static const double space = 8;
 
   static const Color borderColor = AppColor.colorLineComposer;
   static const Color backgroundEditorColor = Colors.white;

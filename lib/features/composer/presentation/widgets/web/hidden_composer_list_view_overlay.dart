@@ -4,8 +4,8 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/web/hidden_composer_item_style.dart';
-import 'package:tmail_ui_user/features/composer/presentation/utils/composer_utils.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/hidden_composer_item.dart';
 
 typedef OnRemoveHiddenComposerItem = Function(ComposerController controller);
@@ -32,8 +32,8 @@ class HiddenComposerListViewOverlay extends StatelessWidget {
   Widget build(BuildContext context) {
     final hiddenComposerIds = composerManager.hiddenComposerIds;
     final maxHeight = responsiveUtils.getSizeScreenHeight(context)
-      - ComposerUtils.composerExpandMoreButtonMaxHeight
-      - ComposerUtils.padding * 2;
+      - ComposerStyle.composerExpandMoreButtonMaxHeight
+      - ComposerStyle.padding * 2;
 
     return Container(
       constraints: BoxConstraints(maxHeight: maxHeight),
