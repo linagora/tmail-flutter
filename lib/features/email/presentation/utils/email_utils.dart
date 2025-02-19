@@ -16,6 +16,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/attachment.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_html_content_from_attachment_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_image_data_from_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -71,6 +72,7 @@ class EmailUtils {
       (success) {
         return success is DownloadAttachmentForWebSuccess
           || success is GetHtmlContentFromAttachmentSuccess
+          || success is GetImageDataFromAttachmentSuccess
           || success is IdleDownloadAttachmentForWeb;
       }) ?? false;
   }
