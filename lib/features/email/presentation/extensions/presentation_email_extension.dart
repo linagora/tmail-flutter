@@ -77,14 +77,10 @@ extension PresentationEmailExtension on PresentationEmail {
           listBccAddressWithoutUsername,
         );
       default:
-        final listToAddressWithoutUsername = newToAddress.withoutMe(userName);
-        final listCcAddressWithoutUsername = newCcAddress.withoutMe(userName);
-        final listBccAddressWithoutUsername = newBccAddress.withoutMe(userName);
-
         return Tuple3(
-          listToAddressWithoutUsername,
-          listCcAddressWithoutUsername,
-          listBccAddressWithoutUsername,
+          newToAddress,
+          newCcAddress,
+          newBccAddress,
         );
     }
   }
