@@ -8,7 +8,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_controller
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/update_screen_display_mode_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
-import 'package:tmail_ui_user/features/composer/presentation/utils/composer_utils.dart';
+import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -90,9 +90,9 @@ class ComposerManager extends GetxController {
     }
 
     final availableWidth = screenWidth
-      - ComposerUtils.composerExpandMoreButtonMaxWidth
-      - ComposerUtils.padding * 3
-      - (countDisplayedComposer - 1) * ComposerUtils.space;
+      - ComposerStyle.composerExpandMoreButtonMaxWidth
+      - ComposerStyle.padding * 3
+      - (countDisplayedComposer - 1) * ComposerStyle.space;
 
     return (
       availableWidth,
@@ -110,7 +110,7 @@ class ComposerManager extends GetxController {
       if (currentHiddenComposerIds.isEmpty) return;
 
       for (var index = currentHiddenComposerIds.length - 1; index >= 0; index--) {
-        final newTotalWidth = totalWidth + ComposerUtils.minimizeWidth;
+        final newTotalWidth = totalWidth + ComposerStyle.minimizeWidth;
         if (newTotalWidth > availableWidth) break;
 
         final id = currentHiddenComposerIds.elementAt(index);
@@ -126,18 +126,18 @@ class ComposerManager extends GetxController {
         final controller = composerControllers[id]!;
 
         if (controller.isNormalScreen) {
-          var newTotalWidth = totalWidth - (ComposerUtils.normalWidth - ComposerUtils.minimizeWidth);
+          var newTotalWidth = totalWidth - (ComposerStyle.normalWidth - ComposerStyle.minimizeWidth);
           var newDisplayMode = ScreenDisplayMode.minimize;
 
           if (newTotalWidth > availableWidth) {
-            newTotalWidth = totalWidth - ComposerUtils.normalWidth;
+            newTotalWidth = totalWidth - ComposerStyle.normalWidth;
             newDisplayMode = ScreenDisplayMode.hidden;
           }
 
           controller.setScreenDisplayMode(newDisplayMode);
           totalWidth = newTotalWidth;
         } else if (controller.isMinimizeScreen) {
-          final newTotalWidth = totalWidth - ComposerUtils.minimizeWidth;
+          final newTotalWidth = totalWidth - ComposerStyle.minimizeWidth;
           controller.setScreenDisplayMode(ScreenDisplayMode.hidden);
           totalWidth = newTotalWidth;
         }
@@ -162,7 +162,7 @@ class ComposerManager extends GetxController {
       if (currentHiddenComposerIds.isEmpty) return;
 
       for (var index = currentHiddenComposerIds.length - 1; index >= 0; index--) {
-        final newTotalWidth = totalWidth + ComposerUtils.minimizeWidth;
+        final newTotalWidth = totalWidth + ComposerStyle.minimizeWidth;
         if (newTotalWidth > availableWidth) break;
 
         final id = currentHiddenComposerIds.elementAt(index);
@@ -174,7 +174,7 @@ class ComposerManager extends GetxController {
         if (id == updatedComposerId) continue;
 
         composerControllers[id]!.setScreenDisplayMode(ScreenDisplayMode.hidden);
-        totalWidth -= ComposerUtils.minimizeWidth;
+        totalWidth -= ComposerStyle.minimizeWidth;
         if (totalWidth <= availableWidth) return;
       }
 
@@ -182,14 +182,14 @@ class ComposerManager extends GetxController {
         if (id == updatedComposerId) continue;
 
         final controller = composerControllers[id]!;
-        var newTotalWidth = totalWidth - (ComposerUtils.normalWidth - ComposerUtils.minimizeWidth);
+        var newTotalWidth = totalWidth - (ComposerStyle.normalWidth - ComposerStyle.minimizeWidth);
 
         if (newTotalWidth <= availableWidth) {
           controller.setScreenDisplayMode(ScreenDisplayMode.minimize);
           return;
         }
 
-        newTotalWidth = totalWidth - ComposerUtils.normalWidth;
+        newTotalWidth = totalWidth - ComposerStyle.normalWidth;
         if (newTotalWidth <= availableWidth) {
           controller.setScreenDisplayMode(ScreenDisplayMode.hidden);
           return;
