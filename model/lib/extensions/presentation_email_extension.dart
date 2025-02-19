@@ -32,11 +32,21 @@ extension PresentationEmailExtension on PresentationEmail {
       cc.numberEmailAddress() +
       bcc.numberEmailAddress();
 
-  int getCountMailAddressWithoutMe(String userName) =>
-      to.withoutMe(userName).numberEmailAddress() +
-      cc.withoutMe(userName).numberEmailAddress() +
-      bcc.withoutMe(userName).numberEmailAddress() +
-      from.withoutMe(userName).numberEmailAddress();
+  int getCountMailAddressWithoutMe(String userName) {
+    final uniqueEmails = <String>{};
+    final newTo = to ?? {};
+    final newCc = cc ?? {};
+    final newBcc = bcc ?? {};
+    final newFrom = from ?? {};
+
+    for (final email in <EmailAddress>[...newTo, ...newCc, ...newBcc, ...newFrom]) {
+      if (email.emailAddress != userName) {
+        uniqueEmails.add(email.emailAddress);
+      }
+    }
+
+    return uniqueEmails.length;
+  }
 
   String getReceivedAt(String newLocale, {String? pattern}) {
     final emailTime = receivedAt;
