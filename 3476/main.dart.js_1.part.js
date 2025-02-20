@@ -495,31 +495,31 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1788
+    $signature: 1790
   };
   B.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1789
+    $signature: 1791
   };
   B.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1790
+    $signature: 1792
   };
   B.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1791
+    $signature: 1793
   };
   B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure.prototype = {
     call$1(entry) {
       return entry.node === this.node;
     },
-    $signature: 579
+    $signature: 421
   };
   B.BaseLoginView_buildLoginButton_closure.prototype = {
     call$0() {
@@ -545,7 +545,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return C.SizedBox_null_null_null_null;
     },
-    $signature: 425
+    $signature: 554
   };
   B.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(_) {
@@ -651,7 +651,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return C.SizedBox_0_0_null_null;
       }
     },
-    $signature: 99
+    $signature: 91
   };
   B.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -670,7 +670,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 52
+    $signature: 49
   };
   B.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -702,7 +702,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return A.Intl__message(_s40_, _null, _s12_, _null, _null);
       }
     },
-    $signature: 1792
+    $signature: 1794
   };
   B.LoginMessageWidget_build_closure0.prototype = {
     call$1(success) {
@@ -723,19 +723,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return "";
     },
-    $signature: 1793
+    $signature: 1795
   };
   B.LoginMessageWidget_build_closure1.prototype = {
     call$1(failure) {
       return C.Color_4293281350;
     },
-    $signature: 1794
+    $signature: 1796
   };
   B.LoginMessageWidget_build_closure2.prototype = {
     call$1(success) {
       return C.Color_4278190080;
     },
-    $signature: 1795
+    $signature: 1797
   };
   B._LoginTextInputBuilderState_build_closure.prototype = {
     call$0() {
@@ -816,9 +816,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.List_email = A._setArrayType(makeConstList(["email"]), type$.JSArray_String);
     D.List_password = A._setArrayType(makeConstList(["password"]), type$.JSArray_String);
     D.BorderSide_Fkb = new A.BorderSide(C.Color_4294112245, 1, C.BorderStyle_1, -1);
-    D.OutlineInputBorder_AuK = new A.OutlineInputBorder(4, C.BorderRadius_ww82, D.BorderSide_Fkb);
-    D.BorderSide_UKi2 = new A.BorderSide(C.Color_4278221567, 2, C.BorderStyle_1, -1);
-    D.OutlineInputBorder_ieL1 = new A.OutlineInputBorder(4, C.BorderRadius_ww82, D.BorderSide_UKi2);
+    D.OutlineInputBorder_AuK = new A.OutlineInputBorder(4, C.BorderRadius_ww81, D.BorderSide_Fkb);
+    D.BorderSide_UKi1 = new A.BorderSide(C.Color_4278221567, 2, C.BorderStyle_1, -1);
+    D.OutlineInputBorder_ieL1 = new A.OutlineInputBorder(4, C.BorderRadius_ww81, D.BorderSide_UKi1);
     D.PrivacyLinkWidget_null = new B.PrivacyLinkWidget(null);
     D.Padding_HfL = new A.Padding(C.EdgeInsets_0_16_0_0, D.PrivacyLinkWidget_null, null);
     D.Color_1035779260 = new A.Color(1035779260);
@@ -844,5 +844,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "XxmFM9dDPIbZuWYh9Bl+ssgHPUI=");
+})($__dart_deferred_initializers__, "eWv4RyNo6SKp7tWSk21XSvoB7og=");
 ;
