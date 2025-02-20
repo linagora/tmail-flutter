@@ -42,4 +42,8 @@ extension AttachmentExtension on Attachment {
   bool get isHTMLFile => type?.isHTMLFile(fileName: name) ?? false;
 
   bool get isImage => type?.isImageFile() ?? false;
+
+  bool get isText => (type?.isTextFile() ?? false)
+    || name?.endsWith('.txt') == true
+    || name?.endsWith('.md') == true;
 }

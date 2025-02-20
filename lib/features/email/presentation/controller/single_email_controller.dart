@@ -65,6 +65,7 @@ import 'package:tmail_ui_user/features/email/domain/state/export_attachment_stat
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_html_content_from_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_image_data_from_attachment_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_text_data_from_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
@@ -80,6 +81,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_acce
 import 'package:tmail_ui_user/features/email/domain/usecases/download_all_attachments_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_image_data_from_attachment_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_text_data_from_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/maybe_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_reject_interactor.dart';
@@ -143,8 +145,11 @@ import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
+import 'package:twake_previewer_flutter/core/constants/supported_charset.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/options/top_bar_options.dart';
+import 'package:twake_previewer_flutter/core/previewer_options/previewer_options.dart';
 import 'package:twake_previewer_flutter/twake_image_previewer/twake_image_previewer.dart';
+import 'package:twake_previewer_flutter/twake_plain_text_previewer/twake_plain_text_previewer.dart';
 
 class SingleEmailController extends BaseController with AppLoaderMixin {
 
@@ -172,6 +177,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final DownloadAllAttachmentsForWebInteractor _downloadAllAttachmentsForWebInteractor;
   final ExportAllAttachmentsInteractor _exportAllAttachmentsInteractor;
   final GetImageDataFromAttachmentInteractor _getImageDataFromAttachmentInteractor;
+  final GetTextDataFromAttachmentInteractor _getTextDataFromAttachmentInteractor;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
@@ -231,6 +237,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._downloadAllAttachmentsForWebInteractor,
     this._exportAllAttachmentsInteractor,
     this._getImageDataFromAttachmentInteractor,
+    this._getTextDataFromAttachmentInteractor,
   );
 
   @override
@@ -314,6 +321,21 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _updateAttachmentsViewState(success.attachment.blobId, Right(success));
       Get.dialog(TwakeImagePreviewer(
         bytes: success.data,
+        topBarOptions: TopBarOptions(
+          title: success.attachment.generateFileName(),
+          onClose: popBack,
+        ),
+      ));
+    } else if (success is GettingTextDataFromAttachment) {
+      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
+    } else if (success is GetTextDataFromAttachmentSuccess) {
+      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
+      Get.dialog(TwakePlainTextPreviewer(
+        supportedCharset: SupportedCharset.utf8,
+        bytes: success.data,
+        previewerOptions: PreviewerOptions(
+          width: currentContext == null ? 200 : currentContext!.width * 0.8,
+        ),
         topBarOptions: TopBarOptions(
           title: success.attachment.generateFileName(),
           onClose: popBack,
@@ -2227,6 +2249,19 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       }
 
       consumeState(_getImageDataFromAttachmentInteractor.execute(
+        DownloadTaskId(uuid.v4()),
+        attachment,
+        attachmentEvaluation.accountId!,
+        attachmentEvaluation.downloadUrl!,
+      ));
+    } else if (attachment.isText) {
+      final attachmentEvaluation = evaluateAttachment(attachment);
+      if (!attachmentEvaluation.canDownloadAttachment) {
+        consumeState(Stream.value(Left(GetTextDataFromAttachmentFailure())));
+        return;
+      }
+
+      consumeState(_getTextDataFromAttachmentInteractor.execute(
         DownloadTaskId(uuid.v4()),
         attachment,
         attachmentEvaluation.accountId!,

@@ -21,6 +21,8 @@ extension MediaTypeExtension on MediaType {
 
   bool isRtfFile() => SupportedPreviewFileTypes.rtfMimeTypes.contains(mimeType);
 
+  bool isTextFile() => SupportedPreviewFileTypes.textMimeTypes.contains(mimeType);
+
   DocumentUti getDocumentUti() => DocumentUti(SupportedPreviewFileTypes.iOSSupportedTypes[mimeType]);
 
   String getIcon(ImagePaths imagePaths, {String? fileName}) {

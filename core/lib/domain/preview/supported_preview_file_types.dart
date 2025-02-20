@@ -5,6 +5,11 @@ class SupportedPreviewFileTypes {
     'image/gif',
     'image/png',];
 
+  static const textMimeTypes = [
+    'text/plain',
+    'text/markdown',
+  ];
+
   static const docMimeTypes = [
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     'application/vnd.oasis.opendocument.text',
