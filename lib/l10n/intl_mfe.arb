@@ -131,7 +131,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "header_email_quoted": "Lor {DatekiFinnAvoye}, depi {LadresEmail}",
+  "header_email_quoted": "Lor {sentDate}, depi {emailAddress}",
   "@header_email_quoted": {
     "type": "text",
     "placeholders_order": [
