@@ -1,33 +1,27 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/views/text/rich_text_builder.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../base/base_scenario.dart';
+import '../base/base_test_scenario.dart';
 import '../models/provisioning_email.dart';
 import '../robots/search_robot.dart';
 import '../robots/thread_robot.dart';
-import '../utils/scenario_utils_mixin.dart';
-import 'login_with_basic_auth_scenario.dart';
 
-class SearchSuggestionHighlightsScenario extends BaseScenario with ScenarioUtilsMixin {
-  SearchSuggestionHighlightsScenario(
-    super.$, {
-    required this.loginWithBasicAuthScenario,
-    required this.keyword,
-    required this.longEmailContents,
-  });
+class SearchSuggestionHighlightsScenario extends BaseTestScenario {
+  SearchSuggestionHighlightsScenario(super.$);
 
-  final LoginWithBasicAuthScenario loginWithBasicAuthScenario;
-  final String keyword;
-  final List<String> longEmailContents;
+  static const keyword = 'Search snippet suggestions';
+  static const List<String> longEmailContents = [
+    "$keyword Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. $keyword Lorem Ipsum has been the industry's standard dummy text ever since the 1500s",
+    "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s $keyword",
+  ];
 
   @override
-  Future<void> execute() async {
+  Future<void> runTestLogic() async {
+    const email = String.fromEnvironment('BASIC_AUTH_EMAIL');
     // Robots
     final threadRobot = ThreadRobot($);
     final searchRobot = SearchRobot($);
-
-    // Login
-    await loginWithBasicAuthScenario.execute();
 
     // Prepare attachment file
     final file = await preparingTxtFile(keyword);
@@ -36,7 +30,7 @@ class SearchSuggestionHighlightsScenario extends BaseScenario with ScenarioUtils
     await provisionEmail(longEmailContents
       .map(
         (emailContent) => ProvisioningEmail(
-          toEmail: loginWithBasicAuthScenario.email,
+          toEmail: email,
           subject: keyword,
           content: emailContent,
           attachmentPaths: emailContent == longEmailContents.first

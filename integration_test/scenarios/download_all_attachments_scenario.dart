@@ -1,30 +1,23 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:patrol/patrol.dart';
 
-import '../base/base_scenario.dart';
+import '../base/base_test_scenario.dart';
 import '../models/provisioning_email.dart';
 import '../robots/email_robot.dart';
 import '../robots/thread_robot.dart';
-import '../utils/scenario_utils_mixin.dart';
-import 'login_with_basic_auth_scenario.dart';
 
-class DownloadAllAttachmentsScenario extends BaseScenario with ScenarioUtilsMixin {
-  DownloadAllAttachmentsScenario(
-    super.$, {
-    required this.loginWithBasicAuthScenario,
-    required this.attachmentContents,
-  });
+class DownloadAllAttachmentsScenario extends BaseTestScenario {
 
-  final LoginWithBasicAuthScenario loginWithBasicAuthScenario;
-  final List<String> attachmentContents;
+  const DownloadAllAttachmentsScenario(super.$);
 
   @override
-  Future<void> execute() async {
+  Future<void> runTestLogic() async {
     const subject = 'download all attachments subject';
+    final List<String> attachmentContents = ['file1', 'file2', 'file3'];
+    const email = String.fromEnvironment('BASIC_AUTH_EMAIL');
+
     final threadRobot = ThreadRobot($);
     final emailRobot = EmailRobot($);
-
-    await loginWithBasicAuthScenario.execute();
 
     // Prepare attachment files
     final attachmentFiles = await Future.wait(
@@ -36,7 +29,7 @@ class DownloadAllAttachmentsScenario extends BaseScenario with ScenarioUtilsMixi
     // Provisioning email
     await provisionEmail(
       [ProvisioningEmail(
-        toEmail: loginWithBasicAuthScenario.email,
+        toEmail: email,
         subject: subject,
         content: 'download all attachments content',
         attachmentPaths: attachmentFiles.map((file) => file.path).toList(),
