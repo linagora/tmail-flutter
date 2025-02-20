@@ -17,16 +17,30 @@ class ComposerRobot extends CoreRobot {
   ComposerRobot(super.$);
 
   Future<void> addRecipient(String email) async {
-    await $(RecipientComposerWidget)
-      .which<RecipientComposerWidget>((widget) => widget.prefix == PrefixEmailAddress.to)
-      .enterText(email);
+    final finder = $(RecipientComposerWidget)
+      .which<RecipientComposerWidget>((widget) => widget.prefix == PrefixEmailAddress.to);
+    final isTextFieldFocused = finder
+      .which<RecipientComposerWidget>((view) => view.focusNode?.hasFocus ?? false)
+      .exists;
+    if (!isTextFieldFocused) {
+      await finder.tap();
+    }
+    await finder.enterText(email);
+
     await $(RecipientSuggestionItemWidget)
       .which<RecipientSuggestionItemWidget>((widget) => widget.emailAddress.email?.contains(email) ?? false)
       .tap();
   }
 
   Future<void> addSubject(String subject) async {
-    await $(SubjectComposerWidget).enterText(subject);
+    final finder = $(SubjectComposerWidget);
+    final isTextFieldFocused = finder
+      .which<SubjectComposerWidget>((view) => view.focusNode?.hasFocus ?? false)
+      .exists;
+    if (!isTextFieldFocused) {
+      await finder.tap();
+    }
+    await finder.enterText(subject);
   }
 
   Future<void> addContent(String content) async {

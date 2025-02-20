@@ -38,7 +38,7 @@ class ForwardEmailScenario extends BaseScenario {
     await searchRobot.tapOnShowAllResultsText();
     await _expectSearchResultEmailListVisible();
 
-    await searchRobot.openEmail('Fwd: Forward email');
+    await searchRobot.openEmailWithSubject('Fwd: Forward email');
     await _expectEmailViewVisible();
     await _expectForwardEmailButtonVisible();
 
