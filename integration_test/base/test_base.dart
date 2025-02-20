@@ -12,7 +12,9 @@ class TestBase {
       description,
       config: const PatrolTesterConfig(
         settlePolicy: SettlePolicy.trySettle,
-        visibleTimeout: Duration(minutes: 1)),
+        visibleTimeout: Duration(minutes: 1),
+        printLogs: true,
+      ),
       nativeAutomatorConfig: const NativeAutomatorConfig(
         findTimeout: Duration(seconds: 10),
       ),
