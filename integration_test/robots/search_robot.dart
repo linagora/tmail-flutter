@@ -11,7 +11,14 @@ class SearchRobot extends CoreRobot {
   SearchRobot(super.$);
 
   Future<void> enterQueryString(String queryString) async {
-    await $(#search_email_text_field).enterText(queryString);
+    final finder = $(#search_email_text_field).$(TextField);
+    final isTextFieldFocused = finder
+      .which<TextField>((view) => view.focusNode?.hasFocus ?? false)
+      .exists;
+    if (!isTextFieldFocused) {
+      await finder.tap();
+    }
+    await finder.enterText(queryString);
   }
 
   Future<void> scrollToEndListSearchFilter() async {
@@ -33,7 +40,14 @@ class SearchRobot extends CoreRobot {
   }
 
   Future<void> enterKeyword(String keyword) async {
-    await $(SearchEmailView).$(TextFieldBuilder).enterText(keyword);
+    final finder = $(SearchEmailView).$(TextFieldBuilder);
+    final isTextFieldFocused = finder
+      .which<TextFieldBuilder>((view) => view.focusNode?.hasFocus ?? false)
+      .exists;
+    if (!isTextFieldFocused) {
+      await finder.tap();
+    }
+    await finder.enterText(keyword);
   }
   
   Future<void> tapOnShowAllResultsText() async {
@@ -59,7 +73,7 @@ class SearchRobot extends CoreRobot {
     await $.pump(const Duration(seconds: 2));
   }
 
-  Future<void> openEmail(String subject) async {
+  Future<void> openEmailWithSubject(String subject) async {
     await $(find.byType(EmailTileBuilder)).first.tap();
     await $.pump(const Duration(seconds: 2));
   }

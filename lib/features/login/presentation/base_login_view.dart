@@ -38,6 +38,7 @@ abstract class BaseLoginView extends GetWidget<LoginController> {
 
   Widget buildInputCredentialForm(BuildContext context) {
     return AutofillGroup(
+      key: const Key('credential_input_form'),
       child: Padding(
         padding: const EdgeInsetsDirectional.symmetric(horizontal: 24),
         child: FocusTraversalGroup(

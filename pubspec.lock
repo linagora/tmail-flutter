@@ -440,6 +440,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.0.0"
+  dispose_scope:
+    dependency: transitive
+    description:
+      name: dispose_scope
+      sha256: "48ec38ca2631c53c4f8fa96b294c801e55c335db5e3fb9f82cede150cfe5a2af"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   dns_client:
     dependency: "direct main"
     description:
@@ -1572,18 +1580,26 @@ packages:
     dependency: "direct dev"
     description:
       name: patrol
-      sha256: "6ac5e239384282da389a6b78d68aa86d8760ad8d5481d665937c4eb586c0b3dc"
+      sha256: "2bb991db06b5e1eb2ec5c803067c41316d94d01dda93ddf16f5342073d791a20"
       url: "https://pub.dev"
     source: hosted
-    version: "3.11.0"
+    version: "3.14.0"
   patrol_finders:
     dependency: transitive
     description:
       name: patrol_finders
-      sha256: "6bf2c3093fbccd02f80f73fafc1bd021d76410cbab6e329be220b5e3bc58f072"
+      sha256: "4c6d78e00362fd15d7c21cfac110e501d08ada7d77000bad139b0c3c2e27ccaf"
       url: "https://pub.dev"
     source: hosted
-    version: "2.1.2"
+    version: "2.7.0"
+  patrol_log:
+    dependency: transitive
+    description:
+      name: patrol_log
+      sha256: "98b2701400c7a00b11533ab942bdeb44c3c714746e7cdb12e6cb93b6d06361da"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   pattern_formatter:
     dependency: transitive
     description:

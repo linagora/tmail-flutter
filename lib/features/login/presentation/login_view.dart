@@ -99,6 +99,7 @@ class LoginView extends BaseLoginView {
                 case LoginFormType.dnsLookupForm:
                 case LoginFormType.retry:
                   return DNSLookupInputForm(
+                    key: const Key('dns_lookup_input_form'),
                     textEditingController: controller.usernameInputController,
                     onTextChange: controller.onUsernameChange,
                     onTextSubmitted: (_) => controller.invokeDNSLookupToGetJmapUrl(),
@@ -135,6 +136,7 @@ class LoginView extends BaseLoginView {
 
   Widget _buildUrlInput(BuildContext context) {
     return Padding(
+      key: const Key('base_url_form'),
       padding: const EdgeInsets.only(right: 24, left: 24, bottom: 24),
       child: TypeAheadFormFieldBuilder<RecentLoginUrl>(
         controller: controller.urlInputController,

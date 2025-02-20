@@ -1,14 +1,12 @@
-import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:patrol/patrol.dart';
-import 'package:tmail_ui_user/features/login/domain/model/recent_login_username.dart';
-import 'package:tmail_ui_user/features/login/presentation/login_view.dart';
-import 'package:tmail_ui_user/features/login/presentation/widgets/login_text_input_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
 
 class LoginRobot extends CoreRobot {
+  final appLocalizations = AppLocalizations();
+
   LoginRobot(super.$);
 
   Future<void> grantNotificationPermission(NativeAutomator nativeAutomator) async {
@@ -18,37 +16,58 @@ class LoginRobot extends CoreRobot {
   }
 
   Future<void> tapOnUseCompanyServer() async {
-    await $.pumpAndSettle();
-    await $(AppLocalizations().useCompanyServer).tap();
+    await $(appLocalizations.useCompanyServer).tap();
   }
 
   Future<void> enterEmail(String email) async {
-    final finder = $(LoginView).$(TextField);
+    final finder = $(#dns_lookup_input_form).$(TextField);
+    final isTextFieldFocused = finder
+      .which<TextField>((view) => view.focusNode?.hasFocus ?? false)
+      .exists;
+    if (!isTextFieldFocused) {
+      await finder.tap();
+    }
     await finder.enterText(email);
-    await $('Next').tap();
   }
 
   Future<void> enterHostUrl(String url) async {
-    final finder = $(LoginView).$(TextField);
+    final finder = $(#base_url_form).$(TextField);
+    final isTextFieldFocused = finder
+      .which<TextField>((view) => view.focusNode?.hasFocus ?? false)
+      .exists;
+    if (!isTextFieldFocused) {
+      await finder.tap();
+    }
     await finder.enterText(url);
-    await $('Next').tap();
+  }
+
+  Future<void> tapOnNextButton() async {
+    await $(appLocalizations.next).tap();
   }
 
   Future<void> enterBasicAuthEmail(String email) async {
-    await $(LoginView)
-      .$(TypeAheadFormFieldBuilder<RecentLoginUsername>)
-      .$(TextField)
-      .enterText(email);
+    final finder = $(#login_username_input).$(TextField);
+    final isTextFieldFocused = finder
+      .which<TextField>((view) => view.focusNode?.hasFocus ?? false)
+      .exists;
+    if (!isTextFieldFocused) {
+      await finder.tap();
+    }
+    await finder.enterText(email);
   }
 
   Future<void> enterBasicAuthPassword(String password) async {
-    await $(LoginView)
-      .$(LoginTextInputBuilder)
-      .$(TextField)
-      .enterText(password);
+    final finder = $(#login_password_input).$(TextField);
+    final isTextFieldFocused = finder
+      .which<TextField>((view) => view.focusNode?.hasFocus ?? false)
+      .exists;
+    if (!isTextFieldFocused) {
+      await finder.tap();
+    }
+    await finder.enterText(password);
   }
 
   Future<void> loginBasicAuth() async {
-    await $(Container).$(ElevatedButton).tap();
+    await $(#loginSubmitForm).tap();
   }
 }
