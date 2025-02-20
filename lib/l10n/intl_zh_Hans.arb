@@ -4002,5 +4002,67 @@
     "placeholders": {
       "numberOfMailbox": {}
     }
+  },
+  "sMimeBadSignatureMessage": "",
+  "@sMimeBadSignatureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "textBodySendReceiptToSender": "",
+  "@textBodySendReceiptToSender": {
+    "type": "text",
+    "placeholders_order": [
+      "receiver",
+      "subject",
+      "time"
+    ],
+    "placeholders": {
+      "receiver": {},
+      "subject": {},
+      "time": {}
+    }
+  },
+  "messageWarningDialogForForwardsToOtherDomains": "",
+  "@messageWarningDialogForForwardsToOtherDomains": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "warningMessageWhenSaveEmailToDraftsFailure": "",
+  "@warningMessageWhenSaveEmailToDraftsFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailReadReceiptsSettingExplanation": "",
+  "@emailReadReceiptsSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "eventReplyWasSentUnsuccessfully": "",
+  "@eventReplyWasSentUnsuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "warningMessageWhenExceedGenerallySizeInComposer": "",
+  "@warningMessageWhenExceedGenerallySizeInComposer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noSuitableBrowserForOIDC": "",
+  "@noSuitableBrowserForOIDC": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sMimeGoodSignatureMessage": "",
+  "@sMimeGoodSignatureMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
