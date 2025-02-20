@@ -29,6 +29,7 @@ class ComposerArguments extends RouterArguments {
   final IdentityId? selectedIdentityId;
   final List<Attachment>? inlineImages;
   final bool? hasRequestReadReceipt;
+  final bool? isMarkAsImportant;
   final ScreenDisplayMode displayMode;
   final List<EmailAddress>? cc;
   final List<EmailAddress>? bcc;
@@ -56,6 +57,7 @@ class ComposerArguments extends RouterArguments {
     this.cc,
     this.bcc,
     this.listPost,
+    this.isMarkAsImportant,
   });
 
   factory ComposerArguments.fromSendingEmail(SendingEmail sendingEmail) =>
@@ -119,6 +121,7 @@ class ComposerArguments extends RouterArguments {
       inlineImages: composerCache.email?.allAttachments.listAttachmentsDisplayedInContent,
       hasRequestReadReceipt: composerCache.hasRequestReadReceipt,
       displayMode: composerCache.displayMode,
+      isMarkAsImportant: composerCache.isMarkAsImportant,
     );
 
   factory ComposerArguments.replyEmail({
@@ -234,6 +237,7 @@ class ComposerArguments extends RouterArguments {
     selectedIdentityId,
     inlineImages,
     hasRequestReadReceipt,
+    isMarkAsImportant,
     displayMode,
     cc,
     bcc,
@@ -258,6 +262,7 @@ class ComposerArguments extends RouterArguments {
     IdentityId? selectedIdentityId,
     List<Attachment>? inlineImages,
     bool? hasRequestReadReceipt,
+    bool? isMarkAsImportant,
     ScreenDisplayMode? displayMode,
     List<EmailAddress>? cc,
     List<EmailAddress>? bcc,
@@ -281,6 +286,7 @@ class ComposerArguments extends RouterArguments {
       selectedIdentityId: selectedIdentityId ?? this.selectedIdentityId,
       inlineImages: inlineImages ?? this.inlineImages,
       hasRequestReadReceipt: hasRequestReadReceipt ?? this.hasRequestReadReceipt,
+      isMarkAsImportant: isMarkAsImportant ?? this.isMarkAsImportant,
       displayMode: displayMode ?? this.displayMode,
       cc: cc ?? this.cc,
       bcc: bcc ?? this.bcc,

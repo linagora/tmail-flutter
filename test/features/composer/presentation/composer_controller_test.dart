@@ -347,7 +347,7 @@ void main() {
             replyToRecipients: {replyToRecipient},
             identity: identity,
             attachments: [attachment],
-            hasReadReceipt: alwaysReadReceiptEnabled
+            hasReadReceipt: alwaysReadReceiptEnabled,
           );
           
           // act
