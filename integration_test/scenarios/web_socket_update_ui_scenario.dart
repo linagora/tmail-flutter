@@ -1,35 +1,27 @@
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 
-import '../base/base_scenario.dart';
+import '../base/base_test_scenario.dart';
 import '../models/provisioning_email.dart';
-import '../utils/scenario_utils_mixin.dart';
-import 'login_with_basic_auth_scenario.dart';
 
-class WebSocketUpdateUiScenario extends BaseScenario with ScenarioUtilsMixin {
-  const WebSocketUpdateUiScenario(super.$, {
-    required this.loginWithBasicAuthScenario,
-    required this.subject,
-    required this.content,
-  });
-
-  final LoginWithBasicAuthScenario loginWithBasicAuthScenario;
-  final String subject;
-  final String content;
+class WebSocketUpdateUiScenario extends BaseTestScenario {
+  const WebSocketUpdateUiScenario(super.$);
 
   @override
-  Future<void> execute() async {
-    await loginWithBasicAuthScenario.execute();
+  Future<void> runTestLogic() async {
+    const email = String.fromEnvironment('BASIC_AUTH_EMAIL');
+    const subject = 'web socket subject';
+    const content = 'web socket content';
 
     await provisionEmail(
       [ProvisioningEmail(
-        toEmail: loginWithBasicAuthScenario.email,
+        toEmail: email,
         subject: subject,
         content: content,
       )],
       refreshEmailView: false,
     );
     await $.pumpAndSettle();
-    await _expectEmailVisible(loginWithBasicAuthScenario.email);
+    await _expectEmailVisible(email);
     await _expectEmailUnreadWithSubject(subject);
     await _expectEmailUnstarredWithSubject(subject);
 

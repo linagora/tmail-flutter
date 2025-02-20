@@ -5,30 +5,20 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/app_grid_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_dashboard/app_list_dashboard_item.dart';
 
-import '../base/base_scenario.dart';
+import '../base/base_test_scenario.dart';
 import '../robots/app_grid_robot.dart';
 import '../robots/mailbox_menu_robot.dart';
 import '../robots/thread_robot.dart';
-import 'login_with_basic_auth_scenario.dart';
 
-class AppGridScenario extends BaseScenario {
+class AppGridScenario extends BaseTestScenario {
 
-  final LoginWithBasicAuthScenario loginWithBasicAuthScenario;
-
-  AppGridScenario(
-    super.$,
-    {
-      required this.loginWithBasicAuthScenario
-    }
-  );
+  const AppGridScenario(super.$);
 
   @override
-  Future<void> execute() async {
+  Future<void> runTestLogic() async {
     final threadRobot = ThreadRobot($);
     final mailboxMenuRobot = MailboxMenuRobot($);
     final appGridRobot = AppGridRobot($);
-
-    await loginWithBasicAuthScenario.execute();
 
     await threadRobot.openMailbox();
     await _expectMailboxViewVisible();

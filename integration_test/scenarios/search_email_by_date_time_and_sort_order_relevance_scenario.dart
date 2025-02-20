@@ -6,32 +6,27 @@ import 'package:tmail_ui_user/features/search/email/presentation/search_email_vi
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-import '../base/base_scenario.dart';
+import '../base/base_test_scenario.dart';
 import '../models/provisioning_email.dart';
 import '../robots/search_robot.dart';
 import '../robots/thread_robot.dart';
-import '../utils/scenario_utils_mixin.dart';
-import 'login_with_basic_auth_scenario.dart';
 
-class SearchEmailByDatetimeAndSortOrderRelevanceScenario extends BaseScenario
-    with ScenarioUtilsMixin {
+class SearchEmailByDatetimeAndSortOrderRelevanceScenario extends BaseTestScenario {
 
-  const SearchEmailByDatetimeAndSortOrderRelevanceScenario(
-    super.$, 
-    {
-      required this.loginWithBasicAuthScenario,
-      required this.queryString,
-      required this.listProvisioningEmail,
-    }
-  );
+  const SearchEmailByDatetimeAndSortOrderRelevanceScenario(super.$);
 
-  final LoginWithBasicAuthScenario loginWithBasicAuthScenario;
-  final String queryString;
-  final List<ProvisioningEmail> listProvisioningEmail;
+  static const queryString = 'relevance';
+  static const listUsername = ['Alice', 'Brian', 'Charlotte', 'David', 'Emma'];
 
   @override
-  Future<void> execute() async {
-    await loginWithBasicAuthScenario.execute();
+  Future<void> runTestLogic() async {
+    final listProvisioningEmail = listUsername
+      .map((username) => ProvisioningEmail(
+        toEmail: '${username.toLowerCase()}@example.com',
+        subject: queryString,
+        content: '$queryString to user $username',
+      ))
+      .toList();
 
     await provisionEmail(listProvisioningEmail);
     await $.pumpAndSettle();
@@ -70,7 +65,7 @@ class SearchEmailByDatetimeAndSortOrderRelevanceScenario extends BaseScenario
     );
     await _expectSearchResultEmailListVisible();
 
-    await _expectEmailListDisplayedCorrectly();
+    await _expectEmailListDisplayedCorrectly(listProvisioningEmail);
   }
 
 
@@ -98,7 +93,7 @@ class SearchEmailByDatetimeAndSortOrderRelevanceScenario extends BaseScenario
     await expectViewVisible($(#sort_filter_context_menu));
   }
 
-  Future<void> _expectEmailListDisplayedCorrectly() async {
+  Future<void> _expectEmailListDisplayedCorrectly(List<ProvisioningEmail> listProvisioningEmail) async {
     expect(find.byType(EmailTileBuilder), findsNWidgets(listProvisioningEmail.length));
   }
 

@@ -7,29 +7,18 @@ import 'package:tmail_ui_user/features/search/email/presentation/search_email_vi
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-import '../base/base_scenario.dart';
+import '../base/base_test_scenario.dart';
 import '../robots/search_robot.dart';
 import '../robots/thread_robot.dart';
-import 'login_with_basic_auth_scenario.dart';
 
-class SearchEmailWithSortOrderScenario extends BaseScenario {
-  const SearchEmailWithSortOrderScenario(
-    super.$, 
-    {
-      required this.loginWithBasicAuthScenario,
-      required this.queryString,
-      required this.listUsername,
-    }
-  );
+class SearchEmailWithSortOrderScenario extends BaseTestScenario {
+  const SearchEmailWithSortOrderScenario(super.$);
 
-  final LoginWithBasicAuthScenario loginWithBasicAuthScenario;
-  final String queryString;
-  final List<String> listUsername;
+  static const queryString = 'hello';
+  static const listUsername = ['Alice', 'Brian', 'Charlotte', 'David', 'Emma'];
 
   @override
-  Future<void> execute() async {
-    await loginWithBasicAuthScenario.execute();
-
+  Future<void> runTestLogic() async {
     final threadRobot = ThreadRobot($);
     await threadRobot.openSearchView();
     await _expectSearchViewVisible();
