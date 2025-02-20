@@ -1422,8 +1422,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       case EmailActionType.downloadMessageAsEML:
         _downloadMessageAsEML(presentationEmail);
         break;
-      case EmailActionType.composeFromPresentationEmail:
-        _composeFromPresentationEmail(presentationEmail);
+      case EmailActionType.editAsNewEmail:
+        _editAsNewEmail(presentationEmail);
         break;
       default:
         break;
@@ -2145,11 +2145,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     downloadAttachmentForWeb(emlAttachment);
   }
 
-  void _composeFromPresentationEmail(PresentationEmail presentationEmail) {
+  void _editAsNewEmail(PresentationEmail presentationEmail) {
     if (accountId == null || session == null) return;
 
     mailboxDashBoardController.goToComposer(
-      ComposerArguments.fromPresentationEmail(presentationEmail),
+      ComposerArguments.editAsNewEmail(presentationEmail),
     );
   }
 
