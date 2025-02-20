@@ -3,6 +3,7 @@ import 'package:patrol/patrol.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
+import '../extensions/patrol_finder_extension.dart';
 
 class LoginRobot extends CoreRobot {
   final appLocalizations = AppLocalizations();
@@ -27,7 +28,7 @@ class LoginRobot extends CoreRobot {
     if (!isTextFieldFocused) {
       await finder.tap();
     }
-    await finder.enterText(email);
+    await finder.enterTextWithoutTapAction(email);
   }
 
   Future<void> enterHostUrl(String url) async {
@@ -38,7 +39,7 @@ class LoginRobot extends CoreRobot {
     if (!isTextFieldFocused) {
       await finder.tap();
     }
-    await finder.enterText(url);
+    await finder.enterTextWithoutTapAction(url);
   }
 
   Future<void> tapOnNextButton() async {
@@ -53,7 +54,7 @@ class LoginRobot extends CoreRobot {
     if (!isTextFieldFocused) {
       await finder.tap();
     }
-    await finder.enterText(email);
+    await finder.enterTextWithoutTapAction(email);
   }
 
   Future<void> enterBasicAuthPassword(String password) async {
@@ -64,7 +65,7 @@ class LoginRobot extends CoreRobot {
     if (!isTextFieldFocused) {
       await finder.tap();
     }
-    await finder.enterText(password);
+    await finder.enterTextWithoutTapAction(password);
   }
 
   Future<void> loginBasicAuth() async {
