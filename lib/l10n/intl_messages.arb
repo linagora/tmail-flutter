@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-02-13T17:07:01.807952",
+  "@@last_modified": "2025-02-20T19:41:05.121752",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -24,8 +24,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "Bad credentials": "Bad credentials",
-  "@Bad credentials": {
+  "badCredentials": "Bad credentials",
+  "@badCredentials": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

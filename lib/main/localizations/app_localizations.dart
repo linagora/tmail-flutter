@@ -38,7 +38,7 @@ class AppLocalizations {
   }
   
   String get badCredentials {
-    return Intl.message('Bad credentials');
+    return Intl.message('Bad credentials', name: 'badCredentials');
   }
 
   String get next {
