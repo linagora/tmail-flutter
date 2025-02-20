@@ -4324,7 +4324,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "parseEmailByBlobIdFailed": "Impossible de récupérer cet email",
+  "parseEmailByBlobIdFailed": "Impossible d'analyser l'e-mail à partir de son blob ID",
   "@parseEmailByBlobIdFailed": {
     "type": "text",
     "placeholders_order": [],
