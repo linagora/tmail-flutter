@@ -336,7 +336,7 @@ void main() {
             bccRecipients: {bccRecipient},
             identity: identity,
             attachments: [attachment],
-            hasReadReceipt: alwaysReadReceiptEnabled
+            hasReadReceipt: alwaysReadReceiptEnabled,
           );
           
           // act
