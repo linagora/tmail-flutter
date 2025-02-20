@@ -25,6 +25,7 @@ export 'email/prefix_email_address.dart';
 export 'email/presentation_email.dart';
 export 'email/presentation_email_address.dart';
 export 'email/read_actions.dart';
+export 'email/mail_priority_header.dart';
 export 'extensions/account_extension.dart';
 export 'extensions/account_id_extensions.dart';
 export 'extensions/attachment_extension.dart';

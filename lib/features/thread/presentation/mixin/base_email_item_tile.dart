@@ -354,4 +354,20 @@ mixin BaseEmailItemTile {
       ),
     );
   }
+
+  Widget buildMarkAsImportantIcon(BuildContext context) {
+    return Padding(
+      padding: ItemEmailTileStyles.getSpaceCalendarEventIcon(
+        context,
+        responsiveUtils,
+      ),
+      child: SvgPicture.asset(
+        imagePaths.icMarkAsImportant,
+        width: 20,
+        height: 20,
+        fit: BoxFit.fill,
+        colorFilter: AppColor.steelGray200.asFilter(),
+      ),
+    );
+  }
 }

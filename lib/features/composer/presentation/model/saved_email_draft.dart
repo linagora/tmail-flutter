@@ -12,6 +12,7 @@ class SavedEmailDraft with EquatableMixin {
   final List<Attachment> attachments;
   final Identity? identity;
   final bool hasReadReceipt;
+  final bool isMarkAsImportant;
 
   SavedEmailDraft({
     required this.content,
@@ -22,6 +23,7 @@ class SavedEmailDraft with EquatableMixin {
     required this.attachments,
     required this.identity,
     required this.hasReadReceipt,
+    this.isMarkAsImportant = false,
   });
 
   factory SavedEmailDraft.empty() {
@@ -47,6 +49,7 @@ class SavedEmailDraft with EquatableMixin {
     {2: bccRecipients},
     attachments,
     identity,
-    hasReadReceipt
+    hasReadReceipt,
+    isMarkAsImportant,
   ];
 }

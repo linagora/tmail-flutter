@@ -4349,4 +4349,67 @@ class AppLocalizations {
       name: 'thisHtmlAttachmentCannotBePreviewed',
     );
   }
+
+  String get markAsImportant {
+    return Intl.message(
+      'Mark as important',
+      name: 'markAsImportant',
+    );
+  }
+
+  String get markAsImportantIsEnabled {
+    return Intl.message(
+      'Mark as important is enabled',
+      name: 'markAsImportantIsEnabled',
+    );
+  }
+
+  String get markAsImportantIsDisabled {
+    return Intl.message(
+      'Mark as important is disabled',
+      name: 'markAsImportantIsDisabled',
+    );
+  }
+
+  String get turnOnMarkAsImportant {
+    return Intl.message(
+      'Turn on mark as important',
+      name: 'turnOnMarkAsImportant',
+    );
+  }
+
+  String get turnOffMarkAsImportant {
+    return Intl.message(
+      'Turn off mark as important',
+      name: 'turnOffMarkAsImportant',
+    );
+  }
+
+  String get preferences {
+    return Intl.message(
+      'Preferences',
+      name: 'preferences',
+    );
+  }
+
+  String get senderSetImportantFlag {
+    return Intl.message(
+      'Sender-set important flag',
+      name: 'senderSetImportantFlag',
+    );
+  }
+
+  String get senderImportantSettingExplanation {
+    return Intl.message(
+      'Enables display of important emails flag in your inbox. This feature is controlled by the sender and thus could result in abuses.',
+      name: 'senderImportantSettingExplanation',
+    );
+  }
+
+  String get senderImportantSettingToggleDescription {
+    return Intl.message(
+    'Display sender-set important flag',
+    name: 'senderImportantSettingToggleDescription',
+    );
+  }
 }

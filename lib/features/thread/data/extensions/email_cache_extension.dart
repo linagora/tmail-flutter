@@ -36,6 +36,21 @@ extension EmailCacheExtension on EmailCache {
         ? Map.fromIterables(headerCalendarEvent!.keys.map((value) => IndividualHeaderIdentifier(value)), headerCalendarEvent!.values)
         : null,
       blobId: blobId != null ? Id(blobId!) : null,
+      xPriorityHeader: xPriorityHeader != null
+        ? Map.fromIterables(
+            xPriorityHeader!.keys.map((value) => IndividualHeaderIdentifier(value)),
+            xPriorityHeader!.values)
+        : null,
+      importanceHeader: importanceHeader != null
+        ? Map.fromIterables(
+            importanceHeader!.keys.map((value) => IndividualHeaderIdentifier(value)),
+            importanceHeader!.values)
+        : null,
+      priorityHeader: priorityHeader != null
+        ? Map.fromIterables(
+            priorityHeader!.keys.map((value) => IndividualHeaderIdentifier(value)),
+            priorityHeader!.values)
+        : null,
     );
   }
 

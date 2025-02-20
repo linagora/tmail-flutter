@@ -42,7 +42,7 @@ class ManageAccountMenuController extends GetxController with ContactSupportMixi
       if (dashBoardController.isRuleFilterCapabilitySupported)
         AccountMenuItem.emailRules,
       if (dashBoardController.isServerSettingsCapabilitySupported)
-        AccountMenuItem.alwaysReadReceipt,
+        AccountMenuItem.preferences,
       if (dashBoardController.isForwardCapabilitySupported)
         AccountMenuItem.forward,
       if (dashBoardController.isVacationCapabilitySupported)

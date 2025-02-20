@@ -287,11 +287,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: b0856586624c19e3e13e78e15bd4d15b27d27661
+      ref: add-priority-headers-for-email
+      resolved-ref: add7877f73730e4e8ab0c0938de67f1e4181f48d
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
-    version: "0.3.2"
+    version: "0.3.3"
   js:
     dependency: transitive
     description:

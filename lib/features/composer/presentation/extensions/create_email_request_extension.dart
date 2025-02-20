@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.da
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/email/mail_priority_header.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/username_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -150,7 +151,16 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
         : null,
       identityHeader: withIdentityHeader
         ? {IndividualHeaderIdentifier.identityHeader: identity?.id?.id.value}
-        : null
+        : null,
+      xPriorityHeader: isMarkAsImportant
+        ? {IndividualHeaderIdentifier.xPriorityHeader: MailPriorityHeader.firstXPriority}
+        : null,
+      importanceHeader: isMarkAsImportant
+        ? {IndividualHeaderIdentifier.importanceHeader: MailPriorityHeader.highImportance}
+        : null,
+      priorityHeader: isMarkAsImportant
+        ? {IndividualHeaderIdentifier.priorityHeader: MailPriorityHeader.urgentPriority}
+        : null,
     );
   }
 

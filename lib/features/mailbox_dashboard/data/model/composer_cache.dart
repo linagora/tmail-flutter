@@ -10,11 +10,13 @@ class ComposerCache with EquatableMixin {
 
   final Email? email;
   final bool? hasRequestReadReceipt;
+  final bool? isMarkAsImportant;
   final ScreenDisplayMode displayMode;
 
   ComposerCache({
     this.email,
     this.hasRequestReadReceipt,
+    this.isMarkAsImportant,
     this.displayMode = ScreenDisplayMode.normal
   });
 
@@ -26,6 +28,7 @@ class ComposerCache with EquatableMixin {
   List<Object?> get props => [
     email,
     hasRequestReadReceipt,
+    isMarkAsImportant,
     displayMode
   ];
 }

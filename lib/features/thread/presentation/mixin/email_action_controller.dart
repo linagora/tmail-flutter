@@ -45,7 +45,7 @@ mixin EmailActionController {
 
   void editAsNewEmail(PresentationEmail presentationEmail) {
     mailboxDashBoardController.goToComposer(
-      ComposerArguments.fromPresentationEmail(presentationEmail),
+      ComposerArguments.editAsNewEmail(presentationEmail),
     );
   }
 

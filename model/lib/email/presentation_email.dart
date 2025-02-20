@@ -13,6 +13,7 @@ import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.da
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_content.dart';
+import 'package:model/email/mail_priority_header.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/media_type_nullable_extension.dart';
@@ -44,6 +45,9 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
   final Set<EmailBodyPart>? htmlBody;
   final Map<PartId, EmailBodyValue>? bodyValues;
   final Map<IndividualHeaderIdentifier, String?>? headerCalendarEvent;
+  final Map<IndividualHeaderIdentifier, String?>? xPriorityHeader;
+  final Map<IndividualHeaderIdentifier, String?>? importanceHeader;
+  final Map<IndividualHeaderIdentifier, String?>? priorityHeader;
 
   PresentationEmail({
     this.id,
@@ -68,6 +72,9 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     this.htmlBody,
     this.bodyValues,
     this.headerCalendarEvent,
+    this.xPriorityHeader,
+    this.importanceHeader,
+    this.priorityHeader,
   });
 
   String getSenderName() {
@@ -135,6 +142,22 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
 
   bool get hasCalendarEvent => headerCalendarEvent?[IndividualHeaderIdentifier.headerCalendarEvent]?.isNotEmpty == true;
 
+  bool get isMarkAsImportant {
+    final xPriority = xPriorityHeader?[IndividualHeaderIdentifier.xPriorityHeader]
+      ?.trim()
+      .toLowerCase();
+    final importance = importanceHeader?[IndividualHeaderIdentifier.importanceHeader]
+      ?.trim()
+      .toLowerCase();
+    final priority = priorityHeader?[IndividualHeaderIdentifier.priorityHeader]
+      ?.trim()
+      .toLowerCase();
+
+    return xPriority == MailPriorityHeader.firstXPriority &&
+      importance == MailPriorityHeader.highImportance &&
+      priority == MailPriorityHeader.urgentPriority;
+  }
+
   List<EmailContent> get emailContentList {
     final newHtmlBody = htmlBody
         ?.where((emailBody) => emailBody.partId != null && emailBody.type != null)
@@ -175,6 +198,9 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     headerCalendarEvent,
     searchSnippetSubject,
     searchSnippetPreview,
+    xPriorityHeader,
+    importanceHeader,
+    priorityHeader,
   ];
 
   PresentationEmail copyWith({
@@ -200,6 +226,9 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     Set<EmailBodyPart>? htmlBody,
     Map<PartId, EmailBodyValue>? bodyValues,
     Map<IndividualHeaderIdentifier, String?>? headerCalendarEvent,
+    Map<IndividualHeaderIdentifier, String?>? xPriorityHeader,
+    Map<IndividualHeaderIdentifier, String?>? importanceHeader,
+    Map<IndividualHeaderIdentifier, String?>? priorityHeader,
   }) {
     return PresentationEmail(
       id: id ?? this.id,
@@ -224,6 +253,9 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
       htmlBody: htmlBody ?? this.htmlBody,
       bodyValues: bodyValues ?? this.bodyValues,
       headerCalendarEvent: headerCalendarEvent ?? this.headerCalendarEvent,
+      xPriorityHeader: xPriorityHeader ?? this.xPriorityHeader,
+      importanceHeader: importanceHeader ?? this.importanceHeader,
+      priorityHeader: priorityHeader ?? this.priorityHeader,
     );
   }
 }

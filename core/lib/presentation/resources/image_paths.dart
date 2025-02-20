@@ -212,7 +212,7 @@ class ImagePaths {
   String get icUnsubscribe => _getImagePath('ic_unsubscribe.svg');
   String get icRecoverDeletedMessages => _getImagePath('ic_recover_deleted_messages.svg');
   String get icPrinter => _getImagePath('ic_printer.svg');
-  String get icAlwaysReadReceipt => _getImagePath('ic_always_read_receipt.svg');
+  String get icPreferences => _getImagePath('ic_preferences.svg');
   String get icNotification => _getImagePath('ic_notification.svg');
   String get icRemoveRule => _getImagePath('ic_remove_rule.svg');
   String get icCheckboxUnselected => _getImagePath('ic_checkbox_unselected.svg');
@@ -222,6 +222,7 @@ class ImagePaths {
   String get icDeleteSelection => _getImagePath('ic_delete_selection.svg');
   String get icLogoTwakeWelcome => _getImagePath('ic_logo_twake_welcome.svg');
   String get icHelp => _getImagePath('ic_help.svg');
+  String get icMarkAsImportant => _getImagePath('ic_mark_as_important.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
