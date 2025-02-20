@@ -608,18 +608,19 @@ class ComposerController extends BaseController
       );
 
       switch(arguments.emailActionType) {
-        case EmailActionType.composeFromPresentationEmail:
+        case EmailActionType.editAsNewEmail:
           _initEmailAddress(
             presentationEmail: arguments.presentationEmail!,
-            actionType: EmailActionType.composeFromPresentationEmail
+            actionType: EmailActionType.editAsNewEmail
           );
           _initSubjectEmail(
             presentationEmail: arguments.presentationEmail!,
-            actionType: EmailActionType.composeFromPresentationEmail
+            actionType: EmailActionType.editAsNewEmail
           );
           _getEmailContentOfEmailDrafts(
             emailId: arguments.presentationEmail!.id!,
           );
+          isMarkAsImportant.value = arguments.presentationEmail!.isMarkAsImportant;
           break;
         case EmailActionType.editDraft:
           _initEmailAddress(

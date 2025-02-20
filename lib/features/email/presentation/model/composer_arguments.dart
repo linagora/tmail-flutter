@@ -105,9 +105,9 @@ class ComposerArguments extends RouterArguments {
       presentationEmail: presentationEmail,
     );
   
-  factory ComposerArguments.fromPresentationEmail(PresentationEmail presentationEmail) =>
+  factory ComposerArguments.editAsNewEmail(PresentationEmail presentationEmail) =>
     ComposerArguments(
-      emailActionType: EmailActionType.composeFromPresentationEmail,
+      emailActionType: EmailActionType.editAsNewEmail,
       presentationEmail: presentationEmail,
     );
 
