@@ -3998,5 +3998,95 @@
       "startDate": {},
       "endDate": {}
     }
+  },
+  "useCompanyServer": "",
+  "@useCompanyServer": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "tryAgain": "",
+  "@tryAgain": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "nameToBeDisplayed": "",
+  "@nameToBeDisplayed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createTwakeId": "",
+  "@createTwakeId": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youHaveNotAddedConditionToRule": "",
+  "@youHaveNotAddedConditionToRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "languageGerman": "",
+  "@languageGerman": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sigInSaasFailed": "",
+  "@sigInSaasFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youAreOffline": "",
+  "@youAreOffline": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youHaveNotAddedActionToRule": "",
+  "@youHaveNotAddedActionToRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createTwakeIdFailed": "",
+  "@createTwakeIdFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "thisFieldCannotContainOnlySpaces": "",
+  "@thisFieldCannotContainOnlySpaces": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youHaveNotSelectedAnyActionForRule": "",
+  "@youHaveNotSelectedAnyActionForRule": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "descriptionWelcomeTo": "",
+  "@descriptionWelcomeTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "findEmails": "",
+  "@findEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "spamFolderNotFound": "",
+  "@spamFolderNotFound": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
