@@ -290,6 +290,10 @@ dev_dependencies:
 
   patrol: 3.14.0
 
+  patrol_log: 0.3.0
+
+  patrol_finders: 2.7.0
+
   plugin_platform_interface: 2.1.8
 
 dependency_overrides:

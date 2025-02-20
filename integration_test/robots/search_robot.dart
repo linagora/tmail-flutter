@@ -6,6 +6,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_bu
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
+import '../extensions/patrol_finder_extension.dart';
 
 class SearchRobot extends CoreRobot {
   SearchRobot(super.$);
@@ -18,7 +19,7 @@ class SearchRobot extends CoreRobot {
     if (!isTextFieldFocused) {
       await finder.tap();
     }
-    await finder.enterText(queryString);
+    await finder.enterTextWithoutTapAction(queryString);
   }
 
   Future<void> scrollToEndListSearchFilter() async {
@@ -47,7 +48,7 @@ class SearchRobot extends CoreRobot {
     if (!isTextFieldFocused) {
       await finder.tap();
     }
-    await finder.enterText(keyword);
+    await finder.enterTextWithoutTapAction(keyword);
   }
   
   Future<void> tapOnShowAllResultsText() async {

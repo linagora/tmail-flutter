@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_s
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
 
 import '../base/core_robot.dart';
+import '../extensions/patrol_finder_extension.dart';
 
 class ComposerRobot extends CoreRobot {
   ComposerRobot(super.$);
@@ -25,7 +26,7 @@ class ComposerRobot extends CoreRobot {
     if (!isTextFieldFocused) {
       await finder.tap();
     }
-    await finder.enterText(email);
+    await finder.enterTextWithoutTapAction(email);
 
     await $(RecipientSuggestionItemWidget)
       .which<RecipientSuggestionItemWidget>((widget) => widget.emailAddress.email?.contains(email) ?? false)
@@ -40,7 +41,7 @@ class ComposerRobot extends CoreRobot {
     if (!isTextFieldFocused) {
       await finder.tap();
     }
-    await finder.enterText(subject);
+    await finder.enterTextWithoutTapAction(subject);
   }
 
   Future<void> addContent(String content) async {
