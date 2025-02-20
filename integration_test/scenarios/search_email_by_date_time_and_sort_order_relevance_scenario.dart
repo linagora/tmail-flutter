@@ -60,6 +60,9 @@ class SearchEmailByDatetimeAndSortOrderRelevanceScenario extends BaseScenario
 
     await Future.delayed(const Duration(seconds: 2));
 
+    await searchRobot.scrollToEndListSearchFilter();
+    await _expectSortBySearchFilterButtonVisible();
+
     await searchRobot.openSortOrderBottomDialog();
     await _expectSortFilterContextMenuVisible();
     await searchRobot.selectSortOrder(
@@ -97,5 +100,9 @@ class SearchEmailByDatetimeAndSortOrderRelevanceScenario extends BaseScenario
 
   Future<void> _expectEmailListDisplayedCorrectly() async {
     expect(find.byType(EmailTileBuilder), findsNWidgets(listProvisioningEmail.length));
+  }
+
+  Future<void> _expectSortBySearchFilterButtonVisible() async {
+    await expectViewVisible($(#mobile_sortBy_search_filter_button));
   }
 }

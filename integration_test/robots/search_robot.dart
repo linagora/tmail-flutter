@@ -46,7 +46,7 @@ class SearchRobot extends CoreRobot {
       finder: $(#mobile_dateTime_search_filter_button),
       view: $(#search_filter_list_view),
       scrollDirection: AxisDirection.right,
-      delta: 300,
+      delta: 100,
     );
   }
 
