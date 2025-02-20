@@ -634,6 +634,7 @@ class ComposerController extends BaseController
             emailId: arguments.presentationEmail!.id!,
           );
           _emailIdEditing = arguments.presentationEmail!.id!;
+          isMarkAsImportant.value = arguments.presentationEmail!.isMarkAsImportant;
           break;
         case EmailActionType.editSendingEmail:
           _initEmailAddress(
@@ -721,6 +722,7 @@ class ComposerController extends BaseController
           if (!PlatformInfo.isWeb) return;
 
           screenDisplayMode.value = arguments.displayMode;
+          isMarkAsImportant.value = arguments.isMarkAsImportant ?? false;
 
           _initEmailAddress(
             presentationEmail: arguments.presentationEmail!,
@@ -1316,6 +1318,7 @@ class ComposerController extends BaseController
       identity: identitySelected.value,
       attachments: uploadController.attachmentsUploaded,
       hasReadReceipt: hasRequestReadReceipt.value,
+      isMarkAsImportant: isMarkAsImportant.value,
     );
 
     return savedEmailDraft.hashCode;
