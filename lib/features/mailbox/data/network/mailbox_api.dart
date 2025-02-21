@@ -34,7 +34,6 @@ import 'package:tmail_ui_user/features/base/mixin/handle_error_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_change_response.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_method_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_rights_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/list_mailbox_id_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/extensions/role_extension.dart';
@@ -454,19 +453,19 @@ class MailboxAPI with HandleSetErrorMixin {
     }
   }
 
-  Future<List<Mailbox>> createDefaultMailbox(
+  Future<(List<Mailbox> mailboxes, Map<Id, SetError> mapErrors)> createDefaultMailbox(
     Session session,
     AccountId accountId,
     List<Role> listRole
   ) async {
-    final mapId = {
+    final mapRoles = {
       for (var role in listRole)
         Id(_uuid.v1()) : role
     };
 
     final mapCreate = {
-      for (var id in mapId.keys)
-        id : Mailbox(name: MailboxName(mapId[id]!.mailboxName), isSubscribed: IsSubscribed(true))
+      for (var id in mapRoles.keys)
+        id : Mailbox(name: MailboxName(mapRoles[id]!.mailboxName), isSubscribed: IsSubscribed(true))
     };
 
     final setMailboxMethodForCreate = SetMailboxMethod(accountId)
@@ -488,53 +487,40 @@ class MailboxAPI with HandleSetErrorMixin {
     );
 
     final mapErrors = handleSetResponse([createResponse]);
+    final mapMailboxCreated = createResponse?.created ?? <Id, Mailbox>{};
 
-    if (mapErrors.isNotEmpty) {
-      throw SetMailboxMethodException(mapErrors);
-    } else {
-      final mapMailboxCreated = createResponse?.created ?? <Id, Mailbox>{};
-      log('MailboxAPI::createDefaultMailbox:mapMailboxCreated: $mapMailboxCreated');
-      final listMailboxCreated = _convertMapToListMailbox(
-        mapRoles: mapId,
-        mapMailboxName: mapCreate,
-        mapMailboxCreated: mapMailboxCreated
-      );
-      log('MailboxAPI::createDefaultMailbox:listMailboxCreated: ${listMailboxCreated.length}');
-      if (listMailboxCreated.isEmpty) {
-        throw NotFoundMailboxCreatedException();
-      } else {
-        return listMailboxCreated;
-      }
-    }
+    final listMailboxCreated = _convertMapToListMailbox(
+      mapRoles: mapRoles,
+      mapMailboxName: mapCreate,
+      mapMailboxCreated: mapMailboxCreated,
+    );
+
+    return (listMailboxCreated, mapErrors);
   }
 
   List<Mailbox> _convertMapToListMailbox({
     required Map<Id, Role> mapRoles,
     required Map<Id, Mailbox> mapMailboxName,
-    required Map<Id, Mailbox> mapMailboxCreated
+    required Map<Id, Mailbox> mapMailboxCreated,
   }) {
-    return mapRoles.keys
-      .where((key) => mapMailboxCreated.containsKey(key))
-      .map((key) {
-        final mailboxName = mapMailboxName[key]?.name;
-        final mailboxRole = mapRoles[key];
-        if (mailboxName != null && mailboxRole != null) {
-          return mapMailboxCreated[key]?.toMailbox(
-            mailboxName,
-            mailboxRole: mailboxRole
-          );
-        } else {
-          return null;
-        }
+    return mapMailboxCreated
+      .entries
+      .map((mailboxEntry) {
+        final id = mailboxEntry.key;
+        final mailbox = mailboxEntry.value;
+        return mailbox.copyWith(
+          name: mapMailboxName[id]?.name,
+          role: mapRoles[id],
+          isSubscribed: IsSubscribed(true),
+        );
       })
-      .whereNotNull()
       .toList();
   }
 
-  Future<void> setRoleDefaultMailbox(
+  Future<(List<Mailbox> mailboxes, Map<Id, SetError> mapErrors)> setRoleDefaultMailbox(
     Session session,
     AccountId accountId,
-    List<Mailbox> listMailbox
+    List<Mailbox> listMailbox,
   ) async {
     final mapUpdated = {
       for (var mailbox in listMailbox)
@@ -560,9 +546,27 @@ class MailboxAPI with HandleSetErrorMixin {
     );
 
     final mapErrors = handleSetResponse([updateResponse]);
-    if (mapErrors.isNotEmpty) {
-      throw SetMailboxMethodException(mapErrors);
+    final listUpdatedMailboxId = updateResponse?.updated?.keys ?? [];
+
+    if (listUpdatedMailboxId.isEmpty) {
+      final listMailboxWithoutRole = listMailbox
+        .map((mailbox) => mailbox.toMailboxWithoutRole())
+        .toList();
+
+      return (listMailboxWithoutRole, mapErrors);
     }
+
+    final listUpdatedMailbox = listMailbox
+      .map((mailbox) {
+        if (listUpdatedMailboxId.contains(mailbox.id!.id)) {
+          return mailbox;
+        } else {
+          return mailbox.toMailboxWithoutRole();
+        }
+      })
+      .toList();
+
+    return (listUpdatedMailbox, mapErrors);
   }
 
   Future<GetMailboxByRoleResponse> getMailboxByRole(

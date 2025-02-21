@@ -292,12 +292,12 @@ class MailboxRepositoryImpl extends MailboxRepository {
   }
 
   @override
-  Future<List<Mailbox>> createDefaultMailbox(Session session, AccountId accountId, List<Role> listRole) {
+  Future<(List<Mailbox> mailboxes, Map<Id, SetError> mapErrors)> createDefaultMailbox(Session session, AccountId accountId, List<Role> listRole) {
     return mapDataSource[DataSourceType.network]!.createDefaultMailbox(session, accountId, listRole);
   }
 
   @override
-  Future<void> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox) {
+  Future<(List<Mailbox> mailboxes, Map<Id, SetError> mapErrors)> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox) {
     return mapDataSource[DataSourceType.network]!.setRoleDefaultMailbox(session, accountId, listMailbox);
   }
   

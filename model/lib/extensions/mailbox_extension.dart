@@ -56,6 +56,24 @@ extension MailboxExtension on Mailbox {
     );
   }
 
+  Mailbox toMailboxWithoutRole() {
+    return Mailbox(
+      id: id,
+      name: name,
+      parentId: parentId,
+      role: null,
+      sortOrder: sortOrder,
+      totalEmails: totalEmails,
+      unreadEmails: unreadEmails,
+      totalThreads: totalThreads,
+      unreadThreads: unreadThreads,
+      myRights: myRights,
+      isSubscribed: isSubscribed,
+      namespace: namespace,
+      rights: rights,
+    );
+  }
+
   Mailbox toMailbox(MailboxName mailboxName, {MailboxId? parentId, Role? mailboxRole}) {
     return Mailbox(
         id: id,

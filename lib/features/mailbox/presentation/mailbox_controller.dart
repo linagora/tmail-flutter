@@ -45,6 +45,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_right_reques
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/create_default_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/get_all_mailboxes_state.dart';
@@ -203,6 +204,8 @@ class MailboxController extends BaseMailboxController
       _handleUnsubscribeMultipleMailboxHasSomeSuccess(success);
     } else if (success is SubaddressingSuccess) {
       _handleSubaddressingSuccess(success);
+    } else if (success is CreateDefaultMailboxAllSuccess) {
+      _handleCreateDefaultFolderIfMissingSuccess(success);
     }
   }
 
@@ -655,6 +658,28 @@ class MailboxController extends BaseMailboxController
         listRoleMissing
       ));
     }
+  }
+
+  Future<void> _handleCreateDefaultFolderIfMissingSuccess(CreateDefaultMailboxAllSuccess success) async {
+    if (success.listMailbox.isEmpty) return;
+
+    Set<Role?> existingRoles = {};
+    Set<MailboxName> existingNamesWithoutParent = {};
+
+    for (var mailbox in success.listMailbox) {
+      if (mailbox.role != null && !existingRoles.add(mailbox.role)) continue;
+
+      if (mailbox.parentId == null && mailbox.name != null && !existingNamesWithoutParent.add(mailbox.name!)) continue;
+
+      allMailboxes.add(mailbox.toPresentationMailbox());
+    }
+
+    await buildTree(allMailboxes);
+    if (currentContext != null) {
+      syncAllMailboxWithDisplayName(currentContext!);
+    }
+    _setMapMailbox();
+    _setOutboxMailbox();
   }
 
   void _handleDataFromNavigationRouter() {

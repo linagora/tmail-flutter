@@ -174,7 +174,8 @@ class EmailAPI with HandleSetErrorMixin {
     final emailSubmissionId = EmailSubmissionId(ReferenceId(ReferencePrefix.defaultPrefix, submissionCreateId));
     Map<EmailSubmissionId, PatchObject> mapEmailSubmissionUpdated = {
       emailSubmissionId: PatchObject({
-        emailRequest.sentMailboxId!.generatePath() : true,
+        if (emailRequest.sentMailboxId != null)
+          emailRequest.sentMailboxId!.generatePath() : true,
         outboxMailboxId!.generatePath() : null,
         KeyWordIdentifier.emailSeen.generatePath(): true,
         KeyWordIdentifier.emailDraft.generatePath(): null
