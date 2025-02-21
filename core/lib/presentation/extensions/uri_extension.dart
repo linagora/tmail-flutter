@@ -30,4 +30,11 @@ extension URIExtension on Uri {
       return false;
     }
   }
+
+  Uri ensureWebSocketUri() {
+    if (scheme == 'ws' || scheme == 'wss') {
+      return this;
+    }
+    return replace(scheme: 'wss');
+  }
 }

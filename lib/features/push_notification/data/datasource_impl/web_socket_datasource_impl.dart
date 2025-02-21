@@ -1,6 +1,8 @@
 
 import 'dart:async';
 
+import 'package:core/presentation/extensions/uri_extension.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/capability/websocket_capability.dart';
@@ -26,7 +28,7 @@ class WebSocketDatasourceImpl implements WebSocketDatasource {
       final webSocketTicket = await _webSocketApi.getWebSocketTicket(session, accountId);
       final webSocketUri = _getWebSocketUri(session, accountId);
       final webSocketChannel = WebSocketChannel.connect(
-        Uri.parse('$webSocketUri?ticket=$webSocketTicket'),
+        Uri.parse('${webSocketUri.ensureWebSocketUri().toString()}?ticket=$webSocketTicket'),
         protocols: ["jmap"],
       );
 
@@ -54,6 +56,7 @@ class WebSocketDatasourceImpl implements WebSocketDatasource {
     if (webSocketCapability?.supportsPush != true) {
       throw WebSocketPushNotSupportedException();
     }
+    log('WebSocketDatasourceImpl::_getWebSocketUri: webSocketCapability = ${webSocketCapability?.toJson()}');
     final webSocketUri = webSocketCapability?.url;
     if (webSocketUri == null) throw WebSocketUriUnavailableException();
 
