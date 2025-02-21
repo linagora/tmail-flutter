@@ -4300,25 +4300,25 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageConfirmationLogout": "",
+  "messageConfirmationLogout": "Bạn có muốn đăng xuất",
   "@messageConfirmationLogout": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "contactSupport": "",
+  "contactSupport": "Hỗ trợ",
   "@contactSupport": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youAreCurrentlyLoggedInWith": "",
+  "youAreCurrentlyLoggedInWith": "Bạn đang đăng nhập với",
   "@youAreCurrentlyLoggedInWith": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "handshakeException": "",
+  "handshakeException": "Lỗi kết nối từ máy khách: {errorMessage}",
   "@handshakeException": {
     "type": "text",
     "placeholders_order": [
@@ -4328,103 +4328,103 @@
       "errorMessage": {}
     }
   },
-  "toastMessageDisallowSubaddressingSuccess": "",
+  "toastMessageDisallowSubaddressingSuccess": "Bạn đã vô hiệu hoá địa chỉ email phụ cho thư mục này",
   "@toastMessageDisallowSubaddressingSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "switchAccountConfirmation": "",
+  "switchAccountConfirmation": "Xác nhận chuyển tài khoản",
   "@switchAccountConfirmation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "logoutConfirmation": "",
+  "logoutConfirmation": "Xác nhận đăng xuất",
   "@logoutConfirmation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailSubaddressCopiedToClipboard": "",
+  "emailSubaddressCopiedToClipboard": "Địa chỉ email phụ đã được sao chép",
   "@emailSubaddressCopiedToClipboard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "",
+  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "Phiên của bạn đã hết hạn. Chúng tôi cần đưa bạn trở lại trang đăng nhập để làm mới phiên. Bạn có thể muốn lưu email mà bạn đang chỉnh sửa trước khi chúng tôi thực hiện việc này.",
   "@messageWarningDialogWhenExpiredOIDCTokenAndReconnection": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "editAsNewEmail": "",
+  "editAsNewEmail": "Soạn lại dưới dạng email mới",
   "@editAsNewEmail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yesLogout": "",
+  "yesLogout": "Đồng ý, Đăng xuất",
   "@yesLogout": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "allowSubaddressing": "",
+  "allowSubaddressing": "Cho phép địa chỉ phụ",
   "@allowSubaddressing": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "replyToList": "",
+  "replyToList": "Trả lời danh sách",
   "@replyToList": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "previewEmailFromEMLFileFailed": "",
+  "previewEmailFromEMLFileFailed": "Không thể tải bản xem trước",
   "@previewEmailFromEMLFileFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "badCredentials": "",
+  "badCredentials": "Tài khoản không hợp lệ",
   "@badCredentials": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reply_to_email_address_prefix": "",
+  "reply_to_email_address_prefix": "Reply to",
   "@reply_to_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "disallowSubaddressing": "",
+  "disallowSubaddressing": "Vô hiệu địa chỉ email phụ cho thư mục",
   "@disallowSubaddressing": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "doYouWantToLogOutAndSwitchTo": "",
+  "doYouWantToLogOutAndSwitchTo": "Bạn có muốn đăng xuất và chuyển sang",
   "@doYouWantToLogOutAndSwitchTo": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "downloadAttachmentInEMLPreviewWarningMessage": "",
+  "downloadAttachmentInEMLPreviewWarningMessage": "Tải tệp đính kèm. Bạn chỉ có thể tải một bản tại một thời điểm.",
   "@downloadAttachmentInEMLPreviewWarningMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "copySubaddress": "",
+  "copySubaddress": "Sao chép email phụ",
   "@copySubaddress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "recoverDeletedMessagesBannerContent": "",
+  "recoverDeletedMessagesBannerContent": "Bạn có thể khôi phục các email đã xoá trong vòng {period}",
   "@recoverDeletedMessagesBannerContent": {
     "type": "text",
     "placeholders_order": [
@@ -4434,31 +4434,31 @@
       "period": {}
     }
   },
-  "toastMessageAllowSubaddressingSuccess": "",
+  "toastMessageAllowSubaddressingSuccess": "Bạn đã kích hoạt thành công địa chỉ email phụ cho thư mục này",
   "@toastMessageAllowSubaddressingSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveAndRefresh": "",
+  "saveAndRefresh": "Lưu & làm mới",
   "@saveAndRefresh": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "last15Days": "",
+  "last15Days": "Trong vòng 15 ngày",
   "@last15Days": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "allow": "",
+  "allow": "Cho phép",
   "@allow": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_confirmation_dialog_allow_subaddressing": "",
+  "message_confirmation_dialog_allow_subaddressing": "Cho phép thư được gửi trực tiếp đến thư mục \"{nameMailbox}\" qua:",
   "@message_confirmation_dialog_allow_subaddressing": {
     "type": "text",
     "placeholders_order": [
@@ -4468,19 +4468,19 @@
       "nameMailbox": {}
     }
   },
-  "emptyTrashFolderFailed": "",
+  "emptyTrashFolderFailed": "Xoá thư rác thất bại",
   "@emptyTrashFolderFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cannotOpenNewWindow": "",
+  "cannotOpenNewWindow": "Không thể mở cửa sổ mới",
   "@cannotOpenNewWindow": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unexpectedError": "",
+  "unexpectedError": "Lỗi không xác định: {errorMessage}",
   "@unexpectedError": {
     "type": "text",
     "placeholders_order": [
@@ -4490,19 +4490,19 @@
       "errorMessage": {}
     }
   },
-  "downloadAttachmentHasBeenCancelled": "",
+  "downloadAttachmentHasBeenCancelled": "Đã huỷ bỏ tải tệp đính kèm",
   "@downloadAttachmentHasBeenCancelled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "parseEmailByBlobIdFailed": "",
+  "parseEmailByBlobIdFailed": "Không thể xử lý email",
   "@parseEmailByBlobIdFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_confirmation_dialog_allow_subaddressing_mobile": "",
+  "message_confirmation_dialog_allow_subaddressing_mobile": "Cho phép thư được gửi trực tiếp tới thư mục \"{nameMailbox}\" qua địa chỉ <{address}>",
   "@message_confirmation_dialog_allow_subaddressing_mobile": {
     "type": "text",
     "placeholders_order": [
@@ -4514,25 +4514,25 @@
       "address": {}
     }
   },
-  "errorWhileFetchingSubaddress": "",
+  "errorWhileFetchingSubaddress": "Lỗi truy xuất email phụ",
   "@errorWhileFetchingSubaddress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "thisHtmlAttachmentCannotBePreviewed": "",
+  "thisHtmlAttachmentCannotBePreviewed": "Không thể xem trước tệp HTML này",
   "@thisHtmlAttachmentCannotBePreviewed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "getHelpOrReportABug": "",
+  "getHelpOrReportABug": "Nhận trợ giúp hoặc báo cáo",
   "@getHelpOrReportABug": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageSubaddressingFailure": "",
+  "toastMessageSubaddressingFailure": "Đã có lỗi",
   "@toastMessageSubaddressingFailure": {
     "type": "text",
     "placeholders_order": [],
