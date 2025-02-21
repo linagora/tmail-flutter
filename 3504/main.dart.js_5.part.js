@@ -9306,7 +9306,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _print_draft_dialog_view$_handleErrorStream$2(error, stackTrace) {
       A.log("_PrintDraftDialogViewState::_handleErrorStream: Exception = " + A.S(error), C.Level_1);
-      A.GetNavigation_back($.$get$Get(), false, new A.PrintEmailFailure(error));
+      A.GetNavigation_back($.$get$Get(), false, new A.PrintEmailFailure(error, null));
     },
     build$1(context) {
       var t3, t4, t5, t6, _null = null,
@@ -23014,5 +23014,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "OUOIZStyzMGf4Oie+AE07IGJrrk=");
+})($__dart_deferred_initializers__, "J3Mj/Ul5avLIcka1LX5Zu2GB1UI=");
 ;
