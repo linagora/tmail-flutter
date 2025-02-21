@@ -6,9 +6,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_controller
 
 extension GetOutboxMailboxIdForComposerExtension on ComposerController {
   MailboxId? getOutboxMailboxIdForComposer() {
-    final defaultOutboxMailbox = mailboxDashBoardController.mapDefaultMailboxIdByRole[
-      PresentationMailbox.roleOutbox
-    ];
+    final defaultOutboxMailboxId = mailboxDashBoardController.outboxMailbox?.mailboxId;
     final lowercaseOutboxRole = PresentationMailbox.roleOutbox.value.toLowerCase();
 
     return mailboxDashBoardController.mapMailboxById.entries
@@ -17,6 +15,6 @@ extension GetOutboxMailboxIdForComposerExtension on ComposerController {
         return mailbox.emailTeamMailBoxes == identitySelected.value?.email &&
           mailbox.name?.name.toLowerCase() == lowercaseOutboxRole;
       })
-      ?.key ?? defaultOutboxMailbox;
+      ?.key ?? defaultOutboxMailboxId;
   }
 }

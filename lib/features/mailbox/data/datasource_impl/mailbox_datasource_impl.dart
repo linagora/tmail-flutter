@@ -130,14 +130,14 @@ class MailboxDataSourceImpl extends MailboxDataSource {
   }
 
   @override
-  Future<List<Mailbox>> createDefaultMailbox(Session session, AccountId accountId, List<Role> listRole) {
+  Future<(List<Mailbox> mailboxes, Map<Id, SetError> mapErrors)> createDefaultMailbox(Session session, AccountId accountId, List<Role> listRole) {
     return Future.sync(() async {
       return await mailboxAPI.createDefaultMailbox(session, accountId, listRole);
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<void> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox) {
+  Future<(List<Mailbox> mailboxes, Map<Id, SetError> mapErrors)> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox) {
     return Future.sync(() async {
       return await mailboxAPI.setRoleDefaultMailbox(session, accountId, listMailbox);
     }).catchError(_exceptionThrower.throwException);
