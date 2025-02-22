@@ -4159,37 +4159,37 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youAreCurrentlyLoggedInWith": "",
+  "youAreCurrentlyLoggedInWith": "Sie sind derzeit angemeldet mit",
   "@youAreCurrentlyLoggedInWith": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "last15Days": "",
+  "last15Days": "Letzte 15 Tage",
   "@last15Days": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yesLogout": "",
+  "yesLogout": "Ja, abmelden",
   "@yesLogout": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageSubaddressingFailure": "",
+  "toastMessageSubaddressingFailure": "Es ist ein Fehler bei der Bearbeitung der Anfrage aufgetreten",
   "@toastMessageSubaddressingFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageConfirmationLogout": "",
+  "messageConfirmationLogout": "Möchten Sie sich abmelden bei",
   "@messageConfirmationLogout": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_confirmation_dialog_allow_subaddressing": "",
+  "message_confirmation_dialog_allow_subaddressing": "Sie sind dabei, jedem zu erlauben, E-Mails direkt an Ihren Ordner „{nameMailbox}“ zu senden:",
   "@message_confirmation_dialog_allow_subaddressing": {
     "type": "text",
     "placeholders_order": [
@@ -4199,49 +4199,49 @@
       "nameMailbox": {}
     }
   },
-  "errorWhileFetchingSubaddress": "",
+  "errorWhileFetchingSubaddress": "Fehler beim Abrufen der Subadresse",
   "@errorWhileFetchingSubaddress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "doYouWantToLogOutAndSwitchTo": "",
+  "doYouWantToLogOutAndSwitchTo": "Möchten Sie sich abmelden und wechseln zu",
   "@doYouWantToLogOutAndSwitchTo": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "allow": "",
+  "allow": "Zulassen",
   "@allow": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "allowSubaddressing": "",
+  "allowSubaddressing": "Subadressierung zulassen",
   "@allowSubaddressing": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "copySubaddress": "",
+  "copySubaddress": "Subadresse kopieren",
   "@copySubaddress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "parseEmailByBlobIdFailed": "",
+  "parseEmailByBlobIdFailed": "E-Mail kann nicht nach Blob-ID geparst werden",
   "@parseEmailByBlobIdFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageAllowSubaddressingSuccess": "",
+  "toastMessageAllowSubaddressingSuccess": "Sie haben die Subadressierung für diesen Ordner erfolgreich zugelassen",
   "@toastMessageAllowSubaddressingSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_confirmation_dialog_allow_subaddressing_mobile": "",
+  "message_confirmation_dialog_allow_subaddressing_mobile": "Sie sind dabei, jedem zu erlauben, E-Mails direkt an Ihren Ordner „{nameMailbox}“ zu senden, indem Sie die Adresse <{address}> verwenden",
   "@message_confirmation_dialog_allow_subaddressing_mobile": {
     "type": "text",
     "placeholders_order": [
@@ -4253,25 +4253,25 @@
       "address": {}
     }
   },
-  "contactSupport": "",
+  "contactSupport": "Kundendienst kontaktieren",
   "@contactSupport": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "editAsNewEmail": "",
+  "editAsNewEmail": "Als neue E-Mail bearbeiten",
   "@editAsNewEmail": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageDisallowSubaddressingSuccess": "",
+  "toastMessageDisallowSubaddressingSuccess": "Sie haben die Subadressierung für diesen Ordner erfolgreich verboten",
   "@toastMessageDisallowSubaddressingSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "getHelpOrReportABug": "",
+  "getHelpOrReportABug": "Hilfe erhalten oder Fehler melden",
   "@getHelpOrReportABug": {
     "type": "text",
     "placeholders_order": [],
@@ -4287,73 +4287,73 @@
       "errorMessage": {}
     }
   },
-  "badCredentials": "",
+  "badCredentials": "Falsche Anmeldedaten",
   "@badCredentials": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "replyToList": "",
+  "replyToList": "Auf Liste antworten",
   "@replyToList": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailSubaddressCopiedToClipboard": "",
+  "emailSubaddressCopiedToClipboard": "E-Mail-Subadresse in die Zwischenablage kopiert",
   "@emailSubaddressCopiedToClipboard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "disallowSubaddressing": "",
+  "disallowSubaddressing": "Subadressierung verbieten",
   "@disallowSubaddressing": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptyTrashFolderFailed": "",
+  "emptyTrashFolderFailed": "Leeren des Papierkorbs fehlgeschlagen",
   "@emptyTrashFolderFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "switchAccountConfirmation": "",
+  "switchAccountConfirmation": "Kontowechselbestätigung",
   "@switchAccountConfirmation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cannotOpenNewWindow": "",
+  "cannotOpenNewWindow": "Neues Fenster kann nicht geöffnet werden",
   "@cannotOpenNewWindow": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "downloadAttachmentInEMLPreviewWarningMessage": "",
+  "downloadAttachmentInEMLPreviewWarningMessage": "Anhang wird heruntergeladen. Sie können nur eine Datei auf einmal herunterladen.",
   "@downloadAttachmentInEMLPreviewWarningMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reply_to_email_address_prefix": "",
+  "reply_to_email_address_prefix": "Antworten auf",
   "@reply_to_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "logoutConfirmation": "",
+  "logoutConfirmation": "Abmeldebestätigung",
   "@logoutConfirmation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveAndRefresh": "",
+  "saveAndRefresh": "Speichern & auffrischen",
   "@saveAndRefresh": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unexpectedError": "",
+  "unexpectedError": "Unerwarteter Fehler: {errorMessage}",
   "@unexpectedError": {
     "type": "text",
     "placeholders_order": [
@@ -4363,19 +4363,19 @@
       "errorMessage": {}
     }
   },
-  "previewEmailFromEMLFileFailed": "",
+  "previewEmailFromEMLFileFailed": "Vorschau dieser eml-Datei nicht möglich",
   "@previewEmailFromEMLFileFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "thisHtmlAttachmentCannotBePreviewed": "",
+  "thisHtmlAttachmentCannotBePreviewed": "Dieser HTML-Anhang kann nicht in der Vorschau angezeigt werden",
   "@thisHtmlAttachmentCannotBePreviewed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "recoverDeletedMessagesBannerContent": "",
+  "recoverDeletedMessagesBannerContent": "Sie können Nachrichten wiederherstellen, die während des letzten {period} gelöscht wurden",
   "@recoverDeletedMessagesBannerContent": {
     "type": "text",
     "placeholders_order": [
@@ -4385,13 +4385,13 @@
       "period": {}
     }
   },
-  "downloadAttachmentHasBeenCancelled": "",
+  "downloadAttachmentHasBeenCancelled": "Das Herunterladen des Anhangs wurde abgebrochen",
   "@downloadAttachmentHasBeenCancelled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "",
+  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "Ihre Sitzung ist abgelaufen. Wir müssen Sie zur Anmeldeseite zurückbringen, um sie aufzufrischen. Vielleicht möchten Sie die E-Mail, die Sie gerade bearbeiten, vorher speichern.",
   "@messageWarningDialogWhenExpiredOIDCTokenAndReconnection": {
     "type": "text",
     "placeholders_order": [],
