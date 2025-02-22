@@ -4158,5 +4158,243 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "youAreCurrentlyLoggedInWith": "Sie sind derzeit angemeldet mit",
+  "@youAreCurrentlyLoggedInWith": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "last15Days": "Letzte 15 Tage",
+  "@last15Days": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yesLogout": "Ja, abmelden",
+  "@yesLogout": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageSubaddressingFailure": "Es ist ein Fehler bei der Bearbeitung der Anfrage aufgetreten",
+  "@toastMessageSubaddressingFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationLogout": "Möchten Sie sich abmelden bei",
+  "@messageConfirmationLogout": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_confirmation_dialog_allow_subaddressing": "Sie sind dabei, jedem zu erlauben, E-Mails direkt an Ihren Ordner „{nameMailbox}“ zu senden:",
+  "@message_confirmation_dialog_allow_subaddressing": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox"
+    ],
+    "placeholders": {
+      "nameMailbox": {}
+    }
+  },
+  "errorWhileFetchingSubaddress": "Fehler beim Abrufen der Subadresse",
+  "@errorWhileFetchingSubaddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "doYouWantToLogOutAndSwitchTo": "Möchten Sie sich abmelden und wechseln zu",
+  "@doYouWantToLogOutAndSwitchTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allow": "Zulassen",
+  "@allow": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allowSubaddressing": "Subadressierung zulassen",
+  "@allowSubaddressing": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copySubaddress": "Subadresse kopieren",
+  "@copySubaddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "parseEmailByBlobIdFailed": "E-Mail kann nicht nach Blob-ID geparst werden",
+  "@parseEmailByBlobIdFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageAllowSubaddressingSuccess": "Sie haben die Subadressierung für diesen Ordner erfolgreich zugelassen",
+  "@toastMessageAllowSubaddressingSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_confirmation_dialog_allow_subaddressing_mobile": "Sie sind dabei, jedem zu erlauben, E-Mails direkt an Ihren Ordner „{nameMailbox}“ zu senden, indem Sie die Adresse <{address}> verwenden",
+  "@message_confirmation_dialog_allow_subaddressing_mobile": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox",
+      "address"
+    ],
+    "placeholders": {
+      "nameMailbox": {},
+      "address": {}
+    }
+  },
+  "contactSupport": "Kundendienst kontaktieren",
+  "@contactSupport": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editAsNewEmail": "Als neue E-Mail bearbeiten",
+  "@editAsNewEmail": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageDisallowSubaddressingSuccess": "Sie haben die Subadressierung für diesen Ordner erfolgreich verboten",
+  "@toastMessageDisallowSubaddressingSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "getHelpOrReportABug": "Hilfe erhalten oder Fehler melden",
+  "@getHelpOrReportABug": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "handshakeException": "",
+  "@handshakeException": {
+    "type": "text",
+    "placeholders_order": [
+      "errorMessage"
+    ],
+    "placeholders": {
+      "errorMessage": {}
+    }
+  },
+  "badCredentials": "Falsche Anmeldedaten",
+  "@badCredentials": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "replyToList": "Auf Liste antworten",
+  "@replyToList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailSubaddressCopiedToClipboard": "E-Mail-Subadresse in die Zwischenablage kopiert",
+  "@emailSubaddressCopiedToClipboard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "disallowSubaddressing": "Subadressierung verbieten",
+  "@disallowSubaddressing": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptyTrashFolderFailed": "Leeren des Papierkorbs fehlgeschlagen",
+  "@emptyTrashFolderFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "switchAccountConfirmation": "Kontowechselbestätigung",
+  "@switchAccountConfirmation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "cannotOpenNewWindow": "Neues Fenster kann nicht geöffnet werden",
+  "@cannotOpenNewWindow": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "downloadAttachmentInEMLPreviewWarningMessage": "Anhang wird heruntergeladen. Sie können nur eine Datei auf einmal herunterladen.",
+  "@downloadAttachmentInEMLPreviewWarningMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reply_to_email_address_prefix": "Antworten auf",
+  "@reply_to_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "logoutConfirmation": "Abmeldebestätigung",
+  "@logoutConfirmation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveAndRefresh": "Speichern & auffrischen",
+  "@saveAndRefresh": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unexpectedError": "Unerwarteter Fehler: {errorMessage}",
+  "@unexpectedError": {
+    "type": "text",
+    "placeholders_order": [
+      "errorMessage"
+    ],
+    "placeholders": {
+      "errorMessage": {}
+    }
+  },
+  "previewEmailFromEMLFileFailed": "Vorschau dieser eml-Datei nicht möglich",
+  "@previewEmailFromEMLFileFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "thisHtmlAttachmentCannotBePreviewed": "Dieser HTML-Anhang kann nicht in der Vorschau angezeigt werden",
+  "@thisHtmlAttachmentCannotBePreviewed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "recoverDeletedMessagesBannerContent": "Sie können Nachrichten wiederherstellen, die während des letzten {period} gelöscht wurden",
+  "@recoverDeletedMessagesBannerContent": {
+    "type": "text",
+    "placeholders_order": [
+      "period"
+    ],
+    "placeholders": {
+      "period": {}
+    }
+  },
+  "downloadAttachmentHasBeenCancelled": "Das Herunterladen des Anhangs wurde abgebrochen",
+  "@downloadAttachmentHasBeenCancelled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "Ihre Sitzung ist abgelaufen. Wir müssen Sie zur Anmeldeseite zurückbringen, um sie aufzufrischen. Vielleicht möchten Sie die E-Mail, die Sie gerade bearbeiten, vorher speichern.",
+  "@messageWarningDialogWhenExpiredOIDCTokenAndReconnection": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
