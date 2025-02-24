@@ -3,6 +3,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/set_mailbox_method_exception.dart';
@@ -17,14 +18,14 @@ class CreateDefaultMailboxInteractor {
   Stream<dartz.Either<Failure, Success>> execute(
     Session session,
     AccountId accountId,
-    List<Role> listRole
+    Map<Id, Role> mapRoles,
   ) async* {
     try {
       yield dartz.Right<Failure, Success>(CreateDefaultMailboxLoading());
       final mailboxesRecord = await _mailboxRepository.createDefaultMailbox(
         session,
         accountId,
-        listRole
+        mapRoles,
       );
 
       final listMailboxCreated = mailboxesRecord.$1;
