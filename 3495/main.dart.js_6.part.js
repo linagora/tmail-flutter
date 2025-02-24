@@ -313,28 +313,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return A.Intl__message("Your vacation responder stopped on " + t1, _null, "messageDisableVacationResponderAutomatically", A._setArrayType([t1], type$.JSArray_Object), _null);
       } else
         return "";
-    },
-    canLaunchUrl(url) {
-      var $async$goto = 0,
-        $async$completer = A._makeAsyncAwaitCompleter(type$.bool),
-        $async$returnValue;
-      var $async$canLaunchUrl = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
-        if ($async$errorCode === 1)
-          return A._asyncRethrow($async$result, $async$completer);
-        while (true)
-          switch ($async$goto) {
-            case 0:
-              // Function start
-              $async$returnValue = $.$get$UrlLauncherPlatform__instance().canLaunch$1(url.toString$0(0));
-              // goto return
-              $async$goto = 1;
-              break;
-            case 1:
-              // return
-              return A._asyncReturn($async$returnValue, $async$completer);
-          }
-      });
-      return A._asyncStartSync($async$canLaunchUrl, $async$completer);
     }
   },
   D;
@@ -811,21 +789,24 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _followLink$body$DefaultLinkDelegate(context) {
       var $async$goto = 0,
         $async$completer = A._makeAsyncAwaitCompleter(type$.void),
-        $async$returnValue, $async$self = this, url;
+        $async$returnValue, $async$handler = 2, $async$currentError, $async$self = this, success, t1, exception, url0, url, $async$exception;
       var $async$_followLink$1 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
-        if ($async$errorCode === 1)
-          return A._asyncRethrow($async$result, $async$completer);
+        if ($async$errorCode === 1) {
+          $async$currentError = $async$result;
+          $async$goto = $async$handler;
+        }
         while (true)
           switch ($async$goto) {
             case 0:
               // Function start
-              url = $async$self.link.uri;
+              url0 = $async$self.link.uri;
+              url = url0;
               $async$goto = !url.get$hasScheme() ? 3 : 4;
               break;
             case 3:
               // then
               $async$goto = 5;
-              return A._asyncAwait(A.pushRouteNameToFramework(context, url.toString$0(0)), $async$_followLink$1);
+              return A._asyncAwait(A.pushRouteNameToFramework(context, url0.toString$0(0)), $async$_followLink$1);
             case 5:
               // returning from await.
               // goto return
@@ -833,29 +814,44 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               break;
             case 4:
               // join
-              $async$goto = 9;
-              return A._asyncAwait(C.canLaunchUrl(url), $async$_followLink$1);
-            case 9:
-              // returning from await.
-              $async$goto = $async$result ? 6 : 8;
-              break;
-            case 6:
-              // then
+              success = null;
+              $async$handler = 7;
+              t1 = $async$self.get$_useWebView() ? B.LaunchMode_2 : B.LaunchMode_3;
               $async$goto = 10;
-              return A._asyncAwait(A.launchUrl(url, $async$self.get$_useWebView() ? B.LaunchMode_1 : B.LaunchMode_2, null), $async$_followLink$1);
+              return A._asyncAwait(A.launchUrl(url, t1, null), $async$_followLink$1);
             case 10:
               // returning from await.
-              // goto join
-              $async$goto = 7;
+              success = $async$result;
+              $async$handler = 2;
+              // goto after finally
+              $async$goto = 9;
               break;
-            case 8:
-              // else
-              A.FlutterError_reportError(new A.FlutterErrorDetails("Could not launch link " + url.toString$0(0), A.StackTrace_current(), "url_launcher", A.ErrorDescription$("during launching a link"), null, null, false));
             case 7:
-              // join
+              // catch
+              $async$handler = 6;
+              $async$exception = $async$currentError;
+              if (A.unwrapException($async$exception) instanceof A.PlatformException)
+                success = false;
+              else
+                throw $async$exception;
+              // goto after finally
+              $async$goto = 9;
+              break;
+            case 6:
+              // uncaught
+              // goto rethrow
+              $async$goto = 2;
+              break;
+            case 9:
+              // after finally
+              if (!success)
+                A.FlutterError_reportError(new A.FlutterErrorDetails("Could not launch link " + A.S(url), A.StackTrace_current(), "url_launcher", A.ErrorDescription$("during launching a link"), null, null, false));
             case 1:
               // return
               return A._asyncReturn($async$returnValue, $async$completer);
+            case 2:
+              // rethrow
+              return A._asyncRethrow($async$currentError, $async$completer);
           }
       });
       return A._asyncStartSync($async$_followLink$1, $async$completer);
@@ -869,7 +865,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1811
+    $signature: 1835
   };
   C._AppGridDashboardIconState_build_closure.prototype = {
     call$3(context, isExpanded, child) {
@@ -885,7 +881,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.imagePaths;
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(new A.Aligned(_null, _null, t5, t4, B.Alignment_0_0, B.C_AxisFlag, B.C_AxisFlag, B.Offset_0_0, _null), A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 1812
+    $signature: 1836
   };
   C.AppGridDashboardItem_build_closure.prototype = {
     call$0() {
@@ -931,7 +927,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.push(t3.build$0());
       return A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 374
+    $signature: 380
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -1034,7 +1030,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       ValueNotifier_bool: findType("ValueNotifier<bool>"),
       WidgetStatePropertyAll_EdgeInsetsGeometry: findType("WidgetStatePropertyAll<EdgeInsetsGeometry>"),
       _LocalizationsScope: findType("_LocalizationsScope"),
-      bool: findType("bool"),
       void: findType("~")
     };
   })();
@@ -1086,5 +1081,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "mnKJvfdd3PLOrsjztuln1vf9Ga4=");
+})($__dart_deferred_initializers__, "wth7N50ZPZOUYNnKGpu5dQCglrA=");
 ;

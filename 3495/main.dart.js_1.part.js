@@ -292,10 +292,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data;
       t2 = A.ElevatedButton_styleFrom(_null, _null, C.Color_4278221567, _null, _null, _null, _null, _null, _null, C.Color_4294967295, _null, _null, _null, _null, new A.RoundedRectangleBorder(A.BorderRadius$circular(10), C.BorderSide_UKi0), _null, _null, _null, _null);
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-      return A.Container$(_null, A.ElevatedButton$(false, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_6nc2, _null, _null, _null, _null, _null), _null, _null, C.IconAlignment_0, D.ValueKey_loginSubmitForm, _null, _null, _null, new B.BaseLoginView_buildLoginButton_closure(_this, context), _null, t2), C.Clip_0, _null, _null, _null, _null, 48, _null, D.EdgeInsetsDirectional_24_0_24_16, _null, _null, _null, t1.size._dx);
+      return A.Container$(_null, A.ElevatedButton$(false, A.Text$(A.Intl__message("Sign In", _null, "signIn", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_6nc4, _null, _null, _null, _null, _null), _null, _null, C.IconAlignment_0, D.ValueKey_loginSubmitForm, _null, _null, _null, new B.BaseLoginView_buildLoginButton_closure(_this, context), _null, t2), C.Clip_0, _null, _null, _null, _null, 48, _null, D.EdgeInsetsDirectional_24_0_24_16, _null, _null, _null, t1.size._dx);
     },
     buildInputCredentialForm$1(context) {
-      return new B.AutofillGroup(new A.Padding(C.EdgeInsetsDirectional_24_0_24_0, A.FocusTraversalGroup$(A.Column$(A._setArrayType([this.buildUserNameInput$1(context), C.SizedBox_null_24_null_null, this.buildPasswordInput$1(context), D.SizedBox_null_40_null_null], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), new B.WidgetOrderTraversalPolicy(A.LinkedHashMap_LinkedHashMap$_empty(type$.FocusScopeNode, type$._DirectionalPolicyData), A.focus_traversal_FocusTraversalPolicy_defaultTraversalRequestFocusCallback$closure())), null), null);
+      return new B.AutofillGroup(new A.Padding(C.EdgeInsetsDirectional_24_0_24_0, A.FocusTraversalGroup$(A.Column$(A._setArrayType([this.buildUserNameInput$1(context), C.SizedBox_null_24_null_null, this.buildPasswordInput$1(context), D.SizedBox_null_40_null_null], type$.JSArray_Widget), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), new B.WidgetOrderTraversalPolicy(A.LinkedHashMap_LinkedHashMap$_empty(type$.FocusScopeNode, type$._DirectionalPolicyData), A.focus_traversal_FocusTraversalPolicy_defaultTraversalRequestFocusCallback$closure())), null), D.ValueKey_credential_input_form);
     },
     buildUserNameInput$1(context) {
       var t2, t3, t4, t5, t6, t7, _this = this, _null = null, _s5_ = "email",
@@ -484,7 +484,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     build$1(context) {
       var _null = null;
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-      return A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_4278221567, 10, _null, D.EdgeInsetsDirectional_24_0_24_16, 1 / 0, _null, 1 / 0, 0, _null, this.onRetry, C.EdgeInsets_0_12_0_12, A.Intl__message("Try again", _null, "tryAgain", _null, _null), C.TextAlign_2, D.TextStyle_6nc2, _null, A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx);
+      return A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_4278221567, 10, _null, D.EdgeInsetsDirectional_24_0_24_16, 1 / 0, _null, 1 / 0, 0, _null, this.onRetry, C.EdgeInsets_0_12_0_12, A.Intl__message("Try again", _null, "tryAgain", _null, _null), C.TextAlign_2, D.TextStyle_6nc4, _null, A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx);
     }
   };
   var typesOffset = hunkHelpers.updateTypes(["LoginMessageWidget()", "RecentItemTileWidget<RecentLoginUsername>(BuildContext,RecentLoginUsername)"]);
@@ -492,31 +492,31 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(configuration) {
       return configuration.toJson$0();
     },
-    $signature: 1813
+    $signature: 1837
   };
   B.AutofillScopeMixin_attach_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration();
     },
-    $signature: 1814
+    $signature: 1838
   };
   B.AutofillGroupState_autofillClients_closure.prototype = {
     call$1(client) {
       return client.get$textInputConfiguration().autofillConfiguration.enabled;
     },
-    $signature: 1815
+    $signature: 1839
   };
   B.AutofillGroupState_register_closure.prototype = {
     call$0() {
       return this.client;
     },
-    $signature: 1816
+    $signature: 1840
   };
   B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure.prototype = {
     call$1(entry) {
       return entry.node === this.node;
     },
-    $signature: 685
+    $signature: 517
   };
   B.BaseLoginView_buildLoginButton_closure.prototype = {
     call$0() {
@@ -542,7 +542,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(context) {
       return C.SizedBox_null_null_null_null;
     },
-    $signature: 516
+    $signature: 528
   };
   B.BaseLoginView_buildPasswordInput_closure.prototype = {
     call$1(_) {
@@ -648,7 +648,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return C.SizedBox_0_0_null_null;
       }
     },
-    $signature: 104
+    $signature: 94
   };
   B.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -699,7 +699,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return A.Intl__message(_s40_, _null, _s12_, _null, _null);
       }
     },
-    $signature: 1817
+    $signature: 1841
   };
   B.LoginMessageWidget_build_closure0.prototype = {
     call$1(success) {
@@ -720,19 +720,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return "";
     },
-    $signature: 1818
+    $signature: 1842
   };
   B.LoginMessageWidget_build_closure1.prototype = {
     call$1(failure) {
       return C.Color_4293281350;
     },
-    $signature: 1819
+    $signature: 1843
   };
   B.LoginMessageWidget_build_closure2.prototype = {
     call$1(success) {
       return C.Color_4278190080;
     },
-    $signature: 1820
+    $signature: 1844
   };
   B._LoginTextInputBuilderState_build_closure.prototype = {
     call$0() {
@@ -829,9 +829,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.TextStyle_69t29 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 24, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_69t30 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 32, C.FontWeight_8_900, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_69t28 = new A.TextStyle(true, C.Color_4278190080, null, null, null, null, 36, C.FontWeight_8_900, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.TextStyle_6nc2 = new A.TextStyle(true, C.Color_4294967295, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.TextStyle_6nc4 = new A.TextStyle(true, C.Color_4294967295, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_8eb5 = new A.TextStyle(true, C.Color_4293281350, null, null, null, null, 13, C.FontWeight_3_400, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_QBc = new A.TextStyle(true, C.Color_4285887861, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+    D.ValueKey_credential_input_form = new A.ValueKey("credential_input_form", type$.ValueKey_String);
     D.ValueKey_loginSubmitForm = new A.ValueKey("loginSubmitForm", type$.ValueKey_String);
     D.ValueKey_login_password_input = new A.ValueKey("login_password_input", type$.ValueKey_String);
     D.ValueKey_login_username_input = new A.ValueKey("login_username_input", type$.ValueKey_String);
@@ -841,5 +842,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "D0u9AosPxj8kbTCevMaTDOvY70Q=");
+})($__dart_deferred_initializers__, "20/yAm0RhNZDnBs4ndIUkhgcep8=");
 ;
