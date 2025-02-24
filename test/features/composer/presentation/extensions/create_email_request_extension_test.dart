@@ -15,11 +15,6 @@ void main() {
     emailActionType: EmailActionType.editDraft,
     subject: 'subject',
     emailContent: 'emailContent',
-    fromSender: {},
-    toRecipients: {},
-    ccRecipients: {},
-    bccRecipients: {},
-    replyToRecipients: {},
   );
 
   group('create email request extension test:', () {
