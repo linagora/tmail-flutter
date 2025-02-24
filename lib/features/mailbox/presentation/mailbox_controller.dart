@@ -10,6 +10,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -650,12 +651,17 @@ class MailboxController extends BaseMailboxController
     final listRoleMissing = MailboxConstants.defaultMailboxRoles
       .whereNot((role) => mapDefaultMailboxRole.containsKey(role) || findNodeByNameOnFirstLevel(role.value) != null)
       .toList();
-    log('MailboxController::_handleCreateDefaultFolderIfMissing():listRoleMissing: $listRoleMissing');
-    if (listRoleMissing.isNotEmpty && accountId != null && session != null) {
+
+    final mapRoles = {
+      for (var role in listRoleMissing)
+        Id(uuid.v1()) : role
+    };
+    log('MailboxController::_handleCreateDefaultFolderIfMissing():mapRoles: $mapRoles');
+    if (mapRoles.isNotEmpty && accountId != null && session != null) {
       consumeState(_createDefaultMailboxInteractor.execute(
         session!,
         accountId!,
-        listRoleMissing
+        mapRoles,
       ));
     }
   }

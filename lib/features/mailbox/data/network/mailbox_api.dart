@@ -456,13 +456,8 @@ class MailboxAPI with HandleSetErrorMixin {
   Future<(List<Mailbox> mailboxes, Map<Id, SetError> mapErrors)> createDefaultMailbox(
     Session session,
     AccountId accountId,
-    List<Role> listRole
+    Map<Id, Role> mapRoles,
   ) async {
-    final mapRoles = {
-      for (var role in listRole)
-        Id(_uuid.v1()) : role
-    };
-
     final mapCreate = {
       for (var id in mapRoles.keys)
         id : Mailbox(name: MailboxName(mapRoles[id]!.mailboxName), isSubscribed: IsSubscribed(true))
