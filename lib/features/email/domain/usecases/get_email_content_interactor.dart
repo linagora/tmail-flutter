@@ -48,7 +48,17 @@ class GetEmailContentInteractor {
       }
     } catch (e) {
       log('GetEmailContentInteractor::execute(): exception = $e');
-      yield Left<Failure, Success>(GetEmailContentFailure(e));
+      yield Left<Failure, Success>(GetEmailContentFailure(
+        e,
+        onRetry: execute(
+          session,
+          accountId,
+          emailId,
+          baseDownloadUrl,
+          transformConfiguration,
+          additionalProperties: additionalProperties
+        ),
+      ));
     }
   }
 
@@ -96,7 +106,17 @@ class GetEmailContentInteractor {
       }
     } catch (e) {
       logError('GetEmailContentInteractor::_getContentEmailFromServer():EXCEPTION: $e');
-      yield Left<Failure, Success>(GetEmailContentFailure(e));
+      yield Left<Failure, Success>(GetEmailContentFailure(
+        e,
+        onRetry: execute(
+          session,
+          accountId,
+          emailId,
+          baseDownloadUrl,
+          transformConfiguration,
+          additionalProperties: additionalProperties
+        ),
+      ));
     }
   }
 
