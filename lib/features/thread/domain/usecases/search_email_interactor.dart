@@ -55,7 +55,19 @@ class SearchEmailInteractor {
 
       yield Right(SearchEmailSuccess(presentationEmailList));
     } catch (e) {
-      yield Left(SearchEmailFailure(e));
+      yield Left(SearchEmailFailure(
+        e,
+        onRetry: execute(
+          session,
+          accountId,
+          filter: filter,
+          limit: limit,
+          position: position,
+          sort: sort,
+          properties: properties,
+          needRefreshSearchState: true,
+        ),
+      ));
     }
   }
 }
