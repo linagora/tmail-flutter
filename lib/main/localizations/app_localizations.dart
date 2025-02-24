@@ -4506,4 +4506,11 @@ class AppLocalizations {
       name: 'downloadAttachmentHasBeenCancelled',
     );
   }
+
+  String get retry {
+    return Intl.message(
+      'Retry',
+      name: 'retry',
+    );
+  }
 }

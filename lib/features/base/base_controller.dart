@@ -618,4 +618,28 @@ abstract class BaseController extends GetxController
     final minInputLength = session.getMinInputLengthAutocomplete(accountId);
     return minInputLength?.value.toInt() ?? AppConfig.defaultMinInputLengthAutocomplete;
   }
+
+  void showRetryToast(FeatureFailure failure) {
+    if (currentOverlayContext == null || currentContext == null) return;
+
+    final exception = failure.exception;
+    final errorMessage = exception is MethodLevelErrors && exception.message != null
+      ? AppLocalizations.of(currentContext!).unexpectedError('${exception.message!}')
+      : AppLocalizations.of(currentContext!).unknownError;
+
+    appToast.showToastMessage(
+      currentOverlayContext!,
+      errorMessage,
+      actionName: failure.onRetry == null
+        ? null
+        : AppLocalizations.of(currentContext!).retry,
+      onActionClick: failure.onRetry == null
+        ? null
+        : () => consumeState(failure.onRetry!),
+      backgroundColor: AppColor.toastErrorBackgroundColor,
+      textColor: Colors.white,
+      actionIcon: SvgPicture.asset(imagePaths.icUndo),
+      infinityToast: true,
+    );
+  }
 }
