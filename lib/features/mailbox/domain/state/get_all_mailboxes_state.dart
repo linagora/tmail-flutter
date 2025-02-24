@@ -19,5 +19,5 @@ class GetAllMailboxSuccess extends UIState {
 
 class GetAllMailboxFailure extends FeatureFailure {
 
-  GetAllMailboxFailure(dynamic exception) : super(exception: exception);
+  GetAllMailboxFailure(dynamic exception, {super.onRetry}) : super(exception: exception);
 }

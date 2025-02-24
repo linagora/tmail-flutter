@@ -67,12 +67,9 @@ void main() {
 
       final streamMailboxResponses = mailboxRepository.getAllMailbox(sessionFixture, accountIdFixture);
 
-      final listMailboxResponse = await streamMailboxResponses.toList();
-
-      expect(listMailboxResponse.length, 1);
-      expect(
-        listMailboxResponse,
-        containsAllInOrder([
+      await expectLater(
+        streamMailboxResponses,
+        emitsInOrder([
           CacheMailboxResponse(
             mailboxes: [
               MailboxFixtures.mailboxA,
@@ -81,7 +78,8 @@ void main() {
               MailboxFixtures.mailboxD,
             ],
             state: StateFixtures.currentMailboxState
-          )
+          ),
+          emitsError(isA<NotFoundMailboxException>())
         ])
       );
     });
