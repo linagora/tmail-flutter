@@ -87,17 +87,12 @@ class MailboxRepositoryImpl extends MailboxRepository {
     Session session,
     {Properties? properties}
   ) async {
-    try {
-      final jmapMailboxResponse = await mapDataSource[DataSourceType.network]!.getAllMailbox(
-        session,
-        accountId,
-        properties: properties);
-      log('MailboxRepositoryImpl::_getAllMailboxFromJMAP: MAILBOX_NETWORK = ${jmapMailboxResponse.mailboxes.length} | STATE_NETWORK = ${jmapMailboxResponse.state}');
-      return jmapMailboxResponse;
-    } catch (e) {
-      logError('MailboxRepositoryImpl::_getAllMailboxFromJMAP: Exception: $e');
-      return null;
-    }
+    final jmapMailboxResponse = await mapDataSource[DataSourceType.network]!.getAllMailbox(
+      session,
+      accountId,
+      properties: properties);
+    log('MailboxRepositoryImpl::_getAllMailboxFromJMAP: MAILBOX_NETWORK = ${jmapMailboxResponse.mailboxes.length} | STATE_NETWORK = ${jmapMailboxResponse.state}');
+    return jmapMailboxResponse;
   }
 
   Future<void> _syncNewInCache(

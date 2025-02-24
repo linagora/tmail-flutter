@@ -25,7 +25,10 @@ class GetAllMailboxInteractor {
           properties: properties)
         .map(_toGetMailboxState);
     } catch (e) {
-      yield Left<Failure, Success>(GetAllMailboxFailure(e));
+      yield Left<Failure, Success>(GetAllMailboxFailure(
+        e,
+        onRetry: execute(session, accountId, properties: properties),  
+      ));
     }
   }
 
