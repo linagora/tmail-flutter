@@ -4393,5 +4393,11 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "retry": "Retry",
+  "@retry": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

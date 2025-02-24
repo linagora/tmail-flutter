@@ -4618,4 +4618,11 @@ class AppLocalizations {
       name: 'viewEntireMessage',
     );
   }
+
+  String get retry {
+    return Intl.message(
+      'Retry',
+      name: 'retry',
+    );
+  }
 }
