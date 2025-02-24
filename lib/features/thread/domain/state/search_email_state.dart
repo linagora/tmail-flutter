@@ -17,5 +17,5 @@ class SearchEmailSuccess extends UIState {
 
 class SearchEmailFailure extends FeatureFailure {
 
-  SearchEmailFailure(dynamic exception) : super(exception: exception);
+  SearchEmailFailure(dynamic exception, {super.onRetry}) : super(exception: exception);
 }

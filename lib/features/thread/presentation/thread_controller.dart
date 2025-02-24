@@ -201,6 +201,7 @@ class ThreadController extends BaseController with EmailActionController {
       mailboxDashBoardController.updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
       canSearchMore = false;
       mailboxDashBoardController.emailsInCurrentMailbox.clear();
+      showRetryToast(failure);
     } else if (failure is SearchMoreEmailFailure) {
       loadingMoreStatus.value = LoadingMoreStatus.completed;
       canSearchMore = true;

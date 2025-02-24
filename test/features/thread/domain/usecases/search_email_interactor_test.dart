@@ -1,3 +1,5 @@
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
@@ -100,7 +102,7 @@ void main() {
 
     test(
       'should return Failure when threadRepository.searchEmails returns Failure',
-      () {
+      () async {
         // arrange
         final exception = Exception();
         when(
@@ -119,15 +121,19 @@ void main() {
           SessionFixtures.aliceSession,
           AccountFixtures.aliceAccountId,
           filter: EmailFilterCondition(text: 'test'),
-        );
+        ).asBroadcastStream();
         
         // assert
+        final firstState = await result.first;
+        final lastState = await result.last;
+        expect(firstState, Right(SearchingState()));
         expect(
-          result,
-          emitsInOrder([
-            Right(SearchingState()),
-            Left(SearchEmailFailure(exception)),
-          ]),
+          lastState.fold((failure) {
+            return failure is SearchEmailFailure
+              && failure.exception == exception
+              && failure.onRetry is Stream<Either<Failure, Success>>;
+          }, (success) => false),
+          true,
         );
       },
     );
