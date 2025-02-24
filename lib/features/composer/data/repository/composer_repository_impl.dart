@@ -46,7 +46,10 @@ class ComposerRepositoryImpl extends ComposerRepository {
   @override
   Future<Email> generateEmail(
     CreateEmailRequest createEmailRequest,
-    {bool withIdentityHeader = false}
+    {
+      bool withIdentityHeader = false,
+      bool isDraft = false,
+    }
   ) async {
     String emailContent = createEmailRequest.emailContent;
     Set<EmailBodyPart> emailAttachments = Set.from(createEmailRequest.createAttachments());
@@ -72,6 +75,7 @@ class ComposerRepositoryImpl extends ComposerRepository {
       userAgent: userAgent,
       partId: emailBodyPartId,
       withIdentityHeader: withIdentityHeader,
+      isDraft: isDraft,
     );
 
     return emailObject;

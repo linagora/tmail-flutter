@@ -19,11 +19,11 @@ class CreateEmailRequest with EquatableMixin {
   final String subject;
   final String emailContent;
   final bool hasRequestReadReceipt;
-  final Set<EmailAddress> fromSender;
-  final Set<EmailAddress> toRecipients;
-  final Set<EmailAddress> ccRecipients;
-  final Set<EmailAddress> bccRecipients;
-  final Set<EmailAddress> replyToRecipients;
+  final Set<EmailAddress>? fromSender;
+  final Set<EmailAddress>? toRecipients;
+  final Set<EmailAddress>? ccRecipients;
+  final Set<EmailAddress>? bccRecipients;
+  final Set<EmailAddress>? replyToRecipients;
   final Identity? identity;
   final List<Attachment>? attachments;
   final Map<String, Attachment>? inlineAttachments;
@@ -44,11 +44,11 @@ class CreateEmailRequest with EquatableMixin {
     required this.emailActionType,
     required this.subject,
     required this.emailContent,
-    required this.fromSender,
-    required this.toRecipients,
-    required this.ccRecipients,
-    required this.bccRecipients,
-    required this.replyToRecipients,
+    this.fromSender,
+    this.toRecipients,
+    this.ccRecipients,
+    this.bccRecipients,
+    this.replyToRecipients,
     this.hasRequestReadReceipt = true,
     this.identity,
     this.attachments,

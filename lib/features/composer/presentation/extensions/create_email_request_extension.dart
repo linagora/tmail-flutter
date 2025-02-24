@@ -22,7 +22,7 @@ import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
 extension CreateEmailRequestExtension on CreateEmailRequest {
 
-  Set<EmailAddress> createSenders() {
+  Set<EmailAddress>? createSenders() {
     if (identity?.email?.isNotEmpty == true) {
       return { identity!.toEmailAddress() };
     } else {
@@ -31,22 +31,25 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
   }
 
   String createMdnEmailAddress() {
-    if (emailActionType == EmailActionType.editDraft && fromSender.isNotEmpty) {
-      return fromSender.first.emailAddress;
+    if (emailActionType == EmailActionType.editDraft && fromSender?.isNotEmpty == true) {
+      return fromSender!.first.emailAddress;
     } else {
       return session.getOwnEmailAddress();
     }
   }
 
-  Set<EmailAddress> createReplyToRecipients() {
-    if (replyToRecipients.isNotEmpty) {
-      return replyToRecipients.toSet();
-    } else if (identity?.replyTo?.isNotEmpty == true) {
-      return identity!.replyTo!.toSet();
-    } else {
-      return { EmailAddress(null, session.getOwnEmailAddress()) };
+  Set<EmailAddress>? createReplyToRecipients({bool isDraft = false}) {
+    if (replyToRecipients?.isNotEmpty == true) {
+      return replyToRecipients;
     }
+
+    if (isDraft) return null;
+
+    return identity?.replyTo?.isNotEmpty == true
+      ? identity!.replyTo!
+      : {EmailAddress(null, session.getOwnEmailAddress())};
   }
+
 
   Set<EmailBodyPart> createAttachments() => attachments?.toEmailBodyPart() ?? {};
 
@@ -110,6 +113,7 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
     required String userAgent,
     required PartId partId,
     bool withIdentityHeader = false,
+    bool isDraft = false,
   }) {
     return Email(
       mailboxIds: createMailboxIds(),
@@ -117,7 +121,7 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
       to: toRecipients,
       cc: ccRecipients,
       bcc: bccRecipients,
-      replyTo: createReplyToRecipients(),
+      replyTo: createReplyToRecipients(isDraft: isDraft),
       inReplyTo: createInReplyTo(),
       references: createReferences(),
       keywords: createKeywords(),
