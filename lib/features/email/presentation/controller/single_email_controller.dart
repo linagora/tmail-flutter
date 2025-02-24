@@ -35,6 +35,7 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mdn/disposition.dart';
 import 'package:jmap_dart_client/jmap/mdn/mdn.dart';
 import 'package:model/email/eml_attachment.dart';
+import 'package:model/error_type_handler/unknown_uri_exception.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -332,7 +333,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else if (failure is ParseCalendarEventFailure) {
       _handleParseCalendarEventFailure(failure);
     } else if (failure is GetEmailContentFailure) {
-      emailLoadedViewState.value = Left<Failure, Success>(failure);
+      _handleGetEmailContentFailure(failure);
     } else if (failure is PrintEmailFailure) {
       _showMessageWhenEmailPrintingFailed(failure);
     } else if (failure is CalendarEventReplyFailure) {
@@ -346,6 +347,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else if (failure is PreviewPDFFileFailure) {
       _handlePreviewPDFFileFailure(failure);
     }
+  }
+
+  void _handleGetEmailContentFailure(GetEmailContentFailure failure) {
+    emailLoadedViewState.value = Left<Failure, Success>(failure);
+    showRetryToast(failure);
   }
 
   void _registerObxStreamListener() {
@@ -609,7 +615,20 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           ));
         } catch (e) {
           logError('SingleEmailController::_getEmailContentAction(): $e');
-          consumeState(Stream.value(Left(GetEmailContentFailure(e))));
+          consumeState(Stream.value(Left(GetEmailContentFailure(
+            e,
+            onRetry: e is UnknownUriException
+              ? null
+              : _getEmailContentInteractor.execute(
+                  session!,
+                  accountId!,
+                  emailId,
+                  session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl),
+                  PlatformInfo.isWeb
+                    ? TransformConfiguration.forPreviewEmailOnWeb()
+                    : TransformConfiguration.forPreviewEmail(),
+                ),
+          ))));
         }
       }
     }

@@ -1,9 +1,10 @@
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:core/core.dart';
 import 'package:dartz/dartz.dart' hide State;
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart' hide State;
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -24,6 +25,7 @@ import 'package:tmail_ui_user/features/email/data/datasource_impl/html_datasourc
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/repository/calendar_event_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_all_attachments_for_web_interactor.dart';
@@ -57,6 +59,9 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oi
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations_delegate.dart';
+import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
 import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
@@ -449,4 +454,75 @@ void main() {
       );
     });
   });
+
+  Widget makeTestableWidget({required Widget child}) {
+    return GetMaterialApp(
+      localizationsDelegates: const [
+        AppLocalizationsDelegate(),
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: LocalizationService.supportedLocales,
+      home: Scaffold(body: child),
+    );
+  }
+
+  testWidgets(
+    'should show retry toast '
+    'when handleFailureViewState is called with GetEmailContentFailure',
+    (tester) async {
+      // arrange
+      when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(PresentationEmail()));
+      when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(EmailUIAction()));
+      when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
+      when(appToast.showToastMessageWithMultipleActions(
+        any, 
+        any,
+        actions: anyNamed('actions'),
+        textColor: anyNamed('textColor'),
+        backgroundColor: anyNamed('backgroundColor'),
+        infinityToast: anyNamed('infinityToast'),
+      )).thenAnswer((realInvocation) {
+        AppToast().showToastMessageWithMultipleActions(
+          realInvocation.positionalArguments[0], 
+          realInvocation.positionalArguments[1],
+          actions: realInvocation.namedArguments[const Symbol('actions')],
+          textColor: realInvocation.namedArguments[const Symbol('textColor')],
+          backgroundColor: realInvocation.namedArguments[const Symbol('backgroundColor')],
+          infinityToast: realInvocation.namedArguments[const Symbol('infinityToast')],
+        );
+      });
+      when(imagePaths.icUndo).thenReturn(ImagePaths().icUndo);
+      when(imagePaths.icClose).thenReturn(ImagePaths().icClose);
+      Get.put(singleEmailController);
+      final widget = makeTestableWidget(child: const _TestView());
+      await tester.pumpWidget(widget);
+      await tester.pump();
+
+      // act
+      singleEmailController.handleFailureViewState(GetEmailContentFailure(
+        null,
+        onRetry: const Stream.empty(),
+      ));
+      await tester.pump();
+
+      // assert
+      expect(find.text(AppLocalizations().unknownError), findsOneWidget);
+      expect(find.text(AppLocalizations().retry), findsOneWidget);
+      expect(find.text(AppLocalizations().close), findsOneWidget);
+
+      // cleanup
+      Get.delete<SingleEmailController>();
+    },
+  );
+}
+
+class _TestView extends GetWidget<SingleEmailController> {
+  const _TestView();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SizedBox();
+  }
 }

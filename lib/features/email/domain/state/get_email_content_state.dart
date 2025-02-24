@@ -51,5 +51,6 @@ class GetEmailContentFromCacheSuccess extends UIState {
 
 class GetEmailContentFailure extends FeatureFailure {
 
-  GetEmailContentFailure(dynamic exception) : super(exception: exception);
+  GetEmailContentFailure(dynamic exception, {super.onRetry})
+    : super(exception: exception);
 }
