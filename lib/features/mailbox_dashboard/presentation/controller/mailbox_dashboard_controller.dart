@@ -2674,7 +2674,7 @@ class MailboxDashBoardController extends ReloadableController
       (failure) => false,
       (success) => success is RefreshingAllEmail);
     log('MailboxDashBoardController::isRefreshingAllMailboxAndEmail:isRefreshingMailbox = $isRefreshingMailbox | isRefreshingEmail = $isRefreshingEmail');
-    return isRefreshingMailbox && isRefreshingEmail;
+    return isRefreshingMailbox || isRefreshingEmail;
   }
 
   void selectAllEmailAction() {
