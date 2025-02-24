@@ -143,7 +143,7 @@ dependencies:
 
   external_path: 1.0.3
 
-  path_provider: 2.1.1
+  path_provider: 2.1.5
 
   device_info_plus: 9.0.1
 
@@ -185,7 +185,7 @@ dependencies:
 
   json_annotation: 4.8.0
 
-  url_launcher: 6.1.10
+  url_launcher: ^6.2.4
 
   firebase_core: 2.7.0
 
