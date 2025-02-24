@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
+import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
@@ -16,6 +17,9 @@ import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/changes/changes_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/changes/changes_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_method.dart';
@@ -24,6 +28,9 @@ import 'package:tmail_ui_user/features/thread/data/extensions/list_email_extensi
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet_get_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet_get_response.dart';
+import 'package:jmap_dart_client/jmap/mail/email/set/set_email_method.dart';
+import 'package:jmap_dart_client/jmap/mail/email/set/set_email_response.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_emails_response.dart';
@@ -305,5 +312,54 @@ class ThreadAPI {
       GetEmailResponse.deserialize);
 
     return resultList!.list.first;
+  }
+
+  Future<dartz.Tuple2<List<EmailId>, List<EmailId>>> deleteAllPermanentlyEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId
+  ) async {
+    final processingInvocation = ProcessingInvocation();
+
+    final jmapRequestBuilder = JmapRequestBuilder(httpClient, processingInvocation);
+
+    final queryEmailMethod = QueryEmailMethod(accountId)
+      ..addLimit(UnsignedInt(30))
+      ..addFilters(EmailFilterCondition(inMailbox: mailboxId))
+      ..addSorts(<Comparator>{}..add(
+          EmailComparator(EmailComparatorProperty.receivedAt)..setIsAscending(false)
+      ));
+
+    final queryEmailInvocation = jmapRequestBuilder.invocation(queryEmailMethod);
+
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addReferenceDestroy(
+        processingInvocation.createResultReference(
+          queryEmailInvocation.methodCallId,
+          ReferencePath.idsPath
+        )
+      );
+
+    final setEmailInvocation = jmapRequestBuilder.invocation(setEmailMethod);
+
+    final capabilities = setEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final result = await (jmapRequestBuilder..usings(capabilities))
+      .build()
+      .execute();
+
+    final queryEmailResponse = result.parse<QueryEmailResponse>(
+      queryEmailInvocation.methodCallId,
+      QueryEmailResponse.deserialize);
+
+    final setEmailResponse = result.parse<SetEmailResponse>(
+      setEmailInvocation.methodCallId,
+      SetEmailResponse.deserialize);
+
+    final listMatchedEmailId = queryEmailResponse?.ids.map((id) => EmailId(id)).toList() ?? [];
+    final listDeletedEmailId = setEmailResponse?.destroyed?.map((id) => EmailId(id)).toList() ?? [];
+    log('ThreadAPI::deleteAllPermanentlyEmails:listMatchedEmailId = $listMatchedEmailId | listDeletedEmailId = $listDeletedEmailId');
+    return dartz.Tuple2(listMatchedEmailId, listDeletedEmailId);
   }
 }

@@ -80,4 +80,40 @@ abstract class ThreadRepository {
     int totalEmails,
     StreamController<dartz.Either<Failure, Success>> onProgressController
   );
+
+  Future<List<EmailId>> markAllAsUnreadForSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmailRead,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+  );
+
+  Future<List<EmailId>> moveAllSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId currentMailboxId,
+    MailboxId destinationMailboxId,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+    {
+      bool isDestinationSpamMailbox = false
+    }
+  );
+
+  Future<List<EmailId>> deleteAllPermanentlyEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+  );
+
+  Future<List<EmailId>> markAllAsStarredForSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController
+  );
 }

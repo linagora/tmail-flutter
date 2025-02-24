@@ -319,8 +319,8 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
   @override
   Future<List<EmailId>> emptyTrashFolder(
-    Session session, 
-    AccountId accountId, 
+    Session session,
+    AccountId accountId,
     MailboxId trashMailboxId,
     int totalEmails,
     StreamController<dartz.Either<Failure, Success>> onProgressController
@@ -411,8 +411,8 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
   @override
   Future<List<EmailId>> emptySpamFolder(
-    Session session, 
-    AccountId accountId, 
+    Session session,
+    AccountId accountId,
     MailboxId spamMailboxId,
     int totalEmails,
     StreamController<dartz.Either<Failure, Success>> onProgressController
@@ -431,5 +431,86 @@ class ThreadRepositoryImpl extends ThreadRepository {
       newDestroyed: listEmailIdDeleted);
 
     return listEmailIdDeleted;
+  }
+
+  @override
+  Future<List<EmailId>> markAllAsUnreadForSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmailRead,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+  ) {
+    return mapDataSource[DataSourceType.network]!.markAllAsUnreadForSelectionAllEmails(
+      session,
+      accountId,
+      mailboxId,
+      totalEmailRead,
+      onProgressController,
+    );
+  }
+
+  @override
+  Future<List<EmailId>> moveAllSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId currentMailboxId,
+    MailboxId destinationMailboxId,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+    {
+      bool isDestinationSpamMailbox = false
+    }
+  ) {
+    return mapDataSource[DataSourceType.network]!.moveAllSelectionAllEmails(
+      session,
+      accountId,
+      currentMailboxId,
+      destinationMailboxId,
+      totalEmails,
+      onProgressController,
+      isDestinationSpamMailbox: isDestinationSpamMailbox
+    );
+  }
+
+  @override
+  Future<List<EmailId>> deleteAllPermanentlyEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController,
+  ) async {
+    final listEmailIdDeleted = await mapDataSource[DataSourceType.network]!.deleteAllPermanentlyEmails(
+      session,
+      accountId,
+      mailboxId,
+      totalEmails,
+      onProgressController,
+    );
+
+    await _updateEmailCache(
+      accountId,
+      session.username,
+      newDestroyed: listEmailIdDeleted);
+
+    return listEmailIdDeleted;
+  }
+
+  @override
+  Future<List<EmailId>> markAllAsStarredForSelectionAllEmails(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+    int totalEmails,
+    StreamController<dartz.Either<Failure, Success>> onProgressController
+  ) {
+    return mapDataSource[DataSourceType.network]!.markAllAsStarredForSelectionAllEmails(
+      session,
+      accountId,
+      mailboxId,
+      totalEmails,
+      onProgressController
+    );
   }
 }
