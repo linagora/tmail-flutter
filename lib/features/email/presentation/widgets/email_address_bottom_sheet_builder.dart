@@ -99,16 +99,15 @@ class EmailAddressBottomSheetBuilder {
                             left: 16,
                             right: 16,
                             top: 16),
-                        child: Text(
+                        child: SelectableText(
                           _emailAddress.displayName,
                           textAlign: TextAlign.center,
-                          overflow: CommonTextStyle.defaultTextOverFlow,
-                          softWrap: CommonTextStyle.defaultSoftWrap,
                           maxLines: 2,
                           style: const TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w600,
-                              color: AppColor.colorNameEmail),
+                            overflow: CommonTextStyle.defaultTextOverFlow,
+                            fontSize: 20,
+                            fontWeight: FontWeight.w600,
+                            color: AppColor.colorNameEmail),
                         )),
                   Material(
                     color: Colors.transparent,
