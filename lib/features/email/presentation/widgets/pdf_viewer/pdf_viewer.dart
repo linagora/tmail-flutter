@@ -4,7 +4,6 @@ import 'dart:math';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
@@ -14,7 +13,7 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:model/download/download_task_id.dart';
 import 'package:model/email/attachment.dart';
-import 'package:pdf_render/pdf_render_widgets.dart';
+import 'package:pdfrx/pdfrx.dart';
 import 'package:percent_indicator/circular_percent_indicator.dart';
 import 'package:tmail_ui_user/features/base/widget/circle_loading_widget.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/download_attachment_exceptions.dart';
@@ -61,6 +60,10 @@ class _PDFViewerState extends State<PDFViewer> {
 
   final DeviceInfoPlugin _deviceInfoPlugin = Get.find<DeviceInfoPlugin>();
   final FocusNode _keyboardFocusNode = FocusNode();
+  final _showPagination = ValueNotifier<bool>(false);
+  static const double _scrollbarWidth = 10;
+  static const double _minScale = 1;
+  static const double _maxScale = 4;
 
   @override
   void initState() {
@@ -110,7 +113,6 @@ class _PDFViewerState extends State<PDFViewer> {
 
   @override
   void dispose() {
-    _pdfViewerController.dispose();
     _pdfViewStateNotifier.dispose();
     _downloadAttachmentStreamSubscription.cancel();
     _downloadAttachmentStreamController.close();
@@ -137,36 +139,76 @@ class _PDFViewerState extends State<PDFViewer> {
                   valueListenable: _pdfViewStateNotifier,
                   builder: (context, viewState, widget) {
                     if (viewState is DownloadAttachmentForWebSuccess) {
-                      return PdfViewer.openData(
+                      return PdfViewer.data(
                         viewState.bytes,
-                        viewerController: _pdfViewerController,
-                        onError: (error) {
-                          logError('_PDFViewerState::build:openData:onError:: $error');
-                          _pdfViewStateNotifier.value = DownloadAttachmentForWebFailure(exception: error);
-                        },
+                        sourceName: this.widget.attachment.generateFileName(),
+                        controller: _pdfViewerController,
                         params: PdfViewerParams(
                           panAxis: PanAxis.vertical,
                           scrollByMouseWheel: 0.5,
-                          layoutPages: (viewSize, pages) {
-                            List<Rect> rect = [];
-                            final viewWidth = viewSize.width;
-                            final viewHeight = viewSize.height;
-                            final maxHeight = pages.fold<double>(0.0, (maxHeight, page) => max(maxHeight, page.height));
-                            final maxWidth = pages.fold<double>(0.0, (maxWidth, page) => max(maxWidth, page.width));
-                            final ratio = viewHeight / max(maxHeight, maxWidth);
-                            log('_PDFViewerState::build: viewWidth = $viewWidth | viewHeight = $viewHeight | maxHeight = $maxHeight | ratio = $ratio');
-                            var top = 0.0;
-                            double padding = 16.0;
-                            for (var page in pages) {
-                              final width = page.width * ratio;
-                              final height = page.height * ratio;
-                              final left = viewWidth > viewHeight ? (viewWidth / 2) - (width / 2) : 0.0;
-                              rect.add(Rect.fromLTWH(left, top, width, height));
-                              top += height + padding;
-                            }
-                            return rect;
+                          backgroundColor: Colors.transparent,
+                          onViewerReady: (_, __) {
+                            _pdfViewerController.setZoom(
+                              _pdfViewerController.centerPosition,
+                              1);
+                            _showPagination.value = true;
                           },
-                          onClickOutSidePageViewer: _closeView
+                          calculateCurrentPageNumber: _calculateCurrentPageNumber,
+                          minScale: _minScale,
+                          maxScale: _maxScale,
+                          boundaryMargin: const EdgeInsets.all(double.infinity),
+                          onInteractionEnd: (details) {
+                            if (_pdfViewerController.currentZoom < _minScale) {
+                              _pdfViewerController.setZoom(
+                                _pdfViewerController.centerPosition,
+                                _minScale,
+                              );
+                            } else if (_pdfViewerController.currentZoom > _maxScale) {
+                              _pdfViewerController.setZoom(
+                                _pdfViewerController.centerPosition,
+                                _maxScale,
+                              );
+                            }
+                          },
+                          layoutPages: (pages, params) => _layoutPdf(
+                            context,
+                            pages,
+                            params,
+                          ),
+                          viewerOverlayBuilder: (_, __, ___) => [
+                            Positioned(
+                              left: 0,
+                              height: _pdfViewerController.documentSize.height,
+                              width: _tapOutSideZoneWidth,
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.translucent,
+                                onTap: _closeView,
+                                child: const IgnorePointer(
+                                  child: SizedBox.expand(),
+                                ),
+                              ),
+                            ),
+                            Positioned(
+                              right: _scrollbarWidth,
+                              height: _pdfViewerController.documentSize.height,
+                              width: _tapOutSideZoneWidth - _scrollbarWidth,
+                              child: GestureDetector(
+                                behavior: HitTestBehavior.translucent,
+                                onTap: _closeView,
+                                child: const IgnorePointer(
+                                  child: SizedBox.expand(),
+                                ),
+                              ),
+                            ),
+                            PdfViewerScrollThumb(
+                              controller: _pdfViewerController,
+                              orientation: ScrollbarOrientation.right,
+                              thumbSize: const Size(_scrollbarWidth, 100),
+                              thumbBuilder: (_, __, ___, ____) => const ColoredBox(
+                                color: Colors.white,
+                              ),
+                            ),
+                          ],
                         ),
                       );
                     } else if (viewState is DownloadingAttachmentForWeb) {
@@ -237,42 +279,22 @@ class _PDFViewerState extends State<PDFViewer> {
                 },
                 child: TopBarAttachmentViewer(
                   title: widget.attachment.generateFileName(),
-                  closeAction: () {
-                    _downloadAttachmentCancelToken?.cancel();
-                    Navigator.maybeOf(context)?.pop();
-                  },
+                  closeAction: _closeView,
                 ),
               ),
             ),
             ValueListenableBuilder(
-              valueListenable: _pdfViewerController,
-              builder: (_, __, ___) {
-                if (_pdfViewerController.isReady) {
-                  return Align(
-                    alignment: AlignmentDirectional.bottomCenter,
-                    child: PaginationPDFViewer(
-                      pdfViewerController: _pdfViewerController,
-                    ),
-                  );
-                } else {
+              valueListenable: _showPagination,
+              builder: (context, showPagination, child) {
+                if (!showPagination) {
                   return const SizedBox.shrink();
                 }
-              }
-            ),
-            ValueListenableBuilder(
-              valueListenable: _pdfViewerController,
-              builder: (context, m, child) {
-                if (!_pdfViewerController.isReady) return Container();
-                final v = _pdfViewerController.viewRect;
-                final all = _pdfViewerController.fullSize;
-                final top = v.top / all.height * v.height;
-                final height = v.height / all.height * v.height;
-                return Positioned(
-                  right: 0,
-                  top: top,
-                  height: height,
-                  width: 8,
-                  child: Container(color: AppColor.colorTextBody),
+
+                return Align(
+                  alignment: AlignmentDirectional.bottomCenter,
+                  child: PaginationPDFViewer(
+                    pdfViewerController: _pdfViewerController,
+                  ),
                 );
               },
             ),
@@ -280,6 +302,38 @@ class _PDFViewerState extends State<PDFViewer> {
         ),
       ),
     );
+  }
+
+  int? _calculateCurrentPageNumber(
+    Rect visibleRect,
+    List<Rect> pageRects,
+    PdfViewerController controller,
+  ) {
+    if (pageRects.isEmpty) {
+      return null;
+    }
+
+    if (pageRects.first.top == visibleRect.top) {
+      return 1; // view at top
+    }
+
+    if (pageRects.last.bottom == visibleRect.bottom) {
+      return pageRects.length; // view at bottom
+    }
+
+    final intersectRatios = <double>[];
+    for (var i = 0; i < pageRects.length; i++) {
+      final intersect = pageRects[i].intersect(visibleRect);
+      if (intersect.isEmpty) {
+        intersectRatios.add(0);
+        continue;
+      }
+
+      final intersectRatio = (intersect.width * intersect.height) / (pageRects[i].width * pageRects[i].height);
+      intersectRatios.add(intersectRatio);
+    }
+    final maxIntersectRatio = intersectRatios.reduce(max);
+    return intersectRatios.indexOf(maxIntersectRatio) + 1;
   }
 
   void _closeView() {
@@ -291,5 +345,48 @@ class _PDFViewerState extends State<PDFViewer> {
     if (event is KeyDownEvent && event.logicalKey == LogicalKeyboardKey.escape) {
       _closeView();
     }
+  }
+
+  double get _tapOutSideZoneWidth {
+    final documentWidth = _pdfViewerController.documentSize.width
+      - _pdfViewerController.params.margin * 2;
+    final documentRenderWidth = documentWidth * _pdfViewerController.currentZoom;
+    final viewSizeWidth = _pdfViewerController.viewSize.width;
+
+    return viewSizeWidth > documentRenderWidth
+      ? (viewSizeWidth - documentRenderWidth) / 2
+      : 0;
+  }
+
+  PdfPageLayout _layoutPdf(
+    BuildContext context,
+    List<PdfPage> pages,
+    PdfViewerParams params,
+  ) {
+    final viewWidth = MediaQuery.sizeOf(context).width;
+    final viewHeight = MediaQuery.sizeOf(context).height;
+    final width = pages.fold(
+      0.0,
+      (prev, page) => max(prev, page.width)) + params.margin * 2;
+    final pageLayouts = <Rect>[];
+    double top = params.margin;
+    for (final page in pages) {
+      pageLayouts.add(
+        Rect.fromLTWH(
+          viewWidth > viewHeight
+            ? (width - page.width) / 2
+            : 0,
+          top,
+          page.width,
+          page.height,
+        ),
+      );
+      top += page.height + params.margin;
+    }
+
+    return PdfPageLayout(
+      pageLayouts: pageLayouts,
+      documentSize: Size(width, top),
+    );
   }
 }
