@@ -28,6 +28,7 @@ class BottomBarComposerWidget extends StatelessWidget {
   final VoidCallback toggleRequestReadReceiptAction;
   final VoidCallback printDraftAction;
   final VoidCallback toggleMarkAsImportantAction;
+  final VoidCallback saveAsTemplateAction;
 
   const BottomBarComposerWidget({
     super.key,
@@ -48,6 +49,7 @@ class BottomBarComposerWidget extends StatelessWidget {
     required this.toggleRequestReadReceiptAction,
     required this.printDraftAction,
     required this.toggleMarkAsImportantAction,
+    required this.saveAsTemplateAction,
   });
 
   @override
@@ -158,6 +160,17 @@ class BottomBarComposerWidget extends StatelessWidget {
                     printDraftAction();
                   },
                 ),
+              PopupItemWidget(
+                iconAction: imagePaths.icSaveToDraft,
+                nameAction: AppLocalizations.of(context).saveAsTemplate,
+                colorIcon: BottomBarComposerWidgetStyle.iconColor,
+                styleName: BottomBarComposerWidgetStyle.popupItemTextStyle,
+                padding: BottomBarComposerWidgetStyle.popupItemPadding,
+                onCallbackAction: () {
+                  menuMoreOptionController.hideMenu();
+                  saveAsTemplateAction();
+                },
+              ),
             ],
             arrangeAsList: true,
             position: null,
