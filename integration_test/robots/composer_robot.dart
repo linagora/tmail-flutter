@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/app_
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_suggestion_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
 import '../extensions/patrol_finder_extension.dart';
@@ -17,9 +18,12 @@ import '../extensions/patrol_finder_extension.dart';
 class ComposerRobot extends CoreRobot {
   ComposerRobot(super.$);
 
-  Future<void> addRecipient(String email) async {
+  Future<void> addRecipientIntoField({
+    required PrefixEmailAddress prefixEmailAddress,
+    required String email,
+  }) async {
     final finder = $(RecipientComposerWidget)
-      .which<RecipientComposerWidget>((widget) => widget.prefix == PrefixEmailAddress.to);
+      .which<RecipientComposerWidget>((widget) => widget.prefix == prefixEmailAddress);
     final isTextFieldFocused = finder
       .which<RecipientComposerWidget>((view) => view.focusNode?.hasFocus ?? false)
       .exists;
@@ -58,10 +62,10 @@ class ComposerRobot extends CoreRobot {
     await composerController!.htmlEditorApi!.insertHtml('$content <br><br>'); 
   }
 
-  Future<void> sendEmail() async {
+  Future<void> sendEmail(ImagePaths imagePaths) async {
     await $(AppBarComposerWidget)
       .$(TMailButtonWidget)
-      .which<TMailButtonWidget>((widget) => widget.icon == ImagePaths().icSendMobile)
+      .which<TMailButtonWidget>((widget) => widget.icon == imagePaths.icSendMobile)
       .tap();
   }
 
@@ -69,5 +73,16 @@ class ComposerRobot extends CoreRobot {
     if (await $.native.isPermissionDialogVisible(timeout: const Duration(seconds: 5))) {
       await $.native.grantPermissionWhenInUse();
     }
+  }
+
+  Future<void> tapCloseComposer(ImagePaths imagePaths) async {
+    await $(AppBarComposerWidget)
+      .$(TMailButtonWidget)
+      .which<TMailButtonWidget>((widget) => widget.icon == imagePaths.icCancel)
+      .tap();
+  }
+
+  Future<void> tapSaveButtonOnSaveDraftConfirmDialog(AppLocalizations appLocalizations) async {
+    await $(find.text(appLocalizations.save)).tap();
   }
 }

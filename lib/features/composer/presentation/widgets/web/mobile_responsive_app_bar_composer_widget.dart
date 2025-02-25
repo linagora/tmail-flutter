@@ -121,8 +121,8 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
             ),
             listButtonAction: [
               PopupItemWidget(
-                  imagePaths.icStyleCodeView,
-                  AppLocalizations.of(context).embedCode,
+                  iconAction: imagePaths.icStyleCodeView,
+                  nameAction: AppLocalizations.of(context).embedCode,
                   styleName: MobileAppBarComposerWidgetStyle.popupItemTextStyle,
                   colorIcon: MobileAppBarComposerWidgetStyle.iconColor,
                   padding: MobileAppBarComposerWidgetStyle.popupItemPadding,
@@ -134,8 +134,8 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
                   },
               ),
               PopupItemWidget(
-                  imagePaths.icReadReceipt,
-                  AppLocalizations.of(context).requestReadReceipt,
+                  iconAction: imagePaths.icReadReceipt,
+                  nameAction: AppLocalizations.of(context).requestReadReceipt,
                   styleName: MobileAppBarComposerWidgetStyle.popupItemTextStyle,
                   padding: MobileAppBarComposerWidgetStyle.popupItemPadding,
                   colorIcon: MobileAppBarComposerWidgetStyle.popupItemIconColor,
@@ -148,8 +148,8 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
               ),
               if (_isPrintEnabled)
                 PopupItemWidget(
-                  imagePaths.icPrinter,
-                  AppLocalizations.of(context).print,
+                  iconAction: imagePaths.icPrinter,
+                  nameAction: AppLocalizations.of(context).print,
                   colorIcon: MobileAppBarComposerWidgetStyle.popupItemIconColor,
                   styleName: MobileAppBarComposerWidgetStyle.popupItemTextStyle,
                   padding: MobileAppBarComposerWidgetStyle.popupItemPadding,
@@ -159,8 +159,8 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
                   },
                 ),
               PopupItemWidget(
-                  imagePaths.icSaveToDraft,
-                  AppLocalizations.of(context).saveAsDraft,
+                  iconAction: imagePaths.icSaveToDraft,
+                  nameAction: AppLocalizations.of(context).saveAsDraft,
                   colorIcon: MobileAppBarComposerWidgetStyle.popupItemIconColor,
                   styleName: MobileAppBarComposerWidgetStyle.popupItemTextStyle,
                   padding: MobileAppBarComposerWidgetStyle.popupItemPadding,
@@ -170,8 +170,8 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
                   },
               ),
               PopupItemWidget(
-                imagePaths.icDeleteMailbox,
-                AppLocalizations.of(context).delete,
+                iconAction: imagePaths.icDeleteMailbox,
+                nameAction: AppLocalizations.of(context).delete,
                 colorIcon: MobileAppBarComposerWidgetStyle.popupItemIconColor,
                 styleName: MobileAppBarComposerWidgetStyle.popupItemTextStyle,
                 padding: MobileAppBarComposerWidgetStyle.popupItemPadding,

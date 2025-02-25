@@ -565,8 +565,8 @@ class EmailView extends GetWidget<SingleEmailController> {
         key: Key('${action.name}_action'),
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
-          action.getIcon(controller.imagePaths),
-          action.getTitle(context),
+          iconAction: action.getIcon(controller.imagePaths),
+          nameAction: action.getTitle(context),
           colorIcon: AppColor.colorTextButton,
           padding: const EdgeInsetsDirectional.only(start: 12),
           styleName: const TextStyle(

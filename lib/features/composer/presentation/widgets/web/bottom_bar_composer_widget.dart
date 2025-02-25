@@ -104,8 +104,8 @@ class BottomBarComposerWidget extends StatelessWidget {
             ),
             listButtonAction: [
               PopupItemWidget(
-                imagePaths.icStyleCodeView,
-                AppLocalizations.of(context).embedCode,
+                iconAction: imagePaths.icStyleCodeView,
+                nameAction: AppLocalizations.of(context).embedCode,
                 styleName: BottomBarComposerWidgetStyle.popupItemTextStyle,
                 colorIcon: BottomBarComposerWidgetStyle.iconColor,
                 padding: BottomBarComposerWidgetStyle.popupItemPadding,
@@ -117,8 +117,8 @@ class BottomBarComposerWidget extends StatelessWidget {
                 },
               ),
               PopupItemWidget(
-                imagePaths.icReadReceipt,
-                AppLocalizations.of(context).requestReadReceipt,
+                iconAction: imagePaths.icReadReceipt,
+                nameAction: AppLocalizations.of(context).requestReadReceipt,
                 styleName: BottomBarComposerWidgetStyle.popupItemTextStyle,
                 padding: BottomBarComposerWidgetStyle.popupItemPadding,
                 colorIcon: BottomBarComposerWidgetStyle.iconColor,
@@ -131,8 +131,8 @@ class BottomBarComposerWidget extends StatelessWidget {
               ),
               if (_isPrintEnabled)
                 PopupItemWidget(
-                  imagePaths.icPrinter,
-                  AppLocalizations.of(context).print,
+                  iconAction: imagePaths.icPrinter,
+                  nameAction: AppLocalizations.of(context).print,
                   colorIcon: BottomBarComposerWidgetStyle.iconColor,
                   styleName: BottomBarComposerWidgetStyle.popupItemTextStyle,
                   padding: BottomBarComposerWidgetStyle.popupItemPadding,
