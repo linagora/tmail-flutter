@@ -337,6 +337,60 @@ class EmailRepositoryImpl extends EmailRepository {
   }
 
   @override
+  Future<Email> saveEmailAsTemplate(
+    Session session,
+    AccountId accountId,
+    Email email,
+    {CancelToken? cancelToken}
+  ) async {
+    final result = await emailDataSource[DataSourceType.network]!.saveEmailAsTemplate(
+      session,
+      accountId,
+      email,
+      cancelToken: cancelToken
+    );
+    try {
+      await emailDataSource[DataSourceType.hiveCache]!.saveEmailAsTemplate(
+        session,
+        accountId,
+        result,
+        cancelToken: cancelToken
+      );
+    } catch (e) {
+      logError('EmailRepositoryImpl::saveEmailAsTemplate:exception $e');
+    }
+    return result;
+  }
+
+  @override
+  Future<Email> updateEmailTemplate(
+    Session session,
+    AccountId accountId,
+    Email newEmail,
+    EmailId oldEmailId,
+    {CancelToken? cancelToken}
+  ) async {
+    final result = await emailDataSource[DataSourceType.network]!.updateEmailTemplate(
+      session,
+      accountId,
+      newEmail,
+      oldEmailId,
+      cancelToken: cancelToken
+    );
+    try {
+      await emailDataSource[DataSourceType.hiveCache]!.updateEmailTemplate(
+        session,
+        accountId,
+        result,
+        oldEmailId,
+      );
+    } catch (e) {
+      logError('EmailRepositoryImpl::updateEmailTemplate:exception $e');
+    }
+    return result;
+  }
+
+  @override
   Future<Uint8List> downloadAttachmentForWeb(
       DownloadTaskId taskId,
       Attachment attachment,

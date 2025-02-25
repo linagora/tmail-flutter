@@ -62,12 +62,17 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
   }
 
   Map<MailboxId, bool>? createMailboxIds() {
-    if (draftsMailboxId != null || outboxMailboxId != null) {
+    if (draftsMailboxId != null
+      || outboxMailboxId != null
+      || templateMailboxId != null
+    ) {
       return {
         if (draftsMailboxId != null)
           draftsMailboxId!: true,
         if (outboxMailboxId != null)
           outboxMailboxId!: true,
+        if (templateMailboxId != null)
+          templateMailboxId!: true,
       };
     } else {
       return null;

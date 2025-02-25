@@ -276,6 +276,33 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   }
 
   @override
+  Future<Email> saveEmailAsTemplate(
+    Session session,
+    AccountId accountId,
+    Email email,
+    {CancelToken? cancelToken}
+  ) async {
+    await _emailCacheManager.update(accountId, session.username, created: [email]);
+    return email;
+  }
+
+  @override
+  Future<Email> updateEmailTemplate(
+    Session session,
+    AccountId accountId,
+    Email newEmail,
+    EmailId oldEmailId,
+    {CancelToken? cancelToken}
+  ) async {
+    await _emailCacheManager.update(
+      accountId,
+      session.username,
+      updated: [newEmail],
+    );
+    return newEmail;
+  }
+
+  @override
   Future<bool> sendEmail(
     Session session,
     AccountId accountId,
