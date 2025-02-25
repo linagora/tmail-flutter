@@ -75,16 +75,15 @@ class EmailAddressDialogBuilder extends StatelessWidget {
                       left: 16,
                       right: 16,
                       top: 16),
-                  child: Center(child: Text(
+                  child: Center(child: SelectableText(
                     _emailAddress.displayName,
                     textAlign: TextAlign.center,
                     maxLines: 2,
-                    overflow: CommonTextStyle.defaultTextOverFlow,
-                    softWrap: CommonTextStyle.defaultSoftWrap,
                     style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: AppColor.colorNameEmail),
+                      overflow: CommonTextStyle.defaultTextOverFlow,
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: AppColor.colorNameEmail),
                   ))
               ),
             Material(
