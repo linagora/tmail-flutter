@@ -483,6 +483,7 @@ class SearchEmailController extends BaseController
   void _searchEmailsFailure(SearchEmailFailure failure) {
     listResultSearch.clear();
     resultSearchViewState.value = Left(failure);
+    showRetryToast(failure);
   }
 
   void searchMoreEmailsAction() {
