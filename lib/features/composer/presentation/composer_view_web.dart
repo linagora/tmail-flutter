@@ -66,6 +66,7 @@ class ComposerView extends GetWidget<ComposerController> {
                   toggleRequestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
                   toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                   saveToDraftsAction: () => controller.handleClickSaveAsDraftsButton(context),
+                  saveToTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
                   deleteComposerAction: () => controller.handleClickDeleteComposer(context),
                 )),
                 ConstrainedBox(
@@ -576,6 +577,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               printDraftAction: () => controller.printDraft(context),
                               toggleRequestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
                               toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
+                              saveAsTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
                             )),
                           ],
                         ),
@@ -885,6 +887,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               printDraftAction: () => controller.printDraft(context),
                               toggleRequestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
                               toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
+                              saveAsTemplateAction: () => controller.handleClickSaveAsTemplateButton(context),
                             )),
                           ],
                         ),

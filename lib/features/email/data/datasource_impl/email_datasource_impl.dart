@@ -222,6 +222,46 @@ class EmailDataSourceImpl extends EmailDataSource {
   }
 
   @override
+  Future<Email> saveEmailAsTemplate(
+    Session session,
+    AccountId accountId,
+    Email email,
+    {
+      CreateNewMailboxRequest? createNewMailboxRequest,
+      CancelToken? cancelToken
+    }
+  ) {
+    return Future.sync(() async {
+      return await emailAPI.saveEmailAsTemplate(
+        session,
+        accountId,
+        email,
+        createNewMailboxRequest: createNewMailboxRequest,
+        cancelToken: cancelToken
+      );
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<Email> updateEmailTemplate(
+    Session session,
+    AccountId accountId,
+    Email newEmail,
+    EmailId oldEmailId,
+    {CancelToken? cancelToken}
+  ) {
+    return Future.sync(() async {
+      return await emailAPI.updateEmailTemplate(
+        session,
+        accountId,
+        newEmail,
+        oldEmailId,
+        cancelToken: cancelToken
+      );
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
   Future<Uint8List> downloadAttachmentForWeb(
       DownloadTaskId taskId,
       Attachment attachment,

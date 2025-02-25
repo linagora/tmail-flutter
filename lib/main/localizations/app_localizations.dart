@@ -4645,4 +4645,61 @@ class AppLocalizations {
       name: 'pullHarderFor',
     );
   }
+
+  String get saveAsTemplate {
+    return Intl.message(
+      'Save as template',
+      name: 'saveAsTemplate',
+    );
+  }
+
+  String get savingTemplate {
+    return Intl.message(
+      'Saving template',
+      name: 'savingTemplate',
+    );
+  }
+
+  String get savingMessageToTemplateFolder {
+    return Intl.message(
+      'Saving message to template folder',
+      name: 'savingMessageToTemplateFolder',
+    );
+  }
+
+  String get saveMessageToTemplateSuccess {
+    return Intl.message(
+      'Save message to template folder successfully',
+      name: 'saveMessageToTemplateSuccess',
+    );
+  }
+
+  String get updateMessageToTemplateSuccess {
+    return Intl.message(
+      'Update message to template folder successfully',
+      name: 'updateMessageToTemplateSuccess',
+    );
+  }
+
+  String get saveMessageToTemplateFailed {
+    return Intl.message(
+      'Save message to template folder failed',
+      name: 'saveMessageToTemplateFailed',
+    );
+  }
+
+  String get saveMessageToTemplateCancelled {
+    return Intl.message(
+      'Save message to template folder has been cancelled',
+      name: 'saveMessageToTemplateCancelled',
+    );
+  }
+
+  String invalidArguments(String description) {
+    return Intl.message(
+      'Invalid arguments: "$description"',
+      name: 'invalidArguments',
+      args: [description],
+    );
+  }
 }

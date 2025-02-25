@@ -25,6 +25,7 @@ class ComposerCache with EquatableMixin {
   final int? draftHash;
   final EmailActionType? actionType;
   final EmailId? draftEmailId;
+  final EmailId? templateEmailId;
 
   ComposerCache({
     this.email,
@@ -36,6 +37,7 @@ class ComposerCache with EquatableMixin {
     this.draftHash,
     this.actionType,
     this.draftEmailId,
+    this.templateEmailId,
   });
 
   factory ComposerCache.fromJson(Map<String, dynamic> json) => _$ComposerCacheFromJson(json);
@@ -53,5 +55,6 @@ class ComposerCache with EquatableMixin {
     draftHash,
     actionType,
     draftEmailId,
+    templateEmailId,
   ];
 }

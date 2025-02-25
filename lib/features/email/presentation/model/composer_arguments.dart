@@ -38,6 +38,7 @@ class ComposerArguments extends RouterArguments {
   final int? savedDraftHash;
   final EmailActionType? savedActionType;
   final EmailId? savedEmailDraftId;
+  final EmailId? savedEmailTemplateId;
 
   ComposerArguments({
     this.emailActionType = EmailActionType.compose,
@@ -66,6 +67,7 @@ class ComposerArguments extends RouterArguments {
     this.savedDraftHash,
     this.savedActionType,
     this.savedEmailDraftId,
+    this.savedEmailTemplateId,
   });
 
   factory ComposerArguments.fromSendingEmail(SendingEmail sendingEmail) =>
@@ -113,11 +115,14 @@ class ComposerArguments extends RouterArguments {
       presentationEmail: presentationEmail,
     );
   
-  factory ComposerArguments.editAsNewEmail(PresentationEmail presentationEmail) =>
-    ComposerArguments(
-      emailActionType: EmailActionType.editAsNewEmail,
-      presentationEmail: presentationEmail,
-    );
+  factory ComposerArguments.editAsNewEmail(
+    PresentationEmail presentationEmail, {
+    EmailId? savedEmailTemplateId
+  }) => ComposerArguments(
+    emailActionType: EmailActionType.editAsNewEmail,
+    presentationEmail: presentationEmail,
+    savedEmailTemplateId: savedEmailTemplateId,
+  );
 
   factory ComposerArguments.fromSessionStorageBrowser(ComposerCache composerCache) =>
     ComposerArguments(
@@ -134,6 +139,7 @@ class ComposerArguments extends RouterArguments {
       savedDraftHash: composerCache.draftHash,
       savedActionType: composerCache.actionType,
       savedEmailDraftId: composerCache.draftEmailId,
+      savedEmailTemplateId: composerCache.templateEmailId,
     );
 
   factory ComposerArguments.replyEmail({
@@ -258,6 +264,7 @@ class ComposerArguments extends RouterArguments {
     savedDraftHash,
     savedActionType,
     savedEmailDraftId,
+    sendingEmailActionType,
   ];
 
   ComposerArguments copyWith({
@@ -287,6 +294,7 @@ class ComposerArguments extends RouterArguments {
     int? savedDraftHash,
     EmailActionType? savedActionType,
     EmailId? savedEmailDraftId,
+    EmailId? savedEmailTemplateId,
   }) {
     return ComposerArguments(
       emailActionType: emailActionType ?? this.emailActionType,
@@ -315,6 +323,7 @@ class ComposerArguments extends RouterArguments {
       savedDraftHash: savedDraftHash ?? this.savedDraftHash,
       savedActionType: savedActionType ?? this.savedActionType,
       savedEmailDraftId: savedEmailDraftId ?? this.savedEmailDraftId,
+      savedEmailTemplateId: savedEmailTemplateId ?? this.savedEmailTemplateId,
     );
   }
 }

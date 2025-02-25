@@ -724,7 +724,7 @@ class ThreadView extends GetWidget<ThreadController>
         _markAsEmailSpamOrUnSpamContextMenuItemAction(context, email, mailboxContain),
       if (mailboxContain?.isArchive == false)
         _archiveMessageContextMenuItemAction(context, email),
-      if (mailboxContain?.isDrafts == false)
+      if (mailboxContain?.isDrafts == false && mailboxContain?.isTemplates == false)
         _editAsNewEmailContextMenuItemAction(context, email),
     ];
   }
@@ -846,7 +846,7 @@ class ThreadView extends GetWidget<ThreadController>
         _buildMarkAsSpamPopupMenuItem(context, email, mailboxContain),
       if (mailboxContain?.isArchive == false)
         _buildArchiveMessagePopupMenuItem(context, email),
-      if (mailboxContain?.isDrafts == false)
+      if (mailboxContain?.isDrafts == false && mailboxContain?.isTemplates == false)
         _buildEditAsNewEmailPopupMenuItem(AppLocalizations.of(context), email),
     ];
   }
