@@ -10,7 +10,8 @@ extension SetupEmailRequestReadReceiptFlagExtension on ComposerController {
   void setupEmailRequestReadReceiptFlag(ComposerArguments arguments) {
     if (currentEmailActionType == EmailActionType.reopenComposerBrowser) {
       hasRequestReadReceipt.value = arguments.hasRequestReadReceipt ?? false;
-    } else if (currentEmailActionType != EmailActionType.editDraft) {
+    } else if (currentEmailActionType != EmailActionType.editDraft &&
+        currentEmailActionType != EmailActionType.editAsNewEmail) {
       getServerSetting();
     }
   }

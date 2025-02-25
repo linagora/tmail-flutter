@@ -566,6 +566,20 @@ class ComposerView extends GetWidget<ComposerController> {
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
+          iconAction: controller.imagePaths.icSaveToDraft,
+          nameAction: AppLocalizations.of(context).saveAsTemplate,
+          colorIcon: ComposerStyle.popupItemIconColor,
+          styleName: ComposerStyle.popupItemTextStyle,
+          padding: ComposerStyle.popupItemPadding,
+          onCallbackAction: () {
+            popBack();
+            controller.handleClickSaveAsTemplateButton(context);
+          }
+        )
+      ),
+      PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupItemWidget(
           iconAction: controller.imagePaths.icDeleteMailbox,
           nameAction: AppLocalizations.of(context).delete,
           styleName: ComposerStyle.popupItemTextStyle,

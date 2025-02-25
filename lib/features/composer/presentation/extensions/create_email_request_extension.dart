@@ -39,12 +39,12 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
     }
   }
 
-  Set<EmailAddress>? createReplyToRecipients({bool isDraft = false}) {
+  Set<EmailAddress>? createReplyToRecipients({bool isNotReplyTo = false}) {
     if (replyToRecipients?.isNotEmpty == true) {
       return replyToRecipients;
     }
 
-    if (isDraft) return null;
+    if (isNotReplyTo) return null;
 
     return identity?.replyTo?.isNotEmpty == true
       ? identity!.replyTo!
@@ -60,18 +60,27 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
         KeyWordIdentifier.emailDraft: true,
         KeyWordIdentifier.emailSeen: true,
       };
+    } else if (templateMailboxId != null) {
+      return {
+        KeyWordIdentifier.emailSeen: true,
+      };
     } else {
       return null;
     }
   }
 
   Map<MailboxId, bool>? createMailboxIds() {
-    if (draftsMailboxId != null || outboxMailboxId != null) {
+    if (draftsMailboxId != null
+      || outboxMailboxId != null
+      || templateMailboxId != null
+    ) {
       return {
         if (draftsMailboxId != null)
           draftsMailboxId!: true,
         if (outboxMailboxId != null)
           outboxMailboxId!: true,
+        if (templateMailboxId != null)
+          templateMailboxId!: true,
       };
     } else {
       return null;
@@ -115,6 +124,7 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
     required PartId partId,
     bool withIdentityHeader = false,
     bool isDraft = false,
+    bool isTemplate = false,
   }) {
     return Email(
       mailboxIds: createMailboxIds(),
@@ -122,7 +132,7 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
       to: toRecipients,
       cc: ccRecipients,
       bcc: bccRecipients,
-      replyTo: createReplyToRecipients(isDraft: isDraft),
+      replyTo: createReplyToRecipients(isNotReplyTo: isDraft || isTemplate),
       inReplyTo: createInReplyTo(),
       references: createReferences(),
       keywords: createKeywords(),

@@ -10,6 +10,7 @@ abstract class ComposerRepository {
     {
       bool withIdentityHeader = false,
       bool isDraft = false,
+      bool isTemplate = false,
     });
 
   Future<UploadAttachment> uploadAttachment(FileInfo fileInfo, Uri uploadUri, {CancelToken? cancelToken});

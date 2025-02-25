@@ -3,7 +3,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_controller
 
 extension SetupEmailRequestReadReceiptFlagExtension on ComposerController {
 
-  void setupEmailRequestReadReceiptFlagForEditDraft(bool isRequestReadReceipt) {
+  void setupEmailRequestReadReceiptFlag(bool isRequestReadReceipt) {
     hasRequestReadReceipt.value = isRequestReadReceipt;
   }
 }

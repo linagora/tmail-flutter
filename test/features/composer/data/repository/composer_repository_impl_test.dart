@@ -103,6 +103,7 @@ void main() {
       when(mockCreateEmailRequest.emailActionType).thenReturn(EmailActionType.compose);
       when(mockCreateEmailRequest.hasRequestReadReceipt).thenReturn(false);
       when(mockCreateEmailRequest.isMarkAsImportant).thenReturn(false);
+      when(mockCreateEmailRequest.templateMailboxId).thenReturn(null);
 
       when(mockHtmlDataSource.replaceImageBase64ToImageCID(
         emailContent: emailContentWithBase64,
@@ -160,6 +161,7 @@ void main() {
       when(mockCreateEmailRequest.emailActionType).thenReturn(EmailActionType.compose);
       when(mockCreateEmailRequest.hasRequestReadReceipt).thenReturn(false);
       when(mockCreateEmailRequest.isMarkAsImportant).thenReturn(false);
+      when(mockCreateEmailRequest.templateMailboxId).thenReturn(null);
 
       when(mockHtmlDataSource.replaceImageBase64ToImageCID(
         emailContent: emailContentWithBase64,
@@ -214,6 +216,7 @@ void main() {
       when(mockCreateEmailRequest.emailActionType).thenReturn(EmailActionType.compose);
       when(mockCreateEmailRequest.hasRequestReadReceipt).thenReturn(false);
       when(mockCreateEmailRequest.isMarkAsImportant).thenReturn(false);
+      when(mockCreateEmailRequest.templateMailboxId).thenReturn(null);
 
       when(mockHtmlDataSource.replaceImageBase64ToImageCID(
         emailContent: plainEmailContent,

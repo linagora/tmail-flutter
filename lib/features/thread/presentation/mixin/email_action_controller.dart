@@ -43,9 +43,15 @@ mixin EmailActionController {
     mailboxDashBoardController.openComposer(ComposerArguments.editDraftEmail(presentationEmail));
   }
 
-  void editAsNewEmail(PresentationEmail presentationEmail) {
+  void editAsNewEmail(
+    PresentationEmail presentationEmail, {
+    EmailId? savedEmailTemplateId,
+  }) {
     mailboxDashBoardController.openComposer(
-      ComposerArguments.editAsNewEmail(presentationEmail),
+      ComposerArguments.editAsNewEmail(
+        presentationEmail,
+        savedEmailTemplateId: savedEmailTemplateId,
+      ),
     );
   }
 

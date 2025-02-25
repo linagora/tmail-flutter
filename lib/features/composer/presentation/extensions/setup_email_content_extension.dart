@@ -65,8 +65,9 @@ extension SetupEmailContentExtension on ComposerController {
             inlineImages: uiState.inlineImages,
           );
 
-          if (currentEmailActionType == EmailActionType.editDraft) {
-            setupEmailRequestReadReceiptFlagForEditDraft(
+          if (currentEmailActionType == EmailActionType.editDraft ||
+              currentEmailActionType == EmailActionType.editAsNewEmail) {
+            setupEmailRequestReadReceiptFlag(
               uiState.emailCurrent!.hasRequestReadReceipt,
             );
             setupSelectedIdentityForEditDraft(
@@ -81,8 +82,9 @@ extension SetupEmailContentExtension on ComposerController {
             inlineImages: uiState.inlineImages,
           );
 
-          if (currentEmailActionType == EmailActionType.editDraft) {
-            setupEmailRequestReadReceiptFlagForEditDraft(
+          if (currentEmailActionType == EmailActionType.editDraft ||
+              currentEmailActionType == EmailActionType.editAsNewEmail) {
+            setupEmailRequestReadReceiptFlag(
               uiState.emailCurrent.hasRequestReadReceipt,
             );
             setupSelectedIdentityForEditDraft(

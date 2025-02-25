@@ -49,6 +49,7 @@ class ComposerRepositoryImpl extends ComposerRepository {
     {
       bool withIdentityHeader = false,
       bool isDraft = false,
+      bool isTemplate = false,
     }
   ) async {
     String emailContent = createEmailRequest.emailContent;
@@ -75,6 +76,7 @@ class ComposerRepositoryImpl extends ComposerRepository {
       partId: emailBodyPartId,
       withIdentityHeader: withIdentityHeader,
       isDraft: isDraft,
+      isTemplate: isTemplate,
     );
 
     return emailObject;

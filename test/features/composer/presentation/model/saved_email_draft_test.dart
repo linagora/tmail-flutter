@@ -2,7 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/attachment.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/saved_email_draft.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/saved_composing_email.dart';
 
 void main() {
   group('saved email draft test', () {
@@ -10,7 +10,7 @@ void main() {
       'should tag toRecipients, ccRecipients and bccRecipients in props',
     () {
       // arrange
-      final savedEmailDraft = SavedEmailDraft(
+      final savedEmailDraft = SavedComposingEmail(
         subject: 'subject',
         content: 'content',
         toRecipients: {EmailAddress('to name', 'to email')},
@@ -43,7 +43,7 @@ void main() {
       final attachments = <Attachment>[];
       const hasReadReceipt = false;
 
-      final toSavedEmailDraft = SavedEmailDraft(
+      final toSavedEmailDraft = SavedComposingEmail(
         subject: subject,
         content: content,
         toRecipients: {recipient},
@@ -55,7 +55,7 @@ void main() {
         hasReadReceipt: hasReadReceipt
       );
 
-      final ccSavedEmailDraft = SavedEmailDraft(
+      final ccSavedEmailDraft = SavedComposingEmail(
         subject: subject,
         content: content,
         toRecipients: {},
@@ -67,7 +67,7 @@ void main() {
         hasReadReceipt: hasReadReceipt
       );
 
-      final bccSavedEmailDraft = SavedEmailDraft(
+      final bccSavedEmailDraft = SavedComposingEmail(
         subject: subject,
         content: content,
         toRecipients: {},
@@ -79,7 +79,7 @@ void main() {
         hasReadReceipt: hasReadReceipt
       );
 
-      final replyToSavedEmailDraft = SavedEmailDraft(
+      final replyToSavedEmailDraft = SavedComposingEmail(
           subject: subject,
           content: content,
           toRecipients: {},
@@ -112,7 +112,7 @@ void main() {
       final listToRecipients = {
         EmailAddress('to name', 'to email')
       };
-      final savedEmailDraft = SavedEmailDraft(
+      final savedEmailDraft = SavedComposingEmail(
           subject: 'subject',
           content: 'content',
           toRecipients: listToRecipients,
@@ -138,7 +138,7 @@ void main() {
       'when all properties are the same',
     () {
       // arrange
-      final savedEmailDraft = SavedEmailDraft(
+      final savedEmailDraft = SavedComposingEmail(
         subject: 'subject',
         content: 'content',
         toRecipients: {EmailAddress('to name', 'to email')},
@@ -150,7 +150,7 @@ void main() {
         hasReadReceipt: false
       );
 
-      final savedEmailDraft2 = SavedEmailDraft(
+      final savedEmailDraft2 = SavedComposingEmail(
         subject: 'subject',
         content: 'content',
         toRecipients: {EmailAddress('to name', 'to email')},
