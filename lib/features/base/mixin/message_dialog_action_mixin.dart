@@ -13,6 +13,7 @@ mixin MessageDialogActionMixin {
       String message,
       String actionName,
       {
+        Key key = const Key('confirm_dialog_action'),
         Function? onConfirmAction,
         Function? onCancelAction,
         OnCloseButtonAction? onCloseButtonAction,
@@ -56,7 +57,7 @@ mixin MessageDialogActionMixin {
             titleActionButtonMaxLines: titleActionButtonMaxLines,
             isArrangeActionButtonsVertical: isArrangeActionButtonsVertical
           )
-          ..key(const Key('confirm_dialog_action'))
+          ..key(key)
           ..title(title ?? '')
           ..content(message)
           ..addIcon(icon)
@@ -108,7 +109,7 @@ mixin MessageDialogActionMixin {
               titleActionButtonMaxLines: titleActionButtonMaxLines,
               isArrangeActionButtonsVertical: isArrangeActionButtonsVertical
             )
-            ..key(const Key('confirm_dialog_action'))
+            ..key(key)
             ..title(title ?? '')
             ..content(message)
             ..addIcon(icon)
@@ -186,7 +187,7 @@ mixin MessageDialogActionMixin {
               titleActionButtonMaxLines: titleActionButtonMaxLines,
               isArrangeActionButtonsVertical: isArrangeActionButtonsVertical
             )
-            ..key(const Key('confirm_dialog_action'))
+            ..key(key)
             ..title(title ?? '')
             ..content(message)
             ..addIcon(icon)
