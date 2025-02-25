@@ -1,4 +1,12 @@
-## [0.14.13] - 2025-01-27
+## [0.14.14] - 2025-02-25
+### Added
+- Translation vi, ta, ru, fr, de
+
+### Fixed
+- Send email in Cyrus
+
+
+## [0.14.13] - 2025-02-19
 ### Fixed
 - #3298 blink when refresh mail list
 - #3291 Search with multiple from address
