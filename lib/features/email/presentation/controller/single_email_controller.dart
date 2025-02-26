@@ -17,6 +17,7 @@ import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:get/get_navigation/src/dialog/dialog_route.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -64,8 +65,6 @@ import 'package:tmail_ui_user/features/email/domain/state/export_all_attachments
 import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_html_content_from_attachment_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/get_image_data_from_attachment_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/get_text_data_from_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
@@ -80,8 +79,6 @@ import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_stat
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_all_attachments_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachments_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/get_image_data_from_attachment_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/get_text_data_from_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/maybe_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_reject_interactor.dart';
@@ -146,6 +143,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:twake_previewer_flutter/core/constants/supported_charset.dart';
+import 'package:twake_previewer_flutter/core/previewer_options/options/previewer_state.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/options/top_bar_options.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/previewer_options.dart';
 import 'package:twake_previewer_flutter/twake_image_previewer/twake_image_previewer.dart';
@@ -176,8 +174,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final GetHtmlContentFromAttachmentInteractor _getHtmlContentFromAttachmentInteractor;
   final DownloadAllAttachmentsForWebInteractor _downloadAllAttachmentsForWebInteractor;
   final ExportAllAttachmentsInteractor _exportAllAttachmentsInteractor;
-  final GetImageDataFromAttachmentInteractor _getImageDataFromAttachmentInteractor;
-  final GetTextDataFromAttachmentInteractor _getTextDataFromAttachmentInteractor;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
@@ -236,8 +232,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._getHtmlContentFromAttachmentInteractor,
     this._downloadAllAttachmentsForWebInteractor,
     this._exportAllAttachmentsInteractor,
-    this._getImageDataFromAttachmentInteractor,
-    this._getTextDataFromAttachmentInteractor,
   );
 
   @override
@@ -315,32 +309,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       ));
     } else if (success is GettingHtmlContentFromAttachment) {
       _updateAttachmentsViewState(success.attachment.blobId, Right(success));
-    } else if (success is GettingImageDataFromAttachment) {
-      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
-    } else if (success is GetImageDataFromAttachmentSuccess) {
-      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
-      Get.dialog(TwakeImagePreviewer(
-        bytes: success.data,
-        topBarOptions: TopBarOptions(
-          title: success.attachment.generateFileName(),
-          onClose: popBack,
-        ),
-      ));
-    } else if (success is GettingTextDataFromAttachment) {
-      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
-    } else if (success is GetTextDataFromAttachmentSuccess) {
-      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
-      Get.dialog(TwakePlainTextPreviewer(
-        supportedCharset: SupportedCharset.utf8,
-        bytes: success.data,
-        previewerOptions: PreviewerOptions(
-          width: currentContext == null ? 200 : currentContext!.width * 0.8,
-        ),
-        topBarOptions: TopBarOptions(
-          title: success.attachment.generateFileName(),
-          onClose: popBack,
-        ),
-      ));
     }
   }
 
@@ -483,7 +451,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         state.fold(
           (failure) => null,
           (success) {
-            if (success is StartDownloadAttachmentForWeb) {
+            if (success is StartDownloadAttachmentForWeb && !success.previewerSupported) {
               emailSupervisorController.mailboxDashBoardController.addDownloadTask(
                 DownloadTaskState(
                   taskId: success.taskId,
@@ -492,7 +460,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
                 ),
               );
 
-              if (currentOverlayContext != null && currentContext != null) {
+              if (currentOverlayContext != null && currentContext != null && !success.previewerSupported) {
                 appToast.showToastMessage(
                   currentOverlayContext!,
                   AppLocalizations.of(currentContext!).your_download_has_started,
@@ -1034,7 +1002,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     await FlutterFileDialog.saveFile(params: params);
   }
 
-  void downloadAttachmentForWeb(Attachment attachment) {
+  void downloadAttachmentForWeb(Attachment attachment, {bool previewerSupported = false}) {
     if (accountId != null && session != null) {
       final generateTaskId = DownloadTaskId(uuid.v4());
       try {
@@ -1049,6 +1017,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           baseDownloadUrl,
           _downloadProgressStateController,
           cancelToken: cancelToken,
+          previewerSupported: previewerSupported,
         ));
       } catch (e) {
         logError('SingleEmailController::downloadAttachmentForWeb(): $e');
@@ -1130,9 +1099,57 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     mailboxDashBoardController.deleteDownloadTask(success.taskId);
 
-    _downloadManager.createAnchorElementDownloadFileWeb(
+    if (!success.previewerSupported) {
+      _downloadManager.createAnchorElementDownloadFileWeb(
         success.bytes,
         success.attachment.generateFileName());
+      return;
+    }
+
+    if (success.attachment.isImage) {
+      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
+      Navigator.of(currentContext!).push(GetDialogRoute(
+        pageBuilder: (context, _, __) => PointerInterceptor(child: TwakeImagePreviewer(
+          bytes: success.bytes,
+          zoomable: true,
+          previewerOptions: const PreviewerOptions(
+            previewerState: PreviewerState.success,
+          ),
+          topBarOptions: TopBarOptions(
+            title: success.attachment.generateFileName(),
+            onClose: () => Navigator.maybePop(context),
+            onDownload: currentContext == null
+              ? null
+              : () => handleDownloadAttachmentAction(
+                  currentContext!,
+                  success.attachment),
+          ),
+        )),
+        barrierDismissible: false,
+      ));
+    } else if (success.attachment.isText || success.attachment.isJson) {
+      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
+      Navigator.of(currentContext!).push(GetDialogRoute(
+        pageBuilder: (context, _, __) => PointerInterceptor(child: TwakePlainTextPreviewer(
+          supportedCharset: SupportedCharset.utf8,
+          bytes: success.bytes,
+          previewerOptions: PreviewerOptions(
+            previewerState: PreviewerState.success,
+            width: currentContext == null ? 200 : currentContext!.width * 0.8,
+          ),
+          topBarOptions: TopBarOptions(
+            title: success.attachment.generateFileName(),
+            onClose: () => Navigator.maybePop(context),
+            onDownload: currentContext == null
+              ? null
+              : () => handleDownloadAttachmentAction(
+                  currentContext!,
+                  success.attachment),
+          ),
+        )),
+        barrierDismissible: false,
+      ));
+    }
   }
 
   void _downloadPDFFile(Uint8List bytes, String fileName) {
@@ -2193,9 +2210,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
   }
 
-  void handleDownloadAttachmentAction(BuildContext context, Attachment attachment) {
+  void handleDownloadAttachmentAction(
+    BuildContext context,
+    Attachment attachment,
+    {bool previewerSupported = false}
+  ) {
     if (PlatformInfo.isWeb) {
-      downloadAttachmentForWeb(attachment);
+      downloadAttachmentForWeb(attachment, previewerSupported: previewerSupported);
     } else if (PlatformInfo.isMobile) {
       exportAttachment(context, attachment);
     } else {
@@ -2241,35 +2262,17 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           customTextTransformers: [const StandardizeHtmlSanitizingTransformers()],
         ),
       ));
-    } else if (attachment.isImage) {
-      final attachmentEvaluation = evaluateAttachment(attachment);
-      if (!attachmentEvaluation.canDownloadAttachment) {
-        consumeState(Stream.value(Left(GetImageDataFromAttachmentFailure())));
-        return;
-      }
-
-      consumeState(_getImageDataFromAttachmentInteractor.execute(
-        DownloadTaskId(uuid.v4()),
-        attachment,
-        attachmentEvaluation.accountId!,
-        attachmentEvaluation.downloadUrl!,
-      ));
-    } else if (attachment.isText) {
-      final attachmentEvaluation = evaluateAttachment(attachment);
-      if (!attachmentEvaluation.canDownloadAttachment) {
-        consumeState(Stream.value(Left(GetTextDataFromAttachmentFailure())));
-        return;
-      }
-
-      consumeState(_getTextDataFromAttachmentInteractor.execute(
-        DownloadTaskId(uuid.v4()),
-        attachment,
-        attachmentEvaluation.accountId!,
-        attachmentEvaluation.downloadUrl!,
-      ));
     } else {
-      handleDownloadAttachmentAction(context, attachment);
+      handleDownloadAttachmentAction(
+        context,
+        attachment,
+        previewerSupported: attachmentPreviewSupported(attachment),
+      );
     }
+  }
+
+  bool attachmentPreviewSupported(Attachment attachment) {
+    return attachment.isImage || attachment.isText || attachment.isJson;
   }
 
   ({

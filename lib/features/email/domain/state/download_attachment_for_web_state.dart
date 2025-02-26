@@ -12,11 +12,12 @@ class StartDownloadAttachmentForWeb extends UIState {
   final DownloadTaskId taskId;
   final Attachment attachment;
   final CancelToken? cancelToken;
+  final bool previewerSupported;
 
-  StartDownloadAttachmentForWeb(this.taskId, this.attachment, [this.cancelToken]);
+  StartDownloadAttachmentForWeb(this.taskId, this.attachment, [this.cancelToken, this.previewerSupported = false]);
 
   @override
-  List<Object?> get props => [taskId, attachment, cancelToken];
+  List<Object?> get props => [taskId, attachment, cancelToken, previewerSupported];
 }
 
 class DownloadingAttachmentForWeb extends UIState {
@@ -50,11 +51,12 @@ class DownloadAttachmentForWebSuccess extends UIState {
   final DownloadTaskId taskId;
   final Attachment attachment;
   final Uint8List bytes;
+  final bool previewerSupported;
 
-  DownloadAttachmentForWebSuccess(this.taskId, this.attachment, this.bytes);
+  DownloadAttachmentForWebSuccess(this.taskId, this.attachment, this.bytes, this.previewerSupported);
 
   @override
-  List<Object> get props => [taskId, attachment, bytes];
+  List<Object> get props => [taskId, attachment, bytes, previewerSupported];
 }
 
 class DownloadAttachmentForWebFailure extends FeatureFailure {

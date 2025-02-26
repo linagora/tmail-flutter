@@ -46,4 +46,7 @@ extension AttachmentExtension on Attachment {
   bool get isText => (type?.isTextFile() ?? false)
     || name?.endsWith('.txt') == true
     || name?.endsWith('.md') == true;
+
+  bool get isJson => (type?.isJsonFile() ?? false)
+    || name?.endsWith('.json') == true;
 }

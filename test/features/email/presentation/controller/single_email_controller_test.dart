@@ -31,8 +31,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_acce
 import 'package:tmail_ui_user/features/email/domain/usecases/download_all_attachments_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_html_content_from_attachment_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/get_image_data_from_attachment_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/get_text_data_from_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/maybe_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_reject_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
@@ -118,8 +116,6 @@ const fallbackGenerators = {
   MockSpec<DownloadAllAttachmentsForWebInteractor>(),
   MockSpec<ExportAllAttachmentsInteractor>(),
   MockSpec<FileUploader>(),
-  MockSpec<GetImageDataFromAttachmentInteractor>(),
-  MockSpec<GetTextDataFromAttachmentInteractor>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -161,8 +157,6 @@ void main() {
 
   final downloadAllAttachmentsForWebInteractor = MockDownloadAllAttachmentsForWebInteractor();
   final exportAllAttachmentsInteractor = MockExportAllAttachmentsInteractor();
-  final getImageDataFromAttachmentInteractor = MockGetImageDataFromAttachmentInteractor();
-  final getTextDataFromAttachmentInteractor = MockGetTextDataFromAttachmentInteractor();
 
   late SingleEmailController singleEmailController;
 
@@ -223,8 +217,6 @@ void main() {
       getHtmlContentFromAttachmentInteractor,
       downloadAllAttachmentsForWebInteractor,
       exportAllAttachmentsInteractor,
-      getImageDataFromAttachmentInteractor,
-      getTextDataFromAttachmentInteractor,
     );
   });
 
