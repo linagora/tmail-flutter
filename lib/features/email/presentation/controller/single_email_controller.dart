@@ -64,8 +64,6 @@ import 'package:tmail_ui_user/features/email/domain/state/export_all_attachments
 import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_html_content_from_attachment_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/get_image_data_from_attachment_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/get_text_data_from_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
@@ -80,8 +78,6 @@ import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_stat
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_all_attachments_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachments_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/get_image_data_from_attachment_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/get_text_data_from_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/maybe_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_reject_interactor.dart';
@@ -175,8 +171,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final GetHtmlContentFromAttachmentInteractor _getHtmlContentFromAttachmentInteractor;
   final DownloadAllAttachmentsForWebInteractor _downloadAllAttachmentsForWebInteractor;
   final ExportAllAttachmentsInteractor _exportAllAttachmentsInteractor;
-  final GetImageDataFromAttachmentInteractor _getImageDataFromAttachmentInteractor;
-  final GetTextDataFromAttachmentInteractor _getTextDataFromAttachmentInteractor;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
@@ -235,8 +229,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._getHtmlContentFromAttachmentInteractor,
     this._downloadAllAttachmentsForWebInteractor,
     this._exportAllAttachmentsInteractor,
-    this._getImageDataFromAttachmentInteractor,
-    this._getTextDataFromAttachmentInteractor,
   );
 
   @override
@@ -314,32 +306,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       ));
     } else if (success is GettingHtmlContentFromAttachment) {
       _updateAttachmentsViewState(success.attachment.blobId, Right(success));
-    } else if (success is GettingImageDataFromAttachment) {
-      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
-    } else if (success is GetImageDataFromAttachmentSuccess) {
-      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
-      Get.dialog(TwakeImagePreviewer(
-        bytes: success.data,
-        topBarOptions: TopBarOptions(
-          title: success.attachment.generateFileName(),
-          onClose: popBack,
-        ),
-      ));
-    } else if (success is GettingTextDataFromAttachment) {
-      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
-    } else if (success is GetTextDataFromAttachmentSuccess) {
-      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
-      Get.dialog(TwakePlainTextPreviewer(
-        supportedCharset: SupportedCharset.utf8,
-        bytes: success.data,
-        previewerOptions: PreviewerOptions(
-          width: currentContext == null ? 200 : currentContext!.width * 0.8,
-        ),
-        topBarOptions: TopBarOptions(
-          title: success.attachment.generateFileName(),
-          onClose: popBack,
-        ),
-      ));
     }
   }
 
@@ -1128,9 +1094,33 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     mailboxDashBoardController.deleteDownloadTask(success.taskId);
 
-    _downloadManager.createAnchorElementDownloadFileWeb(
+    if (success.attachment.isImage) {
+      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
+      Get.dialog(TwakeImagePreviewer(
+        bytes: success.bytes,
+        topBarOptions: TopBarOptions(
+          title: success.attachment.generateFileName(),
+          onClose: popBack,
+        ),
+      ));
+    } else if (success.attachment.isText) {
+      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
+      Get.dialog(TwakePlainTextPreviewer(
+        supportedCharset: SupportedCharset.utf8,
+        bytes: success.bytes,
+        previewerOptions: PreviewerOptions(
+          width: currentContext == null ? 200 : currentContext!.width * 0.8,
+        ),
+        topBarOptions: TopBarOptions(
+          title: success.attachment.generateFileName(),
+          onClose: popBack,
+        ),
+      ));
+    } else {
+      _downloadManager.createAnchorElementDownloadFileWeb(
         success.bytes,
         success.attachment.generateFileName());
+    }
   }
 
   void _downloadPDFFile(Uint8List bytes, String fileName) {
@@ -2239,32 +2229,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           customDomTransformers: [SanitizeHyperLinkTagInHtmlTransformer()],
           customTextTransformers: [const StandardizeHtmlSanitizingTransformers()],
         ),
-      ));
-    } else if (attachment.isImage) {
-      final attachmentEvaluation = evaluateAttachment(attachment);
-      if (!attachmentEvaluation.canDownloadAttachment) {
-        consumeState(Stream.value(Left(GetImageDataFromAttachmentFailure())));
-        return;
-      }
-
-      consumeState(_getImageDataFromAttachmentInteractor.execute(
-        DownloadTaskId(uuid.v4()),
-        attachment,
-        attachmentEvaluation.accountId!,
-        attachmentEvaluation.downloadUrl!,
-      ));
-    } else if (attachment.isText) {
-      final attachmentEvaluation = evaluateAttachment(attachment);
-      if (!attachmentEvaluation.canDownloadAttachment) {
-        consumeState(Stream.value(Left(GetTextDataFromAttachmentFailure())));
-        return;
-      }
-
-      consumeState(_getTextDataFromAttachmentInteractor.execute(
-        DownloadTaskId(uuid.v4()),
-        attachment,
-        attachmentEvaluation.accountId!,
-        attachmentEvaluation.downloadUrl!,
       ));
     } else {
       handleDownloadAttachmentAction(context, attachment);
