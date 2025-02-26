@@ -4002,5 +4002,189 @@
     "placeholders": {
       "numberOfMailbox": {}
     }
+  },
+  "messageWarningDialogForForwardsToOtherDomains": "您正在将电子邮件重定向到另一个域。这可能是安全威胁，也可能被视为非法数据提取。",
+  "@messageWarningDialogForForwardsToOtherDomains": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emailReadReceiptsSettingExplanation": "已读回执是可以向用户发送或从用户发送用于验证是否已阅读邮件的通知。",
+  "@emailReadReceiptsSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "last15Days": "过去 15 天",
+  "@last15Days": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "errorWhileFetchingSubaddress": "获取子地址时出错",
+  "@errorWhileFetchingSubaddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "reply_to_email_address_prefix": "回复至",
+  "@reply_to_email_address_prefix": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "replyToList": "回复邮件列表",
+  "@replyToList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "recoverDeletedMessagesBannerContent": "您可以恢复在过去 {period}删除的邮件",
+  "@recoverDeletedMessagesBannerContent": {
+    "type": "text",
+    "placeholders_order": [
+      "period"
+    ],
+    "placeholders": {
+      "period": {}
+    }
+  },
+  "switchAccountConfirmation": "切换账号确认",
+  "@switchAccountConfirmation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_confirmation_dialog_allow_subaddressing_mobile": "您即将允许任何人使用地址 <{address}> 直接向您的文件夹“{nameMailbox}”发送电子邮件",
+  "@message_confirmation_dialog_allow_subaddressing_mobile": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox",
+      "address"
+    ],
+    "placeholders": {
+      "nameMailbox": {},
+      "address": {}
+    }
+  },
+  "toastMessageAllowSubaddressingSuccess": "您已成功允许此文件夹的子地址",
+  "@toastMessageAllowSubaddressingSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "unexpectedError": "意外错误：{errorMessage}",
+  "@unexpectedError": {
+    "type": "text",
+    "placeholders_order": [
+      "errorMessage"
+    ],
+    "placeholders": {
+      "errorMessage": {}
+    }
+  },
+  "toastMessageSubaddressingFailure": "处理请求时出错",
+  "@toastMessageSubaddressingFailure": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "copySubaddress": "复制子地址",
+  "@copySubaddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "contactSupport": "联系支持人员",
+  "@contactSupport": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "emptyTrashFolderFailed": "清空已删除邮件文件夹失败",
+  "@emptyTrashFolderFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "message_confirmation_dialog_allow_subaddressing": "您即将允许任何人使用以下方式直接向您的文件夹“{nameMailbox}”发送电子邮件：",
+  "@message_confirmation_dialog_allow_subaddressing": {
+    "type": "text",
+    "placeholders_order": [
+      "nameMailbox"
+    ],
+    "placeholders": {
+      "nameMailbox": {}
+    }
+  },
+  "handshakeException": "客户端握手错误：{errorMessage}",
+  "@handshakeException": {
+    "type": "text",
+    "placeholders_order": [
+      "errorMessage"
+    ],
+    "placeholders": {
+      "errorMessage": {}
+    }
+  },
+  "emailSubaddressCopiedToClipboard": "电子邮件子地址已复制到剪贴板",
+  "@emailSubaddressCopiedToClipboard": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "getHelpOrReportABug": "获取帮助或报告错误",
+  "@getHelpOrReportABug": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "badCredentials": "凭据错误",
+  "@badCredentials": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "logoutConfirmation": "登出确认",
+  "@logoutConfirmation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allowSubaddressing": "允许子地址",
+  "@allowSubaddressing": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "disallowSubaddressing": "不允许子地址",
+  "@disallowSubaddressing": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "yesLogout": "是，登出",
+  "@yesLogout": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageDisallowSubaddressingSuccess": "您已成功不允许此文件夹的子地址",
+  "@toastMessageDisallowSubaddressingSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "allow": "允许",
+  "@allow": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveAndRefresh": "保存并刷新",
+  "@saveAndRefresh": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
