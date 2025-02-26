@@ -262,7 +262,7 @@ dependencies:
   twake_previewer_flutter:
     git:
       url: https://github.com/linagora/twake-previewer-flutter
-      ref: main
+      ref: enhancement/1-improve-and-optimize
 
 dev_dependencies:
   flutter_test:

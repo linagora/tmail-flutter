@@ -127,7 +127,7 @@ class _HtmlAttachmentPreviewerState extends State<HtmlAttachmentPreviewer> {
             height: height,
           ),
           htmlViewOptions: HtmlViewOptions(
-            contentClass: 'tmail-content',
+            contentClassName: 'tmail-content',
             direction: AppUtils.getCurrentDirection(context),
             mailtoDelegate: (uri) {
               popBack();
