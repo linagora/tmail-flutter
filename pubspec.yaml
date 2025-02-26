@@ -185,7 +185,7 @@ dependencies:
 
   json_annotation: 4.8.0
 
-  url_launcher: ^6.2.4
+  url_launcher: 6.3.1
 
   firebase_core: 2.7.0
 

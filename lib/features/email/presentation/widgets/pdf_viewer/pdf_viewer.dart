@@ -129,30 +129,30 @@ class _PDFViewerState extends State<PDFViewer> {
         return ValueListenableBuilder(
           valueListenable: _pdfViewStateNotifier,
           builder: (context, viewState, child) {
-            final previewerState = switch (viewState.runtimeType) {
-              DownloadAttachmentForWebSuccess => PreviewerState.success,
-              DownloadAttachmentForWebFailure => PreviewerState.failure,
-              DownloadingAttachmentForWeb => PreviewerState.loading,
+            final previewerState = switch (viewState) {
+              DownloadAttachmentForWebSuccess() => PreviewerState.success,
+              DownloadAttachmentForWebFailure() => PreviewerState.failure,
+              DownloadingAttachmentForWeb() => PreviewerState.loading,
               _ => PreviewerState.idle,
             };
         
-            final bytes = switch (viewState.runtimeType) {
-              DownloadAttachmentForWebSuccess => (viewState as DownloadAttachmentForWebSuccess).bytes,
+            final bytes = switch (viewState) {
+              DownloadAttachmentForWebSuccess(bytes: final bytes) => bytes,
               _ => null,
             };
         
-            final downloadProgress = switch (viewState.runtimeType) {
-              DownloadingAttachmentForWeb => (viewState as DownloadingAttachmentForWeb).progress / 100,
+            final downloadProgress = switch (viewState) {
+              DownloadingAttachmentForWeb(progress: final progress) => progress / 100,
               _ => 0.0,
             };
         
-            final progressText = switch (viewState.runtimeType) {
-              DownloadingAttachmentForWeb => '${(viewState as DownloadingAttachmentForWeb).progress.round()}%',
+            final progressText = switch (viewState) {
+              DownloadingAttachmentForWeb(progress: final progress) => '${progress.round()}%',
               _ => '',
             };
         
-            final title = switch (viewState.runtimeType) {
-              DownloadAttachmentForWebSuccess => (viewState as DownloadAttachmentForWebSuccess).attachment.generateFileName(),
+            final title = switch (viewState) {
+              DownloadAttachmentForWebSuccess(attachment: final attachment) => attachment.generateFileName(),
               _ => '',
             };
             
