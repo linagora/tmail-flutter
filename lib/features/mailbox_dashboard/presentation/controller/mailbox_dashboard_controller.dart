@@ -103,6 +103,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_for_select_all_emails_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
@@ -223,10 +224,10 @@ class MailboxDashBoardController extends ReloadableController
   final GetRestoredDeletedMessageInterator _getRestoredDeletedMessageInteractor;
   final RemoveComposerCacheOnWebInteractor _removeComposerCacheOnWebInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
-  final MarkAllAsUnreadSelectionAllEmailsInteractor _markAllAsUnreadSelectionAllEmailsInteractor;
-  final MoveAllSelectionAllEmailsInteractor _moveAllSelectionAllEmailsInteractor;
-  final DeleteAllPermanentlyEmailsInteractor _deleteAllPermanentlyEmailsInteractor;
-  final MarkAllAsStarredSelectionAllEmailsInteractor _markAllAsStarredSelectionAllEmailsInteractor;
+  final MarkAllAsUnreadSelectionAllEmailsInteractor markAllAsUnreadSelectionAllEmailsInteractor;
+  final MoveAllSelectionAllEmailsInteractor moveAllSelectionAllEmailsInteractor;
+  final DeleteAllPermanentlyEmailsInteractor deleteAllPermanentlyEmailsInteractor;
+  final MarkAllAsStarredSelectionAllEmailsInteractor markAllAsStarredSelectionAllEmailsInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -261,11 +262,7 @@ class MailboxDashBoardController extends ReloadableController
   final isRecoveringDeletedMessage = RxBool(false);
   final localFileDraggableAppState = Rxn<DraggableAppState>();
   final isSelectAllEmailsEnabled = RxBool(false);
-  final viewStateSelectionActionProgress = Rx<Either<Failure, Success>>(Right(UIState.idle));
   final isSelectAllPageEnabled = RxBool(false);
-  final moveAllSelectionAllEmailsViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
-  final deleteAllPermanentlyEmailsViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
-  final markAllAsStarredSelectionAllEmailsViewState = Rx<Either<Failure, Success>>(Right(UIState.idle));
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
@@ -284,25 +281,13 @@ class MailboxDashBoardController extends ReloadableController
   DeepLinksManager? _deepLinksManager;
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
 
-  late StreamSubscription _markAsReadMailboxStreamSubscription;
+  late StreamSubscription _viewStateMailboxActionStreamSubscription;
   late StreamSubscription _refreshActionStreamSubscription;
-  late StreamSubscription _markAllAsUnreadSelectionAllEmailsStreamSubscription;
-  late StreamSubscription _moveAllSelectionAllEmailsStreamSubscription;
-  late StreamSubscription _deleteAllPermanentlyEmailsStreamSubscription;
-  late StreamSubscription _markAllAsStarredSelectionAllEmailsStreamSubscription;
 
-  final StreamController<Either<Failure, Success>> _markAsReadMailboxStreamController =
+  final StreamController<Either<Failure, Success>> viewStateMailboxActionStreamController =
     StreamController<Either<Failure, Success>>.broadcast();
   final StreamController<RefreshActionViewEvent> _refreshActionEventController =
     StreamController<RefreshActionViewEvent>.broadcast();
-  final StreamController<Either<Failure, Success>> _markAllAsUnreadSelectionAllEmailsStreamController =
-    StreamController<Either<Failure, Success>>.broadcast();
-  final StreamController<Either<Failure, Success>> _moveAllSelectionAllEmailsStreamController =
-    StreamController<Either<Failure, Success>>.broadcast();
-  final StreamController<Either<Failure, Success>> _deleteAllPermanentlyEmailsStreamController =
-    StreamController<Either<Failure, Success>>.broadcast();
-  final StreamController<Either<Failure, Success>> _markAllAsStarredSelectionAllEmailsStreamController =
-    StreamController<Either<Failure, Success>>.broadcast();
 
   final _notificationManager = LocalNotificationManager.instance;
   final _fcmService = FcmService.instance;
@@ -337,10 +322,10 @@ class MailboxDashBoardController extends ReloadableController
     this._getRestoredDeletedMessageInteractor,
     this._removeComposerCacheOnWebInteractor,
     this._getAllIdentitiesInteractor,
-    this._markAllAsUnreadSelectionAllEmailsInteractor,
-    this._moveAllSelectionAllEmailsInteractor,
-    this._deleteAllPermanentlyEmailsInteractor,
-    this._markAllAsStarredSelectionAllEmailsInteractor,
+    this.markAllAsUnreadSelectionAllEmailsInteractor,
+    this.moveAllSelectionAllEmailsInteractor,
+    this.deleteAllPermanentlyEmailsInteractor,
+    this.markAllAsStarredSelectionAllEmailsInteractor,
   );
 
   @override
@@ -392,12 +377,7 @@ class MailboxDashBoardController extends ReloadableController
   void handleSuccessViewState(Success success) {
     super.handleSuccessViewState(success);
     if (success is SendEmailLoading) {
-      if (currentOverlayContext != null && currentContext != null) {
-        appToast.showToastMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).your_email_being_sent,
-          leadingSVGIcon: imagePaths.icSendToast);
-      }
+      toastManager.show(success);
     } else if (success is GetEmailStateToRefreshSuccess) {
       dispatchEmailUIAction(RefreshChangeEmailAction(success.storedState));
       _deleteEmailStateToRefreshAction();
@@ -412,9 +392,6 @@ class MailboxDashBoardController extends ReloadableController
       _moveToMailboxSuccess(success);
     } else if (success is DeleteEmailPermanentlySuccess) {
       _deleteEmailPermanentlySuccess(success);
-    } else if (success is MarkAsMailboxReadAllSuccess ||
-        success is MarkAsMailboxReadHasSomeEmailFailure) {
-      _markAsReadMailboxSuccess(success);
     } else if (success is GetAllVacationSuccess) {
       if (success.listVacationResponse.isNotEmpty) {
         vacationResponse.value = success.listVacationResponse.first;
@@ -478,16 +455,17 @@ class MailboxDashBoardController extends ReloadableController
         markStarAction: success.markStarAction,
       );
     } else if (success is MarkAllAsUnreadSelectionAllEmailsAllSuccess
-      || success is MarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure) {
-      _handleMarkAllAsUnreadSelectionAllEmailsSuccess(success);
-    } else if (success is MoveAllSelectionAllEmailsAllSuccess
-      || success is MoveAllSelectionAllEmailsHasSomeEmailFailure) {
-      _handleMoveAllSelectionAllEmailsSuccess(success);
-    } else if (success is DeleteAllPermanentlyEmailsSuccess) {
-      _handleDeleteAllPermanentlyEmailsSuccess(success);
-    } else if (success is MarkAllAsStarredSelectionAllEmailsAllSuccess
-        || success is MarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure) {
-      _handleMarkAllAsStarredSelectionAllEmailsSuccess(success);
+      || success is MarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure
+      || success is MoveAllSelectionAllEmailsAllSuccess
+      || success is MoveAllSelectionAllEmailsHasSomeEmailFailure
+      || success is DeleteAllPermanentlyEmailsSuccess
+      || success is MarkAllAsStarredSelectionAllEmailsAllSuccess
+      || success is MarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure
+      || success is MarkAsMailboxReadAllSuccess
+      || success is MarkAsMailboxReadHasSomeEmailFailure
+    ) {
+      _resetViewStateAndShowToast(success);
+      cancelSelectAllEmailAction();
     }
   }
 
@@ -502,35 +480,28 @@ class MailboxDashBoardController extends ReloadableController
       _handleUpdateEmailAsDraftsFailure(failure);
     } else if (failure is RemoveEmailDraftsFailure) {
       clearState();
-    } else if (failure is MarkAsMailboxReadAllFailure) {
-      _markAsReadMailboxAllFailure(failure);
-    }  else if (failure is MarkAsMailboxReadFailure) {
-      _markAsReadMailboxFailure(failure);
     } else if (failure is GetEmailByIdFailure) {
       _handleGetEmailByIdFailure(failure);
-    } else if (failure is RestoreDeletedMessageFailure) {
-      _handleRestoreDeletedMessageFailed();
-    } else if (failure is GetRestoredDeletedMessageFailure) {
-      _handleRestoreDeletedMessageFailed();
-    } else if (failure is EmptySpamFolderFailure) {
-      _handleEmptySpamFolderFailure(failure);
-    } else if (failure is EmptyTrashFolderFailure) {
-      _handleEmptyTrashFolderFailure(failure);
-    } else if (failure is MoveMultipleEmailToMailboxFailure) {
-      toastManager.showMessageFailure(failure);
+    } else if (failure is EmptySpamFolderFailure
+        || failure is EmptyTrashFolderFailure) {
+      _resetViewStateAndShowToast(failure);
+    }  else if (failure is MarkAllAsUnreadSelectionAllEmailsFailure
+        || failure is MoveAllSelectionAllEmailsFailure
+        || failure is MoveAllSelectionAllEmailsAllFailure
+        || failure is DeleteAllPermanentlyEmailsFailure
+        || failure is MarkAllAsStarredSelectionAllEmailsFailure
+        || failure is MarkAsMailboxReadAllFailure
+        || failure is MarkAsMailboxReadFailure
+    ) {
+      _resetViewStateAndShowToast(failure);
+      cancelSelectAllEmailAction();
+    } else if (failure is MoveMultipleEmailToMailboxFailure
+        || failure is RestoreDeletedMessageFailure
+        || failure is GetRestoredDeletedMessageFailure
+    ) {
+      toastManager.show(failure);
     } else if (failure is GetComposerCacheFailure) {
       _handleIdentityCache();
-    } else if (failure is MarkAllAsUnreadSelectionAllEmailsFailure
-      || failure is MarkAllAsUnreadSelectionAllEmailsAllFailure) {
-      _handleMarkAllAsUnreadSelectionAllEmailsFailure(failure);
-    } else if (failure is MoveAllSelectionAllEmailsFailure
-      || failure is MoveAllSelectionAllEmailsAllFailure) {
-      _handleMoveAllSelectionAllEmailsFailure(failure);
-    } else if (failure is DeleteAllPermanentlyEmailsFailure) {
-      _handleDeleteAllPermanentlyEmailsFailure(failure);
-    } else if (failure is MarkAllAsStarredSelectionAllEmailsFailure
-      || failure is MarkAllAsStarredSelectionAllEmailsAllFailure) {
-      _handleMarkAllAsStarredSelectionAllEmailsFailure(failure);
     }
   }
 
@@ -712,30 +683,13 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void _registerStreamListener() {
-    _markAsReadMailboxStreamSubscription = _markAsReadMailboxStreamController
+    _viewStateMailboxActionStreamSubscription = viewStateMailboxActionStreamController
       .stream
       .listen((state) => viewStateMailboxActionProgress.value = state);
 
     _refreshActionStreamSubscription = _refreshActionEventController.stream
       .debounceTime(const Duration(milliseconds: FcmUtils.durationMessageComing))
       .listen(_handleRefreshActionWhenBackToApp);
-
-    _markAllAsUnreadSelectionAllEmailsStreamSubscription =
-      _markAllAsUnreadSelectionAllEmailsStreamController
-        .stream
-        .listen((state) => viewStateSelectionActionProgress.value = state);
-
-    _moveAllSelectionAllEmailsStreamSubscription = _moveAllSelectionAllEmailsStreamController.stream.listen((state) {
-      moveAllSelectionAllEmailsViewState.value = state;
-    });
-
-    _deleteAllPermanentlyEmailsStreamSubscription = _deleteAllPermanentlyEmailsStreamController.stream.listen((state) {
-      deleteAllPermanentlyEmailsViewState.value = state;
-    });
-
-    _markAllAsStarredSelectionAllEmailsStreamSubscription = _markAllAsStarredSelectionAllEmailsStreamController.stream.listen((state) {
-      markAllAsStarredSelectionAllEmailsViewState.value = state;
-    });
 
     _registerLocalNotificationStreamListener();
   }
@@ -1086,13 +1040,8 @@ class MailboxDashBoardController extends ReloadableController
       emailIds: [success.emailId],
       affectedMailboxId: success.mailboxId,
     );
-    if (currentOverlayContext != null &&  currentContext != null) {
-      appToast.showToastSuccessMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toast_message_delete_a_email_permanently_success,
-        leadingSVGIcon: imagePaths.icDeleteToast
-      );
-    }
+
+    toastManager.show(success);
   }
 
   void markAsEmailRead(
@@ -1310,122 +1259,6 @@ class MailboxDashBoardController extends ReloadableController
           EmailActionType.moveToMailbox,
           destinationPath: destinationMailbox.mailboxPath),
         emailIdsWithReadStatus);
-    }
-  }
-
-  void dragAllSelectedEmailToMailboxAction(PresentationMailbox destinationMailbox) {
-    if (selectedMailbox.value == null) return;
-
-    showConfirmDialogWhenMakeToActionForSelectionAllEmails(
-      imagePaths: imagePaths,
-      totalEmails: selectedMailbox.value!.countTotalEmails,
-      folderName: currentContext != null
-        ? selectedMailbox.value!.getDisplayName(currentContext!)
-        : '',
-      onConfirmAction: () => handleActionsForSelectionAllEmails(
-        context: currentContext!,
-        selectedMailbox: selectedMailbox.value!,
-        actionType: _getTypeMoveAllActionForMailbox(destinationMailbox),
-        destinationMailbox: destinationMailbox,
-      ),
-    );
-  }
-
-  EmailActionType _getTypeMoveAllActionForMailbox(PresentationMailbox presentationMailbox) {
-    if (presentationMailbox.isTrash) {
-      return EmailActionType.moveAllToTrash;
-    } else if (presentationMailbox.isSpam) {
-      return EmailActionType.markAllAsSpam;
-    } else {
-      return EmailActionType.moveAll;
-    }
-  }
-
-  void handleActionsForSelectionAllEmails({
-    required BuildContext context,
-    required PresentationMailbox selectedMailbox,
-    required EmailActionType actionType,
-    PresentationMailbox? destinationMailbox,
-  }) {
-    log('MailboxDashBoardController::handleActionsForSelectionAllEmails:actionType = $actionType');
-    if (sessionCurrent == null || accountId.value == null) {
-      logError('MailboxDashBoardController::_handleActionsForSelectionAllEmails: SESSION & ACCOUNT_ID is null');
-      return;
-    }
-
-    switch(actionType) {
-      case EmailActionType.markAllAsRead:
-        markAsReadMailbox(
-          sessionCurrent!,
-          accountId.value!,
-          selectedMailbox.mailboxId!,
-          selectedMailbox.getDisplayName(context),
-          selectedMailbox.countUnreadEmails,
-        );
-        break;
-      case EmailActionType.markAllAsUnread:
-        markAllAsUnreadSelectionAllEmails(
-          sessionCurrent!,
-          accountId.value!,
-          selectedMailbox.mailboxId!,
-          selectedMailbox.getDisplayName(context),
-          selectedMailbox.countReadEmails,
-        );
-        break;
-      case EmailActionType.moveAll:
-        moveAllSelectionAllEmails(
-          context,
-          sessionCurrent!,
-          accountId.value!,
-          selectedMailbox,
-          destinationMailbox: destinationMailbox,
-        );
-        break;
-      case EmailActionType.moveAllToTrash:
-        moveAllToTrashSelectionAllEmails(
-          context,
-          sessionCurrent!,
-          accountId.value!,
-          selectedMailbox,
-          trashMailbox: destinationMailbox,
-        );
-        break;
-      case EmailActionType.deleteAllPermanently:
-        deleteAllPermanentlyEmails(
-          context,
-          sessionCurrent!,
-          accountId.value!,
-          selectedMailbox,
-        );
-        break;
-      case EmailActionType.markAllAsStarred:
-        markAllAsStarredSelectionAllEmails(
-          sessionCurrent!,
-          accountId.value!,
-          selectedMailbox.mailboxId!,
-          selectedMailbox.getDisplayName(context),
-          selectedMailbox.countTotalEmails,
-        );
-        break;
-      case EmailActionType.markAllAsSpam:
-        maskAllAsSpamSelectionAllEmails(
-          context,
-          sessionCurrent!,
-          accountId.value!,
-          selectedMailbox,
-          spamMailbox: destinationMailbox,
-        );
-        break;
-      case EmailActionType.allUnSpam:
-        allUnSpamSelectionAllEmails(
-          context,
-          sessionCurrent!,
-          accountId.value!,
-          selectedMailbox,
-        );
-        break;
-      default:
-        break;
     }
   }
 
@@ -1795,23 +1628,17 @@ class MailboxDashBoardController extends ReloadableController
         accountId.value!,
         trashMailboxId,
         totalEmailsInTrash ?? 0,
-        _markAsReadMailboxStreamController,
+        viewStateMailboxActionStreamController,
       ));
     }
   }
 
   void _emptyTrashFolderSuccess(EmptyTrashFolderSuccess success) {
-    viewStateMailboxActionProgress.value = Right(UIState.idle);
-
     handleDeleteEmailsInMailbox(
       emailIds: success.emailIds,
       affectedMailboxId: success.mailboxId,
     );
-    if (currentOverlayContext != null && currentContext != null) {
-      appToast.showToastSuccessMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toast_message_empty_trash_folder_success);
-    }
+    _resetViewStateAndShowToast(success);
   }
 
   void _deleteMultipleEmailsPermanently(List<PresentationEmail> listEmails, {Function? onCancelSelectionEmail}) {
@@ -1959,49 +1786,7 @@ class MailboxDashBoardController extends ReloadableController
       mailboxId,
       mailboxDisplayName,
       totalEmailsUnread,
-      _markAsReadMailboxStreamController));
-  }
-
-  void _markAsReadMailboxSuccess(Success success) {
-    viewStateMailboxActionProgress.value = Right(UIState.idle);
-
-    if (success is MarkAsMailboxReadAllSuccess) {
-      if (currentContext != null && currentOverlayContext != null) {
-        appToast.showToastSuccessMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).toastMessageMarkAsMailboxReadSuccess(success.mailboxDisplayName),
-          leadingSVGIcon: imagePaths.icReadToast);
-      }
-    } else if (success is MarkAsMailboxReadHasSomeEmailFailure) {
-      if (currentContext != null && currentOverlayContext != null) {
-        appToast.showToastSuccessMessage(
-          currentOverlayContext!,
-          AppLocalizations.of(currentContext!).toastMessageMarkAsMailboxReadHasSomeEmailFailure(success.mailboxDisplayName, success.countEmailsRead),
-          leadingSVGIcon: imagePaths.icReadToast);
-      }
-    }
-  }
-
-  void _markAsReadMailboxFailure(MarkAsMailboxReadFailure failure) {
-    viewStateMailboxActionProgress.value = Right(UIState.idle);
-    if (currentOverlayContext != null && currentContext != null) {
-      appToast.showToastErrorMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageMarkAsReadFolderAllFailure(
-          failure.mailboxDisplayName,
-        )
-      );
-    }
-  }
-
-  void _markAsReadMailboxAllFailure(MarkAsMailboxReadAllFailure failure) {
-    viewStateMailboxActionProgress.value = Right(UIState.idle);
-    if (currentOverlayContext != null && currentContext != null) {
-      appToast.showToastErrorMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageMarkAsReadFolderAllFailure(failure.mailboxDisplayName)
-      );
-    }
+      viewStateMailboxActionStreamController));
   }
 
   void goToComposer(ComposerArguments arguments) async {
@@ -2786,12 +2571,9 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void emptySpamFolderAction({
-    Function? onCancelSelectionEmail,
     MailboxId? spamFolderId,
     int totalEmails = 0
   }) {
-    onCancelSelectionEmail?.call();
-
     spamFolderId ??= spamMailboxId;
 
     if (accountId.value == null || sessionCurrent == null) {
@@ -2809,22 +2591,16 @@ class MailboxDashBoardController extends ReloadableController
       accountId.value!,
       spamFolderId,
       totalEmails,
-      _markAsReadMailboxStreamController,
+      viewStateMailboxActionStreamController,
     ));
   }
 
   void _emptySpamFolderSuccess(EmptySpamFolderSuccess success) {
-    viewStateMailboxActionProgress.value = Right(UIState.idle);
-
     handleDeleteEmailsInMailbox(
       emailIds: success.emailIds,
       affectedMailboxId: success.mailboxId,
     );
-    if (currentOverlayContext != null && currentContext != null) {
-      appToast.showToastSuccessMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toast_message_empty_trash_folder_success);
-    }
+    _resetViewStateAndShowToast(success);
   }
 
   bool isEmptySpamBannerEnabledOnWeb(
@@ -3214,23 +2990,9 @@ class MailboxDashBoardController extends ReloadableController
     consumeState(_getRestoredDeletedMessageInteractor.execute(sessionCurrent!, accountId.value!, emailRecoveryActionId));
   }
 
-  void _handleRestoreDeletedMessageFailed() {
-    appToast.showToastErrorMessage(
-      currentOverlayContext!,
-      AppLocalizations.of(currentOverlayContext!).restoreDeletedMessageFailed
-    );
-  }
-
-  void _handleEmptySpamFolderFailure(EmptySpamFolderFailure failure) {
+  void _resetViewStateAndShowToast(dynamic viewState) {
     viewStateMailboxActionProgress.value = Right(UIState.idle);
-
-    toastManager.showMessageFailure(failure);
-  }
-
-  void _handleEmptyTrashFolderFailure(EmptyTrashFolderFailure failure) {
-    viewStateMailboxActionProgress.value = Right(UIState.idle);
-
-    toastManager.showMessageFailure(failure);
+    toastManager.show(viewState);
   }
 
   void _handleGetRestoredDeletedMessageSuccess(GetRestoredDeletedMessageSuccess success) async {
@@ -3412,330 +3174,6 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
-  void markAllAsUnreadSelectionAllEmails(
-    Session session,
-    AccountId accountId,
-    MailboxId mailboxId,
-    String mailboxDisplayName,
-    int totalEmailsRead,
-  ) {
-    consumeState(_markAllAsUnreadSelectionAllEmailsInteractor.execute(
-      session,
-      accountId,
-      mailboxId,
-      mailboxDisplayName,
-      totalEmailsRead,
-      _markAllAsUnreadSelectionAllEmailsStreamController
-    ));
-  }
-
-  void _handleMarkAllAsUnreadSelectionAllEmailsSuccess(Success success) {
-    viewStateSelectionActionProgress.value = Right(UIState.idle);
-
-    if (currentContext == null || currentOverlayContext == null) return;
-
-    if (success is MarkAllAsUnreadSelectionAllEmailsAllSuccess) {
-      appToast.showToastSuccessMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageMarkAllAsUnreadSelectionAllEmailsSuccess,
-        leadingSVGIcon: imagePaths.icUnreadToast,
-      );
-    } else if (success is MarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure) {
-      appToast.showToastSuccessMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageMarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure(success.countEmailsUnread),
-        leadingSVGIcon: imagePaths.icUnreadToast,
-      );
-    }
-  }
-
-  void _handleMarkAllAsUnreadSelectionAllEmailsFailure(Failure failure) {
-    viewStateSelectionActionProgress.value = Right(UIState.idle);
-
-    if (currentContext == null || currentOverlayContext == null) return;
-
-    if (failure is MarkAllAsUnreadSelectionAllEmailsFailure) {
-      appToast.showToastErrorMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageMarkAllAsUnreadSelectionAllEmailsFailureWithReason(
-          failure.exception.toString(),
-        ),
-      );
-    } else if (failure is MarkAllAsUnreadSelectionAllEmailsAllFailure) {
-      appToast.showToastErrorMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageMarkAllAsUnreadSelectionAllEmailsAllFailure,
-      );
-    }
-  }
-
-  Future<void> moveAllSelectionAllEmails(
-    BuildContext context,
-    Session session,
-    AccountId accountId,
-    PresentationMailbox currentMailbox,
-    {
-      PresentationMailbox? destinationMailbox,
-    }
-  ) async {
-    if (destinationMailbox == null) {
-      final arguments = DestinationPickerArguments(
-        accountId,
-        MailboxActions.moveEmail,
-        session,
-        mailboxIdSelected: currentMailbox.id,
-      );
-
-      destinationMailbox = PlatformInfo.isWeb
-        ? await DialogRouter.pushGeneralDialog(
-            routeName: AppRoutes.destinationPicker,
-            arguments: arguments,
-          )
-        : await push(AppRoutes.destinationPicker, arguments: arguments);
-    }
-
-    if (destinationMailbox is PresentationMailbox) {
-      consumeState(_moveAllSelectionAllEmailsInteractor.execute(
-        session,
-        accountId,
-        currentMailbox.id,
-        destinationMailbox.id,
-        destinationMailbox.mailboxPath ?? (context.mounted
-          ? destinationMailbox.getDisplayName(context)
-          : ''),
-        currentMailbox.countTotalEmails,
-        _moveAllSelectionAllEmailsStreamController,
-        isDestinationSpamMailbox: destinationMailbox.isSpam
-      ));
-    }
-  }
-
-  void _handleMoveAllSelectionAllEmailsSuccess(Success success) {
-    moveAllSelectionAllEmailsViewState.value = Right(UIState.idle);
-
-    if (currentContext == null || currentOverlayContext == null) return;
-
-    if (success is MoveAllSelectionAllEmailsAllSuccess) {
-      appToast.showToastSuccessMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageMoveAllSelectionAllEmailsSuccess(success.destinationPath),
-        leadingSVGIconColor: Colors.white,
-        leadingSVGIcon: imagePaths.icFolderMailbox,
-      );
-    } else if (success is MoveAllSelectionAllEmailsHasSomeEmailFailure) {
-      appToast.showToastSuccessMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageMoveAllSelectionAllEmailsHasSomeEmailFailure(success.countEmailsMoved, success.destinationPath),
-        leadingSVGIconColor: Colors.white,
-        leadingSVGIcon: imagePaths.icFolderMailbox,
-      );
-    }
-  }
-
-  void _handleMoveAllSelectionAllEmailsFailure(Failure failure) {
-    moveAllSelectionAllEmailsViewState.value = Right(UIState.idle);
-
-    if (currentContext == null || currentOverlayContext == null) return;
-
-    if (failure is MoveAllSelectionAllEmailsFailure) {
-      appToast.showToastErrorMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageMoveAllSelectionAllEmailsFailureWithReason(
-          failure.destinationPath,
-          failure.exception.toString(),
-        ),
-      );
-    } else if (failure is MoveAllSelectionAllEmailsAllFailure) {
-      appToast.showToastErrorMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageMoveAllSelectionAllEmailsAllFailure(
-          failure.destinationPath,
-        ),
-      );
-    }
-  }
-
-  Future<void> moveAllToTrashSelectionAllEmails(
-    BuildContext context,
-    Session session,
-    AccountId accountId,
-    PresentationMailbox currentMailbox,
-    {
-      PresentationMailbox? trashMailbox,
-    }
-  ) async {
-    MailboxId? trashMailboxId = trashMailbox?.id;
-    String? trashMailboxPath = trashMailbox?.getDisplayName(context) ?? '';
-
-    if (trashMailbox == null) {
-      trashMailboxId = getMailboxIdByRole(PresentationMailbox.roleTrash);
-      if (trashMailboxId == null) return;
-      trashMailboxPath = mapMailboxById[trashMailboxId]?.getDisplayName(context) ?? '';
-    }
-
-    if (trashMailboxId == null) return;
-
-    consumeState(_moveAllSelectionAllEmailsInteractor.execute(
-      session,
-      accountId,
-      currentMailbox.id,
-      trashMailboxId,
-      trashMailboxPath,
-      currentMailbox.countTotalEmails,
-      _moveAllSelectionAllEmailsStreamController
-    ));
-  }
-
-  Future<void> deleteAllPermanentlyEmails(
-    BuildContext context,
-    Session session,
-    AccountId accountId,
-    PresentationMailbox currentMailbox
-  ) async {
-    consumeState(_deleteAllPermanentlyEmailsInteractor.execute(
-      session,
-      accountId,
-      currentMailbox.id,
-      currentMailbox.countTotalEmails,
-      _deleteAllPermanentlyEmailsStreamController,
-    ));
-  }
-
-  void _handleDeleteAllPermanentlyEmailsSuccess(DeleteAllPermanentlyEmailsSuccess success) {
-    deleteAllPermanentlyEmailsViewState.value = Right(UIState.idle);
-
-    if (currentContext == null || currentOverlayContext == null) return;
-
-    appToast.showToastSuccessMessage(
-      currentOverlayContext!,
-      AppLocalizations.of(currentContext!).toast_message_empty_trash_folder_success,
-    );
-  }
-
-  void _handleDeleteAllPermanentlyEmailsFailure(DeleteAllPermanentlyEmailsFailure failure) {
-    deleteAllPermanentlyEmailsViewState.value = Right(UIState.idle);
-
-    if (currentContext == null || currentOverlayContext == null) return;
-
-    appToast.showToastSuccessMessage(
-      currentOverlayContext!,
-      AppLocalizations.of(currentContext!).toastMessageDeleteAllPermanentlyEmailsFailureWithReason(
-        failure.exception.toString(),
-      ),
-    );
-  }
-
-  void markAllAsStarredSelectionAllEmails(
-    Session session,
-    AccountId accountId,
-    MailboxId mailboxId,
-    String mailboxDisplayName,
-    int totalEmails
-  ) {
-    consumeState(_markAllAsStarredSelectionAllEmailsInteractor.execute(
-      session,
-      accountId,
-      mailboxId,
-      mailboxDisplayName,
-      totalEmails,
-      _markAllAsUnreadSelectionAllEmailsStreamController,
-    ));
-  }
-
-  void _handleMarkAllAsStarredSelectionAllEmailsSuccess(Success success) {
-    markAllAsStarredSelectionAllEmailsViewState.value = Right(UIState.idle);
-
-    if (currentContext == null || currentOverlayContext == null) return;
-
-    if (success is MarkAllAsStarredSelectionAllEmailsAllSuccess) {
-      appToast.showToastSuccessMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageMarkAllAsStarredSelectionAllEmailsSuccess,
-        leadingSVGIcon: imagePaths.icUnreadToast,
-      );
-    } else if (success is MarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure) {
-      appToast.showToastSuccessMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageMarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure(success.countStarred),
-        leadingSVGIcon: imagePaths.icUnreadToast,
-      );
-    }
-  }
-
-  void _handleMarkAllAsStarredSelectionAllEmailsFailure(Failure failure) {
-    markAllAsStarredSelectionAllEmailsViewState.value = Right(UIState.idle);
-
-    if (currentContext == null || currentOverlayContext == null) return;
-
-    if (failure is MarkAllAsStarredSelectionAllEmailsFailure) {
-      appToast.showToastErrorMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageMarkAllAsStarredSelectionAllEmailsFailureWithReason(
-          failure.exception.toString(),
-        ),
-      );
-    } else if (failure is MarkAllAsStarredSelectionAllEmailsAllFailure) {
-      appToast.showToastErrorMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toastMessageMarkAllAsStarredSelectionAllEmailsAllFailure,
-      );
-    }
-  }
-
-  Future<void> maskAllAsSpamSelectionAllEmails(
-    BuildContext context,
-    Session session,
-    AccountId accountId,
-    PresentationMailbox currentMailbox,
-    {
-      PresentationMailbox? spamMailbox,
-    }
-  ) async {
-    MailboxId? spamMailboxId = spamMailbox?.id;
-    String spamMailboxPath = spamMailbox?.getDisplayName(context) ?? '';
-
-    if (spamMailbox == null) {
-      spamMailboxId = this.spamMailboxId;
-      if (spamMailboxId == null) return;
-      spamMailboxPath = mapMailboxById[spamMailboxId]?.getDisplayName(context) ?? '';
-    }
-
-    if (spamMailboxId == null) return;
-
-    consumeState(_moveAllSelectionAllEmailsInteractor.execute(
-      session,
-      accountId,
-      currentMailbox.id,
-      spamMailboxId,
-      spamMailboxPath,
-      currentMailbox.countTotalEmails,
-      _moveAllSelectionAllEmailsStreamController
-    ));
-  }
-
-  Future<void> allUnSpamSelectionAllEmails(
-    BuildContext context,
-    Session session,
-    AccountId accountId,
-    PresentationMailbox currentMailbox
-  ) async {
-    final inboxMailboxId = getMailboxIdByRole(PresentationMailbox.roleInbox);
-
-    if (inboxMailboxId == null) return;
-
-    final inboxMailboxPath = mapMailboxById[inboxMailboxId]?.getDisplayName(context) ?? '';
-
-    consumeState(_moveAllSelectionAllEmailsInteractor.execute(
-      session,
-      accountId,
-      currentMailbox.id,
-      inboxMailboxId,
-      inboxMailboxPath,
-      currentMailbox.countTotalEmails,
-      _moveAllSelectionAllEmailsStreamController
-    ));
-  }
-
   @override
   void onClose() {
     if (PlatformInfo.isWeb) {
@@ -3751,18 +3189,10 @@ class MailboxDashBoardController extends ReloadableController
       _emailReceiveManager.closeEmailReceiveManagerStream();
       _deepLinkDataStreamSubscription?.cancel();
     }
-    _markAsReadMailboxStreamSubscription.cancel();
-    _markAsReadMailboxStreamController.close();
+    _viewStateMailboxActionStreamSubscription.cancel();
+    viewStateMailboxActionStreamController.close();
     _refreshActionStreamSubscription.cancel();
     _refreshActionEventController.close();
-    _markAllAsUnreadSelectionAllEmailsStreamSubscription.cancel();
-    _markAllAsUnreadSelectionAllEmailsStreamController.close();
-    _moveAllSelectionAllEmailsStreamSubscription.cancel();
-    _moveAllSelectionAllEmailsStreamController.close();
-    _deleteAllPermanentlyEmailsStreamSubscription.cancel();
-    _deleteAllPermanentlyEmailsStreamController.close();
-    _markAllAsStarredSelectionAllEmailsStreamSubscription.cancel();
-    _markAllAsStarredSelectionAllEmailsStreamController.close();
     _notificationManager.closeStream();
     _fcmService.closeStream();
     applicationManager.releaseUserAgent();

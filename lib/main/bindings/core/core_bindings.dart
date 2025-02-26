@@ -52,7 +52,7 @@ class CoreBindings extends Bindings {
   }
 
   void _bindingToast() {
-    Get.put(AppToast());
+    Get.put(AppToast(Get.find<ImagePaths>(), Get.find<ResponsiveUtils>()));
     Get.put(ToastManager(Get.find<AppToast>()));
   }
 

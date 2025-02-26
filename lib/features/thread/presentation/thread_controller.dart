@@ -33,6 +33,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_for_select_all_emails_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/move_emails_to_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';

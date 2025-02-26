@@ -318,7 +318,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   @override
-  Future<List<EmailId>> emptyTrashFolder(
+  Future<List<EmailId>> emptyMailboxFolder(
     Session session,
     AccountId accountId,
     MailboxId trashMailboxId,
@@ -410,30 +410,6 @@ class ThreadRepositoryImpl extends ThreadRepository {
   }
 
   @override
-  Future<List<EmailId>> emptySpamFolder(
-    Session session,
-    AccountId accountId,
-    MailboxId spamMailboxId,
-    int totalEmails,
-    StreamController<dartz.Either<Failure, Success>> onProgressController
-  ) async {
-    final listEmailIdDeleted = await mapDataSource[DataSourceType.network]!.emptyMailboxFolder(
-      session,
-      accountId,
-      spamMailboxId,
-      totalEmails,
-      onProgressController
-    );
-
-    await _updateEmailCache(
-      accountId,
-      session.username,
-      newDestroyed: listEmailIdDeleted);
-
-    return listEmailIdDeleted;
-  }
-
-  @override
   Future<List<EmailId>> markAllAsUnreadForSelectionAllEmails(
     Session session,
     AccountId accountId,
@@ -471,30 +447,6 @@ class ThreadRepositoryImpl extends ThreadRepository {
       onProgressController,
       isDestinationSpamMailbox: isDestinationSpamMailbox
     );
-  }
-
-  @override
-  Future<List<EmailId>> deleteAllPermanentlyEmails(
-    Session session,
-    AccountId accountId,
-    MailboxId mailboxId,
-    int totalEmails,
-    StreamController<dartz.Either<Failure, Success>> onProgressController,
-  ) async {
-    final listEmailIdDeleted = await mapDataSource[DataSourceType.network]!.deleteAllPermanentlyEmails(
-      session,
-      accountId,
-      mailboxId,
-      totalEmails,
-      onProgressController,
-    );
-
-    await _updateEmailCache(
-      accountId,
-      session.username,
-      newDestroyed: listEmailIdDeleted);
-
-    return listEmailIdDeleted;
   }
 
   @override

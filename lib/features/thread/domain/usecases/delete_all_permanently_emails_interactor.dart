@@ -25,7 +25,7 @@ class DeleteAllPermanentlyEmailsInteractor {
       yield Right<Failure, Success>(DeleteAllPermanentlyEmailsLoading());
       onProgressController.add(Right(DeleteAllPermanentlyEmailsLoading()));
 
-      final emailIdDeleted = await _threadRepository.deleteAllPermanentlyEmails(
+      final emailIdDeleted = await _threadRepository.emptyMailboxFolder(
         session,
         accountId,
         mailboxId,

@@ -323,8 +323,8 @@ class ThreadIsolateWorker {
           isDestinationSpamMailbox: isDestinationSpamMailbox,
         );
 
-        log('ThreadIsolateWorker::moveAllSelectionAllEmails(): MOVED: ${movedEmailIds.length}');
-        emailIdListCompleted.addAll(movedEmailIds);
+        log('ThreadIsolateWorker::moveAllSelectionAllEmails(): MOVED: ${movedEmailIds.$1.length} | Error = ${movedEmailIds.$2}');
+        emailIdListCompleted.addAll(movedEmailIds.$1);
 
         onProgressController.add(
           dartz.Right(MoveAllSelectionAllEmailsUpdating(
@@ -341,55 +341,13 @@ class ThreadIsolateWorker {
     return emailIdListCompleted;
   }
 
-  Future<List<EmailId>> deleteAllPermanentlyEmails(
+  Future<List<EmailId>> markAllAsStarredForSelectionAllEmails(
     Session session,
     AccountId accountId,
     MailboxId mailboxId,
     int totalEmails,
     StreamController<dartz.Either<Failure, Success>> onProgressController,
   ) async {
-    List<EmailId> emailIdListCompleted = List.empty(growable: true);
-    try {
-      bool mailboxHasEmails = true;
-
-      while (mailboxHasEmails) {
-        final listResult = await _threadAPI.deleteAllPermanentlyEmails(
-          session,
-          accountId,
-          mailboxId
-        );
-
-        if (listResult.value1.isNotEmpty) {
-          mailboxHasEmails = true;
-        } else {
-          mailboxHasEmails = false;
-        }
-
-        if (listResult.value2.isNotEmpty) {
-          emailIdListCompleted.addAll(listResult.value2);
-
-          onProgressController.add(
-            dartz.Right(MoveAllSelectionAllEmailsUpdating(
-              total: totalEmails,
-              countMoved: emailIdListCompleted.length
-            ))
-          );
-        }
-      }
-    } catch (e) {
-      logError('ThreadIsolateWorker::deleteAllPermanentlyEmails(): ERROR: $e');
-    }
-    log('ThreadIsolateWorker::deleteAllPermanentlyEmails(): TOTAL_DELETED_PERMANENTLY: ${emailIdListCompleted.length}');
-    return emailIdListCompleted;
-  }
-
-  Future<List<EmailId>> markAllAsStarredForSelectionAllEmails(
-      Session session,
-      AccountId accountId,
-      MailboxId mailboxId,
-      int totalEmails,
-      StreamController<dartz.Either<Failure, Success>> onProgressController,
-      ) async {
     List<EmailId> emailIdListCompleted = [];
 
     try {
@@ -398,7 +356,6 @@ class ThreadIsolateWorker {
       EmailId? lastEmailId;
 
       while (hasMoreEmails) {
-        // Fetch emails that are not starred
         final emailResponse = await _threadAPI.getAllEmail(
           session,
           accountId,

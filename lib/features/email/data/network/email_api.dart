@@ -1013,7 +1013,7 @@ class EmailAPI with HandleSetErrorMixin {
     }
   }
 
-  Future<List<EmailId>> moveSelectionAllEmailsToFolder(
+  Future<(List<EmailId> emailIds, Map<Id, SetError> mapErrors)> moveSelectionAllEmailsToFolder(
     Session session,
     AccountId accountId,
     MailboxId currentMailboxId,
@@ -1042,17 +1042,17 @@ class EmailAPI with HandleSetErrorMixin {
 
     final setEmailResponse = response.parse<SetEmailResponse>(
       setEmailInvocation.methodCallId,
-      SetEmailResponse.deserialize
+      SetEmailResponse.deserialize,
     );
 
-    final listIdUpdated = setEmailResponse?.updated?.keys.toList();
+    final updatedEmailIds = setEmailResponse
+      ?.updated
+      ?.keys
+      .toEmailIds()
+      .toList() ?? [];
+
     final mapErrors = handleSetResponse([setEmailResponse]);
 
-    if (listIdUpdated != null && mapErrors.isEmpty) {
-      final listEmailIdUpdated = listIdUpdated.map((id) => EmailId(id)).toList();
-      return listEmailIdUpdated;
-    } else {
-      throw SetMethodException(mapErrors);
-    }
+    return (updatedEmailIds, mapErrors);
   }
 }

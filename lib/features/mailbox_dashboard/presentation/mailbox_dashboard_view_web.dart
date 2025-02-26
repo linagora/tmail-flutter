@@ -24,18 +24,13 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/filter_message_button_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/mailbox_dashboard_view_web_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/mark_mailbox_as_read_loading_banner.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/loading/delete_all_permanently_emails_loading_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/loading/mark_all_as_starred_selection_all_emails_loading_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/loading/mark_all_as_unread_selection_all_emails_loading_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/loading/mark_mailbox_as_read_loading_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/loading/move_all_selection_all_emails_loading_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/filter_message_button.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/search_filter_button.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_input_form_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/app_bar/top_bar_thread_selection.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/view_state_mailbox_action_progress_loading_banner.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/styles/vacation_notification_message_widget_style.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
@@ -108,7 +103,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                           horizontalLoadingWidget: horizontalLoadingWidget,
                           responsiveUtils: controller.responsiveUtils,
                         )),
-                        Obx(() => MarkMailboxAsReadLoadingBanner(
+                        Obx(() => ViewStateMailboxActionProgressLoadingBanner(
                           viewState: controller.viewStateMailboxActionProgress.value,
                         )),
                         const SpamReportBannerWebWidget(),
@@ -135,15 +130,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                           }
                         }),
                         _buildListButtonQuickSearchFilter(context),
-                        Obx(() => MarkMailboxAsReadLoadingWidget(
-                          viewState: controller.viewStateMailboxActionProgress.value,
-                        )),
-                        Obx(() => MarkAllAsUnreadSelectionAllEmailsLoadingWidget(
-                          viewState: controller.viewStateSelectionActionProgress.value,
-                        )),
-                        Obx(() => MoveAllSelectionAllEmailsLoadingWidget(viewState: controller.moveAllSelectionAllEmailsViewState.value)),
-                        Obx(() => DeleteAllPermanentlyEmailsLoadingWidget(viewState: controller.deleteAllPermanentlyEmailsViewState.value)),
-                        Obx(() => MarkAllAsStarredSelectionAllEmailsLoadingWidget(viewState: controller.markAllAsStarredSelectionAllEmailsViewState.value)),
                         Expanded(child: Obx(() {
                           switch(controller.dashboardRoute.value) {
                             case DashboardRoutes.thread:

@@ -33,17 +33,13 @@ class MarkAllAsUnreadSelectionAllEmailsInteractor {
         totalEmailRead,
         onProgressController);
 
-      if (totalEmailRead == listEmailId.length) {
-        yield Right(MarkAllAsUnreadSelectionAllEmailsAllSuccess(mailboxDisplayName));
-      } else if (listEmailId.isNotEmpty) {
+      if (listEmailId.isNotEmpty && totalEmailRead != listEmailId.length) {
         yield Right(MarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure(
           mailboxDisplayName,
           listEmailId.length,
         ));
       } else {
-        yield Left(MarkAllAsUnreadSelectionAllEmailsAllFailure(
-          mailboxDisplayName: mailboxDisplayName
-        ));
+        yield Right(MarkAllAsUnreadSelectionAllEmailsAllSuccess(mailboxDisplayName));
       }
     } catch (e) {
       yield Left(MarkAllAsUnreadSelectionAllEmailsFailure(

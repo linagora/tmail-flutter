@@ -33,12 +33,10 @@ class MarkAllAsStarredSelectionAllEmailsInteractor {
         totalEmails,
         onProgressController);
 
-      if (totalEmails == listEmailId.length) {
-        yield Right(MarkAllAsStarredSelectionAllEmailsAllSuccess());
-      } else if (listEmailId.isNotEmpty) {
+      if (listEmailId.isNotEmpty && totalEmails != listEmailId.length) {
         yield Right(MarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure(listEmailId.length));
       } else {
-        yield Left(MarkAllAsStarredSelectionAllEmailsAllFailure());
+        yield Right(MarkAllAsStarredSelectionAllEmailsAllSuccess());
       }
     } catch (e) {
       yield Left(MarkAllAsStarredSelectionAllEmailsFailure(exception: e));

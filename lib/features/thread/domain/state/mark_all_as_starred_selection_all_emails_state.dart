@@ -29,8 +29,6 @@ class MarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure extends UIState {
   List<Object?> get props => [countStarred];
 }
 
-class  MarkAllAsStarredSelectionAllEmailsAllFailure extends FeatureFailure {}
-
 class MarkAllAsStarredSelectionAllEmailsFailure extends FeatureFailure {
 
   MarkAllAsStarredSelectionAllEmailsFailure({

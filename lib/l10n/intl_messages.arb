@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-02-20T19:41:05.121752",
+  "@@last_modified": "2025-02-26T15:15:51.116032",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4298,11 +4298,15 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mailsOnThisPageAreSelected": "mails on this page are selected. ",
+  "mailsOnThisPageAreSelected": "All {countEmails} mails on this page are selected.",
   "@mailsOnThisPageAreSelected": {
     "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
+    "placeholders_order": [
+      "countEmails"
+    ],
+    "placeholders": {
+      "countEmails": {}
+    }
   },
   "selectAllMailInMailbox": "Select all {total} mails in {folderName}",
   "@selectAllMailInMailbox": {
@@ -4316,13 +4320,15 @@
       "folderName": {}
     }
   },
-  "mailsInMailboxAreSelected": "mails in {folderName} are selected. ",
+  "mailsInMailboxAreSelected": "All {totalEmails} mails in {folderName} are selected.",
   "@mailsInMailboxAreSelected": {
     "type": "text",
     "placeholders_order": [
+      "totalEmails",
       "folderName"
     ],
     "placeholders": {
+      "totalEmails": {},
       "folderName": {}
     }
   },
@@ -4377,12 +4383,6 @@
     "placeholders": {
       "count": {}
     }
-  },
-  "toastMessageMarkAllAsUnreadSelectionAllEmailsAllFailure": "All mails could not be marked as unread",
-  "@toastMessageMarkAllAsUnreadSelectionAllEmailsAllFailure": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
   },
   "toastMessageMarkAllAsUnreadSelectionAllEmailsFailureWithReason": "All mails could not be marked as unread. Due \"{reason}\"",
   "@toastMessageMarkAllAsUnreadSelectionAllEmailsFailureWithReason": {
@@ -4500,12 +4500,6 @@
       "count": {}
     }
   },
-  "toastMessageMarkAllAsStarredSelectionAllEmailsAllFailure": "All mails could not be marked as starred",
-  "@toastMessageMarkAllAsStarredSelectionAllEmailsAllFailure": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "toastMessageMarkAllAsStarredSelectionAllEmailsFailureWithReason": "All mails could not be marked as starred. Due \"{reason}\"",
   "@toastMessageMarkAllAsStarredSelectionAllEmailsFailureWithReason": {
     "type": "text",
@@ -4515,5 +4509,23 @@
     "placeholders": {
       "reason": {}
     }
+  },
+  "allUnSpam": "All UnSpam",
+  "@allUnSpam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAllAsSpam": "Mark all as spam",
+  "@markAllAsSpam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveAllConversation": "Move all conversation",
+  "@moveAllConversation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

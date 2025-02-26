@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget
 import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_for_select_all_emails_extension.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/utils/search_mailbox_utils.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/widgets/mailbox_searched_item_builder.dart';

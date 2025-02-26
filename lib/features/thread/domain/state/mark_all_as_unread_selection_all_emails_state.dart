@@ -47,15 +47,6 @@ class MarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure extends UIState {
   ];
 }
 
-class  MarkAllAsUnreadSelectionAllEmailsAllFailure extends FeatureFailure {
-  final String mailboxDisplayName;
-
-  MarkAllAsUnreadSelectionAllEmailsAllFailure({required this.mailboxDisplayName});
-
-  @override
-  List<Object?> get props => [mailboxDisplayName];
-}
-
 class MarkAllAsUnreadSelectionAllEmailsFailure extends FeatureFailure {
 
   final String mailboxDisplayName;

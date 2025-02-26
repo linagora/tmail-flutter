@@ -4578,12 +4578,6 @@ class AppLocalizations {
       args: [count]);
   }
 
-  String get toastMessageMarkAllAsUnreadSelectionAllEmailsAllFailure {
-    return Intl.message(
-      'All mails could not be marked as unread',
-      name: 'toastMessageMarkAllAsUnreadSelectionAllEmailsAllFailure');
-  }
-
   String toastMessageMarkAllAsUnreadSelectionAllEmailsFailureWithReason(String reason) {
     return Intl.message(
       'All mails could not be marked as unread. Due "$reason"',
@@ -4674,12 +4668,6 @@ class AppLocalizations {
       'You’ve marked $count mails as starred',
       name: 'toastMessageMarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure',
       args: [count]);
-  }
-
-  String get toastMessageMarkAllAsStarredSelectionAllEmailsAllFailure {
-    return Intl.message(
-      'All mails could not be marked as starred',
-      name: 'toastMessageMarkAllAsStarredSelectionAllEmailsAllFailure');
   }
 
   String toastMessageMarkAllAsStarredSelectionAllEmailsFailureWithReason(String reason) {

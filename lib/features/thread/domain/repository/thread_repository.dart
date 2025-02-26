@@ -58,7 +58,7 @@ abstract class ThreadRepository {
     }
   );
 
-  Future<List<EmailId>> emptyTrashFolder(
+  Future<List<EmailId>> emptyMailboxFolder(
     Session session,
     AccountId accountId,
     MailboxId trashMailboxId,
@@ -71,14 +71,6 @@ abstract class ThreadRepository {
     AccountId accountId,
     EmailId emailId,
     {Properties? properties}
-  );
-
-  Future<List<EmailId>> emptySpamFolder(
-    Session session,
-    AccountId accountId,
-    MailboxId spamMailboxId,
-    int totalEmails,
-    StreamController<dartz.Either<Failure, Success>> onProgressController
   );
 
   Future<List<EmailId>> markAllAsUnreadForSelectionAllEmails(
@@ -99,14 +91,6 @@ abstract class ThreadRepository {
     {
       bool isDestinationSpamMailbox = false
     }
-  );
-
-  Future<List<EmailId>> deleteAllPermanentlyEmails(
-    Session session,
-    AccountId accountId,
-    MailboxId mailboxId,
-    int totalEmails,
-    StreamController<dartz.Either<Failure, Success>> onProgressController,
   );
 
   Future<List<EmailId>> markAllAsStarredForSelectionAllEmails(
