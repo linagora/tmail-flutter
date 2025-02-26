@@ -998,7 +998,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     await FlutterFileDialog.saveFile(params: params);
   }
 
-  void downloadAttachmentForWeb(Attachment attachment) {
+  void downloadAttachmentForWeb(Attachment attachment, {bool forPreview = false}) {
     if (accountId != null && session != null) {
       final generateTaskId = DownloadTaskId(uuid.v4());
       try {
@@ -1013,6 +1013,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           baseDownloadUrl,
           _downloadProgressStateController,
           cancelToken: cancelToken,
+          forPreview: forPreview,
         ));
       } catch (e) {
         logError('SingleEmailController::downloadAttachmentForWeb(): $e');
@@ -1094,6 +1095,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     mailboxDashBoardController.deleteDownloadTask(success.taskId);
 
+    if (!success.forPreview) {
+      _downloadManager.createAnchorElementDownloadFileWeb(
+        success.bytes,
+        success.attachment.generateFileName());
+      return;
+    }
+
     if (success.attachment.isImage) {
       _updateAttachmentsViewState(success.attachment.blobId, Right(success));
       Get.dialog(TwakeImagePreviewer(
@@ -1116,10 +1124,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           onClose: popBack,
         ),
       ));
-    } else {
-      _downloadManager.createAnchorElementDownloadFileWeb(
-        success.bytes,
-        success.attachment.generateFileName());
     }
   }
 
@@ -2182,9 +2186,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
   }
 
-  void handleDownloadAttachmentAction(BuildContext context, Attachment attachment) {
+  void handleDownloadAttachmentAction(
+    BuildContext context,
+    Attachment attachment,
+    {bool forPreview = false}
+  ) {
     if (PlatformInfo.isWeb) {
-      downloadAttachmentForWeb(attachment);
+      downloadAttachmentForWeb(attachment, forPreview: forPreview);
     } else if (PlatformInfo.isMobile) {
       exportAttachment(context, attachment);
     } else {
@@ -2231,7 +2239,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         ),
       ));
     } else {
-      handleDownloadAttachmentAction(context, attachment);
+      handleDownloadAttachmentAction(context, attachment, forPreview: true);
     }
   }
 
