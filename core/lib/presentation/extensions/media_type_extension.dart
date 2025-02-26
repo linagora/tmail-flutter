@@ -23,6 +23,8 @@ extension MediaTypeExtension on MediaType {
 
   bool isTextFile() => SupportedPreviewFileTypes.textMimeTypes.contains(mimeType);
 
+  bool isJsonFile() => SupportedPreviewFileTypes.jsonMimeTypes.contains(mimeType);
+
   DocumentUti getDocumentUti() => DocumentUti(SupportedPreviewFileTypes.iOSSupportedTypes[mimeType]);
 
   String getIcon(ImagePaths imagePaths, {String? fileName}) {
