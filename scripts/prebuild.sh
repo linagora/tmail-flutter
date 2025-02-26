@@ -10,12 +10,14 @@ modules=("core" "model" "contact" "forward" "rule_filter" "fcm" "email_recovery"
 for mod in "${modules[@]}"; do
     (
         cd "$mod"
+        flutter clean
         flutter pub get
         dart run build_runner build --delete-conflicting-outputs
     )
 done
 
 # For the parent module
+flutter clean
 flutter pub get
 dart run build_runner build --delete-conflicting-outputs &&
     dart run intl_generator:extract_to_arb --output-dir=./lib/l10n lib/main/localizations/app_localizations.dart &&
