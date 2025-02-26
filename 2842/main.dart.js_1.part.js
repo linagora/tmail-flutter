@@ -516,7 +516,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(entry) {
       return entry.node === this.node;
     },
-    $signature: 423
+    $signature: 407
   };
   B.BaseLoginView_buildLoginButton_closure.prototype = {
     call$0() {
@@ -648,7 +648,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return C.SizedBox_0_0_null_null;
       }
     },
-    $signature: 93
+    $signature: 104
   };
   B.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -667,7 +667,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 56
+    $signature: 52
   };
   B.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
@@ -677,7 +677,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.LoginMessageWidget_build_closure.prototype = {
     call$1(failure) {
-      var t1, _this = this, _null = null,
+      var t1, t2, _this = this, _null = null,
         _s40_ = "Unknown error occurred, please try again",
         _s12_ = "unknownError";
       if (failure instanceof A.GetOIDCConfigurationFailure) {
@@ -688,7 +688,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return A.Intl__message("No suitable browser for OIDC, please check with your system administrator", _null, "noSuitableBrowserForOIDC", _null, _null);
       } else if (failure instanceof A.FeatureFailure) {
         t1 = _this.$this._toastManager;
-        t1 = t1 == null ? _null : t1.getMessageByException$2(_this.context, failure.exception);
+        if (t1 == null)
+          t1 = _null;
+        else {
+          t2 = A.Localizations_of(_this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
+          t2.toString;
+          t2 = t1.getMessageByException$2(t2, failure.exception);
+          t1 = t2;
+        }
         if (t1 == null) {
           A.Localizations_of(_this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
           t1 = A.Intl__message(_s40_, _null, _s12_, _null, _null);
@@ -842,5 +849,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "9ZyVQym/higg2mXeSk+TZfbkIv8=");
+})($__dart_deferred_initializers__, "YthWm8XGlb/A0bJD+3Zv0z11Qj4=");
 ;
