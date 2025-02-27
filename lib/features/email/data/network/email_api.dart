@@ -53,6 +53,7 @@ import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
+import 'package:model/extensions/list_email_extension.dart';
 import 'package:model/extensions/list_email_id_extension.dart';
 import 'package:model/extensions/list_id_extension.dart';
 import 'package:model/extensions/mailbox_id_extension.dart';
@@ -546,15 +547,11 @@ class EmailAPI with HandleSetErrorMixin {
 
       final currentEmailIds = emailIds.sublist(start, end);
 
-      final moveProperties = isMovingToSpam
-          ? currentEmailIds.generateMapUpdateObjectMoveToSpam(
-              currentMailboxId,
-              destinationMailboxId,
-            )
-          : currentEmailIds.generateMapUpdateObjectMoveToMailbox(
-              currentMailboxId,
-              destinationMailboxId,
-            );
+      final moveProperties = currentEmailIds.generateMapUpdateObjectMoveToMailbox(
+        currentMailboxId,
+        destinationMailboxId,
+        isDestinationSpamMailbox: isMovingToSpam,
+      );
 
       final setEmailMethod = SetEmailMethod(accountId)
         ..addUpdates(moveProperties);
@@ -1016,19 +1013,27 @@ class EmailAPI with HandleSetErrorMixin {
   Future<(List<EmailId> emailIds, Map<Id, SetError> mapErrors)> moveSelectionAllEmailsToFolder(
     Session session,
     AccountId accountId,
-    MailboxId currentMailboxId,
     MailboxId destinationMailboxId,
-    List<EmailId> listEmailId,
     {
+      MailboxId? currentMailboxId,
+      List<EmailId>? listEmailId,
+      List<Email>? listEmail,
       bool isDestinationSpamMailbox = false
     }
   ) async {
-    final moveProperties = isDestinationSpamMailbox
-      ? listEmailId.generateMapUpdateObjectMoveToSpam(currentMailboxId, destinationMailboxId)
-      : listEmailId.generateMapUpdateObjectMoveToMailbox(currentMailboxId, destinationMailboxId);
+    final moveProperties = currentMailboxId != null
+      ? listEmailId?.generateMapUpdateObjectMoveToMailbox(
+          currentMailboxId,
+          destinationMailboxId,
+          isDestinationSpamMailbox: isDestinationSpamMailbox,
+        )
+      : listEmail?.generateMapUpdateObjectMoveToMailbox(
+          destinationMailboxId,
+          isDestinationSpamMailbox: isDestinationSpamMailbox,
+        );
 
     final setEmailMethod = SetEmailMethod(accountId)
-      ..addUpdates(moveProperties);
+      ..addUpdates(moveProperties ?? {});
 
     final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
     final setEmailInvocation = requestBuilder.invocation(setEmailMethod);

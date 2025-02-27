@@ -30,7 +30,6 @@ import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
-import 'package:tmail_ui_user/features/base/mixin/email_action_handler_mixin.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/composer/domain/exceptions/set_method_exception.dart';
 import 'package:tmail_ui_user/features/composer/domain/extensions/email_request_extension.dart';
@@ -103,7 +102,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_for_select_all_emails_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_selection_email_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
@@ -112,7 +111,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dash
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/refresh_action_view_event.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailto/presentation/model/mailto_arguments.dart';
@@ -154,8 +153,12 @@ import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_st
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_all_as_starred_selection_all_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_all_as_unread_selection_all_emails_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_all_search_as_read_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_all_search_as_starred_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_all_search_as_unread_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_multiple_email_read_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_as_star_multiple_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/move_all_email_searched_to_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_all_selection_all_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_all_email_state.dart';
@@ -165,8 +168,12 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_all_as_starred_selection_all_emails_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_all_as_unread_selection_all_emails_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_all_search_as_read_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_all_search_as_starred_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_all_search_as_unread_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/move_all_email_searched_to_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_all_selection_all_emails_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
@@ -188,8 +195,7 @@ import 'package:uuid/uuid.dart';
 
 class MailboxDashBoardController extends ReloadableController
     with UserSettingPopupMenuMixin,
-        ContactSupportMixin,
-        EmailActionHandlerMixin {
+        ContactSupportMixin {
 
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
@@ -228,6 +234,10 @@ class MailboxDashBoardController extends ReloadableController
   final MoveAllSelectionAllEmailsInteractor moveAllSelectionAllEmailsInteractor;
   final DeleteAllPermanentlyEmailsInteractor deleteAllPermanentlyEmailsInteractor;
   final MarkAllAsStarredSelectionAllEmailsInteractor markAllAsStarredSelectionAllEmailsInteractor;
+  final MarkAllSearchAsReadInteractor markAllSearchAsReadInteractor;
+  final MarkAllSearchAsUnreadInteractor markAllSearchAsUnreadInteractor;
+  final MarkAllSearchAsStarredInteractor markAllSearchAsStarredInteractor;
+  final MoveAllEmailSearchedToFolderInteractor moveAllEmailSearchedToFolderInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -326,6 +336,10 @@ class MailboxDashBoardController extends ReloadableController
     this.moveAllSelectionAllEmailsInteractor,
     this.deleteAllPermanentlyEmailsInteractor,
     this.markAllAsStarredSelectionAllEmailsInteractor,
+    this.markAllSearchAsReadInteractor,
+    this.markAllSearchAsUnreadInteractor,
+    this.markAllSearchAsStarredInteractor,
+    this.moveAllEmailSearchedToFolderInteractor,
   );
 
   @override
@@ -463,9 +477,19 @@ class MailboxDashBoardController extends ReloadableController
       || success is MarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure
       || success is MarkAsMailboxReadAllSuccess
       || success is MarkAsMailboxReadHasSomeEmailFailure
+      || success is MarkAllSearchAsReadSuccess
+      || success is MarkAllSearchAsUnreadSuccess
+      || success is MarkAllSearchAsStarredSuccess
+      || success is MoveAllEmailSearchedToFolderSuccess
     ) {
       _resetViewStateAndShowToast(success);
-      cancelSelectAllEmailAction();
+      cancelAllSelectionEmailMode();
+    } else if (success is MarkAllSearchAsReadLoading
+        || success is MarkAllSearchAsUnreadLoading
+        || success is MarkAllSearchAsStarredLoading
+        || success is MoveAllEmailSearchedToFolderLoading
+    ) {
+      viewStateMailboxActionProgress.value = Right(success);
     }
   }
 
@@ -494,7 +518,7 @@ class MailboxDashBoardController extends ReloadableController
         || failure is MarkAsMailboxReadFailure
     ) {
       _resetViewStateAndShowToast(failure);
-      cancelSelectAllEmailAction();
+      cancelAllSelectionEmailMode();
     } else if (failure is MoveMultipleEmailToMailboxFailure
         || failure is RestoreDeletedMessageFailure
         || failure is GetRestoredDeletedMessageFailure

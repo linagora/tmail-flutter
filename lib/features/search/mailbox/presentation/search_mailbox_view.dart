@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:focused_menu_custom/modals.dart';
 import 'package:get/get.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
@@ -16,11 +17,12 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget
 import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_for_select_all_emails_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_email_action_type_when_select_all_active_and_mailbox_opened_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_email_action_type_when_select_all_active_and_search_active_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_email_action_type_when_selection_active_extension.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/utils/search_mailbox_utils.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/widgets/mailbox_searched_item_builder.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/draggable_email_data.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SearchMailboxView extends GetWidget<SearchMailboxController>
@@ -186,7 +188,12 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
               controller.responsiveUtils,
               mailboxCurrent,
               maxWidth: constraints.maxWidth,
-              onDragEmailToMailboxAccepted: _handleDragItemAccepted,
+              onDragEmailToMailboxAccepted: (draggableEmailData, destinationMailbox) =>
+                _handleDragItemAccepted(
+                  AppLocalizations.of(context),
+                  draggableEmailData,
+                  destinationMailbox,
+                ),
               onClickOpenMailboxAction: (mailbox) => controller.openMailboxAction(context, mailbox),
               onClickOpenMenuMailboxAction: (position, mailbox) => _openMailboxMenuAction(context, mailbox, position: position),
               onLongPressMailboxAction: (mailbox) => _openMailboxMenuAction(context, mailbox),
@@ -199,20 +206,29 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
   }
 
   void _handleDragItemAccepted(
-    DraggableEmailData draggableEmailData,
-    PresentationMailbox presentationMailbox,
+    AppLocalizations appLocalizations,
+    List<PresentationEmail> listEmails,
+    PresentationMailbox destinationMailbox,
   ) {
-    if (draggableEmailData.isSelectAllEmailsEnabled) {
+    if (controller.dashboardController.isSelectAllActiveAndMailboxOpened) {
       controller
         .dashboardController
-        .dragAllSelectedEmailToMailboxAction(presentationMailbox);
+        .dragEmailsToMailboxWhenSelectAllActiveAndMailboxOpened(
+          appLocalizations: appLocalizations,
+          selectedMailbox: controller.dashboardController.selectedMailbox.value!,
+          destinationMailbox: destinationMailbox,
+        );
+    } else if (controller.dashboardController.isSelectAllActiveAndSearchActive) {
+      controller
+        .dashboardController
+        .dragEmailsToMailboxWhenSelectAllActiveAndSearchActive(
+          appLocalizations: appLocalizations,
+          destinationMailbox: destinationMailbox,
+        );
     } else {
       controller
         .dashboardController
-        .dragSelectedMultipleEmailToMailboxAction(
-          draggableEmailData.listEmails!,
-          presentationMailbox,
-        );
+        .dragSelectedMultipleEmailToMailboxAction(listEmails, destinationMailbox);
     }
   }
 

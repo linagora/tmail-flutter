@@ -4698,4 +4698,90 @@ class AppLocalizations {
       name: 'moveAllConversation',
     );
   }
+
+  String get selectAllMailsThatMatchThisSearch {
+    return Intl.message(
+      'Select all mails that match this search',
+      name: 'selectAllMailsThatMatchThisSearch'
+    );
+  }
+
+  String get allMailsInThisSearchAreSelected {
+    return Intl.message(
+      'All mails in this search are selected. ',
+      name: 'allMailsInThisSearchAreSelected'
+    );
+  }
+
+  String get messageConfirmationDialogWhenMakeToActionForSelectionAllEmailsInSearch {
+    return Intl.message(
+      'This action will affect all mails in search. Are you sure you want to continue?',
+      name: 'messageConfirmationDialogWhenMakeToActionForSelectionAllEmailsInSearch'
+    );
+  }
+
+  String get toastMessageMarkAllSearchAsReadSuccess {
+    return Intl.message(
+      'You’ve marked all messages in search as read',
+      name: 'toastMessageMarkAllSearchAsReadSuccess');
+  }
+
+  String toastMessageMarkAllSearchAsReadFailureWithReason(String reason) {
+    return Intl.message(
+      'All message in search could not be marked as read. Due "$reason"',
+      name: 'toastMessageMarkAllSearchAsReadFailureWithReason',
+      args: [reason]
+    );
+  }
+
+  String get toastMessageMarkAllSearchAsUnreadSuccess {
+    return Intl.message(
+      'You’ve marked all messages in search as unread',
+      name: 'toastMessageMarkAllSearchAsUnreadSuccess');
+  }
+
+  String toastMessageMarkAllSearchAsUnreadFailureWithReason(String reason) {
+    return Intl.message(
+      'All message in search could not be marked as unread. Due "$reason"',
+      name: 'toastMessageMarkAllSearchAsUnreadFailureWithReason',
+      args: [reason]
+    );
+  }
+
+  String get toastMessageMarkAllSearchAsStarredSuccess {
+    return Intl.message(
+      'You’ve marked all messages in search as starred',
+      name: 'toastMessageMarkAllSearchAsStarredSuccess');
+  }
+
+  String toastMessageMarkAllSearchAsStarredFailureWithReason(String reason) {
+    return Intl.message(
+      'All message in search could not be marked as starred. Due "$reason"',
+      name: 'toastMessageMarkAllSearchAsStarredFailureWithReason',
+      args: [reason]
+    );
+  }
+
+  String toastMessageMoveAllEmailSearchedToFolderSuccess(String destinationPath) {
+    return Intl.message(
+      'You’ve moved all mails in search to $destinationPath',
+      name: 'toastMessageMoveAllEmailSearchedToFolderSuccess',
+      args: [destinationPath]
+    );
+  }
+
+  String toastMessageMoveAllEmailSearchedToFolderFailureWithReason(String destinationPath, String reason) {
+    return Intl.message(
+      'All mails in search could not be moved to $destinationPath. Due "$reason"',
+      name: 'toastMessageMoveAllEmailSearchedToFolderFailureWithReason',
+      args: [destinationPath, reason]
+    );
+  }
+
+  String get mailsOnThisPageAreSelectedForSearch {
+    return Intl.message(
+      'All mails on this page are selected.',
+      name: 'mailsOnThisPageAreSelectedForSearch',
+    );
+  }
 }

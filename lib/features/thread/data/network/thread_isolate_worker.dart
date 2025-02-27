@@ -25,6 +25,7 @@ import 'package:model/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/base/isolate/background_isolate_binary_messenger/background_isolate_binary_messenger.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/email/data/network/email_api.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/thread/data/model/empty_mailbox_folder_arguments.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/domain/exceptions/thread_exceptions.dart';
@@ -317,9 +318,9 @@ class ThreadIsolateWorker {
         final movedEmailIds = await _emailAPI.moveSelectionAllEmailsToFolder(
           session,
           accountId,
-          currentMailboxId,
           destinationMailboxId,
-          listEmails.listEmailIds,
+          currentMailboxId: currentMailboxId,
+          listEmailId: listEmails.listEmailIds,
           isDestinationSpamMailbox: isDestinationSpamMailbox,
         );
 
@@ -403,6 +404,198 @@ class ThreadIsolateWorker {
       logError('ThreadIsolateWorker::markAllAsStarredForSelectionAllEmails(): ERROR: $e');
     }
 
+    return emailIdListCompleted;
+  }
+
+  Future<List<EmailId>> markAllSearchAsReadOrUnread(
+    Session session,
+    AccountId accountId,
+    ReadActions readActions,
+    SearchEmailFilter searchEmailFilter,
+    {EmailFilterCondition? moreFilterCondition}
+  ) async {
+    List<EmailId> emailIdListCompleted = [];
+    try {
+      bool hasMoreEmails = true;
+      UTCDate? lastReceivedDate;
+      EmailId? lastEmailId;
+
+      while (hasMoreEmails) {
+        final emailResponse = await _threadAPI.getAllEmail(
+          session,
+          accountId,
+          limit: UnsignedInt(30),
+          filter: searchEmailFilter.mappingToEmailFilterCondition(
+            moreFilterCondition: moreFilterCondition,
+          ),
+          sort: <Comparator>{}..add(
+            EmailComparator(EmailComparatorProperty.receivedAt)..setIsAscending(false)
+          ),
+          properties: Properties({
+            EmailProperty.id,
+            EmailProperty.receivedAt,
+          })
+        );
+
+        List<Email> listEmails = emailResponse.emailList ?? [];
+
+        if (lastEmailId != null) {
+          listEmails.removeWhere((email) => email.id == lastEmailId);
+        }
+
+        if (listEmails.isEmpty) {
+          hasMoreEmails = false;
+          break;
+        }
+
+        lastEmailId = listEmails.last.id;
+        lastReceivedDate = listEmails.last.receivedAt;
+        searchEmailFilter = searchEmailFilter.copyWith(
+          beforeOption: optionOf(lastReceivedDate),
+        );
+
+        final readEmails = await _emailAPI.markAsRead(
+          session,
+          accountId,
+          listEmails.listEmailIds,
+          readActions
+        );
+
+        emailIdListCompleted.addAll(readEmails.emailIdsSuccess);
+      }
+    } catch (e) {
+      logError('ThreadIsolateWorker::markAllSearchAsReadOrUnread(): ERROR: $e');
+    }
+    return emailIdListCompleted;
+  }
+
+  Future<List<EmailId>> markAllSearchAsStarredOrUnStarred(
+    Session session,
+    AccountId accountId,
+    MarkStarAction starAction,
+    SearchEmailFilter searchEmailFilter,
+    {EmailFilterCondition? moreFilterCondition}
+  ) async {
+    List<EmailId> emailIdListCompleted = [];
+    try {
+      bool hasMoreEmails = true;
+      UTCDate? lastReceivedDate;
+      EmailId? lastEmailId;
+
+      while (hasMoreEmails) {
+        final emailResponse = await _threadAPI.getAllEmail(
+          session,
+          accountId,
+          limit: UnsignedInt(30),
+          filter: searchEmailFilter.mappingToEmailFilterCondition(
+            moreFilterCondition: moreFilterCondition,
+          ),
+          sort: <Comparator>{}..add(
+              EmailComparator(EmailComparatorProperty.receivedAt)..setIsAscending(false)
+          ),
+          properties: Properties({
+            EmailProperty.id,
+            EmailProperty.receivedAt,
+          })
+        );
+
+        List<Email> listEmails = emailResponse.emailList ?? [];
+
+        if (lastEmailId != null) {
+          listEmails.removeWhere((email) => email.id == lastEmailId);
+        }
+
+        if (listEmails.isEmpty) {
+          hasMoreEmails = false;
+          break;
+        }
+
+        lastEmailId = listEmails.last.id;
+        lastReceivedDate = listEmails.last.receivedAt;
+        searchEmailFilter = searchEmailFilter.copyWith(
+          beforeOption: optionOf(lastReceivedDate),
+        );
+
+        final starredEmails = await _emailAPI.markAsStar(
+          session,
+          accountId,
+          listEmails.listEmailIds,
+          starAction,
+        );
+
+        emailIdListCompleted.addAll(starredEmails.emailIdsSuccess);
+      }
+    } catch (e) {
+      logError('ThreadIsolateWorker::markAllSearchAsStarredOrUnStarred(): ERROR: $e');
+    }
+    return emailIdListCompleted;
+  }
+
+  Future<List<EmailId>> moveAllEmailSearchedToFolder(
+    Session session,
+    AccountId accountId,
+    MailboxId destinationMailboxId,
+    String destinationPath,
+    SearchEmailFilter searchEmailFilter,
+    {
+      bool isDestinationSpamMailbox = false,
+      EmailFilterCondition? moreFilterCondition,
+    }
+  ) async {
+    List<EmailId> emailIdListCompleted = [];
+    try {
+      bool hasMoreEmails = true;
+      UTCDate? lastReceivedDate;
+      EmailId? lastEmailId;
+
+      while (hasMoreEmails) {
+        final emailResponse = await _threadAPI.getAllEmail(
+          session,
+          accountId,
+          limit: UnsignedInt(30),
+          filter: searchEmailFilter.mappingToEmailFilterCondition(
+            moreFilterCondition: moreFilterCondition,
+          ),
+          sort: <Comparator>{}..add(
+            EmailComparator(EmailComparatorProperty.receivedAt)..setIsAscending(false)
+          ),
+          properties: Properties({
+            EmailProperty.id,
+            EmailProperty.receivedAt,
+            EmailProperty.mailboxIds,
+          })
+        );
+
+        List<Email> listEmails = emailResponse.emailList ?? [];
+
+        if (lastEmailId != null) {
+          listEmails.removeWhere((email) => email.id == lastEmailId);
+        }
+
+        if (listEmails.isEmpty) {
+          hasMoreEmails = false;
+          break;
+        }
+
+        lastEmailId = listEmails.last.id;
+        lastReceivedDate = listEmails.last.receivedAt;
+        searchEmailFilter = searchEmailFilter.copyWith(
+          beforeOption: optionOf(lastReceivedDate),
+        );
+
+        final listResult = await _emailAPI.moveSelectionAllEmailsToFolder(
+          session,
+          accountId,
+          destinationMailboxId,
+          listEmail: listEmails,
+          isDestinationSpamMailbox: isDestinationSpamMailbox,
+        );
+
+        emailIdListCompleted.addAll(listResult.$1);
+      }
+    } catch (e) {
+      logError('ThreadIsolateWorker::markAllSearchToFolder(): ERROR: $e');
+    }
     return emailIdListCompleted;
   }
 }

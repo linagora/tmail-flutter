@@ -1,8 +1,9 @@
 
 import 'dart:convert';
 
-import 'package:core/domain/extensions/datetime_extension.dart';
+import 'package:core/core.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/patch_object.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
@@ -46,7 +47,7 @@ extension EmailExtension on Email {
   }
 
   bool hasReadReceipt(Map<MailboxId, PresentationMailbox> mapMailbox) {
-    final mailboxCurrent = findMailboxContain(mapMailbox);
+    final mailboxCurrent = findMailboxContainingEmail(mapMailbox);
     return !hasMdnSent &&
         headers.readReceiptHasBeenRequested &&
         mailboxCurrent?.isSent == false;
@@ -174,7 +175,36 @@ extension EmailExtension on Email {
 
   List<Attachment> get allAttachments => attachments?.map((item) => item.toAttachment()).toList() ?? [];
 
-  PresentationMailbox? findMailboxContain(Map<MailboxId, PresentationMailbox> mapMailbox) {
+  List<Attachment> get attachmentsWithCid => allAttachments.where((attachment) => attachment.hasCid()).toList();
+
+  MailboxId? findMailboxIdContainingEmail() {
+    final mailboxIdsIsTrue = mailboxIds?.where((key, value) => value) ?? {};
+
+    if (mailboxIdsIsTrue.isNotEmpty == true) {
+      return mailboxIdsIsTrue.keys.first;
+    }
+
+    return null;
+  }
+
+  PatchObject generateMoveToMailboxActionPath(
+    MailboxId destinationMailboxId,
+    {
+      bool isDestinationSpamMailbox = false
+    }
+  ) {
+    final mailboxIdContainingEmail = findMailboxIdContainingEmail();
+
+    return PatchObject({
+      if (mailboxIdContainingEmail != null)
+        mailboxIdContainingEmail.generatePath():  null,
+      destinationMailboxId.generatePath(): true,
+      if (isDestinationSpamMailbox)
+        KeyWordIdentifier.emailSeen.generatePath(): true
+    });
+  }
+
+  PresentationMailbox? findMailboxContainingEmail(Map<MailboxId, PresentationMailbox> mapMailbox) {
     final newMailboxIds = mailboxIds;
     newMailboxIds?.removeWhere((key, value) => !value);
 

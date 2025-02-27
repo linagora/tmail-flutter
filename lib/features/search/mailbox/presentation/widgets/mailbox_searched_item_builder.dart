@@ -8,12 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:focused_menu_custom/focused_menu.dart';
 import 'package:focused_menu_custom/modals.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/utils/search_mailbox_utils.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/draggable_email_data.dart';
 
 class MailboxSearchedItemBuilder extends StatefulWidget {
 
@@ -52,7 +52,7 @@ class _MailboxSearchedItemBuilderState extends State<MailboxSearchedItemBuilder>
   @override
   Widget build(BuildContext context) {
     if (PlatformInfo.isWeb) {
-      return DragTarget<DraggableEmailData>(
+      return DragTarget<List<PresentationEmail>>(
         builder: (_, __, ___) => _buildMailboxItem(context),
         onAcceptWithDetails: (details) {
           widget.onDragEmailToMailboxAccepted?.call(

@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -7,25 +6,22 @@ import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
-import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filter_email_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/recover_deleted_message_loading_banner_widget.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/view_state_mailbox_action_progress_loading_banner.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_banner_widget.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
-import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/draggable_email_data.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/scroll_to_top_button_widget_styles.dart';
@@ -42,15 +38,14 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_
 import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_message_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/select_all_banner/select_all_emails_in_mailbox_banner.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/select_all_banner/select_all_emails_in_search_banner.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_loading_bar_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ThreadView extends GetWidget<ThreadController>
-  with AppLoaderMixin,
-    FilterEmailPopupMenuMixin,
-    PopupMenuWidgetMixin {
+  with AppLoaderMixin, FilterEmailPopupMenuMixin {
 
   ThreadView({Key? key}) : super(key: key);
 
@@ -118,6 +113,15 @@ class ThreadView extends GetWidget<ThreadController>
                             hintTextSearch: AppLocalizations.of(context).search_emails,
                             onOpenSearchViewAction: controller.goToSearchView
                           ),
+                          Obx(() => RecoverDeletedMessageLoadingBannerWidget(
+                            isLoading: controller.mailboxDashBoardController.isRecoveringDeletedMessage.value,
+                            horizontalLoadingWidget: horizontalLoadingWidget,
+                            responsiveUtils: controller.responsiveUtils,
+                          )),
+                          Obx(() => ViewStateMailboxActionProgressLoadingBanner(
+                            viewState: controller.mailboxDashBoardController.viewStateMailboxActionProgress.value,
+                            responsiveUtils: controller.responsiveUtils,
+                          )),
                           SpamReportBannerWidget(
                             spamReportController: controller.mailboxDashBoardController.spamReportController,
                             margin: ThreadViewStyle.getBannerMargin(
@@ -140,11 +144,6 @@ class ThreadView extends GetWidget<ThreadController>
                               return const SizedBox.shrink();
                             }
                           }),
-                            Obx(() => RecoverDeletedMessageLoadingBannerWidget(
-                                isLoading: controller.mailboxDashBoardController.isRecoveringDeletedMessage.value,
-                                horizontalLoadingWidget: horizontalLoadingWidget,
-                                responsiveUtils: controller.responsiveUtils,
-                            )),
                         ],
                       Obx(() {
                         final presentationMailbox = controller.mailboxDashBoardController.selectedMailbox.value;
@@ -168,25 +167,24 @@ class ThreadView extends GetWidget<ThreadController>
                           return const SizedBox.shrink();
                         }
                       }),
-                      if (!controller.responsiveUtils.isDesktop(context))
-                        _buildMailboxActionProgressBanner(context),
                       if (controller.responsiveUtils.isWebDesktop(context))
                         Obx(() {
-                          if (controller.validateToShowSelectionEmailsBanner()) {
-                            final selectedMailbox = controller
-                              .mailboxDashBoardController
-                              .selectedMailbox
-                              .value!;
-
-                            final listEmailSelectedLength = controller
-                              .mailboxDashBoardController
-                              .listEmailSelected
-                              .length;
+                          if (controller.isMailboxSelectionEmailBannerDisplayed) {
+                            final selectedMailbox = controller.selectedMailbox!;
+                            final listEmailSelectedLength = controller.listEmailSelected.length;
 
                             return SelectAllEmailInMailboxBanner(
                               limitEmailsInPage: listEmailSelectedLength,
                               totalEmails: selectedMailbox.countTotalEmails,
                               folderName: selectedMailbox.getDisplayName(context),
+                              onSelectAllEmailAction: controller.enableSelectAllEmails,
+                              onClearSelection: controller.cancelSelectEmail
+                            );
+                          } else if (controller.isSearchSelectionEmailBannerDisplayed) {
+                            final listEmailSelectedLength = controller.listEmailSelected.length;
+
+                            return SelectAllEmailInSearchBanner(
+                              limitEmailsInPage: listEmailSelectedLength,
                               onSelectAllEmailAction: controller.enableSelectAllEmails,
                               onClearSelection: controller.cancelSelectEmail
                             );
@@ -502,19 +500,12 @@ class ThreadView extends GetWidget<ThreadController>
   }
 
   Widget _buildEmailItemDraggable(BuildContext context, PresentationEmail presentationEmail) {
-    final isSelectAllEmailsEnabled = controller
-      .mailboxDashBoardController
-      .isSelectAllEmailsEnabled
-      .value;
-
     return GestureDetector(
       behavior: HitTestBehavior.translucent,
       onSecondaryTapDown: (_) {},
       onTapDown: (_) {},
-      child: Draggable<DraggableEmailData>(
-        data: isSelectAllEmailsEnabled
-          ? DraggableEmailData.withSelectAllEmails()
-          : DraggableEmailData(listEmails: controller.listEmailDrag),
+      child: Draggable<List<PresentationEmail>>(
+        data: controller.listEmailDrag,
         feedback: Obx(() {
           final isSelectAllEmailsEnabled = controller
             .mailboxDashBoardController
@@ -842,12 +833,13 @@ class ThreadView extends GetWidget<ThreadController>
   ) {
     return PopupMenuItem(
       padding: EdgeInsets.zero,
-      child: popupItem(
+      child: PopupItemWidget(
         mailboxContain?.isSpam == true ? controller.imagePaths.icNotSpam : controller.imagePaths.icSpam,
         mailboxContain?.isSpam == true
           ? AppLocalizations.of(context).remove_from_spam
           : AppLocalizations.of(context).mark_as_spam,
         colorIcon: AppColor.colorTextButton,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         styleName: const TextStyle(
           fontWeight: FontWeight.w500,
           fontSize: 16,
@@ -869,10 +861,11 @@ class ThreadView extends GetWidget<ThreadController>
   ) {
     return PopupMenuItem(
       padding: EdgeInsets.zero,
-      child: popupItem(
+      child: PopupItemWidget(
         controller.imagePaths.icOpenInNewTab,
         AppLocalizations.of(context).openInNewTab,
         colorIcon: AppColor.colorTextButton,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         styleName: const TextStyle(
           fontWeight: FontWeight.w500,
           fontSize: 16,
@@ -892,10 +885,11 @@ class ThreadView extends GetWidget<ThreadController>
   ) {
     return PopupMenuItem(
       padding: EdgeInsets.zero,
-      child: popupItem(
+      child: PopupItemWidget(
         controller.imagePaths.icMailboxArchived,
         AppLocalizations.of(context).archiveMessage,
         colorIcon: AppColor.colorTextButton,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         styleName: const TextStyle(
           fontWeight: FontWeight.w500,
           fontSize: 16,
@@ -915,10 +909,11 @@ class ThreadView extends GetWidget<ThreadController>
   ) {
     return PopupMenuItem(
       padding: EdgeInsets.zero,
-      child: popupItem(
+      child: PopupItemWidget(
         controller.imagePaths.icEdit,
         appLocalizations.editAsNewEmail,
         colorIcon: AppColor.colorTextButton,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
         styleName: const TextStyle(
           fontWeight: FontWeight.w500,
           fontSize: 16,
@@ -930,70 +925,5 @@ class ThreadView extends GetWidget<ThreadController>
         }
       )
     );
-  }
-
-  Widget _buildMailboxActionProgressBanner(BuildContext context) {
-    return Obx(() {
-      return _MailboxActionProgressBanner(
-        viewState: controller.mailboxDashBoardController.viewStateMailboxActionProgress.value,
-        responsiveUtils: controller.responsiveUtils,
-      );
-    });
-  }
-}
-
-class _MailboxActionProgressBanner extends StatelessWidget with AppLoaderMixin {
-  final Either<Failure, Success> viewState;
-  final ResponsiveUtils responsiveUtils;
-
-  const _MailboxActionProgressBanner({
-    required this.viewState,
-    required this.responsiveUtils,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return viewState.fold(
-      (failure) => const SizedBox.shrink(),
-      (success) {
-        if (success is MarkAsMailboxReadLoading ||
-            success is EmptySpamFolderLoading ||
-            success is EmptyTrashFolderLoading) {
-          return Padding(
-            padding: EdgeInsets.only(
-              top: responsiveUtils.isDesktop(context) ? 16 : 0,
-              left: 16,
-              right: 16,
-              bottom: responsiveUtils.isDesktop(context) ? 0 : 16,
-            ),
-            child: horizontalLoadingWidget,
-          );
-        } else if (success is UpdatingMarkAsMailboxReadState) {
-          return _buildProgressBanner(
-            context,
-            success.countRead,
-            success.totalUnread,
-          );
-        } else if (success is EmptyingFolderState) {
-          return _buildProgressBanner(
-            context,
-            success.countEmailsDeleted,
-            success.totalEmails,
-          );
-        }
-        return const SizedBox.shrink();
-      },
-    );
-  }
-
-  Padding _buildProgressBanner(BuildContext context, int progress, int total) {
-    final percent = total > 0 ? progress / total : 0.68;
-    return Padding(
-      padding: EdgeInsets.only(
-        top: responsiveUtils.isDesktop(context) ? 16 : 0,
-        left: 16,
-        right: 16,
-        bottom: responsiveUtils.isDesktop(context) ? 0 : 16),
-      child: horizontalPercentLoadingWidget(percent));
   }
 }

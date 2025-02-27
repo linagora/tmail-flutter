@@ -14,10 +14,11 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/app_grid_vie
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_for_select_all_emails_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_email_action_type_when_select_all_active_and_mailbox_opened_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_email_action_type_when_select_all_active_and_search_active_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_email_action_type_when_selection_active_extension.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_view.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/styles/quotas_view_styles.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/draggable_email_data.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class MailboxView extends BaseMailboxView {
@@ -366,7 +367,12 @@ class MailboxView extends BaseMailboxView {
             onOpenMailboxFolderClick: (mailboxNode) => controller.openMailbox(context, mailboxNode.item),
             onExpandFolderActionClick: (mailboxNode) => controller.toggleMailboxFolder(mailboxNode, controller.mailboxListScrollController),
             onSelectMailboxFolderClick: controller.selectMailboxNode,
-            onDragItemAccepted: _handleDragItemAccepted,
+            onDragItemAccepted: (draggableEmailData, destinationMailbox) =>
+              _handleDragItemAccepted(
+                AppLocalizations.of(context),
+                draggableEmailData,
+                destinationMailbox,
+              ),
             onMenuActionClick: (position, mailboxNode) {
               openMailboxMenuActionOnWeb(
                 context,
@@ -387,7 +393,12 @@ class MailboxView extends BaseMailboxView {
           mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value,
           onOpenMailboxFolderClick: (mailboxNode) => controller.openMailbox(context, mailboxNode.item),
           onSelectMailboxFolderClick: controller.selectMailboxNode,
-          onDragItemAccepted: _handleDragItemAccepted,
+          onDragItemAccepted: (draggableEmailData, destinationMailbox) =>
+            _handleDragItemAccepted(
+              AppLocalizations.of(context),
+              draggableEmailData,
+              destinationMailbox,
+            ),
           onMenuActionClick: (position, mailboxNode) {
             openMailboxMenuActionOnWeb(
               context,
@@ -405,27 +416,39 @@ class MailboxView extends BaseMailboxView {
   }
 
   void _handleDragItemAccepted(
-    DraggableEmailData draggableEmailData,
-    PresentationMailbox presentationMailbox,
+    AppLocalizations appLocalizations,
+    List<PresentationEmail> listEmails,
+    PresentationMailbox destinationMailbox,
   ) {
-    final mailboxPath = controller.findNodePath(presentationMailbox.id)
-        ?? presentationMailbox.name?.name;
+    final mailboxPath = controller.findNodePath(destinationMailbox.id)
+        ?? destinationMailbox.name?.name;
     log('MailboxView::_handleDragItemAccepted(): mailboxPath: $mailboxPath');
     if (mailboxPath != null) {
-      presentationMailbox = presentationMailbox
+      destinationMailbox = destinationMailbox
         .toPresentationMailboxWithMailboxPath(mailboxPath);
     }
 
-    if (draggableEmailData.isSelectAllEmailsEnabled) {
+    if (controller.mailboxDashBoardController.isSelectAllActiveAndMailboxOpened) {
       controller
         .mailboxDashBoardController
-        .dragAllSelectedEmailToMailboxAction(presentationMailbox);
+        .dragEmailsToMailboxWhenSelectAllActiveAndMailboxOpened(
+          appLocalizations: appLocalizations,
+          selectedMailbox: controller.mailboxDashBoardController.selectedMailbox.value!,
+          destinationMailbox: destinationMailbox,
+        );
+    } else if (controller.mailboxDashBoardController.isSelectAllActiveAndMailboxOpened) {
+      controller
+        .mailboxDashBoardController
+        .dragEmailsToMailboxWhenSelectAllActiveAndSearchActive(
+          appLocalizations: appLocalizations,
+          destinationMailbox: destinationMailbox,
+        );
     } else {
       controller
         .mailboxDashBoardController
         .dragSelectedMultipleEmailToMailboxAction(
-          draggableEmailData.listEmails!,
-          presentationMailbox,
+          listEmails,
+          destinationMailbox,
         );
     }
   }

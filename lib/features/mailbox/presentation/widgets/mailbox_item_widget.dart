@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -15,7 +16,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/label_mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/leading_mailbox_item_widget.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/draggable_email_data.dart';
 
 class MailboxItemWidget extends StatefulWidget {
 
@@ -65,7 +65,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
   @override
   Widget build(BuildContext context) {
     if (_responsiveUtils.isWebDesktop(context) && widget.mailboxDisplayed == MailboxDisplayed.mailbox) {
-      return DragTarget<DraggableEmailData>(
+      return DragTarget<List<PresentationEmail>>(
         builder: (context, _, __) {
           return InkWell(
             onTap: () => widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
