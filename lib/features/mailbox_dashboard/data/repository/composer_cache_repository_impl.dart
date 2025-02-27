@@ -12,7 +12,7 @@ class ComposerCacheRepositoryImpl extends ComposerCacheRepository {
   ComposerCacheRepositoryImpl(this.composerCacheDataSource);
 
   @override
-  Future<ComposerCache> getComposerCacheOnWeb(
+  Future<List<ComposerCache>> getComposerCacheOnWeb(
     AccountId accountId,
     UserName userName
   ) {
@@ -20,8 +20,13 @@ class ComposerCacheRepositoryImpl extends ComposerCacheRepository {
   }
 
   @override
-  Future<void> removeComposerCacheOnWeb() {
-    return composerCacheDataSource.removeComposerCacheOnWeb();
+  Future<void> removeAllComposerCacheOnWeb(AccountId accountId, UserName userName) {
+    return composerCacheDataSource.removeAllComposerCacheOnWeb(accountId, userName);
+  }
+
+  @override
+  Future<void> removeComposerCacheByIdOnWeb(AccountId accountId, UserName userName, String composerId) {
+    return composerCacheDataSource.removeComposerCacheByIdOnWeb(accountId, userName, composerId);
   }
 
   @override

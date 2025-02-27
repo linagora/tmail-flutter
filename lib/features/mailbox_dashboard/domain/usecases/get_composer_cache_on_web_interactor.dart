@@ -13,8 +13,11 @@ class GetComposerCacheOnWebInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, UserName userName) async* {
     try {
-      final data = await composerCacheRepository.getComposerCacheOnWeb(accountId, userName);
-      yield Right(GetComposerCacheSuccess(data));
+      final listComposerCache = await composerCacheRepository.getComposerCacheOnWeb(
+        accountId,
+        userName,
+      );
+      yield Right(GetComposerCacheSuccess(listComposerCache));
     } catch (exception) {
       yield Left(GetComposerCacheFailure(exception));
     }

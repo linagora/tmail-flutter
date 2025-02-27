@@ -51,7 +51,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -156,7 +156,7 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   MockSpec<GetEmailContentInteractor>(),
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<UploadController>(fallbackGenerators: fallbackGenerators),
-  MockSpec<RemoveComposerCacheOnWebInteractor>(),
+  MockSpec<RemoveComposerCacheByIdOnWebInteractor>(),
   MockSpec<SaveComposerCacheOnWebInteractor>(),
   MockSpec<DownloadImageAsBase64Interactor>(),
   MockSpec<TransformHtmlEmailContentInteractor>(),
@@ -199,7 +199,7 @@ void main() {
   late MockGetEmailContentInteractor mockGetEmailContentInteractor;
   late MockGetAllIdentitiesInteractor mockGetAllIdentitiesInteractor;
   late MockUploadController mockUploadController;
-  late MockRemoveComposerCacheOnWebInteractor mockRemoveComposerCacheOnWebInteractor;
+  late MockRemoveComposerCacheByIdOnWebInteractor mockRemoveComposerCacheByIdOnWebInteractor;
   late MockSaveComposerCacheOnWebInteractor mockSaveComposerCacheOnWebInteractor;
   late MockDownloadImageAsBase64Interactor mockDownloadImageAsBase64Interactor;
   late MockTransformHtmlEmailContentInteractor mockTransformHtmlEmailContentInteractor;
@@ -267,7 +267,7 @@ void main() {
     mockGetEmailContentInteractor = MockGetEmailContentInteractor();
     mockGetAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
     mockUploadController = MockUploadController();
-    mockRemoveComposerCacheOnWebInteractor = MockRemoveComposerCacheOnWebInteractor();
+    mockRemoveComposerCacheByIdOnWebInteractor = MockRemoveComposerCacheByIdOnWebInteractor();
     mockSaveComposerCacheOnWebInteractor = MockSaveComposerCacheOnWebInteractor();
     mockDownloadImageAsBase64Interactor = MockDownloadImageAsBase64Interactor();
     mockTransformHtmlEmailContentInteractor = MockTransformHtmlEmailContentInteractor();
@@ -282,7 +282,7 @@ void main() {
       mockGetEmailContentInteractor,
       mockGetAllIdentitiesInteractor,
       mockUploadController,
-      mockRemoveComposerCacheOnWebInteractor,
+      mockRemoveComposerCacheByIdOnWebInteractor,
       mockSaveComposerCacheOnWebInteractor,
       mockDownloadImageAsBase64Interactor,
       mockTransformHtmlEmailContentInteractor,
@@ -415,7 +415,7 @@ void main() {
             mockGetEmailContentInteractor,
             mockGetAllIdentitiesInteractor,
             mockUploadController,
-            mockRemoveComposerCacheOnWebInteractor,
+            mockRemoveComposerCacheByIdOnWebInteractor,
             mockSaveComposerCacheOnWebInteractor,
             mockDownloadImageAsBase64Interactor,
             mockTransformHtmlEmailContentInteractor,
@@ -476,7 +476,7 @@ void main() {
             mockGetEmailContentInteractor,
             mockGetAllIdentitiesInteractor,
             mockUploadController,
-            mockRemoveComposerCacheOnWebInteractor,
+            mockRemoveComposerCacheByIdOnWebInteractor,
             mockSaveComposerCacheOnWebInteractor,
             mockDownloadImageAsBase64Interactor,
             mockTransformHtmlEmailContentInteractor,
@@ -538,7 +538,7 @@ void main() {
             mockGetEmailContentInteractor,
             mockGetAllIdentitiesInteractor,
             mockUploadController,
-            mockRemoveComposerCacheOnWebInteractor,
+            mockRemoveComposerCacheByIdOnWebInteractor,
             mockSaveComposerCacheOnWebInteractor,
             mockDownloadImageAsBase64Interactor,
             mockTransformHtmlEmailContentInteractor,
@@ -599,7 +599,7 @@ void main() {
             mockGetEmailContentInteractor,
             mockGetAllIdentitiesInteractor,
             mockUploadController,
-            mockRemoveComposerCacheOnWebInteractor,
+            mockRemoveComposerCacheByIdOnWebInteractor,
             mockSaveComposerCacheOnWebInteractor,
             mockDownloadImageAsBase64Interactor,
             mockTransformHtmlEmailContentInteractor,
@@ -901,7 +901,7 @@ void main() {
             mockGetEmailContentInteractor,
             mockGetAllIdentitiesInteractor,
             mockUploadController,
-            mockRemoveComposerCacheOnWebInteractor,
+            mockRemoveComposerCacheByIdOnWebInteractor,
             mockSaveComposerCacheOnWebInteractor,
             mockDownloadImageAsBase64Interactor,
             mockTransformHtmlEmailContentInteractor,
@@ -973,7 +973,7 @@ void main() {
             mockGetEmailContentInteractor,
             mockGetAllIdentitiesInteractor,
             mockUploadController,
-            mockRemoveComposerCacheOnWebInteractor,
+            mockRemoveComposerCacheByIdOnWebInteractor,
             mockSaveComposerCacheOnWebInteractor,
             mockDownloadImageAsBase64Interactor,
             mockTransformHtmlEmailContentInteractor,
@@ -1047,7 +1047,7 @@ void main() {
             mockGetEmailContentInteractor,
             mockGetAllIdentitiesInteractor,
             mockUploadController,
-            mockRemoveComposerCacheOnWebInteractor,
+            mockRemoveComposerCacheByIdOnWebInteractor,
             mockSaveComposerCacheOnWebInteractor,
             mockDownloadImageAsBase64Interactor,
             mockTransformHtmlEmailContentInteractor,
@@ -1125,7 +1125,7 @@ void main() {
             mockGetEmailContentInteractor,
             mockGetAllIdentitiesInteractor,
             mockUploadController,
-            mockRemoveComposerCacheOnWebInteractor,
+            mockRemoveComposerCacheByIdOnWebInteractor,
             mockSaveComposerCacheOnWebInteractor,
             mockDownloadImageAsBase64Interactor,
             mockTransformHtmlEmailContentInteractor,
@@ -1490,7 +1490,7 @@ void main() {
             mockGetEmailContentInteractor,
             mockGetAllIdentitiesInteractor,
             mockUploadController,
-            mockRemoveComposerCacheOnWebInteractor,
+            mockRemoveComposerCacheByIdOnWebInteractor,
             mockSaveComposerCacheOnWebInteractor,
             mockDownloadImageAsBase64Interactor,
             mockTransformHtmlEmailContentInteractor,
@@ -1542,7 +1542,7 @@ void main() {
             mockGetEmailContentInteractor,
             mockGetAllIdentitiesInteractor,
             mockUploadController,
-            mockRemoveComposerCacheOnWebInteractor,
+            mockRemoveComposerCacheByIdOnWebInteractor,
             mockSaveComposerCacheOnWebInteractor,
             mockDownloadImageAsBase64Interactor,
             mockTransformHtmlEmailContentInteractor,
@@ -1595,7 +1595,7 @@ void main() {
             mockGetEmailContentInteractor,
             mockGetAllIdentitiesInteractor,
             mockUploadController,
-            mockRemoveComposerCacheOnWebInteractor,
+            mockRemoveComposerCacheByIdOnWebInteractor,
             mockSaveComposerCacheOnWebInteractor,
             mockDownloadImageAsBase64Interactor,
             mockTransformHtmlEmailContentInteractor,
@@ -1652,7 +1652,7 @@ void main() {
             mockGetEmailContentInteractor,
             mockGetAllIdentitiesInteractor,
             mockUploadController,
-            mockRemoveComposerCacheOnWebInteractor,
+            mockRemoveComposerCacheByIdOnWebInteractor,
             mockSaveComposerCacheOnWebInteractor,
             mockDownloadImageAsBase64Interactor,
             mockTransformHtmlEmailContentInteractor,

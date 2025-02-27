@@ -12,12 +12,16 @@ class ComposerCache with EquatableMixin {
   final bool? hasRequestReadReceipt;
   final bool? isMarkAsImportant;
   final ScreenDisplayMode displayMode;
+  final int? composerIndex;
+  final String? composerId;
 
   ComposerCache({
     this.email,
     this.hasRequestReadReceipt,
     this.isMarkAsImportant,
     this.displayMode = ScreenDisplayMode.normal
+    this.composerIndex,
+    this.composerId,
   });
 
   factory ComposerCache.fromJson(Map<String, dynamic> json) => _$ComposerCacheFromJson(json);
@@ -30,5 +34,7 @@ class ComposerCache with EquatableMixin {
     hasRequestReadReceipt,
     isMarkAsImportant,
     displayMode
+    composerIndex,
+    composerId,
   ];
 }

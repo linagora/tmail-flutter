@@ -37,6 +37,8 @@ class SaveComposerCacheOnWebInteractor {
           hasRequestReadReceipt: createEmailRequest.hasRequestReadReceipt,
           isMarkAsImportant: createEmailRequest.isMarkAsImportant,
           displayMode: createEmailRequest.displayMode
+          composerIndex: createEmailRequest.composerIndex,
+          composerId: createEmailRequest.composerId,
         ));
       return Right(SaveComposerCacheSuccess());
     } catch (exception) {
