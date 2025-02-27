@@ -2091,10 +2091,10 @@ packages:
     description:
       path: "."
       ref: "enhancement/1-improve-and-optimize"
-      resolved-ref: f00cbb04126cd6174eaa7c9e68f3f717ef9f37ec
+      resolved-ref: "2c35cb18f7c8556531a2b1507a45af95422427d8"
       url: "https://github.com/linagora/twake-previewer-flutter"
     source: git
-    version: "0.0.9"
+    version: "0.0.10"
   typed_data:
     dependency: transitive
     description:
