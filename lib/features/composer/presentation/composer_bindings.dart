@@ -52,7 +52,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/session
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/session_storage_composer_datasoure_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identity_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
@@ -303,7 +303,7 @@ class ComposerBindings extends BaseBindings {
       tag: composerId,
     );
     Get.lazyPut(
-      () => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>(tag: composerId)),
+      () => RemoveComposerCacheByIdOnWebInteractor(Get.find<ComposerCacheRepository>(tag: composerId)),
       tag: composerId,
     );
     Get.lazyPut(() => SaveComposerCacheOnWebInteractor(
@@ -359,7 +359,7 @@ class ComposerBindings extends BaseBindings {
       Get.find<GetEmailContentInteractor>(tag: composerId),
       Get.find<GetAllIdentitiesInteractor>(tag: composerId),
       Get.find<UploadController>(tag: composerId),
-      Get.find<RemoveComposerCacheOnWebInteractor>(tag: composerId),
+      Get.find<RemoveComposerCacheByIdOnWebInteractor>(tag: composerId),
       Get.find<SaveComposerCacheOnWebInteractor>(tag: composerId),
       Get.find<DownloadImageAsBase64Interactor>(tag: composerId),
       Get.find<TransformHtmlEmailContentInteractor>(tag: composerId),
@@ -425,7 +425,7 @@ class ComposerBindings extends BaseBindings {
     Get.delete<LocalImagePickerInteractor>(tag: composerId);
     Get.delete<UploadAttachmentInteractor>(tag: composerId);
     Get.delete<GetEmailContentInteractor>(tag: composerId);
-    Get.delete<RemoveComposerCacheOnWebInteractor>(tag: composerId);
+    Get.delete<RemoveComposerCacheByIdOnWebInteractor>(tag: composerId);
     Get.delete<SaveComposerCacheOnWebInteractor>(tag: composerId);
     Get.delete<DownloadImageAsBase64Interactor>(tag: composerId);
     Get.delete<TransformHtmlEmailContentInteractor>(tag: composerId);

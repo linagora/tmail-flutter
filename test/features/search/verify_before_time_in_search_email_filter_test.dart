@@ -42,7 +42,8 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_r
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
@@ -152,7 +153,8 @@ const fallbackGenerators = {
   MockSpec<RestoredDeletedMessageInteractor>(),
   MockSpec<GetRestoredDeletedMessageInterator>(),
   MockSpec<GetIdentityCacheOnWebInteractor>(),
-  MockSpec<RemoveComposerCacheOnWebInteractor>(),
+  MockSpec<RemoveAllComposerCacheOnWebInteractor>(),
+  MockSpec<RemoveComposerCacheByIdOnWebInteractor>(),
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<ComposerManager>(fallbackGenerators: fallbackGenerators),
 ])
@@ -209,7 +211,8 @@ void main() {
   late MockUnsubscribeEmailInteractor unsubscribeEmailInteractor;
   late MockRestoredDeletedMessageInteractor restoreDeletedMessageInteractor;
   late MockGetRestoredDeletedMessageInterator getRestoredDeletedMessageInteractor;
-  late MockRemoveComposerCacheOnWebInteractor removeComposerCacheOnWebInteractor;
+  late MockRemoveAllComposerCacheOnWebInteractor removeAllComposerCacheOnWebInteractor;
+  late MockRemoveComposerCacheByIdOnWebInteractor removeComposerCacheByIdOnWebInteractor;
   late MockGetAllIdentitiesInteractor getAllIdentitiesInteractor;
 
   // Declaration base controller
@@ -301,7 +304,8 @@ void main() {
     unsubscribeEmailInteractor = MockUnsubscribeEmailInteractor();
     restoreDeletedMessageInteractor = MockRestoredDeletedMessageInteractor();
     getRestoredDeletedMessageInteractor = MockGetRestoredDeletedMessageInterator();
-    removeComposerCacheOnWebInteractor = MockRemoveComposerCacheOnWebInteractor();
+    removeAllComposerCacheOnWebInteractor = MockRemoveAllComposerCacheOnWebInteractor();
+    removeComposerCacheByIdOnWebInteractor = MockRemoveComposerCacheByIdOnWebInteractor();
     getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
 
     searchController = SearchController(
@@ -346,7 +350,8 @@ void main() {
       unsubscribeEmailInteractor,
       restoreDeletedMessageInteractor,
       getRestoredDeletedMessageInteractor,
-      removeComposerCacheOnWebInteractor,
+      removeAllComposerCacheOnWebInteractor,
+      removeComposerCacheByIdOnWebInteractor,
       getAllIdentitiesInteractor,
     );
 

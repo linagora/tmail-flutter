@@ -56,7 +56,8 @@ import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_na
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/advanced_filter_controller.dart';
@@ -173,7 +174,8 @@ const fallbackGenerators = {
   MockSpec<Uuid>(),
   MockSpec<CachingManager>(),
   MockSpec<LanguageCacheManager>(),
-  MockSpec<RemoveComposerCacheOnWebInteractor>(),
+  MockSpec<RemoveAllComposerCacheOnWebInteractor>(),
+  MockSpec<RemoveComposerCacheByIdOnWebInteractor>(),
   MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
   MockSpec<TwakeAppManager>(),
@@ -263,7 +265,8 @@ void main() {
   final verifyNameInteractor = MockVerifyNameInteractor();
   final getAllMailboxInteractor = MockGetAllMailboxInteractor();
   final refreshAllMailboxInteractor = MockRefreshAllMailboxInteractor();
-  final removeComposerCacheOnWebInteractor = MockRemoveComposerCacheOnWebInteractor();
+  final removeAllComposerCacheOnWebInteractor = MockRemoveAllComposerCacheOnWebInteractor();
+  final removeComposerCacheByIdOnWebInteractor = MockRemoveComposerCacheByIdOnWebInteractor();
   final getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
   final composerManager = MockComposerManager();
   late MailboxController mailboxController;
@@ -316,7 +319,8 @@ void main() {
     Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
     Get.put<UpdateAccountCacheInteractor>(updateAccountCacheInteractor);
     Get.put<GetAllIdentitiesInteractor>(getAllIdentitiesInteractor);
-    Get.put<RemoveComposerCacheOnWebInteractor>(removeComposerCacheOnWebInteractor);
+    Get.put<RemoveAllComposerCacheOnWebInteractor>(removeAllComposerCacheOnWebInteractor);
+    Get.put<RemoveComposerCacheByIdOnWebInteractor>(removeComposerCacheByIdOnWebInteractor);
     Get.put<ComposerManager>(composerManager);
 
     searchController = SearchController(
@@ -351,7 +355,8 @@ void main() {
       unsubscribeEmailInteractor,
       restoreDeletedMessageInteractor,
       getRestoredDeletedMessageInteractor,
-      removeComposerCacheOnWebInteractor,
+      removeAllComposerCacheOnWebInteractor,
+      removeComposerCacheByIdOnWebInteractor,
       getAllIdentitiesInteractor,
     );
   });
