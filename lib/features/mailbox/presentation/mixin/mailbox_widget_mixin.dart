@@ -315,8 +315,8 @@ mixin MailboxWidgetMixin {
         child: Opacity(
           opacity: contextMenuItem.isActivated ? 1.0 : 0.3,
           child: PopupItemWidget(
-            contextMenuItem.action.getContextMenuIcon(imagePaths),
-            contextMenuItem.action.getTitleContextMenu(context),
+            iconAction: contextMenuItem.action.getContextMenuIcon(imagePaths),
+            nameAction: contextMenuItem.action.getTitleContextMenu(context),
             colorIcon: contextMenuItem.action.getColorContextMenuIcon(),
             padding: const EdgeInsetsDirectional.only(start: 12),
             iconSize: 24,

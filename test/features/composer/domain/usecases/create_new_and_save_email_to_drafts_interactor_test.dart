@@ -43,15 +43,13 @@ void main() {
         emailActionType: EmailActionType.editDraft,
         subject: 'subject',
         emailContent: 'emailContent',
-        fromSender: {},
-        toRecipients: {},
-        ccRecipients: {},
-        bccRecipients: {},
-        replyToRecipients: {},
         draftsEmailId: EmailId(Id('some-id'))
       );
-      when(composerRepository.generateEmail(any, withIdentityHeader: anyNamed('withIdentityHeader')))
-        .thenAnswer((_) async => Email());
+      when(composerRepository.generateEmail(
+        any,
+        withIdentityHeader: anyNamed('withIdentityHeader'),
+        isDraft: anyNamed('isDraft'),
+      )).thenAnswer((_) async => Email());
       when(emailRepository.updateEmailDrafts(any, any, any, any))
         .thenAnswer((_) async => Email());
       
@@ -61,13 +59,16 @@ void main() {
         .last;
       await untilCalled(composerRepository.generateEmail(
         any,
-        withIdentityHeader: anyNamed('withIdentityHeader')));
+        withIdentityHeader: anyNamed('withIdentityHeader'),
+        isDraft: anyNamed('isDraft'),
+      ));
       
       // assert
       verify(composerRepository.generateEmail(
         createEmailRequest,
-        withIdentityHeader: true)
-      ).called(1);
+        withIdentityHeader: true,
+        isDraft: true,
+      )).called(1);
     });
 
     test(
@@ -82,14 +83,12 @@ void main() {
         emailActionType: EmailActionType.editDraft,
         subject: 'subject',
         emailContent: 'emailContent',
-        fromSender: {},
-        toRecipients: {},
-        ccRecipients: {},
-        bccRecipients: {},
-        replyToRecipients: {},
       );
-      when(composerRepository.generateEmail(any, withIdentityHeader: anyNamed('withIdentityHeader')))
-        .thenAnswer((_) async => Email());
+      when(composerRepository.generateEmail(
+        any,
+        withIdentityHeader: anyNamed('withIdentityHeader'),
+        isDraft: anyNamed('isDraft'),
+      )).thenAnswer((_) async => Email());
       when(emailRepository.saveEmailAsDrafts(any, any, any))
         .thenAnswer((_) async => Email());
       
@@ -99,13 +98,16 @@ void main() {
         .last;
       await untilCalled(composerRepository.generateEmail(
         any,
-        withIdentityHeader: anyNamed('withIdentityHeader')));
+        withIdentityHeader: anyNamed('withIdentityHeader'),
+        isDraft: anyNamed('isDraft'),
+      ));
       
       // assert
       verify(composerRepository.generateEmail(
         createEmailRequest,
-        withIdentityHeader: true)
-      ).called(1);
+        withIdentityHeader: true,
+        isDraft: true,
+      )).called(1);
     });
   });
 }

@@ -496,8 +496,8 @@ class ComposerView extends GetWidget<ComposerController> {
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
-          controller.imagePaths.icReadReceipt,
-          AppLocalizations.of(context).requestReadReceipt,
+          iconAction: controller.imagePaths.icReadReceipt,
+          nameAction: AppLocalizations.of(context).requestReadReceipt,
           styleName: ComposerStyle.popupItemTextStyle,
           padding: ComposerStyle.popupItemPadding,
           colorIcon: ComposerStyle.popupItemIconColor,
@@ -512,8 +512,8 @@ class ComposerView extends GetWidget<ComposerController> {
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
-          controller.imagePaths.icSaveToDraft,
-          AppLocalizations.of(context).saveAsDraft,
+          iconAction: controller.imagePaths.icSaveToDraft,
+          nameAction: AppLocalizations.of(context).saveAsDraft,
           colorIcon: ComposerStyle.popupItemIconColor,
           styleName: ComposerStyle.popupItemTextStyle,
           padding: ComposerStyle.popupItemPadding,
@@ -526,8 +526,8 @@ class ComposerView extends GetWidget<ComposerController> {
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
-          controller.imagePaths.icDeleteMailbox,
-          AppLocalizations.of(context).delete,
+          iconAction: controller.imagePaths.icDeleteMailbox,
+          nameAction: AppLocalizations.of(context).delete,
           styleName: ComposerStyle.popupItemTextStyle,
           padding: ComposerStyle.popupItemPadding,
           onCallbackAction: () {

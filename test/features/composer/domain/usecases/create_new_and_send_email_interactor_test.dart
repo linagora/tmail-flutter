@@ -34,14 +34,12 @@ void main() {
         emailActionType: EmailActionType.editDraft,
         subject: 'subject',
         emailContent: 'emailContent',
-        fromSender: {},
-        toRecipients: {},
-        ccRecipients: {},
-        bccRecipients: {},
-        replyToRecipients: {},
       );
-      when(composerRepository.generateEmail(any, withIdentityHeader: anyNamed('withIdentityHeader')))
-        .thenAnswer((_) async => Email());
+      when(composerRepository.generateEmail(
+        any,
+        withIdentityHeader: anyNamed('withIdentityHeader'),
+        isDraft: anyNamed('isDraft'),
+      )).thenAnswer((_) async => Email());
       
       // act
       createNewAndSendEmailInteractor
@@ -49,13 +47,16 @@ void main() {
         .last;
       await untilCalled(composerRepository.generateEmail(
         any,
-        withIdentityHeader: anyNamed('withIdentityHeader')));
+        withIdentityHeader: anyNamed('withIdentityHeader'),
+        isDraft: anyNamed('isDraft'),
+      ));
       
       // assert
       verify(composerRepository.generateEmail(
         createEmailRequest,
-        withIdentityHeader: false)
-      ).called(1);
+        withIdentityHeader: false,
+        isDraft: false,
+      )).called(1);
     });
   });
 }

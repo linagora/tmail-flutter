@@ -7,7 +7,10 @@ import 'package:tmail_ui_user/features/upload/domain/model/upload_attachment.dar
 abstract class ComposerRepository {
   Future<Email> generateEmail(
     CreateEmailRequest createEmailRequest,
-    {bool withIdentityHeader = false});
+    {
+      bool withIdentityHeader = false,
+      bool isDraft = false,
+    });
 
   Future<UploadAttachment> uploadAttachment(FileInfo fileInfo, Uri uploadUri, {CancelToken? cancelToken});
 

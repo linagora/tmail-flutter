@@ -89,7 +89,9 @@ class CreateNewAndSaveEmailToDraftsInteractor {
     try {
       final emailCreated = await _composerRepository.generateEmail(
         createEmailRequest,
-        withIdentityHeader: true);
+        withIdentityHeader: true,
+        isDraft: true,
+      );
       return emailCreated;
     } catch (e) {
       logError('CreateNewAndSaveEmailToDraftsInteractor::_createEmailObject: Exception: $e');

@@ -6,8 +6,8 @@ import 'package:tmail_ui_user/features/base/styles/popup_item_widget_style.dart'
 
 class PopupItemWidget extends StatelessWidget {
 
-  final String _iconAction;
-  final String _nameAction;
+  final String iconAction;
+  final String nameAction;
   final Color? colorIcon;
   final double? iconSize;
   final TextStyle? styleName;
@@ -16,20 +16,18 @@ class PopupItemWidget extends StatelessWidget {
   final EdgeInsetsGeometry? padding;
   final VoidCallback? onCallbackAction;
 
-  const PopupItemWidget(
-    this._iconAction,
-    this._nameAction,
-    {
-      Key? key,
-      this.colorIcon,
-      this.iconSize,
-      this.styleName,
-      this.isSelected,
-      this.padding,
-      this.selectedIcon,
-      this.onCallbackAction
-    }
-  ) : super(key: key);
+  const PopupItemWidget({
+    Key? key,
+    required this.iconAction,
+    required this.nameAction,
+    this.colorIcon,
+    this.iconSize,
+    this.styleName,
+    this.isSelected,
+    this.padding,
+    this.selectedIcon,
+    this.onCallbackAction,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,7 +42,7 @@ class PopupItemWidget extends StatelessWidget {
             padding: padding,
             child: Row(children: [
               SvgPicture.asset(
-                _iconAction,
+                iconAction,
                 width: iconSize ?? PopupItemWidgetStyle.iconSize,
                 height: iconSize ?? PopupItemWidgetStyle.iconSize,
                 fit: BoxFit.fill,
@@ -52,7 +50,7 @@ class PopupItemWidget extends StatelessWidget {
               ),
               const SizedBox(width: PopupItemWidgetStyle.space),
               Expanded(child: Text(
-                _nameAction,
+                nameAction,
                 style: styleName ?? PopupItemWidgetStyle.labelTextStyle
               )),
               if (isSelected == true && selectedIcon != null)
