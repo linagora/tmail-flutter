@@ -1104,13 +1104,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     if (success.attachment.isImage) {
       _updateAttachmentsViewState(success.attachment.blobId, Right(success));
-      Get.dialog(TwakeImagePreviewer(
-        bytes: success.bytes,
-        topBarOptions: TopBarOptions(
-          title: success.attachment.generateFileName(),
-          onClose: popBack,
-        ),
-      ));
+      Get.dialog(PointerInterceptor(child: TwakeImagePreviewer(
+          bytes: success.bytes,
+          zoomable: true,
+          topBarOptions: TopBarOptions(
+            title: success.attachment.generateFileName(),
+            onClose: popBack,
+          ),
+        )));
     } else if (success.attachment.isText) {
       _updateAttachmentsViewState(success.attachment.blobId, Right(success));
       Get.dialog(TwakePlainTextPreviewer(
