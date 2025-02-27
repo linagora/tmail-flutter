@@ -1,11 +1,11 @@
 import 'dart:convert';
-import 'package:collection/collection.dart';
 import 'package:core/domain/exceptions/web_session_exception.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:model/model.dart';
+import 'package:model/email/email_action_type.dart';
+import 'package:model/extensions/account_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/session_storage_composer_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
@@ -20,7 +20,7 @@ class SessionStorageComposerDatasourceImpl
   final ExceptionThrower _exceptionThrower;
 
   @override
-  Future<ComposerCache> getComposerCacheOnWeb(
+  Future<List<ComposerCache>> getComposerCacheOnWeb(
     AccountId accountId,
     UserName userName
   ) async {
@@ -30,21 +30,17 @@ class SessionStorageComposerDatasourceImpl
         accountId.asString,
         userName.value).toString();
         
-      final result = html.window.sessionStorage.entries.firstWhereOrNull(
-        (entry) => entry.key == keyWithIdentity);
-      if (result != null) {
-        return ComposerCache.fromJson(jsonDecode(result.value));
+      final listEntries = html.window.sessionStorage.entries.where(
+        (entry) => entry.key.startsWith(keyWithIdentity),
+      );
+
+      if (listEntries.isNotEmpty) {
+        return listEntries
+          .map((entry) => ComposerCache.fromJson(jsonDecode(entry.value)))
+          .toList();
       } else {
         throw NotFoundInWebSessionException();
       }
-    }).catchError(_exceptionThrower.throwException);
-  }
-
-  @override
-  Future<void> removeComposerCacheOnWeb() async {
-    return Future.sync(() {
-      html.window.sessionStorage.removeWhere(
-        (key, value) => key.startsWith(EmailActionType.reopenComposerBrowser.name));
     }).catchError(_exceptionThrower.throwException);
   }
 
@@ -58,7 +54,9 @@ class SessionStorageComposerDatasourceImpl
       final composerCacheKey = TupleKey(
         EmailActionType.reopenComposerBrowser.name,
         accountId.asString,
-        userName.value).toString();
+        userName.value,
+        composerCache.composerId,
+      ).toString();
       Map<String, String> entries = {
         composerCacheKey: jsonEncode(composerCache.toJson())
       };
@@ -76,6 +74,33 @@ class SessionStorageComposerDatasourceImpl
         htmlContent: htmlContent,
         transformConfiguration: transformConfiguration,
         mapCidImageDownloadUrl: mapUrlDownloadCID);
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<void> removeAllComposerCacheOnWeb(AccountId accountId, UserName userName) {
+    return Future.sync(() {
+      final keyWithIdentity = TupleKey(
+        EmailActionType.reopenComposerBrowser.name,
+        accountId.asString,
+        userName.value,
+      ).toString();
+
+      html.window.sessionStorage.removeWhere((key, value) => key.startsWith(keyWithIdentity));
+    }).catchError(_exceptionThrower.throwException);
+  }
+
+  @override
+  Future<void> removeComposerCacheByIdOnWeb(AccountId accountId, UserName userName, String composerId) {
+    return Future.sync(() {
+      final keyWithIdentity = TupleKey(
+        EmailActionType.reopenComposerBrowser.name,
+        accountId.asString,
+        userName.value,
+        composerId,
+      ).toString();
+
+      html.window.sessionStorage.removeWhere((key, value) => key == keyWithIdentity);
     }).catchError(_exceptionThrower.throwException);
   }
 }

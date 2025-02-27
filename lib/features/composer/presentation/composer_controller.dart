@@ -88,7 +88,7 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/presentatio
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
@@ -149,7 +149,7 @@ class ComposerController extends BaseController
   final GetEmailContentInteractor _getEmailContentInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final UploadController uploadController;
-  final RemoveComposerCacheOnWebInteractor _removeComposerCacheOnWebInteractor;
+  final RemoveComposerCacheByIdOnWebInteractor _removeComposerCacheByIdOnWebInteractor;
   final SaveComposerCacheOnWebInteractor _saveComposerCacheOnWebInteractor;
   final DownloadImageAsBase64Interactor _downloadImageAsBase64Interactor;
   final TransformHtmlEmailContentInteractor _transformHtmlEmailContentInteractor;
@@ -243,7 +243,7 @@ class ComposerController extends BaseController
     this._getEmailContentInteractor,
     this._getAllIdentitiesInteractor,
     this.uploadController,
-    this._removeComposerCacheOnWebInteractor,
+    this._removeComposerCacheByIdOnWebInteractor,
     this._saveComposerCacheOnWebInteractor,
     this._downloadImageAsBase64Interactor,
     this._transformHtmlEmailContentInteractor,
@@ -421,7 +421,15 @@ class ComposerController extends BaseController
 
   @override
   Future<void> onUnloadBrowserListener(html.Event event) async {
-    await _removeComposerCacheOnWebInteractor.execute();
+    final username = mailboxDashBoardController.sessionCurrent?.username;
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (composerId != null && username != null && accountId != null) {
+      await _removeComposerCacheByIdOnWebInteractor.execute(
+        accountId,
+        username,
+        composerId!,
+      );
+    }
     await _saveComposerCacheOnWebAction();
   }
 
@@ -504,6 +512,10 @@ class ComposerController extends BaseController
     final emailContent = await getContentInEditor();
     final uploadUri = _getUploadUriFromSession(session, accountId);
 
+    final composerIndex = composerId != null
+      ? mailboxDashBoardController.composerManager.getComposerIndex(composerId!)
+      : null;
+    
     return CreateEmailRequest(
       session: session,
       accountId: accountId,
@@ -531,6 +543,8 @@ class ComposerController extends BaseController
       emailSendingQueue: arguments.sendingEmail,
       displayMode: screenDisplayMode.value,
       uploadUri: uploadUri,
+      composerIndex: composerIndex,
+      composerId: composerId,
     );
   }
 
@@ -1363,9 +1377,12 @@ class ComposerController extends BaseController
 
     isEmailChanged.value = draftEmailHash != emptyDraftEmailHash;
 
-    if (composerArguments.value?.emailActionType == EmailActionType.compose ||
-        composerArguments.value?.emailActionType == EmailActionType.editDraft) {
+    final emailActionType = composerArguments.value?.emailActionType;
+    if (emailActionType == EmailActionType.compose
+        || emailActionType == EmailActionType.editDraft) {
       _savedEmailDraftHash = draftEmailHash;
+    } else if (emailActionType == EmailActionType.reopenComposerBrowser) {
+      _savedEmailDraftHash = emptyDraftEmailHash;
     }
   }
 
@@ -1468,7 +1485,7 @@ class ComposerController extends BaseController
     required AccountId accountId,
     required String downloadUrl
   }) {
-    _restoreEmailInlineImagesInteractor = getBinding<RestoreEmailInlineImagesInteractor>();
+    _restoreEmailInlineImagesInteractor = getBinding<RestoreEmailInlineImagesInteractor>(tag: composerId);
     if (_restoreEmailInlineImagesInteractor == null) return;
     consumeState(_restoreEmailInlineImagesInteractor!.execute(
       htmlContent: htmlContent,

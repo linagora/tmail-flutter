@@ -39,6 +39,8 @@ class CreateEmailRequest with EquatableMixin {
   final SendingEmail? emailSendingQueue;
   final ScreenDisplayMode displayMode;
   final Uri? uploadUri;
+  final int? composerIndex;
+  final String? composerId;
 
   CreateEmailRequest({
     required this.session,
@@ -67,6 +69,8 @@ class CreateEmailRequest with EquatableMixin {
     this.emailSendingQueue,
     this.displayMode = ScreenDisplayMode.normal,
     this.uploadUri,
+    this.composerIndex,
+    this.composerId,
   });
 
   @override
@@ -97,5 +101,7 @@ class CreateEmailRequest with EquatableMixin {
     emailSendingQueue,
     displayMode,
     uploadUri,
+    composerIndex,
+    composerId,
   ];
 }
