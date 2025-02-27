@@ -33,7 +33,10 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           flutter-version: "3.24.5"
+          channel: "stable"
           cache: true
+          cache-key: "deps-${{ hashFiles('**/pubspec.lock') }}"
+          cache-path: ${{ runner.tool_cache }}/flutter # optional, change this to specify the cache path
 
       - name: Setup Firebase env
         env:
