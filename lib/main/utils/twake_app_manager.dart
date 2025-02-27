@@ -1,20 +1,8 @@
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 
 class TwakeAppManager {
-  ComposerOverlayState? _composerOverlayState;
+  bool _hasComposer = false;
 
-  void openComposerOnWeb() =>
-      _composerOverlayState = ComposerOverlayState.active;
+  void setHasComposer(bool value) => _hasComposer = value;
 
-  void closeComposerOnWeb() {
-    _composerOverlayState = ComposerOverlayState.inActive;
-    _composerOverlayState = null;
-  }
-
-  bool get isComposerOpened =>
-      _composerOverlayState == ComposerOverlayState.active;
-
-  void dispose() {
-    _composerOverlayState = null;
-  }
+  bool get hasComposer => _hasComposer;
 }

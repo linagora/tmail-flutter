@@ -221,7 +221,7 @@ abstract class BaseController extends GetxController
 
   void _handleBadCredentialsException() {
     log('$runtimeType::_handleBadCredentialsException:');
-    if (!twakeAppManager.isComposerOpened) {
+    if (!twakeAppManager.hasComposer) {
       _performReconnection();
       return;
     }
