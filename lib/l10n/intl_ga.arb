@@ -4071,19 +4071,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "errorWhileFetchingSubaddress": "",
+  "errorWhileFetchingSubaddress": "Earráid agus an fosheoladh á fháil",
   "@errorWhileFetchingSubaddress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emptyTrashFolderFailed": "",
+  "emptyTrashFolderFailed": "Theip ar fhillteán bruscar folamh",
   "@emptyTrashFolderFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "handshakeException": "",
+  "handshakeException": "Earráid chroitheadh láimhe sa chliant: {errorMessage}",
   "@handshakeException": {
     "type": "text",
     "placeholders_order": [
@@ -4093,25 +4093,25 @@
       "errorMessage": {}
     }
   },
-  "getHelpOrReportABug": "",
+  "getHelpOrReportABug": "Faigh cabhair nó tuairiscigh fabht",
   "@getHelpOrReportABug": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "copySubaddress": "",
+  "copySubaddress": "Cóipeáil an fosheoladh",
   "@copySubaddress": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "thisHtmlAttachmentCannotBePreviewed": "",
+  "thisHtmlAttachmentCannotBePreviewed": "Ní féidir réamhamharc a dhéanamh ar an gceangaltán html seo",
   "@thisHtmlAttachmentCannotBePreviewed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "unexpectedError": "",
+  "unexpectedError": "Earráid gan choinne: {errorMessage}",
   "@unexpectedError": {
     "type": "text",
     "placeholders_order": [
@@ -4121,7 +4121,7 @@
       "errorMessage": {}
     }
   },
-  "message_confirmation_dialog_allow_subaddressing_mobile": "",
+  "message_confirmation_dialog_allow_subaddressing_mobile": "Tá tú ar tí ligean d'aon duine ríomhphoist a sheoladh go díreach chuig d'fhillteán \"{nameMailbox}\" leis an seoladh <{ address}>",
   "@message_confirmation_dialog_allow_subaddressing_mobile": {
     "type": "text",
     "placeholders_order": [
@@ -4133,55 +4133,55 @@
       "address": {}
     }
   },
-  "toastMessageAllowSubaddressingSuccess": "",
+  "toastMessageAllowSubaddressingSuccess": "D'éirigh leat fosheoladh a cheadú don fhillteán seo",
   "@toastMessageAllowSubaddressingSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "doYouWantToLogOutAndSwitchTo": "",
+  "doYouWantToLogOutAndSwitchTo": "Ar mhaith leat logáil amach agus athrú chuig",
   "@doYouWantToLogOutAndSwitchTo": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "saveAndRefresh": "",
+  "saveAndRefresh": "Sábháil & athnuachan",
   "@saveAndRefresh": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youAreCurrentlyLoggedInWith": "",
+  "youAreCurrentlyLoggedInWith": "Tá tú logáilte isteach le",
   "@youAreCurrentlyLoggedInWith": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "",
+  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "Chuaigh do sheisiún in éag. Ní mór dúinn tú a thabhairt ar ais go dtí an leathanach logála isteach chun é a athnuachan. Seans gur mhaith leat an ríomhphost atá á chur in eagar agat faoi láthair a shábháil sula ndéanaimid amhlaidh.",
   "@messageWarningDialogWhenExpiredOIDCTokenAndReconnection": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "allowSubaddressing": "",
+  "allowSubaddressing": "Ceadaigh fosheoladh",
   "@allowSubaddressing": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "switchAccountConfirmation": "",
+  "switchAccountConfirmation": "Athraigh Deimhniú Cuntas",
   "@switchAccountConfirmation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "toastMessageDisallowSubaddressingSuccess": "",
+  "toastMessageDisallowSubaddressingSuccess": "D'éirigh leat fosheoladh a dhícheadú don fhillteán seo",
   "@toastMessageDisallowSubaddressingSuccess": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "recoverDeletedMessagesBannerContent": "",
+  "recoverDeletedMessagesBannerContent": "Is féidir leat teachtaireachtaí a scriosadh le linn na {period} seo caite a athshlánú",
   "@recoverDeletedMessagesBannerContent": {
     "type": "text",
     "placeholders_order": [
@@ -4191,103 +4191,103 @@
       "period": {}
     }
   },
-  "toastMessageSubaddressingFailure": "",
+  "toastMessageSubaddressingFailure": "Tharla earráid agus an t-iarratas á láimhseáil",
   "@toastMessageSubaddressingFailure": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "disallowSubaddressing": "",
+  "disallowSubaddressing": "Dícheadaigh fosheoladh",
   "@disallowSubaddressing": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "previewEmailFromEMLFileFailed": "",
+  "previewEmailFromEMLFileFailed": "Ní féidir an comhad eml seo a réamhamharc",
   "@previewEmailFromEMLFileFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "parseEmailByBlobIdFailed": "",
+  "parseEmailByBlobIdFailed": "Ní féidir ríomhphost a pharsáil trí aitheantas blob",
   "@parseEmailByBlobIdFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cannotOpenNewWindow": "",
+  "cannotOpenNewWindow": "Ní féidir fuinneog nua a oscailt",
   "@cannotOpenNewWindow": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "replyToList": "",
+  "replyToList": "Freagair an liosta",
   "@replyToList": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "downloadAttachmentInEMLPreviewWarningMessage": "",
+  "downloadAttachmentInEMLPreviewWarningMessage": "Ceangaltán á íoslódáil. Ní féidir leat ach comhad amháin a íoslódáil ag an am.",
   "@downloadAttachmentInEMLPreviewWarningMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "contactSupport": "",
+  "contactSupport": "Tacaíocht teagmhála",
   "@contactSupport": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "downloadAttachmentHasBeenCancelled": "",
+  "downloadAttachmentHasBeenCancelled": "Cuireadh an ceangaltán íoslódála ar ceal",
   "@downloadAttachmentHasBeenCancelled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "last15Days": "",
+  "last15Days": "15 lá seo caite",
   "@last15Days": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageConfirmationLogout": "",
+  "messageConfirmationLogout": "Ar mhaith leat logáil amach as",
   "@messageConfirmationLogout": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "reply_to_email_address_prefix": "",
+  "reply_to_email_address_prefix": "Freagra ar",
   "@reply_to_email_address_prefix": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "logoutConfirmation": "",
+  "logoutConfirmation": "Deimhniú Lógó Amach",
   "@logoutConfirmation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "badCredentials": "",
+  "badCredentials": "Dintiúir dona",
   "@badCredentials": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailSubaddressCopiedToClipboard": "",
+  "emailSubaddressCopiedToClipboard": "Cóipeáladh an fosheoladh ríomhphoist chuig an ngearrthaisce",
   "@emailSubaddressCopiedToClipboard": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "yesLogout": "",
+  "yesLogout": "Sea, Logáil amach",
   "@yesLogout": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "message_confirmation_dialog_allow_subaddressing": "",
+  "message_confirmation_dialog_allow_subaddressing": "Tá tú ar tí ligean d'aon duine ríomhphoist a sheoladh go díreach chuig d'fhillteán \"{nameMailbox}\" ag baint úsáide as:",
   "@message_confirmation_dialog_allow_subaddressing": {
     "type": "text",
     "placeholders_order": [
@@ -4297,13 +4297,13 @@
       "nameMailbox": {}
     }
   },
-  "allow": "",
+  "allow": "Ceadaigh",
   "@allow": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "editAsNewEmail": "",
+  "editAsNewEmail": "Cuir in eagar mar ríomhphost nua",
   "@editAsNewEmail": {
     "type": "text",
     "placeholders_order": [],
