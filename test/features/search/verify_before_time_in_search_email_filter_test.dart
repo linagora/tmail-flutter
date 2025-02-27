@@ -348,7 +348,6 @@ void main() {
       getRestoredDeletedMessageInteractor,
       removeComposerCacheOnWebInteractor,
       getAllIdentitiesInteractor,
-      composerManager,
     );
 
     when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));

@@ -437,6 +437,6 @@ class ComposerBindings extends BaseBindings {
 
     Get.delete<FileUploader>(tag: composerId);
 
-    IdentityInteractorsBindings().dispose();
+    IdentityInteractorsBindings(composerId: composerId).dispose();
   }
 }
