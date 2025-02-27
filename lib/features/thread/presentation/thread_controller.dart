@@ -14,14 +14,10 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
-import 'package:tmail_ui_user/features/base/mixin/email_action_handler_mixin.dart';
-import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
@@ -30,10 +26,9 @@ import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_for_select_all_emails_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_selection_email_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/move_emails_to_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -84,10 +79,7 @@ import 'package:universal_html/html.dart' as html;
 typedef StartRangeSelection = int;
 typedef EndRangeSelection = int;
 
-class ThreadController extends BaseController
-    with EmailActionController,
-        PopupMenuWidgetMixin,
-        EmailActionHandlerMixin {
+class ThreadController extends BaseController with EmailActionController {
 
   final networkConnectionController = Get.find<NetworkConnectionController>();
 
@@ -295,27 +287,6 @@ class ThreadController extends BaseController
       } else if (action is FilterMessageAction) {
         filterMessagesAction(action.option);
         mailboxDashBoardController.clearDashBoardAction();
-      } else if (action is HandleEmailActionTypeAction) {
-        if (_validateToShowConfirmBulkActionEmailsDialog()) {
-          showConfirmDialogWhenMakeToActionForSelectionAllEmails(
-            imagePaths: imagePaths,
-            totalEmails: selectedMailbox?.countTotalEmails ?? 0,
-            folderName: currentContext != null
-              ? selectedMailbox?.getDisplayName(currentContext!) ?? ''
-              : '',
-            onConfirmAction: () => mailboxDashBoardController.handleActionsForSelectionAllEmails(
-              context: currentContext!,
-              selectedMailbox: selectedMailbox!,
-              actionType: action.emailAction
-            ),
-          );
-        } else {
-          pressEmailSelectionAction(
-            action.emailAction,
-            action.listEmailSelected,
-          );
-        }
-        mailboxDashBoardController.clearDashBoardAction();
       } else if (action is OpenEmailDetailedFromSuggestionQuickSearchAction) {
         final mailboxContain = action.presentationEmail.findMailboxContain(mailboxDashBoardController.mapMailboxById);
         final newEmail = generateEmailByPlatform(action.presentationEmail);
@@ -356,9 +327,6 @@ class ThreadController extends BaseController
         }
         canSearchMore = true;
         mailboxDashBoardController.emailsInCurrentMailbox.clear();
-      } else if (action is MoreSelectedEmailAction) {
-        showPopupMenuSelectionEmailAction(action.context, action.position);
-        mailboxDashBoardController.clearDashBoardAction();
       }
     });
 
@@ -576,14 +544,17 @@ class ThreadController extends BaseController
   }) {
     log('ThreadController::_getAllEmailAction:getLatestChanges = $getLatestChanges');
     if (_session != null &&_accountId != null) {
+      final filterMessageOption = mailboxDashBoardController.filterMessageOption.value;
       consumeState(_getEmailsInMailboxInteractor.execute(
         _session!,
         _accountId!,
         limit: ThreadConstants.defaultLimit,
         sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
         emailFilter: EmailFilter(
-          filter: _getFilterCondition(mailboxIdSelected: selectedMailboxId),
-          filterOption: mailboxDashBoardController.filterMessageOption.value,
+          filter: filterMessageOption.getFilterCondition(
+            mailboxIdSelected: selectedMailboxId,
+          ),
+          filterOption: filterMessageOption,
           mailboxId: selectedMailboxId
         ),
         propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
@@ -592,43 +563,6 @@ class ThreadController extends BaseController
       ));
     } else {
       consumeState(Stream.value(Left(GetAllEmailFailure(NotFoundSessionException()))));
-    }
-  }
-
-  @visibleForTesting
-  EmailFilterCondition getFilterCondition({
-    PresentationEmail? oldestEmail,
-    MailboxId? mailboxIdSelected,
-  }) => _getFilterCondition(
-    oldestEmail: oldestEmail,
-    mailboxIdSelected: mailboxIdSelected,
-  );
-
-  EmailFilterCondition _getFilterCondition({PresentationEmail? oldestEmail, MailboxId? mailboxIdSelected}) {
-    switch(mailboxDashBoardController.filterMessageOption.value) {
-      case FilterMessageOption.all:
-        return EmailFilterCondition(
-          inMailbox: mailboxIdSelected,
-          before: oldestEmail?.receivedAt
-        );
-      case FilterMessageOption.unread:
-        return EmailFilterCondition(
-          inMailbox: mailboxIdSelected,
-          notKeyword: KeyWordIdentifier.emailSeen.value,
-          before: oldestEmail?.receivedAt
-        );
-      case FilterMessageOption.attachments:
-        return EmailFilterCondition(
-          inMailbox: mailboxIdSelected,
-          hasAttachment: true,
-          before: oldestEmail?.receivedAt
-        );
-      case FilterMessageOption.starred:
-        return EmailFilterCondition(
-          inMailbox: mailboxIdSelected,
-          hasKeyword: KeyWordIdentifier.emailFlagged.value,
-          before: oldestEmail?.receivedAt
-        );
     }
   }
 
@@ -718,7 +652,7 @@ class ThreadController extends BaseController
       position: _searchEmailFilter.position,
       sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
       filter: _searchEmailFilter.mappingToEmailFilterCondition(
-        moreFilterCondition: _getFilterCondition(),
+        moreFilterCondition: mailboxDashBoardController.filterMessageOption.value.getFilterCondition(),
       ),
       properties: EmailUtils.getPropertiesForEmailGetMethod(
         _session!,
@@ -742,6 +676,7 @@ class ThreadController extends BaseController
   }
 
   Future<Either<Failure, Success>> _refreshChangeListEmailCache() async {
+    final filterMessageOption = mailboxDashBoardController.filterMessageOption.value;
     return _refreshChangesEmailsInMailboxInteractor.execute(
       _session!,
       _accountId!,
@@ -753,8 +688,8 @@ class ThreadController extends BaseController
       ),
       propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
       emailFilter: EmailFilter(
-        filter: _getFilterCondition(mailboxIdSelected: selectedMailboxId),
-        filterOption: mailboxDashBoardController.filterMessageOption.value,
+        filter: filterMessageOption.getFilterCondition(mailboxIdSelected: selectedMailboxId),
+        filterOption: filterMessageOption,
         mailboxId: selectedMailboxId,
       ),
     ).last;
@@ -781,14 +716,15 @@ class ThreadController extends BaseController
         ? mailboxDashBoardController.emailsInCurrentMailbox.last
         : null;
       log('ThreadController::_loadMoreEmails: OldestEmailID = ${oldestEmail?.id?.asString}');
+      final filterMessageOption =  mailboxDashBoardController.filterMessageOption.value;
       consumeState(_loadMoreEmailsInMailboxInteractor.execute(
         GetEmailRequest(
           _session!,
           _accountId!,
           limit: ThreadConstants.defaultLimit,
           sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
-          filterOption: mailboxDashBoardController.filterMessageOption.value,
-          filter: _getFilterCondition(oldestEmail: oldestEmail, mailboxIdSelected: selectedMailboxId),
+          filterOption: filterMessageOption,
+          filter: filterMessageOption.getFilterCondition(oldestEmail: oldestEmail, mailboxIdSelected: selectedMailboxId),
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           lastEmailId: oldestEmail?.id
         )
@@ -940,19 +876,7 @@ class ThreadController extends BaseController
       .every((email) => email.selectMode == SelectMode.INACTIVE);
   }
 
-  void cancelSelectEmail() {
-    if (mailboxDashBoardController.currentSelectMode.value == SelectMode.INACTIVE) {
-      return;
-    }
-    final newEmailList = mailboxDashBoardController.emailsInCurrentMailbox
-      .map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE))
-      .toList();
-    mailboxDashBoardController.isSelectAllEmailsEnabled.value = false;
-    mailboxDashBoardController.isSelectAllPageEnabled.value = false;
-    mailboxDashBoardController.updateEmailList(newEmailList);
-    mailboxDashBoardController.currentSelectMode.value = SelectMode.INACTIVE;
-    mailboxDashBoardController.listEmailSelected.clear();
-  }
+  void cancelSelectEmail() => mailboxDashBoardController.cancelAllSelectionEmailMode();
 
   void enableSelectAllEmails() {
     mailboxDashBoardController.isSelectAllEmailsEnabled.value = true;
@@ -1027,7 +951,7 @@ class ThreadController extends BaseController
         position: _searchEmailFilter.position,
         sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
         filter: _searchEmailFilter.mappingToEmailFilterCondition(
-          moreFilterCondition: _getFilterCondition()
+          moreFilterCondition: mailboxDashBoardController.filterMessageOption.value.getFilterCondition()
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
         needRefreshSearchState: needRefreshSearchState
@@ -1107,7 +1031,7 @@ class ThreadController extends BaseController
         sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
         position: _searchEmailFilter.position,
         filter: _searchEmailFilter.mappingToEmailFilterCondition(
-          moreFilterCondition: _getFilterCondition()
+          moreFilterCondition: mailboxDashBoardController.filterMessageOption.value.getFilterCondition()
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
         lastEmailId: lastEmail?.id
@@ -1546,7 +1470,7 @@ class ThreadController extends BaseController
     }
   }
 
-  bool validateToShowSelectionEmailsBanner() {
+  bool get isMailboxSelectionEmailBannerDisplayed {
     return mailboxDashBoardController.isSelectAllPageEnabled.isTrue &&
         selectedMailbox != null &&
         selectedMailbox!.countTotalEmails > ThreadConstants.maxCountEmails &&
@@ -1554,55 +1478,8 @@ class ThreadController extends BaseController
             selectedMailbox!.countTotalEmails;
   }
 
-  void showPopupMenuSelectionEmailAction(BuildContext context, RelativeRect position) {
-    final listSelectionEmailActions = [
-      EmailActionType.markAllAsRead,
-      EmailActionType.markAllAsUnread,
-      if (selectedMailbox == null || selectedMailbox?.isDrafts == false)
-        EmailActionType.moveAll,
-      if (selectedMailbox?.isTrash == true ||
-          selectedMailbox?.isSpam == true ||
-          selectedMailbox?.isDrafts == true)
-        EmailActionType.deleteAllPermanently
-      else
-        EmailActionType.moveAllToTrash
-    ];
-
-    openPopupMenuAction(
-      context,
-      position,
-      listSelectionEmailActions.map((action) => PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: popupItem(
-          action.getIcon(imagePaths),
-          action.getTitle(context),
-          colorIcon: action.getIconColor(),
-          styleName: const TextStyle(
-            fontWeight: FontWeight.w500,
-            fontSize: 14,
-            color: Colors.black
-          ),
-          onCallbackAction: () {
-            popBack();
-            if (!isSearchActive) {
-              showConfirmDialogWhenMakeToActionForSelectionAllEmails(
-                imagePaths: imagePaths,
-                totalEmails: selectedMailbox?.countTotalEmails ?? 0,
-                folderName: selectedMailbox?.getDisplayName(context) ?? '',
-                onConfirmAction: () => mailboxDashBoardController.handleActionsForSelectionAllEmails(
-                  context: context,
-                  selectedMailbox: selectedMailbox!,
-                  actionType: action,
-                ),
-              );
-            }
-          }
-        )
-      )).toList()
-    );
-  }
-
-  bool _validateToShowConfirmBulkActionEmailsDialog() {
-    return mailboxDashBoardController.isSelectAllEmailsEnabled.isTrue;
+  bool get isSearchSelectionEmailBannerDisplayed {
+    return mailboxDashBoardController.isSelectAllPageEnabled.isTrue
+      && searchController.isSearchEmailRunning;
   }
 }

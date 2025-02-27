@@ -15,7 +15,7 @@ typedef OnEmailActionTypeAction = Function(
   List<PresentationEmail> listEmail,
   EmailActionType actionType,
 );
-typedef OnMoreSelectedEmailAction = Function(RelativeRect position);
+typedef OnMoreSelectionAllEmailAction = Function(RelativeRect position);
 
 class TopBarThreadSelection extends StatelessWidget{
 
@@ -26,7 +26,7 @@ class TopBarThreadSelection extends StatelessWidget{
   final VoidCallback? onCancelSelection;
   final bool isSelectAllEmailsEnabled;
   final PresentationMailbox? selectedMailbox;
-  final OnMoreSelectedEmailAction? onMoreSelectedEmailAction;
+  final OnMoreSelectionAllEmailAction? onMoreSelectionAllEmailAction;
 
   const TopBarThreadSelection({
     super.key,
@@ -37,7 +37,7 @@ class TopBarThreadSelection extends StatelessWidget{
     this.selectedMailbox,
     this.onEmailActionTypeAction,
     this.onCancelSelection,
-    this.onMoreSelectedEmailAction,
+    this.onMoreSelectionAllEmailAction,
   });
 
   @override
@@ -132,7 +132,7 @@ class TopBarThreadSelection extends StatelessWidget{
             iconColor: AppColor.primaryColor,
             tooltipMessage: AppLocalizations.of(context).more,
             backgroundColor: Colors.transparent,
-            onTapActionAtPositionCallback: onMoreSelectedEmailAction
+            onTapActionAtPositionCallback: onMoreSelectionAllEmailAction
           ),
       ]),
     );
@@ -145,7 +145,7 @@ class TopBarThreadSelection extends StatelessWidget{
           || selectedMailbox?.isSpam == true
           || selectedMailbox?.isDrafts == true);
 
-  bool get canSpamAndMove => listEmail.isAllCanSpamAndMove(mapMailbox);
+  bool get canSpamAndMove => isSelectAllEmailsEnabled ? true : listEmail.isAllCanSpamAndMove(mapMailbox);
 
   bool get isAllSpam => listEmail.isAllSpam(mapMailbox);
 

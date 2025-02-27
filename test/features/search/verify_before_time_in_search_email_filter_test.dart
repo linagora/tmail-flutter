@@ -72,8 +72,12 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mail
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_all_as_starred_selection_all_emails_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_all_as_unread_selection_all_emails_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_all_search_as_read_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_all_search_as_starred_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/mark_all_search_as_unread_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/move_all_email_searched_to_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_all_selection_all_emails_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_emails_in_mailbox_interactor.dart';
@@ -161,6 +165,10 @@ const fallbackGenerators = {
   MockSpec<MoveAllSelectionAllEmailsInteractor>(),
   MockSpec<DeleteAllPermanentlyEmailsInteractor>(),
   MockSpec<MarkAllAsStarredSelectionAllEmailsInteractor>(),
+  MockSpec<MarkAllSearchAsReadInteractor>(),
+  MockSpec<MarkAllSearchAsUnreadInteractor>(),
+  MockSpec<MarkAllSearchAsStarredInteractor>(),
+  MockSpec<MoveAllEmailSearchedToFolderInteractor>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -220,6 +228,10 @@ void main() {
   late MockMoveAllSelectionAllEmailsInteractor moveAllSelectionAllEmailsInteractor;
   late MockDeleteAllPermanentlyEmailsInteractor deleteAllPermanentlyEmailsInteractor;
   late MockMarkAllAsStarredSelectionAllEmailsInteractor markAllAsStarredSelectionAllEmailsInteractor;
+  late MockMarkAllSearchAsReadInteractor markAllSearchAsReadInteractor;
+  late MockMarkAllSearchAsUnreadInteractor markAllSearchAsUnreadInteractor;
+  late MockMarkAllSearchAsStarredInteractor markAllSearchAsStarredInteractor;
+  late MockMoveAllEmailSearchedToFolderInteractor moveAllEmailSearchedToFolderInteractor;
 
   // Declaration base controller
   late MockCachingManager mockCachingManager;
@@ -316,6 +328,10 @@ void main() {
     moveAllSelectionAllEmailsInteractor = MockMoveAllSelectionAllEmailsInteractor();
     deleteAllPermanentlyEmailsInteractor = MockDeleteAllPermanentlyEmailsInteractor();
     markAllAsStarredSelectionAllEmailsInteractor = MockMarkAllAsStarredSelectionAllEmailsInteractor();
+    markAllSearchAsReadInteractor = MockMarkAllSearchAsReadInteractor();
+    markAllSearchAsUnreadInteractor = MockMarkAllSearchAsUnreadInteractor();
+    markAllSearchAsStarredInteractor = MockMarkAllSearchAsStarredInteractor();
+    moveAllEmailSearchedToFolderInteractor = MockMoveAllEmailSearchedToFolderInteractor();
 
     searchController = SearchController(
       mockQuickSearchEmailInteractor,
@@ -364,6 +380,10 @@ void main() {
       moveAllSelectionAllEmailsInteractor,
       deleteAllPermanentlyEmailsInteractor,
       markAllAsStarredSelectionAllEmailsInteractor,
+      markAllSearchAsReadInteractor,
+      markAllSearchAsUnreadInteractor,
+      markAllSearchAsStarredInteractor,
+      moveAllEmailSearchedToFolderInteractor,
     );
 
     when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
@@ -829,7 +849,7 @@ void main() {
         ),
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
         emailFilter: EmailFilter(
-          filter: threadController.getFilterCondition(mailboxIdSelected: threadController.selectedMailboxId),
+          filter: mailboxDashboardController.filterMessageOption.value.getFilterCondition(mailboxIdSelected: threadController.selectedMailboxId),
           filterOption: mailboxDashboardController.filterMessageOption.value,
           mailboxId: threadController.selectedMailboxId,
         ),
@@ -997,7 +1017,7 @@ void main() {
         ),
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
         emailFilter: EmailFilter(
-          filter: threadController.getFilterCondition(mailboxIdSelected: threadController.selectedMailboxId),
+          filter: mailboxDashboardController.filterMessageOption.value.getFilterCondition(mailboxIdSelected: threadController.selectedMailboxId),
           filterOption: mailboxDashboardController.filterMessageOption.value,
           mailboxId: threadController.selectedMailboxId,
         ),
@@ -1110,7 +1130,7 @@ void main() {
         ),
         propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
         emailFilter: EmailFilter(
-          filter: threadController.getFilterCondition(mailboxIdSelected: threadController.selectedMailboxId),
+          filter: mailboxDashboardController.filterMessageOption.value.getFilterCondition(mailboxIdSelected: threadController.selectedMailboxId),
           filterOption: mailboxDashboardController.filterMessageOption.value,
           mailboxId: threadController.selectedMailboxId,
         ),

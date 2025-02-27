@@ -20,6 +20,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/extensions/state_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
@@ -463,6 +464,74 @@ class ThreadRepositoryImpl extends ThreadRepository {
       mailboxId,
       totalEmails,
       onProgressController
+    );
+  }
+
+  @override
+  Future<List<EmailId>> markAllSearchAsRead(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilter searchEmailFilter,
+    {EmailFilterCondition? moreFilterCondition}
+  ) {
+    return mapDataSource[DataSourceType.network]!.markAllSearchAsRead(
+      session,
+      accountId,
+      searchEmailFilter,
+      moreFilterCondition: moreFilterCondition,
+    );
+  }
+
+  @override
+  Future<List<EmailId>> markAllSearchAsUnread(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilter searchEmailFilter,
+    {EmailFilterCondition? moreFilterCondition}
+  ) {
+    return mapDataSource[DataSourceType.network]!.markAllSearchAsUnread(
+      session,
+      accountId,
+      searchEmailFilter,
+      moreFilterCondition: moreFilterCondition,
+    );
+  }
+
+  @override
+  Future<List<EmailId>> markAllSearchAsStarred(
+    Session session,
+    AccountId accountId,
+    SearchEmailFilter searchEmailFilter,
+    {EmailFilterCondition? moreFilterCondition}
+  ) {
+    return mapDataSource[DataSourceType.network]!.markAllSearchAsStarred(
+      session,
+      accountId,
+      searchEmailFilter,
+      moreFilterCondition: moreFilterCondition,
+    );
+  }
+
+  @override
+  Future<List<EmailId>> moveAllEmailSearchedToFolder(
+    Session session,
+    AccountId accountId,
+    MailboxId destinationMailboxId,
+    String destinationPath,
+    SearchEmailFilter searchEmailFilter,
+    {
+      bool isDestinationSpamMailbox = false,
+      EmailFilterCondition? moreFilterCondition,
+    }
+  ) {
+    return mapDataSource[DataSourceType.network]!.moveAllEmailSearchedToFolder(
+      session,
+      accountId,
+      destinationMailboxId,
+      destinationPath,
+      searchEmailFilter,
+      isDestinationSpamMailbox: isDestinationSpamMailbox,
+      moreFilterCondition: moreFilterCondition,
     );
   }
 }

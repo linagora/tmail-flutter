@@ -4,14 +4,14 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-class MessageSelectEmailInPageWidget extends StatelessWidget {
+class MessageSelectEmailOnPageInMailboxWidget extends StatelessWidget {
 
   final int limitEmailsInPage;
   final int totalEmails;
   final String folderName;
   final VoidCallback onSelectAllEmailAction;
 
-  const MessageSelectEmailInPageWidget({
+  const MessageSelectEmailOnPageInMailboxWidget({
     super.key,
     required this.limitEmailsInPage,
     required this.totalEmails,

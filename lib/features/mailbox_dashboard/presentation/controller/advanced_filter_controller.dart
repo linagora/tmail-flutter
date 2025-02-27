@@ -19,7 +19,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
@@ -239,7 +239,7 @@ class AdvancedFilterController extends BaseController {
       )) ?? [];
   }
 
-  void initSearchFilterField(BuildContext? context) {
+  void initSearchFilterField() {
     subjectFilterInputController.text = StringConvert.writeNullToEmpty(
       _memorySearchFilter.subject);
 
@@ -275,11 +275,13 @@ class AdvancedFilterController extends BaseController {
       toAddressExpandMode.value = ExpandMode.COLLAPSE;
     }
 
-    if (context != null) {
+    if (currentContext != null) {
       mailBoxFilterInputController.text = _memorySearchFilter.mailbox == null
-        ? AppLocalizations.of(context).allFolders
+        ? AppLocalizations.of(currentContext!).allFolders
         : StringConvert.writeNullToEmpty(
-            _memorySearchFilter.mailbox?.getDisplayName(context));
+            _memorySearchFilter.mailbox?.getDisplayName(currentContext!));
+    } else {
+      mailBoxFilterInputController.text = _memorySearchFilter.mailbox?.name?.name ?? '';
     }
   }
 
@@ -483,7 +485,7 @@ class AdvancedFilterController extends BaseController {
         } else if (action is QuickSearchEmailByFromAction) {
           _handleQuickSearchEmailByFromAction(action.emailAddress);
         } else if (action is OpenAdvancedSearchViewAction) {
-          initSearchFilterField(currentContext);
+          initSearchFilterField();
         } else if (action is ClearSearchFilterAppliedAction) {
           clearSearchFilter();
         }
@@ -518,7 +520,7 @@ class AdvancedFilterController extends BaseController {
 
   void _handleStartSearchEmailAction() {
     _memorySearchFilter = searchController.searchEmailFilter.value;
-    initSearchFilterField(currentContext);
+    initSearchFilterField();
   }
 
   void onHasAttachmentCheckboxChanged(bool? isChecked) {

@@ -1,12 +1,10 @@
 
-import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 
@@ -31,17 +29,6 @@ class FilterMessageAction extends DashBoardAction {
 
   @override
   List<Object?> get props => [option];
-}
-
-class HandleEmailActionTypeAction extends DashBoardAction {
-
-  final EmailActionType emailAction;
-  final List<PresentationEmail> listEmailSelected;
-
-  HandleEmailActionTypeAction(this.listEmailSelected, this.emailAction);
-
-  @override
-  List<Object> get props => [listEmailSelected, emailAction];
 }
 
 class OpenEmailDetailedFromSuggestionQuickSearchAction extends DashBoardAction {
@@ -149,14 +136,3 @@ class OpenAdvancedSearchViewAction extends DashBoardAction {}
 class ClearSearchFilterAppliedAction extends DashBoardAction {}
 
 class ClearAdvancedSearchFilterEmailAction extends DashBoardAction {}
-
-class MoreSelectedEmailAction extends DashBoardAction {
-
-  final BuildContext context;
-  final RelativeRect position;
-
-  MoreSelectedEmailAction(this.context, this.position);
-
-  @override
-  List<Object> get props => [context, position];
-}

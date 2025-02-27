@@ -1,7 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/select_all_banner/message_select_all_email_in_mailbox_widget.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/select_all_banner/message_select_email_in_page_widget.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/select_all_banner/message_select_email_on_page_in_mailbox_widget.dart';
 
 class SelectAllEmailInMailboxBanner extends StatefulWidget {
   final int limitEmailsInPage;
@@ -43,7 +43,7 @@ class _SelectAllEmailInMailboxBannerState extends State<SelectAllEmailInMailboxB
             folderName: widget.folderName,
             onClearSelection: widget.onClearSelection,
           )
-        : MessageSelectEmailInPageWidget(
+        : MessageSelectEmailOnPageInMailboxWidget(
             limitEmailsInPage: widget.limitEmailsInPage,
             totalEmails: widget.totalEmails,
             folderName: widget.folderName,

@@ -4,7 +4,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 
 extension UpdateEmailsWithNewMailboxIdExtension on MailboxDashBoardController {
-  handleUpdateEmailsWithNewMailboxId({
+  void handleUpdateEmailsWithNewMailboxId({
     required Map<MailboxId,List<EmailId>> originalMailboxIdsWithEmailIds,
     required MailboxId destinationMailboxId,
   }) {

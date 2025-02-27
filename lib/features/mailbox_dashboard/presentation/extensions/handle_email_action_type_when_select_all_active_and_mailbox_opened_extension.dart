@@ -2,7 +2,6 @@
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
-import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -14,95 +13,95 @@ import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_excepti
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/exceptions/spam_report_exception.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_all_selection_all_emails_state.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-extension HandleActionForSelectAllEmailsExtension on MailboxDashBoardController {
+extension HandleEmailActionTypeWhenSelectAllActiveAndMailboxOpenedExtension on MailboxDashBoardController {
 
-  void handleActionsForSelectionAllEmails({
-    required BuildContext context,
+  void handleActionTypeWhenSelectAllActiveAndMailboxOpened({
+    required AppLocalizations appLocalizations,
     required PresentationMailbox selectedMailbox,
     required EmailActionType actionType,
     PresentationMailbox? destinationMailbox,
   }) {
-    log('MailboxDashBoardController::handleActionsForSelectionAllEmails:actionType = $actionType');
-    if (sessionCurrent == null || accountId.value == null) {
-      logError('MailboxDashBoardController::handleActionsForSelectionAllEmails: SESSION & ACCOUNT_ID is null');
+    final accountId = this.accountId.value;
+    final session = sessionCurrent;
+    if (session == null || accountId == null) {
+      logError('MailboxDashBoardController::handleActionTypeWhenSelectAllActiveAndMailboxOpened: SESSION & ACCOUNT_ID is null');
       return;
     }
 
     switch(actionType) {
       case EmailActionType.markAllAsRead:
         markAsReadMailbox(
-          sessionCurrent!,
-          accountId.value!,
+          session,
+          accountId,
           selectedMailbox.mailboxId!,
-          selectedMailbox.getDisplayName(context),
+          selectedMailbox.getDisplayNameByAppLocalizations(appLocalizations),
           selectedMailbox.countUnreadEmails,
         );
         break;
       case EmailActionType.markAllAsUnread:
         markAllAsUnreadSelectionAllEmails(
-          sessionCurrent!,
-          accountId.value!,
+          session,
+          accountId,
           selectedMailbox.mailboxId!,
-          selectedMailbox.getDisplayName(context),
+          selectedMailbox.getDisplayNameByAppLocalizations(appLocalizations),
           selectedMailbox.countReadEmails,
         );
         break;
       case EmailActionType.moveAll:
         moveAllSelectionAllEmails(
-          context,
-          sessionCurrent!,
-          accountId.value!,
+          appLocalizations,
+          session,
+          accountId,
           selectedMailbox,
           destinationMailbox: destinationMailbox,
         );
         break;
       case EmailActionType.moveAllToTrash:
         moveAllToTrashSelectionAllEmails(
-          context,
-          sessionCurrent!,
-          accountId.value!,
+          appLocalizations,
+          session,
+          accountId,
           selectedMailbox,
           trashMailbox: destinationMailbox,
         );
         break;
       case EmailActionType.deleteAllPermanently:
         deleteAllPermanentlyEmails(
-          context,
-          sessionCurrent!,
-          accountId.value!,
+          session,
+          accountId,
           selectedMailbox,
         );
         break;
       case EmailActionType.markAllAsStarred:
         markAllAsStarredSelectionAllEmails(
-          sessionCurrent!,
-          accountId.value!,
+          session,
+          accountId,
           selectedMailbox.mailboxId!,
-          selectedMailbox.getDisplayName(context),
+          selectedMailbox.getDisplayNameByAppLocalizations(appLocalizations),
           selectedMailbox.countTotalEmails,
         );
         break;
       case EmailActionType.markAllAsSpam:
         maskAllAsSpamSelectionAllEmails(
-          context,
-          sessionCurrent!,
-          accountId.value!,
+          appLocalizations,
+          session,
+          accountId,
           selectedMailbox,
           spamMailbox: destinationMailbox,
         );
         break;
       case EmailActionType.allUnSpam:
         allUnSpamSelectionAllEmails(
-          context,
-          sessionCurrent!,
-          accountId.value!,
+          appLocalizations,
+          session,
+          accountId,
           selectedMailbox,
         );
         break;
@@ -129,7 +128,7 @@ extension HandleActionForSelectAllEmailsExtension on MailboxDashBoardController 
   }
 
   Future<void> moveAllSelectionAllEmails(
-    BuildContext context,
+    AppLocalizations appLocalizations,
     Session session,
     AccountId accountId,
     PresentationMailbox currentMailbox,
@@ -159,9 +158,7 @@ extension HandleActionForSelectAllEmailsExtension on MailboxDashBoardController 
         accountId,
         currentMailbox.id,
         destinationMailbox.id,
-        destinationMailbox.mailboxPath ?? (context.mounted
-          ? destinationMailbox.getDisplayName(context)
-          : ''),
+        destinationMailbox.mailboxPath ?? destinationMailbox.getDisplayNameByAppLocalizations(appLocalizations),
         currentMailbox.countTotalEmails,
         viewStateMailboxActionStreamController,
         isDestinationSpamMailbox: destinationMailbox.isSpam,
@@ -170,7 +167,7 @@ extension HandleActionForSelectAllEmailsExtension on MailboxDashBoardController 
   }
 
   Future<void> moveAllToTrashSelectionAllEmails(
-    BuildContext context,
+    AppLocalizations appLocalizations,
     Session session,
     AccountId accountId,
     PresentationMailbox currentMailbox,
@@ -180,8 +177,8 @@ extension HandleActionForSelectAllEmailsExtension on MailboxDashBoardController 
   ) async {
     final trashMailboxId = trashMailbox?.id
         ?? getMailboxIdByRole(PresentationMailbox.roleTrash);
-    final trashMailboxPath = trashMailbox?.getDisplayName(context)
-        ?? mapMailboxById[trashMailboxId]?.getDisplayName(context)
+    final trashMailboxPath = trashMailbox?.getDisplayNameByAppLocalizations(appLocalizations)
+        ?? mapMailboxById[trashMailboxId]?.getDisplayNameByAppLocalizations(appLocalizations)
         ?? '';
 
     if (trashMailboxId == null) {
@@ -204,7 +201,6 @@ extension HandleActionForSelectAllEmailsExtension on MailboxDashBoardController 
   }
 
   Future<void> deleteAllPermanentlyEmails(
-    BuildContext context,
     Session session,
     AccountId accountId,
     PresentationMailbox currentMailbox,
@@ -236,7 +232,7 @@ extension HandleActionForSelectAllEmailsExtension on MailboxDashBoardController 
   }
 
   Future<void> maskAllAsSpamSelectionAllEmails(
-    BuildContext context,
+    AppLocalizations appLocalizations,
     Session session,
     AccountId accountId,
     PresentationMailbox currentMailbox,
@@ -245,8 +241,8 @@ extension HandleActionForSelectAllEmailsExtension on MailboxDashBoardController 
     }
   ) async {
     final spamMailboxId = spamMailbox?.id ?? this.spamMailboxId;
-    final spamMailboxPath = spamMailbox?.getDisplayName(context)
-        ?? mapMailboxById[spamMailboxId]?.getDisplayName(context)
+    final spamMailboxPath = spamMailbox?.getDisplayNameByAppLocalizations(appLocalizations)
+        ?? mapMailboxById[spamMailboxId]?.getDisplayNameByAppLocalizations(appLocalizations)
         ?? '';
 
     if (spamMailboxId == null) {
@@ -269,13 +265,14 @@ extension HandleActionForSelectAllEmailsExtension on MailboxDashBoardController 
   }
 
   Future<void> allUnSpamSelectionAllEmails(
-    BuildContext context,
+    AppLocalizations appLocalizations,
     Session session,
     AccountId accountId,
     PresentationMailbox currentMailbox,
   ) async {
     final inboxMailboxId = getMailboxIdByRole(PresentationMailbox.roleInbox);
-    final inboxMailboxPath = mapMailboxById[inboxMailboxId]?.getDisplayName(context) ?? '';
+    final inboxMailboxPath = mapMailboxById[inboxMailboxId]
+        ?.getDisplayNameByAppLocalizations(appLocalizations) ?? '';
 
     if (inboxMailboxId == null) {
       consumeState(Stream.value(Left(MoveAllSelectionAllEmailsFailure(
@@ -296,31 +293,20 @@ extension HandleActionForSelectAllEmailsExtension on MailboxDashBoardController 
     ));
   }
 
-  void cancelSelectAllEmailAction() {
-    isSelectAllPageEnabled.value = false;
-    isSelectAllEmailsEnabled.value = false;
-    dispatchAction(CancelSelectionAllEmailAction());
-  }
-
-  void dragAllSelectedEmailToMailboxAction(PresentationMailbox destinationMailbox) {
-    if (selectedMailbox.value == null) return;
-
-    showConfirmDialogWhenMakeToActionForSelectionAllEmails(
-      imagePaths: imagePaths,
-      totalEmails: selectedMailbox.value!.countTotalEmails,
-      folderName: currentContext != null
-          ? selectedMailbox.value!.getDisplayName(currentContext!)
-          : '',
-      onConfirmAction: () => handleActionsForSelectionAllEmails(
-        context: currentContext!,
-        selectedMailbox: selectedMailbox.value!,
-        actionType: _getTypeMoveAllActionForMailbox(destinationMailbox),
-        destinationMailbox: destinationMailbox,
-      ),
+  void dragEmailsToMailboxWhenSelectAllActiveAndMailboxOpened({
+    required AppLocalizations appLocalizations,
+    required PresentationMailbox selectedMailbox,
+    required PresentationMailbox destinationMailbox,
+  }) {
+    handleActionTypeWhenSelectAllActiveAndMailboxOpened(
+      appLocalizations: appLocalizations,
+      selectedMailbox: selectedMailbox,
+      actionType: getTypeMoveAllActionForMailbox(destinationMailbox),
+      destinationMailbox: destinationMailbox,
     );
   }
 
-  EmailActionType _getTypeMoveAllActionForMailbox(PresentationMailbox presentationMailbox) {
+  EmailActionType getTypeMoveAllActionForMailbox(PresentationMailbox presentationMailbox) {
     if (presentationMailbox.isTrash) {
       return EmailActionType.moveAllToTrash;
     } else if (presentationMailbox.isSpam) {

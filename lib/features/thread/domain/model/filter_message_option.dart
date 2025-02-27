@@ -2,6 +2,9 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -149,6 +152,37 @@ extension FilterMessageOptionExtension on FilterMessageOption {
           fontSize: 13,
           fontWeight: FontWeight.normal,
           color: AppColor.primaryColor);
+    }
+  }
+
+  EmailFilterCondition getFilterCondition({
+    PresentationEmail? oldestEmail,
+    MailboxId? mailboxIdSelected,
+  }) {
+    switch(this) {
+      case FilterMessageOption.all:
+        return EmailFilterCondition(
+          inMailbox: mailboxIdSelected,
+          before: oldestEmail?.receivedAt,
+        );
+      case FilterMessageOption.unread:
+        return EmailFilterCondition(
+          inMailbox: mailboxIdSelected,
+          notKeyword: KeyWordIdentifier.emailSeen.value,
+          before: oldestEmail?.receivedAt,
+        );
+      case FilterMessageOption.attachments:
+        return EmailFilterCondition(
+          inMailbox: mailboxIdSelected,
+          hasAttachment: true,
+          before: oldestEmail?.receivedAt,
+        );
+      case FilterMessageOption.starred:
+        return EmailFilterCondition(
+          inMailbox: mailboxIdSelected,
+          hasKeyword: KeyWordIdentifier.emailFlagged.value,
+          before: oldestEmail?.receivedAt,
+        );
     }
   }
 }

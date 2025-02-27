@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
-import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identities_header_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identities_radio_list_builder.dart';
 
-class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidgetMixin, AppLoaderMixin {
+class IdentitiesView extends GetWidget<IdentitiesController> with AppLoaderMixin {
 
   IdentitiesView({Key? key}) : super(key: key);
 

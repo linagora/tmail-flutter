@@ -14,11 +14,12 @@ import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_view_web.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/base_mailbox_dashboard_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_email_action_type_when_selection_active_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/composer_overlay_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/filter_message_button_style.dart';
@@ -105,6 +106,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         )),
                         Obx(() => ViewStateMailboxActionProgressLoadingBanner(
                           viewState: controller.viewStateMailboxActionProgress.value,
+                          responsiveUtils: controller.responsiveUtils,
                         )),
                         const SpamReportBannerWebWidget(),
                         QuotasBannerWidget(),
@@ -241,15 +243,15 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 onCancelSelection: () =>
                   controller.dispatchAction(CancelSelectionAllEmailAction()),
                 onEmailActionTypeAction: (listEmails, actionType) =>
-                  controller.dispatchAction(HandleEmailActionTypeAction(
-                    listEmails,
-                    actionType,
-                  )),
-                onMoreSelectedEmailAction: (position) =>
-                  controller.dispatchAction(MoreSelectedEmailAction(
-                    context,
-                    position,
-                  )),
+                  controller.handleEmailActionTypeWhenSelectionActive(
+                    actionType: actionType,
+                    listSelectedEmail: listEmails,
+                  ),
+                onMoreSelectionAllEmailAction: (position) =>
+                  controller.openEmailActionTypePopupMenu(
+                    context: context,
+                    position: position,
+                  ),
               );
             } else {
               return Padding(

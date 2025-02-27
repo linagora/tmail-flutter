@@ -3,7 +3,6 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/application_manager.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -17,6 +16,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
@@ -24,7 +24,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/advanced_search_filter.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/search_email_filter.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -62,7 +61,6 @@ const fallbackGenerators = {
   // Advanced filter controller mock specs
   MockSpec<MailboxDashBoardController>(fallbackGenerators: fallbackGenerators),
   MockSpec<GetAutoCompleteInteractor>(),
-  MockSpec<BuildContext>(),
   // Search controller mock specs
   MockSpec<QuickSearchEmailInteractor>(),
   MockSpec<SaveRecentSearchInteractor>(),
@@ -73,7 +71,6 @@ void main() {
   late AdvancedFilterController advancedFilterController;
   late MockMailboxDashBoardController mockMailboxDashBoardController;
   late MockGetAutoCompleteInteractor mockGetAutoCompleteInteractor;
-  late MockBuildContext mockBuildContext;
 
   // Declaration search controller
   late SearchController searchController;
@@ -148,7 +145,6 @@ void main() {
     // Mock advanced filter controller
     mockMailboxDashBoardController = MockMailboxDashBoardController();
     mockGetAutoCompleteInteractor = MockGetAutoCompleteInteractor();
-    mockBuildContext = MockBuildContext();
 
     Get.put<MailboxDashBoardController>(mockMailboxDashBoardController);
     Get.put<GetAutoCompleteInteractor>(mockGetAutoCompleteInteractor);
@@ -207,7 +203,7 @@ void main() {
         advancedFilterController.setMemorySearchFilter(memorySearchFilter);
 
         // Act
-        advancedFilterController.initSearchFilterField(mockBuildContext);
+        advancedFilterController.initSearchFilterField();
 
         // Assert
         expect(advancedFilterController.subjectFilterInputController.text, equals('subject'));

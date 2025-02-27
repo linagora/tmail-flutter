@@ -25,6 +25,10 @@ import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_sta
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_all_as_starred_selection_all_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/mark_all_as_unread_selection_all_emails_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_all_search_as_read_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_all_search_as_starred_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/mark_all_search_as_unread_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/move_all_email_searched_to_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_all_selection_all_emails_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
@@ -86,6 +90,10 @@ class ToastManager {
       MarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure() => appLocalizations.toastMessageMarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure(success.countStarred),
       SendEmailLoading() => appLocalizations.your_email_being_sent,
       DeleteEmailPermanentlySuccess() => appLocalizations.toast_message_delete_a_email_permanently_success,
+      MarkAllSearchAsReadSuccess() => appLocalizations.toastMessageMarkAllSearchAsReadSuccess,
+      MarkAllSearchAsUnreadSuccess() => appLocalizations.toastMessageMarkAllSearchAsUnreadSuccess,
+      MarkAllSearchAsStarredSuccess() => appLocalizations.toastMessageMarkAllSearchAsStarredSuccess,
+      MoveAllEmailSearchedToFolderSuccess() => appLocalizations.toastMessageMoveAllEmailSearchedToFolderSuccess(success.destinationPath),
       _ => null
     };
   }
@@ -111,6 +119,10 @@ class ToastManager {
       ParseEmailByBlobIdFailure() => appLocalizations.parseEmailByBlobIdFailed,
       PreviewEmailFromEmlFileFailure() => _getMessageForPreviewEmailFromEmlFileFailure(appLocalizations, failure.exception),
       RestoreDeletedMessageFailure() => appLocalizations.restoreDeletedMessageFailed,
+      MarkAllSearchAsReadFailure() => appLocalizations.toastMessageMarkAllSearchAsReadFailureWithReason(failure.exception.toString()),
+      MarkAllSearchAsUnreadFailure() => appLocalizations.toastMessageMarkAllSearchAsUnreadFailureWithReason(failure.exception.toString()),
+      MarkAllSearchAsStarredFailure() => appLocalizations.toastMessageMarkAllSearchAsStarredFailureWithReason(failure.exception.toString()),
+      MoveAllEmailSearchedToFolderFailure() => appLocalizations.toastMessageMoveAllEmailSearchedToFolderFailureWithReason(failure.destinationPath, failure.exception.toString()),
       _ => null
     };
   }
@@ -120,10 +132,10 @@ class ToastManager {
     required Success success,
   }) {
     return switch (success) {
-      MarkAsMailboxReadAllSuccess() || MarkAsMailboxReadHasSomeEmailFailure() => appToast.imagePaths.icReadToast,
-      MarkAllAsUnreadSelectionAllEmailsAllSuccess() || MarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure() => appToast.imagePaths.icUnreadToast,
-      MoveAllSelectionAllEmailsAllSuccess() || MoveAllSelectionAllEmailsHasSomeEmailFailure() => appToast.imagePaths.icFolderMailbox,
-      MarkAllAsStarredSelectionAllEmailsAllSuccess() || MarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure() => appToast.imagePaths.icStar,
+      MarkAsMailboxReadAllSuccess() || MarkAsMailboxReadHasSomeEmailFailure() || MarkAllSearchAsReadSuccess() => appToast.imagePaths.icReadToast,
+      MarkAllAsUnreadSelectionAllEmailsAllSuccess() || MarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure() || MarkAllSearchAsUnreadSuccess() => appToast.imagePaths.icUnreadToast,
+      MoveAllSelectionAllEmailsAllSuccess() || MoveAllSelectionAllEmailsHasSomeEmailFailure() || MoveAllEmailSearchedToFolderSuccess() => appToast.imagePaths.icFolderMailbox,
+      MarkAllAsStarredSelectionAllEmailsAllSuccess() || MarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure() || MarkAllSearchAsStarredSuccess() => appToast.imagePaths.icStar,
       SendEmailLoading() => appToast.imagePaths.icSendToast,
       DeleteEmailPermanentlySuccess() => appToast.imagePaths.icDeleteToast,
       _ => null
