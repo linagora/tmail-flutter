@@ -16,9 +16,11 @@ import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget
 import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_for_select_all_emails_extension.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/utils/search_mailbox_utils.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/widgets/mailbox_searched_item_builder.dart';
+import 'package:tmail_ui_user/features/thread/presentation/model/draggable_email_data.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class SearchMailboxView extends GetWidget<SearchMailboxController>
@@ -184,7 +186,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
               controller.responsiveUtils,
               mailboxCurrent,
               maxWidth: constraints.maxWidth,
-              onDragEmailToMailboxAccepted: controller.dashboardController.dragSelectedMultipleEmailToMailboxAction,
+              onDragEmailToMailboxAccepted: _handleDragItemAccepted,
               onClickOpenMailboxAction: (mailbox) => controller.openMailboxAction(context, mailbox),
               onClickOpenMenuMailboxAction: (position, mailbox) => _openMailboxMenuAction(context, mailbox, position: position),
               onLongPressMailboxAction: (mailbox) => _openMailboxMenuAction(context, mailbox),
@@ -194,6 +196,24 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
         }
       );
     });
+  }
+
+  void _handleDragItemAccepted(
+    DraggableEmailData draggableEmailData,
+    PresentationMailbox presentationMailbox,
+  ) {
+    if (draggableEmailData.isSelectAllEmailsEnabled) {
+      controller
+        .dashboardController
+        .dragAllSelectedEmailToMailboxAction(presentationMailbox);
+    } else {
+      controller
+        .dashboardController
+        .dragSelectedMultipleEmailToMailboxAction(
+          draggableEmailData.listEmails!,
+          presentationMailbox,
+        );
+    }
   }
 
   List<FocusedMenuItem> _listPopupMenuItemAction(BuildContext context, PresentationMailbox mailbox) {

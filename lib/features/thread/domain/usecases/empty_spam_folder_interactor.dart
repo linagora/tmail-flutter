@@ -25,7 +25,7 @@ class EmptySpamFolderInteractor {
       yield Right<Failure, Success>(EmptySpamFolderLoading());
       onProgressController.add(Right(EmptySpamFolderLoading()));
       
-      final emailIdDeleted = await threadRepository.emptySpamFolder(
+      final emailIdDeleted = await threadRepository.emptyMailboxFolder(
         session, 
         accountId, 
         spamMailboxId, 
