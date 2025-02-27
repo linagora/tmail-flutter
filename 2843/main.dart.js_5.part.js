@@ -4302,12 +4302,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     BaseEmailItemTile: function BaseEmailItemTile() {
     },
-    DraggableEmailData: function DraggableEmailData(t0, t1) {
-      this.listEmails = t0;
-      this.isSelectAllEmailsEnabled = t1;
-    },
-    _DraggableEmailData_Object_EquatableMixin: function _DraggableEmailData_Object_EquatableMixin() {
-    },
     ThreadView$() {
       $.$get$Get();
       var t1 = $.GetInstance__getInstance;
@@ -5612,7 +5606,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$HandleEmailActionTypeWhenSelectAllActiveAndMailboxOpenedExtension_allUnSpamSelectionAllEmails, $async$completer);
     },
-    HandleEmailActionTypeWhenSelectAllActiveAndMailboxOpenedExtension__getTypeMoveAllActionForMailbox(_this, presentationMailbox) {
+    HandleEmailActionTypeWhenSelectAllActiveAndMailboxOpenedExtension_getTypeMoveAllActionForMailbox(_this, presentationMailbox) {
       var t1 = presentationMailbox.role,
         t2 = J.getInterceptor$(t1);
       if (t2.$eq(t1, $.$get$PresentationMailbox_roleTrash()))
@@ -5622,7 +5616,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return C.EmailActionType_33;
     },
-    HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_handleActionTypeWhenSelectAllActiveAndSearchActive(_this, actionType, appLocalizations) {
+    HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_handleActionTypeWhenSelectAllActiveAndSearchActive(_this, actionType, appLocalizations, destinationMailbox) {
       var searchEmailFilter, filterOption, _null = null,
         accountId = _this.accountId.get$value(0),
         session = _this.sessionCurrent;
@@ -5646,10 +5640,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           B.HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_moveAllEmailSearchedToFolder(_this, appLocalizations, session, accountId, searchEmailFilter, A.FilterMessageOptionExtension_getFilterCondition(filterOption, _null, _null));
           break;
         case 34:
-          B.HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_moveAllEmailSearchedToTrash(_this, appLocalizations, session, accountId, searchEmailFilter, A.FilterMessageOptionExtension_getFilterCondition(filterOption, _null, _null));
+          B.HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_moveAllEmailSearchedToTrash(_this, appLocalizations, session, accountId, searchEmailFilter, destinationMailbox, A.FilterMessageOptionExtension_getFilterCondition(filterOption, _null, _null));
           break;
         case 37:
-          B.HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_markAllEmailSearchedAsSpam(_this, appLocalizations, session, accountId, searchEmailFilter, A.FilterMessageOptionExtension_getFilterCondition(filterOption, _null, _null));
+          B.HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_markAllEmailSearchedAsSpam(_this, appLocalizations, session, accountId, searchEmailFilter, destinationMailbox, A.FilterMessageOptionExtension_getFilterCondition(filterOption, _null, _null));
           break;
         default:
           break;
@@ -5671,6 +5665,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
             case 2:
               // returning from await.
               destinationMailbox = $async$result;
+              destinationMailbox = destinationMailbox;
               if (destinationMailbox instanceof A.PresentationMailbox) {
                 t1 = destinationMailbox.id;
                 t2 = destinationMailbox.mailboxPath;
@@ -5687,10 +5682,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_moveAllEmailSearchedToFolder, $async$completer);
     },
-    HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_moveAllEmailSearchedToTrash(_this, appLocalizations, session, accountId, searchEmailFilter, moreFilterCondition) {
+    HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_moveAllEmailSearchedToTrash(_this, appLocalizations, session, accountId, searchEmailFilter, destinationMailbox, moreFilterCondition) {
       var $async$goto = 0,
         $async$completer = A._makeAsyncAwaitCompleter(type$.void),
-        $async$returnValue, trashMailboxPath, t1, trashMailboxId;
+        $async$returnValue, t2, trashMailboxPath, t1, trashMailboxId;
       var $async$HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_moveAllEmailSearchedToTrash = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
         if ($async$errorCode === 1)
           return A._asyncRethrow($async$result, $async$completer);
@@ -5698,10 +5693,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           switch ($async$goto) {
             case 0:
               // Function start
-              t1 = $.$get$PresentationMailbox_roleTrash();
-              trashMailboxId = _this.mapDefaultMailboxIdByRole.$index(0, t1);
-              t1 = _this.mapMailboxById.$index(0, trashMailboxId);
-              trashMailboxPath = t1 == null ? null : A.PresentationMailboxExtension_getDisplayNameByAppLocalizations(t1, appLocalizations);
+              t1 = destinationMailbox == null;
+              trashMailboxId = t1 ? null : destinationMailbox.id;
+              if (trashMailboxId == null) {
+                t2 = $.$get$PresentationMailbox_roleTrash();
+                trashMailboxId = _this.mapDefaultMailboxIdByRole.$index(0, t2);
+              }
+              t1 = t1 ? null : A.PresentationMailboxExtension_getDisplayNameByAppLocalizations(destinationMailbox, appLocalizations);
+              if (t1 == null) {
+                t1 = _this.mapMailboxById.$index(0, trashMailboxId);
+                t1 = t1 == null ? null : A.PresentationMailboxExtension_getDisplayNameByAppLocalizations(t1, appLocalizations);
+                trashMailboxPath = t1;
+              } else
+                trashMailboxPath = t1;
               if (trashMailboxPath == null)
                 trashMailboxPath = "";
               if (trashMailboxId == null) {
@@ -5718,10 +5722,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       });
       return A._asyncStartSync($async$HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_moveAllEmailSearchedToTrash, $async$completer);
     },
-    HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_markAllEmailSearchedAsSpam(_this, appLocalizations, session, accountId, searchEmailFilter, moreFilterCondition) {
+    HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_markAllEmailSearchedAsSpam(_this, appLocalizations, session, accountId, searchEmailFilter, destinationMailbox, moreFilterCondition) {
       var $async$goto = 0,
         $async$completer = A._makeAsyncAwaitCompleter(type$.void),
-        $async$returnValue, spamMailboxId, t1, spamMailboxPath;
+        $async$returnValue, spamMailboxPath, t1, spamMailboxId;
       var $async$HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_markAllEmailSearchedAsSpam = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
         if ($async$errorCode === 1)
           return A._asyncRethrow($async$result, $async$completer);
@@ -5729,9 +5733,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           switch ($async$goto) {
             case 0:
               // Function start
-              spamMailboxId = _this.get$spamMailboxId();
-              t1 = _this.mapMailboxById.$index(0, spamMailboxId);
-              spamMailboxPath = t1 == null ? null : A.PresentationMailboxExtension_getDisplayNameByAppLocalizations(t1, appLocalizations);
+              t1 = destinationMailbox == null;
+              spamMailboxId = t1 ? null : destinationMailbox.id;
+              if (spamMailboxId == null)
+                spamMailboxId = _this.get$spamMailboxId();
+              t1 = t1 ? null : A.PresentationMailboxExtension_getDisplayNameByAppLocalizations(destinationMailbox, appLocalizations);
+              if (t1 == null) {
+                t1 = _this.mapMailboxById.$index(0, spamMailboxId);
+                t1 = t1 == null ? null : A.PresentationMailboxExtension_getDisplayNameByAppLocalizations(t1, appLocalizations);
+                spamMailboxPath = t1;
+              } else
+                spamMailboxPath = t1;
               if (spamMailboxPath == null)
                 spamMailboxPath = "";
               if (spamMailboxId == null) {
@@ -11116,8 +11128,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _mailbox_view_web$_buildListChildTileWidget$2(context, parentNode) {
       return this._mailbox_view_web$_buildListChildTileWidget$3$lastNode(context, parentNode, null);
     },
-    _handleDragItemAccepted$3(appLocalizations, draggableEmailData, destinationMailbox) {
-      var t2, mailboxPath, t3, selectedMailbox, _this = this,
+    _handleDragItemAccepted$3(appLocalizations, listEmails, destinationMailbox) {
+      var t2, mailboxPath, t3, _this = this,
         t1 = $.$get$GetWidget__cache();
       A.Expando__checkType(_this);
       t1 = t1._jsWeakMap;
@@ -11131,17 +11143,25 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (mailboxPath != null)
         destinationMailbox = A.PresentationMailboxExtension_toPresentationMailboxWithMailboxPath(destinationMailbox, mailboxPath);
       A.Expando__checkType(_this);
-      selectedMailbox = t2._as(t1.get(_this)).mailboxDashBoardController.selectedMailbox.get$value(0);
-      if (draggableEmailData.isSelectAllEmailsEnabled && selectedMailbox != null) {
+      t3 = t2._as(t1.get(_this)).mailboxDashBoardController;
+      if (t3.isSelectAllEmailsEnabled.get$value(0) && t3.selectedMailbox.get$value(0) != null) {
         A.Expando__checkType(_this);
-        t1 = t2._as(t1.get(_this)).mailboxDashBoardController;
-        B.HandleEmailActionTypeWhenSelectAllActiveAndMailboxOpenedExtension_handleActionTypeWhenSelectAllActiveAndMailboxOpened(t1, B.HandleEmailActionTypeWhenSelectAllActiveAndMailboxOpenedExtension__getTypeMoveAllActionForMailbox(t1, destinationMailbox), appLocalizations, destinationMailbox, selectedMailbox);
+        t3 = t2._as(t1.get(_this)).mailboxDashBoardController;
+        A.Expando__checkType(_this);
+        t1 = t2._as(t1.get(_this)).mailboxDashBoardController.selectedMailbox.get$value(0);
+        t1.toString;
+        B.HandleEmailActionTypeWhenSelectAllActiveAndMailboxOpenedExtension_handleActionTypeWhenSelectAllActiveAndMailboxOpened(t3, B.HandleEmailActionTypeWhenSelectAllActiveAndMailboxOpenedExtension_getTypeMoveAllActionForMailbox(t3, destinationMailbox), appLocalizations, destinationMailbox, t1);
       } else {
         A.Expando__checkType(_this);
-        t1 = t2._as(t1.get(_this)).mailboxDashBoardController;
-        t2 = draggableEmailData.listEmails;
-        t2.toString;
-        t1.dragSelectedMultipleEmailToMailboxAction$2(t2, destinationMailbox);
+        t3 = t2._as(t1.get(_this)).mailboxDashBoardController;
+        if (t3.isSelectAllEmailsEnabled.get$value(0) && t3.selectedMailbox.get$value(0) != null) {
+          A.Expando__checkType(_this);
+          t1 = t2._as(t1.get(_this)).mailboxDashBoardController;
+          B.HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_handleActionTypeWhenSelectAllActiveAndSearchActive(t1, B.HandleEmailActionTypeWhenSelectAllActiveAndMailboxOpenedExtension_getTypeMoveAllActionForMailbox(t1, destinationMailbox), appLocalizations, destinationMailbox);
+        } else {
+          A.Expando__checkType(_this);
+          t2._as(t1.get(_this)).mailboxDashBoardController.dragSelectedMultipleEmailToMailboxAction$2(listEmails, destinationMailbox);
+        }
       }
     }
   };
@@ -13089,7 +13109,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B._MailboxSearchedItemBuilderState.prototype = {
     build$1(context) {
-      return A.DragTarget$(new B._MailboxSearchedItemBuilderState_build_closure(this, context), new B._MailboxSearchedItemBuilderState_build_closure0(this), null, null, type$.DraggableEmailData);
+      return A.DragTarget$(new B._MailboxSearchedItemBuilderState_build_closure(this, context), new B._MailboxSearchedItemBuilderState_build_closure0(this), null, null, type$.List_PresentationEmail);
     },
     _buildMailboxItem$1(context) {
       var t6, t7, t8, _this = this, _null = null,
@@ -13308,12 +13328,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return new A.Padding(t1, A.SvgPicture$asset("assets/images/ic_calendar_event.svg", C.Alignment_0_0, presentationEmail.get$hasRead() ? A.ColorNullableExtension_asFilter(C.Color_4286680217) : A.ColorNullableExtension_asFilter(D.Color_4280032031), C.BoxFit_0, 20, null, null, 20), null);
     }
   };
-  B.DraggableEmailData.prototype = {
-    get$props() {
-      return [this.listEmails, this.isSelectAllEmailsEnabled];
-    }
-  };
-  B._DraggableEmailData_Object_EquatableMixin.prototype = {};
   B.ThreadView.prototype = {
     build$1(context) {
       var t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, _this = this, _null = null,
@@ -13508,12 +13522,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       t1 = t1._jsWeakMap;
       t2 = A._instanceType(_this)._eval$1("GetWidget.S");
-      if (t2._as(t1.get(_this)).EmailActionController_mailboxDashBoardController.isSelectAllEmailsEnabled.get$value(0))
-        t3 = new B.DraggableEmailData(_null, true);
-      else {
-        A.Expando__checkType(_this);
-        t3 = new B.DraggableEmailData(t2._as(t1.get(_this)).listEmailDrag, false);
-      }
+      t3 = t2._as(t1.get(_this)).listEmailDrag;
       A.Expando__checkType(_this);
       t4 = t2._as(t1.get(_this)).EmailActionController_mailboxDashBoardController.selectedEmail.get$value(0);
       t4 = t4 == null ? _null : t4.id;
@@ -13528,7 +13537,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t2._as(t1.get(_this)).EmailActionController_mailboxDashBoardController.searchController;
       t1 = t1.simpleSearchIsActivated.get$value(0) || t1.advancedSearchIsActivated.get$value(0);
       t5 = B.EmailTileBuilder$(_null, true, t1, isShowingEmailContent, new A.ValueKey("email_tile_builder_" + A.S(t4), type$.ValueKey_String), presentationEmail.mailboxContain, _null, _null, presentationEmail, t5, selectModeAll);
-      return A.GestureDetector$(C.HitTestBehavior_2, B.Draggable$(_this._buildEmailItemNotDraggable$2(context, presentationEmail), t5, t3, B.drag_target__pointerDragAnchorStrategy$closure(), new A.Obx(new B.ThreadView__buildEmailItemDraggable_closure(_this, context), _null), new B.ThreadView__buildEmailItemDraggable_closure0(_this), new B.ThreadView__buildEmailItemDraggable_closure1(_this, presentationEmail), new B.ThreadView__buildEmailItemDraggable_closure2(_this), type$.DraggableEmailData), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.ThreadView__buildEmailItemDraggable_closure3(), _null, _null, _null, new B.ThreadView__buildEmailItemDraggable_closure4(), _null, _null, _null, _null, _null, false, C.Offset_7BT);
+      return A.GestureDetector$(C.HitTestBehavior_2, B.Draggable$(_this._buildEmailItemNotDraggable$2(context, presentationEmail), t5, t3, B.drag_target__pointerDragAnchorStrategy$closure(), new A.Obx(new B.ThreadView__buildEmailItemDraggable_closure(_this, context), _null), new B.ThreadView__buildEmailItemDraggable_closure0(_this), new B.ThreadView__buildEmailItemDraggable_closure1(_this, presentationEmail), new B.ThreadView__buildEmailItemDraggable_closure2(_this), type$.List_PresentationEmail), C.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.ThreadView__buildEmailItemDraggable_closure3(), _null, _null, _null, new B.ThreadView__buildEmailItemDraggable_closure4(), _null, _null, _null, _null, _null, false, C.Offset_7BT);
     },
     _buildEmailItemNotDraggable$2(context, presentationEmail) {
       var t2, t3, t4, isShowingEmailContent, selectModeAll, t5, t6, t7, t8, _this = this, _null = null,
@@ -19317,7 +19326,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.HandleEmailActionTypeWhenSelectionActiveExtension_handleEmailActionTypeWhenSelectionActive_closure0.prototype = {
     call$0() {
-      return B.HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_handleActionTypeWhenSelectAllActiveAndSearchActive(this._this, this.actionType, this.appLocalizations);
+      return B.HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_handleActionTypeWhenSelectAllActiveAndSearchActive(this._this, this.actionType, this.appLocalizations, null);
     },
     $signature: 0
   };
@@ -22114,7 +22123,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchMailboxView__buildMailboxListView____closure1.prototype = {
     call$2(draggableEmailData, destinationMailbox) {
-      var t3, t4, selectedMailbox,
+      var t3, t4, t5,
         t1 = this.$this,
         t2 = A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t2.toString;
@@ -22122,17 +22131,30 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       t3 = t3._jsWeakMap;
       t4 = A._instanceType(t1)._eval$1("GetWidget.S");
-      selectedMailbox = t4._as(t3.get(t1)).dashboardController.selectedMailbox.get$value(0);
-      if (draggableEmailData.isSelectAllEmailsEnabled && selectedMailbox != null) {
+      t5 = t4._as(t3.get(t1)).dashboardController;
+      if (t5.isSelectAllEmailsEnabled.get$value(0) && t5.selectedMailbox.get$value(0) != null) {
         A.Expando__checkType(t1);
-        t1 = t4._as(t3.get(t1)).dashboardController;
-        B.HandleEmailActionTypeWhenSelectAllActiveAndMailboxOpenedExtension_handleActionTypeWhenSelectAllActiveAndMailboxOpened(t1, B.HandleEmailActionTypeWhenSelectAllActiveAndMailboxOpenedExtension__getTypeMoveAllActionForMailbox(t1, destinationMailbox), t2, destinationMailbox, selectedMailbox);
+        t5 = t4._as(t3.get(t1)).dashboardController;
+        A.Expando__checkType(t1);
+        t1 = t4._as(t3.get(t1)).dashboardController.selectedMailbox.get$value(0);
+        t1.toString;
+        B.HandleEmailActionTypeWhenSelectAllActiveAndMailboxOpenedExtension_handleActionTypeWhenSelectAllActiveAndMailboxOpened(t5, B.HandleEmailActionTypeWhenSelectAllActiveAndMailboxOpenedExtension_getTypeMoveAllActionForMailbox(t5, destinationMailbox), t2, destinationMailbox, t1);
       } else {
         A.Expando__checkType(t1);
-        t1 = t4._as(t3.get(t1)).dashboardController;
-        t2 = draggableEmailData.listEmails;
-        t2.toString;
-        t1.dragSelectedMultipleEmailToMailboxAction$2(t2, destinationMailbox);
+        t5 = t4._as(t3.get(t1)).dashboardController;
+        if (t5.isSelectAllEmailsEnabled.get$value(0)) {
+          t5 = t5.searchController;
+          t5 = t5.simpleSearchIsActivated.get$value(0) || t5.advancedSearchIsActivated.get$value(0);
+        } else
+          t5 = false;
+        if (t5) {
+          A.Expando__checkType(t1);
+          t1 = t4._as(t3.get(t1)).dashboardController;
+          B.HandleEmailActionTypeWhenSelectAllActiveAndSearchActiveExtension_handleActionTypeWhenSelectAllActiveAndSearchActive(t1, B.HandleEmailActionTypeWhenSelectAllActiveAndMailboxOpenedExtension_getTypeMoveAllActionForMailbox(t1, destinationMailbox), t2, destinationMailbox);
+        } else {
+          A.Expando__checkType(t1);
+          t4._as(t3.get(t1)).dashboardController.dragSelectedMultipleEmailToMailboxAction$2(draggableEmailData, destinationMailbox);
+        }
       }
       return null;
     },
@@ -23620,7 +23642,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _mixin = hunkHelpers.mixin,
       _inheritMany = hunkHelpers.inheritMany,
       _inherit = hunkHelpers.inherit;
-    _inheritMany(A.Object, [B.ByteConverter, B.QuickSearchSuggestionsBox, B.QuickSearchSuggestionsBoxDecoration, B.QuickSearchTextFieldConfiguration, B.ArabicDateLocale, B.EnglishDateLocale, B.FrenchDateLocale, B.GermanDateLocale, B.ItalianDateLocale, B.RussianDateLocale, B.VietnameseDateLocale, B.DropdownSearchData, B.Drag, B.MultiDragPointerState, B.DraggableDetails, B.FocusedMenuItem, B.WebScript, B._DraggableEmailAddress_Object_EquatableMixin, B.EditorViewMixin, B.NotFoundTrashMailboxException, B.FilterEmailPopupMenuMixin, B.BaseEmailItemTile, B._DraggableEmailData_Object_EquatableMixin]);
+    _inheritMany(A.Object, [B.ByteConverter, B.QuickSearchSuggestionsBox, B.QuickSearchSuggestionsBoxDecoration, B.QuickSearchTextFieldConfiguration, B.ArabicDateLocale, B.EnglishDateLocale, B.FrenchDateLocale, B.GermanDateLocale, B.ItalianDateLocale, B.RussianDateLocale, B.VietnameseDateLocale, B.DropdownSearchData, B.Drag, B.MultiDragPointerState, B.DraggableDetails, B.FocusedMenuItem, B.WebScript, B._DraggableEmailAddress_Object_EquatableMixin, B.EditorViewMixin, B.NotFoundTrashMailboxException, B.FilterEmailPopupMenuMixin, B.BaseEmailItemTile]);
     _inheritMany(A._Enum, [B.SizeUnit, B._DragEndKind]);
     _inheritMany(A.StatefulWidget, [B.ScrollingFloatingButtonAnimated, B.QuickSearchSuggestionList, B.TypeAheadFieldQuickSearch, B.SelectionArea, B.Draggable, B.SelectableRegion, B.HighlightSVGIconOnHover, B.RecipientComposerWidget, B.AttachmentComposerWidget, B.PrintDraftDialogView, B.WebEditorWidget, B.EventAttendeeDetailWidget, B.EmailReceiverWidget, B.AppGridView, B.TextFieldAutocompleteEmailAddressWeb, B.MailboxSearchedItemBuilder, B.EmailTileBuilder, B.ScrollToTopButtonWidget, B.SelectAllEmailInMailboxBanner, B.SelectAllEmailInSearchBanner]);
     _inheritMany(A.State0, [B.__ScrollingFloatingButtonAnimatedState_State_SingleTickerProviderStateMixin, B._QuickSearchSuggestionListState_State_SingleTickerProviderStateMixin, B.__TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver, B._SelectionAreaState, B._DraggableState, B._SelectableRegionState_State_TextSelectionDelegate, B._HighlightSVGIconOnHoverState, B._RecipientComposerWidgetState, B._AttachmentComposerWidgetState, B._PrintDraftDialogViewState, B._WebEditorState, B._EventAttendeeDetailWidgetState, B._EmailReceiverWidgetState, B._AppGridViewState, B._TextFieldAutocompleteEmailAddressWebState, B._MailboxSearchedItemBuilderState, B.__EmailTileBuilderState_State_BaseEmailItemTile, B._ScrollToTopButtonWidgetState, B._SelectAllEmailInMailboxBannerState, B._SelectAllEmailInSearchBannerState]);
@@ -23665,7 +23687,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(B.SearchEmailLoadingBarWidget, B._SearchEmailLoadingBarWidget_StatelessWidget_AppLoaderMixin);
     _inherit(B._SearchMailboxView_GetWidget_AppLoaderMixin_MailboxWidgetMixin, B._SearchMailboxView_GetWidget_AppLoaderMixin);
     _inherit(B.SearchMailboxView, B._SearchMailboxView_GetWidget_AppLoaderMixin_MailboxWidgetMixin);
-    _inherit(B.DraggableEmailData, B._DraggableEmailData_Object_EquatableMixin);
     _inherit(B._ThreadView_GetWidget_AppLoaderMixin_FilterEmailPopupMenuMixin, B._ThreadView_GetWidget_AppLoaderMixin);
     _inherit(B.ThreadView, B._ThreadView_GetWidget_AppLoaderMixin_FilterEmailPopupMenuMixin);
     _inherit(B._EmailTileBuilderState, B.__EmailTileBuilderState_State_BaseEmailItemTile);
@@ -23688,12 +23709,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _mixin(B._SearchEmailLoadingBarWidget_StatelessWidget_AppLoaderMixin, A.AppLoaderMixin);
     _mixin(B._SearchMailboxView_GetWidget_AppLoaderMixin, A.AppLoaderMixin);
     _mixin(B._SearchMailboxView_GetWidget_AppLoaderMixin_MailboxWidgetMixin, A.MailboxWidgetMixin);
-    _mixin(B._DraggableEmailData_Object_EquatableMixin, A.EquatableMixin);
     _mixin(B._ThreadView_GetWidget_AppLoaderMixin, A.AppLoaderMixin);
     _mixin(B._ThreadView_GetWidget_AppLoaderMixin_FilterEmailPopupMenuMixin, B.FilterEmailPopupMenuMixin);
     _mixin(B.__EmailTileBuilderState_State_BaseEmailItemTile, B.BaseEmailItemTile);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"ScrollingFloatingButtonAnimated":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ScrollingFloatingButtonAnimatedState":{"State0":["ScrollingFloatingButtonAnimated"]},"QuickSearchInputForm":{"FormField":["String"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[],"FormField.T":"String"},"_QuickSearchInputFormFormFieldState":{"FormFieldState":["String"],"State0":["FormField<String>"]},"QuickSearchSuggestionList":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"QuickSearchSuggestionListState":{"State0":["QuickSearchSuggestionList<1,2,3>"]},"TypeAheadFieldQuickSearch":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_TypeAheadFieldQuickSearchState":{"State0":["TypeAheadFieldQuickSearch<1,2,3>"],"WidgetsBindingObserver":[]},"MultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_ImmediatePointerState":{"MultiDragPointerState":[]},"ImmediateMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_HorizontalPointerState":{"MultiDragPointerState":[]},"HorizontalMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_VerticalPointerState":{"MultiDragPointerState":[]},"VerticalMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"Drawer":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SelectionArea":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SelectionAreaState":{"State0":["SelectionArea"]},"PlatformSelectableRegionContextMenu":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Draggable":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_DraggableState":{"State0":["Draggable<1>"]},"SelectableRegion":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"SelectableRegionState":{"State0":["SelectableRegion"]},"_NonOverrideAction":{"ContextAction":["1"],"Action":["1"]},"_SelectAllAction0":{"ContextAction":["SelectAllTextIntent"],"Action":["SelectAllTextIntent"],"Action.T":"SelectAllTextIntent","ContextAction.T":"SelectAllTextIntent"},"_CopySelectionAction0":{"ContextAction":["CopySelectionTextIntent"],"Action":["CopySelectionTextIntent"],"Action.T":"CopySelectionTextIntent","ContextAction.T":"CopySelectionTextIntent"},"_GranularlyExtendSelectionAction":{"ContextAction":["1"],"Action":["1"],"Action.T":"1","ContextAction.T":"1"},"_GranularlyExtendCaretSelectionAction":{"ContextAction":["1"],"Action":["1"],"Action.T":"1","ContextAction.T":"1"},"_DirectionallyExtendCaretSelectionAction":{"ContextAction":["1"],"Action":["1"],"Action.T":"1","ContextAction.T":"1"},"_SelectableRegionContainerDelegate":{"Listenable":[]},"Linkify":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ComposeFloatingButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailAvatarBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"HighlightSVGIconOnHover":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HighlightSVGIconOnHoverState":{"State0":["HighlightSVGIconOnHover"]},"HyperLinkWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PopupItemNoIconWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ComposerView":{"GetWidget":["ComposerController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ComposerController"},"DraftEmailPrint":{"EquatableMixin":[]},"DraggableEmailAddress":{"EquatableMixin":[]},"DesktopResponsiveContainerView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MobileResponsiveContainerView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TabletResponsiveContainerView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"WebEditorView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentHeaderComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentItemComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentProgressLoadingComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DraggableRecipientTagWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"InsertImageLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FromComposerMobileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecipientComposerWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RecipientComposerWidgetState":{"State0":["RecipientComposerWidget"]},"RecipientTagItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SubjectComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TitleComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentComposerWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AttachmentComposerWidgetState":{"State0":["AttachmentComposerWidget"]},"AttachmentDropZoneWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BottomBarComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DesktopAppBarComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FromComposerDropDownWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MinimizeComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MobileResponsiveAppBarComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PrintDraftDialogView":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PrintDraftDialogViewState":{"State0":["PrintDraftDialogView"]},"WebEditorWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_WebEditorState":{"State0":["WebEditorWidget"]},"EmailView":{"GetWidget":["SingleEmailController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SingleEmailController"},"AttachmentItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentsInfo":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttendeeWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarDateIconWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarEventActionBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarEventActionButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarEventDetailWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarEventInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventAttendeeDetailWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_EventAttendeeDetailWidgetState":{"State0":["EventAttendeeDetailWidget"]},"EventBodyContentWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventLinkDetailWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventLocationInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventTimeInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventTitleWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"HideAllAttendeesButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"OrganizerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SeeAllAttendeesButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DraggableAttachmentItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailAttachmentsWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailReceiverWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_EmailReceiverWidgetState":{"State0":["EmailReceiverWidget"]},"EmailSenderBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailSubjectWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewAppBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewBackButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewBottomBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewEmptyWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FeedbackDraggableAttachmentItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"InformationSenderAndReceiverBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MailUnsubscribedBanner":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PrefixRecipientWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ReceivedTimeBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"NotFoundTrashMailboxException":{"Exception":[]},"BaseMailboxView":{"GetWidget":["MailboxController"],"Widget":[],"DiagnosticableTree":[]},"MailboxView":{"GetWidget":["MailboxController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxController"},"AppGridView":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AppGridViewState":{"State0":["AppGridView"]},"MailboxLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FilterMessageAction":{"UIAction":[],"EquatableMixin":[]},"OpenEmailDetailedFromSuggestionQuickSearchAction":{"UIAction":[],"EquatableMixin":[]},"BaseMailboxDashBoardView":{"GetWidget":["MailboxDashBoardController"],"Widget":[],"DiagnosticableTree":[]},"MailboxDashBoardView":{"GetWidget":["MailboxDashBoardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxDashBoardController"},"AdvancedSearchFilterFormBottomView":{"GetWidget":["AdvancedFilterController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"AdvancedFilterController"},"AdvancedSearchFilterOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AdvancedSearchInputForm":{"GetWidget":["AdvancedFilterController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"AdvancedFilterController"},"AutoCompleteTagItemWidgetWeb":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AvatarTagItemWidget0":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DateDropDownButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IconOpenAdvancedSearchWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SortByDropDownButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TextFieldAutocompleteEmailAddressWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_TextFieldAutocompleteEmailAddressWebState":{"State0":["TextFieldAutocompleteEmailAddressWeb"]},"TopBarThreadSelection":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppListDashboardItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DownloadTaskItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ContactQuickSearchItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailQuickSearchItemTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecentSearchItemTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecoverDeletedMessageLoadingBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FilterMessageButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchFilterButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchInputFormWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ViewStateMailboxActionProgressLoadingBanner":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"QuotasView":{"GetWidget":["QuotasController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"QuotasController"},"QuotasBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchEmailView":{"GetWidget":["SearchEmailController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SearchEmailController"},"AppBarSelectionMode":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailReceiveTimeActionTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailSortByActionTitleWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmptySearchEmailWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchEmailLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchMailboxView":{"GetWidget":["SearchMailboxController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SearchMailboxController"},"MailboxSearchedItemBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_MailboxSearchedItemBuilderState":{"State0":["MailboxSearchedItemBuilder"]},"DraggableEmailData":{"EquatableMixin":[]},"ThreadView":{"GetWidget":["ThreadController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ThreadController"},"AppBarThreadWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DefaultWebAppBarThreadWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SelectionWebAppBarThreadWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"WebAppBarThreadWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BannerDeleteAllSpamEmailsWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BannerEmptyTrashWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BottomBarThreadSelectionWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DraggableFeedbackWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailTileBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_EmailTileBuilderState":{"State0":["EmailTileBuilder"]},"EmptyEmailsWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ScrollToTopButtonWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ScrollToTopButtonWidgetState":{"State0":["ScrollToTopButtonWidget"]},"MessageSelectAllEmailInMailboxWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MessageSelectAllEmailInSearchWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MessageSelectEmailOnPageInMailboxWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MessageSelectEmailOnPageInSearchWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SelectAllEmailInMailboxBanner":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SelectAllEmailInMailboxBannerState":{"State0":["SelectAllEmailInMailboxBanner"]},"SelectAllEmailInSearchBanner":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SelectAllEmailInSearchBannerState":{"State0":["SelectAllEmailInSearchBanner"]},"SpamReportBannerButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SpamReportBannerLabelWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SpamReportBannerWebWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SpamReportBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ThreadViewLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"ScrollingFloatingButtonAnimated":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ScrollingFloatingButtonAnimatedState":{"State0":["ScrollingFloatingButtonAnimated"]},"QuickSearchInputForm":{"FormField":["String"],"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[],"FormField.T":"String"},"_QuickSearchInputFormFormFieldState":{"FormFieldState":["String"],"State0":["FormField<String>"]},"QuickSearchSuggestionList":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"QuickSearchSuggestionListState":{"State0":["QuickSearchSuggestionList<1,2,3>"]},"TypeAheadFieldQuickSearch":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_TypeAheadFieldQuickSearchState":{"State0":["TypeAheadFieldQuickSearch<1,2,3>"],"WidgetsBindingObserver":[]},"MultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_ImmediatePointerState":{"MultiDragPointerState":[]},"ImmediateMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_HorizontalPointerState":{"MultiDragPointerState":[]},"HorizontalMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"_VerticalPointerState":{"MultiDragPointerState":[]},"VerticalMultiDragGestureRecognizer":{"GestureRecognizer":[],"DiagnosticableTree":[],"GestureArenaMember":[]},"Drawer":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SelectionArea":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SelectionAreaState":{"State0":["SelectionArea"]},"PlatformSelectableRegionContextMenu":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Draggable":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_DraggableState":{"State0":["Draggable<1>"]},"SelectableRegion":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"SelectableRegionState":{"State0":["SelectableRegion"]},"_NonOverrideAction":{"ContextAction":["1"],"Action":["1"]},"_SelectAllAction0":{"ContextAction":["SelectAllTextIntent"],"Action":["SelectAllTextIntent"],"Action.T":"SelectAllTextIntent","ContextAction.T":"SelectAllTextIntent"},"_CopySelectionAction0":{"ContextAction":["CopySelectionTextIntent"],"Action":["CopySelectionTextIntent"],"Action.T":"CopySelectionTextIntent","ContextAction.T":"CopySelectionTextIntent"},"_GranularlyExtendSelectionAction":{"ContextAction":["1"],"Action":["1"],"Action.T":"1","ContextAction.T":"1"},"_GranularlyExtendCaretSelectionAction":{"ContextAction":["1"],"Action":["1"],"Action.T":"1","ContextAction.T":"1"},"_DirectionallyExtendCaretSelectionAction":{"ContextAction":["1"],"Action":["1"],"Action.T":"1","ContextAction.T":"1"},"_SelectableRegionContainerDelegate":{"Listenable":[]},"Linkify":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ComposeFloatingButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailAvatarBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"HighlightSVGIconOnHover":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HighlightSVGIconOnHoverState":{"State0":["HighlightSVGIconOnHover"]},"HyperLinkWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PopupItemNoIconWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ComposerView":{"GetWidget":["ComposerController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ComposerController"},"DraftEmailPrint":{"EquatableMixin":[]},"DraggableEmailAddress":{"EquatableMixin":[]},"DesktopResponsiveContainerView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MobileResponsiveContainerView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TabletResponsiveContainerView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"WebEditorView":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentHeaderComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentItemComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentProgressLoadingComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DraggableRecipientTagWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"InsertImageLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FromComposerMobileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecipientComposerWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_RecipientComposerWidgetState":{"State0":["RecipientComposerWidget"]},"RecipientTagItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SubjectComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TitleComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentComposerWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AttachmentComposerWidgetState":{"State0":["AttachmentComposerWidget"]},"AttachmentDropZoneWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BottomBarComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DesktopAppBarComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FromComposerDropDownWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MinimizeComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MobileResponsiveAppBarComposerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PrintDraftDialogView":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PrintDraftDialogViewState":{"State0":["PrintDraftDialogView"]},"WebEditorWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_WebEditorState":{"State0":["WebEditorWidget"]},"EmailView":{"GetWidget":["SingleEmailController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SingleEmailController"},"AttachmentItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttachmentsInfo":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AttendeeWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarDateIconWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarEventActionBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarEventActionButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarEventDetailWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"CalendarEventInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventAttendeeDetailWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_EventAttendeeDetailWidgetState":{"State0":["EventAttendeeDetailWidget"]},"EventBodyContentWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventLinkDetailWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventLocationInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventTimeInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EventTitleWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"HideAllAttendeesButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"OrganizerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SeeAllAttendeesButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DraggableAttachmentItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailAttachmentsWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailReceiverWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_EmailReceiverWidgetState":{"State0":["EmailReceiverWidget"]},"EmailSenderBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailSubjectWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewAppBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewBackButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewBottomBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewEmptyWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailViewLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FeedbackDraggableAttachmentItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"InformationSenderAndReceiverBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MailUnsubscribedBanner":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"PrefixRecipientWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ReceivedTimeBuilder":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"NotFoundTrashMailboxException":{"Exception":[]},"BaseMailboxView":{"GetWidget":["MailboxController"],"Widget":[],"DiagnosticableTree":[]},"MailboxView":{"GetWidget":["MailboxController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxController"},"AppGridView":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AppGridViewState":{"State0":["AppGridView"]},"MailboxLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FilterMessageAction":{"UIAction":[],"EquatableMixin":[]},"OpenEmailDetailedFromSuggestionQuickSearchAction":{"UIAction":[],"EquatableMixin":[]},"BaseMailboxDashBoardView":{"GetWidget":["MailboxDashBoardController"],"Widget":[],"DiagnosticableTree":[]},"MailboxDashBoardView":{"GetWidget":["MailboxDashBoardController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"MailboxDashBoardController"},"AdvancedSearchFilterFormBottomView":{"GetWidget":["AdvancedFilterController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"AdvancedFilterController"},"AdvancedSearchFilterOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AdvancedSearchInputForm":{"GetWidget":["AdvancedFilterController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"AdvancedFilterController"},"AutoCompleteTagItemWidgetWeb":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AvatarTagItemWidget0":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DateDropDownButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"IconOpenAdvancedSearchWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SortByDropDownButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"TextFieldAutocompleteEmailAddressWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_TextFieldAutocompleteEmailAddressWebState":{"State0":["TextFieldAutocompleteEmailAddressWeb"]},"TopBarThreadSelection":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppListDashboardItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DownloadTaskItemWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ContactQuickSearchItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailQuickSearchItemTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecentSearchItemTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"RecoverDeletedMessageLoadingBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"FilterMessageButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchFilterButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchInputFormWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ViewStateMailboxActionProgressLoadingBanner":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"QuotasView":{"GetWidget":["QuotasController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"QuotasController"},"QuotasBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchEmailView":{"GetWidget":["SearchEmailController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SearchEmailController"},"AppBarSelectionMode":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailReceiveTimeActionTileWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailSortByActionTitleWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmptySearchEmailWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchEmailLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SearchMailboxView":{"GetWidget":["SearchMailboxController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"SearchMailboxController"},"MailboxSearchedItemBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_MailboxSearchedItemBuilderState":{"State0":["MailboxSearchedItemBuilder"]},"ThreadView":{"GetWidget":["ThreadController"],"Widget":[],"DiagnosticableTree":[],"GetWidget.S":"ThreadController"},"AppBarThreadWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DefaultWebAppBarThreadWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SelectionWebAppBarThreadWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"WebAppBarThreadWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BannerDeleteAllSpamEmailsWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BannerEmptyTrashWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"BottomBarThreadSelectionWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DraggableFeedbackWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"EmailTileBuilder":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_EmailTileBuilderState":{"State0":["EmailTileBuilder"]},"EmptyEmailsWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ScrollToTopButtonWidget":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ScrollToTopButtonWidgetState":{"State0":["ScrollToTopButtonWidget"]},"MessageSelectAllEmailInMailboxWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MessageSelectAllEmailInSearchWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MessageSelectEmailOnPageInMailboxWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MessageSelectEmailOnPageInSearchWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SelectAllEmailInMailboxBanner":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SelectAllEmailInMailboxBannerState":{"State0":["SelectAllEmailInMailboxBanner"]},"SelectAllEmailInSearchBanner":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_SelectAllEmailInSearchBannerState":{"State0":["SelectAllEmailInSearchBanner"]},"SpamReportBannerButtonWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SpamReportBannerLabelWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SpamReportBannerWebWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"SpamReportBannerWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"ThreadViewLoadingBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]}}'));
   A._Universe_addErasedTypes(init.typeUniverse, JSON.parse('{"_QuickSearchSuggestionListState_State_SingleTickerProviderStateMixin":3,"__TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver":3,"_NonOverrideAction":1}'));
   var string$ = {
     Mailbo: "MailboxDashBoardController::dispatchAction(): ",
@@ -23709,7 +23729,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       CalendarAttendee: findType("CalendarAttendee"),
       Directionality: findType("Directionality"),
       DraggableEmailAddress: findType("DraggableEmailAddress"),
-      DraggableEmailData: findType("DraggableEmailData"),
       DropdownSearchData_Identity: findType("DropdownSearchData<Identity>"),
       Either_Failure_Success: findType("Either<Failure0,Success0>"),
       EmailAddress: findType("EmailAddress"),
@@ -23742,6 +23761,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       JSArray__DragTargetState_Object: findType("JSArray<_DragTargetState<Object>>"),
       JSArray_of_void_Function_Action_Intent: findType("JSArray<~(Action<Intent>)>"),
       Left_Failure_Success: findType("Left<Failure0,Success0>"),
+      List_PresentationEmail: findType("List<PresentationEmail>"),
       List_SuggestionEmailAddress: findType("List<SuggestionEmailAddress>"),
       MailboxDashBoardController: findType("MailboxDashBoardController"),
       MappedListIterable_EmailReceiveTimeType_Widget: findType("MappedListIterable<EmailReceiveTimeType,Widget>"),
@@ -24164,5 +24184,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "+/BMKW8p+QeXyIxUiLtVTZCgKGc=");
+})($__dart_deferred_initializers__, "AzhP5lAPqsCpDlXRA2ojh4XJAww=");
 ;
