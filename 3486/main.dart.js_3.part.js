@@ -6,8 +6,8 @@
 })(self, "$__dart_deferred_initializers__", "eventLog");
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var A, B;
-  A = holdersList[10];
-  B = holdersList[14];
+  A = holdersList[11];
+  B = holdersList[15];
   var typesOffset = hunkHelpers.updateTypes([]);
   (function constants() {
     B.ApplicationVersionWidget_null_null_null_null = new A.ApplicationVersionWidget(null, null, null, null);
@@ -17,5 +17,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "HuR+3E0Km2ShwvmsGyMyE3x6JyU=");
+})($__dart_deferred_initializers__, "XGFmlcpX1J9WYoj6uJnyWy0hVz8=");
 ;
