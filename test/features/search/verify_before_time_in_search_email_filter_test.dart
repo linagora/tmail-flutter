@@ -20,6 +20,7 @@ import 'package:model/email/presentation_email.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_email_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/delete_multiple_emails_permanently_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_restored_deleted_message_interactor.dart';
@@ -153,6 +154,7 @@ const fallbackGenerators = {
   MockSpec<GetIdentityCacheOnWebInteractor>(),
   MockSpec<RemoveComposerCacheOnWebInteractor>(),
   MockSpec<GetAllIdentitiesInteractor>(),
+  MockSpec<ComposerManager>(fallbackGenerators: fallbackGenerators),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -182,6 +184,7 @@ void main() {
   final MockAppGridDashboardController appGridDashboardController = MockAppGridDashboardController();
   final MockSpamReportController spamReportController = MockSpamReportController();
   final MockNetworkConnectionController networkConnectionController = MockNetworkConnectionController();
+  final composerManager = MockComposerManager();
 
   late MailboxDashBoardController mailboxDashboardController;
   late MockMoveToMailboxInteractor moveToMailboxInteractor;
@@ -317,6 +320,7 @@ void main() {
     Get.put<GetSessionInteractor>(getSessionInteractor);
     Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
     Get.put<UpdateAccountCacheInteractor>(updateAccountCacheInteractor);
+    Get.put<ComposerManager>(composerManager);
 
     mailboxDashboardController = MailboxDashBoardController(
       moveToMailboxInteractor,
@@ -344,6 +348,7 @@ void main() {
       getRestoredDeletedMessageInteractor,
       removeComposerCacheOnWebInteractor,
       getAllIdentitiesInteractor,
+      composerManager,
     );
 
     when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
