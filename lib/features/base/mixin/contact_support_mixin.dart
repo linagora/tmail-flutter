@@ -5,6 +5,7 @@ import 'package:model/extensions/contact_support_capability_extension.dart';
 import 'package:model/support/contact_support_capability.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -31,7 +32,7 @@ mixin ContactSupportMixin {
       AppUtils.launchLink(mailtoLink);
     } else {
       final mailboxDashBoardController = getBinding<MailboxDashBoardController>();
-      mailboxDashBoardController?.goToComposer(
+      mailboxDashBoardController?.openComposer(
         ComposerArguments.fromEmailAddress(EmailAddress(null, mailAddress)),
       );
     }

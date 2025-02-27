@@ -62,6 +62,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/get_outb
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_sent_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_shared_media_file_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/update_screen_display_mode_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
@@ -86,6 +87,7 @@ import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -257,7 +259,6 @@ class ComposerController extends BaseController
     if (PlatformInfo.isWeb) {
       responsiveContainerKey = GlobalKey();
       richTextWebController = getBinding<RichTextWebController>(tag: composerId);
-      responsiveContainerKey = GlobalKey();
       menuMoreOptionController = CustomPopupMenuController();
     } else {
       richTextMobileTabletController = getBinding<RichTextMobileTabletController>(tag: composerId);
@@ -305,7 +306,6 @@ class ComposerController extends BaseController
       richTextMobileTabletController = null;
     }
     _identityContentOnOpenPolicy = SignatureStatus.editedAvailable;
-    responsiveContainerKey = null;
     super.onClose();
   }
 
@@ -1563,17 +1563,11 @@ class ComposerController extends BaseController
   }
 
   void _closeComposerAction({dynamic result, bool closeOverlays = false}) {
-    if (PlatformInfo.isWeb) {
-      if (closeOverlays) {
-        popBack();
-      }
-      mailboxDashBoardController.closeComposerOnWeb(
-        composerId: composerId,
-        result: result,
-      );
-    } else {
-      popBack(result: result, closeOverlays: closeOverlays);
-    }
+    mailboxDashBoardController.closeComposer(
+      result: result,
+      closeOverlays: closeOverlays,
+      composerId: composerId,
+    );
   }
 
   void displayScreenTypeComposerAction(ScreenDisplayMode displayMode) async {
@@ -1585,6 +1579,7 @@ class ComposerController extends BaseController
       richTextWebController!.editorController.setText(textCurrent);
     }
     screenDisplayMode.value = displayMode;
+    updateDisplayModeForComposerQueue(displayMode);
 
     await Future.delayed(
       const Duration(milliseconds: 300),
