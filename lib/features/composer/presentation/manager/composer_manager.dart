@@ -30,6 +30,27 @@ class ComposerManager extends GetxController {
     _arrangeComposerIfNeeded();
   }
 
+  void addListComposer(List<ComposerArguments> listArguments) {
+    for (var argument in listArguments) {
+      final composerId = argument.composerId;
+
+      if (composerId == null) continue;
+
+      ComposerBindings(
+        composerId: composerId,
+        composerArguments: argument,
+      ).dependencies();
+
+      composers[composerId] = ComposerView(
+        key: Key(composerId),
+        composerId: composerId,
+      );
+      composerIdsQueue.add(composerId);
+    }
+
+    _syncQueueIfNeeded();
+  }
+
   void removeComposer(String id) {
     log('ComposerManager::removeComposer:Id = $id');
     if (!composers.containsKey(id)) return;
@@ -251,6 +272,8 @@ class ComposerManager extends GetxController {
       .where((id) => getComposerView(id).controller.isNormalScreen)
       .toList();
   }
+
+  int getComposerIndex(String id) => composerIdsQueue.toList().indexOf(id);
 
   void showComposerIfHidden(String composerId) {
     log('ComposerManager::showComposerIfHidden:Id = $composerId');

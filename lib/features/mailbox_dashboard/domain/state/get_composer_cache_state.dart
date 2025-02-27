@@ -4,12 +4,12 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cac
 
 class GetComposerCacheSuccess extends UIState {
 
-  final ComposerCache composerCache;
+  final List<ComposerCache> listComposerCache;
 
-  GetComposerCacheSuccess(this.composerCache);
+  GetComposerCacheSuccess(this.listComposerCache);
 
   @override
-  List<Object> get props => [composerCache];
+  List<Object> get props => [listComposerCache];
 }
 
 class GetComposerCacheFailure extends FeatureFailure {

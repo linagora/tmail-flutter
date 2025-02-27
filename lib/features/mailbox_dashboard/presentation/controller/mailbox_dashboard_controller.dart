@@ -92,7 +92,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_repor
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composer_cache_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
@@ -101,6 +102,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
@@ -209,7 +211,8 @@ class MailboxDashBoardController extends ReloadableController
   final UnsubscribeEmailInteractor _unsubscribeEmailInteractor;
   final RestoredDeletedMessageInteractor _restoreDeletedMessageInteractor;
   final GetRestoredDeletedMessageInterator _getRestoredDeletedMessageInteractor;
-  final RemoveComposerCacheOnWebInteractor _removeComposerCacheOnWebInteractor;
+  final RemoveComposerCacheByIdOnWebInteractor _removeComposerCacheByIdOnWebInteractor;
+  final RemoveAllComposerCacheOnWebInteractor _removeAllComposerCacheOnWebInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
@@ -298,7 +301,8 @@ class MailboxDashBoardController extends ReloadableController
     this._unsubscribeEmailInteractor,
     this._restoreDeletedMessageInteractor,
     this._getRestoredDeletedMessageInteractor,
-    this._removeComposerCacheOnWebInteractor,
+    this._removeAllComposerCacheOnWebInteractor,
+    this._removeComposerCacheByIdOnWebInteractor,
     this._getAllIdentitiesInteractor,
   );
 
@@ -427,8 +431,7 @@ class MailboxDashBoardController extends ReloadableController
     } else if (success is GetAllIdentitiesSuccess) {
       _handleGetAllIdentitiesSuccess(success);
     } else if (success is GetComposerCacheSuccess) {
-      removeComposerCacheOnWeb();
-      openComposer(ComposerArguments.fromSessionStorageBrowser(success.composerCache));
+      handleGetComposerCacheSuccess(success);
     } else if (success is GetIdentityCacheOnWebSuccess) {
       goToSettings();
     } else if (success is MarkAsStarEmailSuccess) {
@@ -3036,8 +3039,23 @@ class MailboxDashBoardController extends ReloadableController
 
   String get userEmail => sessionCurrent?.getOwnEmailAddress() ?? '';
 
-  Future<void> removeComposerCacheOnWeb() async {
-    await _removeComposerCacheOnWebInteractor.execute();
+  Future<void> removeComposerCacheByIdOnWeb(String composerId) async {
+    if (accountId.value == null || sessionCurrent == null) return;
+
+    await _removeComposerCacheByIdOnWebInteractor.execute(
+      accountId.value!,
+      sessionCurrent!.username,
+      composerId,
+    );
+  }
+
+  Future<void> removeAllComposerCacheOnWeb() async {
+    if (accountId.value == null || sessionCurrent == null) return;
+
+    await _removeAllComposerCacheOnWebInteractor.execute(
+      accountId.value!,
+      sessionCurrent!.username,
+    );
   }
 
   bool validateSendingEmailFailedWhenNetworkIsLostOnMobile(dynamic failure) {
