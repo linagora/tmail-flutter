@@ -22,7 +22,7 @@ import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
 extension CreateEmailRequestExtension on CreateEmailRequest {
 
-  Set<EmailAddress>? createSenders() {
+  Set<EmailAddress> createSenders() {
     if (identity?.email?.isNotEmpty == true) {
       return { identity!.toEmailAddress() };
     } else {
