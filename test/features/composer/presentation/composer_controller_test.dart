@@ -918,6 +918,7 @@ void main() {
                   to: {toRecipient},
                   cc: {ccRecipient},
                   bcc: {bccRecipient},
+                  replyTo: {replyToRecipient},
                   mailboxContain: PresentationMailbox(
                     MailboxId(Id('some-mailbox-id')),
                     role: PresentationMailbox.roleJunk,
