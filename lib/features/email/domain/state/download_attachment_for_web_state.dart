@@ -50,11 +50,12 @@ class DownloadAttachmentForWebSuccess extends UIState {
   final DownloadTaskId taskId;
   final Attachment attachment;
   final Uint8List bytes;
+  final bool forPreview;
 
-  DownloadAttachmentForWebSuccess(this.taskId, this.attachment, this.bytes);
+  DownloadAttachmentForWebSuccess(this.taskId, this.attachment, this.bytes, this.forPreview);
 
   @override
-  List<Object> get props => [taskId, attachment, bytes];
+  List<Object> get props => [taskId, attachment, bytes, forPreview];
 }
 
 class DownloadAttachmentForWebFailure extends FeatureFailure {

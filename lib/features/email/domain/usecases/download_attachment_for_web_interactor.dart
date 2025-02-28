@@ -35,8 +35,9 @@ class DownloadAttachmentForWebInteractor {
       AccountId accountId,
       String baseDownloadUrl,
       StreamController<Either<Failure, Success>> onReceiveController,
-      {CancelToken? cancelToken}
-  ) async* {
+      {CancelToken? cancelToken,
+      bool forPreview = false,
+  }) async* {
     try {
       yield Right<Failure, Success>(StartDownloadAttachmentForWeb(taskId, attachment, cancelToken));
       onReceiveController.add(Right(StartDownloadAttachmentForWeb(taskId, attachment, cancelToken)));
@@ -69,7 +70,8 @@ class DownloadAttachmentForWebInteractor {
         DownloadAttachmentForWebSuccess(
           taskId,
           attachment,
-          bytesDownloaded
+          bytesDownloaded,
+          forPreview,
         )
       );
     } catch (exception) {
