@@ -3,6 +3,7 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_editor_view.dart';
@@ -10,6 +11,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/app_
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_suggestion_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
 import '../extensions/patrol_finder_extension.dart';
@@ -69,5 +71,15 @@ class ComposerRobot extends CoreRobot {
     if (await $.native.isPermissionDialogVisible(timeout: const Duration(seconds: 5))) {
       await $.native.grantPermissionWhenInUse();
     }
+  }
+
+  Future<void> saveAsTemplate() async {
+    await $(AppBarComposerWidget)
+      .$(TMailButtonWidget)
+      .which<TMailButtonWidget>((widget) => widget.icon == ImagePaths().icMore)
+      .tap();
+    await $(PopupItemWidget)
+      .$(AppLocalizations().saveAsTemplate)
+      .tap();
   }
 }

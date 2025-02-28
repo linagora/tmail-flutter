@@ -131,6 +131,24 @@ abstract class EmailRepository {
     {CancelToken? cancelToken}
   );
 
+  Future<Email> saveEmailAsTemplate(
+    Session session,
+    AccountId accountId,
+    Email email,
+    {
+      CreateNewMailboxRequest? createNewMailboxRequest,
+      CancelToken? cancelToken
+    }
+  );
+
+  Future<Email> updateEmailTemplate(
+    Session session,
+    AccountId accountId,
+    Email newEmail,
+    EmailId oldEmailId,
+    {CancelToken? cancelToken}
+  );
+
   Future<({
     List<EmailId> emailIdsSuccess,
     Map<Id, SetError> mapErrors,
