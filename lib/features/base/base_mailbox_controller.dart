@@ -384,6 +384,7 @@ abstract class BaseMailboxController extends BaseController {
               (value) => onRenameMailboxAction(presentationMailbox, MailboxName(value))
           )
         ).build()),
+        barrierDismissible: false,
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }
@@ -452,6 +453,7 @@ abstract class BaseMailboxController extends BaseController {
           ..onConfirmButtonAction(AppLocalizations.of(context).delete, () => onDeleteMailboxAction(presentationMailbox))
           ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack())
         ).build()),
+        barrierDismissible: false,
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }

@@ -562,6 +562,7 @@ class EmailView extends GetWidget<SingleEmailController> {
   ) {
     return actionTypes.map((action) {
       return PopupMenuItem(
+        enabled: false,
         key: Key('${action.name}_action'),
         padding: EdgeInsets.zero,
         child: PopupItemWidget(

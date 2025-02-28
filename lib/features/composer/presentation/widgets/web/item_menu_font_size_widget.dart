@@ -21,26 +21,29 @@ class ItemMenuFontSizeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PointerInterceptor(
-      child: Container(
-        alignment: Alignment.center,
-        color: Colors.transparent,
-        child: Stack(
+    return Semantics(
+      excludeSemantics: true,
+      child: PointerInterceptor(
+        child: Container(
           alignment: Alignment.center,
-          children: [
-            Text(
-              '$value',
-              style: ItemMenuFontSizeWidgetStyle.labelTextStyle,
-            ),
-            if (value == selectedValue)
-              Align(
-                alignment: AlignmentDirectional.centerStart,
-                child: Padding(
-                  padding: ItemMenuFontSizeWidgetStyle.selectIconPadding,
-                  child: SvgPicture.asset(_imagePaths.icSelectedSB),
+          color: Colors.transparent,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              Text(
+                '$value',
+                style: ItemMenuFontSizeWidgetStyle.labelTextStyle,
+              ),
+              if (value == selectedValue)
+                Align(
+                  alignment: AlignmentDirectional.centerStart,
+                  child: Padding(
+                    padding: ItemMenuFontSizeWidgetStyle.selectIconPadding,
+                    child: SvgPicture.asset(_imagePaths.icSelectedSB),
+                  )
                 )
-              )
-          ],
+            ],
+          ),
         ),
       ),
     );

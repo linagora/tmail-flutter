@@ -187,6 +187,7 @@ class EmailRulesController extends BaseController {
                 popBack()))
           .build()
         ),
+        barrierDismissible: false,
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }
