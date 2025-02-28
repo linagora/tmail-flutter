@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/save_template_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/update_template_email_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 
 class SaveTemplateEmailInteractor {
   const SaveTemplateEmailInteractor(
@@ -23,13 +24,14 @@ class SaveTemplateEmailInteractor {
 
   Stream<Either<Failure, Success>> execute({
     required CreateEmailRequest createEmailRequest,
+    required CreateNewMailboxRequest? createNewMailboxRequest,
     CancelToken? cancelToken,
   }) async* {
     yield Right(GenerateEmailLoading());
 
-    final emailCreated = await _createEmailObject(createEmailRequest);
-
     try {
+      final emailCreated = await _createEmailObject(createEmailRequest);
+
       if (emailCreated == null) {
         yield Left(GenerateEmailFailure(CannotCreateEmailObjectException()));
         return;
@@ -51,6 +53,7 @@ class SaveTemplateEmailInteractor {
           createEmailRequest.session,
           createEmailRequest.accountId,
           emailCreated,
+          createNewMailboxRequest: createNewMailboxRequest,
           cancelToken: cancelToken,
         );
         yield Right(SaveTemplateEmailSuccess(emailTemplateSaved.id!));

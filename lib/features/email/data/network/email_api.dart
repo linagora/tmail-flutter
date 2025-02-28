@@ -662,13 +662,40 @@ class EmailAPI with HandleSetErrorMixin {
     Session session,
     AccountId accountId,
     Email email,
-    {CancelToken? cancelToken}
+    {
+      CreateNewMailboxRequest? createNewMailboxRequest,
+      CancelToken? cancelToken
+    }
   ) async {
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+
+    MailboxId? mailboxId;
+    if (createNewMailboxRequest != null) {
+      final generateCreateId = Id(_uuid.v1());
+      final setMailboxMethod = SetMailboxMethod(accountId)
+        ..addCreate(
+            generateCreateId,
+            Mailbox(
+              name: createNewMailboxRequest.newName,
+              parentId: createNewMailboxRequest.parentId,
+              isSubscribed: IsSubscribed(createNewMailboxRequest.isSubscribed)
+            )
+        );
+
+      requestBuilder.invocation(setMailboxMethod);
+
+      mailboxId = MailboxId(ReferenceId(
+          ReferencePrefix.defaultPrefix,
+          generateCreateId));
+    } else {
+      mailboxId = email.mailboxIds?.keys.first;
+    }
+    if (mailboxId != null) {
+      email.mailboxIds?.addAll({mailboxId: true});
+    }
     final idCreateMethod = Id(_uuid.v1());
     final setEmailMethod = SetEmailMethod(accountId)
       ..addCreate(idCreateMethod, email);
-
-    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
     final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
@@ -776,8 +803,11 @@ class EmailAPI with HandleSetErrorMixin {
     Session session,
     AccountId accountId,
     Email email,
-    {CancelToken? cancelToken}
-  ) => _emailSetCreateMethod(session, accountId, email, cancelToken: cancelToken);
+    {
+      CreateNewMailboxRequest? createNewMailboxRequest,
+      CancelToken? cancelToken
+    }
+  ) => _emailSetCreateMethod(session, accountId, email, createNewMailboxRequest: createNewMailboxRequest, cancelToken: cancelToken);
 
   Future<bool> removeEmailTemplate(
     Session session,

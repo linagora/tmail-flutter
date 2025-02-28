@@ -135,7 +135,10 @@ abstract class EmailRepository {
     Session session,
     AccountId accountId,
     Email email,
-    {CancelToken? cancelToken}
+    {
+      CreateNewMailboxRequest? createNewMailboxRequest,
+      CancelToken? cancelToken
+    }
   );
 
   Future<Email> updateEmailTemplate(

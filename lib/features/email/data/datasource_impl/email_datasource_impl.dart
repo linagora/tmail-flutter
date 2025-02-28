@@ -226,13 +226,17 @@ class EmailDataSourceImpl extends EmailDataSource {
     Session session,
     AccountId accountId,
     Email email,
-    {CancelToken? cancelToken}
+    {
+      CreateNewMailboxRequest? createNewMailboxRequest,
+      CancelToken? cancelToken
+    }
   ) {
     return Future.sync(() async {
       return await emailAPI.saveEmailAsTemplate(
         session,
         accountId,
         email,
+        createNewMailboxRequest: createNewMailboxRequest,
         cancelToken: cancelToken
       );
     }).catchError(_exceptionThrower.throwException);

@@ -279,6 +279,7 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
     Session session,
     AccountId accountId,
     Email email, {
+    CreateNewMailboxRequest? createNewMailboxRequest,
     CancelToken? cancelToken,
   }) {
     throw UnimplementedError();

@@ -48,6 +48,7 @@ import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
+// ignore: unused_import
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
@@ -237,9 +238,6 @@ class ComposerBindings extends BaseBindings {
       Get.find<ComposerRepository>(),
       Get.find<EmailRepository>(),
     ));
-    Get.lazyPut(() => CreateNewMailboxInteractor(
-      Get.find<MailboxRepository>(),
-    ));
   }
 
   @override
@@ -265,7 +263,6 @@ class ComposerBindings extends BaseBindings {
       Get.find<CreateNewAndSaveEmailToDraftsInteractor>(),
       Get.find<PrintEmailInteractor>(),
       Get.find<SaveTemplateEmailInteractor>(),
-      Get.find<CreateNewMailboxInteractor>(),
     ));
   }
 

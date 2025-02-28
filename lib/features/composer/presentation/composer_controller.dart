@@ -90,8 +90,6 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
@@ -160,7 +158,6 @@ class ComposerController extends BaseController
   final CreateNewAndSaveEmailToDraftsInteractor _createNewAndSaveEmailToDraftsInteractor;
   final PrintEmailInteractor printEmailInteractor;
   final SaveTemplateEmailInteractor _saveTemplateEmailInteractor;
-  final CreateNewMailboxInteractor _createNewMailboxInteractor;
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
@@ -228,6 +225,7 @@ class ComposerController extends BaseController
   int? _savedEmailDraftHash;
   bool _restoringSignatureButton = false;
   GlobalKey? responsiveContainerKey;
+  EmailId? _currentTemplateEmailId;
   
   @visibleForTesting
   bool get restoringSignatureButton => _restoringSignatureButton;
@@ -254,7 +252,6 @@ class ComposerController extends BaseController
     this._createNewAndSaveEmailToDraftsInteractor,
     this.printEmailInteractor,
     this._saveTemplateEmailInteractor,
-    this._createNewMailboxInteractor,
   );
 
   @override
@@ -1425,49 +1422,30 @@ class ComposerController extends BaseController
         PresentationMailbox.roleTemplates.value.toLowerCase())
       .keys
       .firstOrNull;
-    
-    if (templateMailboxId == null) {
-      final createTemplatesMailboxState = await _createNewMailboxInteractor.execute(
-        mailboxDashBoardController.sessionCurrent!,
-        mailboxDashBoardController.accountId.value!,
-        CreateNewMailboxRequest(
-          MailboxName(PresentationMailbox.roleTemplates.value.toUpperCase()),
-        ),
-      ).last;
-      templateMailboxId = createTemplatesMailboxState.fold(
-        (failure) => null,
-        (success) => success is CreateNewMailboxSuccess ? success.newMailbox.id : null,
-      );
-    }
-
-    if (templateMailboxId == null) {
-      if (context.mounted == true) {
-        appToast.showToastErrorMessage(
-          context,
-          AppLocalizations.of(context).saveMessageToTemplateFailed,
-        );
-      }
-      return;
-    }
 
     final emailContent = await getContentInEditor();
     final cancelToken = CancelToken();
     final resultState = await _showSavingMessageToTemplateDialog(
       emailContent: emailContent,
       templateMailboxId: templateMailboxId,
-      templateEmailId: _emailIdEditing,
+      templateEmailId: _currentTemplateEmailId,
+      createNewMailboxRequest: templateMailboxId != null
+        ? null
+        : CreateNewMailboxRequest(
+            MailboxName(PresentationMailbox.roleTemplates.value.toUpperCase()),
+          ),
       cancelToken: cancelToken,
     );
 
     if (resultState is SaveTemplateEmailSuccess && context.mounted == true) {
-      _emailIdEditing = resultState.emailId;
+      _currentTemplateEmailId = resultState.emailId;
       mailboxDashBoardController.consumeState(Stream.value(Right(resultState)));
       appToast.showToastSuccessMessage(
         context,
         AppLocalizations.of(context).saveMessageToTemplateSuccess,
       );
     } else if (resultState is UpdateTemplateEmailSuccess && context.mounted == true) {
-      _emailIdEditing = resultState.emailId;
+      _currentTemplateEmailId = resultState.emailId;
       mailboxDashBoardController.consumeState(Stream.value(Right(resultState)));
       appToast.showToastSuccessMessage(
         context,
@@ -2476,8 +2454,9 @@ class ComposerController extends BaseController
 
   Future<dynamic> _showSavingMessageToTemplateDialog({
     required String emailContent,
-    required MailboxId templateMailboxId,
+    required MailboxId? templateMailboxId,
     required EmailId? templateEmailId,
+    required CreateNewMailboxRequest? createNewMailboxRequest,
     CancelToken? cancelToken,
   }) {
     final childWidget = PointerInterceptor(
@@ -2508,6 +2487,7 @@ class ComposerController extends BaseController
           displayMode: screenDisplayMode.value
         ),
         saveTemplateEmailInteractor: _saveTemplateEmailInteractor,
+        createNewMailboxRequest: createNewMailboxRequest,
         onCancel: (cancelToken) => cancelToken?.cancel(),
         cancelToken: cancelToken,
       ),

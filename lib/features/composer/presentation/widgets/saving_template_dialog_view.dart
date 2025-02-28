@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/create_email_
 import 'package:tmail_ui_user/features/email/domain/state/save_template_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/update_template_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/save_template_email_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -23,6 +24,7 @@ class SavingTemplateDialogView extends StatefulWidget {
 
   final CreateEmailRequest createEmailRequest;
   final SaveTemplateEmailInteractor saveTemplateEmailInteractor;
+  final CreateNewMailboxRequest? createNewMailboxRequest;
   final CancelToken? cancelToken;
   final void Function(CancelToken? cancelToken)? onCancel;
 
@@ -30,6 +32,7 @@ class SavingTemplateDialogView extends StatefulWidget {
     super.key,
     required this.createEmailRequest,
     required this.saveTemplateEmailInteractor,
+    required this.createNewMailboxRequest,
     this.cancelToken,
     this.onCancel,
   });
@@ -48,6 +51,7 @@ class _SavingTemplateDialogViewState extends State<SavingTemplateDialogView> {
     _streamSubscription = widget.saveTemplateEmailInteractor
       .execute(
         createEmailRequest: widget.createEmailRequest,
+        createNewMailboxRequest: widget.createNewMailboxRequest,
         cancelToken: widget.cancelToken
       )
       .listen(_handleDataStream, onError: _handleErrorStream);

@@ -280,7 +280,10 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
     Session session,
     AccountId accountId,
     Email email,
-    {CancelToken? cancelToken}
+    {
+      CreateNewMailboxRequest? createNewMailboxRequest,
+      CancelToken? cancelToken
+    }
   ) async {
     await _emailCacheManager.update(accountId, session.username, created: [email]);
     return email;

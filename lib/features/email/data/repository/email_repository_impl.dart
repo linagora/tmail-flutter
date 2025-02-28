@@ -341,12 +341,16 @@ class EmailRepositoryImpl extends EmailRepository {
     Session session,
     AccountId accountId,
     Email email,
-    {CancelToken? cancelToken}
+    {
+      CreateNewMailboxRequest? createNewMailboxRequest,
+      CancelToken? cancelToken,
+    }
   ) async {
     final result = await emailDataSource[DataSourceType.network]!.saveEmailAsTemplate(
       session,
       accountId,
       email,
+      createNewMailboxRequest: createNewMailboxRequest,
       cancelToken: cancelToken
     );
     try {
@@ -354,6 +358,7 @@ class EmailRepositoryImpl extends EmailRepository {
         session,
         accountId,
         result,
+        createNewMailboxRequest: createNewMailboxRequest,
         cancelToken: cancelToken
       );
     } catch (e) {
