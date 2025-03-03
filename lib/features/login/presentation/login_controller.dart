@@ -17,7 +17,6 @@ import 'package:model/account/password.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/response/oidc_response.dart';
-import 'package:model/oidc/token_id.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
@@ -40,6 +39,7 @@ import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/sign_in_with_applicative_token_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/update_authentication_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
@@ -54,6 +54,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_con
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/sign_in_with_applicative_token_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_twake_workplace_state.dart';
@@ -84,6 +85,7 @@ class LoginController extends ReloadableController {
   final GetAllRecentLoginUsernameOnMobileInteractor _getAllRecentLoginUsernameOnMobileInteractor;
   final DNSLookupToGetJmapUrlInteractor _dnsLookupToGetJmapUrlInteractor;
   final SignInTwakeWorkplaceInteractor _signInTwakeWorkplaceInteractor;
+  final SignInWithApplicativeTokenInteractor _signInWithApplicativeTokenInteractor;
 
   final TextEditingController urlInputController = TextEditingController();
   final TextEditingController usernameInputController = TextEditingController();
@@ -131,6 +133,7 @@ class LoginController extends ReloadableController {
     this._getAllRecentLoginUsernameOnMobileInteractor,
     this._dnsLookupToGetJmapUrlInteractor,
     this._signInTwakeWorkplaceInteractor,
+    this._signInWithApplicativeTokenInteractor,
   );
 
   @override
@@ -211,6 +214,12 @@ class LoginController extends ReloadableController {
     } else if (success is DNSLookupToGetJmapUrlSuccess) {
       _handleDNSLookupToGetJmapUrlSuccess(success);
     } else if (success is SignInTwakeWorkplaceSuccess) {
+      _synchronizeTokenAndGetSession(
+        baseUri: success.baseUri,
+        tokenOIDC: success.tokenOIDC,
+        oidcConfiguration: success.oidcConfiguration,
+      );
+    } else if (success is SignInWithApplicativeTokenSuccess) {
       _synchronizeTokenAndGetSession(
         baseUri: success.baseUri,
         tokenOIDC: success.tokenOIDC,
@@ -646,16 +655,11 @@ class LoginController extends ReloadableController {
   }
 
   void _loginByApplicativeToken(String token) {
-    _synchronizeTokenAndGetSession(
+    consumeState(_signInWithApplicativeTokenInteractor.execute(
+      applicativeToken: token,
       baseUri: _currentBaseUrl!,
-      tokenOIDC: TokenOIDC(_applicativeToken, TokenId(uuid.v4()), ''),
-      oidcConfiguration: OIDCConfiguration(
-        authority: '',
-        clientId: '',
-        scopes: [],
-      ),
-    );
-    getSessionAction();
+      uuid: uuid,
+    ));
   }
 
   @override

@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_con
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/sign_in_with_applicative_token_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_controller.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
@@ -73,6 +74,7 @@ import 'login_controller_test.mocks.dart';
   MockSpec<ApplicationManager>(),
   MockSpec<ToastManager>(),
   MockSpec<TwakeAppManager>(),
+  MockSpec<SignInWithApplicativeTokenInteractor>(),
 ])
 void main() {
   late MockAuthenticationInteractor mockAuthenticationInteractor;
@@ -106,7 +108,7 @@ void main() {
   late MockApplicationManager mockApplicationManager;
   late MockToastManager mockToastManager;
   late MockTwakeAppManager mockTwakeAppManager;
-
+  late MockSignInWithApplicativeTokenInteractor mockSignInWithApplicativeTokenInteractor;
   late LoginController loginController;
 
   group('Test handleFailureViewState with GetTokenOIDCFailure', () {
@@ -125,7 +127,7 @@ void main() {
       mockGetAllRecentLoginUsernameOnMobileInteractor = MockGetAllRecentLoginUsernameOnMobileInteractor();
       mockDNSLookupToGetJmapUrlInteractor = MockDNSLookupToGetJmapUrlInteractor();
       mockSignInTwakeWorkplaceInteractor = MockSignInTwakeWorkplaceInteractor();
-
+      mockSignInWithApplicativeTokenInteractor = MockSignInWithApplicativeTokenInteractor();
       // mock reloadable controller
       mockGetSessionInteractor = MockGetSessionInteractor();
       mockGetAuthenticatedAccountInteractor = MockGetAuthenticatedAccountInteractor();
@@ -185,6 +187,7 @@ void main() {
         mockGetAllRecentLoginUsernameOnMobileInteractor,
         mockDNSLookupToGetJmapUrlInteractor,
         mockSignInTwakeWorkplaceInteractor,
+        mockSignInWithApplicativeTokenInteractor,
       );
 
 
