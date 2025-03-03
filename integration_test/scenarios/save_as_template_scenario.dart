@@ -19,6 +19,8 @@ class SaveAsTemplateScenario extends BaseTestScenario {
     await composerRobot.saveAsTemplate();
     
     await _expectSaveToastSuccessVisible();
+
+    await composerRobot.addSubject('test subject');
     
     await composerRobot.saveAsTemplate();
 
