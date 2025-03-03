@@ -66,7 +66,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/list_sha
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/saved_email_draft.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/saved_composing_email.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/signature_status.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
@@ -223,6 +223,7 @@ class ComposerController extends BaseController
   ButtonState printDraftButtonState = ButtonState.enabled;
   SignatureStatus _identityContentOnOpenPolicy = SignatureStatus.editedAvailable;
   int? _savedEmailDraftHash;
+  int? _savedEmailTemplateHash;
   bool _restoringSignatureButton = false;
   GlobalKey? responsiveContainerKey;
   EmailId? _currentTemplateEmailId;
@@ -1303,15 +1304,15 @@ class ComposerController extends BaseController
   }
 
   Future<bool> _validateEmailChange() async {
-    final newDraftHash = await _hashDraftEmail();
+    final newDraftHash = await _hashComposingEmail();
 
     return _savedEmailDraftHash != newDraftHash;
   }
 
-  Future<int> _hashDraftEmail() async {
+  Future<int> _hashComposingEmail() async {
     final emailContent = await getContentInEditor();
 
-    final savedEmailDraft = SavedEmailDraft(
+    final savedEmailDraft = SavedComposingEmail(
       subject: subjectEmail.value ?? '',
       content: emailContent,
       toRecipients: listToEmailAddress.toSet(),
@@ -1326,14 +1327,14 @@ class ComposerController extends BaseController
     return savedEmailDraft.hashCode;
   }
 
-  int get emptyDraftEmailHash => SavedEmailDraft.empty().hashCode;
+  int get emptyDraftEmailHash => SavedComposingEmail.empty().hashCode;
 
   Future<void> _updateSavedEmailDraftHash() async {
-    _savedEmailDraftHash = await _hashDraftEmail();
+    _savedEmailDraftHash = await _hashComposingEmail();
   }
 
   Future<void> _initEmailDraftHash() async {
-    final draftEmailHash = await _hashDraftEmail();
+    final draftEmailHash = await _hashComposingEmail();
 
     isEmailChanged.value = draftEmailHash != emptyDraftEmailHash;
 
@@ -1406,6 +1407,9 @@ class ComposerController extends BaseController
   }
 
   Future<void> handleClickSaveAsTemplateButton(BuildContext context) async {
+    final currentTemplateHash = await _hashComposingEmail();
+    if (_savedEmailTemplateHash == currentTemplateHash) return;
+
     if (composerArguments.value == null ||
         mailboxDashBoardController.sessionCurrent == null ||
         mailboxDashBoardController.accountId.value == null ||
@@ -1444,6 +1448,7 @@ class ComposerController extends BaseController
         context,
         AppLocalizations.of(context).saveMessageToTemplateSuccess,
       );
+      _savedEmailTemplateHash = currentTemplateHash;
     } else if (resultState is UpdateTemplateEmailSuccess && context.mounted == true) {
       _currentTemplateEmailId = resultState.emailId;
       mailboxDashBoardController.consumeState(Stream.value(Right(resultState)));
@@ -1451,6 +1456,7 @@ class ComposerController extends BaseController
         context,
         AppLocalizations.of(context).updateMessageToTemplateSuccess,
       );
+      _savedEmailTemplateHash = currentTemplateHash;
     } else if ((resultState is SaveTemplateEmailFailure ||
         resultState is UpdateTemplateEmailFailure ||
         resultState is GenerateEmailFailure) &&

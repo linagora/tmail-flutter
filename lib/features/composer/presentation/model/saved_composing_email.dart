@@ -3,7 +3,7 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/attachment.dart';
 
-class SavedEmailDraft with EquatableMixin {
+class SavedComposingEmail with EquatableMixin {
   final String content;
   final String subject;
   final Set<EmailAddress> toRecipients;
@@ -14,7 +14,7 @@ class SavedEmailDraft with EquatableMixin {
   final Identity? identity;
   final bool hasReadReceipt;
 
-  SavedEmailDraft({
+  SavedComposingEmail({
     required this.content,
     required this.subject,
     required this.toRecipients,
@@ -26,8 +26,8 @@ class SavedEmailDraft with EquatableMixin {
     required this.hasReadReceipt,
   });
 
-  factory SavedEmailDraft.empty() {
-    return SavedEmailDraft(
+  factory SavedComposingEmail.empty() {
+    return SavedComposingEmail(
       subject: '',
       content: '',
       toRecipients: {},
