@@ -51,8 +51,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
+  import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -166,7 +165,6 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   MockSpec<CreateNewAndSaveEmailToDraftsInteractor>(),
   MockSpec<PrintEmailInteractor>(),
   MockSpec<SaveTemplateEmailInteractor>(),
-  MockSpec<CreateNewMailboxInteractor>(),
 
   // Additional Getx dependencies mock specs
   MockSpec<NetworkConnectionController>(fallbackGenerators: fallbackGenerators),
@@ -211,7 +209,6 @@ void main() {
   late MockCreateNewAndSaveEmailToDraftsInteractor mockCreateNewAndSaveEmailToDraftsInteractor;
   late MockPrintEmailInteractor mockPrintEmailInteractor;
   late MockSaveTemplateEmailInteractor mockSaveTemplateEmailInteractor;
-  late MockCreateNewMailboxInteractor mockCreateNewMailboxInteractor;
 
   // Declaration Getx dependencies
   final mockMailboxDashBoardController = MockMailboxDashBoardController();
@@ -281,7 +278,6 @@ void main() {
     mockCreateNewAndSaveEmailToDraftsInteractor = MockCreateNewAndSaveEmailToDraftsInteractor();
     mockPrintEmailInteractor = MockPrintEmailInteractor();
     mockSaveTemplateEmailInteractor = MockSaveTemplateEmailInteractor();
-    mockCreateNewMailboxInteractor = MockCreateNewMailboxInteractor();
 
     composerController = ComposerController(
       mockLocalFilePickerInteractor,
@@ -298,7 +294,6 @@ void main() {
       mockCreateNewAndSaveEmailToDraftsInteractor,
       mockPrintEmailInteractor,
       mockSaveTemplateEmailInteractor,
-      mockCreateNewMailboxInteractor,
     );
 
     mockHtmlEditorApi = MockHtmlEditorApi();
