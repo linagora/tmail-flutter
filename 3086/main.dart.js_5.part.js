@@ -248,10 +248,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _QuickSearchSuggestionListState_State_SingleTickerProviderStateMixin: function _QuickSearchSuggestionListState_State_SingleTickerProviderStateMixin() {
     },
-    QuickSearchTextFieldConfiguration$(autocorrect, autofocus, clearTextButton, controller, cursorColor, cursorRadius, cursorWidth, decoration, enableInteractiveSelection, enableSuggestions, enabled, focusNode, inputFormatters, keyboardAppearance, keyboardType, leftButton, maxLength, maxLengthEnforcement, maxLines, minLines, obscureText, onChanged, onEditingComplete, onSubmitted, onTap, rightButton, scrollPadding, style, textAlign, textAlignVertical, textCapitalization, textDirection, textInputAction) {
-      return new B.QuickSearchTextFieldConfiguration(decoration, controller, focusNode, style, textAlign, textDirection, textAlignVertical, true, true, keyboardType, false, inputFormatters, true, maxLines, minLines, maxLength, maxLengthEnforcement, false, onChanged, onSubmitted, cursorColor, cursorRadius, cursorWidth, keyboardAppearance, onEditingComplete, onTap, scrollPadding, textCapitalization, textInputAction, true, leftButton, rightButton, clearTextButton);
+    QuickSearchTextFieldConfiguration$(autocorrect, autofocus, clearTextButton, controller, cursorColor, cursorRadius, cursorWidth, decoration, enableInteractiveSelection, enableSuggestions, enabled, focusNode, inputFormatters, keyboardAppearance, keyboardType, leftButton, maxLength, maxLengthEnforcement, maxLines, minLines, obscureText, onChanged, onEditingComplete, onSubmitted, onTap, rightButton, scrollPadding, style, textAlign, textAlignVertical, textCapitalization, textDirection, textFieldKey, textInputAction) {
+      return new B.QuickSearchTextFieldConfiguration(decoration, controller, focusNode, style, textAlign, textDirection, textAlignVertical, true, true, keyboardType, false, inputFormatters, true, maxLines, minLines, maxLength, maxLengthEnforcement, false, onChanged, onSubmitted, cursorColor, cursorRadius, cursorWidth, keyboardAppearance, onEditingComplete, onTap, scrollPadding, textCapitalization, textInputAction, true, leftButton, rightButton, clearTextButton, textFieldKey);
     },
-    QuickSearchTextFieldConfiguration: function QuickSearchTextFieldConfiguration(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32) {
+    QuickSearchTextFieldConfiguration: function QuickSearchTextFieldConfiguration(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32, t33) {
       var _ = this;
       _.decoration = t0;
       _.controller = t1;
@@ -286,6 +286,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.leftButton = t30;
       _.rightButton = t31;
       _.clearTextButton = t32;
+      _.textFieldKey = t33;
     },
     TypeAheadFieldQuickSearch: function TypeAheadFieldQuickSearch(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13, t14, t15, t16, t17, t18, t19, t20, t21, t22, t23, t24, t25, t26, t27, t28, t29, t30, t31, t32, t33, t34, t35, t36, t37, t38, t39, t40, t41, t42) {
       var _ = this;
@@ -6492,7 +6493,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         this.setState$1(new B._TypeAheadFieldQuickSearchState__updateTextDirection_closure(this, directionByText));
     },
     build$1(context) {
-      var t2, t3, t4, t5, t6, t7, _this = this, _null = null,
+      var t2, t3, t4, t5, t6, t7, t8, _this = this, _null = null,
         t1 = _this._suggestionsBox;
       t1 = (t1 == null ? _null : t1.isOpened) === true ? D.BoxDecoration_EFv0 : C.BoxDecoration_IMr;
       t2 = _this._widget.maxHeight;
@@ -6500,12 +6501,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = _this._widget.textFieldConfiguration.leftButton;
       if (t4 != null)
         t3.push(t4);
-      t4 = _this.get$_type_ahead_field_quick_search$_effectiveFocusNode();
-      t5 = _this.get$_type_ahead_field_quick_search$_effectiveController();
-      t6 = _this._widget.textFieldConfiguration;
-      t7 = _this.___TypeAheadFieldQuickSearchState__textDirection_A;
-      t7 === $ && A.throwUnnamedLateFieldNI();
-      t3.push(A.Expanded$(A.TextField$(true, C.List_empty, false, _null, true, C.Clip_1, _null, A.text_field_TextField__defaultContextMenuBuilder$closure(), t5, t6.cursorColor, _null, _null, _null, t6.cursorRadius, t6.cursorWidth, t6.decoration, C.DragStartBehavior_1, true, true, true, true, false, t4, C.Type_EditableText_NMc, _null, t6.inputFormatters, _null, t6.keyboardAppearance, t6.keyboardType, _null, t6.maxLength, t6.maxLengthEnforcement, t6.maxLines, t6.minLines, _null, false, "\u2022", _null, _this.get$_onTextChange(), t6.onEditingComplete, t6.onSubmitted, t6.onTap, false, _null, false, _null, true, _null, t6.scrollPadding, _null, _null, C.BoxHeightStyle_0, C.BoxWidthStyle_0, _null, _null, _null, _null, _null, _null, t6.style, t6.textAlign, t6.textAlignVertical, t6.textCapitalization, t7, t6.textInputAction, _null, _null), 1));
+      t4 = _this._widget.textFieldConfiguration;
+      t5 = _this.get$_type_ahead_field_quick_search$_effectiveFocusNode();
+      t6 = _this.get$_type_ahead_field_quick_search$_effectiveController();
+      t7 = _this._widget.textFieldConfiguration;
+      t8 = _this.___TypeAheadFieldQuickSearchState__textDirection_A;
+      t8 === $ && A.throwUnnamedLateFieldNI();
+      t3.push(A.Expanded$(A.TextField$(true, C.List_empty, false, _null, true, C.Clip_1, _null, A.text_field_TextField__defaultContextMenuBuilder$closure(), t6, t7.cursorColor, _null, _null, _null, t7.cursorRadius, t7.cursorWidth, t7.decoration, C.DragStartBehavior_1, true, true, true, true, false, t5, C.Type_EditableText_NMc, _null, t7.inputFormatters, t4.textFieldKey, t7.keyboardAppearance, t7.keyboardType, _null, t7.maxLength, t7.maxLengthEnforcement, t7.maxLines, t7.minLines, _null, false, "\u2022", _null, _this.get$_onTextChange(), t7.onEditingComplete, t7.onSubmitted, t7.onTap, false, _null, false, _null, true, _null, t7.scrollPadding, _null, _null, C.BoxHeightStyle_0, C.BoxWidthStyle_0, _null, _null, _null, _null, _null, _null, t7.style, t7.textAlign, t7.textAlignVertical, t7.textCapitalization, t8, t7.textInputAction, _null, _null), 1));
       if (_this._widget.textFieldConfiguration.clearTextButton != null) {
         t4 = _this.get$_type_ahead_field_quick_search$_effectiveController();
         t4 = (t4 == null ? _null : t4._change_notifier$_value.text.length !== 0) === true;
@@ -11505,26 +11507,27 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.InkWell$(false, _null, true, new A.Padding(C.EdgeInsets_12_12_12_12, A.Row$(A._setArrayType([A.Text$(A.Intl__message("Showing results for:", _null, "showingResultsFor", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_5Ry2, _null, _null, _null, _null, _null), C.SizedBox_4_null_null_null, A.Expanded$(A.Text$('"' + keyword + '"', _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_69t27, _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null), _null, true, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new B.SearchInputFormWidget__buildShowAllResultButton_closure(this, keyword), _null, _null, _null, _null, _null, _null, _null);
     },
     _createConfiguration$1(context) {
-      var t3, t4, t5, t6, t7, t8, _null = null,
+      var t4, t5, t6, t7, t8, t9, _null = null,
         t1 = this._searchController,
-        t2 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale.get$languageCode(0)) ? C.TextDirection_0 : C.TextDirection_1;
+        t2 = t1.searchTextFieldKey,
+        t3 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(type$._LocalizationsScope).localizationsState._localizations$_locale.get$languageCode(0)) ? C.TextDirection_0 : C.TextDirection_1;
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-      t3 = A.InputDecoration$(_null, C._NoInputBorder_i5L, _null, C.EdgeInsets_0_0_0_0, _null, _null, _null, _null, true, C._NoInputBorder_i5L, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, C._NoInputBorder_i5L, _null, _null, _null, _null, _null, _null, _null, E.TextStyle_e3y0, A.Intl__message("Search emails", _null, "search_emails", _null, _null), _null, _null, _null, _null, _null, _null, _null, C.TextStyle_WbI1, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
-      t4 = A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_search_bar.svg", C.Alignment_0_0, _null, false, C.BoxFit_0, _null, _null, _null, _null), C.EdgeInsets_0_0_0_0, _null, 40, new B.SearchInputFormWidget__createConfiguration_closure(this), _null, _null);
-      t5 = A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_clear_text_search.svg", C.Alignment_0_0, _null, false, C.BoxFit_0, 16, _null, _null, 16), _null, _null, _null, t1.get$clearTextSearch(), _null, _null);
+      t4 = A.InputDecoration$(_null, C._NoInputBorder_i5L, _null, C.EdgeInsets_0_0_0_0, _null, _null, _null, _null, true, C._NoInputBorder_i5L, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, C._NoInputBorder_i5L, _null, _null, _null, _null, _null, _null, _null, E.TextStyle_e3y0, A.Intl__message("Search emails", _null, "search_emails", _null, _null), _null, _null, _null, _null, _null, _null, _null, C.TextStyle_WbI1, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null);
+      t5 = A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_search_bar.svg", C.Alignment_0_0, _null, false, C.BoxFit_0, _null, _null, _null, _null), C.EdgeInsets_0_0_0_0, _null, 40, new B.SearchInputFormWidget__createConfiguration_closure(this), _null, _null);
+      t6 = A.buildIconWeb(_null, _null, A.SvgPicture$asset("assets/images/ic_clear_text_search.svg", C.Alignment_0_0, _null, false, C.BoxFit_0, 16, _null, _null, 16), _null, _null, _null, t1.get$clearTextSearch(), _null, _null);
       $.$get$Get();
-      t6 = $.GetInstance__getInstance;
-      if (t6 == null)
-        t6 = $.GetInstance__getInstance = C.C_GetInstance;
-      t6 = t6.find$1$1$tag(0, _null, type$.ImagePaths);
       t7 = $.GetInstance__getInstance;
       if (t7 == null)
         t7 = $.GetInstance__getInstance = C.C_GetInstance;
-      t7 = t7.find$1$1$tag(0, _null, type$.SearchController);
+      t7 = t7.find$1$1$tag(0, _null, type$.ImagePaths);
       t8 = $.GetInstance__getInstance;
       if (t8 == null)
         t8 = $.GetInstance__getInstance = C.C_GetInstance;
-      return B.QuickSearchTextFieldConfiguration$(true, false, t5, t1.searchInputController, C.Color_4278221567, _null, 2, t3, true, true, true, t1.searchFocus, _null, _null, C.TextInputType_0_null_null, new A.Padding(C.EdgeInsetsDirectional_8_0_0_0, t4, _null), _null, _null, 1, _null, false, _null, _null, new B.SearchInputFormWidget__createConfiguration_closure0(this), _null, new B.IconOpenAdvancedSearchWidget(t6, t7, t8.find$1$1$tag(0, _null, type$.AdvancedFilterController), _null), C.EdgeInsets_20_20_20_20, _null, C.TextAlign_4, _null, C.TextCapitalization_30, t2, C.TextInputAction_2);
+      t8 = t8.find$1$1$tag(0, _null, type$.SearchController);
+      t9 = $.GetInstance__getInstance;
+      if (t9 == null)
+        t9 = $.GetInstance__getInstance = C.C_GetInstance;
+      return B.QuickSearchTextFieldConfiguration$(true, false, t6, t1.searchInputController, C.Color_4278221567, _null, 2, t4, true, true, true, t1.searchFocus, _null, _null, C.TextInputType_0_null_null, new A.Padding(C.EdgeInsetsDirectional_8_0_0_0, t5, _null), _null, _null, 1, _null, false, _null, _null, new B.SearchInputFormWidget__createConfiguration_closure0(this), _null, new B.IconOpenAdvancedSearchWidget(t7, t8, t9.find$1$1$tag(0, _null, type$.AdvancedFilterController), _null), C.EdgeInsets_20_20_20_20, _null, C.TextAlign_4, _null, C.TextCapitalization_30, t3, t2, C.TextInputAction_2);
     },
     buildListButtonForQuickSearchForm$3(context, searchFilter, suggestionsListState) {
       return new A.Obx(new B.SearchInputFormWidget_buildListButtonForQuickSearchForm_closure(this, searchFilter, suggestionsListState), null);
@@ -13671,7 +13674,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = field.get$_quick_search_input_form$_effectiveController();
       if (t3 == null)
         t3 = t1.controller;
-      return new B.TypeAheadFieldQuickSearch(_this.suggestionsCallback, _this.onSuggestionSelected, _this.itemBuilder, _this.suggestionsBoxDecoration, _this.suggestionsBoxController, _this.debounceDuration, _this.loadingBuilder, _this.noItemsFoundBuilder, _this.errorBuilder, _this.transitionBuilder, _this.animationDuration, _this.direction, _this.animationStart, B.QuickSearchTextFieldConfiguration$(true, false, t1.clearTextButton, t3, t1.cursorColor, t1.cursorRadius, t1.cursorWidth, t2, true, true, true, t1.focusNode, t1.inputFormatters, t1.keyboardAppearance, t1.keyboardType, t1.leftButton, t1.maxLength, t1.maxLengthEnforcement, t1.maxLines, t1.minLines, false, new B.QuickSearchInputForm__closure(field, t1), t1.onEditingComplete, t1.onSubmitted, t1.onTap, t1.rightButton, t1.scrollPadding, t1.style, t1.textAlign, t1.textAlignVertical, t1.textCapitalization, t1.textDirection, t1.textInputAction), _this.suggestionsBoxVerticalOffset, _this.getImmediateSuggestions, _this.hideOnLoading, _this.hideOnEmpty, _this.hideOnError, _this.hideSuggestionsOnKeyboardHide, _this.keepSuggestionsOnLoading, _this.keepSuggestionsOnSuggestionSelected, _this.autoFlipDirection, _this.hideKeyboard, _this.minCharsForSuggestions, _this.listActionButton, _this.actionButtonBuilder, _this.buttonActionCallback, _this.buttonShowAllResult, _this.titleHeaderRecent, _this.itemRecentBuilder, _this.fetchRecentActionCallback, _this.onRecentSelected, _this.listActionPadding, _this.hideSuggestionsBox, _this.maxHeight, _this.isDirectionRTL, _this.contactItemBuilder, _this.contactSuggestionsCallback, _this.onContactSuggestionSelected, _this.minInputLengthAutocomplete, null, _this.T._eval$1("@<0>")._bind$1(_this.P)._bind$1(_this.R)._eval$1("TypeAheadFieldQuickSearch<1,2,3>"));
+      return new B.TypeAheadFieldQuickSearch(_this.suggestionsCallback, _this.onSuggestionSelected, _this.itemBuilder, _this.suggestionsBoxDecoration, _this.suggestionsBoxController, _this.debounceDuration, _this.loadingBuilder, _this.noItemsFoundBuilder, _this.errorBuilder, _this.transitionBuilder, _this.animationDuration, _this.direction, _this.animationStart, B.QuickSearchTextFieldConfiguration$(true, false, t1.clearTextButton, t3, t1.cursorColor, t1.cursorRadius, t1.cursorWidth, t2, true, true, true, t1.focusNode, t1.inputFormatters, t1.keyboardAppearance, t1.keyboardType, t1.leftButton, t1.maxLength, t1.maxLengthEnforcement, t1.maxLines, t1.minLines, false, new B.QuickSearchInputForm__closure(field, t1), t1.onEditingComplete, t1.onSubmitted, t1.onTap, t1.rightButton, t1.scrollPadding, t1.style, t1.textAlign, t1.textAlignVertical, t1.textCapitalization, t1.textDirection, t1.textFieldKey, t1.textInputAction), _this.suggestionsBoxVerticalOffset, _this.getImmediateSuggestions, _this.hideOnLoading, _this.hideOnEmpty, _this.hideOnError, _this.hideSuggestionsOnKeyboardHide, _this.keepSuggestionsOnLoading, _this.keepSuggestionsOnSuggestionSelected, _this.autoFlipDirection, _this.hideKeyboard, _this.minCharsForSuggestions, _this.listActionButton, _this.actionButtonBuilder, _this.buttonActionCallback, _this.buttonShowAllResult, _this.titleHeaderRecent, _this.itemRecentBuilder, _this.fetchRecentActionCallback, _this.onRecentSelected, _this.listActionPadding, _this.hideSuggestionsBox, _this.maxHeight, _this.isDirectionRTL, _this.contactItemBuilder, _this.contactSuggestionsCallback, _this.onContactSuggestionSelected, _this.minInputLengthAutocomplete, null, _this.T._eval$1("@<0>")._bind$1(_this.P)._bind$1(_this.R)._eval$1("TypeAheadFieldQuickSearch<1,2,3>"));
     },
     $signature() {
       return this.T._eval$1("@<0>")._bind$1(this.P)._bind$1(this.R)._eval$1("TypeAheadFieldQuickSearch<1,2,3>(FormFieldState<String>)");
@@ -13685,7 +13688,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t1 != null)
         t1.call$1(text);
     },
-    $signature: 9
+    $signature: 10
   };
   B.QuickSearchSuggestionsBox__findRootMediaQuery_closure.prototype = {
     call$1(element) {
@@ -14082,7 +14085,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$0() {
       return null;
     },
-    $signature: 10
+    $signature: 9
   };
   B.SelectableRegionState_initState_closure.prototype = {
     call$0() {
@@ -16214,7 +16217,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(value) {
       return this.$this.get$_recipient_composer_widget$_handleSubmitTagAction().call$2(value, this.stateSetter);
     },
-    $signature: 9
+    $signature: 10
   };
   B._RecipientComposerWidgetState_build___closure8.prototype = {
     call$1(_) {
@@ -16229,7 +16232,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1.onShowFullListEmailAddressAction.call$1(t1.prefix);
       }
     },
-    $signature: 10
+    $signature: 9
   };
   B._RecipientComposerWidgetState_build___closure10.prototype = {
     call$2(context, index) {
@@ -16261,7 +16264,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(value) {
       return this.$this.get$_recipient_composer_widget$_handleOnTagChangeAction().call$2(value, this.stateSetter);
     },
-    $signature: 9
+    $signature: 10
   };
   B._RecipientComposerWidgetState_build___closure1.prototype = {
     call$1(queryString) {
@@ -17605,7 +17608,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = "";
       A.AppUtils_copyEmailAddressToClipboard(this.context, t1);
     },
-    $signature: 10
+    $signature: 9
   };
   B.EmailSenderBuilder_build_closure2.prototype = {
     call$0() {
@@ -17622,7 +17625,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = "";
       A.AppUtils_copyEmailAddressToClipboard(this.context, t1);
     },
-    $signature: 10
+    $signature: 9
   };
   B.EmailViewAppBarWidget_build_closure.prototype = {
     call$2(context, constraints) {
@@ -19228,7 +19231,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).onTextChanged$2(C.AdvancedSearchFilterField_2, value);
     },
-    $signature: 9
+    $signature: 10
   };
   B.AdvancedSearchInputForm_build_closure0.prototype = {
     call$1(value) {
@@ -19237,7 +19240,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).onTextChanged$2(C.AdvancedSearchFilterField_3, value);
     },
-    $signature: 9
+    $signature: 10
   };
   B.AdvancedSearchInputForm_build_closure1.prototype = {
     call$1(value) {
@@ -19246,7 +19249,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).onTextChanged$2(C.AdvancedSearchFilterField_4, value);
     },
-    $signature: 9
+    $signature: 10
   };
   B.AdvancedSearchInputForm_build_closure2.prototype = {
     call$0() {
@@ -19413,7 +19416,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.GetNavigation_back($.$get$Get(), false, null);
       }
     },
-    $signature: 9
+    $signature: 10
   };
   B.AutoCompleteTagItemWidgetWeb_build_closure0.prototype = {
     call$0() {
@@ -19601,7 +19604,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(value) {
       return this.$this.get$_text_field_autocomplete_email_address_web$_handleSubmitTagAction().call$2(value, this.setState);
     },
-    $signature: 9
+    $signature: 10
   };
   B._TextFieldAutocompleteEmailAddressWebState_build____closure9.prototype = {
     call$2(context, index) {
@@ -19635,7 +19638,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(tag) {
       return this.$this.get$_text_field_autocomplete_email_address_web$_handleOnTagChangeAction().call$2(tag, this.setState);
     },
-    $signature: 9
+    $signature: 10
   };
   B._TextFieldAutocompleteEmailAddressWebState_build____closure1.prototype = {
     call$1(queryString) {
@@ -19898,18 +19901,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchInputFormWidget_build__closure0.prototype = {
     call$1(filterAction) {
-      var t1, t2;
+      var t1, t2, t3;
       if (filterAction instanceof A.QuickSearchFilter) {
-        t1 = this.$this._searchController.listFilterOnSuggestionForm;
-        if (!t1.contains$1(t1, filterAction)) {
-          t2 = t1.RxObjectMixin___RxObjectMixin__value_A;
-          t2 === $ && A.throwUnnamedLateFieldNI();
-          J.add$1$ax(t2, filterAction);
-          t2 = t1.NotifyManager_subject;
-          t1 = t1.get$value(0);
-          t2._rx_stream$_value = t1;
-          t2._notifyData$1(t1);
+        t1 = this.$this._searchController;
+        t1.simulateSearchTextFieldEnterWhiteSpace$0();
+        t2 = t1.listFilterOnSuggestionForm;
+        if (!t2.contains$1(t2, filterAction)) {
+          t3 = t2.RxObjectMixin___RxObjectMixin__value_A;
+          t3 === $ && A.throwUnnamedLateFieldNI();
+          J.add$1$ax(t3, filterAction);
+          t3 = t2.NotifyManager_subject;
+          t2 = t2.get$value(0);
+          t3._rx_stream$_value = t2;
+          t3._notifyData$1(t2);
         }
+        t1.simulateSearchTextFieldClick$0();
       }
     },
     $signature: 18
@@ -19958,7 +19964,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(keyword) {
       return this.$this._invokeSearchEmailAction$1(C.JSString_methods.trim$0(keyword));
     },
-    $signature: 9
+    $signature: 10
   };
   B.SearchInputFormWidget__createConfiguration_closure.prototype = {
     call$0() {
@@ -19980,8 +19986,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.SearchInputFormWidget_buildListButtonForQuickSearchForm__closure.prototype = {
     call$1(searchFilter) {
-      var t1 = this.$this._searchController.listFilterOnSuggestionForm;
-      t1.remove$1(t1, searchFilter);
+      var t2,
+        t1 = this.$this._searchController;
+      t1.simulateSearchTextFieldEnterWhiteSpace$0();
+      t2 = t1.listFilterOnSuggestionForm;
+      t2.remove$1(t2, searchFilter);
+      t1.simulateSearchTextFieldClick$0();
       this.suggestionsListState.invalidateSuggestions$0();
     },
     $signature: 1785
@@ -20282,7 +20292,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._searchEmailByQueryString$2$context$queryString(this.context, queryString);
       return null;
     },
-    $signature: 9
+    $signature: 10
   };
   B.SearchEmailView__buildSearchInputForm_closure1.prototype = {
     call$0() {
@@ -21035,7 +21045,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return null;
     },
-    $signature: 9
+    $signature: 10
   };
   B.SearchMailboxView__buildMailboxListView_closure.prototype = {
     call$0() {
@@ -21832,7 +21842,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
       A.AppUtils_launchLink(J.toString$0$(this.email.routeWeb));
     },
-    $signature: 10
+    $signature: 9
   };
   B.ThreadView__buildArchiveMessagePopupMenuItem_closure.prototype = {
     call$0() {
@@ -21843,7 +21853,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController.archiveMessage$2(this.context, this.email);
     },
-    $signature: 10
+    $signature: 9
   };
   B.ThreadView__buildEditAsNewEmailPopupMenuItem_closure.prototype = {
     call$0() {
@@ -21854,7 +21864,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController.goToComposer$1(A.ComposerArguments$(_null, _null, _null, _null, C.ScreenDisplayMode_2, C.EmailActionType_16, _null, _null, _null, _null, _null, _null, _null, _null, _null, this.email, _null, _null, _null, _null, _null));
     },
-    $signature: 10
+    $signature: 9
   };
   B.ThreadView__buildMailboxActionProgressBanner_closure.prototype = {
     call$0() {
@@ -22866,7 +22876,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Positioned_qdM = new A.Positioned(0, 0, 0, 0, null, null, D.HtmlElementView_ato, null);
     D.QuickSearchSuggestionsBoxDecoration_7K0 = new B.QuickSearchSuggestionsBoxDecoration(C.Color_4294967295, C.BorderRadius_ww89);
     D.QuickSearchSuggestionsBoxDecoration_null_null = new B.QuickSearchSuggestionsBoxDecoration(null, null);
-    D.QuickSearchTextFieldConfiguration_U86 = new B.QuickSearchTextFieldConfiguration(C.InputDecoration_8UR, null, null, null, C.TextAlign_4, null, null, true, true, C.TextInputType_0_null_null, false, null, true, 1, null, null, null, false, null, null, null, null, 2, null, null, null, C.EdgeInsets_20_20_20_20, C.TextCapitalization_30, null, true, null, null, null);
+    D.QuickSearchTextFieldConfiguration_zHP = new B.QuickSearchTextFieldConfiguration(C.InputDecoration_8UR, null, null, null, C.TextAlign_4, null, null, true, true, C.TextInputType_0_null_null, false, null, true, 1, null, null, null, false, null, null, null, null, 2, null, null, null, C.EdgeInsets_20_20_20_20, C.TextCapitalization_30, null, true, null, null, null, null);
     D.RoundedRectangleBorder_1u2 = new A.RoundedRectangleBorder(C.BorderRadius_ww80, C.BorderSide_01);
     D.RoundedRectangleBorder_NYu10 = new A.RoundedRectangleBorder(C.BorderRadius_ww811, C.BorderSide_Q1M);
     D.Radius_24_24 = new A.Radius(24, 24);
@@ -23025,5 +23035,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "oRqy84jhm//ftCV/fCIFnL4UwII=");
+})($__dart_deferred_initializers__, "9+71YNC/EN+WofwwGhltZdWLsrM=");
 ;
