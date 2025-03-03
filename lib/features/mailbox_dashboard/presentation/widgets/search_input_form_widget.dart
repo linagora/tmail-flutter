@@ -93,6 +93,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
             },
             buttonActionCallback: (filterAction) {
               if (filterAction is QuickSearchFilter) {
+                _searchController.simulateSearchTextFieldEnterWhiteSpace();
                 _searchController.addQuickSearchFilterToSuggestionSearchView(filterAction);
               }
             },
@@ -254,6 +255,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         isSelected: isSelected,
         backgroundColor: searchFilter.getSuggestionBackgroundColor(isSelected: isSelected),
         onDeleteSearchFilterAction: (searchFilter) {
+          _searchController.simulateSearchTextFieldEnterWhiteSpace();
           _searchController.deleteQuickSearchFilterFromSuggestionSearchView(searchFilter);
           suggestionsListState.invalidateSuggestions();
         },

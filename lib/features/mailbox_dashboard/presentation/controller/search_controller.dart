@@ -307,6 +307,15 @@ class SearchController extends BaseController with DateRangePickerMixin {
     hideAdvancedSearchFormView();
   }
 
+  void simulateSearchTextFieldEnterWhiteSpace() {
+    log('SearchController::simulateSearchTextFieldEnterWhiteSpace:currentSearchText = $currentSearchText');
+    final currentQuery = searchInputController.text;
+    if (currentQuery.isEmpty) {
+      searchInputController.value = const TextEditingValue(text: ' ');
+      Future.delayed(const Duration(milliseconds: 10), searchInputController.clear);
+    }
+  }
+
   @override
   void onClose() {
     searchInputController.dispose();
