@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/base/isolate/background_isolate_binary_me
 import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/top_bar_attachment_viewer.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
+import 'package:twake_previewer_flutter/core/previewer_options/options/previewer_state.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/previewer_options.dart';
 import 'package:twake_previewer_flutter/twake_html_previewer/options/html_view_options.dart';
 import 'package:twake_previewer_flutter/twake_html_previewer/twake_html_previewer.dart';
@@ -123,6 +124,7 @@ class _HtmlAttachmentPreviewerState extends State<HtmlAttachmentPreviewer> {
       ? TwakeHtmlPreviewer(
           bytes: utf8.encode(widget.htmlContent),
           previewerOptions: PreviewerOptions(
+            previewerState: PreviewerState.success,
             width: width,
             height: height,
           ),
