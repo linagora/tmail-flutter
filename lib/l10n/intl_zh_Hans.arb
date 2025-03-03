@@ -4003,13 +4003,13 @@
       "numberOfMailbox": {}
     }
   },
-  "sMimeBadSignatureMessage": "",
+  "sMimeBadSignatureMessage": "此邮件未通过 S/MIME 签名验证。",
   "@sMimeBadSignatureMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "textBodySendReceiptToSender": "",
+  "textBodySendReceiptToSender": "{receiver} 在 {time} 阅读了邮件\n\n主题：{subject}\n\n注意：此回执仅确认邮件已显示在收件人的计算机上，无法保证收件人已阅读或理解邮件内容。",
   "@textBodySendReceiptToSender": {
     "type": "text",
     "placeholders_order": [
@@ -4029,7 +4029,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "warningMessageWhenSaveEmailToDraftsFailure": "",
+  "warningMessageWhenSaveEmailToDraftsFailure": "将邮件保存到草稿文件夹失败。\n保存邮件时出错。",
   "@warningMessageWhenSaveEmailToDraftsFailure": {
     "type": "text",
     "placeholders_order": [],
@@ -4041,25 +4041,25 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "eventReplyWasSentUnsuccessfully": "",
+  "eventReplyWasSentUnsuccessfully": "活动回复未成功发送！",
   "@eventReplyWasSentUnsuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "warningMessageWhenExceedGenerallySizeInComposer": "",
+  "warningMessageWhenExceedGenerallySizeInComposer": "您的邮件大于第三方电子邮件系统普遍接受的大小。如果您确认发送此邮件，有可能会被收件人系统拒收。",
   "@warningMessageWhenExceedGenerallySizeInComposer": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "noSuitableBrowserForOIDC": "",
+  "noSuitableBrowserForOIDC": "没有适合 OIDC 的浏览器，请与系统管理员联系",
   "@noSuitableBrowserForOIDC": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sMimeGoodSignatureMessage": "",
+  "sMimeGoodSignatureMessage": "此邮件的真实性已通过 S/MIME 签名验证。",
   "@sMimeGoodSignatureMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -4077,7 +4077,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "cannotOpenNewWindow": "",
+  "cannotOpenNewWindow": "无法打开新窗口",
   "@cannotOpenNewWindow": {
     "type": "text",
     "placeholders_order": [],
@@ -4095,7 +4095,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "doYouWantToLogOutAndSwitchTo": "",
+  "doYouWantToLogOutAndSwitchTo": "是否要登出并切换到",
   "@doYouWantToLogOutAndSwitchTo": {
     "type": "text",
     "placeholders_order": [],
@@ -4129,7 +4129,7 @@
       "address": {}
     }
   },
-  "previewEmailFromEMLFileFailed": "",
+  "previewEmailFromEMLFileFailed": "无法预览此 EML 文件",
   "@previewEmailFromEMLFileFailed": {
     "type": "text",
     "placeholders_order": [],
@@ -4151,7 +4151,7 @@
       "errorMessage": {}
     }
   },
-  "messageConfirmationLogout": "",
+  "messageConfirmationLogout": "是否要登出",
   "@messageConfirmationLogout": {
     "type": "text",
     "placeholders_order": [],
@@ -4169,7 +4169,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "parseEmailByBlobIdFailed": "",
+  "parseEmailByBlobIdFailed": "无法通过 Blob ID 解析电子邮件",
   "@parseEmailByBlobIdFailed": {
     "type": "text",
     "placeholders_order": [],
@@ -4237,13 +4237,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "thisHtmlAttachmentCannotBePreviewed": "",
+  "thisHtmlAttachmentCannotBePreviewed": "无法预览此 HTML 附件",
   "@thisHtmlAttachmentCannotBePreviewed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "downloadAttachmentInEMLPreviewWarningMessage": "",
+  "downloadAttachmentInEMLPreviewWarningMessage": "正在下载附件，您一次只能下载一个文件。",
   "@downloadAttachmentInEMLPreviewWarningMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -4255,7 +4255,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "",
+  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "您的会话已过期。我们需要带您返回登录页面以刷新它。在返回之前，您可能想要保存您当前正在编辑的电子邮件。",
   "@messageWarningDialogWhenExpiredOIDCTokenAndReconnection": {
     "type": "text",
     "placeholders_order": [],
@@ -4267,13 +4267,13 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "downloadAttachmentHasBeenCancelled": "",
+  "downloadAttachmentHasBeenCancelled": "已取消下载附件",
   "@downloadAttachmentHasBeenCancelled": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youAreCurrentlyLoggedInWith": "",
+  "youAreCurrentlyLoggedInWith": "您当前登录",
   "@youAreCurrentlyLoggedInWith": {
     "type": "text",
     "placeholders_order": [],
@@ -4297,7 +4297,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "editAsNewEmail": "",
+  "editAsNewEmail": "作为新邮件编辑",
   "@editAsNewEmail": {
     "type": "text",
     "placeholders_order": [],
