@@ -1,7 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/app_bar_composer_widget_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/minimize_composer_widget.dart';
@@ -10,16 +9,16 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class DesktopAppBarComposerWidget extends StatelessWidget {
 
+  final ImagePaths imagePaths;
   final String emailSubject;
   final VoidCallback onCloseViewAction;
   final ScreenDisplayMode? displayMode;
   final OnChangeDisplayModeAction? onChangeDisplayModeAction;
   final BoxConstraints? constraints;
 
-  final _imagePaths = Get.find<ImagePaths>();
-
-  DesktopAppBarComposerWidget({
+  const DesktopAppBarComposerWidget({
     super.key,
+    required this.imagePaths,
     required this.emailSubject,
     required this.onCloseViewAction,
     this.displayMode,
@@ -50,7 +49,17 @@ class DesktopAppBarComposerWidget extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   TMailButtonWidget.fromIcon(
-                    icon: _imagePaths.icMinimize,
+                    icon: imagePaths.icDoubleArrowDown,
+                    backgroundColor: Colors.transparent,
+                    tooltipMessage: AppLocalizations.of(context).hide,
+                    iconSize: AppBarComposerWidgetStyle.iconSize,
+                    iconColor: AppBarComposerWidgetStyle.iconColor,
+                    padding: AppBarComposerWidgetStyle.iconPadding,
+                    onTapActionCallback: () => onChangeDisplayModeAction!(ScreenDisplayMode.hidden),
+                  ),
+                  const SizedBox(width: AppBarComposerWidgetStyle.space),
+                  TMailButtonWidget.fromIcon(
+                    icon: imagePaths.icMinimize,
                     backgroundColor: Colors.transparent,
                     tooltipMessage: AppLocalizations.of(context).minimize,
                     iconSize: AppBarComposerWidgetStyle.iconSize,
@@ -61,8 +70,8 @@ class DesktopAppBarComposerWidget extends StatelessWidget {
                   const SizedBox(width: AppBarComposerWidgetStyle.space),
                   TMailButtonWidget.fromIcon(
                     icon: displayMode == ScreenDisplayMode.fullScreen
-                      ? _imagePaths.icFullScreenExit
-                      : _imagePaths.icFullScreen,
+                      ? imagePaths.icFullScreenExit
+                      : imagePaths.icFullScreen,
                     backgroundColor: Colors.transparent,
                     tooltipMessage: displayMode == ScreenDisplayMode.fullScreen
                       ? AppLocalizations.of(context).exitFullscreen
@@ -78,7 +87,7 @@ class DesktopAppBarComposerWidget extends StatelessWidget {
                   ),
                   const SizedBox(width: AppBarComposerWidgetStyle.space),
                   TMailButtonWidget.fromIcon(
-                    icon: _imagePaths.icCancel,
+                    icon: imagePaths.icCancel,
                     backgroundColor: Colors.transparent,
                     tooltipMessage: AppLocalizations.of(context).saveAndClose,
                     iconSize: AppBarComposerWidgetStyle.iconSize,
@@ -93,7 +102,7 @@ class DesktopAppBarComposerWidget extends StatelessWidget {
             Align(
               alignment: AlignmentDirectional.centerEnd,
               child: TMailButtonWidget.fromIcon(
-                icon: _imagePaths.icCancel,
+                icon: imagePaths.icCancel,
                 backgroundColor: Colors.transparent,
                 tooltipMessage: AppLocalizations.of(context).saveAndClose,
                 iconSize: AppBarComposerWidgetStyle.iconSize,
