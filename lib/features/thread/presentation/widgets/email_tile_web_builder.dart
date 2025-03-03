@@ -2,6 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/tap_down_details_extension.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,6 +13,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/base_email_item_tile.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/answered_forwarded_icon.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class EmailTileBuilder extends StatefulWidget {
@@ -330,6 +332,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
               EmailActionType.preview,
               widget.presentationEmail
             ),
+            excludeFromSemantics: true,
             onHover: (value) => _hoverNotifier.value = value,
             hoverColor: AppColor.colorEmailTileHoverWeb,
             borderRadius: const BorderRadius.all(Radius.circular(14)),
@@ -339,93 +342,68 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
               alignment: Alignment.center,
               child: Row(children: [
                 const SizedBox(width: 10),
-                buildIconWeb(
-                  icon: ValueListenableBuilder(
-                    valueListenable: _hoverNotifier,
-                    builder: (context, isHovered, child) {
-                      return SvgPicture.asset(
-                        widget.presentationEmail.isSelected
-                          ? imagePaths.icCheckboxSelected
-                          : imagePaths.icCheckboxUnselected,
-                        colorFilter: ColorFilter.mode(
-                          isHovered || widget.presentationEmail.isSelected
-                            ? AppColor.primaryColor
-                            : AppColor.colorEmailTileCheckboxUnhover,
-                          BlendMode.srcIn),
-                        width: 20,
-                        height: 20);
-                    },
-                  ),
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  iconPadding: EdgeInsets.zero,
-                  minSize: 28,
-                  tooltip: widget.presentationEmail.isSelected
-                    ? AppLocalizations.of(context).selected
-                    : AppLocalizations.of(context).notSelected,
-                  onTap: () {
-                    widget.emailActionClick?.call(
-                      EmailActionType.selection,
-                      widget.presentationEmail
+                ValueListenableBuilder(
+                  valueListenable: _hoverNotifier,
+                  builder: (context, isHovered, _) {
+                    return TMailButtonWidget.fromIcon(
+                      icon: widget.presentationEmail.isSelected
+                        ? imagePaths.icCheckboxSelected
+                        : imagePaths.icCheckboxUnselected,
+                      iconSize: 20,
+                      iconColor: isHovered || widget.presentationEmail.isSelected
+                        ? AppColor.primaryColor
+                        : AppColor.colorEmailTileCheckboxUnhover,
+                      padding: const EdgeInsets.all(5),
+                      backgroundColor: Colors.transparent,
+                      tooltipMessage: widget.presentationEmail.isSelected
+                        ? AppLocalizations.of(context).selected
+                        : AppLocalizations.of(context).notSelected,
+                      onTapActionCallback: () => widget.emailActionClick?.call(
+                        EmailActionType.selection,
+                        widget.presentationEmail
+                      ),
                     );
                   },
                 ),
-                buildIconWeb(
-                  icon: SvgPicture.asset(
-                    widget.presentationEmail.hasStarred
-                      ? imagePaths.icStar
-                      : imagePaths.icUnStar,
-                    width: 20,
-                    height: 20,
-                    fit: BoxFit.fill
-                  ),
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  iconPadding: EdgeInsets.zero,
-                  minSize: 28,
-                  tooltip: widget.presentationEmail.hasStarred
+                TMailButtonWidget.fromIcon(
+                  icon: widget.presentationEmail.hasStarred
+                    ? imagePaths.icStar
+                    : imagePaths.icUnStar,
+                  iconSize: 20,
+                  padding: const EdgeInsets.all(5),
+                  backgroundColor: Colors.transparent,
+                  tooltipMessage: widget.presentationEmail.hasStarred
                     ? AppLocalizations.of(context).starred
                     : AppLocalizations.of(context).not_starred,
-                  onTap: () => widget.emailActionClick?.call(
+                  onTapActionCallback: () => widget.emailActionClick?.call(
                     widget.presentationEmail.hasStarred
                       ? EmailActionType.unMarkAsStarred
                       : EmailActionType.markAsStarred,
                     widget.presentationEmail
+                  ),
+                ),
+                if (widget.presentationEmail.isAnsweredOrForwarded)
+                  AnsweredForwardedIcon(
+                    isAnswered: widget.presentationEmail.isAnswered,
+                    isForwarded: widget.presentationEmail.isForwarded,
+                    imagePaths: imagePaths,
                   )
-                ),
-                buildIconWeb(
-                  icon: buildIconAnsweredOrForwarded(presentationEmail: widget.presentationEmail),
-                  tooltip: messageToolTipForAnsweredOrForwarded(context, widget.presentationEmail),
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  iconPadding: EdgeInsets.zero,
-                  minSize: 28,
-                  splashRadius: 1
-                ),
-                buildIconWeb(
-                  icon: widget.presentationEmail.hasRead
-                    ? const SizedBox(width: 20, height: 20)
-                    : Container(
-                        alignment: Alignment.center,
-                        width: 20,
-                        height: 20,
-                        child: SvgPicture.asset(
-                          imagePaths.icUnreadStatus,
-                          width: 9,
-                          height: 9,
-                          fit: BoxFit.fill
-                        ),
-                      ),
-                  margin: const EdgeInsets.symmetric(vertical: 6),
-                  iconPadding: EdgeInsets.zero,
-                  minSize: 28,
-                  tooltip: widget.presentationEmail.hasRead
-                    ? null
-                    : AppLocalizations.of(context).mark_as_read,
-                  onTap: widget.presentationEmail.hasRead ? null : () {
-                    widget.emailActionClick?.call(
+                else
+                  const SizedBox(width: 24, height: 24),
+                if (widget.presentationEmail.hasRead)
+                  const SizedBox(width: 28, height: 28)
+                else
+                  TMailButtonWidget.fromIcon(
+                    icon: imagePaths.icUnreadStatus,
+                    iconSize: 9,
+                    padding: const EdgeInsets.all(10),
+                    backgroundColor: Colors.transparent,
+                    tooltipMessage: AppLocalizations.of(context).mark_as_read,
+                    onTapActionCallback: () => widget.emailActionClick?.call(
                       EmailActionType.markAsRead,
                       widget.presentationEmail
-                    );
-                  },
-                ),
+                    ),
+                  ),
                 buildIconAvatarText(
                   widget.presentationEmail,
                   iconSize: 32,
@@ -469,7 +447,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
 
   EdgeInsetsGeometry _getPaddingItem(BuildContext context) {
     if (responsiveUtils.isDesktop(context)) {
-      return const EdgeInsets.symmetric(vertical: 4);
+      return const EdgeInsets.symmetric(vertical: 8);
     } else if (responsiveUtils.isTablet(context)) {
       return const EdgeInsetsDirectional.symmetric(vertical: 8, horizontal: 24);
     } else {

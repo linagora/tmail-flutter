@@ -150,7 +150,8 @@ class ColorPickerDialogBuilder {
                 })
           ],
         ),
-      )
+      ),
+      barrierDismissible: false
     );
   }
 

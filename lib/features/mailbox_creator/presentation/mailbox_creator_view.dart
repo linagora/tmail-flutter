@@ -1,7 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +24,6 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
 
   @override
   Widget build(BuildContext context) {
-    log('MailboxCreatorView::build():');
     return PointerInterceptor(
       child: GestureDetector(
         onTap: () => controller.closeMailboxCreator(context),
@@ -40,7 +38,9 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
             right: false,
             child: Center(
                 child: GestureDetector(
-                  onTap: () => FocusScope.of(context).unfocus(),
+                  onTap: PlatformInfo.isMobile
+                    ? FocusScope.of(context).unfocus
+                    : () {},
                   child: Container(
                       margin: _getMarginView(context),
                       decoration: BoxDecoration(
@@ -60,20 +60,18 @@ class MailboxCreatorView extends GetWidget<MailboxCreatorController> {
                           ]),
                       width: _getWidthView(context),
                       height: _getHeightView(context),
-                      child: ClipRRect(
-                          borderRadius: _getRadiusView(context),
-                          child: SafeArea(
-                            top: false,
-                            bottom: false,
-                            left: PlatformInfo.isMobile && controller.responsiveUtils.isLandscapeMobile(context),
-                            right: PlatformInfo.isMobile && controller.responsiveUtils.isLandscapeMobile(context),
-                            child: Column(children: [
-                              _buildAppBar(context),
-                              const Divider(color: AppColor.colorDividerDestinationPicker, height: 1),
-                              _buildCreateMailboxNameInput(context),
-                              _buildMailboxLocation(context),
-                            ]),
-                          )
+                      clipBehavior: Clip.antiAlias,
+                      child: SafeArea(
+                        top: false,
+                        bottom: false,
+                        left: PlatformInfo.isMobile && controller.responsiveUtils.isLandscapeMobile(context),
+                        right: PlatformInfo.isMobile && controller.responsiveUtils.isLandscapeMobile(context),
+                        child: Column(children: [
+                          _buildAppBar(context),
+                          const Divider(color: AppColor.colorDividerDestinationPicker, height: 1),
+                          _buildCreateMailboxNameInput(context),
+                          _buildMailboxLocation(context),
+                        ]),
                       )
                   ),
                 )

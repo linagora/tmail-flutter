@@ -670,6 +670,7 @@ class _TypeAheadFieldQuickSearchState<T, P, R>
               widget.textFieldConfiguration.leftButton!,
             Expanded(
               child: TextField(
+                key: widget.textFieldConfiguration.textFieldKey,
                 focusNode: _effectiveFocusNode,
                 controller: _effectiveController,
                 decoration: widget.textFieldConfiguration.decoration,

@@ -172,6 +172,7 @@ class QuickSearchTextFieldConfiguration {
 
   final Widget? leftButton, rightButton;
   final Widget? clearTextButton;
+  final GlobalKey? textFieldKey;
 
   /// Creates a QuickSearchTextFieldConfiguration
   const QuickSearchTextFieldConfiguration({
@@ -208,6 +209,7 @@ class QuickSearchTextFieldConfiguration {
     this.leftButton,
     this.rightButton,
     this.clearTextButton,
+    this.textFieldKey,
   });
 
   /// Copies the [QuickSearchTextFieldConfiguration] and only changes the specified
@@ -246,6 +248,7 @@ class QuickSearchTextFieldConfiguration {
     Widget? leftButton,
     Widget? rightButton,
     Widget? clearTextButton,
+    GlobalKey? textFieldKey,
   }) {
     return QuickSearchTextFieldConfiguration(
       decoration: decoration ?? this.decoration,
@@ -282,6 +285,7 @@ class QuickSearchTextFieldConfiguration {
       leftButton: leftButton ?? this.leftButton,
       rightButton: rightButton ?? this.rightButton,
       clearTextButton: clearTextButton ?? this.clearTextButton,
+      textFieldKey: textFieldKey ?? this.textFieldKey,
     );
   }
 }
