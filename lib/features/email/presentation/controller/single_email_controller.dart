@@ -141,6 +141,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:twake_previewer_flutter/core/constants/supported_charset.dart';
+import 'package:twake_previewer_flutter/core/previewer_options/options/previewer_state.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/options/top_bar_options.dart';
 import 'package:twake_previewer_flutter/core/previewer_options/previewer_options.dart';
 import 'package:twake_previewer_flutter/twake_image_previewer/twake_image_previewer.dart';
@@ -457,7 +458,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
                 ),
               );
 
-              if (currentOverlayContext != null && currentContext != null) {
+              if (currentOverlayContext != null && currentContext != null && !success.forPreview) {
                 appToast.showToastMessage(
                   currentOverlayContext!,
                   AppLocalizations.of(currentContext!).your_download_has_started,
@@ -1105,26 +1106,40 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     if (success.attachment.isImage) {
       _updateAttachmentsViewState(success.attachment.blobId, Right(success));
       Get.dialog(PointerInterceptor(child: TwakeImagePreviewer(
-          bytes: success.bytes,
-          zoomable: true,
-          topBarOptions: TopBarOptions(
-            title: success.attachment.generateFileName(),
-            onClose: popBack,
-          ),
-        )));
+        bytes: success.bytes,
+        zoomable: true,
+        previewerOptions: const PreviewerOptions(
+          previewerState: PreviewerState.success,
+        ),
+        topBarOptions: TopBarOptions(
+          title: success.attachment.generateFileName(),
+          onClose: popBack,
+          onDownload: currentContext == null
+            ? null
+            : () => handleDownloadAttachmentAction(
+                currentContext!,
+                success.attachment),
+        ),
+      )));
     } else if (success.attachment.isText) {
       _updateAttachmentsViewState(success.attachment.blobId, Right(success));
-      Get.dialog(TwakePlainTextPreviewer(
+      Get.dialog(PointerInterceptor(child: TwakePlainTextPreviewer(
         supportedCharset: SupportedCharset.utf8,
         bytes: success.bytes,
         previewerOptions: PreviewerOptions(
+          previewerState: PreviewerState.success,
           width: currentContext == null ? 200 : currentContext!.width * 0.8,
         ),
         topBarOptions: TopBarOptions(
           title: success.attachment.generateFileName(),
           onClose: popBack,
+          onDownload: currentContext == null
+            ? null
+            : () => handleDownloadAttachmentAction(
+                currentContext!,
+                success.attachment),
         ),
-      ));
+      )));
     }
   }
 

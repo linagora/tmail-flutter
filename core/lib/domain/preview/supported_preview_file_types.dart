@@ -3,6 +3,7 @@ class SupportedPreviewFileTypes {
     'image/bmp',
     'image/jpeg',
     'image/gif',
+    'image/webp',
     'image/png',];
 
   static const textMimeTypes = [

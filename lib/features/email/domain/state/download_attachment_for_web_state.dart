@@ -12,11 +12,12 @@ class StartDownloadAttachmentForWeb extends UIState {
   final DownloadTaskId taskId;
   final Attachment attachment;
   final CancelToken? cancelToken;
+  final bool forPreview;
 
-  StartDownloadAttachmentForWeb(this.taskId, this.attachment, [this.cancelToken]);
+  StartDownloadAttachmentForWeb(this.taskId, this.attachment, [this.cancelToken, this.forPreview = false]);
 
   @override
-  List<Object?> get props => [taskId, attachment, cancelToken];
+  List<Object?> get props => [taskId, attachment, cancelToken, forPreview];
 }
 
 class DownloadingAttachmentForWeb extends UIState {

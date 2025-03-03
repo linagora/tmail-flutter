@@ -39,8 +39,8 @@ class DownloadAttachmentForWebInteractor {
       bool forPreview = false,
   }) async* {
     try {
-      yield Right<Failure, Success>(StartDownloadAttachmentForWeb(taskId, attachment, cancelToken));
-      onReceiveController.add(Right(StartDownloadAttachmentForWeb(taskId, attachment, cancelToken)));
+      yield Right<Failure, Success>(StartDownloadAttachmentForWeb(taskId, attachment, cancelToken, forPreview));
+      onReceiveController.add(Right(StartDownloadAttachmentForWeb(taskId, attachment, cancelToken, forPreview)));
 
       final currentAccount = await _accountRepository.getCurrentAccount();
       AccountRequest? accountRequest;
