@@ -89,6 +89,8 @@ class _ExpandComposerButtonState extends State<ExpandComposerButton> {
       ),
     );
 
+    final isAllHiddenComposer = _composerManager.isAllHiddenComposer;
+
     return PortalTarget(
         visible: _visible,
         portalFollower: GestureDetector(
@@ -96,10 +98,16 @@ class _ExpandComposerButtonState extends State<ExpandComposerButton> {
           onTap: () => setState(() => _visible = false),
         ),
         child: PortalTarget(
-          anchor: const Aligned(
-            follower: Alignment.bottomLeft,
-            target: Alignment.topLeft,
-            offset:  Offset(0.0, 0.0),
+          anchor: Aligned(
+            follower: isAllHiddenComposer
+              ? Alignment.bottomRight
+              : Alignment.bottomLeft,
+            target: isAllHiddenComposer
+              ? Alignment.topRight
+              : Alignment.topLeft,
+            offset: isAllHiddenComposer
+              ? const Offset(16.0, 0.0)
+              : const Offset(0.0, 0.0),
           ),
           portalFollower: HiddenComposerListViewOverlay(
             composerManager: _composerManager,

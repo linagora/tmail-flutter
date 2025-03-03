@@ -826,7 +826,7 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void hideMailboxMenuWhenScreenSizeChange(BuildContext context) {
-    if (isDrawerOpen && responsiveUtils.isWebDesktop(context)) {
+    if (responsiveUtils.isWebDesktop(context) && isDrawerOpen) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         closeMailboxMenuDrawer();
       });

@@ -36,6 +36,16 @@ class DesktopAppBarComposerWidget extends StatelessWidget {
           if (onChangeDisplayModeAction != null)
             ... [
                   TMailButtonWidget.fromIcon(
+                    icon: imagePaths.icDoubleArrowDown,
+                    backgroundColor: Colors.transparent,
+                    tooltipMessage: AppLocalizations.of(context).hide,
+                    iconSize: AppBarComposerWidgetStyle.iconSize,
+                    iconColor: AppBarComposerWidgetStyle.iconColor,
+                    padding: AppBarComposerWidgetStyle.iconPadding,
+                    onTapActionCallback: () => onChangeDisplayModeAction!(ScreenDisplayMode.hidden),
+                  ),
+                  const SizedBox(width: AppBarComposerWidgetStyle.space),
+                  TMailButtonWidget.fromIcon(
                     icon: imagePaths.icMinimize,
                     backgroundColor: Colors.transparent,
                     tooltipMessage: AppLocalizations.of(context).minimize,
