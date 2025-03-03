@@ -40,6 +40,7 @@ import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/update_authentication_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
@@ -98,6 +99,19 @@ class LoginController extends ReloadableController {
   Password? _password;
   Uri? _baseUri;
   String _applicativeToken = '';
+  bool get isShowingMessage {
+    return viewState.value.fold(
+      (failure) {
+        // Ignore message when login by applicative token
+        if (failure is UpdateAccountCacheFailure && _password == null && _applicativeToken.isNotEmpty) {
+          return false;
+        }
+
+        return true;
+      },
+      (success) => true
+    );
+  }
 
   DeepLinksManager? _deepLinksManager;
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;

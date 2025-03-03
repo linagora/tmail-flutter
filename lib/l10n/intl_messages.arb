@@ -4268,6 +4268,24 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "advancedSettings": "Advanced settings",
+  "@advancedSettings": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "applicativeToken": "Applicative token",
+  "@applicativeToken": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "someJMAPServicesDoNotSupportLoginViaPassword": "Some JMAP services do not support login via password for third party apps but instead allow generate applicative tokens.",
+  "@someJMAPServicesDoNotSupportLoginViaPassword": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "downloadAttachmentInEMLPreviewWarningMessage": "Downloading attachment. You can only download one file at a time.",
   "@downloadAttachmentInEMLPreviewWarningMessage": {
     "type": "text",

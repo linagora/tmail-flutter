@@ -72,9 +72,12 @@ class _ApplicativeTokenFieldState extends State<ApplicativeTokenField> with Sing
       children: [
         Row(
           children: [
-            Text(
-              widget.appLocalizations.applicativeToken,
-              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            Expanded(
+              child: Text(
+                widget.appLocalizations.applicativeToken,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                maxLines: 2,
+              ),
             ),
             const SizedBox(width: 8),
             Expanded(

@@ -95,6 +95,7 @@ class LoginView extends BaseLoginView {
             Obx(() => LoginMessageWidget(
               formType: controller.loginFormType.value,
               viewState: controller.viewState.value,
+              isShowingMessage: controller.isShowingMessage,
             )),
             Obx(() {
               switch (controller.loginFormType.value) {
