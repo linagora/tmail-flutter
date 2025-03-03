@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -52,12 +54,21 @@ class SearchController extends BaseController with DateRangePickerMixin {
 
   FocusNode searchFocus = FocusNode();
   String currentSearchText = '';
+  GlobalKey? searchTextFieldKey;
 
   SearchController(
     this._quickSearchEmailInteractor,
     this._saveRecentSearchInteractor,
     this._getAllRecentSearchLatestInteractor,
   );
+
+  @override
+  void onInit() {
+    super.onInit();
+    if (PlatformInfo.isWeb) {
+      searchTextFieldKey = GlobalKey();
+    }
+  }
 
   void openAdvanceSearch() {
     isAdvancedSearchViewOpen.value = true;
@@ -316,10 +327,33 @@ class SearchController extends BaseController with DateRangePickerMixin {
     }
   }
 
+  void simulateSearchTextFieldClick() {
+    final oldSelection = searchInputController.selection;
+    log('SearchController::simulateSearchTextFieldClick:oldSelection = $oldSelection');
+    Future.delayed(const Duration(milliseconds: 50), () {
+      final textFieldRenderBox = searchTextFieldKey?.currentContext?.findRenderObject() as RenderBox?;
+      log('_TypeAheadFieldQuickSearchState::simulateSearchTextFieldClick:textFieldRenderBox = $textFieldRenderBox');
+      if (textFieldRenderBox != null) {
+        final tapPosition = textFieldRenderBox.localToGlobal(Offset.zero);
+        GestureBinding.instance.handlePointerEvent(PointerDownEvent(position: tapPosition));
+        GestureBinding.instance.handlePointerEvent(PointerUpEvent(position: tapPosition));
+        Future.delayed(const Duration(milliseconds: 50), () {
+          searchInputController.value = TextEditingValue(
+            text: searchInputController.text,
+            selection: oldSelection,
+          );
+        });
+      }
+    });
+  }
+
   @override
   void onClose() {
     searchInputController.dispose();
     searchFocus.dispose();
+    if (PlatformInfo.isWeb) {
+      searchTextFieldKey = null;
+    }
     super.onClose();
   }
 }

@@ -95,6 +95,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
               if (filterAction is QuickSearchFilter) {
                 _searchController.simulateSearchTextFieldEnterWhiteSpace();
                 _searchController.addQuickSearchFilterToSuggestionSearchView(filterAction);
+                _searchController.simulateSearchTextFieldClick();
               }
             },
             listActionPadding: const EdgeInsets.only(left: 12, right: 12, top: 12, bottom: 6),
@@ -207,6 +208,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
       focusNode: _searchController.searchFocus,
       textInputAction: TextInputAction.done,
       cursorColor: AppColor.primaryColor,
+      textFieldKey: _searchController.searchTextFieldKey,
       textDirection: DirectionUtils.getDirectionByLanguage(context),
       onSubmitted: (keyword) => _invokeSearchEmailAction(keyword.trim()),
       decoration: InputDecoration(
@@ -257,6 +259,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         onDeleteSearchFilterAction: (searchFilter) {
           _searchController.simulateSearchTextFieldEnterWhiteSpace();
           _searchController.deleteQuickSearchFilterFromSuggestionSearchView(searchFilter);
+          _searchController.simulateSearchTextFieldClick();
           suggestionsListState.invalidateSuggestions();
         },
       );
