@@ -17,6 +17,7 @@ import 'package:model/account/password.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/request/oidc_request.dart';
 import 'package:model/oidc/response/oidc_response.dart';
+import 'package:model/oidc/token_id.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/home/domain/state/auto_sign_in_via_deep_link_state.dart';
@@ -96,6 +97,7 @@ class LoginController extends ReloadableController {
   UserName? _username;
   Password? _password;
   Uri? _baseUri;
+  String _applicativeToken = '';
 
   DeepLinksManager? _deepLinksManager;
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
@@ -368,7 +370,7 @@ class LoginController extends ReloadableController {
       consumeState(Stream.value(Left(AuthenticationUserFailure(CanNotFoundBaseUrl()))));
     } else if (_username == null) {
       consumeState(Stream.value(Left(AuthenticationUserFailure(CanNotFoundUserName()))));
-    } else if (_password == null) {
+    } else if (_password == null && _applicativeToken.isEmpty) {
       consumeState(Stream.value(Left(AuthenticationUserFailure(CanNotFoundPassword()))));
     } else {
       if (PlatformInfo.isMobile && loginFormType.value == LoginFormType.credentialForm) {
@@ -378,13 +380,17 @@ class LoginController extends ReloadableController {
         }
       }
 
-      consumeState(
-        _authenticationInteractor.execute(
-          baseUrl: _currentBaseUrl!,
-          userName: _username!,
-          password: _password!
-        )
-      );
+      if (_password != null) {
+        consumeState(
+          _authenticationInteractor.execute(
+            baseUrl: _currentBaseUrl!,
+            userName: _username!,
+            password: _password!
+          )
+        );
+      } else {
+        _loginByApplicativeToken(_applicativeToken);
+      }
     }
   }
 
@@ -620,6 +626,23 @@ class LoginController extends ReloadableController {
     loginFormType.value == LoginFormType.dnsLookupForm ||
     loginFormType.value == LoginFormType.passwordForm ||
     loginFormType.value == LoginFormType.credentialForm;
+
+  void onApplicativeTokenChange(String value) {
+    _applicativeToken = value;
+  }
+
+  void _loginByApplicativeToken(String token) {
+    _synchronizeTokenAndGetSession(
+      baseUri: _currentBaseUrl!,
+      tokenOIDC: TokenOIDC(_applicativeToken, TokenId(uuid.v4()), ''),
+      oidcConfiguration: OIDCConfiguration(
+        authority: '',
+        clientId: '',
+        scopes: [],
+      ),
+    );
+    getSessionAction();
+  }
 
   @override
   void onClose() {
