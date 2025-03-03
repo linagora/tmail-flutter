@@ -516,7 +516,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(entry) {
       return entry.node === this.node;
     },
-    $signature: 636
+    $signature: 475
   };
   B.BaseLoginView_buildLoginButton_closure.prototype = {
     call$0() {
@@ -648,7 +648,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           return C.SizedBox_0_0_null_null;
       }
     },
-    $signature: 106
+    $signature: 93
   };
   B.LoginView__buildLoadingProgress__closure0.prototype = {
     call$1(success) {
@@ -842,5 +842,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "2p6vCLjQRjy3UAISwn9JRdj8dKo=");
+})($__dart_deferred_initializers__, "Vgmg/S4O1PuIikj1fLuih4lf2vc=");
 ;
