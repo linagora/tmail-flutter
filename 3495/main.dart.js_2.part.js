@@ -330,19 +330,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         throw B.wrapException(A.NetworkImageLoadException$($status, this.resolved));
       }
     },
-    $signature: 173
+    $signature: 199
   };
   A.NetworkImage__loadAsync_closure0.prototype = {
     call$1(e) {
       return this.completer.completeError$1(e);
     },
-    $signature: 88
+    $signature: 85
   };
   A.NetworkImage__loadAsync_closure1.prototype = {
     call$2(bytes, total) {
       this.chunkEvents.add$1(0, new A.ImageChunkEvent(bytes, total));
     },
-    $signature: 248
+    $signature: 237
   };
   A._ApplicationVersionWidgetState_build_closure.prototype = {
     call$2(context, snapshot) {
@@ -411,5 +411,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_2", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "yY+lDyGohLKVYQetauzG5w38a5E=");
+})($__dart_deferred_initializers__, "iUz+eGyWZC2bg/ri64nv9vVa2Ms=");
 ;
