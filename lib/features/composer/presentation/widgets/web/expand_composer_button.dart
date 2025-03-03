@@ -107,7 +107,6 @@ class _ExpandComposerButtonState extends State<ExpandComposerButton> {
             responsiveUtils: _responsiveUtils,
             onRemoveHiddenComposerItem: (controller) {
               widget.onRemoveHiddenComposerItem(controller);
-              setState(() => _visible = false);
             },
             onShowComposerAction: (composerId) {
               widget.onShowComposerAction(composerId);
