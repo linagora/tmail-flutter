@@ -189,6 +189,11 @@ class ComposerManager extends GetxController {
   }) {
     if (composerIdsQueue.isEmpty) return;
 
+    if (newDisplayMode.isNotContentVisible()) {
+      composers.refresh();
+      return;
+    }
+
     var (availableScreenWidth, totalOpenedComposersWidth, composerControllers) =
       _getSizeToArrangeComposer(screenWidth: screenWidth);
 
@@ -243,6 +248,10 @@ class ComposerManager extends GetxController {
     return conditionsMap[ScreenDisplayMode.hidden]!.isNotEmpty
       ? conditionsMap[ScreenDisplayMode.hidden]!.first
       : null;
+  }
+
+  bool get isAllHiddenComposer {
+    return composerIdsQueue.every((id) => getComposerView(id).controller.isHiddenScreen);
   }
 
   List<String> get hiddenComposerIds {

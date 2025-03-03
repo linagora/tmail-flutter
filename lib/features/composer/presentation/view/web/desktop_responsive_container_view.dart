@@ -1,3 +1,4 @@
+import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -9,6 +10,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/web/minimiz
 class DesktopResponsiveContainerView extends StatelessWidget {
 
   final ResponsiveUtils responsiveUtils;
+  final ImagePaths imagePaths;
   final ComposerManager composerManager;
   final ScreenDisplayMode displayMode;
   final String emailSubject;
@@ -21,6 +23,7 @@ class DesktopResponsiveContainerView extends StatelessWidget {
     required this.childBuilder,
     required this.composerManager,
     required this.responsiveUtils,
+    required this.imagePaths,
     required this.displayMode,
     required this.emailSubject,
     required this.onCloseViewAction,
@@ -32,6 +35,7 @@ class DesktopResponsiveContainerView extends StatelessWidget {
     if (displayMode == ScreenDisplayMode.minimize) {
       final composerWidget = PointerInterceptor(
         child: MinimizeComposerWidget(
+          imagePaths: imagePaths,
           emailSubject: emailSubject,
           onCloseViewAction: onCloseViewAction,
           onChangeDisplayModeAction: onChangeDisplayModeAction,
