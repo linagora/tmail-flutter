@@ -641,6 +641,7 @@ class ComposerView extends GetWidget<ComposerController> {
         },
         composerManager: controller.mailboxDashBoardController.composerManager,
         responsiveUtils: controller.responsiveUtils,
+        imagePaths: controller.imagePaths,
         displayMode: controller.screenDisplayMode.value,
         emailSubject: controller.subjectEmail.value ?? '',
         onCloseViewAction: () => controller.handleClickCloseComposer(context),
