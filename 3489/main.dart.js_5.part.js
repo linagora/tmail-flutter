@@ -6818,7 +6818,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t1 = A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data,
         t2 = this._composerManager;
       if (J.get$isNotEmpty$asx(t2.composers.get$keys(0)))
-        t2.syncComposerStateWhenComposerQueueChanged$1$screenWidth(t1.size._dx);
+        t2.arrangeComposerWhenComposerQueueChanged$1$screenWidth(t1.size._dx);
       return new A.Obx(new C.ComposerOverlayView_build_closure(this, context), null);
     }
   };
@@ -18126,5 +18126,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "PQMxfOyz/OB0st3yzrcCmnnSTrg=");
+})($__dart_deferred_initializers__, "/380DmJZJQvUTBNL9gJqRz4yLG0=");
 ;
