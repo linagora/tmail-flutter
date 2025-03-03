@@ -18533,8 +18533,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       switch (A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).dashboardRoute.get$value(0)) {
-        case C.DashboardRoutes_0:
-          return t1._buildScaffoldHaveDrawer$1$body(B.ThreadView$());
         case C.DashboardRoutes_1:
           return D.EmailView_null;
         case C.DashboardRoutes_2:
@@ -23014,5 +23012,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "xdZWiswEV/8NdoBFYD7k+QwEXYc=");
+})($__dart_deferred_initializers__, "kHv/q5fljJbvi/pYGdGgdJdae0U=");
 ;

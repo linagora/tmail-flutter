@@ -122,17 +122,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._toastManager = t2;
       _.key = t3;
     },
-    LoginMessageWidget_build_closure: function LoginMessageWidget_build_closure(t0, t1) {
+    LoginMessageWidget_build_closure: function LoginMessageWidget_build_closure() {
+    },
+    LoginMessageWidget_build_closure0: function LoginMessageWidget_build_closure0() {
+    },
+    LoginMessageWidget_messageFromViewState_closure: function LoginMessageWidget_messageFromViewState_closure(t0, t1) {
       this.$this = t0;
       this.context = t1;
     },
-    LoginMessageWidget_build_closure0: function LoginMessageWidget_build_closure0(t0, t1) {
+    LoginMessageWidget_messageFromViewState_closure0: function LoginMessageWidget_messageFromViewState_closure0(t0, t1) {
       this.$this = t0;
       this.context = t1;
-    },
-    LoginMessageWidget_build_closure1: function LoginMessageWidget_build_closure1() {
-    },
-    LoginMessageWidget_build_closure2: function LoginMessageWidget_build_closure2() {
     },
     LoginTextInputBuilder: function LoginTextInputBuilder(t0, t1, t2, t3, t4, t5, t6, t7) {
       var _ = this;
@@ -428,8 +428,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     build$1(context) {
       var _null = null,
         t1 = A.InheritedModel_inheritFrom(context, _null, type$.MediaQuery).data.size._dx < 600 ? 280 : 320,
-        t2 = this.viewState;
-      return new A.Padding(D.EdgeInsetsDirectional_58_11_58_36, new A.SizedBox(t1, _null, A.Text$(t2.fold$2(0, new B.LoginMessageWidget_build_closure(this, context), new B.LoginMessageWidget_build_closure0(this, context)), _null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, t2.fold$2(0, new B.LoginMessageWidget_build_closure1(), new B.LoginMessageWidget_build_closure2()), _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), C.TextAlign_2, _null, _null, _null, _null), _null), _null);
+        t2 = this.messageFromViewState$1(context);
+      return new A.Padding(D.EdgeInsetsDirectional_58_11_58_36, new A.SizedBox(t1, _null, A.Text$(t2, _null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, this.viewState.fold$2(0, new B.LoginMessageWidget_build_closure(), new B.LoginMessageWidget_build_closure0()), _null, _null, _null, _null, _null, _null, _null, _null, 15, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), C.TextAlign_2, _null, _null, _null, _null), _null), _null);
+    },
+    messageFromViewState$1(context) {
+      return this.viewState.fold$2(0, new B.LoginMessageWidget_messageFromViewState_closure(this, context), new B.LoginMessageWidget_messageFromViewState_closure0(this, context));
     }
   };
   B.LoginTextInputBuilder.prototype = {
@@ -677,6 +680,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.LoginMessageWidget_build_closure.prototype = {
     call$1(failure) {
+      return C.Color_4293281350;
+    },
+    $signature: 1819
+  };
+  B.LoginMessageWidget_build_closure0.prototype = {
+    call$1(success) {
+      return C.Color_4278190080;
+    },
+    $signature: 1820
+  };
+  B.LoginMessageWidget_messageFromViewState_closure.prototype = {
+    call$1(failure) {
       var t1, _this = this, _null = null,
         _s40_ = "Unknown error occurred, please try again",
         _s12_ = "unknownError";
@@ -699,9 +714,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return A.Intl__message(_s40_, _null, _s12_, _null, _null);
       }
     },
-    $signature: 1819
+    $signature: 1821
   };
-  B.LoginMessageWidget_build_closure0.prototype = {
+  B.LoginMessageWidget_messageFromViewState_closure0.prototype = {
     call$1(success) {
       var _this = this, _null = null,
         t1 = _this.$this.formType;
@@ -719,18 +734,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return A.Intl__message("To login and access your message please connect to your JMAP server", _null, "loginInputUrlMessage", _null, _null);
       } else
         return "";
-    },
-    $signature: 1820
-  };
-  B.LoginMessageWidget_build_closure1.prototype = {
-    call$1(failure) {
-      return C.Color_4293281350;
-    },
-    $signature: 1821
-  };
-  B.LoginMessageWidget_build_closure2.prototype = {
-    call$1(success) {
-      return C.Color_4278190080;
     },
     $signature: 1822
   };
@@ -756,7 +759,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _inherit = hunkHelpers.inherit,
       _inheritMany = hunkHelpers.inheritMany;
     _inherit(B._AutofillScopeTextInputConfiguration, A.TextInputConfiguration);
-    _inheritMany(A.Closure, [B._AutofillScopeTextInputConfiguration_toJson_closure, B.AutofillScopeMixin_attach_closure, B.AutofillGroupState_autofillClients_closure, B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure, B.BaseLoginView_buildUserNameInput_closure0, B.BaseLoginView_buildPasswordInput_closure, B.LoginView__buildLoadingProgress__closure, B.LoginView__buildLoadingProgress__closure0, B.LoginMessageWidget_build_closure, B.LoginMessageWidget_build_closure0, B.LoginMessageWidget_build_closure1, B.LoginMessageWidget_build_closure2]);
+    _inheritMany(A.Closure, [B._AutofillScopeTextInputConfiguration_toJson_closure, B.AutofillScopeMixin_attach_closure, B.AutofillGroupState_autofillClients_closure, B._WidgetOrderTraversalPolicy_FocusTraversalPolicy_DirectionalFocusTraversalPolicyMixin_changedScope_closure, B.BaseLoginView_buildUserNameInput_closure0, B.BaseLoginView_buildPasswordInput_closure, B.LoginView__buildLoadingProgress__closure, B.LoginView__buildLoadingProgress__closure0, B.LoginMessageWidget_build_closure, B.LoginMessageWidget_build_closure0, B.LoginMessageWidget_messageFromViewState_closure, B.LoginMessageWidget_messageFromViewState_closure0]);
     _inherit(B.AutofillScopeMixin, A.Object);
     _inherit(B.AutofillContextAction, A._Enum);
     _inheritMany(A.StatefulWidget, [B.AutofillGroup, B.LoginTextInputBuilder]);
@@ -842,5 +845,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "++myMtTzkskHSdNiIx4EkAI3YEU=");
+})($__dart_deferred_initializers__, "aZoW2T8AMpUT8mvjq/n1bRe0BYc=");
 ;
