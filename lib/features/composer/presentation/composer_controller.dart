@@ -1571,10 +1571,10 @@ class ComposerController extends BaseController
   }
 
   void displayScreenTypeComposerAction(ScreenDisplayMode displayMode) async {
-    if (screenDisplayMode.value == ScreenDisplayMode.minimize) {
+    if (screenDisplayMode.value.isNotContentVisible()) {
       _isEmailBodyLoaded = false;
     }
-    if (richTextWebController != null && screenDisplayMode.value != ScreenDisplayMode.minimize) {
+    if (richTextWebController != null && !screenDisplayMode.value.isNotContentVisible()) {
       final textCurrent = await richTextWebController!.editorController.getText();
       richTextWebController!.editorController.setText(textCurrent);
     }

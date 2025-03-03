@@ -333,6 +333,7 @@ class ComposerView extends GetWidget<ComposerController> {
             onTap: () => controller.clearFocus(context),
             child: Column(children: [
               Obx(() => DesktopAppBarComposerWidget(
+                imagePaths: controller.imagePaths,
                 emailSubject: controller.subjectEmail.value ?? '',
                 displayMode: controller.screenDisplayMode.value,
                 onCloseViewAction: () => controller.handleClickCloseComposer(context),
@@ -636,6 +637,7 @@ class ComposerView extends GetWidget<ComposerController> {
         },
         composerManager: controller.mailboxDashBoardController.composerManager,
         responsiveUtils: controller.responsiveUtils,
+        imagePaths: controller.imagePaths,
         displayMode: controller.screenDisplayMode.value,
         emailSubject: controller.subjectEmail.value ?? '',
         onCloseViewAction: () => controller.handleClickCloseComposer(context),
@@ -647,6 +649,7 @@ class ComposerView extends GetWidget<ComposerController> {
             onTap: () => controller.clearFocus(context),
             child: Column(children: [
               Obx(() => DesktopAppBarComposerWidget(
+                imagePaths: controller.imagePaths,
                 emailSubject: controller.subjectEmail.value ?? '',
                 onCloseViewAction: () => controller.handleClickCloseComposer(context),
                 constraints: constraints,
