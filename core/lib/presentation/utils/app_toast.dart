@@ -5,10 +5,14 @@ import 'package:core/presentation/views/toast/tmail_toast.dart';
 import 'package:core/presentation/views/toast/toast_position.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 class AppToast {
+
+  final ImagePaths imagePaths;
+  final ResponsiveUtils responsiveUtils;
+
+  const AppToast(this.imagePaths, this.responsiveUtils);
 
   void showToastErrorMessage(
     BuildContext context,
@@ -19,7 +23,6 @@ class AppToast {
       Duration? duration,
     }
   ) {
-    final imagePaths = Get.find<ImagePaths>();
     showToastMessage(
       context,
       message,
@@ -40,7 +43,6 @@ class AppToast {
       Duration? duration,
     }
   ) {
-    final imagePaths = Get.find<ImagePaths>();
     showToastMessage(
       context,
       message,
@@ -61,7 +63,6 @@ class AppToast {
       Duration? duration,
     }
   ) {
-    final imagePaths = Get.find<ImagePaths>();
     showToastMessage(
       context,
       message,
@@ -94,7 +95,6 @@ class AppToast {
       Duration? duration,
     }
   ) {
-    final responsiveUtils = Get.find<ResponsiveUtils>();
     Widget? trailingWidget;
     if (actionName != null) {
       if (actionIcon == null) {

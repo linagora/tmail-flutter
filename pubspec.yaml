@@ -266,6 +266,8 @@ dependencies:
 
   flutter_file_dialog: 3.0.2
 
+  package_info_plus: 4.2.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

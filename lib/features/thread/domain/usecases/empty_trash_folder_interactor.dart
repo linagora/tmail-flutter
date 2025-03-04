@@ -25,7 +25,7 @@ class EmptyTrashFolderInteractor {
       yield Right<Failure, Success>(EmptyTrashFolderLoading());
       onProgressController.add(Right(EmptyTrashFolderLoading()));
 
-      final emailIdDeleted = await threadRepository.emptyTrashFolder(
+      final emailIdDeleted = await threadRepository.emptyMailboxFolder(
         session, 
         accountId, 
         trashMailboxId,

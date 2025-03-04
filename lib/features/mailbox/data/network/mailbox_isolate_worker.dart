@@ -110,7 +110,6 @@ class MailboxIsolateWorker {
                   ..setIsAscending(false)),
               properties: Properties({
                   EmailProperty.id,
-                  EmailProperty.keywords,
                   EmailProperty.receivedAt,
                 }))
             .then((response) {
@@ -178,7 +177,6 @@ class MailboxIsolateWorker {
                       ..setIsAscending(false)),
               properties: Properties({
                   EmailProperty.id,
-                  EmailProperty.keywords,
                   EmailProperty.receivedAt,
               })
             ).then((response) {

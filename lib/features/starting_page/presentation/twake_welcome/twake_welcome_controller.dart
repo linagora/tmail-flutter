@@ -161,10 +161,9 @@ class TwakeWelcomeController extends ReloadableController {
 
   @override
   void handleFailureViewState(Failure failure) {
-    if (failure is SignInTwakeWorkplaceFailure) {
-      _handleSignInTwakeWorkplaceFailure(failure);
-    } else if (failure is SignUpTwakeWorkplaceFailure) {
-      _handleSignUpTwakeWorkplaceFailure(failure);
+    if (failure is SignInTwakeWorkplaceFailure || failure is SignUpTwakeWorkplaceFailure) {
+      SmartDialog.dismiss();
+      toastManager.show(failure);
     } else {
       super.handleFailureViewState(failure);
     }
@@ -182,8 +181,7 @@ class TwakeWelcomeController extends ReloadableController {
   @override
   void handleGetSessionFailure(GetSessionFailure failure) {
     SmartDialog.dismiss();
-
-    toastManager.showMessageFailure(failure);
+    toastManager.show(failure);
   }
 
   @override
@@ -204,18 +202,6 @@ class TwakeWelcomeController extends ReloadableController {
     );
 
     getSessionAction();
-  }
-
-  void _handleSignInTwakeWorkplaceFailure(SignInTwakeWorkplaceFailure failure) {
-    SmartDialog.dismiss();
-
-    toastManager.showMessageFailure(failure);
-  }
-
-  void _handleSignUpTwakeWorkplaceFailure(SignUpTwakeWorkplaceFailure failure) {
-    SmartDialog.dismiss();
-
-    toastManager.showMessageFailure(failure);
   }
 
   @override

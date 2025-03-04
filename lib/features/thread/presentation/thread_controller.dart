@@ -19,6 +19,9 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/base/mixin/email_action_handler_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_email_permanently_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/delete_multiple_emails_permanently_state.dart';
@@ -27,8 +30,10 @@ import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_action_for_select_all_emails_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/move_emails_to_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -79,7 +84,10 @@ import 'package:universal_html/html.dart' as html;
 typedef StartRangeSelection = int;
 typedef EndRangeSelection = int;
 
-class ThreadController extends BaseController with EmailActionController {
+class ThreadController extends BaseController
+    with EmailActionController,
+        PopupMenuWidgetMixin,
+        EmailActionHandlerMixin {
 
   final networkConnectionController = Get.find<NetworkConnectionController>();
 
@@ -288,7 +296,25 @@ class ThreadController extends BaseController with EmailActionController {
         filterMessagesAction(action.option);
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is HandleEmailActionTypeAction) {
-        pressEmailSelectionAction(action.emailAction, action.listEmailSelected);
+        if (_validateToShowConfirmBulkActionEmailsDialog()) {
+          showConfirmDialogWhenMakeToActionForSelectionAllEmails(
+            imagePaths: imagePaths,
+            totalEmails: selectedMailbox?.countTotalEmails ?? 0,
+            folderName: currentContext != null
+              ? selectedMailbox?.getDisplayName(currentContext!) ?? ''
+              : '',
+            onConfirmAction: () => mailboxDashBoardController.handleActionsForSelectionAllEmails(
+              context: currentContext!,
+              selectedMailbox: selectedMailbox!,
+              actionType: action.emailAction
+            ),
+          );
+        } else {
+          pressEmailSelectionAction(
+            action.emailAction,
+            action.listEmailSelected,
+          );
+        }
         mailboxDashBoardController.clearDashBoardAction();
       } else if (action is OpenEmailDetailedFromSuggestionQuickSearchAction) {
         final mailboxContain = action.presentationEmail.findMailboxContain(mailboxDashBoardController.mapMailboxById);
@@ -330,6 +356,9 @@ class ThreadController extends BaseController with EmailActionController {
         }
         canSearchMore = true;
         mailboxDashBoardController.emailsInCurrentMailbox.clear();
+      } else if (action is MoreSelectedEmailAction) {
+        showPopupMenuSelectionEmailAction(action.context, action.position);
+        mailboxDashBoardController.clearDashBoardAction();
       }
     });
 
@@ -859,6 +888,12 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   void selectEmail(PresentationEmail presentationEmailSelected) {
+    if (mailboxDashBoardController.isSelectAllPageEnabled.isTrue) {
+      mailboxDashBoardController.isSelectAllPageEnabled.value = false;
+    }
+    if (mailboxDashBoardController.isSelectAllEmailsEnabled.isTrue) {
+      mailboxDashBoardController.isSelectAllEmailsEnabled.value = false;
+    }
     final emailsInCurrentMailbox = mailboxDashBoardController.emailsInCurrentMailbox;
 
     if (_rangeSelectionMode && latestEmailSelectedOrUnselected.value != null && latestEmailSelectedOrUnselected.value?.id != presentationEmailSelected.id) {
@@ -912,9 +947,15 @@ class ThreadController extends BaseController with EmailActionController {
     final newEmailList = mailboxDashBoardController.emailsInCurrentMailbox
       .map((email) => email.toSelectedEmail(selectMode: SelectMode.INACTIVE))
       .toList();
+    mailboxDashBoardController.isSelectAllEmailsEnabled.value = false;
+    mailboxDashBoardController.isSelectAllPageEnabled.value = false;
     mailboxDashBoardController.updateEmailList(newEmailList);
     mailboxDashBoardController.currentSelectMode.value = SelectMode.INACTIVE;
     mailboxDashBoardController.listEmailSelected.clear();
+  }
+
+  void enableSelectAllEmails() {
+    mailboxDashBoardController.isSelectAllEmailsEnabled.value = true;
   }
 
   void closeFilterMessageActionSheet() {
@@ -1492,10 +1533,76 @@ class ThreadController extends BaseController with EmailActionController {
 
   void handleLoadMoreEmailsRequest() {
     log('ThreadController::handleLoadMoreEmailsRequest:');
+    if (mailboxDashBoardController.isSelectAllPageEnabled.isTrue) {
+      mailboxDashBoardController.isSelectAllPageEnabled.value = false;
+    }
+    if (mailboxDashBoardController.isSelectAllEmailsEnabled.isTrue) {
+      mailboxDashBoardController.isSelectAllEmailsEnabled.value = false;
+    }
     if (isSearchActive) {
       _searchMoreEmails();
     } else  {
       _loadMoreEmails();
     }
+  }
+
+  bool validateToShowSelectionEmailsBanner() {
+    return mailboxDashBoardController.isSelectAllPageEnabled.isTrue &&
+        selectedMailbox != null &&
+        selectedMailbox!.countTotalEmails > ThreadConstants.maxCountEmails &&
+        mailboxDashBoardController.listEmailSelected.length <
+            selectedMailbox!.countTotalEmails;
+  }
+
+  void showPopupMenuSelectionEmailAction(BuildContext context, RelativeRect position) {
+    final listSelectionEmailActions = [
+      EmailActionType.markAllAsRead,
+      EmailActionType.markAllAsUnread,
+      if (selectedMailbox == null || selectedMailbox?.isDrafts == false)
+        EmailActionType.moveAll,
+      if (selectedMailbox?.isTrash == true ||
+          selectedMailbox?.isSpam == true ||
+          selectedMailbox?.isDrafts == true)
+        EmailActionType.deleteAllPermanently
+      else
+        EmailActionType.moveAllToTrash
+    ];
+
+    openPopupMenuAction(
+      context,
+      position,
+      listSelectionEmailActions.map((action) => PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: popupItem(
+          action.getIcon(imagePaths),
+          action.getTitle(context),
+          colorIcon: action.getIconColor(),
+          styleName: const TextStyle(
+            fontWeight: FontWeight.w500,
+            fontSize: 14,
+            color: Colors.black
+          ),
+          onCallbackAction: () {
+            popBack();
+            if (!isSearchActive) {
+              showConfirmDialogWhenMakeToActionForSelectionAllEmails(
+                imagePaths: imagePaths,
+                totalEmails: selectedMailbox?.countTotalEmails ?? 0,
+                folderName: selectedMailbox?.getDisplayName(context) ?? '',
+                onConfirmAction: () => mailboxDashBoardController.handleActionsForSelectionAllEmails(
+                  context: context,
+                  selectedMailbox: selectedMailbox!,
+                  actionType: action,
+                ),
+              );
+            }
+          }
+        )
+      )).toList()
+    );
+  }
+
+  bool _validateToShowConfirmBulkActionEmailsDialog() {
+    return mailboxDashBoardController.isSelectAllEmailsEnabled.isTrue;
   }
 }

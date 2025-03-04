@@ -1012,4 +1012,47 @@ class EmailAPI with HandleSetErrorMixin {
       throw NotParsableBlobIdToEmailException();
     }
   }
+
+  Future<(List<EmailId> emailIds, Map<Id, SetError> mapErrors)> moveSelectionAllEmailsToFolder(
+    Session session,
+    AccountId accountId,
+    MailboxId currentMailboxId,
+    MailboxId destinationMailboxId,
+    List<EmailId> listEmailId,
+    {
+      bool isDestinationSpamMailbox = false
+    }
+  ) async {
+    final moveProperties = isDestinationSpamMailbox
+      ? listEmailId.generateMapUpdateObjectMoveToSpam(currentMailboxId, destinationMailboxId)
+      : listEmailId.generateMapUpdateObjectMoveToMailbox(currentMailboxId, destinationMailboxId);
+
+    final setEmailMethod = SetEmailMethod(accountId)
+      ..addUpdates(moveProperties);
+
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
+
+    final capabilities = setEmailMethod.requiredCapabilities
+      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+
+    final response = await (requestBuilder..usings(capabilities))
+      .build()
+      .execute();
+
+    final setEmailResponse = response.parse<SetEmailResponse>(
+      setEmailInvocation.methodCallId,
+      SetEmailResponse.deserialize,
+    );
+
+    final updatedEmailIds = setEmailResponse
+      ?.updated
+      ?.keys
+      .toEmailIds()
+      .toList() ?? [];
+
+    final mapErrors = handleSetResponse([setEmailResponse]);
+
+    return (updatedEmailIds, mapErrors);
+  }
 }

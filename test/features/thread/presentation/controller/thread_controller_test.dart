@@ -386,6 +386,8 @@ void main() {
         when(mockMailboxDashBoardController.filterMessageOption).thenReturn(Rx(FilterMessageOption.all));
         when(mockMailboxDashBoardController.currentSelectMode).thenReturn(Rx(SelectMode.INACTIVE));
         when(mockMailboxDashBoardController.listEmailSelected).thenReturn(RxList([]));
+        when(mockMailboxDashBoardController.isSelectAllEmailsEnabled).thenReturn(RxBool(false));
+        when(mockMailboxDashBoardController.isSelectAllPageEnabled).thenReturn(RxBool(false));
         when(mockSearchController.searchState).thenReturn(Rx(SearchState.initial()));
         when(mockSearchController.isAdvancedSearchViewOpen).thenReturn(RxBool(false));
         when(mockSearchController.isSearchEmailRunning).thenReturn(true);

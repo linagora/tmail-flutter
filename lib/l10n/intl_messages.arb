@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-02-20T19:41:05.121752",
+  "@@last_modified": "2025-02-26T15:15:51.116032",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4294,6 +4294,236 @@
   },
   "downloadAttachmentHasBeenCancelled": "Download attachment has been cancelled",
   "@downloadAttachmentHasBeenCancelled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "mailsOnThisPageAreSelected": "All {countEmails} mails on this page are selected.",
+  "@mailsOnThisPageAreSelected": {
+    "type": "text",
+    "placeholders_order": [
+      "countEmails"
+    ],
+    "placeholders": {
+      "countEmails": {}
+    }
+  },
+  "selectAllMailInMailbox": "Select all {total} mails in {folderName}",
+  "@selectAllMailInMailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "total",
+      "folderName"
+    ],
+    "placeholders": {
+      "total": {},
+      "folderName": {}
+    }
+  },
+  "mailsInMailboxAreSelected": "All {totalEmails} mails in {folderName} are selected.",
+  "@mailsInMailboxAreSelected": {
+    "type": "text",
+    "placeholders_order": [
+      "totalEmails",
+      "folderName"
+    ],
+    "placeholders": {
+      "totalEmails": {},
+      "folderName": {}
+    }
+  },
+  "clearSelection": "Clear selection",
+  "@clearSelection": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "confirmBulkAction": "Confirm bulk action",
+  "@confirmBulkAction": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "ok": "OK",
+  "@ok": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageConfirmationDialogWhenMakeToActionForSelectionAllEmailsInMailbox": "This action will affect all {total} mails in {folderName}. Are you sure you want to continue?",
+  "@messageConfirmationDialogWhenMakeToActionForSelectionAllEmailsInMailbox": {
+    "type": "text",
+    "placeholders_order": [
+      "total",
+      "folderName"
+    ],
+    "placeholders": {
+      "total": {},
+      "folderName": {}
+    }
+  },
+  "markAllAsUnread": "Mark all as unread",
+  "@markAllAsUnread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAllAsUnreadSelectionAllEmailsSuccess": "You’ve marked all mails as unread",
+  "@toastMessageMarkAllAsUnreadSelectionAllEmailsSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure": "You’ve marked {count} mails as unread",
+  "@toastMessageMarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "toastMessageMarkAllAsUnreadSelectionAllEmailsFailureWithReason": "All mails could not be marked as unread. Due \"{reason}\"",
+  "@toastMessageMarkAllAsUnreadSelectionAllEmailsFailureWithReason": {
+    "type": "text",
+    "placeholders_order": [
+      "reason"
+    ],
+    "placeholders": {
+      "reason": {}
+    }
+  },
+  "toastMessageMarkAsReadFolderFailureWithReason": "Folder \"{folderName}\" could not be marked as read. Due \"{reason}\"",
+  "@toastMessageMarkAsReadFolderFailureWithReason": {
+    "type": "text",
+    "placeholders_order": [
+      "folderName",
+      "reason"
+    ],
+    "placeholders": {
+      "folderName": {},
+      "reason": {}
+    }
+  },
+  "toastMessageMoveAllSelectionAllEmailsSuccess": "You’ve moved all mails to {destinationPath}",
+  "@toastMessageMoveAllSelectionAllEmailsSuccess": {
+    "type": "text",
+    "placeholders_order": [
+      "destinationPath"
+    ],
+    "placeholders": {
+      "destinationPath": {}
+    }
+  },
+  "toastMessageMoveAllSelectionAllEmailsHasSomeEmailFailure": "You’ve moved {count} mails to {destinationPath}",
+  "@toastMessageMoveAllSelectionAllEmailsHasSomeEmailFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "count",
+      "destinationPath"
+    ],
+    "placeholders": {
+      "count": {},
+      "destinationPath": {}
+    }
+  },
+  "toastMessageMoveAllSelectionAllEmailsAllFailure": "All mails could not be moved to {destinationPath}",
+  "@toastMessageMoveAllSelectionAllEmailsAllFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "destinationPath"
+    ],
+    "placeholders": {
+      "destinationPath": {}
+    }
+  },
+  "toastMessageMoveAllSelectionAllEmailsFailureWithReason": "All mails could not be moved to {destinationPath}. Due \"{reason}\"",
+  "@toastMessageMoveAllSelectionAllEmailsFailureWithReason": {
+    "type": "text",
+    "placeholders_order": [
+      "destinationPath",
+      "reason"
+    ],
+    "placeholders": {
+      "destinationPath": {},
+      "reason": {}
+    }
+  },
+  "moveAll": "Move all",
+  "@moveAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveAllToTrash": "Move all to trash",
+  "@moveAllToTrash": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteAllPermanently": "Delete all permanently",
+  "@deleteAllPermanently": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageDeleteAllPermanentlyEmailsFailureWithReason": "All mails could not be delete forever. Due \"{reason}\"",
+  "@toastMessageDeleteAllPermanentlyEmailsFailureWithReason": {
+    "type": "text",
+    "placeholders_order": [
+      "reason"
+    ],
+    "placeholders": {
+      "reason": {}
+    }
+  },
+  "allStarred": "All starred",
+  "@allStarred": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAllAsStarredSelectionAllEmailsSuccess": "You’ve marked all mails as starred",
+  "@toastMessageMarkAllAsStarredSelectionAllEmailsSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "toastMessageMarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure": "You’ve marked {count} mails as starred",
+  "@toastMessageMarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure": {
+    "type": "text",
+    "placeholders_order": [
+      "count"
+    ],
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "toastMessageMarkAllAsStarredSelectionAllEmailsFailureWithReason": "All mails could not be marked as starred. Due \"{reason}\"",
+  "@toastMessageMarkAllAsStarredSelectionAllEmailsFailureWithReason": {
+    "type": "text",
+    "placeholders_order": [
+      "reason"
+    ],
+    "placeholders": {
+      "reason": {}
+    }
+  },
+  "allUnSpam": "All UnSpam",
+  "@allUnSpam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAllAsSpam": "Mark all as spam",
+  "@markAllAsSpam": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "moveAllConversation": "Move all conversation",
+  "@moveAllConversation": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

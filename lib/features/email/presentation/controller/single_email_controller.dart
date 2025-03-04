@@ -328,14 +328,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else if (failure is CalendarEventReplyFailure
         || failure is StoreEventAttendanceStatusFailure) {
       _calendarEventFailure(failure);
-    } else if (failure is ParseEmailByBlobIdFailure) {
-      _handleParseEmailByBlobIdFailure(failure);
-    } else if (failure is PreviewEmailFromEmlFileFailure) {
-      _handlePreviewEmailFromEMLFileFailure(failure);
+    } else if (failure is PreviewEmailFromEmlFileFailure
+        || failure is PreviewPDFFileFailure
+        || failure is ParseEmailByBlobIdFailure
+    ) {
+      SmartDialog.dismiss();
+      toastManager.show(failure);
     } else if (failure is GetHtmlContentFromAttachmentFailure) {
       _handleGetHtmlContentFromAttachmentFailure(failure);
-    } else if (failure is PreviewPDFFileFailure) {
-      _handlePreviewPDFFileFailure(failure);
     }
   }
 
@@ -2328,21 +2328,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _handleParseEmailByBlobIdFailure(ParseEmailByBlobIdFailure failure) {
-    SmartDialog.dismiss();
-    toastManager.showMessageFailure(failure);
-  }
-
-  void _handlePreviewPDFFileFailure(PreviewPDFFileFailure failure) {
-    SmartDialog.dismiss();
-    toastManager.showMessageFailure(failure);
-  }
-
-  void _handlePreviewEmailFromEMLFileFailure(PreviewEmailFromEmlFileFailure failure) {
-    SmartDialog.dismiss();
-    toastManager.showMessageFailure(failure);
-  }
-
   void _handlePreviewEmailFromEMLFileSuccess(PreviewEmailFromEmlFileSuccess success) {
     SmartDialog.dismiss();
 
@@ -2355,11 +2340,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       );
 
       if (!isOpen) {
-        toastManager.showMessageFailure(PreviewEmailFromEmlFileFailure(CannotOpenNewWindowException()));
+        toastManager.show(PreviewEmailFromEmlFileFailure(CannotOpenNewWindowException()));
       }
     } else if (PlatformInfo.isMobile) {
       if (currentContext == null) {
-        toastManager.showMessageFailure(PreviewEmailFromEmlFileFailure(NotFoundContextException()));
+        toastManager.show(PreviewEmailFromEmlFileFailure(NotFoundContextException()));
         return;
       }
 

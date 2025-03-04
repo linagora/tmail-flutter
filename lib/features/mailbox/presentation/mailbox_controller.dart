@@ -816,6 +816,12 @@ class MailboxController extends BaseMailboxController
     log('MailboxController::_handleOpenMailbox():MAILBOX_ID = ${presentationMailboxSelected.id.asString} | MAILBOX_NAME: ${presentationMailboxSelected.name?.name}');
     KeyboardUtils.hideKeyboard(context);
     mailboxDashBoardController.clearSelectedEmail();
+    if (mailboxDashBoardController.isSelectAllEmailsEnabled.isTrue) {
+      mailboxDashBoardController.isSelectAllEmailsEnabled.value = false;
+    }
+    if (mailboxDashBoardController.isSelectAllPageEnabled.isTrue) {
+      mailboxDashBoardController.isSelectAllPageEnabled.value = false;
+    }
     if (presentationMailboxSelected.id != mailboxDashBoardController.selectedMailbox.value?.id) {
       mailboxDashBoardController.clearFilterMessageOption();
     }

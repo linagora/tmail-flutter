@@ -4506,4 +4506,196 @@ class AppLocalizations {
       name: 'downloadAttachmentHasBeenCancelled',
     );
   }
+
+  String mailsOnThisPageAreSelected(int countEmails) {
+    return Intl.message(
+        'All $countEmails mails on this page are selected.',
+        name: 'mailsOnThisPageAreSelected',
+        args: [countEmails]
+    );
+  }
+
+  String selectAllMailInMailbox(int total, String folderName) {
+    return Intl.message(
+      'Select all $total mails in $folderName',
+      name: 'selectAllMailInMailbox',
+      args: [total, folderName]
+    );
+  }
+
+  String mailsInMailboxAreSelected(int totalEmails, String folderName) {
+    return Intl.message(
+      'All $totalEmails mails in $folderName are selected.',
+      name: 'mailsInMailboxAreSelected',
+      args: [totalEmails, folderName]
+    );
+  }
+
+  String get clearSelection {
+    return Intl.message(
+      'Clear selection',
+      name: 'clearSelection',
+    );
+  }
+
+  String get confirmBulkAction {
+    return Intl.message(
+      'Confirm bulk action',
+      name: 'confirmBulkAction');
+  }
+
+  String get ok {
+    return Intl.message(
+      'OK',
+      name: 'ok');
+  }
+
+  String messageConfirmationDialogWhenMakeToActionForSelectionAllEmailsInMailbox(int total, String folderName) {
+    return Intl.message(
+      'This action will affect all $total mails in $folderName. Are you sure you want to continue?',
+      name: 'messageConfirmationDialogWhenMakeToActionForSelectionAllEmailsInMailbox',
+      args: [total, folderName]
+    );
+  }
+
+  String get markAllAsUnread {
+    return Intl.message(
+      'Mark all as unread',
+      name: 'markAllAsUnread',
+    );
+  }
+
+  String get toastMessageMarkAllAsUnreadSelectionAllEmailsSuccess {
+    return Intl.message(
+      'You’ve marked all mails as unread',
+      name: 'toastMessageMarkAllAsUnreadSelectionAllEmailsSuccess');
+  }
+
+  String toastMessageMarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure(int count) {
+    return Intl.message(
+      'You’ve marked $count mails as unread',
+      name: 'toastMessageMarkAllAsUnreadSelectionAllEmailsHasSomeEmailFailure',
+      args: [count]);
+  }
+
+  String toastMessageMarkAllAsUnreadSelectionAllEmailsFailureWithReason(String reason) {
+    return Intl.message(
+      'All mails could not be marked as unread. Due "$reason"',
+      name: 'toastMessageMarkAllAsUnreadSelectionAllEmailsFailureWithReason',
+      args: [reason]
+    );
+  }
+
+  String toastMessageMarkAsReadFolderFailureWithReason(String folderName, String reason) {
+    return Intl.message(
+        'Folder "$folderName" could not be marked as read. Due "$reason"',
+        name: 'toastMessageMarkAsReadFolderFailureWithReason',
+        args: [folderName, reason]
+    );
+  }
+
+  String toastMessageMoveAllSelectionAllEmailsSuccess(String destinationPath) {
+    return Intl.message(
+      'You’ve moved all mails to $destinationPath',
+      name: 'toastMessageMoveAllSelectionAllEmailsSuccess',
+      args: [destinationPath]);
+  }
+
+  String toastMessageMoveAllSelectionAllEmailsHasSomeEmailFailure(int count, String destinationPath) {
+    return Intl.message(
+      'You’ve moved $count mails to $destinationPath',
+      name: 'toastMessageMoveAllSelectionAllEmailsHasSomeEmailFailure',
+      args: [count, destinationPath]);
+  }
+
+  String toastMessageMoveAllSelectionAllEmailsAllFailure(String destinationPath) {
+    return Intl.message(
+      'All mails could not be moved to $destinationPath',
+      name: 'toastMessageMoveAllSelectionAllEmailsAllFailure',
+      args: [destinationPath]);
+  }
+
+  String toastMessageMoveAllSelectionAllEmailsFailureWithReason(String destinationPath, String reason) {
+    return Intl.message(
+      'All mails could not be moved to $destinationPath. Due "$reason"',
+      name: 'toastMessageMoveAllSelectionAllEmailsFailureWithReason',
+      args: [destinationPath, reason]
+    );
+  }
+
+  String get moveAll {
+    return Intl.message(
+      'Move all',
+      name: 'moveAll');
+  }
+
+  String get moveAllToTrash {
+    return Intl.message(
+      'Move all to trash',
+      name: 'moveAllToTrash',
+    );
+  }
+
+  String get deleteAllPermanently {
+    return Intl.message(
+      'Delete all permanently',
+      name: 'deleteAllPermanently');
+  }
+
+  String toastMessageDeleteAllPermanentlyEmailsFailureWithReason(String reason) {
+    return Intl.message(
+      'All mails could not be delete forever. Due "$reason"',
+      name: 'toastMessageDeleteAllPermanentlyEmailsFailureWithReason',
+      args: [reason]
+    );
+  }
+
+  String get allStarred {
+    return Intl.message(
+      'All starred',
+      name: 'allStarred',
+    );
+  }
+
+  String get toastMessageMarkAllAsStarredSelectionAllEmailsSuccess {
+    return Intl.message(
+      'You’ve marked all mails as starred',
+      name: 'toastMessageMarkAllAsStarredSelectionAllEmailsSuccess');
+  }
+
+  String toastMessageMarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure(int count) {
+    return Intl.message(
+      'You’ve marked $count mails as starred',
+      name: 'toastMessageMarkAllAsStarredSelectionAllEmailsHasSomeEmailFailure',
+      args: [count]);
+  }
+
+  String toastMessageMarkAllAsStarredSelectionAllEmailsFailureWithReason(String reason) {
+    return Intl.message(
+      'All mails could not be marked as starred. Due "$reason"',
+      name: 'toastMessageMarkAllAsStarredSelectionAllEmailsFailureWithReason',
+      args: [reason]
+    );
+  }
+
+  String get allUnSpam {
+    return Intl.message(
+      'All UnSpam',
+      name: 'allUnSpam',
+    );
+  }
+
+  String get markAllAsSpam {
+    return Intl.message(
+      'Mark all as spam',
+      name: 'markAllAsSpam',
+    );
+  }
+
+  String get moveAllConversation {
+    return Intl.message(
+      'Move all conversation',
+      name: 'moveAllConversation',
+    );
+  }
 }
