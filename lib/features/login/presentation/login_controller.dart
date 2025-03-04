@@ -50,6 +50,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_con
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
+import 'package:tmail_ui_user/features/login/presentation/extensions/handle_openid_configuration.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_twake_workplace_state.dart';
@@ -92,7 +93,7 @@ class LoginController extends ReloadableController {
   UserName? _username;
   Password? _password;
   Uri? _baseUri;
-
+  FeatureFailure? featureFailure;
   DeepLinksManager? _deepLinksManager;
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
 
@@ -147,6 +148,8 @@ class LoginController extends ReloadableController {
       getAuthenticatedAccountAction();
     } else if (failure is CheckOIDCIsAvailableFailure) {
       _handleCheckOIDCIsAvailableFailure(failure);
+    } else if (failure is GetOIDCConfigurationFromBaseUrlFailure) {
+      handleGetOIDCConfigurationFromBaseUrlFailure();
     } else if (failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCConfigurationFailure ||
         failure is SignInTwakeWorkplaceFailure
@@ -176,7 +179,7 @@ class LoginController extends ReloadableController {
     } else if (success is GetStoredOidcConfigurationSuccess) {
       _getTokenOIDCAction(success.oidcConfiguration);
     } else if (success is CheckOIDCIsAvailableSuccess) {
-      _getOIDCConfiguration(success.oidcResponse);
+      getOIDCConfiguration(success.oidcResponse);
     } else if (success is GetOIDCConfigurationSuccess) {
       _getOIDCConfigurationSuccess(success);
     } else if (success is GetTokenOIDCSuccess) {
@@ -201,6 +204,8 @@ class LoginController extends ReloadableController {
     logError('LoginController::handleUrgentException:Exception: $exception | Failure: $failure');
     if (failure is CheckOIDCIsAvailableFailure) {
       _handleCheckOIDCIsAvailableFailure(failure);
+    } else if (failure is GetOIDCConfigurationFromBaseUrlFailure) {
+      handleGetOIDCConfigurationFromBaseUrlFailure();
     } else if (failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCConfigurationFailure ||
         failure is SignInTwakeWorkplaceFailure
@@ -264,11 +269,23 @@ class LoginController extends ReloadableController {
   }
 
   void _handleCheckOIDCIsAvailableFailure(CheckOIDCIsAvailableFailure failure) {
-    if (failure.exception is CanNotFoundOIDCLinks || failure.exception is InvalidOIDCResponseException) {
+    try {
+      featureFailure = failure;
+      tryGetOIDCConfigurationFromBaseUrl(_currentBaseUrl!);
+    } catch (e) {
+      logError('LoginController::_handleCheckOIDCIsAvailableFailure:Exception = $e');
+      handleOIDCIsNotAvailable(failure);
+    }
+  }
+
+  void handleOIDCIsNotAvailable(FeatureFailure? failure) {
+    if (failure?.exception is CanNotFoundOIDCLinks ||
+        failure?.exception is InvalidOIDCResponseException) {
       _handleCommonOIDCFailure();
     } else {
       loginFormType.value = LoginFormType.retry;
     }
+    featureFailure = null;
   }
 
   void retryCheckOidc() {
@@ -368,7 +385,7 @@ class LoginController extends ReloadableController {
     }
   }
 
-  void _getOIDCConfiguration(OIDCResponse oidcResponse) {
+  void getOIDCConfiguration(OIDCResponse oidcResponse) {
     consumeState(_getOIDCConfigurationInteractor.execute(oidcResponse));
   }
 
@@ -599,6 +616,7 @@ class LoginController extends ReloadableController {
 
   @override
   void onClose() {
+    featureFailure = null;
     passFocusNode.dispose();
     baseUrlFocusNode.dispose();
     userNameFocusNode.dispose();

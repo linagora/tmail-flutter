@@ -18,3 +18,8 @@ class GetOIDCConfigurationFailure extends FeatureFailure {
 
   GetOIDCConfigurationFailure(dynamic exception) : super(exception: exception);
 }
+
+class GetOIDCConfigurationFromBaseUrlFailure extends FeatureFailure {
+
+  GetOIDCConfigurationFromBaseUrlFailure(dynamic exception) : super(exception: exception);
+}
