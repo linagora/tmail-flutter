@@ -96,7 +96,7 @@ class MailboxRepositoryImpl extends MailboxRepository {
       return jmapMailboxResponse;
     } catch (e) {
       logError('MailboxRepositoryImpl::_getAllMailboxFromJMAP: Exception: $e');
-      return null;
+      rethrow;
     }
   }
 

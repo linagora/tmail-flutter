@@ -231,6 +231,7 @@ class MailboxController extends BaseMailboxController
       (failure) {
         if (failure is GetAllMailboxFailure) {
           mailboxDashBoardController.updateRefreshAllMailboxState(Left(RefreshAllMailboxFailure()));
+          showRetryToast(failure);
         }
       },
       (success) {
