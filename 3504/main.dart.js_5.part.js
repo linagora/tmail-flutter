@@ -2073,21 +2073,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       switch (_this.method) {
         case C.EventMethod_1:
         case C.EventMethod_3:
-          return C.Color_4278221567;
+          return D.Color_4293653759;
         case C.EventMethod_5:
         case C.EventMethod_6:
-          return C.Color_4283151179;
+          return D.Color_4293720293;
         case C.EventMethod_4:
         case C.EventMethod_7:
-          return E.Color_4294914887;
+          return D.Color_4294306795;
         case C.EventMethod_2:
           matchedAttendee = B.CalendarEventExtension_findAttendeeHasUpdatedStatus(_this, listEmailAddressSender);
           if (matchedAttendee != null)
-            return B.CalendarEventExtension_getAttendeeMessageTextColor(_this, matchedAttendee.participationStatus);
+            return B.CalendarEventExtension_getAttendeeMessageBannerColor(_this, matchedAttendee.participationStatus);
           else
-            return C.Color_0;
+            return null;
         default:
-          return C.Color_0;
+          return null;
       }
     },
     CalendarEventExtension_getColorEventActionText(_this, listEmailAddressSender) {
@@ -2107,9 +2107,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           if (matchedAttendee != null)
             return B.CalendarEventExtension_getAttendeeMessageTextColor(_this, matchedAttendee.participationStatus);
           else
-            return C.Color_0;
+            return null;
         default:
-          return C.Color_0;
+          return null;
       }
     },
     CalendarEventExtension_getIconEventAction(_this, imagePaths) {
@@ -2229,6 +2229,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return "";
     },
+    CalendarEventExtension_getAttendeeMessageBannerColor(_this, $status) {
+      var t1 = J.getInterceptor$($status);
+      if (t1.$eq($status, new A.CalendarAttendeeParticipationStatus("ACCEPTED")))
+        return D.Color_4293720293;
+      else if (t1.$eq($status, new A.CalendarAttendeeParticipationStatus("TENTATIVE")))
+        return E.Color_4294964674;
+      else if (t1.$eq($status, new A.CalendarAttendeeParticipationStatus("DECLINED")))
+        return D.Color_4294306795;
+      else
+        return null;
+    },
     CalendarEventExtension_getAttendeeMessageTextColor(_this, $status) {
       var t1 = J.getInterceptor$($status);
       if (t1.$eq($status, new A.CalendarAttendeeParticipationStatus("ACCEPTED")))
@@ -2238,7 +2249,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else if (t1.$eq($status, new A.CalendarAttendeeParticipationStatus("DECLINED")))
         return E.Color_4294914887;
       else
-        return C.Color_0;
+        return null;
     },
     CalendarEventExtension_get_localStartDate(_this) {
       var t1 = _this.startUtcDate;
@@ -9558,7 +9569,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.CalendarEventActionBannerWidget.prototype = {
     build$1(context) {
-      var t1, imagePaths, t2, t3, t4, t5, t6, t7, _null = null;
+      var t1, imagePaths, t2, t3, t4, t5, t6, _null = null;
       $.$get$Get();
       t1 = $.GetInstance__getInstance;
       if (t1 == null)
@@ -9566,16 +9577,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       imagePaths = t1.find$1$1$tag(0, _null, type$.ImagePaths);
       t1 = this.calendarEvent;
       t2 = this.listEmailAddressSender;
-      t3 = B.CalendarEventExtension_getColorEventActionBanner(t1, t2).value;
-      t3 = A.Color$fromARGB(31, t3 >>> 16 & 255, t3 >>> 8 & 255, t3 & 255);
-      t4 = type$.JSArray_Widget;
-      t5 = A._setArrayType([], t4);
+      t3 = B.CalendarEventExtension_getColorEventActionBanner(t1, t2);
+      t4 = A._setArrayType([], type$.JSArray_Widget);
       if (B.CalendarEventExtension_getIconEventAction(t1, imagePaths).length !== 0)
-        t5.push(new A.Padding(C.EdgeInsetsDirectional_0_0_8_0, A.SvgPicture$asset(B.CalendarEventExtension_getIconEventAction(t1, imagePaths), C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, _null, 20), _null));
-      t6 = A.TextStyle$(_null, _null, B.CalendarEventExtension_getColorEventActionText(t1, t2), _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null);
-      t7 = B.CalendarEventExtension_getUserNameEventAction(t1, context, imagePaths, t2);
-      t5.push(A.Expanded$(A.Column$(A._setArrayType([A.Text$rich(A.TextSpan$(A._setArrayType([A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, B.CalendarEventExtension_getColorEventActionText(t1, t2), _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_6_700, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), t7), A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, _null, B.CalendarEventExtension_getTitleEventAction(t1, context, t2))], type$.JSArray_InlineSpan), _null, _null, _null, _null, _null, _null, _null, t6, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null)], t4), C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1), 1));
-      return A.Container$(_null, A.Row$(t5, C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(t3, _null, _null, C.BorderRadius_ww80, _null, _null, _null, C.BoxShape_0), _null, _null, _null, C.EdgeInsets_16_12_16_12, C.EdgeInsets_12_12_12_12, _null, _null, _null);
+        t4.push(new A.Padding(C.EdgeInsetsDirectional_0_0_8_0, A.SvgPicture$asset(B.CalendarEventExtension_getIconEventAction(t1, imagePaths), C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, _null, 20), _null));
+      t5 = A.TextStyle$(_null, _null, B.CalendarEventExtension_getColorEventActionText(t1, t2), _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_3_400, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null);
+      t6 = B.CalendarEventExtension_getUserNameEventAction(t1, context, imagePaths, t2);
+      t4.push(A.Expanded$(A.Text$rich(A.TextSpan$(A._setArrayType([A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, B.CalendarEventExtension_getColorEventActionText(t1, t2), _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_6_700, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), t6), A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, _null, B.CalendarEventExtension_getTitleEventAction(t1, context, t2))], type$.JSArray_InlineSpan), _null, _null, _null, _null, _null, _null, _null, t5, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), 1));
+      return A.Container$(_null, A.Row$(t4, C.CrossAxisAlignment_0, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.Clip_0, _null, _null, new A.BoxDecoration(t3, _null, _null, C.BorderRadius_ww80, _null, _null, _null, C.BoxShape_0), _null, _null, _null, C.EdgeInsets_16_12_16_12, C.EdgeInsets_12_12_12_12, _null, _null, _null);
     }
   };
   B.CalendarEventActionButtonWidget.prototype = {
@@ -22753,8 +22762,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Color_4290764543 = new A.Color(4290764543);
     D.Color_4292763230 = new A.Color(4292763230);
     D.Color_4293322239 = new A.Color(4293322239);
+    D.Color_4293653759 = new A.Color(4293653759);
+    D.Color_4293720293 = new A.Color(4293720293);
     D.Color_4293942340 = new A.Color(4293942340);
     D.Color_4294177783 = new A.Color(4294177783);
+    D.Color_4294306795 = new A.Color(4294306795);
     D.ComposerView_null = new B.ComposerView(null);
     D.CupertinoLoadingWidget_16_null_null = new A.CupertinoLoadingWidget(16, null, null);
     D.CupertinoLoadingWidget_2jN0 = new A.CupertinoLoadingWidget(null, C.EdgeInsets_16_16_16_16, null);
@@ -23014,5 +23026,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "AQcEWVAPoW7XxAnstq83HK/AdjI=");
+})($__dart_deferred_initializers__, "oCyJ88UTNNSrcwZDN1rz0YGPiZg=");
 ;
