@@ -33,6 +33,7 @@ class ComposerArguments extends RouterArguments {
   final List<EmailAddress>? cc;
   final List<EmailAddress>? bcc;
   final String? listPost;
+  final String? composerId;
 
   ComposerArguments({
     this.emailActionType = EmailActionType.compose,
@@ -56,6 +57,7 @@ class ComposerArguments extends RouterArguments {
     this.cc,
     this.bcc,
     this.listPost,
+    this.composerId,
   });
 
   factory ComposerArguments.fromSendingEmail(SendingEmail sendingEmail) =>
@@ -119,6 +121,7 @@ class ComposerArguments extends RouterArguments {
       inlineImages: composerCache.email?.allAttachments.listAttachmentsDisplayedInContent,
       hasRequestReadReceipt: composerCache.hasRequestReadReceipt,
       displayMode: composerCache.displayMode,
+      composerId: composerCache.composerId,
     );
 
   factory ComposerArguments.replyEmail({
@@ -238,6 +241,7 @@ class ComposerArguments extends RouterArguments {
     cc,
     bcc,
     listPost,
+    composerId,
   ];
 
   ComposerArguments copyWith({
@@ -262,6 +266,7 @@ class ComposerArguments extends RouterArguments {
     List<EmailAddress>? cc,
     List<EmailAddress>? bcc,
     String? listPost,
+    String? composerId,
   }) {
     return ComposerArguments(
       emailActionType: emailActionType ?? this.emailActionType,
@@ -285,6 +290,7 @@ class ComposerArguments extends RouterArguments {
       cc: cc ?? this.cc,
       bcc: bcc ?? this.bcc,
       listPost: listPost ?? this.listPost,
+      composerId: composerId ?? this.composerId,
     );
   }
 }
