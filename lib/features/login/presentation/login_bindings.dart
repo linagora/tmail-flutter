@@ -21,7 +21,6 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_logi
 import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_username_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
@@ -42,7 +41,6 @@ class LoginBindings extends BaseBindings {
     Get.create(() => LoginController(
       Get.find<AuthenticationInteractor>(),
       Get.find<CheckOIDCIsAvailableInteractor>(),
-      Get.find<GetOIDCIsAvailableInteractor>(),
       Get.find<GetOIDCConfigurationInteractor>(),
       Get.find<GetTokenOIDCInteractor>(),
       Get.find<AuthenticateOidcOnBrowserInteractor>(),
@@ -84,9 +82,6 @@ class LoginBindings extends BaseBindings {
   @override
   void bindingsInteractor() {
     Get.lazyPut(() => CheckOIDCIsAvailableInteractor(
-        Get.find<AuthenticationOIDCRepository>(),
-    ));
-    Get.lazyPut(() => GetOIDCIsAvailableInteractor(
         Get.find<AuthenticationOIDCRepository>(),
     ));
     Get.lazyPut(() => GetOIDCConfigurationInteractor(

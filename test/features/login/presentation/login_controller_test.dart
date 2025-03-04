@@ -23,7 +23,6 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_logi
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
@@ -53,7 +52,6 @@ import 'login_controller_test.mocks.dart';
   MockSpec<Uuid>(),
   MockSpec<AuthenticationInteractor>(),
   MockSpec<CheckOIDCIsAvailableInteractor>(),
-  MockSpec<GetOIDCIsAvailableInteractor>(),
   MockSpec<GetOIDCConfigurationInteractor>(),
   MockSpec<GetTokenOIDCInteractor>(),
   MockSpec<AuthenticateOidcOnBrowserInteractor>(),
@@ -77,7 +75,6 @@ import 'login_controller_test.mocks.dart';
 void main() {
   late MockAuthenticationInteractor mockAuthenticationInteractor;
   late MockCheckOIDCIsAvailableInteractor mockCheckOIDCIsAvailableInteractor;
-  late MockGetOIDCIsAvailableInteractor mockGetOIDCIsAvailableInteractor;
   late MockGetOIDCConfigurationInteractor mockGetOIDCConfigurationInteractor;
   late MockGetTokenOIDCInteractor mockGetTokenOIDCInteractor;
   late MockAuthenticateOidcOnBrowserInteractor mockAuthenticateOidcOnBrowserInteractor;
@@ -113,7 +110,6 @@ void main() {
     setUp(() {
       mockAuthenticationInteractor = MockAuthenticationInteractor();
       mockCheckOIDCIsAvailableInteractor = MockCheckOIDCIsAvailableInteractor();
-      mockGetOIDCIsAvailableInteractor = MockGetOIDCIsAvailableInteractor();
       mockGetOIDCConfigurationInteractor = MockGetOIDCConfigurationInteractor();
       mockGetTokenOIDCInteractor = MockGetTokenOIDCInteractor();
       mockAuthenticateOidcOnBrowserInteractor = MockAuthenticateOidcOnBrowserInteractor();
@@ -173,7 +169,6 @@ void main() {
       loginController = LoginController(
         mockAuthenticationInteractor,
         mockCheckOIDCIsAvailableInteractor,
-        mockGetOIDCIsAvailableInteractor,
         mockGetOIDCConfigurationInteractor,
         mockGetTokenOIDCInteractor,
         mockAuthenticateOidcOnBrowserInteractor,
