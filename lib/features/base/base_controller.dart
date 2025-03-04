@@ -627,18 +627,27 @@ abstract class BaseController extends GetxController
       ? AppLocalizations.of(currentContext!).unexpectedError('${exception.message!}')
       : AppLocalizations.of(currentContext!).unknownError;
 
-    appToast.showToastMessage(
+    appToast.showToastMessageWithMultipleActions(
       currentOverlayContext!,
       errorMessage,
-      actionName: failure.onRetry == null
-        ? null
-        : AppLocalizations.of(currentContext!).retry,
-      onActionClick: failure.onRetry == null
-        ? null
-        : () => consumeState(failure.onRetry!),
+      actions: [
+        if (failure.onRetry != null)
+          (
+            actionName: AppLocalizations.of(currentContext!).retry,
+            onActionClick: () => consumeState(failure.onRetry!),
+            actionIcon: SvgPicture.asset(imagePaths.icUndo),
+          ),
+        (
+          actionName: AppLocalizations.of(currentContext!).close,
+          onActionClick: () => ToastView.dismiss(),
+          actionIcon: SvgPicture.asset(
+            imagePaths.icClose,
+            colorFilter: Colors.white.asFilter(),
+          ),
+        )
+      ],
       backgroundColor: AppColor.toastErrorBackgroundColor,
       textColor: Colors.white,
-      actionIcon: SvgPicture.asset(imagePaths.icUndo),
       infinityToast: true,
     );
   }
