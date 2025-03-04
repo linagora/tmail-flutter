@@ -57,7 +57,12 @@ class AttachmentItemWidget extends StatelessWidget {
                 borderRadius: const BorderRadius.all(Radius.circular(AttachmentItemWidgetStyle.radius)),
                 border: Border.all(color: AttachmentItemWidgetStyle.borderColor),
               ),
-              width: _getMaxWidthItem(context),
+              width: AttachmentItemWidgetStyle.getMaxWidthItem(
+                platformIsMobile: PlatformInfo.isMobile,
+                responsiveIsMobile: _responsiveUtils.isMobile(context),
+                responsiveIsTablet: _responsiveUtils.isTablet(context),
+                responsiveIsTabletLarge: _responsiveUtils.isTabletLarge(context),
+              ),
               child: Row(
                 children: [
                   isLoading
@@ -115,21 +120,5 @@ class AttachmentItemWidget extends StatelessWidget {
         );
       }
     );
-  }
-
-  double _getMaxWidthItem(BuildContext context) {
-    if (PlatformInfo.isMobile) {
-      return _responsiveUtils.isMobile(context)
-        ? AttachmentItemWidgetStyle.maxWidthMobile
-        : AttachmentItemWidgetStyle.maxWidthTablet;
-    } else {
-      if (_responsiveUtils.isTabletLarge(context)) {
-        return AttachmentItemWidgetStyle.maxWidthTabletLarge;
-      } else if (_responsiveUtils.isTablet(context)) {
-        return AttachmentItemWidgetStyle.maxWidthTablet;
-      } else {
-        return AttachmentItemWidgetStyle.maxWidthMobile;
-      }
-    }
   }
 }

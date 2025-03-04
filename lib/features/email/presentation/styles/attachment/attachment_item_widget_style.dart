@@ -31,4 +31,23 @@ class AttachmentItemWidgetStyle {
     color: AppColor.attachmentFileSizeColor,
     fontWeight: FontWeight.normal
   );
+
+  static double getMaxWidthItem({
+    required bool platformIsMobile,
+    required bool responsiveIsMobile,
+    required bool responsiveIsTablet,
+    required bool responsiveIsTabletLarge,
+  }) {
+    if (platformIsMobile) {
+      return responsiveIsMobile ? maxWidthMobile : maxWidthTablet;
+    } else {
+      if (responsiveIsTabletLarge) {
+        return maxWidthTabletLarge;
+      } else if (responsiveIsTablet) {
+        return maxWidthTablet;
+      } else {
+        return maxWidthMobile;
+      }
+    }
+  }
 }
