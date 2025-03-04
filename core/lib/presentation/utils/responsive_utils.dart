@@ -1,4 +1,5 @@
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 
@@ -109,4 +110,48 @@ class ResponsiveUtils {
   }
 
   static bool isMatchedMobileWidth(double width) => width < minTabletWidth;
+
+  double getAttachmentItemMaxWidth(BuildContext context) {
+    if (PlatformInfo.isMobile) {
+      return isMobile(context)
+        ? 260
+        : 240;
+    } else {
+      if (isTabletLarge(context)) {
+        return 200;
+      } else if (isTablet(context)) {
+        return 240;
+      } else {
+        return 260;
+      }
+    }
+  }
+
+  Size calculateWidgetSize(Widget widget) {
+    final PipelineOwner pipelineOwner = PipelineOwner();
+    final BuildOwner buildOwner = BuildOwner(focusManager: FocusManager());
+    
+    final RenderConstrainedBox renderBox = RenderConstrainedBox(
+      additionalConstraints: const BoxConstraints(),
+    )..layout(const BoxConstraints());
+
+    pipelineOwner.rootNode = renderBox;
+
+    final RenderObjectToWidgetElement<RenderBox> element = RenderObjectToWidgetAdapter<RenderBox>(
+      container: renderBox,
+      child: Directionality(
+        textDirection: TextDirection.ltr,
+        child: widget,
+      ),
+    ).attachToRenderTree(buildOwner);
+    
+    buildOwner.buildScope(element);
+    buildOwner.finalizeTree();
+    
+    pipelineOwner.flushLayout();
+    pipelineOwner.flushCompositingBits();
+    pipelineOwner.flushPaint();
+    
+    return renderBox.size;
+  }
 }
