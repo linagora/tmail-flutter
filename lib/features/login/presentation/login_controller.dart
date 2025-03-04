@@ -36,7 +36,6 @@ import 'package:tmail_ui_user/features/login/domain/state/get_all_recent_login_u
 import 'package:tmail_ui_user/features/login/domain/state/get_authenticated_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_authentication_info_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration_state.dart';
-import 'package:tmail_ui_user/features/login/domain/state/get_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
@@ -47,7 +46,6 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_logi
 import 'package:tmail_ui_user/features/login/domain/usecases/get_all_recent_login_username_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authentication_info_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_configuration_interactor.dart';
-import 'package:tmail_ui_user/features/login/domain/usecases/get_oidc_is_available_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_configuration_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
@@ -70,7 +68,6 @@ class LoginController extends ReloadableController {
 
   final AuthenticationInteractor _authenticationInteractor;
   final CheckOIDCIsAvailableInteractor _checkOIDCIsAvailableInteractor;
-  final GetOIDCIsAvailableInteractor _getOIDCIsAvailableInteractor;
   final GetOIDCConfigurationInteractor _getOIDCConfigurationInteractor;
   final GetTokenOIDCInteractor _getTokenOIDCInteractor;
   final AuthenticateOidcOnBrowserInteractor _authenticateOidcOnBrowserInteractor;
@@ -92,7 +89,6 @@ class LoginController extends ReloadableController {
 
   final loginFormType = LoginFormType.none.obs;
 
-  OIDCResponse? _oidcResponse;
   UserName? _username;
   Password? _password;
   Uri? _baseUri;
@@ -103,7 +99,6 @@ class LoginController extends ReloadableController {
   LoginController(
     this._authenticationInteractor,
     this._checkOIDCIsAvailableInteractor,
-    this._getOIDCIsAvailableInteractor,
     this._getOIDCConfigurationInteractor,
     this._getTokenOIDCInteractor,
     this._authenticateOidcOnBrowserInteractor,
@@ -153,7 +148,6 @@ class LoginController extends ReloadableController {
     } else if (failure is CheckOIDCIsAvailableFailure) {
       _handleCheckOIDCIsAvailableFailure(failure);
     } else if (failure is GetStoredOidcConfigurationFailure ||
-        failure is GetOIDCIsAvailableFailure ||
         failure is GetOIDCConfigurationFailure ||
         failure is SignInTwakeWorkplaceFailure
     ) {
@@ -182,10 +176,7 @@ class LoginController extends ReloadableController {
     } else if (success is GetStoredOidcConfigurationSuccess) {
       _getTokenOIDCAction(success.oidcConfiguration);
     } else if (success is CheckOIDCIsAvailableSuccess) {
-      _redirectToSSOLoginScreen(success);
-    } else if (success is GetOIDCIsAvailableSuccess) {
-      _oidcResponse = success.oidcResponse;
-      _getOIDCConfiguration();
+      _getOIDCConfiguration(success.oidcResponse);
     } else if (success is GetOIDCConfigurationSuccess) {
       _getOIDCConfigurationSuccess(success);
     } else if (success is GetTokenOIDCSuccess) {
@@ -212,7 +203,6 @@ class LoginController extends ReloadableController {
       _handleCheckOIDCIsAvailableFailure(failure);
     } else if (failure is GetStoredOidcConfigurationFailure ||
         failure is GetOIDCConfigurationFailure ||
-        failure is GetOIDCIsAvailableFailure ||
         failure is SignInTwakeWorkplaceFailure
     ) {
       _handleCommonOIDCFailure();
@@ -318,16 +308,6 @@ class LoginController extends ReloadableController {
     }
   }
 
-  void _redirectToSSOLoginScreen(CheckOIDCIsAvailableSuccess success) {
-    _oidcResponse = success.oidcResponse;
-    consumeState(_getOIDCIsAvailableInteractor.execute(
-      OIDCRequest(
-        baseUrl: _currentBaseUrl!.toString(),
-        resourceUrl: _currentBaseUrl!.origin
-      )
-    ));
-  }
-
   void handleBackButtonAction(BuildContext context) {
     KeyboardUtils.hideKeyboard(context);
     clearState();
@@ -388,12 +368,8 @@ class LoginController extends ReloadableController {
     }
   }
 
-  void _getOIDCConfiguration() {
-    if (_oidcResponse != null) {
-      consumeState(_getOIDCConfigurationInteractor.execute(_oidcResponse!));
-    } else {
-      dispatchState(Left(GetOIDCConfigurationFailure(CanNotFoundOIDCLinks())));
-    }
+  void _getOIDCConfiguration(OIDCResponse oidcResponse) {
+    consumeState(_getOIDCConfigurationInteractor.execute(oidcResponse));
   }
 
   void _getOIDCConfigurationSuccess(GetOIDCConfigurationSuccess success) {
