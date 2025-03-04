@@ -589,7 +589,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = t2.build$0();
       t3 = t4 ? _null : t3.value;
       t4 = type$.JSArray_Widget;
-      t3 = A._setArrayType([A.SelectableText$(t3 == null ? "" : t3, 1, D.TextStyle_69t14)], t4);
+      t3 = A._setArrayType([A.SelectableText$(t3 == null ? "" : t3, 1, D.TextStyle_69t14, _null)], t4);
       if (_this.subtitle != null) {
         t5 = A.Matrix4_Matrix4$translationValues(-8, 0, 0);
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
@@ -919,7 +919,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.push(t3.build$0());
       return A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 378
+    $signature: 379
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -1074,5 +1074,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "yJ8YQG81cIeOsEn2+cTYzNDumlg=");
+})($__dart_deferred_initializers__, "Im+l7PSebHlmYwHXZAEW95xmhUs=");
 ;
