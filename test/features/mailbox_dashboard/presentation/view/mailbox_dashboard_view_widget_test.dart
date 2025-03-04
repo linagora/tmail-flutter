@@ -352,7 +352,6 @@ void main() {
         getRestoredDeletedMessageInteractor,
         removeComposerCacheOnWebInteractor,
         getAllIdentitiesInteractor,
-        composerManager,
       );
       Get.put(mailboxDashboardController);
       mailboxDashboardController.onReady();
