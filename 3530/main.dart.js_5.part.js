@@ -9961,22 +9961,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return new A.LayoutBuilder(new B.EmailAttachmentsWidget_build_closure(this), null);
     },
     _getAttachmentDisplayed$2(context, maxWidth) {
-      var t1, pipelineOwner, buildOwner, renderBox, possibleNumberOfDisplayedAttachments, attachmentsAboutToDisplay0,
+      var t1, possibleNumberOfDisplayedAttachments, attachmentsAboutToDisplay0,
         attachmentsAboutToDisplay = this.attachments;
       if (J.get$length$asx(attachmentsAboutToDisplay.get$value(0)) <= 2)
         return attachmentsAboutToDisplay;
-      t1 = this._buildMoreAttachmentButton$3$padding(context, 100, C.EdgeInsets_12_8_12_8);
-      pipelineOwner = A.PipelineOwner$(null, null, null);
-      buildOwner = A.BuildOwner$(A.FocusManager$());
-      renderBox = A.RenderConstrainedBox$(C.BoxConstraints_86y0);
-      renderBox.layout$1(C.BoxConstraints_86y0);
-      pipelineOwner.set$rootNode(renderBox);
-      buildOwner.buildScope$1(new A.RenderObjectToWidgetAdapter(A.Directionality$(t1, C.TextDirection_1), renderBox, new A.GlobalObjectKey(renderBox, type$.GlobalObjectKey_State_StatefulWidget), type$.RenderObjectToWidgetAdapter_RenderBox).attachToRenderTree$1(buildOwner));
-      buildOwner.finalizeTree$0();
-      pipelineOwner.flushLayout$0();
-      pipelineOwner.flushCompositingBits$0();
-      pipelineOwner.flushPaint$0();
-      possibleNumberOfDisplayedAttachments = C.JSNumber_methods.$tdiv(maxWidth - renderBox.get$size(0)._dx, this.responsiveUtils.getAttachmentItemMaxWidth$1(context));
+      t1 = this.responsiveUtils;
+      possibleNumberOfDisplayedAttachments = C.JSNumber_methods.$tdiv(maxWidth - t1.calculateWidgetSize$2$constraints(this._buildMoreAttachmentButton$3$padding(context, 100, C.EdgeInsets_12_8_12_8), new A.BoxConstraints(0, maxWidth, 0, 1 / 0))._dx, t1.getAttachmentItemMaxWidth$1(context));
       if (J.get$length$asx(attachmentsAboutToDisplay.get$value(0)) === 3) {
         t1 = type$.MediaQuery;
         attachmentsAboutToDisplay0 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size._dx >= 1200 ? attachmentsAboutToDisplay : attachmentsAboutToDisplay.sublist$2(attachmentsAboutToDisplay, 0, 2);
@@ -22602,7 +22592,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       GestureRecognizerFactoryWithHandlers_TapAndPanGestureRecognizer: findType("GestureRecognizerFactoryWithHandlers<TapAndPanGestureRecognizer>"),
       GestureRecognizerFactoryWithHandlers_TapGestureRecognizer: findType("GestureRecognizerFactoryWithHandlers<TapGestureRecognizer>"),
       GestureRecognizerFactory_GestureRecognizer: findType("GestureRecognizerFactory<GestureRecognizer>"),
-      GlobalObjectKey_State_StatefulWidget: findType("GlobalObjectKey<State0<StatefulWidget>>"),
       Identity: findType("Identity"),
       ImagePaths: findType("ImagePaths"),
       JSArray_BoxShadow: findType("JSArray<BoxShadow>"),
@@ -22652,7 +22641,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       QuotasController: findType("QuotasController"),
       RecentSearch: findType("RecentSearch"),
       RenderBox: findType("RenderBox"),
-      RenderObjectToWidgetAdapter_RenderBox: findType("RenderObjectToWidgetAdapter<RenderBox>"),
       ResponsiveUtils: findType("ResponsiveUtils"),
       RestorableProperty_nullable_Object: findType("RestorableProperty<Object?>"),
       SearchController: findType("SearchController"),
@@ -23051,5 +23039,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "XMpnc1tJVjwc3FmlGGHurzt9kwk=");
+})($__dart_deferred_initializers__, "BEu8V0Pb5FI6uvs1MASN5+Ywa6U=");
 ;
