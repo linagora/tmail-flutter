@@ -2413,9 +2413,13 @@ class MailboxDashBoardController extends ReloadableController
     for (var error in listErrors) {
       if (error.type == SetError.tooLarge || error.type == SetError.overQuota) {
         if (isDrafts) {
-          _showToastSendMessageFailure(error.toastMessageForSaveEmailAsDraftFailure(currentContext!));
+          _showToastSendMessageFailure(error.toastMessageForSaveEmailAsDraftFailure(
+            appLocalizations: AppLocalizations.of(currentContext!),
+          ));
         } else {
-          _showToastSendMessageFailure(error.toastMessageForSendEmailFailure(currentContext!));
+          _showToastSendMessageFailure(error.toastMessageForSendEmailFailure(
+            appLocalizations: AppLocalizations.of(currentContext!),
+          ));
         }
         return true;
       }
