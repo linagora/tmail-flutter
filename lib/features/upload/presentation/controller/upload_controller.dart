@@ -193,24 +193,24 @@ class UploadController extends BaseController {
   }
 
   void initializeUploadAttachments(List<Attachment> attachments) {
-    final listUploadFilesState = attachments
-        .map((attachment) => UploadFileState(
-            UploadTaskId(attachment.blobId!.value),
-            uploadStatus: UploadFileStatus.succeed,
-            attachment: attachment))
-        .toList();
-    _uploadingStateFiles.addAll(listUploadFilesState);
+    _uploadingStateFiles.addAll(
+      attachments.map((attachment) => UploadFileState(
+        UploadTaskId(attachment.blobId!.value),
+        uploadStatus: UploadFileStatus.succeed,
+        attachment: attachment
+      ))
+    );
     _refreshListUploadAttachmentState();
   }
 
   void initializeUploadInlineAttachments(List<Attachment> inlineAttachments) {
-    final listUploadInlineImagesState = inlineAttachments
-        .map((inlineAttachment) => UploadFileState(
-            UploadTaskId(inlineAttachment.blobId!.value),
-            uploadStatus: UploadFileStatus.succeed,
-            attachment: inlineAttachment))
-        .toList();
-    _uploadingStateInlineFiles.addAll(listUploadInlineImagesState);
+    _uploadingStateInlineFiles.addAll(
+      inlineAttachments.map((inlineAttachment) => UploadFileState(
+        UploadTaskId(inlineAttachment.blobId!.value),
+        uploadStatus: UploadFileStatus.succeed,
+        attachment: inlineAttachment,
+      ))
+    );
     _refreshListUploadAttachmentState();
   }
 
@@ -428,45 +428,44 @@ class UploadController extends BaseController {
   }
 
   List<Attachment> get inlineAttachmentsUploaded {
-    if (_uploadingStateInlineFiles.uploadingStateFiles.isEmpty) {
-      return List.empty();
-    }
-    return _uploadingStateInlineFiles.uploadingStateFiles
-        .whereNotNull()
-        .map((fileState) => fileState.attachment)
-        .whereNotNull()
-        .where((attachment) => attachment.cid != null)
-        .toList();
+    return _uploadingStateInlineFiles.uploadingStateFiles.fold<List<Attachment>>(
+      [],
+      (list, fileState) {
+        final attachment = fileState?.attachment;
+        if (attachment?.cid != null) {
+          list.add(attachment!);
+        }
+        return list;
+      },
+    );
   }
 
   List<FileInfo> get inlineAttachmentsPicked {
-    if (_uploadingStateInlineFiles.uploadingStateFiles.isEmpty) {
-      return List.empty();
-    }
-    return _uploadingStateInlineFiles.uploadingStateFiles
-      .whereNotNull()
-      .map((fileState) => fileState.file)
-      .whereNotNull()
-      .toList();
+    return _uploadingStateInlineFiles.uploadingStateFiles.fold<List<FileInfo>>(
+      [],
+      (list, fileState) {
+        final file = fileState?.file;
+        if (file != null) {
+          list.add(file);
+        }
+        return list;
+      },
+    );
   }
 
   Map<String, Attachment> get mapInlineAttachments {
-    final inlineAttachments = _uploadingStateInlineFiles.uploadingStateFiles
-        .whereNotNull()
-        .map((fileState) => fileState.attachment)
-        .whereNotNull()
-        .where((attachment) => attachment.cid != null)
-        .toList();
+    final mapInlineAttachments = _uploadingStateInlineFiles.uploadingStateFiles.fold<Map<String, Attachment>>(
+      {},
+      (map, fileState) {
+        final attachment = fileState?.attachment;
+        if (attachment?.cid != null) {
+          map[attachment!.cid!] = attachment;
+        }
+        return map;
+      },
+    );
 
-    log('UploadController::mapInlineAttachments(): $inlineAttachments');
-
-    if (inlineAttachments.isEmpty) {
-      return {};
-    }
-
-    final mapInlineAttachments = {
-      for (var item in inlineAttachments) item.cid!: item
-    };
+    log('UploadController::mapInlineAttachments(): Found ${mapInlineAttachments.length} inline attachments.');
 
     return mapInlineAttachments;
   }

@@ -13,6 +13,7 @@ extension DetailedEmailHiveCacheExtension on DetailedEmailHiveCache {
       emailId: EmailId(Id(emailId)),
       createdTime: timeSaved,
       attachments: attachments?.toAttachment(),
+      emailContentPath: emailContentPath,
       headers: headers?.toSetEmailHeader(),
       keywords: keywords != null
         ? Map.fromIterables(keywords!.keys.map((value) => KeyWordIdentifier(value)), keywords!.values)

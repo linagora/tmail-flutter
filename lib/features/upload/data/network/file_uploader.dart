@@ -19,7 +19,6 @@ import 'package:tmail_ui_user/features/base/isolate/background_isolate_binary_me
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
 import 'package:tmail_ui_user/features/upload/data/model/upload_file_arguments.dart';
 import 'package:tmail_ui_user/features/upload/domain/exceptions/upload_exception.dart';
-import 'package:tmail_ui_user/features/upload/domain/extensions/file_info_extension.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/main/exceptions/isolate_exception.dart';
@@ -43,31 +42,33 @@ class FileUploader {
 
   Future<Attachment> uploadAttachment(
       UploadTaskId uploadId,
-      StreamController<Either<Failure, Success>> onSendController,
       FileInfo fileInfo,
       Uri uploadUri,
-      {CancelToken? cancelToken}
+      {
+        CancelToken? cancelToken,
+        StreamController<Either<Failure, Success>>? onSendController,
+      }
   ) async {
     if (PlatformInfo.isWeb) {
       return _handleUploadAttachmentActionOnWeb(
           uploadId,
-          onSendController,
           fileInfo,
           uploadUri,
-          cancelToken: cancelToken);
+          cancelToken: cancelToken,
+          onSendController: onSendController,
+      );
     } else {
       final rootIsolateToken = RootIsolateToken.instance;
       if (rootIsolateToken == null) {
         throw CanNotGetRootIsolateToken();
       }
 
-      final mobileFileUpload = fileInfo.toMobileFileUpload();
       return await _isolateExecutor.execute(
         arg1: UploadFileArguments(
           _dioClient,
           _fileUtils,
           uploadId,
-          mobileFileUpload,
+          fileInfo,
           uploadUri,
           rootIsolateToken,
         ),
@@ -75,7 +76,7 @@ class FileUploader {
         notification: (value) {
           if (value is Success) {
             log('FileUploader::uploadAttachment(): onUpdateProgress: $value');
-            onSendController.add(Right(value));
+            onSendController?.add(Right(value));
           }
         }
       )
@@ -94,12 +95,15 @@ class FileUploader {
       await HiveCacheConfig.instance.setUp();
 
       final headerParam = argsUpload.dioClient.getHeaders();
-      headerParam[HttpHeaders.contentTypeHeader] = argsUpload.mobileFileUpload.mimeType;
-      headerParam[HttpHeaders.contentLengthHeader] = argsUpload.mobileFileUpload.fileSize;
+      headerParam[HttpHeaders.contentTypeHeader] = argsUpload.fileInfo.mimeType;
+      headerParam[HttpHeaders.contentLengthHeader] = argsUpload.fileInfo.fileSize;
 
       final mapExtra = <String, dynamic>{
         uploadAttachmentExtraKey: {
-          filePathExtraKey: argsUpload.mobileFileUpload.filePath,
+          if (argsUpload.fileInfo.filePath?.isNotEmpty == true)
+            filePathExtraKey: argsUpload.fileInfo.filePath,
+          if (argsUpload.fileInfo.bytes?.isNotEmpty == true)
+            streamDataExtraKey: BodyBytesStream.fromBytes(argsUpload.fileInfo.bytes!),
         }
       };
 
@@ -109,31 +113,39 @@ class FileUploader {
           headers: headerParam,
           extra: mapExtra
         ),
-        data: File(argsUpload.mobileFileUpload.filePath).openRead(),
+        data: argsUpload.fileInfo.filePath?.isNotEmpty == true
+          ? File(argsUpload.fileInfo.filePath!).openRead()
+          : argsUpload.fileInfo.bytes != null
+              ? BodyBytesStream.fromBytes(argsUpload.fileInfo.bytes!)
+              : null,
         onSendProgress: (count, total) {
           log('FileUploader::_handleUploadAttachmentAction():onSendProgress: FILE[${argsUpload.uploadId.id}] : { PROGRESS = $count | TOTAL = $total}');
           sendPort.send(
             UploadingAttachmentUploadState(
               argsUpload.uploadId,
               count,
-              argsUpload.mobileFileUpload.fileSize
+              argsUpload.fileInfo.fileSize
             )
           );
         }
       );
       log('FileUploader::_handleUploadAttachmentAction(): RESULT_JSON = $resultJson');
-      if (argsUpload.mobileFileUpload.mimeType == FileUtils.TEXT_PLAIN_MIME_TYPE) {
-        final fileCharset = await argsUpload.fileUtils.getCharsetFromBytes(
-          File(argsUpload.mobileFileUpload.filePath).readAsBytesSync()
-        );
+      if (argsUpload.fileInfo.mimeType == FileUtils.TEXT_PLAIN_MIME_TYPE) {
+        final fileBytes = argsUpload.fileInfo.filePath?.isNotEmpty == true
+          ? File(argsUpload.fileInfo.filePath!).readAsBytesSync()
+          : argsUpload.fileInfo.bytes;
+
+        final fileCharset = fileBytes != null
+          ? await argsUpload.fileUtils.getCharsetFromBytes(fileBytes)
+          : null;
         return _parsingResponse(
           resultJson: resultJson,
-          fileName: argsUpload.mobileFileUpload.fileName,
-          fileCharset: fileCharset.toLowerCase());
+          fileName: argsUpload.fileInfo.fileName,
+          fileCharset: fileCharset?.toLowerCase());
       } else {
         return _parsingResponse(
           resultJson: resultJson,
-          fileName: argsUpload.mobileFileUpload.fileName);
+          fileName: argsUpload.fileInfo.fileName);
       }
     } on DioError catch (exception) {
       logError('FileUploader::_handleUploadAttachmentAction():DioError: $exception');
@@ -149,10 +161,12 @@ class FileUploader {
 
   Future<Attachment> _handleUploadAttachmentActionOnWeb(
     UploadTaskId uploadId,
-    StreamController<Either<Failure, Success>> onSendController,
     FileInfo fileInfo,
     Uri uploadUri,
-    {CancelToken? cancelToken}
+    {
+      CancelToken? cancelToken,
+      StreamController<Either<Failure, Success>>? onSendController,
+    }
   ) async {
     final headerParam = _dioClient.getHeaders();
     headerParam[HttpHeaders.contentTypeHeader] = fileInfo.mimeType;
@@ -160,7 +174,8 @@ class FileUploader {
 
     final mapExtra = <String, dynamic>{
       uploadAttachmentExtraKey: {
-        streamDataExtraKey: BodyBytesStream.fromBytes(fileInfo.bytes!),
+        if (fileInfo.bytes?.isNotEmpty == true)
+          streamDataExtraKey: BodyBytesStream.fromBytes(fileInfo.bytes!),
       }
     };
 
@@ -174,7 +189,7 @@ class FileUploader {
       cancelToken: cancelToken,
       onSendProgress: (count, total) {
         log('FileUploader::_handleUploadAttachmentActionOnWeb():onSendProgress: FILE[${uploadId.id}] : { PROGRESS = $count | TOTAL = $total}');
-        onSendController.add(
+        onSendController?.add(
           Right(UploadingAttachmentUploadState(
             uploadId,
             count,

@@ -54,15 +54,14 @@ class ComposerRepositoryImpl extends ComposerRepository {
     String emailContent = createEmailRequest.emailContent;
     Set<EmailBodyPart> emailAttachments = Set.from(createEmailRequest.createAttachments());
 
-    if (createEmailRequest.inlineAttachments?.isNotEmpty == true) {
-      final tupleContentInlineAttachments = await _replaceImageBase64ToImageCID(
-        emailContent: emailContent,
-        inlineAttachments: createEmailRequest.inlineAttachments!
-      );
+    final tupleContentInlineAttachments = await _replaceImageBase64ToImageCID(
+      emailContent: emailContent,
+      inlineAttachments: createEmailRequest.inlineAttachments ?? {},
+      uploadUri: createEmailRequest.uploadUri,
+    );
 
-      emailContent = tupleContentInlineAttachments.value1;
-      emailAttachments.addAll(tupleContentInlineAttachments.value2);
-    }
+    emailContent = tupleContentInlineAttachments.value1;
+    emailAttachments.addAll(tupleContentInlineAttachments.value2);
 
     emailContent = await _removeCollapsedExpandedSignatureEffect(emailContent: emailContent);
 
@@ -83,18 +82,23 @@ class ComposerRepositoryImpl extends ComposerRepository {
 
   Future<Tuple2<String, Set<EmailBodyPart>>> _replaceImageBase64ToImageCID({
     required String emailContent,
-    required Map<String, Attachment> inlineAttachments
+    required Map<String, Attachment> inlineAttachments,
+    required Uri? uploadUri,
   }) {
     try {
       return _htmlDataSource.replaceImageBase64ToImageCID(
         emailContent: emailContent,
-        inlineAttachments: inlineAttachments);
+        inlineAttachments: inlineAttachments,
+        uploadUri: uploadUri,
+      );
     } catch (e) {
       logError('ComposerRepositoryImpl::_replaceImageBase64ToImageCID: Exception: $e');
       return Future.value(
         Tuple2(
           emailContent,
-          inlineAttachments.values.toList().toEmailBodyPart(charset: Constant.base64Charset)
+          inlineAttachments.isNotEmpty
+            ? inlineAttachments.values.toList().toEmailBodyPart(charset: Constant.base64Charset)
+            : {},
         )
       );
     }

@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:core/domain/exceptions/string_exception.dart';
+import 'package:http_parser/http_parser.dart';
 
 class StringConvert {
   static const String separatorPattern = r'[ ,;]+';
@@ -72,5 +73,30 @@ class StringConvert {
 
   static String toUrlScheme(String hostScheme) {
     return '$hostScheme://';
+  }
+
+  static Uint8List convertBase64ImageTagToBytes(String base64ImageTag) {
+    if (!base64ImageTag.contains('base64,')) {
+      throw ArgumentError('The string is not valid Base64 data from an <img> tag.');
+    }
+
+    final base64Data = base64ImageTag.split(',').last;
+
+    return base64Decode(base64Data);
+  }
+
+  static MediaType? getMediaTypeFromBase64ImageTag(String base64ImageTag) {
+    try {
+      if (!base64ImageTag.startsWith("data:") || !base64ImageTag.contains(";base64,")) {
+        return null;
+      }
+
+      final mimeType = base64ImageTag.split(";")[0].split(":")[1];
+      log('StringConvert::getMediaTypeFromBase64ImageTag:mimeType = $mimeType');
+      return MediaType.parse(mimeType);
+    } catch (e) {
+      logError('StringConvert::getMimeTypeFromBase64ImageTag:Exception = $e');
+      return null;
+    }
   }
 }

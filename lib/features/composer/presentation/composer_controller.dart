@@ -20,6 +20,7 @@ import 'package:html/parser.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -474,24 +475,35 @@ class ComposerController extends BaseController
       mailboxDashBoardController.sessionCurrent!.username);
   }
 
+  Uri? _getUploadUriFromSession(Session session, AccountId accountId) {
+    try {
+      return session.getUploadUri(accountId, jmapUrl: dynamicUrlInterceptors.jmapUrl);
+    } catch (e) {
+      logError('ComposerController::_getUploadUriFromSession:Exception = $e');
+      return null;
+    }
+  }
+
   Future<CreateEmailRequest?> _generateCreateEmailRequest() async {
-    if (composerArguments.value == null ||
-        mailboxDashBoardController.sessionCurrent == null ||
-        mailboxDashBoardController.accountId.value == null
-    ) {
+    final arguments = composerArguments.value;
+    final session = mailboxDashBoardController.sessionCurrent;
+    final accountId = mailboxDashBoardController.accountId.value;
+
+    if (arguments == null || session == null || accountId == null) {
       log('ComposerController::_generateCreateEmailRequest: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
       return null;
     }
     
     final emailContent = await getContentInEditor();
-    
+    final uploadUri = _getUploadUriFromSession(session, accountId);
+
     return CreateEmailRequest(
-      session: mailboxDashBoardController.sessionCurrent!,
-      accountId: mailboxDashBoardController.accountId.value!,
-      emailActionType: composerArguments.value!.emailActionType,
+      session: session,
+      accountId: accountId,
+      emailActionType: arguments.emailActionType,
       subject: subjectEmail.value ?? '',
       emailContent: emailContent,
-      fromSender: composerArguments.value!.presentationEmail?.from ?? {},
+      fromSender: arguments.presentationEmail?.from ?? {},
       toRecipients: listToEmailAddress.toSet(),
       ccRecipients: listCcEmailAddress.toSet(),
       bccRecipients: listBccEmailAddress.toSet(),
@@ -505,12 +517,13 @@ class ComposerController extends BaseController
       sentMailboxId: getSentMailboxIdForComposer(),
       draftsMailboxId: getDraftMailboxIdForComposer(),
       draftsEmailId: getDraftEmailId(),
-      answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
-      unsubscribeEmailId: composerArguments.value!.previousEmailId,
-      messageId: composerArguments.value!.messageId,
-      references: composerArguments.value!.references,
-      emailSendingQueue: composerArguments.value!.sendingEmail,
-      displayMode: screenDisplayMode.value
+      answerForwardEmailId: arguments.presentationEmail?.id,
+      unsubscribeEmailId: arguments.previousEmailId,
+      messageId: arguments.messageId,
+      references: arguments.references,
+      emailSendingQueue: arguments.sendingEmail,
+      displayMode: screenDisplayMode.value,
+      uploadUri: uploadUri,
     );
   }
 
@@ -1043,10 +1056,11 @@ class ComposerController extends BaseController
   }
 
   void _handleSendMessages(BuildContext context) async {
-    if (composerArguments.value == null ||
-        mailboxDashBoardController.sessionCurrent == null ||
-        mailboxDashBoardController.accountId.value == null
-    ) {
+    final arguments = composerArguments.value;
+    final session = mailboxDashBoardController.sessionCurrent;
+    final accountId = mailboxDashBoardController.accountId.value;
+
+    if (arguments == null || session == null || accountId == null) {
       log('ComposerController::_handleSendMessages: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
       _sendButtonState = ButtonState.enabled;
       _closeComposerAction(closeOverlays: true);
@@ -1058,9 +1072,14 @@ class ComposerController extends BaseController
     }
 
     final emailContent = await getContentInEditor();
+    final uploadUri = _getUploadUriFromSession(session, accountId);
     final cancelToken = CancelToken();
     final resultState = await _showSendingMessageDialog(
+      session: session,
+      accountId: accountId,
+      arguments: arguments,
       emailContent: emailContent,
+      uploadUri: uploadUri,
       cancelToken: cancelToken
     );
     log('ComposerController::_handleSendMessages: resultState = $resultState');
@@ -1080,18 +1099,22 @@ class ComposerController extends BaseController
   }
 
   Future<dynamic> _showSendingMessageDialog({
+    required Session session,
+    required AccountId accountId,
+    required ComposerArguments arguments,
     required String emailContent,
-    CancelToken? cancelToken
+    required Uri? uploadUri,
+    CancelToken? cancelToken,
   }) {
     final childWidget = PointerInterceptor(
       child: SendingMessageDialogView(
         createEmailRequest: CreateEmailRequest(
-          session: mailboxDashBoardController.sessionCurrent!,
-          accountId: mailboxDashBoardController.accountId.value!,
-          emailActionType: composerArguments.value!.emailActionType,
+          session: session,
+          accountId: accountId,
+          emailActionType: arguments.emailActionType,
           subject: subjectEmail.value ?? '',
           emailContent: emailContent,
-          fromSender: composerArguments.value!.presentationEmail?.from ?? {},
+          fromSender: arguments.presentationEmail?.from ?? {},
           toRecipients: listToEmailAddress.toSet(),
           ccRecipients: listCcEmailAddress.toSet(),
           bccRecipients: listBccEmailAddress.toSet(),
@@ -1104,12 +1127,13 @@ class ComposerController extends BaseController
           outboxMailboxId: getOutboxMailboxIdForComposer(),
           sentMailboxId: getSentMailboxIdForComposer(),
           draftsEmailId: getDraftEmailId(),
-          answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
-          unsubscribeEmailId: composerArguments.value!.previousEmailId,
-          messageId: composerArguments.value!.messageId,
-          references: composerArguments.value!.references,
-          emailSendingQueue: composerArguments.value!.sendingEmail,
-          displayMode: screenDisplayMode.value
+          answerForwardEmailId: arguments.presentationEmail?.id,
+          unsubscribeEmailId: arguments.previousEmailId,
+          messageId: arguments.messageId,
+          references: arguments.references,
+          emailSendingQueue: arguments.sendingEmail,
+          displayMode: screenDisplayMode.value,
+          uploadUri: uploadUri,
         ),
         createNewAndSendEmailInteractor: _createNewAndSendEmailInteractor,
         onCancelSendingEmailAction: _handleCancelSendingMessage,
@@ -1350,9 +1374,13 @@ class ComposerController extends BaseController
 
     _saveToDraftButtonState = ButtonState.disabled;
 
-    if (composerArguments.value == null ||
-        mailboxDashBoardController.sessionCurrent == null ||
-        mailboxDashBoardController.accountId.value == null ||
+    final arguments = composerArguments.value;
+    final session = mailboxDashBoardController.sessionCurrent;
+    final accountId = mailboxDashBoardController.accountId.value;
+
+    if (arguments == null ||
+        session == null ||
+        accountId == null ||
         getDraftMailboxIdForComposer() == null
     ) {
       log('ComposerController::handleClickSaveAsDraftsButton: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
@@ -1361,9 +1389,14 @@ class ComposerController extends BaseController
     }
 
     final emailContent = await getContentInEditor();
+    final uploadUri = _getUploadUriFromSession(session, accountId);
     final cancelToken = CancelToken();
     final resultState = await _showSavingMessageToDraftsDialog(
+      session: session,
+      accountId: accountId,
+      arguments: arguments,
       emailContent: emailContent,
+      uploadUri: uploadUri,
       draftEmailId: _emailIdEditing,
       cancelToken: cancelToken
     );
@@ -2291,9 +2324,13 @@ class ComposerController extends BaseController
   }
 
   void _handleSaveMessageToDraft(BuildContext context) async {
-    if (composerArguments.value == null ||
-        mailboxDashBoardController.sessionCurrent == null ||
-        mailboxDashBoardController.accountId.value == null ||
+    final arguments = composerArguments.value;
+    final session = mailboxDashBoardController.sessionCurrent;
+    final accountId = mailboxDashBoardController.accountId.value;
+
+    if (arguments == null ||
+        session == null ||
+        accountId == null ||
         getDraftMailboxIdForComposer() == null
     ) {
       log('ComposerController::_handleSaveMessageToDraft: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
@@ -2305,11 +2342,16 @@ class ComposerController extends BaseController
     popBack();
 
     final emailContent = await getContentInEditor();
+    final uploadUri = _getUploadUriFromSession(session, accountId);
     final draftEmailId = getDraftEmailId();
     log('ComposerController::_handleSaveMessageToDraft: draftEmailId = $draftEmailId');
     final cancelToken = CancelToken();
     final resultState = await _showSavingMessageToDraftsDialog(
+      session: session,
+      accountId: accountId,
+      arguments: arguments,
       emailContent: emailContent,
+      uploadUri: uploadUri,
       draftEmailId: draftEmailId,
       cancelToken: cancelToken
     );
@@ -2346,19 +2388,23 @@ class ComposerController extends BaseController
   }
 
   Future<dynamic> _showSavingMessageToDraftsDialog({
+    required Session session,
+    required AccountId accountId,
+    required ComposerArguments arguments,
     required String emailContent,
+    required Uri? uploadUri,
     EmailId? draftEmailId,
     CancelToken? cancelToken,
   }) {
     final childWidget = PointerInterceptor(
       child: SavingMessageDialogView(
         createEmailRequest: CreateEmailRequest(
-          session: mailboxDashBoardController.sessionCurrent!,
-          accountId: mailboxDashBoardController.accountId.value!,
-          emailActionType: composerArguments.value!.emailActionType,
+          session: session,
+          accountId: accountId,
+          emailActionType: arguments.emailActionType,
           subject: subjectEmail.value ?? '',
           emailContent: emailContent,
-          fromSender: composerArguments.value!.presentationEmail?.from ?? {},
+          fromSender: arguments.presentationEmail?.from ?? {},
           toRecipients: listToEmailAddress.toSet(),
           ccRecipients: listCcEmailAddress.toSet(),
           bccRecipients: listBccEmailAddress.toSet(),
@@ -2371,12 +2417,13 @@ class ComposerController extends BaseController
           sentMailboxId: getSentMailboxIdForComposer(),
           draftsMailboxId: getDraftMailboxIdForComposer(),
           draftsEmailId: draftEmailId,
-          answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
-          unsubscribeEmailId: composerArguments.value!.previousEmailId,
-          messageId: composerArguments.value!.messageId,
-          references: composerArguments.value!.references,
-          emailSendingQueue: composerArguments.value!.sendingEmail,
-          displayMode: screenDisplayMode.value
+          answerForwardEmailId: arguments.presentationEmail?.id,
+          unsubscribeEmailId: arguments.previousEmailId,
+          messageId: arguments.messageId,
+          references: arguments.references,
+          emailSendingQueue: arguments.sendingEmail,
+          displayMode: screenDisplayMode.value,
+          uploadUri: uploadUri,
         ),
         createNewAndSaveEmailToDraftsInteractor: _createNewAndSaveEmailToDraftsInteractor,
         onCancelSavingEmailToDraftsAction: _handleCancelSavingMessageToDrafts,

@@ -1,7 +1,5 @@
-import 'package:core/data/network/dio_client.dart';
 import 'package:core/data/network/download/download_client.dart';
 import 'package:core/utils/application_manager.dart';
-import 'package:core/utils/file_utils.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
@@ -29,7 +27,6 @@ import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:uuid/uuid.dart';
-import 'package:worker_manager/worker_manager.dart';
 
 class PublicAssetBindings extends BaseBindings {
   PublicAssetBindings(this._publicAssetArguments);
@@ -38,12 +35,6 @@ class PublicAssetBindings extends BaseBindings {
 
   @override
   void dependencies() {
-    Get.lazyPut(
-      () => FileUploader(
-              Get.find<DioClient>(tag: BindingTag.isolateTag),
-              Get.find<Executor>(),
-              Get.find<FileUtils>()),
-      tag: BindingTag.publicAssetBindingsTag);
     Get.lazyPut(
       () => PublicAssetApi(Get.find<HttpClient>(), Get.find<Uuid>()),
       tag: BindingTag.publicAssetBindingsTag);
@@ -82,7 +73,7 @@ class PublicAssetBindings extends BaseBindings {
   void bindingsDataSourceImpl() {
     Get.lazyPut(
       () => AttachmentUploadDataSourceImpl(
-        Get.find<FileUploader>(tag: BindingTag.publicAssetBindingsTag),
+        Get.find<FileUploader>(),
         Get.find<Uuid>(),
         Get.find<RemoteExceptionThrower>()),
       tag: BindingTag.publicAssetBindingsTag);

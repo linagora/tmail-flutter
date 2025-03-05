@@ -37,10 +37,12 @@ import 'package:tmail_ui_user/features/push_notification/data/network/web_socket
 import 'package:tmail_ui_user/features/quotas/data/network/quotas_api.dart';
 import 'package:tmail_ui_user/features/server_settings/data/network/server_settings_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
+import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/send_email_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:uuid/uuid.dart';
+import 'package:worker_manager/worker_manager.dart';
 
 class NetworkBindings extends Bindings {
 
@@ -84,6 +86,7 @@ class NetworkBindings extends Bindings {
       Get.find<OIDCHttpClient>(),
       Get.find<MailboxCacheManager>(),
     ));
+    Get.put(Executor());
   }
 
   void _bindingInterceptors() {
@@ -126,6 +129,11 @@ class NetworkBindings extends Bindings {
     Get.put(ServerSettingsAPI(Get.find<HttpClient>()));
     Get.put(WebSocketApi(Get.find<DioClient>()));
     Get.put(LinagoraEcosystemApi(Get.find<DioClient>()));
+    Get.put(FileUploader(
+      Get.find<DioClient>(),
+      Get.find<Executor>(),
+      Get.find<FileUtils>(),
+    ));
   }
 
   void _bindingConnection() {
@@ -140,7 +148,11 @@ class NetworkBindings extends Bindings {
   void _bindingTransformer() {
     Get.put(const HtmlEscape());
     Get.put(HtmlTransform(Get.find<DioClient>(), Get.find<HtmlEscape>()));
-    Get.put(HtmlAnalyzer(Get.find<HtmlTransform>()));
+    Get.put(HtmlAnalyzer(
+      Get.find<HtmlTransform>(),
+      Get.find<FileUploader>(),
+      Get.find<Uuid>(),
+    ));
   }
 
   void _bindingServices() {

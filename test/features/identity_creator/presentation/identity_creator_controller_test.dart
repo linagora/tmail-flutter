@@ -45,6 +45,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/profiles/iden
 import 'package:tmail_ui_user/features/public_asset/domain/model/public_assets_in_identity_arguments.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/usecase/create_public_asset_interactor.dart';
 import 'package:tmail_ui_user/features/public_asset/domain/usecase/delete_public_assets_interactor.dart';
+import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart';
@@ -78,6 +79,7 @@ import 'identity_creator_controller_test.mocks.dart';
   MockSpec<DioClient>(),
   MockSpec<Executor>(),
   MockSpec<FileUtils>(),
+  MockSpec<FileUploader>(),
   MockSpec<RemoteExceptionThrower>(),
   MockSpec<DownloadClient>(),
   MockSpec<HtmlAnalyzer>(),
@@ -163,6 +165,7 @@ void main() {
     Get.put<DioClient>(MockDioClient(), tag: BindingTag.isolateTag);
     Get.put<Executor>(MockExecutor());
     Get.put<FileUtils>(MockFileUtils());
+    Get.put<FileUploader>(MockFileUploader());
     Get.put<RemoteExceptionThrower>(MockRemoteExceptionThrower());
     Get.put<DownloadClient>(MockDownloadClient());
     Get.put<HtmlAnalyzer>(MockHtmlAnalyzer());
