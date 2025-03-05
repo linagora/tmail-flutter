@@ -273,4 +273,26 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
   Future<DownloadedResponse> exportAllAttachments(AccountId accountId, EmailId emailId, String baseDownloadAllUrl, String outputFileName, AccountRequest accountRequest, {CancelToken? cancelToken}) {
     throw UnimplementedError();
   }
+  
+  @override
+  Future<Email> saveEmailAsTemplate(
+    Session session,
+    AccountId accountId,
+    Email email, {
+    CreateNewMailboxRequest? createNewMailboxRequest,
+    CancelToken? cancelToken,
+  }) {
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<Email> updateEmailTemplate(
+    Session session,
+    AccountId accountId,
+    Email newEmail,
+    EmailId oldEmailId, {
+    CancelToken? cancelToken,
+  }) {
+    throw UnimplementedError();
+  }
 }

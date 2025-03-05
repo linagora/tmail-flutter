@@ -27,6 +27,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
   final VoidCallback toggleRequestReadReceiptAction;
   final VoidCallback printDraftAction;
   final VoidCallback saveToDraftsAction;
+  final VoidCallback saveToTemplateAction;
   final VoidCallback deleteComposerAction;
 
   const MobileResponsiveAppBarComposerWidget({
@@ -47,6 +48,7 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
     required this.toggleRequestReadReceiptAction,
     required this.printDraftAction,
     required this.saveToDraftsAction,
+    required this.saveToTemplateAction,
     required this.deleteComposerAction,
   });
 
@@ -168,6 +170,17 @@ class MobileResponsiveAppBarComposerWidget extends StatelessWidget {
                     menuMoreOptionController.hideMenu();
                     saveToDraftsAction();
                   },
+              ),
+              PopupItemWidget(
+                iconAction: imagePaths.icSaveToDraft,
+                nameAction: AppLocalizations.of(context).saveAsTemplate,
+                colorIcon: MobileAppBarComposerWidgetStyle.popupItemIconColor,
+                styleName: MobileAppBarComposerWidgetStyle.popupItemTextStyle,
+                padding: MobileAppBarComposerWidgetStyle.popupItemPadding,
+                onCallbackAction: () {
+                  menuMoreOptionController.hideMenu();
+                  saveToTemplateAction();
+                },
               ),
               PopupItemWidget(
                 iconAction: imagePaths.icDeleteMailbox,

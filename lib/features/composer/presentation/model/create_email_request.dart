@@ -30,7 +30,9 @@ class CreateEmailRequest with EquatableMixin {
   final MailboxId? outboxMailboxId;
   final MailboxId? sentMailboxId;
   final MailboxId? draftsMailboxId;
+  final MailboxId? templateMailboxId;
   final EmailId? draftsEmailId;
+  final EmailId? templateEmailId;
   final EmailId? answerForwardEmailId;
   final EmailId? unsubscribeEmailId;
   final MessageIdsHeaderValue? messageId;
@@ -56,7 +58,9 @@ class CreateEmailRequest with EquatableMixin {
     this.outboxMailboxId,
     this.sentMailboxId,
     this.draftsMailboxId,
+    this.templateMailboxId,
     this.draftsEmailId,
+    this.templateEmailId,
     this.answerForwardEmailId,
     this.unsubscribeEmailId,
     this.messageId,
@@ -84,7 +88,9 @@ class CreateEmailRequest with EquatableMixin {
     outboxMailboxId,
     sentMailboxId,
     draftsMailboxId,
+    templateMailboxId,
     draftsEmailId,
+    templateEmailId,
     answerForwardEmailId,
     unsubscribeEmailId,
     references,

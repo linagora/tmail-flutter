@@ -41,16 +41,17 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.d
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/formatting_options_state.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/saved_email_draft.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/saved_composing_email.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/save_template_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
+  import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -163,6 +164,7 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   MockSpec<CreateNewAndSendEmailInteractor>(),
   MockSpec<CreateNewAndSaveEmailToDraftsInteractor>(),
   MockSpec<PrintEmailInteractor>(),
+  MockSpec<SaveTemplateEmailInteractor>(),
 
   // Additional Getx dependencies mock specs
   MockSpec<NetworkConnectionController>(fallbackGenerators: fallbackGenerators),
@@ -206,6 +208,7 @@ void main() {
   late MockCreateNewAndSendEmailInteractor mockCreateNewAndSendEmailInteractor;
   late MockCreateNewAndSaveEmailToDraftsInteractor mockCreateNewAndSaveEmailToDraftsInteractor;
   late MockPrintEmailInteractor mockPrintEmailInteractor;
+  late MockSaveTemplateEmailInteractor mockSaveTemplateEmailInteractor;
 
   // Declaration Getx dependencies
   final mockMailboxDashBoardController = MockMailboxDashBoardController();
@@ -274,6 +277,7 @@ void main() {
     mockCreateNewAndSendEmailInteractor = MockCreateNewAndSendEmailInteractor();
     mockCreateNewAndSaveEmailToDraftsInteractor = MockCreateNewAndSaveEmailToDraftsInteractor();
     mockPrintEmailInteractor = MockPrintEmailInteractor();
+    mockSaveTemplateEmailInteractor = MockSaveTemplateEmailInteractor();
 
     composerController = ComposerController(
       mockLocalFilePickerInteractor,
@@ -289,6 +293,7 @@ void main() {
       mockCreateNewAndSendEmailInteractor,
       mockCreateNewAndSaveEmailToDraftsInteractor,
       mockPrintEmailInteractor,
+      mockSaveTemplateEmailInteractor,
     );
 
     mockHtmlEditorApi = MockHtmlEditorApi();
@@ -338,7 +343,7 @@ void main() {
           final state = GetAlwaysReadReceiptSettingSuccess(
             alwaysReadReceiptEnabled: alwaysReadReceiptEnabled);
 
-          final savedEmailDraft = SavedEmailDraft(
+          final savedEmailDraft = SavedComposingEmail(
             content: emailContent,
             subject: emailSubject,
             toRecipients: {toRecipient},
@@ -378,7 +383,7 @@ void main() {
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
           final state = GetAlwaysReadReceiptSettingFailure(Exception());
 
-          final savedEmailDraft = SavedEmailDraft(
+          final savedEmailDraft = SavedComposingEmail(
             content: emailContent,
             subject: emailSubject,
             toRecipients: {toRecipient},
@@ -421,7 +426,7 @@ void main() {
               selectedIdentityId: selectedIdentity.id,
               identities: [selectedIdentity]));
 
-          final savedEmailDraft = SavedEmailDraft(
+          final savedEmailDraft = SavedComposingEmail(
             content: emailContent,
             subject: emailSubject,
             toRecipients: {toRecipient},
@@ -463,7 +468,7 @@ void main() {
             ComposerArguments(identities: [identity]));
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
 
-          final savedEmailDraft = SavedEmailDraft(
+          final savedEmailDraft = SavedComposingEmail(
             content: emailContent,
             subject: emailSubject,
             toRecipients: {toRecipient},
@@ -512,7 +517,7 @@ void main() {
             (_) => Stream.value(
               Right(GetAllIdentitiesSuccess([selectedIdentity], null))));
 
-          final savedEmailDraft = SavedEmailDraft(
+          final savedEmailDraft = SavedComposingEmail(
             content: emailContent,
             subject: emailSubject,
             toRecipients: {toRecipient},
@@ -561,7 +566,7 @@ void main() {
             (_) => Stream.value(
               Right(GetAllIdentitiesSuccess([identity], null))));
 
-          final savedEmailDraft = SavedEmailDraft(
+          final savedEmailDraft = SavedComposingEmail(
             content: emailContent,
             subject: emailSubject,
             toRecipients: {toRecipient},
@@ -620,7 +625,7 @@ void main() {
               .thenAnswer((_) => Stream.value(
                 Right(SaveEmailAsDraftsSuccess(EmailId(Id('123')), null))));
 
-            final savedEmailDraft = SavedEmailDraft(
+            final savedEmailDraft = SavedComposingEmail(
               content: emailContent,
               subject: emailSubject,
               toRecipients: {toRecipient},
@@ -693,7 +698,7 @@ void main() {
               .thenAnswer((_) => Stream.value(
                 Right(UpdateEmailDraftsSuccess(EmailId(Id('123'))))));
 
-            final savedEmailDraft = SavedEmailDraft(
+            final savedEmailDraft = SavedComposingEmail(
               content: emailContent,
               subject: emailSubject,
               toRecipients: {toRecipient},
@@ -760,7 +765,7 @@ void main() {
           final state = GetAlwaysReadReceiptSettingSuccess(
             alwaysReadReceiptEnabled: alwaysReadReceiptEnabled);
 
-          final savedEmailDraft = SavedEmailDraft(
+          final savedEmailDraft = SavedComposingEmail(
             content: emailContent,
             subject: emailSubject,
             toRecipients: {toRecipient},
@@ -801,7 +806,7 @@ void main() {
 
           final state = GetAlwaysReadReceiptSettingFailure(Exception());
 
-          final savedEmailDraft = SavedEmailDraft(
+          final savedEmailDraft = SavedComposingEmail(
             content: emailContent,
             subject: emailSubject,
             toRecipients: {toRecipient},
@@ -853,7 +858,7 @@ void main() {
 
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
 
-          final savedEmailDraft = SavedEmailDraft(
+          final savedEmailDraft = SavedComposingEmail(
             content: emailContent,
             subject: emailSubject,
             toRecipients: {toRecipient},
@@ -907,7 +912,7 @@ void main() {
 
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
 
-          final savedEmailDraft = SavedEmailDraft(
+          final savedEmailDraft = SavedComposingEmail(
             content: emailContent,
             subject: emailSubject,
             toRecipients: {toRecipient},
@@ -966,7 +971,7 @@ void main() {
 
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
 
-          final savedEmailDraft = SavedEmailDraft(
+          final savedEmailDraft = SavedComposingEmail(
             content: emailContent,
             subject: emailSubject,
             toRecipients: {toRecipient},
@@ -1024,7 +1029,7 @@ void main() {
 
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
 
-          final savedEmailDraft = SavedEmailDraft(
+          final savedEmailDraft = SavedComposingEmail(
             content: emailContent,
             subject: emailSubject,
             toRecipients: {toRecipient},
@@ -1084,7 +1089,7 @@ void main() {
               .thenAnswer((_) => Stream.value(
                 Right(SaveEmailAsDraftsSuccess(EmailId(Id('123')), null))));
 
-            final savedEmailDraft = SavedEmailDraft(
+            final savedEmailDraft = SavedComposingEmail(
               content: emailContent,
               subject: emailSubject,
               toRecipients: {toRecipient},
@@ -1158,7 +1163,7 @@ void main() {
               .thenAnswer((_) => Stream.value(
                 Right(UpdateEmailDraftsSuccess(EmailId(Id('123'))))));
 
-            final savedEmailDraft = SavedEmailDraft(
+            final savedEmailDraft = SavedComposingEmail(
               content: emailContent,
               subject: emailSubject,
               toRecipients: {toRecipient},
@@ -1226,7 +1231,7 @@ void main() {
               identityHeader: {IndividualHeaderIdentifier.identityHeader: idenityId},
               headers: {EmailHeader(EmailProperty.headerMdnKey, 'value')}));
 
-          final savedEmailDraft = SavedEmailDraft(
+          final savedEmailDraft = SavedComposingEmail(
             content: emailContent,
             subject: emailSubject,
             toRecipients: {toRecipient},
@@ -1267,7 +1272,7 @@ void main() {
           when(mockUploadController.attachmentsUploaded).thenReturn([attachment]);
           composerController?.hasRequestReadReceipt.value = alwaysReadReceiptEnabled;
 
-          final savedEmailDraft = SavedEmailDraft(
+          final savedEmailDraft = SavedComposingEmail(
             content: emailContentWithSignatureButton,
             subject: emailSubject,
             toRecipients: {toRecipient},

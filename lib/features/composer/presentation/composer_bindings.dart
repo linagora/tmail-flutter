@@ -35,6 +35,7 @@ import 'package:tmail_ui_user/features/email/data/repository/email_repository_im
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/save_template_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/mailbox_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
@@ -47,6 +48,8 @@ import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
+// ignore: unused_import
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -230,6 +233,11 @@ class ComposerBindings extends BaseBindings {
       Get.find<EmailRepository>()));
 
     IdentityInteractorsBindings().dependencies();
+
+    Get.lazyPut(() => SaveTemplateEmailInteractor(
+      Get.find<ComposerRepository>(),
+      Get.find<EmailRepository>(),
+    ));
   }
 
   @override
@@ -254,6 +262,7 @@ class ComposerBindings extends BaseBindings {
       Get.find<CreateNewAndSendEmailInteractor>(),
       Get.find<CreateNewAndSaveEmailToDraftsInteractor>(),
       Get.find<PrintEmailInteractor>(),
+      Get.find<SaveTemplateEmailInteractor>(),
     ));
   }
 

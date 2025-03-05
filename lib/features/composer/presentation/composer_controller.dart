@@ -24,6 +24,7 @@ import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/model.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -65,7 +66,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/list_sha
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/saved_email_draft.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/saved_composing_email.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/signature_status.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
@@ -73,17 +74,22 @@ import 'package:tmail_ui_user/features/composer/presentation/model/screen_displa
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_message_dialog_view.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_template_dialog_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/sending_message_dialog_view.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/save_template_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/update_template_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/save_template_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/transform_html_email_content_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
@@ -151,6 +157,7 @@ class ComposerController extends BaseController
   final CreateNewAndSendEmailInteractor _createNewAndSendEmailInteractor;
   final CreateNewAndSaveEmailToDraftsInteractor _createNewAndSaveEmailToDraftsInteractor;
   final PrintEmailInteractor printEmailInteractor;
+  final SaveTemplateEmailInteractor _saveTemplateEmailInteractor;
 
   GetAllAutoCompleteInteractor? _getAllAutoCompleteInteractor;
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
@@ -216,8 +223,10 @@ class ComposerController extends BaseController
   ButtonState printDraftButtonState = ButtonState.enabled;
   SignatureStatus _identityContentOnOpenPolicy = SignatureStatus.editedAvailable;
   int? _savedEmailDraftHash;
+  int? _savedEmailTemplateHash;
   bool _restoringSignatureButton = false;
   GlobalKey? responsiveContainerKey;
+  EmailId? _currentTemplateEmailId;
   
   @visibleForTesting
   bool get restoringSignatureButton => _restoringSignatureButton;
@@ -243,6 +252,7 @@ class ComposerController extends BaseController
     this._createNewAndSendEmailInteractor,
     this._createNewAndSaveEmailToDraftsInteractor,
     this.printEmailInteractor,
+    this._saveTemplateEmailInteractor,
   );
 
   @override
@@ -1294,15 +1304,15 @@ class ComposerController extends BaseController
   }
 
   Future<bool> _validateEmailChange() async {
-    final newDraftHash = await _hashDraftEmail();
+    final newDraftHash = await _hashComposingEmail();
 
     return _savedEmailDraftHash != newDraftHash;
   }
 
-  Future<int> _hashDraftEmail() async {
+  Future<int> _hashComposingEmail() async {
     final emailContent = await getContentInEditor();
 
-    final savedEmailDraft = SavedEmailDraft(
+    final savedEmailDraft = SavedComposingEmail(
       subject: subjectEmail.value ?? '',
       content: emailContent,
       toRecipients: listToEmailAddress.toSet(),
@@ -1317,14 +1327,14 @@ class ComposerController extends BaseController
     return savedEmailDraft.hashCode;
   }
 
-  int get emptyDraftEmailHash => SavedEmailDraft.empty().hashCode;
+  int get emptyDraftEmailHash => SavedComposingEmail.empty().hashCode;
 
   Future<void> _updateSavedEmailDraftHash() async {
-    _savedEmailDraftHash = await _hashDraftEmail();
+    _savedEmailDraftHash = await _hashComposingEmail();
   }
 
   Future<void> _initEmailDraftHash() async {
-    final draftEmailHash = await _hashDraftEmail();
+    final draftEmailHash = await _hashComposingEmail();
 
     isEmailChanged.value = draftEmailHash != emptyDraftEmailHash;
 
@@ -1393,6 +1403,69 @@ class ComposerController extends BaseController
       );
     } else {
       _saveToDraftButtonState = ButtonState.enabled;
+    }
+  }
+
+  Future<void> handleClickSaveAsTemplateButton(BuildContext context) async {
+    final currentTemplateHash = await _hashComposingEmail();
+    if (_savedEmailTemplateHash == currentTemplateHash) return;
+
+    if (composerArguments.value == null ||
+        mailboxDashBoardController.sessionCurrent == null ||
+        mailboxDashBoardController.accountId.value == null
+    ) {
+      log('ComposerController::handleClickSaveAsTemplateButton: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
+      return;
+    }
+    
+    MailboxId? templateMailboxId = mailboxDashBoardController
+      .getMailboxIdByRole(PresentationMailbox.roleTemplates);
+    templateMailboxId ??= mailboxDashBoardController.mapMailboxById
+      .where((_, mailbox) => mailbox.name?.name.toLowerCase() ==
+        PresentationMailbox.roleTemplates.value.toLowerCase())
+      .keys
+      .firstOrNull;
+
+    final emailContent = await getContentInEditor();
+    final cancelToken = CancelToken();
+    final resultState = await _showSavingMessageToTemplateDialog(
+      emailContent: emailContent,
+      templateMailboxId: templateMailboxId,
+      templateEmailId: _currentTemplateEmailId,
+      createNewMailboxRequest: templateMailboxId != null
+        ? null
+        : CreateNewMailboxRequest(
+            MailboxName(PresentationMailbox.roleTemplates.value.toUpperCase()),
+          ),
+      cancelToken: cancelToken,
+    );
+
+    if (resultState is SaveTemplateEmailSuccess && context.mounted == true) {
+      _currentTemplateEmailId = resultState.emailId;
+      mailboxDashBoardController.consumeState(Stream.value(Right(resultState)));
+      appToast.showToastSuccessMessage(
+        context,
+        AppLocalizations.of(context).saveMessageToTemplateSuccess,
+      );
+      _savedEmailTemplateHash = currentTemplateHash;
+    } else if (resultState is UpdateTemplateEmailSuccess && context.mounted == true) {
+      _currentTemplateEmailId = resultState.emailId;
+      mailboxDashBoardController.consumeState(Stream.value(Right(resultState)));
+      appToast.showToastSuccessMessage(
+        context,
+        AppLocalizations.of(context).updateMessageToTemplateSuccess,
+      );
+      _savedEmailTemplateHash = currentTemplateHash;
+    } else if ((resultState is SaveTemplateEmailFailure ||
+        resultState is UpdateTemplateEmailFailure ||
+        resultState is GenerateEmailFailure) &&
+        context.mounted == true
+    ) {
+      final message = cancelToken.isCancelled
+        ? AppLocalizations.of(context).saveMessageToTemplateCancelled
+        : AppLocalizations.of(context).saveMessageToTemplateFailed;
+
+      appToast.showToastErrorMessage(context, message);
     }
   }
 
@@ -2372,6 +2445,55 @@ class ComposerController extends BaseController
         ),
         createNewAndSaveEmailToDraftsInteractor: _createNewAndSaveEmailToDraftsInteractor,
         onCancelSavingEmailToDraftsAction: _handleCancelSavingMessageToDrafts,
+        cancelToken: cancelToken,
+      ),
+    );
+    return Get.dialog(
+      PlatformInfo.isMobile
+        ? PopScope(canPop: false, child: childWidget)
+        : childWidget,
+      barrierDismissible: false,
+      barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+    );
+  }
+
+  Future<dynamic> _showSavingMessageToTemplateDialog({
+    required String emailContent,
+    required MailboxId? templateMailboxId,
+    required EmailId? templateEmailId,
+    required CreateNewMailboxRequest? createNewMailboxRequest,
+    CancelToken? cancelToken,
+  }) {
+    final childWidget = PointerInterceptor(
+      child: SavingTemplateDialogView(
+        createEmailRequest: CreateEmailRequest(
+          session: mailboxDashBoardController.sessionCurrent!,
+          accountId: mailboxDashBoardController.accountId.value!,
+          emailActionType: composerArguments.value!.emailActionType,
+          subject: subjectEmail.value ?? '',
+          emailContent: emailContent,
+          fromSender: composerArguments.value!.presentationEmail?.from ?? {},
+          toRecipients: listToEmailAddress.toSet(),
+          ccRecipients: listCcEmailAddress.toSet(),
+          bccRecipients: listBccEmailAddress.toSet(),
+          replyToRecipients: listReplyToEmailAddress.toSet(),
+          hasRequestReadReceipt: hasRequestReadReceipt.value,
+          identity: identitySelected.value,
+          attachments: uploadController.attachmentsUploaded,
+          inlineAttachments: uploadController.mapInlineAttachments,
+          sentMailboxId: getSentMailboxIdForComposer(),
+          templateMailboxId: templateMailboxId,
+          templateEmailId: templateEmailId,
+          answerForwardEmailId: composerArguments.value!.presentationEmail?.id,
+          unsubscribeEmailId: composerArguments.value!.previousEmailId,
+          messageId: composerArguments.value!.messageId,
+          references: composerArguments.value!.references,
+          emailSendingQueue: composerArguments.value!.sendingEmail,
+          displayMode: screenDisplayMode.value
+        ),
+        saveTemplateEmailInteractor: _saveTemplateEmailInteractor,
+        createNewMailboxRequest: createNewMailboxRequest,
+        onCancel: (cancelToken) => cancelToken?.cancel(),
         cancelToken: cancelToken,
       ),
     );

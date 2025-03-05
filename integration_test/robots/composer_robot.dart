@@ -3,6 +3,7 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
+import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_editor_view.dart';
@@ -84,5 +85,15 @@ class ComposerRobot extends CoreRobot {
 
   Future<void> tapSaveButtonOnSaveDraftConfirmDialog(AppLocalizations appLocalizations) async {
     await $(find.text(appLocalizations.save)).tap();
+  }
+
+  Future<void> saveAsTemplate() async {
+    await $(AppBarComposerWidget)
+      .$(TMailButtonWidget)
+      .which<TMailButtonWidget>((widget) => widget.icon == ImagePaths().icMore)
+      .tap();
+    await $(PopupItemWidget)
+      .$(AppLocalizations().saveAsTemplate)
+      .tap();
   }
 }
