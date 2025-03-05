@@ -92,11 +92,17 @@ class LoginView extends BaseLoginView {
                 style: const TextStyle(fontSize: 32, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
               )
             ),
-            Obx(() => LoginMessageWidget(
-              formType: controller.loginFormType.value,
-              viewState: controller.viewState.value,
-              isShowingMessage: controller.isShowingMessage,
-            )),
+            KeyboardVisibilityBuilder(
+              builder: (context, visible) {
+                if (visible) return const SizedBox.shrink();
+
+                return Obx(() => LoginMessageWidget(
+                  formType: controller.loginFormType.value,
+                  viewState: controller.viewState.value,
+                  isShowingMessage: controller.isShowingMessage,
+                ));
+              }
+            ),
             Obx(() {
               switch (controller.loginFormType.value) {
                 case LoginFormType.dnsLookupForm:
