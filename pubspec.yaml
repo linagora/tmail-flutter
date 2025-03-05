@@ -65,7 +65,7 @@ dependencies:
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: add-priority-headers-for-email
+      ref: maintenance-v0.14.2
 
   contacts_service:
     git:

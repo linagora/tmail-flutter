@@ -659,8 +659,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: add-priority-headers-for-email
-      resolved-ref: add7877f73730e4e8ab0c0938de67f1e4181f48d
+      ref: "maintenance-v0.14.2"
+      resolved-ref: a99313556186e5cf9ffce3866bfb9bdd3b9e975b
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
     version: "0.3.3"
