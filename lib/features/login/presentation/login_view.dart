@@ -94,13 +94,18 @@ class LoginView extends BaseLoginView {
             ),
             KeyboardVisibilityBuilder(
               builder: (context, visible) {
-                if (visible) return const SizedBox.shrink();
+                return Obx(() {
+                  if (visible && (controller.loginFormType.value == LoginFormType.passwordForm
+                      || controller.loginFormType.value == LoginFormType.credentialForm)) {
+                    return const SizedBox.shrink();
+                  }
 
-                return Obx(() => LoginMessageWidget(
-                  formType: controller.loginFormType.value,
-                  viewState: controller.viewState.value,
-                  isShowingMessage: controller.isShowingMessage,
-                ));
+                  return LoginMessageWidget(
+                    formType: controller.loginFormType.value,
+                    viewState: controller.viewState.value,
+                    isShowingMessage: controller.isShowingMessage,
+                  );
+                });
               }
             ),
             Obx(() {
