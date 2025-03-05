@@ -62,6 +62,7 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/email_ac
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_draft_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_outbox_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_sent_mailbox_id_for_composer_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_message_failure_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_shared_media_file_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
@@ -1158,10 +1159,14 @@ class ComposerController extends BaseController
     required BuildContext context,
     required FeatureFailure failure
   }) async {
+    final errorMessage = getMessageFailure(
+      appLocalizations: AppLocalizations.of(context),
+      exception: failure.exception,
+    );
     await showConfirmDialogAction(
       context,
       title: '',
-      AppLocalizations.of(context).warningMessageWhenSendEmailFailure,
+      errorMessage,
       AppLocalizations.of(context).edit,
       cancelTitle: AppLocalizations.of(context).closeAnyway,
       alignCenter: true,
@@ -2449,10 +2454,15 @@ class ComposerController extends BaseController
     VoidCallback? onConfirmAction,
     VoidCallback? onCancelAction,
   }) async {
+    final errorMessage = getMessageFailure(
+      appLocalizations: AppLocalizations.of(context),
+      exception: failure.exception,
+      isDraft: true,
+    );
     await showConfirmDialogAction(
       context,
       title: '',
-      AppLocalizations.of(context).warningMessageWhenSaveEmailToDraftsFailure,
+      errorMessage,
       AppLocalizations.of(context).edit,
       cancelTitle: AppLocalizations.of(context).closeAnyway,
       alignCenter: true,
