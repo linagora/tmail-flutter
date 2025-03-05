@@ -8,6 +8,5 @@ extension PlatformFileExtension on PlatformFile {
     fileSize: size,
     filePath: PlatformInfo.isWeb ? '' : path ?? '',
     bytes: bytes,
-    readStream: readStream
   );
 }

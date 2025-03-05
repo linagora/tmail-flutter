@@ -686,6 +686,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           emailId: currentEmail!.id!,
           createdTime: currentEmail?.receivedAt?.value ?? DateTime.now(),
           attachments: success.attachments,
+          inlineImages: success.inlineImages,
           headers: success.emailCurrent?.headers,
           keywords: success.emailCurrent?.keywords,
           htmlEmailContent: success.htmlEmailContent,

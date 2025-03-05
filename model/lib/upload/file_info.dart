@@ -7,7 +7,6 @@ class FileInfo with EquatableMixin {
   final int fileSize;
   final String? filePath;
   final Uint8List? bytes;
-  final Stream<List<int>>? readStream;
   final String? type;
   final bool? isInline;
   final bool? isShared;
@@ -17,7 +16,6 @@ class FileInfo with EquatableMixin {
     required this.fileSize,
     this.filePath,
     this.bytes,
-    this.readStream,
     this.type,
     this.isInline,
     this.isShared,
@@ -32,7 +30,7 @@ class FileInfo with EquatableMixin {
   }) {
     return FileInfo(
       fileName: name ?? '',
-      fileSize: size ?? 0,
+      fileSize: size ?? bytes.length,
       bytes: bytes,
       type: type,
       isInline: isInline,
@@ -59,7 +57,6 @@ class FileInfo with EquatableMixin {
     filePath,
     fileSize,
     bytes,
-    readStream,
     type,
     isInline,
     isShared,

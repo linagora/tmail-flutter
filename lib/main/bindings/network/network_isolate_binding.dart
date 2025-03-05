@@ -87,7 +87,6 @@ class NetworkIsolateBindings extends Bindings {
   }
 
   void _bindingIsolateWorker() {
-    Get.put(Executor());
     Get.put(ThreadIsolateWorker(
       Get.find<ThreadAPI>(tag: BindingTag.isolateTag),
       Get.find<EmailAPI>(tag: BindingTag.isolateTag),
