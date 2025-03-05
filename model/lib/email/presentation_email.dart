@@ -153,8 +153,8 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
       ?.trim()
       .toLowerCase();
 
-    return xPriority == MailPriorityHeader.firstXPriority &&
-      importance == MailPriorityHeader.highImportance &&
+    return xPriority?.startsWith(MailPriorityHeader.firstXPriority) == true ||
+      importance == MailPriorityHeader.highImportance ||
       priority == MailPriorityHeader.urgentPriority;
   }
 
