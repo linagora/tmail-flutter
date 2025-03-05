@@ -19,6 +19,7 @@ class CreateEmailRequest with EquatableMixin {
   final String subject;
   final String emailContent;
   final bool hasRequestReadReceipt;
+  final bool isMarkAsImportant;
   final Set<EmailAddress> fromSender;
   final Set<EmailAddress> toRecipients;
   final Set<EmailAddress> ccRecipients;
@@ -48,6 +49,7 @@ class CreateEmailRequest with EquatableMixin {
     required this.ccRecipients,
     required this.bccRecipients,
     this.hasRequestReadReceipt = true,
+    this.isMarkAsImportant = false,
     this.identity,
     this.attachments,
     this.inlineAttachments,
@@ -76,6 +78,7 @@ class CreateEmailRequest with EquatableMixin {
     bccRecipients,
     identity,
     hasRequestReadReceipt,
+    isMarkAsImportant,
     attachments,
     inlineAttachments,
     outboxMailboxId,

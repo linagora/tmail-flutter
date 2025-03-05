@@ -21,7 +21,6 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacati
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/action/dashboard_setting_action.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/always_read_receipt/bindings/always_read_receipt_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forward_bindings.dart';
@@ -31,6 +30,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/account
 import 'package:tmail_ui_user/features/manage_account/presentation/model/manage_account_arguments.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/settings_page_level.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/notification/bindings/notification_binding.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/preferences/bindings/preferences_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller_bindings.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -183,8 +183,8 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
       case AccountMenuItem.emailRules:
         EmailRulesBindings().dependencies();
         break;
-      case AccountMenuItem.alwaysReadReceipt:
-        AlwaysReadReceiptBindings().dependencies();
+      case AccountMenuItem.preferences:
+        PreferencesBindings().dependencies();
         break;
       case AccountMenuItem.forward:
         ForwardBindings().dependencies();
@@ -223,7 +223,7 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
 
   bool get isVacationCapabilitySupported {
     if (accountId.value != null && sessionCurrent != null) {
-      return [CapabilityIdentifier.jmapVacationResponse].isSupported(sessionCurrent!, accountId.value!);
+      return CapabilityIdentifier.jmapVacationResponse.isSupported(sessionCurrent!, accountId.value!);
     } else {
       return false;
     }
@@ -231,7 +231,7 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
 
   bool get isServerSettingsCapabilitySupported {
     if (accountId.value != null && sessionCurrent != null) {
-      return [capabilityServerSettings].isSupported(sessionCurrent!, accountId.value!);
+      return capabilityServerSettings.isSupported(sessionCurrent!, accountId.value!);
     } else {
       return false;
     }
@@ -239,7 +239,7 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
 
   bool get isRuleFilterCapabilitySupported {
     if (accountId.value != null && sessionCurrent != null) {
-      return [capabilityRuleFilter].isSupported(sessionCurrent!, accountId.value!);
+      return capabilityRuleFilter.isSupported(sessionCurrent!, accountId.value!);
     } else {
       return false;
     }
@@ -247,7 +247,7 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
 
   bool get isForwardCapabilitySupported {
     if (accountId.value != null && sessionCurrent != null) {
-      return [capabilityForward].isSupported(sessionCurrent!, accountId.value!);
+      return capabilityForward.isSupported(sessionCurrent!, accountId.value!);
     } else {
       return false;
     }

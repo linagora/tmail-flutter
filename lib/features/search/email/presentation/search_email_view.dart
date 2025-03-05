@@ -648,6 +648,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   selectAllMode: controller.selectionMode.value,
                   searchQuery: controller.searchQuery,
                   isShowingEmailContent: controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
+                  isSenderImportantFlagEnabled: controller.mailboxDashBoardController.isSenderImportantFlagEnabled.value,
                   isSearchEmailRunning: true,
                   padding: SearchEmailViewStyle.getPaddingSearchResultList(context, controller.responsiveUtils),
                   mailboxContain: currentPresentationEmail.mailboxContain,
@@ -697,6 +698,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                   selectAllMode: controller.selectionMode.value,
                   searchQuery: controller.searchQuery,
                   isShowingEmailContent: controller.mailboxDashBoardController.selectedEmail.value?.id == currentPresentationEmail.id,
+                  isSenderImportantFlagEnabled: controller.mailboxDashBoardController.isSenderImportantFlagEnabled.value,
                   isSearchEmailRunning: true,
                   padding: SearchEmailViewStyle.getPaddingSearchResultList(
                     context,

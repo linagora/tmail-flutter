@@ -22,6 +22,9 @@ class ThreadConstants {
     EmailProperty.hasAttachment,
     EmailProperty.replyTo,
     EmailProperty.mailboxIds,
+    IndividualHeaderIdentifier.xPriorityHeader.value,
+    IndividualHeaderIdentifier.importanceHeader.value,
+    IndividualHeaderIdentifier.priorityHeader.value,
   });
   static final propertiesUpdatedDefault = Properties({
     EmailProperty.keywords,
@@ -64,21 +67,7 @@ class ThreadConstants {
   });
 
   static final propertiesCalendarEvent = Properties({
-    EmailProperty.id,
-    EmailProperty.blobId,
-    EmailProperty.subject,
-    EmailProperty.from,
-    EmailProperty.to,
-    EmailProperty.cc,
-    EmailProperty.bcc,
-    EmailProperty.keywords,
-    EmailProperty.size,
-    EmailProperty.receivedAt,
-    EmailProperty.sentAt,
-    EmailProperty.preview,
-    EmailProperty.hasAttachment,
-    EmailProperty.replyTo,
-    EmailProperty.mailboxIds,
+    ...propertiesDefault.value,
     IndividualHeaderIdentifier.headerCalendarEvent.value,
   });
 

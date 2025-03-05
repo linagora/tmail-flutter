@@ -6,6 +6,7 @@ import 'package:model/email/prefix_email_address.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/composer_print_draft_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/mark_as_important_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/web/desktop_responsive_container_view.dart';
@@ -47,6 +48,7 @@ class ComposerView extends GetWidget<ComposerController> {
                   openRichToolbarAction: controller.richTextWebController!.toggleFormattingOptions,
                   isSendButtonEnabled: controller.isEnableEmailSendButton.value,
                   hasRequestReadReceipt: controller.hasRequestReadReceipt.value,
+                  isMarkAsImportant: controller.isMarkAsImportant.value,
                   isEmailChanged: controller.isEmailChanged.value,
                   menuMoreOptionController: controller.menuMoreOptionController!,
                   onCloseViewAction: () => controller.handleClickCloseComposer(context),
@@ -56,6 +58,7 @@ class ComposerView extends GetWidget<ComposerController> {
                   toggleCodeViewAction: controller.richTextWebController!.toggleCodeView,
                   printDraftAction: () => controller.printDraft(context),
                   toggleRequestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
+                  toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                   saveToDraftsAction: () => controller.handleClickSaveAsDraftsButton(context),
                   deleteComposerAction: () => controller.handleClickDeleteComposer(context),
                 )),
@@ -512,6 +515,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               isCodeViewEnabled: controller.richTextWebController!.codeViewEnabled,
                               isFormattingOptionsEnabled: controller.richTextWebController!.isFormattingOptionsEnabled,
                               hasReadReceipt: controller.hasRequestReadReceipt.value,
+                              isMarkAsImportant: controller.isMarkAsImportant.value,
                               openRichToolbarAction: controller.richTextWebController!.toggleFormattingOptions,
                               attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
                               insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
@@ -523,6 +527,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               menuMoreOptionController: controller.menuMoreOptionController!,
                               printDraftAction: () => controller.printDraft(context),
                               toggleRequestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
+                              toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                             )),
                           ],
                         ),
@@ -795,6 +800,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               isCodeViewEnabled: controller.richTextWebController!.codeViewEnabled,
                               isFormattingOptionsEnabled: controller.richTextWebController!.isFormattingOptionsEnabled,
                               hasReadReceipt: controller.hasRequestReadReceipt.value,
+                              isMarkAsImportant: controller.isMarkAsImportant.value,
                               openRichToolbarAction: controller.richTextWebController!.toggleFormattingOptions,
                               attachFileAction: () => controller.openFilePickerByType(context, FileType.any),
                               insertImageAction: () => controller.insertImage(context, constraints.maxWidth),
@@ -806,6 +812,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               menuMoreOptionController: controller.menuMoreOptionController!,
                               printDraftAction: () => controller.printDraft(context),
                               toggleRequestReadReceiptAction: () => controller.toggleRequestReadReceipt(context),
+                              toggleMarkAsImportantAction: () => controller.toggleMarkAsImportant(context),
                             )),
                           ],
                         ),
