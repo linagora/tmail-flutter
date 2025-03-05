@@ -128,6 +128,7 @@ class LoginView extends BaseLoginView {
             Obx(() {
               switch (controller.loginFormType.value) {
                 case LoginFormType.passwordForm:
+                case LoginFormType.credentialForm:
                   return ApplicativeTokenField(
                     onChanged: controller.onApplicativeTokenChange,
                     appLocalizations: AppLocalizations.of(context),

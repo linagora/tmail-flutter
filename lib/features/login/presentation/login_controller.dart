@@ -391,19 +391,19 @@ class LoginController extends ReloadableController {
     log('LoginController::handleLoginPressed:_currentBaseUrl: $_currentBaseUrl | _username: $_username | _password: $_password');
     if (_currentBaseUrl == null) {
       consumeState(Stream.value(Left(AuthenticationUserFailure(CanNotFoundBaseUrl()))));
-    } else if (_username == null) {
+    } else if (_username == null && _applicativeToken.isEmpty) {
       consumeState(Stream.value(Left(AuthenticationUserFailure(CanNotFoundUserName()))));
     } else if (_password == null && _applicativeToken.isEmpty) {
       consumeState(Stream.value(Left(AuthenticationUserFailure(CanNotFoundPassword()))));
     } else {
-      if (PlatformInfo.isMobile && loginFormType.value == LoginFormType.credentialForm) {
+      if (PlatformInfo.isMobile && loginFormType.value == LoginFormType.credentialForm && _username != null) {
         TextInput.finishAutofillContext();
         if (_username!.value.isEmail) {
           _storeUsernameToCache(_username!.value);
         }
       }
 
-      if (_password != null) {
+      if (_password != null && _username != null) {
         consumeState(
           _authenticationInteractor.execute(
             baseUrl: _currentBaseUrl!,
