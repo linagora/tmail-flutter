@@ -242,7 +242,6 @@ extension AppColor on Color {
   static const blue700 = Color(0xFF208BFF);
   static const steelGray400 = Color(0xFF818C99);
   static const steelGray600 = Color(0xFF4E5966);
-  static const blue700 = Color(0xFF208BFF);
   static const blue100 = Color(0xFFDFEEFF);
   static const blue400 = Color(0xFF80BDFF);
   static const m3Tertiary = Color(0xFF8C9CAF);

@@ -111,7 +111,6 @@ class MailboxView extends BaseMailboxView {
                 ],
               ),
             Container(
-              color: AppColor.colorBgMailbox,
               width: double.infinity,
               alignment: controller.responsiveUtils.isDesktop(context)
                 ? AlignmentDirectional.centerStart
@@ -122,8 +121,9 @@ class MailboxView extends BaseMailboxView {
                 title: '${AppLocalizations.of(context).version.toLowerCase()} ',
                 textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
                   fontSize: 13,
-                  color: AppColor.colorTextBody,
-                  fontWeight: FontWeight.normal
+                  height: 16 / 13,
+                  color: AppColor.steelGray400,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ),
