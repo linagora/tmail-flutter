@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
@@ -14,5 +15,13 @@ class EmailRobot extends CoreRobot {
   Future<void> tapDownloadAllButton() async {
     await $(AppLocalizations().downloadAll).tap();
     await $.pumpAndSettle();
+  }
+
+  Future<void> onTapReplyEmail() async {
+    await $(#reply_email_button).tap();
+  }
+
+  Future<void> onTapBackButton() async {
+    await $(find.byType(EmailViewBackButton)).first.tap();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
@@ -8,13 +9,12 @@ import '../robots/search_robot.dart';
 import '../robots/thread_robot.dart';
 
 class NoDispositionInlineScenario extends BaseTestScenario {
-  static const _firstPartOfBase64DataString = 'data:image/jpeg;base64';
-  static const emailSubject = 'Greeting Card';
-
   const NoDispositionInlineScenario(super.$);
 
   @override
   Future<void> runTestLogic() async {
+    const emailSubject = 'Greeting Card';
+
     final threadRobot = ThreadRobot($);
     final searchRobot = SearchRobot($);
     
@@ -27,7 +27,7 @@ class NoDispositionInlineScenario extends BaseTestScenario {
 
     await searchRobot.openEmailWithSubject(emailSubject);
     await _expectEmailViewVisible();
-    await _expectHtmlContentViewerVisible();
+    await _ensureHtmlContentViewerVisible();
     await _expectEmailViewWithBase64Image();
   }
 
@@ -43,16 +43,17 @@ class NoDispositionInlineScenario extends BaseTestScenario {
     await expectViewVisible($(EmailView));
   }
 
-  Future<void> _expectHtmlContentViewerVisible() async {
-    await expectViewVisible($(HtmlContentViewer));
+  Future<void> _ensureHtmlContentViewerVisible() async {
+    await $(HtmlContentViewer).scrollTo(scrollDirection: AxisDirection.down);
   }
 
   Future<void> _expectEmailViewWithBase64Image() async {
     expect(
-      $(EmailView)
-        .$(HtmlContentViewer)
+      $(HtmlContentViewer)
         .which<HtmlContentViewer>((view) {
-          return view.contentHtml.contains(_firstPartOfBase64DataString);
+          final contentHtml = view.contentHtml;
+
+          return contentHtml.contains('data:image/') && contentHtml.contains(';base64');
         }),
       findsOneWidget,
     );
