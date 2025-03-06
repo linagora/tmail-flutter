@@ -226,7 +226,6 @@ extension AppColor on Color {
   static const thumbScrollbarColor = Color(0xFFC1C1C1);
   static const loginViewShadowColor = Color(0x3DBCBCBC);
   static const colorEmailTileCheckboxUnhover = Color(0xFFAEB7C2);
-  static const colorEmailTileHoverWeb = Color(0xFFDFEEFF);
   static const colorSearchFilterButton = Color(0xFFECEEF1);
   static const colorSearchFilterTitle = Color(0xFF686E76);
   static const colorSearchFilterIcon = Color(0xFF686E76);
