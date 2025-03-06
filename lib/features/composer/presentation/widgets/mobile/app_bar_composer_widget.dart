@@ -91,6 +91,7 @@ class AppBarComposerWidget extends StatelessWidget {
           ),
           const SizedBox(width: MobileAppBarComposerWidgetStyle.space),
           TMailButtonWidget.fromIcon(
+            key: const Key('composer_more_button'),
             icon: imagePaths.icMore,
             iconColor: MobileAppBarComposerWidgetStyle.iconColor,
             backgroundColor: Colors.transparent,
