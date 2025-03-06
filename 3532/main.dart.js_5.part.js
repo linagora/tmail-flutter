@@ -12477,7 +12477,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return new A.Padding(t1, A.SvgPicture$asset("assets/images/ic_calendar_event.svg", C.Alignment_0_0, presentationEmail.get$hasRead() ? A.ColorNullableExtension_asFilter(C.Color_4286680217) : A.ColorNullableExtension_asFilter(D.Color_4280032031), C.BoxFit_0, 20, null, null, 20), null);
     },
     buildMarkAsImportantIcon$1(context) {
-      return new A.Padding(B.ItemEmailTileStyles_getSpaceCalendarEventIcon(context, this.BaseEmailItemTile_responsiveUtils), A.SvgPicture$asset("assets/images/ic_mark_as_important.svg", C.Alignment_0_0, A.ColorNullableExtension_asFilter(C.Color_4289640386), C.BoxFit_0, 20, null, null, 20), null);
+      return new A.Padding(B.ItemEmailTileStyles_getSpaceCalendarEventIcon(context, this.BaseEmailItemTile_responsiveUtils), A.SvgPicture$asset("assets/images/ic_mark_as_important.svg", C.Alignment_0_0, A.ColorNullableExtension_asFilter(C.Color_4289640386), C.BoxFit_0, 20, null, null, 20), D.ValueKey_important_flag_icon);
     }
   };
   B.ThreadView.prototype = {
@@ -23087,6 +23087,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.ValueKey_empty_thread_view = new A.ValueKey("empty_thread_view", type$.ValueKey_String);
     D.ValueKey_filter_message_button = new A.ValueKey("filter_message_button", type$.ValueKey_String);
     D.ValueKey_forward_email_button = new A.ValueKey("forward_email_button", type$.ValueKey_String);
+    D.ValueKey_important_flag_icon = new A.ValueKey("important_flag_icon", type$.ValueKey_String);
     D.ValueKey_kqK = new A.ValueKey("default_web_app_bar_thread_widget", type$.ValueKey_String);
     D.ValueKey_list_view_app_grid = new A.ValueKey("list_view_app_grid", type$.ValueKey_String);
     D.ValueKey_lqi = new A.ValueKey("create_filter_rule_button_within_empty_email", type$.ValueKey_String);
@@ -23135,5 +23136,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "XRGtPveKO6k7e7CtNewiG3XeBAU=");
+})($__dart_deferred_initializers__, "8KIUCs6kgNxWmmaDLWipL99rg8Q=");
 ;
