@@ -2446,4 +2446,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         AppLocalizations.of(currentContext!).thisHtmlAttachmentCannotBePreviewed);
     }
   }
+
+  String getOwnEmailAddress() {
+    try {
+      return session?.getOwnEmailAddress() ?? '';
+    } catch (e) {
+      return '';
+    }
+  }
 }

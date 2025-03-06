@@ -234,11 +234,21 @@ class EmailView extends GetWidget<SingleEmailController> {
                       });
                     }),
                   ),
-                  EmailViewBottomBarWidget(
-                    key: const Key('email_view_button_bar'),
-                    presentationEmail: currentEmail,
-                    emailActionCallback: controller.pressEmailAction
-                  ),
+                  Obx(() {
+                    final emailLoaded = controller.currentEmailLoaded.value;
+
+                    if (emailLoaded == null) return const SizedBox.shrink();
+
+                    return EmailViewBottomBarWidget(
+                      key: const Key('email_view_button_bar'),
+                      imagePaths: controller.imagePaths,
+                      responsiveUtils: controller.responsiveUtils,
+                      emailLoaded: emailLoaded,
+                      presentationEmail: currentEmail,
+                      userName: controller.getOwnEmailAddress(),
+                      emailActionCallback: controller.pressEmailAction,
+                    );
+                  }),
                 ]);
               } else {
                 return const EmailViewEmptyWidget();

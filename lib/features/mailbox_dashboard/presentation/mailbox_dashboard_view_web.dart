@@ -23,6 +23,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/quick_search_filter.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/filter_message_button_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/mailbox_dashboard_view_web_style.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/compose_button_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/download/download_task_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/mark_mailbox_as_read_loading_banner.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
@@ -82,7 +83,11 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                     }),
                     Expanded(child: Row(children: [
                       Column(children: [
-                        _buildComposerButton(context),
+                        ComposeButtonWidget(
+                          imagePaths: controller.imagePaths,
+                          onTapAction: () =>
+                            controller.goToComposer(ComposerArguments()),
+                        ),
                         Expanded(child: SizedBox(
                           width: ResponsiveUtils.defaultSizeMenu,
                           child: Obx(() {
@@ -695,35 +700,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         controller.searchController.sortOrderFiltered,
         onCallBack: controller.selectSortOrderQuickSearchFilter
       )
-    );
-  }
-
-  Widget _buildComposerButton(BuildContext context) {
-    return Container(
-      padding: const EdgeInsetsDirectional.only(
-        start: 16,
-        end: 16,
-        top: 16,
-        bottom: 8
-      ),
-      width: ResponsiveUtils.defaultSizeMenu,
-      alignment: Alignment.centerLeft,
-      child: TMailButtonWidget(
-        key: const Key('compose_email_button'),
-        text: AppLocalizations.of(context).compose,
-        icon: controller.imagePaths.icComposeWeb,
-        borderRadius: 10,
-        iconSize: 24,
-        iconColor: Colors.white,
-        padding: const EdgeInsetsDirectional.symmetric(vertical: 8),
-        backgroundColor: AppColor.blue700,
-        textStyle: const TextStyle(
-          fontSize: 15,
-          color: Colors.white,
-          fontWeight: FontWeight.w500
-        ),
-        onTapActionCallback: () => controller.goToComposer(ComposerArguments()),
-      ),
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
@@ -81,6 +82,9 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: widget.mailboxNode.item.isTeamMailboxes
+                  ? CrossAxisAlignment.start
+                  : CrossAxisAlignment.center,
                 children: [
                   LeadingMailboxItemWidget(
                     imagePaths: _imagePaths,
