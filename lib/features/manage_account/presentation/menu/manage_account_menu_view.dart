@@ -25,8 +25,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
            child: Column(
                children: [
                  if (!controller.responsiveUtils.isWebDesktop(context))
-                   Container(
-                       color: Colors.white,
+                   Padding(
                        padding: const EdgeInsetsDirectional.only(top: 16, bottom: 16, start: 16),
                        child: Row(children: [
                          ApplicationLogoWidthTextWidget(),
@@ -146,7 +145,6 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                    ),
                  )),
                  Container(
-                   color: AppColor.colorBgMailbox,
                    width: double.infinity,
                    alignment: controller.responsiveUtils.isDesktop(context)
                      ? AlignmentDirectional.centerStart
@@ -157,8 +155,9 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                      title: '${AppLocalizations.of(context).version.toLowerCase()} ',
                      textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
                        fontSize: 13,
-                       color: AppColor.colorTextBody,
-                       fontWeight: FontWeight.normal
+                       height: 16 / 13,
+                       color: AppColor.steelGray400,
+                       fontWeight: FontWeight.w400,
                      ),
                    ),
                  ),

@@ -63,7 +63,7 @@ mixin BaseEmailItemTile {
       !email.hasRead ? FontWeight.w600 : FontWeight.normal;
 
   Color buildTextColorForReadEmail(PresentationEmail email) =>
-      email.hasRead ? AppColor.colorContentEmail : AppColor.colorNameEmail;
+      email.hasRead ? AppColor.steelGray400 : Colors.black;
 
   bool hasMailboxLabel(bool isSearchEmailRunning, PresentationEmail email) {
     return isSearchEmailRunning && email.mailboxContain != null;
@@ -161,12 +161,12 @@ mixin BaseEmailItemTile {
         ensureHighlightVisible: true,
         styleOrigin: const TextStyle(
           fontSize: 13,
-          color: AppColor.colorContentEmail,
+          color: AppColor.steelGray400,
           fontWeight: FontWeight.normal
         ),
         styleWord: TextStyle(
           fontSize: 13,
-          color: AppColor.colorContentEmail,
+          color: AppColor.steelGray400,
           backgroundColor: Colors.amberAccent[200],
         )
       );
@@ -175,7 +175,7 @@ mixin BaseEmailItemTile {
         email.getPartialContent(),
         style: const TextStyle(
           fontSize: 13,
-          color: AppColor.colorContentEmail,
+          color: AppColor.steelGray400,
           fontWeight: FontWeight.normal)
       );
     }
@@ -349,8 +349,8 @@ mixin BaseEmailItemTile {
         height: 20,
         fit: BoxFit.fill,
         colorFilter: presentationEmail.hasRead
-          ? AppColor.colorCalendarEventRead.asFilter()
-          : AppColor.colorCalendarEventUnread.asFilter(),
+          ? AppColor.steelGray400.asFilter()
+          : Colors.black.asFilter(),
       ),
     );
   }

@@ -133,7 +133,6 @@ class MailboxView extends BaseMailboxView {
                         Obx(() {
                           if (!controller.isSelectionEnabled() && controller.responsiveUtils.isPortraitMobile(context)) {
                             return Container(
-                              color: AppColor.colorBgMailbox,
                               width: double.infinity,
                               padding: const EdgeInsets.all(16),
                               child: SafeArea(
@@ -142,9 +141,10 @@ class MailboxView extends BaseMailboxView {
                                   padding: EdgeInsets.zero,
                                   title: '${AppLocalizations.of(context).version} ',
                                   textStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                    fontSize: 16,
-                                    color: AppColor.colorContentEmail,
-                                    fontWeight: FontWeight.w500
+                                    fontSize: 13,
+                                    height: 16 / 13,
+                                    color: AppColor.steelGray400,
+                                    fontWeight: FontWeight.w400,
                                   ),
                                 ),
                               ),

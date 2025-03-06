@@ -15,7 +15,7 @@ class QuotasViewStyles {
   static const double progressStateTextSize = 13;
   static const double topLineSize = 1;
 
-  static const Color labelTextColor = AppColor.colorLabelQuotas;
+  static const Color labelTextColor = AppColor.steelGray400;
   static const Color webBackgroundColor = AppColor.colorBgDesktop;
   static const Color mobileBackgroundColor = Colors.white;
   static const Color progressBarBackgroundColor = AppColor.colorDivider;
