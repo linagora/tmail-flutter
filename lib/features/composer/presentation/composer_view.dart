@@ -500,6 +500,7 @@ class ComposerView extends GetWidget<ComposerController> {
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
+          key: const Key('mark_as_important_popup_item'),
           iconAction: controller.imagePaths.icMarkAsImportant,
           nameAction: AppLocalizations.of(context).markAsImportant,
           styleName: ComposerStyle.popupItemTextStyle,

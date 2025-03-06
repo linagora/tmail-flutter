@@ -85,4 +85,12 @@ class ComposerRobot extends CoreRobot {
   Future<void> tapSaveButtonOnSaveDraftConfirmDialog(AppLocalizations appLocalizations) async {
     await $(find.text(appLocalizations.save)).tap();
   }
+
+  Future<void> tapMoreOptionOnAppBar() async {
+    await $(#composer_more_button).tap();
+  }
+
+  Future<void> tapMarkAsImportantPopupItemOnMenu() async {
+    await $(#mark_as_important_popup_item).tap();
+  }
 }

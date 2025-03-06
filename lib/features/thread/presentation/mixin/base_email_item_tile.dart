@@ -357,6 +357,7 @@ mixin BaseEmailItemTile {
 
   Widget buildMarkAsImportantIcon(BuildContext context) {
     return Padding(
+      key: const Key('important_flag_icon'),
       padding: ItemEmailTileStyles.getSpaceCalendarEventIcon(
         context,
         responsiveUtils,
