@@ -14,15 +14,19 @@ class LinagoraEcosystemApi {
   LinagoraEcosystemApi(this._dioClient);
 
   Future<LinagoraEcosystem> getLinagoraEcosystem(String baseUrl) async {
-    final result = await _dioClient.get(
-      Endpoint.linagoraEcosystem.usingBaseUrl(baseUrl).generateEndpointPath(),
-    );
-    log('LinagoraEcosystemApi::getLinagoraEcosystem: $result');
-    if (result is Map<String, dynamic>) {
-      return LinagoraEcosystem.deserialize(result);
-    } else if (result is String) {
-      return LinagoraEcosystem.deserialize(jsonDecode(result));
-    } else {
+    try {
+      final result = await _dioClient.get(
+        Endpoint.linagoraEcosystem.usingBaseUrl(baseUrl).generateEndpointPath(),
+      );
+      log('LinagoraEcosystemApi::getLinagoraEcosystem: $result');
+      if (result is Map<String, dynamic>) {
+        return LinagoraEcosystem.deserialize(result);
+      } else if (result is String) {
+        return LinagoraEcosystem.deserialize(jsonDecode(result));
+      } else {
+        throw NotFoundLinagoraEcosystem();
+      }
+    } catch (_) {
       throw NotFoundLinagoraEcosystem();
     }
   }

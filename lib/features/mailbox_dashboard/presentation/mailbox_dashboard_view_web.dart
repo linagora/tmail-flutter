@@ -182,8 +182,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
             }),
             mobile: Obx(() {
               switch(controller.dashboardRoute.value) {
-                case DashboardRoutes.thread:
-                  return _buildScaffoldHaveDrawer(body: ThreadView());
                 case DashboardRoutes.emailDetailed:
                   return const EmailView();
                 case DashboardRoutes.searchEmail:
