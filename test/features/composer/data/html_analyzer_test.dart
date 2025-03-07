@@ -191,6 +191,41 @@ void main() {
     });
 
     test(
+      'When processing 100 base64 images,\n'
+      'should replace each with a unique CID and add corresponding attachments',
+    () async {
+      int countImage = 100;
+      final htmlContent = '''
+        ${List.generate(countImage, (index) => '<img src="data:image/jpeg;base64,/9j/4AAQSkZJRg==">').join(' ')}
+      ''';
+      final inlineAttachments = <String, Attachment>{};
+      final uploadUri = Uri.parse('https://example.com/upload');
+
+      when(mockUuid.v1()).thenAnswer((_) => 'uuid1');
+
+      when(mockFileUploader.uploadAttachment(any, any, any))
+        .thenAnswer((_) async => Attachment(
+          blobId: Id('blob123'),
+          type: MediaType('image', 'png'),
+          disposition: ContentDisposition.inline,
+        ));
+
+      final result = await htmlAnalyzer.replaceImageBase64ToImageCID(
+        emailContent: htmlContent,
+        inlineAttachments: inlineAttachments,
+        uploadUri: uploadUri,
+      );
+
+      final document = parse(result.value1);
+      final imgTags = document.querySelectorAll('img');
+      expect(imgTags.length, countImage);
+      expect(imgTags.every((img) => img.attributes['src']!.contains('cid:')), isTrue);
+      expect(result.value2.length, countImage);
+      verify(mockUuid.v1()).called(countImage);
+      verify(mockFileUploader.uploadAttachment(any, any, uploadUri)).called(countImage);
+    });
+
+    test(
       'When one image upload throws an exception out of multiple base64 images,\n'
       'should replace successful upload with CID and keep original src for failed one',
     () async {
