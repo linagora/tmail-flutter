@@ -9961,12 +9961,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return new A.LayoutBuilder(new B.EmailAttachmentsWidget_build_closure(this), null);
     },
     _getAttachmentDisplayed$2(context, maxWidth) {
-      var t1, possibleNumberOfDisplayedAttachments, attachmentsAboutToDisplay0,
+      var possibleNumberOfDisplayedAttachments, t1, attachmentsAboutToDisplay0,
         attachmentsAboutToDisplay = this.attachments;
       if (J.get$length$asx(attachmentsAboutToDisplay.get$value(0)) <= 2)
         return attachmentsAboutToDisplay;
-      t1 = this.responsiveUtils;
-      possibleNumberOfDisplayedAttachments = C.JSNumber_methods.$tdiv(maxWidth - t1.calculateWidgetSize$2$constraints(this._buildMoreAttachmentButton$3$padding(context, 100, C.EdgeInsets_12_8_12_8), new A.BoxConstraints(0, maxWidth, 0, 1 / 0))._dx, t1.getAttachmentItemMaxWidth$1(context));
+      possibleNumberOfDisplayedAttachments = C.JSNumber_methods.$tdiv(maxWidth - 120, this.responsiveUtils.getAttachmentItemMaxWidth$1(context));
       if (J.get$length$asx(attachmentsAboutToDisplay.get$value(0)) === 3) {
         t1 = type$.MediaQuery;
         attachmentsAboutToDisplay0 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size._dx >= 1200 ? attachmentsAboutToDisplay : attachmentsAboutToDisplay.sublist$2(attachmentsAboutToDisplay, 0, 2);
@@ -10632,7 +10631,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     popupMenuEmailSortOrderType$3$onCallBack(context, sortOrderSelected, onCallBack) {
       var t1 = type$.MappedListIterable_of_EmailSortOrderType_and_PopupMenuItem_dynamic;
-      return A.List_List$of(new A.MappedListIterable(D.List_aYI, new B.MailboxDashBoardView_popupMenuEmailSortOrderType_closure(this, context, sortOrderSelected, onCallBack), t1), true, t1._eval$1("ListIterable.E"));
+      return A.List_List$of(new A.MappedListIterable(D.List_evx, new B.MailboxDashBoardView_popupMenuEmailSortOrderType_closure(this, context, sortOrderSelected, onCallBack), t1), true, t1._eval$1("ListIterable.E"));
     },
     _mailbox_dashboard_view_web$_openPopupMenuDateFilter$2(context, position) {
       var t2, t3, _this = this,
@@ -10989,7 +10988,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t2, t3, t4, t5, _null = null,
         _s29_ = "assets/images/ic_dropdown.svg",
         t1 = type$.MappedListIterable_of_EmailSortOrderType_and_DropdownMenuItem_EmailSortOrderType;
-      t1 = A.List_List$of(new A.MappedListIterable(D.List_aYI, new B.SortByDropDownButton_build_closure(this, context), t1), true, t1._eval$1("ListIterable.E"));
+      t1 = A.List_List$of(new A.MappedListIterable(D.List_evx, new B.SortByDropDownButton_build_closure(this, context), t1), true, t1._eval$1("ListIterable.E"));
       t2 = this.sortOrderSelected;
       t3 = A.Border_Border$all(C.Color_520093696, 0.5);
       t4 = A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
@@ -11806,11 +11805,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _popupMenuEmailSortOrderType$3(context, sortTypeSelected, onCallBack) {
       var t1 = type$.MappedListIterable_of_EmailSortOrderType_and_PopupMenuItem_dynamic;
-      return A.List_List$of(new A.MappedListIterable(D.List_aYI, new B.SearchEmailView__popupMenuEmailSortOrderType_closure(this, onCallBack, sortTypeSelected), t1), true, t1._eval$1("ListIterable.E"));
+      return A.List_List$of(new A.MappedListIterable(D.List_evx, new B.SearchEmailView__popupMenuEmailSortOrderType_closure(this, onCallBack, sortTypeSelected), t1), true, t1._eval$1("ListIterable.E"));
     },
     _emailSortOrderCupertinoActionTitle$3(context, sortOrderSelected, onCallBack) {
       var t1 = type$.MappedListIterable_EmailSortOrderType_Widget;
-      return A.List_List$of(new A.MappedListIterable(D.List_aYI, new B.SearchEmailView__emailSortOrderCupertinoActionTitle_closure(this, context, sortOrderSelected, onCallBack), t1), true, t1._eval$1("ListIterable.E"));
+      return A.List_List$of(new A.MappedListIterable(D.List_evx, new B.SearchEmailView__emailSortOrderCupertinoActionTitle_closure(this, context, sortOrderSelected, onCallBack), t1), true, t1._eval$1("ListIterable.E"));
     },
     _buildShowAllResultSearchButton$2(context, textSearch) {
       var t2, t3, t4, _this = this, _null = null,
@@ -22862,8 +22861,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.List_EmailLinkifier_UrlLinkifier = A._setArrayType(makeConstList([C.C_EmailLinkifier, C.C_UrlLinkifier]), A.findType("JSArray<Linkifier>"));
     D.List_LB7 = A._setArrayType(makeConstList([C.QuickSearchFilter_0, C.QuickSearchFilter_1, C.QuickSearchFilter_2, C.QuickSearchFilter_3]), A.findType("JSArray<@>"));
     D.List_RWw = A._setArrayType(makeConstList([C.EventActionType_0, C.EventActionType_1, C.EventActionType_2, C.EventActionType_3]), A.findType("JSArray<EventActionType>"));
-    D.List_aYI = A._setArrayType(makeConstList([C.EmailSortOrderType_0, C.EmailSortOrderType_1, C.EmailSortOrderType_2, C.EmailSortOrderType_3, C.EmailSortOrderType_4, C.EmailSortOrderType_5, C.EmailSortOrderType_6]), A.findType("JSArray<EmailSortOrderType>"));
     D.List_b5W = A._setArrayType(makeConstList([C.PointerDeviceKind_0, C.PointerDeviceKind_1, C.PointerDeviceKind_2, C.PointerDeviceKind_3, C.PointerDeviceKind_4, C.PointerDeviceKind_5]), A.findType("JSArray<PointerDeviceKind>"));
+    D.List_evx = A._setArrayType(makeConstList([C.EmailSortOrderType_0, C.EmailSortOrderType_1, C.EmailSortOrderType_2, C.EmailSortOrderType_3, C.EmailSortOrderType_4, C.EmailSortOrderType_5, C.EmailSortOrderType_6, C.EmailSortOrderType_7, C.EmailSortOrderType_8]), A.findType("JSArray<EmailSortOrderType>"));
     D.List_gOG = A._setArrayType(makeConstList([C.EmailReceiveTimeType_0, C.EmailReceiveTimeType_1, C.EmailReceiveTimeType_2, C.EmailReceiveTimeType_3, C.EmailReceiveTimeType_4, C.EmailReceiveTimeType_5]), A.findType("JSArray<EmailReceiveTimeType>"));
     D.Color_2566945535 = new A.Color(2566945535);
     D.BoxShadow_anX = new A.BoxShadow(0, C.BlurStyle_0, D.Color_2566945535, C.Offset_0_0, 12);
@@ -23039,5 +23038,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "BEu8V0Pb5FI6uvs1MASN5+Ywa6U=");
+})($__dart_deferred_initializers__, "EX6y2qDsjnw32ofW2osdGK9rgmQ=");
 ;
