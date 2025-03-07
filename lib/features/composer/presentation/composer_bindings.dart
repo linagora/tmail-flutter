@@ -65,28 +65,12 @@ import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_image_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
-import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 import 'package:uuid/uuid.dart';
-import 'package:worker_manager/worker_manager.dart';
 
 class ComposerBindings extends BaseBindings {
-
-  @override
-  void dependencies() {
-    _bindingsUtils();
-    super.dependencies();
-  }
-
-  void _bindingsUtils() {
-    Get.lazyPut(() => FileUploader(
-      Get.find<DioClient>(tag: BindingTag.isolateTag),
-      Get.find<Executor>(),
-      Get.find<FileUtils>(),
-    ));
-  }
 
   @override
   void bindingsDataSourceImpl() {

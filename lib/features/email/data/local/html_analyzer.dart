@@ -1,3 +1,4 @@
+
 import 'package:collection/collection.dart';
 import 'package:core/data/constants/constant.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
@@ -5,6 +6,7 @@ import 'package:core/presentation/utils/html_transformer/text/persist_preformatt
 import 'package:core/presentation/utils/html_transformer/text/sanitize_autolink_html_transformers.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/string_convert.dart';
 import 'package:dartz/dartz.dart';
 import 'package:html/parser.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
@@ -12,13 +14,21 @@ import 'package:model/email/attachment.dart';
 import 'package:model/email/email_content.dart';
 import 'package:model/email/email_content_type.dart';
 import 'package:model/extensions/attachment_extension.dart';
+import 'package:model/upload/file_info.dart';
+import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
+import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
+import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
+import 'package:uuid/uuid.dart';
 
 class HtmlAnalyzer {
+  static const String cidPrefixKey = 'cid:';
 
   final HtmlTransform _htmlTransform;
+  final FileUploader _fileUploader;
+  final Uuid _uuid;
 
-  HtmlAnalyzer(this._htmlTransform);
+  HtmlAnalyzer(this._htmlTransform, this._fileUploader, this._uuid);
 
   Future<EmailContent> transformEmailContent(
     EmailContent emailContent,
@@ -112,35 +122,76 @@ class HtmlAnalyzer {
 
   Future<Tuple2<String, Set<EmailBodyPart>>> replaceImageBase64ToImageCID({
     required String emailContent,
-    required Map<String, Attachment> inlineAttachments
+    required Map<String, Attachment> inlineAttachments,
+    required Uri? uploadUri,
   }) async {
     final document = parse(emailContent);
-    final listImgTag = document.querySelectorAll('img[src^="data:image/"][id^="cid:"]');
+    final listImgTag = document.querySelectorAll('img[src^="data:image/"]');
 
-    final listInlineAttachment = await Future.wait(listImgTag.map((imgTag) async {
-      final idImg = imgTag.attributes['id'];
-      final cid = idImg!.replaceFirst('cid:', '').trim();
-      imgTag.attributes['src'] = 'cid:$cid';
-      imgTag.attributes.remove('id');
-      return cid;
-    })).then((listCid) {
-      final listInlineAttachment = listCid
-        .map((cid) {
-          if (inlineAttachments.containsKey(cid)) {
-            return inlineAttachments[cid]!.toEmailBodyPart(charset: Constant.base64Charset);
-          } else {
-            return null;
-          }
-        })
-        .whereNotNull()
-        .toSet();
+    log('HtmlAnalyzer::replaceImageBase64ToImageCID:listImgTagLength = ${listImgTag.length} | inlineAttachments = ${inlineAttachments.length}');
 
-      return listInlineAttachment;
-    });
+    if (listImgTag.isEmpty) {
+      return Tuple2(
+        emailContent,
+        inlineAttachments.isNotEmpty
+          ? inlineAttachments.values.toList().toEmailBodyPart(charset: Constant.base64Charset)
+          : {},
+      );
+    }
 
-    final newContent = document.body?.innerHtml ?? emailContent;
+    final Set<EmailBodyPart> inlineAttachmentsSet = {};
+    final List<Future<void>> asyncTasks = [];
 
-    return Tuple2(newContent, listInlineAttachment);
+    for (final imgTag in listImgTag) {
+      final attributes = imgTag.attributes;
+      final imageSrc = attributes['src'];
+      if (imageSrc?.isEmpty ?? true) continue;
+
+      final idImg = attributes['id'];
+      if (idImg?.startsWith(cidPrefixKey) == true) {
+        final cid = idImg!.substring(cidPrefixKey.length).trim();
+        final attachment = inlineAttachments[cid];
+
+        if (attachment != null) {
+          attributes['src'] = '$cidPrefixKey$cid';
+          attributes.remove('id');
+          inlineAttachmentsSet.add(attachment.toEmailBodyPart(charset: Constant.base64Charset));
+          continue;
+        }
+      }
+
+      if (uploadUri == null) continue;
+
+      final taskId = idImg?.startsWith(cidPrefixKey) == true
+        ? idImg!.substring(cidPrefixKey.length)
+        : _uuid.v1();
+
+      asyncTasks.add(_retrieveAttachmentFromUpload(
+        taskId: taskId,
+        uploadUri: uploadUri,
+        base64ImageTag: imageSrc!,
+      ).then((attachmentRecord) {
+        if (attachmentRecord == null) return;
+
+        final newInlineAttachment = attachmentRecord.$1.toAttachmentWithDisposition(
+          disposition: ContentDisposition.inline,
+          cid: attachmentRecord.$2,
+        );
+
+        final newCid = newInlineAttachment.cid!;
+        inlineAttachments[newCid] = newInlineAttachment;
+        attributes['src'] = '$cidPrefixKey$newCid';
+        attributes.remove('id');
+
+        inlineAttachmentsSet.add(newInlineAttachment.toEmailBodyPart(charset: Constant.base64Charset));
+      }));
+    }
+
+    if (asyncTasks.isNotEmpty) {
+      await Future.wait(asyncTasks);
+    }
+
+    return Tuple2(document.body?.innerHtml ?? emailContent, inlineAttachmentsSet);
   }
 
   Future<String> removeCollapsedExpandedSignatureEffect({required String emailContent}) async {
@@ -161,5 +212,33 @@ class HtmlAnalyzer {
     final newContent = document.body?.innerHtml ?? emailContent;
     log('HtmlAnalyzer::removeCollapsedExpandedSignatureEffect: AFTER = $newContent');
     return newContent;
+  }
+
+  Future<(Attachment attachment, String taskId)?> _retrieveAttachmentFromUpload({
+    required String taskId,
+    required Uri uploadUri,
+    required String base64ImageTag,
+  }) async {
+    try {
+      final imageBytes = StringConvert.convertBase64ImageTagToBytes(base64ImageTag);
+      final mediaType = StringConvert.getMediaTypeFromBase64ImageTag(base64ImageTag);
+      log('HtmlAnalyzer::_retrieveAttachmentFromUpload: mimeType = ${mediaType?.mimeType} | imageBytesLength = ${imageBytes.length}');
+      final fileInfo = FileInfo.fromBytes(
+        bytes: imageBytes,
+        name: '$taskId.${mediaType?.subtype ?? 'png'}',
+        type: mediaType?.mimeType,
+      );
+
+      final attachment = await _fileUploader.uploadAttachment(
+        UploadTaskId(taskId),
+        fileInfo,
+        uploadUri,
+      );
+      log('HtmlAnalyzer::_retrieveAttachmentFromUpload:Attachment = $attachment | taskId = $taskId');
+      return (attachment, taskId);
+    } catch (e) {
+      logError('HtmlAnalyzer::_retrieveAttachmentFromUpload:Exception = $e');
+      return null;
+    }
   }
 }

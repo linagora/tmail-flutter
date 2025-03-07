@@ -2,8 +2,8 @@
 import 'package:core/data/network/dio_client.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:equatable/equatable.dart';
+import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/base/isolate/background_isolate_binary_messenger/background_isolate_binary_messenger.dart';
-import 'package:tmail_ui_user/features/upload/domain/model/mobile_file_upload.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 
 class UploadFileArguments with EquatableMixin {
@@ -11,7 +11,7 @@ class UploadFileArguments with EquatableMixin {
   final DioClient dioClient;
   final FileUtils fileUtils;
   final UploadTaskId uploadId;
-  final MobileFileUpload mobileFileUpload;
+  final FileInfo fileInfo;
   final Uri uploadUri;
   final RootIsolateToken isolateToken;
 
@@ -19,7 +19,7 @@ class UploadFileArguments with EquatableMixin {
     this.dioClient,
     this.fileUtils,
     this.uploadId,
-    this.mobileFileUpload,
+    this.fileInfo,
     this.uploadUri,
     this.isolateToken,
   );
@@ -29,7 +29,7 @@ class UploadFileArguments with EquatableMixin {
     dioClient,
     fileUtils,
     uploadId,
-    mobileFileUpload,
+    fileInfo,
     uploadUri,
     isolateToken,
   ];

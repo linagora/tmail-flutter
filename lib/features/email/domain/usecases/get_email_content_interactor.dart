@@ -68,7 +68,7 @@ class GetEmailContentInteractor {
         additionalProperties: additionalProperties);
       final listAttachments = email.allAttachments.getListAttachmentsDisplayedOutside(email.htmlBodyAttachments);
       final listInlineImages = email.allAttachments.listAttachmentsDisplayedInContent;
-
+      log('GetEmailContentInteractor::_getContentEmailFromServer: listAttachments = ${listAttachments.length} | listInlineImages = ${listInlineImages.length}');
       if (email.emailContentList.isNotEmpty) {
         final mapCidImageDownloadUrl = listInlineImages.toMapCidImageDownloadUrl(
           accountId: accountId,
@@ -109,8 +109,8 @@ class GetEmailContentInteractor {
     {Properties? additionalProperties}
   ) async* {
     try {
-      log('GetEmailContentInteractor::_getStoredOpenedEmail(): CALLED');
       final detailedEmail = await emailRepository.getStoredOpenedEmail(session, accountId, emailId);
+      log('GetEmailContentInteractor::_getStoredOpenedEmail: attachments = ${detailedEmail.attachments?.length} | inlineImages = ${detailedEmail.inlineImages?.length}');
       yield Right<Failure, Success>(GetEmailContentFromCacheSuccess(
         htmlEmailContent: detailedEmail.htmlEmailContent ?? '',
         attachments: detailedEmail.attachments ?? [],
@@ -144,8 +144,8 @@ class GetEmailContentInteractor {
     {Properties? additionalProperties}
   ) async* {
     try {
-      log('GetEmailContentInteractor::_getStoredNewEmail():CALLED');
       final detailedEmail = await emailRepository.getStoredNewEmail(session, accountId, emailId);
+      log('GetEmailContentInteractor::_getStoredNewEmail: attachments = ${detailedEmail.attachments?.length} | inlineImages = ${detailedEmail.inlineImages?.length}');
       yield Right<Failure, Success>(GetEmailContentFromCacheSuccess(
         htmlEmailContent: detailedEmail.htmlEmailContent ?? '',
         attachments: detailedEmail.attachments ?? [],

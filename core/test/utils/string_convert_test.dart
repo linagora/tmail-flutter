@@ -283,4 +283,51 @@ void main() {
       );
     });
   });
+
+  group('StringConvert::getMediaTypeFromBase64ImageTag::', () {
+    test('should return correct MediaType for valid JPEG base64 tag', () {
+      const validJpegTag = 'data:image/jpeg;base64,/9j/4AAQSkZJRg==';
+      final result = StringConvert.getMediaTypeFromBase64ImageTag(validJpegTag);
+      expect(result, isNotNull);
+      expect(result!.type, 'image');
+      expect(result.subtype, 'jpeg');
+    });
+
+    test('should return correct MediaType for valid PNG base64 tag', () {
+      const validPngTag = 'data:image/png;base64,iVBORw0KGgo===';
+      final result = StringConvert.getMediaTypeFromBase64ImageTag(validPngTag);
+      expect(result, isNotNull);
+      expect(result!.type, 'image');
+      expect(result.subtype, 'png');
+    });
+
+    test('should return null for string not starting with "data:"', () {
+      const invalidTag = 'image/jpeg;base64,/9j/4AAQSkZJRg==';
+      final result = StringConvert.getMediaTypeFromBase64ImageTag(invalidTag);
+      expect(result, isNull);
+    });
+
+    test('should return null for string without ";base64,"', () {
+      const invalidTag = 'data:image/jpeg,/9j/4AAQSkZJRg==';
+      final result = StringConvert.getMediaTypeFromBase64ImageTag(invalidTag);
+      expect(result, isNull);
+    });
+
+    test('should return null for invalid format', () {
+      const invalidTag = 'data:invalid;base64,data';
+      final result = StringConvert.getMediaTypeFromBase64ImageTag(invalidTag);
+      expect(result, isNull);
+    });
+
+    test('should return null for empty string', () {
+      const emptyTag = '';
+      final result = StringConvert.getMediaTypeFromBase64ImageTag(emptyTag);
+      expect(result, isNull);
+    });
+
+    test('should handle null input gracefully', () {
+      const String? nullTag = null;
+      expect(() => StringConvert.getMediaTypeFromBase64ImageTag(nullTag!), throwsA(isA<TypeError>()));
+    });
+  });
 }

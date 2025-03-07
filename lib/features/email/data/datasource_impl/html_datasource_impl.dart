@@ -42,12 +42,14 @@ class HtmlDataSourceImpl extends HtmlDataSource {
   @override
   Future<Tuple2<String, Set<EmailBodyPart>>> replaceImageBase64ToImageCID({
     required String emailContent,
-    required Map<String, Attachment> inlineAttachments
+    required Map<String, Attachment> inlineAttachments,
+    required Uri? uploadUri,
   }) {
     return Future.sync(() async {
       return await _htmlAnalyzer.replaceImageBase64ToImageCID(
         emailContent: emailContent,
-        inlineAttachments: inlineAttachments
+        inlineAttachments: inlineAttachments,
+        uploadUri: uploadUri,
       );
     }).catchError(_exceptionThrower.throwException);
   }

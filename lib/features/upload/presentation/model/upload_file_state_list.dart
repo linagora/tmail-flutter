@@ -18,7 +18,7 @@ class UploadFileStateList {
     return this;
   }
 
-  UploadFileStateList addAll(List<UploadFileState> elements) {
+  UploadFileStateList addAll(Iterable<UploadFileState> elements) {
     _uploadingStateFiles.addAll(elements);
     return this;
   }

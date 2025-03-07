@@ -1,27 +1,32 @@
 
-import 'package:flutter/widgets.dart';
 import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 extension SetErrorExtension on SetError {
 
-  String toastMessageForSendEmailFailure(BuildContext context) {
+  String toastMessageForSendEmailFailure({
+    required AppLocalizations appLocalizations,
+    String? defaultMessage,
+  }) {
     if (type == SetError.tooLarge) {
-      return AppLocalizations.of(context).sendMessageFailureWithSetErrorTypeTooLarge;
+      return appLocalizations.sendMessageFailureWithSetErrorTypeTooLarge;
     } else if (type == SetError.overQuota) {
-      return AppLocalizations.of(context).sendMessageFailureWithSetErrorTypeOverQuota;
+      return appLocalizations.sendMessageFailureWithSetErrorTypeOverQuota;
     } else {
-      return AppLocalizations.of(context).sendMessageFailure;
+      return defaultMessage ?? appLocalizations.sendMessageFailure;
     }
   }
 
-  String toastMessageForSaveEmailAsDraftFailure(BuildContext context) {
+  String toastMessageForSaveEmailAsDraftFailure({
+    required AppLocalizations appLocalizations,
+    String? defaultMessage,
+  }) {
     if (type == SetError.tooLarge) {
-      return AppLocalizations.of(context).saveEmailAsDraftFailureWithSetErrorTypeTooLarge;
+      return appLocalizations.saveEmailAsDraftFailureWithSetErrorTypeTooLarge;
     } else if (type == SetError.overQuota) {
-      return AppLocalizations.of(context).saveEmailAsDraftFailureWithSetErrorTypeOverQuota;
+      return appLocalizations.saveEmailAsDraftFailureWithSetErrorTypeOverQuota;
     } else {
-      return AppLocalizations.of(context).saveEmailAsDraftFailure;
+      return defaultMessage ?? appLocalizations.saveEmailAsDraftFailure;
     }
   }
 }

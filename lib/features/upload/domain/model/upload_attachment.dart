@@ -42,10 +42,10 @@ class UploadAttachment with EquatableMixin {
 
       final attachment = await fileUploader.uploadAttachment(
         uploadTaskId,
-        _progressStateController,
         fileInfo,
         uploadUri,
-        cancelToken: cancelToken
+        cancelToken: cancelToken,
+        onSendController: _progressStateController,
       );
 
       log('UploadAttachment::upload: ATTACHMENT_UPLOADED = $attachment');

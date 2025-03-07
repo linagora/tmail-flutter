@@ -75,7 +75,10 @@ class SearchRobot extends CoreRobot {
   }
 
   Future<void> openEmailWithSubject(String subject) async {
-    await $(find.byType(EmailTileBuilder)).first.tap();
+    await $(find.byType(EmailTileBuilder))
+      .which<EmailTileBuilder>((view) => view.presentationEmail.subject == subject)
+      .first
+      .tap();
     await $.pump(const Duration(seconds: 2));
   }
 }

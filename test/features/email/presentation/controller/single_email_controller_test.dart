@@ -57,6 +57,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/log_out_oidc_interactor.dart';
+import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/toast_manager.dart';
@@ -114,6 +115,7 @@ const fallbackGenerators = {
   MockSpec<TwakeAppManager>(),
   MockSpec<DownloadAllAttachmentsForWebInteractor>(),
   MockSpec<ExportAllAttachmentsInteractor>(),
+  MockSpec<FileUploader>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -405,10 +407,14 @@ void main() {
     final calendarEventRepository = CalendarEventRepositoryImpl(
       {DataSourceType.network :calendarEventDataSource},
       HtmlDataSourceImpl(
-        HtmlAnalyzer(HtmlTransform(
-          MockDioClient(),
-          const HtmlEscape(),
-        )),
+        HtmlAnalyzer(
+          HtmlTransform(
+            MockDioClient(),
+            const HtmlEscape(),
+          ),
+          MockFileUploader(),
+          MockUuid(),
+        ),
         CacheExceptionThrower(),
       ),
     );

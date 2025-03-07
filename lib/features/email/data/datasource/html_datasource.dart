@@ -18,7 +18,8 @@ abstract class HtmlDataSource {
 
   Future<Tuple2<String, Set<EmailBodyPart>>> replaceImageBase64ToImageCID({
     required String emailContent,
-    required Map<String, Attachment> inlineAttachments
+    required Map<String, Attachment> inlineAttachments,
+    required Uri? uploadUri,
   });
 
   Future<String> removeCollapsedExpandedSignatureEffect({required String emailContent});
