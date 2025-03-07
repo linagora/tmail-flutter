@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' hide HttpClient;
 
 import 'package:collection/collection.dart';
@@ -25,6 +26,7 @@ import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_sta
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 import '../models/provisioning_email.dart';
+import '../resources/test_images.dart';
 
 mixin ScenarioUtilsMixin {
   Future<void> provisionEmail(
@@ -125,6 +127,13 @@ mixin ScenarioUtilsMixin {
     final directory = await getTemporaryDirectory();
     final file = File('${directory.path}/test.txt');
     return file.writeAsString(content);
+  }
+
+  Future<File> preparingPngWithName(String pngName) async {
+    final bytes = base64Decode(TestImages.base64);
+    final directory = await getTemporaryDirectory();
+    final file = File('${directory.path}/$pngName.png');
+    return file.writeAsBytes(bytes);
   }
 
   Future<List<Attachment>> uploadAttachments(
