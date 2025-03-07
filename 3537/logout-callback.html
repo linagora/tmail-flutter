@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <script>
+        const AUTH_RESPONSE_KEY = "auth_info";
+        const CODE_VERIFIER_KEY = "auth_code_verifier";
+        window.onload = function () {
+            localStorage.removeItem(AUTH_RESPONSE_KEY);
+            localStorage.removeItem(CODE_VERIFIER_KEY);
+            const params = new URLSearchParams(window.location.search)
+            if (params.has('redirect_uri')) {
+                const redirect = params.get('redirect_uri');
+                window.location.replace(redirect);
+            } else {
+                window.location.assign("/");
+            }
+        }
+    </script>
+</head>
+
+<body>
+</body>
+
+</html>
