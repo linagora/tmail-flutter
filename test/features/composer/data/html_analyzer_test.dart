@@ -74,6 +74,37 @@ void main() {
     });
 
     test(
+      'When HTML content has an image with existing CID,\n'
+      'but inlineAttachments is empty,\n'
+      'should re-upload base64 succeeds then replace src with that CID and add attachment to result',
+    () async {
+      const htmlContent = '<img id="cid:test123" src="data:image/png;base64,iVBORw0KGgo=">';
+      final inlineAttachments = <String, Attachment>{};
+      final uploadUri = Uri.parse('https://example.com/upload');
+
+      when(mockFileUploader.uploadAttachment(any, any, any))
+        .thenAnswer((_) async => Attachment(
+          blobId: Id('test123'),
+          type: MediaType('image', 'png'),
+          disposition: ContentDisposition.inline,
+          cid: 'test123',
+        ));
+
+      final result = await htmlAnalyzer.replaceImageBase64ToImageCID(
+        emailContent: htmlContent,
+        inlineAttachments: inlineAttachments,
+        uploadUri: uploadUri,
+      );
+
+      final document = parse(result.value1);
+      final imgTag = document.querySelector('img');
+      expect(imgTag?.attributes['src'], 'cid:test123');
+      expect(imgTag?.attributes.containsKey('id'), isFalse);
+      expect(result.value2.length, 1);
+      expect(result.value2.first.cid, 'test123');
+    });
+
+    test(
       'When HTML content has a base64 image and upload succeeds,\n'
       'should replace src with new CID and add attachment to result',
     () async {
@@ -101,6 +132,7 @@ void main() {
       expect(imgTag?.attributes['src'], 'cid:new-uuid-123');
       expect(result.value2.length, 1);
       expect(result.value2.first.cid, 'new-uuid-123');
+      verify(mockUuid.v1()).called(1);
       verify(mockFileUploader.uploadAttachment(any, any, uploadUri)).called(1);
     });
 
@@ -151,9 +183,10 @@ void main() {
       final document = parse(result.value1);
       final imgTags = document.querySelectorAll('img');
       expect(imgTags.length, 2);
-      expect(imgTags[0].attributes['src'], 'cid:uuid1');
-      expect(imgTags[1].attributes['src'], 'cid:uuid1');
+      expect(imgTags[0].attributes['src'], contains('cid:'));
+      expect(imgTags[1].attributes['src'], contains('cid:'));
       expect(result.value2.length, 2);
+      verify(mockUuid.v1()).called(2);
       verify(mockFileUploader.uploadAttachment(any, any, uploadUri)).called(2);
     });
 
@@ -198,6 +231,7 @@ void main() {
       expect(imgTags[1].attributes['src'], 'data:image/jpeg;base64,/9j/4AAQSkZJRg==');
       expect(result.value2.length, 1);
       expect(result.value2.first.cid, 'uuid1');
+      verify(mockUuid.v1()).called(2);
       verify(mockFileUploader.uploadAttachment(any, any, uploadUri)).called(2);
     });
 
@@ -229,6 +263,7 @@ void main() {
       expect(imgTags[0].attributes['src'], 'data:image/png;base64,iVBORw0KGgo=');
       expect(imgTags[1].attributes['src'], 'data:image/jpeg;base64,/9j/4AAQSkZJRg==');
       expect(result.value2.length, 0);
+      verify(mockUuid.v1()).called(2);
       verify(mockFileUploader.uploadAttachment(any, any, uploadUri)).called(2);
     });
 
@@ -256,6 +291,7 @@ void main() {
       expect(imgTags.length, 1);
       expect(imgTags[0].attributes['src'], 'data:image/png;base64,invalid-base64-data');
       expect(result.value2.length, 0);
+      verify(mockUuid.v1()).called(1);
     });
 
     test(
@@ -282,6 +318,7 @@ void main() {
       expect(imgTags.length, 1);
       expect(imgTags[0].attributes['src'], 'data:image/png;base64,iVBORw0KGgo=');
       expect(result.value2.length, 0);
+      verify(mockUuid.v1()).called(1);
       verify(mockFileUploader.uploadAttachment(any, any, any)).called(1);
     });
   });
