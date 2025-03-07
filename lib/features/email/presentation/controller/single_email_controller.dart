@@ -140,6 +140,12 @@ import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
+import 'package:twake_previewer_flutter/core/constants/supported_charset.dart';
+import 'package:twake_previewer_flutter/core/previewer_options/options/previewer_state.dart';
+import 'package:twake_previewer_flutter/core/previewer_options/options/top_bar_options.dart';
+import 'package:twake_previewer_flutter/core/previewer_options/previewer_options.dart';
+import 'package:twake_previewer_flutter/twake_image_previewer/twake_image_previewer.dart';
+import 'package:twake_previewer_flutter/twake_plain_text_previewer/twake_plain_text_previewer.dart';
 
 class SingleEmailController extends BaseController with AppLoaderMixin {
 
@@ -452,7 +458,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
                 ),
               );
 
-              if (currentOverlayContext != null && currentContext != null) {
+              if (currentOverlayContext != null && currentContext != null && !success.forPreview) {
                 appToast.showToastMessage(
                   currentOverlayContext!,
                   AppLocalizations.of(currentContext!).your_download_has_started,
@@ -993,7 +999,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     await FlutterFileDialog.saveFile(params: params);
   }
 
-  void downloadAttachmentForWeb(Attachment attachment) {
+  void downloadAttachmentForWeb(Attachment attachment, {bool forPreview = false}) {
     if (accountId != null && session != null) {
       final generateTaskId = DownloadTaskId(uuid.v4());
       try {
@@ -1008,6 +1014,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           baseDownloadUrl,
           _downloadProgressStateController,
           cancelToken: cancelToken,
+          forPreview: forPreview,
         ));
       } catch (e) {
         logError('SingleEmailController::downloadAttachmentForWeb(): $e');
@@ -1089,9 +1096,51 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     mailboxDashBoardController.deleteDownloadTask(success.taskId);
 
-    _downloadManager.createAnchorElementDownloadFileWeb(
+    if (!success.forPreview) {
+      _downloadManager.createAnchorElementDownloadFileWeb(
         success.bytes,
         success.attachment.generateFileName());
+      return;
+    }
+
+    if (success.attachment.isImage) {
+      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
+      Get.dialog(PointerInterceptor(child: TwakeImagePreviewer(
+        bytes: success.bytes,
+        zoomable: true,
+        previewerOptions: const PreviewerOptions(
+          previewerState: PreviewerState.success,
+        ),
+        topBarOptions: TopBarOptions(
+          title: success.attachment.generateFileName(),
+          onClose: popBack,
+          onDownload: currentContext == null
+            ? null
+            : () => handleDownloadAttachmentAction(
+                currentContext!,
+                success.attachment),
+        ),
+      )));
+    } else if (success.attachment.isText) {
+      _updateAttachmentsViewState(success.attachment.blobId, Right(success));
+      Get.dialog(PointerInterceptor(child: TwakePlainTextPreviewer(
+        supportedCharset: SupportedCharset.utf8,
+        bytes: success.bytes,
+        previewerOptions: PreviewerOptions(
+          previewerState: PreviewerState.success,
+          width: currentContext == null ? 200 : currentContext!.width * 0.8,
+        ),
+        topBarOptions: TopBarOptions(
+          title: success.attachment.generateFileName(),
+          onClose: popBack,
+          onDownload: currentContext == null
+            ? null
+            : () => handleDownloadAttachmentAction(
+                currentContext!,
+                success.attachment),
+        ),
+      )));
+    }
   }
 
   void _downloadPDFFile(Uint8List bytes, String fileName) {
@@ -2153,9 +2202,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
   }
 
-  void handleDownloadAttachmentAction(BuildContext context, Attachment attachment) {
+  void handleDownloadAttachmentAction(
+    BuildContext context,
+    Attachment attachment,
+    {bool forPreview = false}
+  ) {
     if (PlatformInfo.isWeb) {
-      downloadAttachmentForWeb(attachment);
+      downloadAttachmentForWeb(attachment, forPreview: forPreview);
     } else if (PlatformInfo.isMobile) {
       exportAttachment(context, attachment);
     } else {
@@ -2201,8 +2254,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           customTextTransformers: [const StandardizeHtmlSanitizingTransformers()],
         ),
       ));
-    }else {
-      handleDownloadAttachmentAction(context, attachment);
+    } else {
+      handleDownloadAttachmentAction(context, attachment, forPreview: true);
     }
   }
 
