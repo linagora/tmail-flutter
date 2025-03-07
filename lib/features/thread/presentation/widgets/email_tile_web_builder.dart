@@ -65,6 +65,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
             EmailActionType.selection,
             widget.presentationEmail
           ),
+          hoverColor: Theme.of(context).colorScheme.outline.withOpacity(0.08),
           child: Container(
             padding: widget.padding ?? _getPaddingItem(context),
             decoration: _getDecorationItem(),
@@ -189,6 +190,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
             EmailActionType.preview,
             widget.presentationEmail
           ),
+          hoverColor: Theme.of(context).colorScheme.outline.withOpacity(0.08),
           onHover: (value) => _hoverNotifier.value = value,
           child: Container(
             padding: widget.padding ?? _getPaddingItem(context),
@@ -337,7 +339,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
               widget.presentationEmail
             ),
             onHover: (value) => _hoverNotifier.value = value,
-            hoverColor: AppColor.colorEmailTileHoverWeb,
+            hoverColor: Theme.of(context).colorScheme.outline.withOpacity(0.08),
             borderRadius: const BorderRadius.all(Radius.circular(14)),
             child: Container(
               padding: widget.padding ?? _getPaddingItem(context),
@@ -489,9 +491,10 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
     ) {
       return const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(8)),
-        color: AppColor.colorEmailTileHoverWeb);
+        color: AppColor.blue100,
+      );
     } else if (widget.isShowingEmailContent && responsiveUtils.isTabletLarge(context)) {
-      return const BoxDecoration(color: AppColor.colorItemEmailSelectedDesktop);
+      return const BoxDecoration(color: AppColor.blue100);
     } else {
       return null;
     }

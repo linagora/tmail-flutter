@@ -38,10 +38,22 @@ class HtmlUtils {
       editor.parentNode.replaceChild(newEditor, editor);''',
     name: 'unregisterDropListener');
 
-  static String customCssStyleHtmlEditor({TextDirection direction = TextDirection.ltr}) {
+  static String customCssStyleHtmlEditor({
+    TextDirection direction = TextDirection.ltr,
+    bool useDefaultFont = false,
+  }) {
     if (PlatformInfo.isWeb) {
       return '''
         <style>
+          ${useDefaultFont ? '''
+            body {
+              font-family: Arial, 'Inter', sans-serif;
+              font-weight: 500;
+              font-size: 16px;
+              line-height: 24px;
+            }
+          ''' : ''}
+        
           .note-editable {
             direction: ${direction.name};
           }
@@ -53,6 +65,15 @@ class HtmlUtils {
       ''';
     } else if (PlatformInfo.isMobile) {
       return '''
+        ${useDefaultFont ? '''
+          body {
+            font-family: Arial, 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 24px;
+          }
+        ''' : ''}
+        
         #editor {
           direction: ${direction.name};
         }
@@ -94,7 +115,9 @@ class HtmlUtils {
     String? styleCSS,
     String? javaScripts,
     bool hideScrollBar = true,
-    TextDirection? direction
+    bool useDefaultFont = false,
+    TextDirection? direction,
+    double? contentPadding,
   }) {
     return '''
       <!DOCTYPE html>
@@ -102,7 +125,18 @@ class HtmlUtils {
       <head>
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      ${useDefaultFont && PlatformInfo.isMobile
+        ? '<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">'
+        : ''}
       <style>
+        ${useDefaultFont ? '''
+          body {
+            font-family: 'Inter', sans-serif;
+            font-weight: 500;
+            font-size: 16px;
+            line-height: 24px;
+          }
+        ''' : ''}
         .tmail-content {
           min-height: ${minHeight ?? 0}px;
           min-width: ${minWidth ?? 0}px;
@@ -120,7 +154,7 @@ class HtmlUtils {
         ${styleCSS ?? ''}
       </style>
       </head>
-      <body ${direction == TextDirection.rtl ? 'dir="rtl"' : ''} style = "overflow-x: hidden">
+      <body ${direction == TextDirection.rtl ? 'dir="rtl"' : ''} style = "overflow-x: hidden; ${contentPadding != null ? 'margin: $contentPadding;' : ''}";>
       <div class="tmail-content">$content</div>
       ${javaScripts ?? ''}
       </body>

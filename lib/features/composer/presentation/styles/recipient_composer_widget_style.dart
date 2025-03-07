@@ -33,13 +33,8 @@ class RecipientComposerWidgetStyle {
     fontSize: 15,
     fontWeight: FontWeight.normal,
     decoration: TextDecoration.underline,
-    decorationColor: AppColor.colorPrefixButtonComposer,
-    color: AppColor.colorPrefixButtonComposer,
-  );
-  static const TextStyle labelTextStyle = TextStyle(
-    fontSize: 14,
-    fontWeight: FontWeight.w400,
-    color: AppColor.colorLabelComposer
+    decorationColor: AppColor.m3Neutral70,
+    color: AppColor.m3Neutral70,
   );
   static const TextStyle inputTextStyle = TextStyle(
     fontSize: 16,

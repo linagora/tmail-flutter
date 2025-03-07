@@ -38,16 +38,11 @@ mixin MessageDialogActionMixin {
         PopInvokedWithResultCallback? onPopInvoked,
         bool isArrangeActionButtonsVertical = false,
         int? titleActionButtonMaxLines,
-        EdgeInsetsGeometry? titlePadding,
+        bool useIconAsBasicLogo = false,
       }
   ) async {
     final responsiveUtils = Get.find<ResponsiveUtils>();
     final imagePaths = Get.find<ImagePaths>();
-
-    final paddingTitle = titlePadding ??
-        (icon != null
-            ? const EdgeInsetsDirectional.only(top: 24, start: 24, end: 24)
-            : const EdgeInsetsDirectional.symmetric(horizontal: 24));
 
     if (alignCenter) {
       final childWidget = PointerInterceptor(
@@ -55,24 +50,30 @@ mixin MessageDialogActionMixin {
             imagePaths,
             listTextSpan: listTextSpan,
             titleActionButtonMaxLines: titleActionButtonMaxLines,
-            isArrangeActionButtonsVertical: isArrangeActionButtonsVertical
+            isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
+            useIconAsBasicLogo: useIconAsBasicLogo,
           )
           ..key(key)
           ..title(title ?? '')
           ..content(message)
           ..addIcon(icon)
-          ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
-          ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
-          ..marginIcon(icon != null ? (marginIcon ?? const EdgeInsets.only(top: 24)) : null)
-          ..paddingTitle(paddingTitle)
+          ..colorConfirmButton(actionButtonColor ?? AppColor.blue700)
+          ..colorCancelButton(cancelButtonColor ?? AppColor.colorF3F6F9)
           ..radiusButton(12)
-          ..paddingButton(paddingButton)
-          ..paddingContent(const EdgeInsets.only(left: 24, right: 24, bottom: 24, top: 12))
-          ..marginButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 24, left: 24, right: 24))
-          ..styleTitle(titleStyle ?? const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
-          ..styleContent(messageStyle ?? const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
-          ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
-          ..styleTextConfirmButton(actionStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
+          ..styleTitle(titleStyle)
+          ..styleContent(messageStyle)
+          ..styleTextCancelButton(cancelStyle ?? const TextStyle(
+            fontSize: 17,
+            height: 24 / 17,
+            fontWeight: FontWeight.w500,
+            color: AppColor.steelGray600,
+          ))
+          ..styleTextConfirmButton(actionStyle ?? const TextStyle(
+            fontSize: 17,
+            height: 24 / 17,
+            fontWeight: FontWeight.w500,
+            color: Colors.white,
+          ))
           ..onConfirmButtonAction(actionName, () {
             if (autoPerformPopBack) {
               popBack();
@@ -107,25 +108,30 @@ mixin MessageDialogActionMixin {
               listTextSpan: listTextSpan,
               maxWith: responsiveUtils.getSizeScreenShortestSide(context) - 16,
               titleActionButtonMaxLines: titleActionButtonMaxLines,
-              isArrangeActionButtonsVertical: isArrangeActionButtonsVertical
+              isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
+              useIconAsBasicLogo: useIconAsBasicLogo,
             )
             ..key(key)
             ..title(title ?? '')
             ..content(message)
             ..addIcon(icon)
-            ..paddingButton(paddingButton)
-            ..margin(const EdgeInsets.only(bottom: 42))
             ..widthDialog(responsiveUtils.getSizeScreenWidth(context))
-            ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
-            ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
-            ..paddingTitle(paddingTitle)
-            ..marginIcon(EdgeInsets.zero)
-            ..paddingContent(const EdgeInsets.only(left: 44, right: 44, bottom: 24, top: 12))
-            ..marginButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 16, left: 44, right: 44))
-            ..styleTitle(titleStyle ?? const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
-            ..styleContent(messageStyle ?? const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
-            ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
-            ..styleTextConfirmButton(actionStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
+            ..colorConfirmButton(actionButtonColor ?? AppColor.blue700)
+            ..colorCancelButton(cancelButtonColor ?? AppColor.colorF3F6F9)
+            ..styleTitle(titleStyle)
+            ..styleContent(messageStyle)
+            ..styleTextCancelButton(cancelStyle ?? const TextStyle(
+              fontSize: 17,
+              height: 24 / 17,
+              fontWeight: FontWeight.w500,
+              color: AppColor.steelGray600,
+            ))
+            ..styleTextConfirmButton(actionStyle ?? const TextStyle(
+              fontSize: 17,
+              height: 24 / 17,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ))
             ..onConfirmButtonAction(actionName, () {
               if (autoPerformPopBack) {
                 popBack();
@@ -185,24 +191,29 @@ mixin MessageDialogActionMixin {
               imagePaths,
               listTextSpan: listTextSpan,
               titleActionButtonMaxLines: titleActionButtonMaxLines,
-              isArrangeActionButtonsVertical: isArrangeActionButtonsVertical
+              isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
+              useIconAsBasicLogo: useIconAsBasicLogo,
             )
             ..key(key)
             ..title(title ?? '')
             ..content(message)
             ..addIcon(icon)
-            ..paddingButton(paddingButton)
-            ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
-            ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
-            ..marginIcon(icon != null ? const EdgeInsets.only(top: 24) : null)
-            ..paddingTitle(paddingTitle)
-            ..marginIcon(EdgeInsets.zero)
-            ..paddingContent(const EdgeInsets.only(left: 44, right: 44, bottom: 24, top: 12))
-            ..marginButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 16, left: 44, right: 44))
-            ..styleTitle(titleStyle ?? const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
-            ..styleContent(messageStyle ?? const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
-            ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
-            ..styleTextConfirmButton(actionStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
+            ..colorConfirmButton(actionButtonColor ?? AppColor.blue700)
+            ..colorCancelButton(cancelButtonColor ?? AppColor.colorF3F6F9)
+            ..styleTitle(titleStyle)
+            ..styleContent(messageStyle)
+            ..styleTextCancelButton(cancelStyle ?? const TextStyle(
+              fontSize: 17,
+              height: 24 / 17,
+              fontWeight: FontWeight.w500,
+              color: AppColor.steelGray600,
+            ))
+            ..styleTextConfirmButton(actionStyle ?? const TextStyle(
+              fontSize: 17,
+              height: 24 / 17,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ))
             ..onConfirmButtonAction(actionName, () {
               if (autoPerformPopBack) {
                 popBack();

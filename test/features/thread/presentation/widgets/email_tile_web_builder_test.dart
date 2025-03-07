@@ -1,4 +1,3 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/foundation.dart';
@@ -49,6 +48,8 @@ void main() {
           home: Scaffold(body: widgetUnderTest)));
       await tester.pump();
 
+      BuildContext context = tester.element(find.byType(EmailTileBuilder));
+
       // assert
       expect(
         find.byWidgetPredicate(
@@ -60,7 +61,7 @@ void main() {
       expect(
         find.byWidgetPredicate(
           (widget) => widget is InkWell
-            && widget.hoverColor == AppColor.colorEmailTileHoverWeb
+            && widget.hoverColor == Theme.of(context).colorScheme.outline.withOpacity(0.08)
         ),
         findsOneWidget);
 
@@ -93,6 +94,7 @@ void main() {
           home: Scaffold(body: widgetUnderTest)));
       await tester.pump();
 
+      BuildContext context = tester.element(find.byType(EmailTileBuilder));
       // assert
       expect(
         find.byWidgetPredicate(
@@ -104,9 +106,9 @@ void main() {
       expect(
         find.byWidgetPredicate(
           (widget) => widget is InkWell
-            && widget.hoverColor == AppColor.colorEmailTileHoverWeb
+            && widget.hoverColor == Theme.of(context).colorScheme.outline.withOpacity(0.08)
         ),
-        findsNothing);
+        findsOneWidget);
     });
 
     testWidgets(

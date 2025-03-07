@@ -66,6 +66,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
         child: Row(children: [
           if (_supportDisplayMailboxNameTitle(context))
             EmailViewBackButton(
+              imagePaths: _imagePaths,
               onBackAction: onBackAction,
               mailboxContain: mailboxContain,
               isSearchActivated: isSearchActivated,
@@ -74,23 +75,24 @@ class EmailViewAppBarWidget extends StatelessWidget {
           const Spacer(),
           Row(
             children: [
-                const SizedBox(width: EmailViewAppBarWidgetStyles.space),
+                if (optionsWidget != null) ... optionsWidget!,
                 TMailButtonWidget.fromIcon(
                   icon: _imagePaths.icMoveEmail,
                   iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
+                  iconColor: EmailViewAppBarWidgetStyles.iconColor,
                   tooltipMessage: AppLocalizations.of(context).move_message,
                   backgroundColor: Colors.transparent,
-                  padding: EmailViewAppBarWidgetStyles.buttonPadding,
                   onTapActionCallback: () => onEmailActionClick?.call(presentationEmail, EmailActionType.moveToMailbox)
                 ),
-                const SizedBox(width: EmailViewAppBarWidgetStyles.space),
                 TMailButtonWidget.fromIcon(
                   icon: presentationEmail.hasStarred
                     ? _imagePaths.icStar
                     : _imagePaths.icUnStar,
                   iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
+                  iconColor: presentationEmail.hasStarred
+                    ? null
+                    : EmailViewAppBarWidgetStyles.iconColor,
                   backgroundColor: Colors.transparent,
-                  padding: EmailViewAppBarWidgetStyles.buttonPadding,
                   tooltipMessage: presentationEmail.hasStarred
                     ? AppLocalizations.of(context).not_starred
                     : AppLocalizations.of(context).mark_as_starred,
@@ -99,36 +101,26 @@ class EmailViewAppBarWidget extends StatelessWidget {
                     presentationEmail.hasStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred
                   )
                 ),
-                Obx(() {
-                  if (_singleEmailController.currentEmailLoaded.value != null
-                    && PlatformInfo.isWeb
-                    && PlatformInfo.isCanvasKit
-                  ) {
-                    return TMailButtonWidget.fromIcon(
+                if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit)
+                  Obx(() => AbsorbPointer(
+                    absorbing: _singleEmailController.currentEmailLoaded.value == null,
+                    child: TMailButtonWidget.fromIcon(
                       icon: _imagePaths.icPrinter,
-                      margin: const EdgeInsetsDirectional.only(start: EmailViewAppBarWidgetStyles.space),
                       iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
+                      iconColor: EmailViewAppBarWidgetStyles.iconColor,
                       backgroundColor: Colors.transparent,
-                      padding: EmailViewAppBarWidgetStyles.buttonPadding,
                       tooltipMessage: AppLocalizations.of(context).printAll,
                       onTapActionCallback: () => onEmailActionClick?.call(
                         presentationEmail,
-                        EmailActionType.printAll
-                      )
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                }),
-                const SizedBox(width: EmailViewAppBarWidgetStyles.space),
+                        EmailActionType.printAll,
+                      ),
+                    ),
+                  )),
                 TMailButtonWidget.fromIcon(
                   icon: _imagePaths.icDeleteComposer,
                   iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
+                  iconColor: EmailViewAppBarWidgetStyles.iconColor,
                   backgroundColor: Colors.transparent,
-                  padding: EmailViewAppBarWidgetStyles.buttonPadding,
-                  iconColor: canDeletePermanently
-                    ? EmailViewAppBarWidgetStyles.deletePermanentButtonColor
-                    : EmailViewAppBarWidgetStyles.emptyTrashButtonColor,
                   tooltipMessage: canDeletePermanently
                     ? AppLocalizations.of(context).delete_permanently
                     : AppLocalizations.of(context).move_to_trash,
@@ -140,12 +132,11 @@ class EmailViewAppBarWidget extends StatelessWidget {
                     }
                   }
                 ),
-                const SizedBox(width: EmailViewAppBarWidgetStyles.space),
                 TMailButtonWidget.fromIcon(
-                  icon: _imagePaths.icMore,
+                  icon: _imagePaths.icMoreVertical,
                   iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
+                  iconColor: EmailViewAppBarWidgetStyles.iconColor,
                   backgroundColor: Colors.transparent,
-                  padding: EmailViewAppBarWidgetStyles.buttonPadding,
                   tooltipMessage: AppLocalizations.of(context).more,
                   onTapActionCallback: _responsiveUtils.isScreenWithShortestSide(context)
                     ? () => onMoreActionClick?.call(presentationEmail, null)
@@ -154,9 +145,6 @@ class EmailViewAppBarWidget extends StatelessWidget {
                     ? (position) => onMoreActionClick?.call(presentationEmail, position)
                     : null
                 ),
-                if(optionsWidget != null)
-                  ...optionsWidget!,
-                const SizedBox(width: EmailViewAppBarWidgetStyles.space),
               ]
           ),
         ])

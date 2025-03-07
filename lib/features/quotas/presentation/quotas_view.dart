@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -43,6 +44,7 @@ class QuotasView extends GetWidget<QuotasController> {
                       controller.imagePaths.icQuotas,
                       width: QuotasViewStyles.iconSize,
                       height: QuotasViewStyles.iconSize,
+                      colorFilter: AppColor.steelGray400.asFilter(),
                       fit: BoxFit.fill,
                     ),
                     const SizedBox(width: QuotasViewStyles.iconPadding),

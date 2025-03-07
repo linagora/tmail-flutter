@@ -1069,16 +1069,10 @@ class MailboxController extends BaseMailboxController
         .show();
     } else {
       Get.dialog(
-        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
+        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
           ..key(const Key('confirm_dialog_delete_multiple_mailbox'))
           ..title(AppLocalizations.of(context).deleteFolders)
           ..content(AppLocalizations.of(context).messageConfirmationDialogDeleteMultipleFolder(selectedMailboxList.length))
-          ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
-          ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-          ..styleTextConfirmButton(const TextStyle(
-              fontSize: 17,
-              fontWeight: FontWeight.w500,
-              color: AppColor.colorActionDeleteConfirmDialog))
           ..onCloseButtonAction(() => popBack())
           ..onConfirmButtonAction(AppLocalizations.of(context).delete, () =>
               _deleteMultipleMailboxAction(selectedMailboxList))
@@ -1711,23 +1705,16 @@ class MailboxController extends BaseMailboxController
     } else {
       Get.dialog(
         PointerInterceptor(
-            child: (ConfirmDialogBuilder(imagePaths)
+            child: (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
               ..key(const Key('confirm_dialog_subaddressing'))
               ..title(AppLocalizations.of(context).allowSubaddressing)
-              ..styleTitle(const TextStyle(
-                  fontSize: 17,
-                  fontWeight: FontWeight.w500,
-                  color: AppColor.colorTextButton
-              ))
               ..content(AppLocalizations.of(context).message_confirmation_dialog_allow_subaddressing(mailboxName))
-              ..addIcon(SvgPicture.asset(imagePaths.icSubaddressingAllow, width: 64, height: 64))
               ..addWidgetContent(CopySubaddressWidget(
                 context: context,
                 imagePath: imagePaths,
                 subaddress: subaddress,
                 onCopyButtonAction: () => copySubaddressAction(context, subaddress),
               ))
-              ..colorCancelButton(AppColor.colorContentEmail)
               ..onCloseButtonAction(() => popBack())
               ..onConfirmButtonAction(AppLocalizations.of(context).allow, () => onAllowSubaddressingAction(mailboxId, currentRights, MailboxActions.allowSubaddressing))
               ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack())

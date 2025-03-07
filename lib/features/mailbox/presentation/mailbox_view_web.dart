@@ -111,7 +111,6 @@ class MailboxView extends BaseMailboxView {
                 ],
               ),
             Container(
-              color: AppColor.colorBgMailbox,
               width: double.infinity,
               alignment: controller.responsiveUtils.isDesktop(context)
                 ? AlignmentDirectional.centerStart
@@ -122,8 +121,9 @@ class MailboxView extends BaseMailboxView {
                 title: '${AppLocalizations.of(context).version.toLowerCase()} ',
                 textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
                   fontSize: 13,
-                  color: AppColor.colorTextBody,
-                  fontWeight: FontWeight.normal
+                  height: 16 / 13,
+                  color: AppColor.steelGray400,
+                  fontWeight: FontWeight.w400,
                 ),
               ),
             ),
@@ -193,7 +193,7 @@ class MailboxView extends BaseMailboxView {
                   child: Text(
                     AppLocalizations.of(context).folders,
                     style: const TextStyle(
-                      fontSize: 17,
+                      fontSize: 15,
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
@@ -207,14 +207,16 @@ class MailboxView extends BaseMailboxView {
                     TMailButtonWidget.fromIcon(
                       icon: controller.imagePaths.icSearchBar,
                       backgroundColor: Colors.transparent,
-                      iconColor: AppColor.primaryColor,
+                      iconColor: AppColor.steelGrayA540,
+                      iconSize: 20,
                       tooltipMessage: AppLocalizations.of(context).searchForFolders,
                       onTapActionCallback: () => controller.openSearchViewAction(context)
                     ),
                     TMailButtonWidget.fromIcon(
                       icon: controller.imagePaths.icAddNewFolder,
                       backgroundColor: Colors.transparent,
-                      iconColor: AppColor.primaryColor,
+                      iconColor: AppColor.steelGrayA540,
+                      iconSize: 20,
                       tooltipMessage: AppLocalizations.of(context).newFolder,
                       onTapActionCallback: () => controller.goToCreateNewMailboxView(context)
                     ),

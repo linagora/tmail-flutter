@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -41,37 +40,11 @@ class DeleteIdentityDialogBuilder extends StatelessWidget {
   }
 
   ConfirmDialogBuilder _buildDeleteDialog(BuildContext context) {
-    return ConfirmDialogBuilder(imagePaths)
+    return ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
         ..key(const Key('confirm_dialog_delete_identity'))
         ..title(AppLocalizations.of(context).delete_identity)
-        ..styleTitle(const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppColor.colorActionDeleteConfirmDialog))
-        ..paddingTitle(const EdgeInsets.all(0.0))
         ..content(AppLocalizations.of(context).message_confirmation_dialog_delete_identity)
-        ..styleContent(const TextStyle(
-            fontSize: 15,
-            fontWeight: FontWeight.normal,
-            color: AppColor.colorContentEmail))
-        ..paddingContent(const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0))
-        ..addIcon(Padding(
-          padding: const EdgeInsets.symmetric(vertical: 24.0),
-          child: SvgPicture.asset(imagePaths.icDeleteDialogIdentity, fit: BoxFit.fill),
-        ))
-        ..marginIcon(EdgeInsets.zero)
-        ..colorCancelButton(AppColor.colorButtonCancelDialog)
-        ..styleTextCancelButton(const TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w500,
-            color: AppColor.colorTextButton))
-        ..colorConfirmButton(AppColor.colorActionDeleteConfirmDialog)
-        ..styleTextConfirmButton(const TextStyle(
-            fontSize: 17,
-            fontWeight: FontWeight.w500,
-            color: Colors.white))
-        ..marginButton(const EdgeInsets.only(bottom: 24, left: 24, right: 24))
-        ..backgroundColor(Colors.black26)
+        ..onCloseButtonAction(popBack)
         ..onConfirmButtonAction(AppLocalizations.of(context).delete, () =>
             onDeleteIdentityAction.call())
         ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack());
