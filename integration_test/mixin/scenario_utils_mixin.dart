@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' hide HttpClient;
 
 import 'package:collection/collection.dart';
@@ -33,6 +34,7 @@ import 'package:uuid/uuid.dart';
 
 import '../models/provisioning_email.dart';
 import '../models/provisioning_identity.dart';
+import '../resources/test_images.dart';
 
 mixin ScenarioUtilsMixin {
   Future<void> provisionEmail(
@@ -44,7 +46,8 @@ mixin ScenarioUtilsMixin {
     ComposerBindings().dependencies();
 
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-    final createNewAndSendEmailInteractor = Get.find<CreateNewAndSendEmailInteractor>();
+    final createNewAndSendEmailInteractor =
+        Get.find<CreateNewAndSendEmailInteractor>();
     final threadController = Get.find<ThreadController>();
 
     final identity = await getIdentity();
@@ -53,27 +56,33 @@ mixin ScenarioUtilsMixin {
 
     // Provision emails
     await Future.wait(provisioningEmails.map((provisioningEmail) async {
-      final attachments = await uploadAttachments(provisioningEmail.attachmentPaths);
+      final attachments =
+          await uploadAttachments(provisioningEmail.attachmentPaths);
 
       // Create and send email
-      return await createNewAndSendEmailInteractor.execute(
-        createEmailRequest: CreateEmailRequest(
-          session: mailboxDashBoardController.sessionCurrent!,
-          accountId: mailboxDashBoardController.accountId.value!,
-          emailActionType: EmailActionType.compose,
-          ownEmailAddress: mailboxDashBoardController.ownEmailAddress.value,
-          subject: provisioningEmail.subject,
-          emailContent: provisioningEmail.content,
-          toRecipients: {EmailAddress(null, provisioningEmail.toEmail)},
-          outboxMailboxId: mailboxDashBoardController.outboxMailbox?.mailboxId,
-          sentMailboxId: folderLocationRole != null
-            ? mailboxDashBoardController.mapDefaultMailboxIdByRole[folderLocationRole]
-            : mailboxDashBoardController.mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
-          identity: identity,
-          attachments: attachments,
-          hasRequestReadReceipt: requestReadReceipt,
-        ),
-      ).last;
+      return await createNewAndSendEmailInteractor
+          .execute(
+            createEmailRequest: CreateEmailRequest(
+              session: mailboxDashBoardController.sessionCurrent!,
+              accountId: mailboxDashBoardController.accountId.value!,
+              emailActionType: EmailActionType.compose,
+              ownEmailAddress: mailboxDashBoardController.ownEmailAddress.value,
+              subject: provisioningEmail.subject,
+              emailContent: provisioningEmail.content,
+              toRecipients: {EmailAddress(null, provisioningEmail.toEmail)},
+              outboxMailboxId:
+                  mailboxDashBoardController.outboxMailbox?.mailboxId,
+              sentMailboxId: folderLocationRole != null
+                  ? mailboxDashBoardController
+                      .mapDefaultMailboxIdByRole[folderLocationRole]
+                  : mailboxDashBoardController
+                      .mapDefaultMailboxIdByRole[PresentationMailbox.roleSent],
+              identity: identity,
+              attachments: attachments,
+              hasRequestReadReceipt: requestReadReceipt,
+            ),
+          )
+          .last;
     }));
 
     // Refresh view after provisioning emails
@@ -90,12 +99,10 @@ mixin ScenarioUtilsMixin {
     bool? isStar,
   }) async {
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-    final emails = mailboxDashBoardController
-      .emailsInCurrentMailbox
-      .where((presentationEmail) => subjects.contains(
-        presentationEmail.subject
-      ))
-      .toList();
+    final emails = mailboxDashBoardController.emailsInCurrentMailbox
+        .where(
+            (presentationEmail) => subjects.contains(presentationEmail.subject))
+        .toList();
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     if (session == null || accountId == null) return;
@@ -110,26 +117,22 @@ mixin ScenarioUtilsMixin {
     if (isRead != null) {
       final markEmailAsReadMethod = SetEmailMethod(accountId)
         ..addUpdates(emails.listEmailIds.generateMapUpdateObjectMarkAsRead(
-          isRead ? ReadActions.markAsRead : ReadActions.markAsUnread
-        ));
+            isRead ? ReadActions.markAsRead : ReadActions.markAsUnread));
       requestBuilder.invocation(markEmailAsReadMethod);
-      capabilities.addAll(markEmailAsReadMethod
-        .requiredCapabilities
-        .toCapabilitiesSupportTeamMailboxes(session, accountId));
+      capabilities.addAll(markEmailAsReadMethod.requiredCapabilities
+          .toCapabilitiesSupportTeamMailboxes(session, accountId));
     }
-    
+
     // Mark as star/unstar
     if (isStar != null) {
       final markEmailAsStarMethod = SetEmailMethod(accountId)
         ..addUpdates(emails.listEmailIds.generateMapUpdateObjectMarkAsStar(
-          isStar ? MarkStarAction.markStar : MarkStarAction.unMarkStar
-        ));
+            isStar ? MarkStarAction.markStar : MarkStarAction.unMarkStar));
       requestBuilder.invocation(markEmailAsStarMethod);
-      capabilities.addAll(markEmailAsStarMethod
-        .requiredCapabilities
-        .toCapabilitiesSupportTeamMailboxes(session, accountId));
+      capabilities.addAll(markEmailAsStarMethod.requiredCapabilities
+          .toCapabilitiesSupportTeamMailboxes(session, accountId));
     }
-    
+
     await (requestBuilder..usings(capabilities)).build().execute();
   }
 
@@ -139,9 +142,15 @@ mixin ScenarioUtilsMixin {
     return file.writeAsString(content);
   }
 
+  Future<File> preparingPngWithName(String pngName) async {
+    final bytes = base64Decode(TestImages.base64);
+    final directory = await getTemporaryDirectory();
+    final file = File('${directory.path}/$pngName.png');
+    return file.writeAsBytes(bytes);
+  }
+
   Future<List<Attachment>> uploadAttachments(
-    List<String> attachmentPaths
-  ) async {
+      List<String> attachmentPaths) async {
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 
     final attachments = <Attachment>[];
@@ -156,20 +165,22 @@ mixin ScenarioUtilsMixin {
       );
 
       try {
-        final uploadUri = mailboxDashBoardController.sessionCurrent!.getUploadUri(
+        final uploadUri =
+            mailboxDashBoardController.sessionCurrent!.getUploadUri(
           mailboxDashBoardController.accountId.value!,
           jmapUrl: mailboxDashBoardController.dynamicUrlInterceptors.jmapUrl,
         );
 
-        final uploadAttachmentInteractor = Get.find<UploadAttachmentInteractor>();
-        final uploadAttachmentState = await uploadAttachmentInteractor
-          .execute(fileInfo, uploadUri)
-          .last;
+        final uploadAttachmentInteractor =
+            Get.find<UploadAttachmentInteractor>();
+        final uploadAttachmentState =
+            await uploadAttachmentInteractor.execute(fileInfo, uploadUri).last;
         final attachment = await uploadAttachmentState.fold(
           (failure) => null,
           (success) async {
             if (success is UploadAttachmentSuccess) {
-              final uploadAttachment = await success.uploadAttachment.progressState.last;
+              final uploadAttachment =
+                  await success.uploadAttachment.progressState.last;
               return uploadAttachment.fold(
                 (failure) => null,
                 (success) {
@@ -196,10 +207,12 @@ mixin ScenarioUtilsMixin {
   Future<Identity?> getIdentity() async {
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
     final getAllIdentitiesInteractor = Get.find<GetAllIdentitiesInteractor>();
-    final getAllIdentities = await getAllIdentitiesInteractor.execute(
-      mailboxDashBoardController.sessionCurrent!,
-      mailboxDashBoardController.accountId.value!,
-    ).last;
+    final getAllIdentities = await getAllIdentitiesInteractor
+        .execute(
+          mailboxDashBoardController.sessionCurrent!,
+          mailboxDashBoardController.accountId.value!,
+        )
+        .last;
     return getAllIdentities.fold(
       (failure) => null,
       (success) {
@@ -211,42 +224,47 @@ mixin ScenarioUtilsMixin {
     );
   }
 
-  bool isMatchingEmailList(List<EmailAddress> emailList, Set<String> allowedEmails) {
+  bool isMatchingEmailList(
+      List<EmailAddress> emailList, Set<String> allowedEmails) {
     if (emailList.length != allowedEmails.length) {
       return false;
     }
 
-    final Set<String> emails = emailList.map((e) => e.email).whereType<String>().toSet();
+    final Set<String> emails =
+        emailList.map((e) => e.email).whereType<String>().toSet();
 
-    return emails.length == allowedEmails.length && emails.containsAll(allowedEmails);
+    return emails.length == allowedEmails.length &&
+        emails.containsAll(allowedEmails);
   }
 
-  Future<void> provisionIdentities(List<ProvisioningIdentity> provisioningIdentities) async {
+  Future<void> provisionIdentities(
+      List<ProvisioningIdentity> provisioningIdentities) async {
     IdentityInteractorsBindings().dependencies();
 
     final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
     final createNewIdentityInteractor = Get.find<CreateNewIdentityInteractor>();
-    final createNewDefaultIdentityInteractor = Get.find<CreateNewDefaultIdentityInteractor>();
+    final createNewDefaultIdentityInteractor =
+        Get.find<CreateNewDefaultIdentityInteractor>();
     const uuid = Uuid();
 
     final session = mailboxDashBoardController.sessionCurrent;
     final accountId = mailboxDashBoardController.accountId.value;
     final listIdentityRequest = provisioningIdentities
-      .map((provisioningIdentity) => CreateNewIdentityRequest(
-        Id(uuid.v1()),
-        provisioningIdentity.identity,
-        isDefaultIdentity: provisioningIdentity.isDefault,
-      ));
+        .map((provisioningIdentity) => CreateNewIdentityRequest(
+              Id(uuid.v1()),
+              provisioningIdentity.identity,
+              isDefaultIdentity: provisioningIdentity.isDefault,
+            ));
 
     for (var identityRequest in listIdentityRequest) {
       if (identityRequest.isDefaultIdentity) {
         await createNewDefaultIdentityInteractor
-          .execute(session!, accountId!, identityRequest)
-          .last;
+            .execute(session!, accountId!, identityRequest)
+            .last;
       } else {
         await createNewIdentityInteractor
-          .execute(session!, accountId!, identityRequest)
-          .last;
+            .execute(session!, accountId!, identityRequest)
+            .last;
       }
     }
 
