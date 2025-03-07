@@ -428,6 +428,9 @@ class UploadController extends BaseController {
   }
 
   List<Attachment> get inlineAttachmentsUploaded {
+    if (_uploadingStateInlineFiles.uploadingStateFiles.isEmpty) {
+      return [];
+    }
     return _uploadingStateInlineFiles.uploadingStateFiles.fold<List<Attachment>>(
       [],
       (list, fileState) {
@@ -441,6 +444,9 @@ class UploadController extends BaseController {
   }
 
   List<FileInfo> get inlineAttachmentsPicked {
+    if (_uploadingStateInlineFiles.uploadingStateFiles.isEmpty) {
+      return [];
+    }
     return _uploadingStateInlineFiles.uploadingStateFiles.fold<List<FileInfo>>(
       [],
       (list, fileState) {
@@ -454,6 +460,9 @@ class UploadController extends BaseController {
   }
 
   Map<String, Attachment> get mapInlineAttachments {
+    if (_uploadingStateInlineFiles.uploadingStateFiles.isEmpty) {
+      return {};
+    }
     final mapInlineAttachments = _uploadingStateInlineFiles.uploadingStateFiles.fold<Map<String, Attachment>>(
       {},
       (map, fileState) {
