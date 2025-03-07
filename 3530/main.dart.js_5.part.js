@@ -5118,6 +5118,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return currentWidth * 0.7;
     },
+    AttachmentItemWidgetStyle_getMaxWidthItem(platformIsMobile, responsiveIsMobile, responsiveIsTablet, responsiveIsTabletLarge) {
+      if (platformIsMobile)
+        return responsiveIsMobile ? 260 : 240;
+      else if (responsiveIsTabletLarge)
+        return 200;
+      else if (responsiveIsTablet)
+        return 240;
+      else
+        return 260;
+    },
     FilterMessageButtonStyle_getButtonPadding(isSelected) {
       if (isSelected)
         return D.EdgeInsetsDirectional_12_4_4_4;
@@ -17396,7 +17406,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       isLoading = t3 != null && !A.EmailUtils_checkingIfAttachmentActionIsEnabled(J.$index$asx(attachmentsViewState.get$value(0), attachmentsViewState.$ti._precomputed1._as(t3)));
       t3 = isLoading ? _null : new B.AttachmentItemWidget_build__closure(t1);
       t4 = A.Border_Border$all(C.Color_520093696, 1);
-      t5 = t1._attachment_item_widget$_responsiveUtils.getAttachmentItemMaxWidth$1(this.context);
+      t5 = this.context;
+      t6 = t1._attachment_item_widget$_responsiveUtils;
+      t5 = B.AttachmentItemWidgetStyle_getMaxWidthItem(false, A.InheritedModel_inheritFrom(t5, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx < 600, t6.isTablet$1(t5), t6.isTabletLarge$1(t5));
       t6 = isLoading ? D.SizedBox_CLo : A.SvgPicture$asset(A.AttachmentExtension_getIcon(t2, t1._attachment_item_widget$_imagePaths), C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, _null, 20);
       t7 = t2.name;
       if ($.$get$_context().$index(0, "flutterCanvasKit") != null)
@@ -17578,35 +17590,36 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.EmailAttachmentsWidget_build_closure.prototype = {
     call$2(context, constraints) {
-      var t10, t11, _null = null,
+      var hideItemsCount, t5, t6, t7, t8, t9, t10, t11, _null = null,
         t1 = this.$this,
-        t2 = t1.responsiveUtils,
-        possibleNumberOfDisplayedAttachments = C.JSNumber_methods.$tdiv(constraints.maxWidth - D.EdgeInsetsDirectional_16_0_16_12.get$horizontal() - 16 - 120, t2.getAttachmentItemMaxWidth$1(context)),
+        t2 = D.EdgeInsetsDirectional_16_0_16_12.get$horizontal(),
+        t3 = type$.MediaQuery,
+        t4 = t1.responsiveUtils,
+        possibleNumberOfDisplayedAttachments = C.JSNumber_methods.$tdiv(constraints.maxWidth - t2 - 16 - 120, B.AttachmentItemWidgetStyle_getMaxWidthItem(false, A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx < 600, t4.isTablet$1(context), t4.isTabletLarge$1(context))),
         attachmentDisplayed = t1.attachments,
-        attachmentDisplayed0 = possibleNumberOfDisplayedAttachments >= J.get$length$asx(attachmentDisplayed.get$value(0)) ? attachmentDisplayed : attachmentDisplayed.sublist$2(attachmentDisplayed, 0, possibleNumberOfDisplayedAttachments),
-        t3 = J.getInterceptor$asx(attachmentDisplayed0),
-        hideItemsCount = J.get$length$asx(attachmentDisplayed.get$value(0)) - t3.get$length(attachmentDisplayed0),
-        t4 = J.get$length$asx(attachmentDisplayed.get$value(0)),
-        t5 = A.filesize(B.ListAttachmentExtension_get_totalSize(attachmentDisplayed), 1),
-        t6 = t1.showDownloadAllAttachmentsButton,
-        t7 = t1.onTapDownloadAllButton,
-        t8 = type$.MediaQuery,
-        t9 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t8).data.size._dx < 600 ? C.CrossAxisAlignment_1 : C.CrossAxisAlignment_2;
-      t3 = t3.map$1$1(attachmentDisplayed0, new B.EmailAttachmentsWidget_build__closure(t1), type$.StatelessWidget);
+        attachmentDisplayed0 = possibleNumberOfDisplayedAttachments >= J.get$length$asx(attachmentDisplayed.get$value(0)) ? attachmentDisplayed : attachmentDisplayed.sublist$2(attachmentDisplayed, 0, possibleNumberOfDisplayedAttachments);
+      t2 = J.getInterceptor$asx(attachmentDisplayed0);
+      hideItemsCount = J.get$length$asx(attachmentDisplayed.get$value(0)) - t2.get$length(attachmentDisplayed0);
+      t5 = J.get$length$asx(attachmentDisplayed.get$value(0));
+      t6 = A.filesize(B.ListAttachmentExtension_get_totalSize(attachmentDisplayed), 1);
+      t7 = t1.showDownloadAllAttachmentsButton;
+      t8 = t1.onTapDownloadAllButton;
+      t9 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx < 600 ? C.CrossAxisAlignment_1 : C.CrossAxisAlignment_2;
+      t2 = t2.map$1$1(attachmentDisplayed0, new B.EmailAttachmentsWidget_build__closure(t1), type$.StatelessWidget);
       t10 = type$.JSArray_Widget;
-      t3 = A._setArrayType([new A.Flexible(1, C.FlexFit_1, A.Wrap$(C.WrapAlignment_0, A.List_List$of(t3, true, t3.$ti._eval$1("ListIterable.E")), C.WrapCrossAlignment_0, C.WrapAlignment_0, 8, 8), _null)], t10);
+      t2 = A._setArrayType([new A.Flexible(1, C.FlexFit_1, A.Wrap$(C.WrapAlignment_0, A.List_List$of(t2, true, t2.$ti._eval$1("ListIterable.E")), C.WrapCrossAlignment_0, C.WrapAlignment_0, 8, 8), _null)], t10);
       t11 = hideItemsCount > 0;
-      if (t11 && !(A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t8).data.size._dx < 600))
-        t3.push(t1._buildMoreAttachmentButton$3$padding(context, hideItemsCount, C.EdgeInsets_12_8_12_8));
-      t2 = A._setArrayType([new B.AttachmentsInfo(t1.imagePaths, t4, t5, t2, t1.onTapShowAllAttachmentFile, t6, t7, _null), D.SizedBox_null_6_null_null, A.Row$(t3, t9, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), D.SizedBox_null_6_null_null], t10);
-      if (A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t8).data.size._dx < 600) {
+      if (t11 && !(A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx < 600))
+        t2.push(t1._buildMoreAttachmentButton$3$padding(context, hideItemsCount, C.EdgeInsets_12_8_12_8));
+      t2 = A._setArrayType([new B.AttachmentsInfo(t1.imagePaths, t5, t6, t4, t1.onTapShowAllAttachmentFile, t7, t8, _null), D.SizedBox_null_6_null_null, A.Row$(t2, t9, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), D.SizedBox_null_6_null_null], t10);
+      if (A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t3).data.size._dx < 600) {
         t3 = A._setArrayType([], t10);
         if (t11)
           t3.push(t1._buildMoreAttachmentButton$2(context, hideItemsCount));
         t3.push(C.Spacer_null);
-        if (t6) {
+        if (t7) {
           A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-          t3.push(A.TMailButtonWidget$(C.Color_0, _null, 8, _null, false, _null, "assets/images/ic_download_all.svg", C.TextDirection_0, _null, _null, 8, _null, C.MainAxisSize_1, _null, 1 / 0, _null, 1 / 0, 0, _null, _null, t7, C.EdgeInsets_12_8_12_8, A.Intl__message("Download all", _null, "downloadAll", _null, _null), _null, _null, C.TextStyle_8aB4, _null, _null, _null, _null, false, _null));
+          t3.push(A.TMailButtonWidget$(C.Color_0, _null, 8, _null, false, _null, "assets/images/ic_download_all.svg", C.TextDirection_0, _null, _null, 8, _null, C.MainAxisSize_1, _null, 1 / 0, _null, 1 / 0, 0, _null, _null, t8, C.EdgeInsets_12_8_12_8, A.Intl__message("Download all", _null, "downloadAll", _null, _null), _null, _null, C.TextStyle_8aB4, _null, _null, _null, _null, false, _null));
         }
         t2.push(A.Row$(t3, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null));
       }
@@ -23131,5 +23144,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "JdEETiU16TvTP4e4rGM5Mg6tQBg=");
+})($__dart_deferred_initializers__, "tmrD5hLV2xYhHMn86hNFooXtj1U=");
 ;
