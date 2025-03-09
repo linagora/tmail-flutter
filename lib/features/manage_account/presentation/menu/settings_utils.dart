@@ -2,9 +2,10 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class SettingsUtils {
+  SettingsUtils._();
+
   static double getHorizontalPadding(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isMobile(context)) {
       return 16;
@@ -54,22 +55,34 @@ class SettingsUtils {
     }
   }
 
-  static BoxDecoration? getBoxDecorationForContent(BuildContext context, ResponsiveUtils responsiveUtils) {
+  static BoxDecoration? getBoxDecorationForContent(
+    BuildContext context,
+    ResponsiveUtils responsiveUtils,
+    {
+      Color backgroundColor = Colors.white
+    }
+  ) {
     if (responsiveUtils.isWebDesktop(context)) {
       return BoxDecoration(
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColor.colorBorderSettingContentWeb, width: 1),
-        color: Colors.white);
+        borderRadius: const BorderRadius.all(Radius.circular(16)),
+        color: backgroundColor,
+      );
     } else {
       return null;
     }
   }
 
-  static Color? getContentBackgroundColor(BuildContext context, ResponsiveUtils responsiveUtils) {
+  static Color? getContentBackgroundColor(
+    BuildContext context,
+    ResponsiveUtils responsiveUtils,
+    {
+      Color backgroundColor = Colors.white
+    }
+  ) {
     if (responsiveUtils.isWebDesktop(context)) {
       return null;
     } else {
-      return Colors.white;
+      return backgroundColor;
     }
   }
 
@@ -81,58 +94,33 @@ class SettingsUtils {
     }
   }
 
-  static EdgeInsets getPaddingListRecipientForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (responsiveUtils.isPortraitMobile(context)) {
-      return const EdgeInsets.symmetric(horizontal: 16);
-    } else if (responsiveUtils.isLandscapeMobile(context)) {
-      return const EdgeInsets.all(12);
-    } else {
-      return const EdgeInsets.symmetric(horizontal: 32, vertical: 12);
-    }
-  }
-
-  static BoxDecoration? getBoxDecorationForListRecipient(BuildContext context, ResponsiveUtils responsiveUtils) {
-    return BoxDecoration(
-      borderRadius: BorderRadius.circular(12),
-      border: Border.all(color: AppColor.colorBorderSettingContentWeb, width: 1),
-      color: Colors.white);
-  }
-
-  static EdgeInsets getPaddingTitleHeaderForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (responsiveUtils.isPortraitMobile(context)) {
-      return const EdgeInsets.symmetric(horizontal: 16, vertical: 12);
-    } else if (responsiveUtils.isLandscapeMobile(context)) {
-      return const EdgeInsets.all(12);
-    } else {
-      return const EdgeInsets.symmetric(horizontal: 32, vertical: 12);
-    }
-  }
-
-  static EdgeInsets getPaddingKeepLocalSwitchButtonForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (responsiveUtils.isPortraitMobile(context)) {
-      return const EdgeInsets.symmetric(horizontal: 18, vertical: 14);
-    } else if (responsiveUtils.isLandscapeMobile(context)) {
-      return const EdgeInsets.all(14);
-    } else {
-      return const EdgeInsets.symmetric(horizontal: 34, vertical: 14);
-    }
-  }
-
-  static EdgeInsets getPaddingInputRecipientForwarding(BuildContext context, ResponsiveUtils responsiveUtils) {
-    if (responsiveUtils.isPortraitMobile(context)) {
-      return const EdgeInsets.symmetric(horizontal: 16, vertical: 12);
-    } else if (responsiveUtils.isLandscapeMobile(context)) {
-      return const EdgeInsets.all(12);
-    } else {
-      return const EdgeInsets.symmetric(horizontal: 32, vertical: 12);
-    }
-  }
-
-  static EdgeInsets getMarginViewForForwardSettingDetails(BuildContext context, ResponsiveUtils responsiveUtils) {
+  static EdgeInsetsGeometry getSettingContentPadding(
+    BuildContext context,
+    ResponsiveUtils responsiveUtils,
+  ) {
     if (responsiveUtils.isWebDesktop(context)) {
       return const EdgeInsets.all(16);
+    } else if (responsiveUtils.isPortraitMobile(context)) {
+      return const EdgeInsets.symmetric(horizontal: 16, vertical: 12);
+    } else if (responsiveUtils.isLandscapeMobile(context)) {
+      return const EdgeInsets.all(12);
     } else {
+      return const EdgeInsets.symmetric(horizontal: 32, vertical: 12);
+    }
+  }
+
+  static EdgeInsetsGeometry getSettingContentWithoutHeaderPadding(
+    BuildContext context,
+    ResponsiveUtils responsiveUtils,
+  ) {
+    if (responsiveUtils.isWebDesktop(context)) {
       return EdgeInsets.zero;
+    } else if (responsiveUtils.isPortraitMobile(context)) {
+      return const EdgeInsets.symmetric(horizontal: 16, vertical: 12);
+    } else if (responsiveUtils.isLandscapeMobile(context)) {
+      return const EdgeInsets.all(12);
+    } else {
+      return const EdgeInsets.symmetric(horizontal: 32, vertical: 12);
     }
   }
 
@@ -144,30 +132,29 @@ class SettingsUtils {
     }
   }
 
-  static EdgeInsets getPaddingHeaderSetting(BuildContext context) {
-    if (AppUtils.isDirectionRTL(context)) {
-      return const EdgeInsets.only(top: 25, bottom: 25, right: 32);
-    } else {
-      return const EdgeInsets.only(top: 25, bottom: 25, left: 32);
-    }
-  }
-
-  static EdgeInsets getPaddingRightHeaderSetting(BuildContext context) {
-    if (AppUtils.isDirectionRTL(context)) {
-      return const EdgeInsets.only(right: 48, top: 16, bottom: 10, left: 10);
-    } else {
-      return const EdgeInsets.only(right: 10, top: 16, bottom: 10, left: 48);
-    }
-  }
-
-  static EdgeInsets getPaddingAlwaysReadReceiptSetting(
+  static EdgeInsetsGeometry getPreferencesSettingPadding(
     BuildContext context,
     ResponsiveUtils responsiveUtils
   ) {
     if (responsiveUtils.isWebDesktop(context)) {
       return const EdgeInsets.all(24);
     } else {
-      return EdgeInsets.zero;
+      return const EdgeInsetsDirectional.symmetric(vertical: 8);
+    }
+  }
+
+  static EdgeInsetsGeometry getForwardBannerPadding(
+    BuildContext context,
+    ResponsiveUtils responsiveUtils,
+  ) {
+    if (responsiveUtils.isWebDesktop(context)) {
+      return const EdgeInsetsDirectional.only(start: 16, end: 16, top: 16);
+    } else if (responsiveUtils.isPortraitMobile(context)) {
+      return const EdgeInsets.symmetric(horizontal: 16, vertical: 12);
+    } else if (responsiveUtils.isLandscapeMobile(context)) {
+      return const EdgeInsets.all(12);
+    } else {
+      return const EdgeInsets.symmetric(horizontal: 32, vertical: 12);
     }
   }
 }

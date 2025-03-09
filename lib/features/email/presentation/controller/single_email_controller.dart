@@ -1491,15 +1491,18 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         .show();
     } else {
       Get.dialog(
-        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
-            ..key(const Key('confirm_dialog_delete_email_permanently'))
-            ..title(DeleteActionType.single.getTitleDialog(context))
-            ..content(DeleteActionType.single.getContentDialog(context))
-            ..onCloseButtonAction(() => popBack())
-            ..onConfirmButtonAction(DeleteActionType.single.getConfirmActionName(context), () => _deleteEmailPermanentlyAction(context, email))
-            ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
-          .build()
-        ),
+        PointerInterceptor(child: ConfirmationDialogBuilder(
+          key: const Key('confirm_dialog_delete_email_permanently'),
+          imagePath: imagePaths,
+          useIconAsBasicLogo: true,
+          title: DeleteActionType.single.getTitleDialog(context),
+          textContent: DeleteActionType.single.getContentDialog(context),
+          confirmText: DeleteActionType.single.getConfirmActionName(context),
+          cancelText: AppLocalizations.of(context).cancel,
+          onConfirmButtonAction: () => _deleteEmailPermanentlyAction(context, email),
+          onCancelButtonAction: popBack,
+          onCloseButtonAction: popBack,
+        )),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }
@@ -1883,19 +1886,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       showAsBottomSheet: true,
       title: AppLocalizations.of(context).unsubscribeMail,
       icon: SvgPicture.asset(imagePaths.icEmpty),
-      messageStyle: const TextStyle(
-        color: AppColor.messageDialogColor,
-        fontSize: 14,
-        fontWeight: FontWeight.w500
-      ),
+      messageStyle: ThemeUtils.textStyleBodyBody2(color: AppColor.steelGray400),
       listTextSpan: [
         TextSpan(text: AppLocalizations.of(context).unsubscribeMailDialogMessage),
         TextSpan(
           text: ' ${presentationEmail.getSenderName()}',
-          style: const TextStyle(
-            color: AppColor.messageDialogHighlightColor,
-            fontSize: 15,
-            fontWeight: FontWeight.w500
+          style: ThemeUtils.textStyleBodyBody2(
+            color: AppColor.steelGray400,
+            fontWeight: FontWeight.w700,
           ),
         ),
         const TextSpan(text: ' ?'),
@@ -1949,7 +1947,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _printEmailInteractor.execute(
         EmailPrint(
           appName: appLocalizations.app_name,
-          userName: mailboxDashBoardController.userEmail,
+          userName: mailboxDashBoardController.getOwnEmailAddress(),
           attachments: currentEmailLoaded.value!.attachments,
           emailContent: currentEmailLoaded.value!.htmlContent,
           fromPrefix: appLocalizations.from_email_address_prefix,
@@ -2430,7 +2428,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     listEmailAddressAttendees.addAll(listEmailAddress);
 
-    final currentUserEmail = mailboxDashBoardController.sessionCurrent?.getOwnEmailAddress() ?? '';
+    final currentUserEmail = mailboxDashBoardController.getOwnEmailAddress();
     final listEmailAddressMailTo = listEmailAddressAttendees.removeInvalidEmails(currentUserEmail);
     log('SingleEmailController::handleMailToAttendees: listEmailAddressMailTo = $listEmailAddressMailTo');
     mailboxDashBoardController.goToComposer(

@@ -48,15 +48,17 @@ class QuotasView extends GetWidget<QuotasController> {
                       fit: BoxFit.fill,
                     ),
                     const SizedBox(width: QuotasViewStyles.iconPadding),
-                    Text(
-                      AppLocalizations.of(context).storageQuotas,
-                      style: const TextStyle(
-                        fontSize: QuotasViewStyles.labelTextSize,
-                        fontWeight: QuotasViewStyles.labelFontWeight,
-                        color: QuotasViewStyles.labelTextColor
+                    Expanded(
+                      child: Text(
+                        AppLocalizations.of(context).storageQuotas,
+                        style: const TextStyle(
+                          fontSize: QuotasViewStyles.labelTextSize,
+                          fontWeight: QuotasViewStyles.labelFontWeight,
+                          color: QuotasViewStyles.labelTextColor
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     )
                   ],
                 ),

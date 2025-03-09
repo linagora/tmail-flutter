@@ -1,4 +1,3 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
@@ -46,6 +45,7 @@ class ForwardController extends BaseController {
   final selectionMode = Rx<SelectMode>(SelectMode.INACTIVE);
   final listRecipientForward = RxList<RecipientForward>();
   final currentForward = Rxn<TMailForward>();
+  final forwardWarningBannerState = Rxn<BannerState>();
 
   bool get currentForwardLocalCopyState => currentForward.value?.localCopy ?? false;
 
@@ -122,20 +122,6 @@ class ForwardController extends BaseController {
       onConfirmAction: () => _handleDeleteRecipientAction({emailAddress}),
       showAsBottomSheet: true,
       useIconAsBasicLogo: true,
-      actionStyle: const TextStyle(
-        fontSize: 17,
-        height: 24 / 17,
-        fontWeight: FontWeight.w500,
-        color: AppColor.steelGray600,
-      ),
-      cancelStyle: const TextStyle(
-        fontSize: 17,
-        height: 24 / 17,
-        fontWeight: FontWeight.w500,
-        color: Colors.white,
-      ),
-      actionButtonColor: AppColor.colorF3F6F9,
-      cancelButtonColor: AppColor.blue700,
     );
   }
 
@@ -218,20 +204,6 @@ class ForwardController extends BaseController {
       onConfirmAction: () => _handleDeleteRecipientAction(listEmailAddress),
       showAsBottomSheet: true,
       useIconAsBasicLogo: true,
-      actionStyle: const TextStyle(
-        fontSize: 17,
-        height: 24 / 17,
-        fontWeight: FontWeight.w500,
-        color: AppColor.steelGray600,
-      ),
-      cancelStyle: const TextStyle(
-        fontSize: 17,
-        height: 24 / 17,
-        fontWeight: FontWeight.w500,
-        color: Colors.white,
-      ),
-      actionButtonColor: AppColor.colorF3F6F9,
-      cancelButtonColor: AppColor.blue700,
     );
   }
 
@@ -333,9 +305,9 @@ class ForwardController extends BaseController {
   }
 
   void _updateForwardWarningBannerState() {
-    accountDashBoardController.forwardWarningBannerState.value = _isExistRecipientSameServerDomain
+    forwardWarningBannerState.value = _isExistRecipientSameServerDomain
       ? BannerState.enabled
       : BannerState.disabled;
-    log('ForwardController::_updateForwardWarningBannerState: forwardWarningBannerState = ${accountDashBoardController.forwardWarningBannerState.value}');
+    log('ForwardController::_updateForwardWarningBannerState: forwardWarningBannerState = ${forwardWarningBannerState.value}');
   }
 }

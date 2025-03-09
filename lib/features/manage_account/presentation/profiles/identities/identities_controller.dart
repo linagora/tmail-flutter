@@ -312,12 +312,15 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
   void _deleteIdentityFailure(DeleteIdentityFailure failure) {
     if (currentContext != null) {
       Get.dialog(
-        (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
-            ..key(const Key('dialog_message_delete_identity_failed'))
-            ..title(AppLocalizations.of(currentContext!).delete_failed)
-            ..onCloseButtonAction(() => popBack())
-            ..onConfirmButtonAction('${AppLocalizations.of(currentContext!).got_it}!', () => popBack()))
-          .build(),
+        ConfirmationDialogBuilder(
+          key: const Key('dialog_message_delete_identity_failed'),
+          imagePath: imagePaths,
+          useIconAsBasicLogo: true,
+          title: AppLocalizations.of(currentContext!).delete_failed,
+          confirmText: '${AppLocalizations.of(currentContext!).got_it}!',
+          onConfirmButtonAction: popBack,
+          onCloseButtonAction: popBack,
+        ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }

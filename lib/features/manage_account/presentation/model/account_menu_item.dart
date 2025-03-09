@@ -1,6 +1,5 @@
 
 import 'package:core/presentation/resources/image_paths.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum AccountMenuItem {
@@ -43,30 +42,49 @@ enum AccountMenuItem {
     }
   }
 
-  String getName(BuildContext context) {
+  String getName(AppLocalizations appLocalizations) {
     switch(this) {
       case AccountMenuItem.profiles:
-        return AppLocalizations.of(context).profiles;
+        return appLocalizations.profiles;
       case AccountMenuItem.languageAndRegion:
-        return AppLocalizations.of(context).language;
+        return appLocalizations.language;
       case AccountMenuItem.emailRules:
-        return AppLocalizations.of(context).emailRules;
+        return appLocalizations.emailRules;
       case AccountMenuItem.preferences:
-        return AppLocalizations.of(context).preferences;
+        return appLocalizations.preferences;
       case AccountMenuItem.forward:
-        return AppLocalizations.of(context).forwarding;
+        return appLocalizations.forwarding;
       case AccountMenuItem.vacation:
-        return AppLocalizations.of(context).vacation;
+        return appLocalizations.vacation;
       case AccountMenuItem.mailboxVisibility:
-        return AppLocalizations.of(context).folderVisibility;
+        return appLocalizations.folderVisibility;
       case AccountMenuItem.notification:
-        return AppLocalizations.of(context).notification;
+        return appLocalizations.notification;
       case AccountMenuItem.contactSupport:
-        return AppLocalizations.of(context).contactSupport;
+        return appLocalizations.contactSupport;
       case AccountMenuItem.signOut:
-        return AppLocalizations.of(context).sign_out;
+        return appLocalizations.sign_out;
       case AccountMenuItem.none:
-        return AppLocalizations.of(context).profiles;
+        return appLocalizations.profiles;
+    }
+  }
+  
+  String getExplanation(AppLocalizations appLocalizations) {
+    switch(this) {
+      case AccountMenuItem.profiles:
+        return appLocalizations.profilesSettingExplanation;
+      case AccountMenuItem.languageAndRegion:
+        return appLocalizations.languageSubtitle;
+      case AccountMenuItem.emailRules:
+        return appLocalizations.emailRuleSettingExplanation;
+      case AccountMenuItem.forward:
+        return appLocalizations.forwardingSettingExplanation;
+      case AccountMenuItem.vacation:
+        return appLocalizations.vacationSettingExplanation;
+      case AccountMenuItem.mailboxVisibility:
+        return appLocalizations.folderVisibilitySubtitle;
+      default:
+        return '';
     }
   }
 

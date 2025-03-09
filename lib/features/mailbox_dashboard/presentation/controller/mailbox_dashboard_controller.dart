@@ -1552,23 +1552,26 @@ class MailboxDashBoardController extends ReloadableController
       .show();
     } else {
       Get.dialog(
-        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
-          ..key(const Key('confirm_dialog_delete_emails_permanently'))
-          ..title(actionType.getTitleDialog(context))
-          ..content(actionType.getContentDialog(
-              context,
-              count: listEmails?.length,
-              mailboxName: mailboxCurrent?.getDisplayName(context)))
-          ..onCloseButtonAction(() => popBack())
-          ..onConfirmButtonAction(
-              actionType.getConfirmActionName(context),
-              () => _deleteSelectionEmailsPermanentlyAction(
-                  actionType,
-                  listEmails: listEmails,
-                  onCancelSelectionEmail: onCancelSelectionEmail))
-          ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack()))
-        .build()
-        ),
+        PointerInterceptor(child: ConfirmationDialogBuilder(
+          key: const Key('confirm_dialog_delete_emails_permanently'),
+          imagePath: imagePaths,
+          useIconAsBasicLogo: true,
+          title: actionType.getTitleDialog(context),
+          textContent: actionType.getContentDialog(
+            context,
+            count: listEmails?.length,
+            mailboxName: mailboxCurrent?.getDisplayName(context),
+          ),
+          confirmText: actionType.getConfirmActionName(context),
+          cancelText: AppLocalizations.of(context).cancel,
+          onConfirmButtonAction: () => _deleteSelectionEmailsPermanentlyAction(
+            actionType,
+            listEmails: listEmails,
+            onCancelSelectionEmail: onCancelSelectionEmail,
+          ),
+          onCancelButtonAction: popBack,
+          onCloseButtonAction: popBack,
+        )),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }
@@ -2689,24 +2692,31 @@ class MailboxDashBoardController extends ReloadableController
           .show();
     } else {
       Get.dialog(
-        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
-          ..key(const Key('confirm_dialog_empty_spam'))
-          ..title(AppLocalizations.of(context).emptySpamFolder)
-          ..content(AppLocalizations.of(context).emptySpamMessageDialog)
-          ..onCloseButtonAction(popBack)
-          ..onConfirmButtonAction(AppLocalizations.of(context).delete_all, () {
+        PointerInterceptor(child: ConfirmationDialogBuilder(
+          key: const Key('confirm_dialog_empty_spam'),
+          imagePath: imagePaths,
+          useIconAsBasicLogo: true,
+          title: AppLocalizations.of(context).emptySpamFolder,
+          textContent: AppLocalizations.of(context).emptySpamMessageDialog,
+          confirmText: AppLocalizations.of(context).delete_all,
+          cancelText: AppLocalizations.of(context).cancel,
+          onConfirmButtonAction: () {
             popBack();
             if (spamMailbox.countTotalEmails > 0) {
-              emptySpamFolderAction(spamFolderId: spamMailbox.id, totalEmails: spamMailbox.countTotalEmails);
+              emptySpamFolderAction(
+                spamFolderId: spamMailbox.id,
+                totalEmails: spamMailbox.countTotalEmails,
+              );
             } else {
               appToast.showToastWarningMessage(
                 context,
-                AppLocalizations.of(context).noEmailInYourCurrentFolder
+                AppLocalizations.of(context).noEmailInYourCurrentFolder,
               );
             }
-          })
-          ..onCancelButtonAction(AppLocalizations.of(context).cancel, popBack)
-        ).build()),
+          },
+          onCancelButtonAction: popBack,
+          onCloseButtonAction: popBack,
+        )),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }
@@ -3115,8 +3125,6 @@ class MailboxDashBoardController extends ReloadableController
     isRecoveringDeletedMessage.value = true;
   }
 
-  String get userEmail => sessionCurrent?.getOwnEmailAddress() ?? '';
-
   Future<void> _removeComposerCacheOnWeb() async {
     await _removeComposerCacheOnWebInteractor.execute();
   }
@@ -3217,6 +3225,15 @@ class MailboxDashBoardController extends ReloadableController
       appGridDashboardController.loadAppGridLinagraEcosystem(
         dynamicUrlInterceptors.jmapUrl ?? '',
       );
+    }
+  }
+
+  String getOwnEmailAddress() {
+    try {
+      return sessionCurrent?.getOwnEmailAddress() ?? '';
+    } catch (e) {
+      logError('ManageAccountDashBoardController::getOwnEmailAddress:Exception: $e');
+      return '';
     }
   }
 

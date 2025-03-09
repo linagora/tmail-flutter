@@ -42,10 +42,8 @@ class _ApplicationVersionWidgetState extends State<ApplicationVersionWidget> {
             child: Text(
               '${widget.title ?? 'v.'}${snapshot.data}',
               textAlign: TextAlign.center,
-              style: widget.textStyle ?? Theme.of(context).textTheme.labelMedium?.copyWith(
-                fontSize: 13,
-                color: AppColor.colorContentEmail,
-                fontWeight: FontWeight.w500
+              style: widget.textStyle ?? Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColor.steelGray400,
               ),
             ),
           );

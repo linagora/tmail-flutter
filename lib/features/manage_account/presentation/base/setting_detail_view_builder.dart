@@ -7,7 +7,8 @@ class SettingDetailViewBuilder extends StatelessWidget {
 
   final ResponsiveUtils responsiveUtils;
   final Widget child;
-  final EdgeInsets? padding;
+  final EdgeInsetsGeometry? padding;
+  final Color backgroundColor;
   final VoidCallback? onTapGestureDetector;
 
   const SettingDetailViewBuilder({
@@ -15,6 +16,7 @@ class SettingDetailViewBuilder extends StatelessWidget {
     required this.responsiveUtils,
     required this.child,
     this.padding,
+    this.backgroundColor = Colors.white,
     this.onTapGestureDetector
   });
 
@@ -27,8 +29,16 @@ class SettingDetailViewBuilder extends StatelessWidget {
         child: Container(
           width: double.infinity,
           height: double.infinity,
-          color: SettingsUtils.getContentBackgroundColor(context, responsiveUtils),
-          decoration: SettingsUtils.getBoxDecorationForContent(context, responsiveUtils),
+          color: SettingsUtils.getContentBackgroundColor(
+            context,
+            responsiveUtils,
+            backgroundColor: backgroundColor,
+          ),
+          decoration: SettingsUtils.getBoxDecorationForContent(
+            context,
+            responsiveUtils,
+            backgroundColor: backgroundColor,
+          ),
           margin: SettingsUtils.getMarginSettingDetailsView(context, responsiveUtils),
           padding: padding,
           child: child,

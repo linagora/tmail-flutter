@@ -7,7 +7,6 @@ typedef OnCopyButtonAction = void Function();
 
 class CopySubaddressWidget extends StatelessWidget {
 
-  final BuildContext context;
   final ImagePaths imagePath;
   final String subaddress;
 
@@ -15,7 +14,6 @@ class CopySubaddressWidget extends StatelessWidget {
 
   const CopySubaddressWidget({
     super.key,
-    required this.context,
     required this.imagePath,
     required this.subaddress,
     required this.onCopyButtonAction

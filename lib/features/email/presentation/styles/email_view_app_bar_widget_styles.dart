@@ -19,10 +19,6 @@ class EmailViewAppBarWidgetStyles {
   }
   static const Color bottomBorderColor = AppColor.colorDividerHorizontal;
   static const Color backgroundColor = Colors.white;
-  static const Color emptyTrashButtonColor = AppColor.primaryColor;
-  static const Color deletePermanentButtonColor = AppColor.colorDeletePermanentlyButton;
-  static const Color buttonActivatedColor = AppColor.primaryColor;
-  static const Color buttonDeactivatedColor = AppColor.colorAttachmentIcon;
   static const Color iconColor = AppColor.steelGrayA540;
 
   static EdgeInsetsGeometry paddingIOS(BuildContext context, ResponsiveUtils responsiveUtils) {

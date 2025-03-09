@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -34,6 +35,7 @@ class SettingOptionItem extends StatelessWidget {
         Text(
           optionType.getTitle(appLocalizations),
           style: const TextStyle(
+            fontFamily: ConstantsUI.fontApp,
             fontSize: 15,
             height: 20 / 15,
             fontWeight: FontWeight.bold,
@@ -44,9 +46,7 @@ class SettingOptionItem extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 24),
           child: Text(
             optionType.getExplanation(appLocalizations),
-            style: const TextStyle(
-              fontSize: 13,
-              height: 16 / 13,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
               color: Colors.black,
             ),
           ),
@@ -71,9 +71,7 @@ class SettingOptionItem extends StatelessWidget {
             Expanded(
               child: Text(
                 optionType.getToggleDescription(appLocalizations),
-                style: const TextStyle(
-                  fontSize: 13,
-                  height: 16 / 13,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
                   color: Colors.black,
                 ),
               ),

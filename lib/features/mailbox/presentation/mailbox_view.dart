@@ -3,7 +3,6 @@ import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
@@ -140,12 +139,6 @@ class MailboxView extends BaseMailboxView {
                                 child: ApplicationVersionWidget(
                                   padding: EdgeInsets.zero,
                                   title: '${AppLocalizations.of(context).version} ',
-                                  textStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                    fontSize: 13,
-                                    height: 16 / 13,
-                                    color: AppColor.steelGray400,
-                                    fontWeight: FontWeight.w400,
-                                  ),
                                 ),
                               ),
                             );
@@ -225,8 +218,8 @@ class MailboxView extends BaseMailboxView {
           }
           return UserInformationWidget(
             userName: controller.mailboxDashBoardController.accountId.value != null
-              ? UserName(controller.mailboxDashBoardController.sessionCurrent!.getOwnEmailAddress())
-              : null,
+              ? controller.mailboxDashBoardController.getOwnEmailAddress()
+              : '',
             subtitle: AppLocalizations.of(context).manage_account,
             onSubtitleClick: controller.mailboxDashBoardController.goToSettings,
             border: const Border(
@@ -366,10 +359,8 @@ class MailboxView extends BaseMailboxView {
               categories.getTitle(context),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                fontSize: 14,
+              style: ThemeUtils.textStyleBodyBody3(
                 color: Colors.black,
-                fontWeight: FontWeight.w400,
               )
             )
           ),

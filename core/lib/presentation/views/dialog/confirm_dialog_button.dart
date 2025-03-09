@@ -8,17 +8,19 @@ class ConfirmDialogButton extends StatelessWidget {
   final Color backgroundColor;
   final EdgeInsetsGeometry? padding;
   final int? maxLines;
-  final TextStyle textStyle;
+  final TextStyle? textStyle;
+  final Color? textColor;
   final VoidCallback? onTapAction;
 
   const ConfirmDialogButton({
     super.key,
     required this.label,
-    required this.textStyle,
     required this.backgroundColor,
+    this.textStyle,
     this.borderRadius,
     this.padding,
     this.maxLines,
+    this.textColor,
     this.onTapAction
   });
 
@@ -45,7 +47,9 @@ class ConfirmDialogButton extends StatelessWidget {
             textAlign: TextAlign.center,
             maxLines: maxLines,
             overflow: TextOverflow.ellipsis,
-            style: textStyle
+            style: textStyle ?? Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: textColor,
+            )
           ),
         ),
       ),

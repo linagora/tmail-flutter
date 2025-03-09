@@ -1069,17 +1069,16 @@ class MailboxController extends BaseMailboxController
         .show();
     } else {
       Get.dialog(
-        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
-          ..key(const Key('confirm_dialog_delete_multiple_mailbox'))
-          ..title(AppLocalizations.of(context).deleteFolders)
-          ..content(AppLocalizations.of(context).messageConfirmationDialogDeleteMultipleFolder(selectedMailboxList.length))
-          ..onCloseButtonAction(() => popBack())
-          ..onConfirmButtonAction(AppLocalizations.of(context).delete, () =>
-              _deleteMultipleMailboxAction(selectedMailboxList))
-          ..onCancelButtonAction(AppLocalizations.of(context).cancel, () =>
-              popBack()))
-          .build()
-        ),
+        PointerInterceptor(child: ConfirmationDialogBuilder(
+          key: const Key('confirm_dialog_delete_multiple_mailbox'),
+          imagePath: imagePaths,
+          useIconAsBasicLogo: true,
+          title: AppLocalizations.of(context).deleteFolders,
+          textContent: AppLocalizations.of(context).messageConfirmationDialogDeleteMultipleFolder(selectedMailboxList.length),
+          onConfirmButtonAction: () => _deleteMultipleMailboxAction(selectedMailboxList),
+          onCancelButtonAction: popBack,
+          onCloseButtonAction: popBack,
+        )),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }
@@ -1279,7 +1278,10 @@ class MailboxController extends BaseMailboxController
         break;
       case MailboxActions.copySubaddress:
         try{
-          final subaddress = getSubaddress(mailboxDashBoardController.userEmail, findNodePathWithSeparator(mailbox.id, '.')!);
+          final subaddress = getSubaddress(
+            mailboxDashBoardController.getOwnEmailAddress(),
+            findNodePathWithSeparator(mailbox.id, '.')!,
+          );
           copySubaddressAction(context, subaddress);
         } catch (error) {
           appToast.showToastErrorMessage(context, AppLocalizations.of(context).errorWhileFetchingSubaddress);
@@ -1294,7 +1296,10 @@ class MailboxController extends BaseMailboxController
         break;
       case MailboxActions.allowSubaddressing:
         try{
-          final subaddress = getSubaddress(mailboxDashBoardController.userEmail, findNodePathWithSeparator(mailbox.id, '.')!);
+          final subaddress = getSubaddress(
+            mailboxDashBoardController.getOwnEmailAddress(),
+            findNodePathWithSeparator(mailbox.id, '.')!,
+          );
           openConfirmationDialogSubaddressingAction(
               context,
               responsiveUtils,
@@ -1705,20 +1710,28 @@ class MailboxController extends BaseMailboxController
     } else {
       Get.dialog(
         PointerInterceptor(
-            child: (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
-              ..key(const Key('confirm_dialog_subaddressing'))
-              ..title(AppLocalizations.of(context).allowSubaddressing)
-              ..content(AppLocalizations.of(context).message_confirmation_dialog_allow_subaddressing(mailboxName))
-              ..addWidgetContent(CopySubaddressWidget(
-                context: context,
-                imagePath: imagePaths,
-                subaddress: subaddress,
-                onCopyButtonAction: () => copySubaddressAction(context, subaddress),
-              ))
-              ..onCloseButtonAction(() => popBack())
-              ..onConfirmButtonAction(AppLocalizations.of(context).allow, () => onAllowSubaddressingAction(mailboxId, currentRights, MailboxActions.allowSubaddressing))
-              ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack())
-            ).build()),
+          child: ConfirmationDialogBuilder(
+            key: const Key('confirm_dialog_subaddressing'),
+            imagePath: imagePaths,
+            useIconAsBasicLogo: true,
+            title: AppLocalizations.of(context).allowSubaddressing,
+            textContent: AppLocalizations.of(context).message_confirmation_dialog_allow_subaddressing(mailboxName),
+            confirmText: AppLocalizations.of(context).allow,
+            cancelText: AppLocalizations.of(context).cancel,
+            additionalWidgetContent: CopySubaddressWidget(
+              imagePath: imagePaths,
+              subaddress: subaddress,
+              onCopyButtonAction: () => copySubaddressAction(context, subaddress),
+            ),
+            onConfirmButtonAction: () => onAllowSubaddressingAction(
+              mailboxId,
+              currentRights,
+              MailboxActions.allowSubaddressing,
+            ),
+            onCancelButtonAction: popBack,
+            onCloseButtonAction: popBack,
+          ),
+        ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }

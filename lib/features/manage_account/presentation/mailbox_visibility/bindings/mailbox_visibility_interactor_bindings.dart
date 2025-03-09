@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_i
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
@@ -50,6 +51,7 @@ class MailboxVisibilityInteractorBindings extends InteractorsBindings {
     Get.lazyPut(() => RefreshAllMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => SubscribeMailboxInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => SubscribeMultipleMailboxInteractor(Get.find<MailboxRepository>()));
+    Get.lazyPut(() => VerifyNameInteractor());
   }
 
   @override

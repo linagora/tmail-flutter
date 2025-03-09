@@ -5,12 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/base/state/banner_state.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/autocomplete_contact_text_field_with_tags.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/forward_header_widget.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/forward_warning_banner.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/list_email_forward_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_explanation_widget.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_header_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
@@ -19,74 +24,76 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: SettingsUtils.getBackgroundColor(context, controller.responsiveUtils),
-      body: Container(
-        width: double.infinity,
-        height: double.infinity,
-        color: SettingsUtils.getContentBackgroundColor(context, controller.responsiveUtils),
-        decoration: SettingsUtils.getBoxDecorationForContent(context, controller.responsiveUtils),
-        margin: SettingsUtils.getMarginViewForForwardSettingDetails(context, controller.responsiveUtils),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (controller.responsiveUtils.isWebDesktop(context))
-              ...[
-                ForwardHeaderWidget(imagePaths: controller.imagePaths, responsiveUtils: controller.responsiveUtils),
-                const Divider(height: 1, color: AppColor.colorDividerHeaderSetting)
+    return Column(
+      children: [
+        Obx(() {
+          if (controller.forwardWarningBannerState.value == BannerState.enabled) {
+            return ForwardWarningBanner(
+              imagePaths: controller.imagePaths,
+              responsiveUtils: controller.responsiveUtils,
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
+        Expanded(
+          child: SettingDetailViewBuilder(
+            responsiveUtils: controller.responsiveUtils,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (controller.responsiveUtils.isWebDesktop(context))
+                  ...[
+                    const SettingHeaderWidget(menuItem: AccountMenuItem.forward),
+                    const Divider(height: 1, color: AppColor.colorDividerHeaderSetting),
+                  ],
+                Expanded(child: SingleChildScrollView(
+                  physics: const ClampingScrollPhysics(),
+                  child: Padding(
+                    padding: SettingsUtils.getSettingContentPadding(
+                      context,
+                      controller.responsiveUtils,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (!controller.responsiveUtils.isWebDesktop(context))
+                          const SettingExplanationWidget(
+                            menuItem: AccountMenuItem.forward,
+                            padding: EdgeInsetsDirectional.only(bottom: 24),
+                          ),
+                        _buildKeepLocalSwitchButton(context),
+                        Obx(() => controller.currentForward.value != null
+                          ? _buildAddRecipientsFormWidget(context)
+                          : const SizedBox.shrink()
+                        ),
+                        _buildLoadingView(),
+                        Obx(() {
+                          if (controller.listRecipientForward.isNotEmpty) {
+                            return const ListEmailForwardsWidget();
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        })
+                      ],
+                    ),
+                  )
+                ))
               ],
-            Expanded(child: SingleChildScrollView(
-              physics: const ClampingScrollPhysics(),
-              child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-                if (!controller.responsiveUtils.isWebDesktop(context))
-                  _buildTitleHeader(context),
-                _buildKeepLocalSwitchButton(context),
-                Obx(() => controller.currentForward.value != null
-                  ? _buildAddRecipientsFormWidget(context)
-                  : const SizedBox.shrink()
-                ),
-                _buildLoadingView(),
-                Obx(() {
-                  if (controller.listRecipientForward.isNotEmpty) {
-                    return const ListEmailForwardsWidget();
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                })
-              ])
-            ))
-          ],
+            ),
+          ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildTitleHeader(BuildContext context) {
-    return Container(
-      color: Colors.transparent,
-      width: double.infinity,
-      padding: SettingsUtils.getPaddingTitleHeaderForwarding(context, controller.responsiveUtils),
-      child: Text(
-        AppLocalizations.of(context).forwardingSettingExplanation,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: AppColor.colorSettingExplanation
-        )
-      ),
+      ],
     );
   }
 
   Widget _buildKeepLocalSwitchButton(BuildContext context) {
     return Obx(() {
       return controller.listRecipientForward.isNotEmpty
-          ? Container(
-              color: Colors.transparent,
-              padding: SettingsUtils.getPaddingKeepLocalSwitchButtonForwarding(context, controller.responsiveUtils),
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 24, top: 8),
               child: Row(children: [
-                Padding(
-                  padding: const EdgeInsets.only(right: 16),
-                  child: InkWell(
+                  InkWell(
                     onTap: controller.handleEditLocalCopy,
                     child: SvgPicture.asset(
                       controller.currentForwardLocalCopyState
@@ -94,19 +101,24 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
                         : controller.imagePaths.icSwitchOff,
                       fit: BoxFit.fill,
                       width: 36,
-                      height: 24))),
-                Expanded(
-                  child: Text(
-                    AppLocalizations.of(context).keepLocalCopyForwardLabel,
-                    overflow: CommonTextStyle.defaultTextOverFlow,
-                    softWrap: CommonTextStyle.defaultSoftWrap,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black)
+                      height: 24,
+                    ),
                   ),
-                )
-              ]))
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      AppLocalizations.of(context).keepLocalCopyForwardLabel,
+                      overflow: CommonTextStyle.defaultTextOverFlow,
+                      softWrap: CommonTextStyle.defaultSoftWrap,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black)
+                    ),
+                  ),
+                ],
+              ),
+            )
           : const SizedBox();
     });
 
@@ -116,9 +128,7 @@ class ForwardView extends GetWidget<ForwardController> with AppLoaderMixin {
     return Obx(() => controller.viewState.value.fold(
       (failure) => const SizedBox.shrink(),
       (success) => success is LoadingState
-        ? Padding(
-            padding: const EdgeInsets.all(24),
-            child: loadingWidget)
+        ? loadingWidget
         : const SizedBox.shrink()
     ));
   }
