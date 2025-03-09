@@ -13,7 +13,8 @@ import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visib
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/state/mailbox_visibility_state.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/utils/mailbox_visibility_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/widgets/mailbox_visibility_folder_tile_builder.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/widgets/mailbox_visibility_header_widget.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_header_widget.dart';
 
 class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
   with AppLoaderMixin,
@@ -30,13 +31,8 @@ class MailboxVisibilityView extends GetWidget<MailboxVisibilityController>
         children: [
           if (controller.responsiveUtils.isWebDesktop(context))
             ...[
-              const SizedBox(height: 24),
-              const MailboxVisibilityHeaderWidget(),
-              const SizedBox(height: 16),
-              const Divider(
-                color: AppColor.colorDividerMailbox,
-                height: 1
-              )
+              const SettingHeaderWidget(menuItem: AccountMenuItem.mailboxVisibility),
+              const Divider(height: 1, color: AppColor.colorDividerHeaderSetting),
             ],
           _buildLoadingView(),
           Expanded(child: Padding(

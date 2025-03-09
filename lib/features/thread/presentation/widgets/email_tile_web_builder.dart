@@ -12,6 +12,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/base_email_item_tile.dart';
+import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class EmailTileBuilder extends StatefulWidget {
@@ -94,12 +95,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                       if (!widget.presentationEmail.hasRead)
                         Padding(
                           padding: const EdgeInsetsDirectional.only(end: 5),
-                          child: SvgPicture.asset(
-                            imagePaths.icUnreadStatus,
-                            width: 9,
-                            height: 9,
-                            fit: BoxFit.fill
-                          )
+                          child: buildIconUnreadStatus(),
                         ),
                       Expanded(
                         child: buildInformationSender(
@@ -118,12 +114,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                       if (widget.presentationEmail.hasAttachment == true)
                         Padding(
                           padding: const EdgeInsetsDirectional.only(start: 8),
-                          child: SvgPicture.asset(
-                            imagePaths.icAttachment,
-                            width: 16,
-                            height: 16,
-                            fit: BoxFit.fill
-                          )
+                          child: buildIconAttachment(),
                         ),
                       Padding(
                         padding: const EdgeInsetsDirectional.only(
@@ -227,12 +218,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                         if (!widget.presentationEmail.hasRead)
                           Padding(
                             padding: const EdgeInsetsDirectional.only(end: 5),
-                            child: SvgPicture.asset(
-                                imagePaths.icUnreadStatus,
-                                width: 9,
-                                height: 9,
-                                fit: BoxFit.fill
-                            )
+                            child: buildIconUnreadStatus(),
                           ),
                         Expanded(
                           child: buildInformationSender(
@@ -414,12 +400,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                         alignment: Alignment.center,
                         width: 20,
                         height: 20,
-                        child: SvgPicture.asset(
-                          imagePaths.icUnreadStatus,
-                          width: 9,
-                          height: 9,
-                          fit: BoxFit.fill
-                        ),
+                        child: buildIconUnreadStatus(),
                       ),
                   margin: const EdgeInsets.symmetric(vertical: 6),
                   iconPadding: EdgeInsets.zero,
@@ -512,7 +493,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
     return Row(children: [
       buildSVGIconButton(
         icon: imagePaths.icOpenInNewTab,
-        iconColor: AppColor.colorActionButtonHover,
+        iconColor: ItemEmailTileStyles.actionIconColor,
         iconSize: _getIconSize(context),
         padding: _getPaddingIcon(context),
         tooltip: AppLocalizations.of(context).openInNewTab,
@@ -524,7 +505,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
       if(!widget.presentationEmail.isDraft)
         buildSVGIconButton(
           icon: widget.presentationEmail.hasRead ? imagePaths.icUnread: imagePaths.icRead,
-          iconColor: AppColor.colorActionButtonHover,
+          iconColor: ItemEmailTileStyles.actionIconColor,
           iconSize: _getIconSize(context),
           padding: _getPaddingIcon(context),
           tooltip: widget.presentationEmail.hasRead
@@ -539,7 +520,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
         ... [
           buildSVGIconButton(
             icon: imagePaths.icMove,
-            iconColor: AppColor.colorActionButtonHover,
+            iconColor: ItemEmailTileStyles.actionIconColor,
             iconSize: _getIconSize(context),
             padding: _getPaddingIcon(context),
             tooltip: AppLocalizations.of(context).move,
@@ -551,7 +532,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
         ],
       buildSVGIconButton(
         icon: imagePaths.icDeleteComposer,
-        iconColor: AppColor.colorActionButtonHover,
+        iconColor: ItemEmailTileStyles.actionIconColor,
         iconSize: responsiveUtils.isDesktop(context) ? 16 : 14,
         padding: _getPaddingIcon(context),
         tooltip: canDeletePermanently
@@ -564,7 +545,7 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
       ),
       buildSVGIconButton(
         icon: imagePaths.icMore,
-        iconColor: AppColor.colorActionButtonHover,
+        iconColor: ItemEmailTileStyles.actionIconColor,
         iconSize: _getIconSize(context),
         padding: _getPaddingIcon(context),
         tooltip: AppLocalizations.of(context).more,
@@ -627,18 +608,18 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
               constraints: BoxConstraints(maxWidth: constraints.maxWidth / 2),
               padding: const EdgeInsetsDirectional.only(end: 12),
               child: buildEmailTitle(
-                  context,
+                context,
                 widget.presentationEmail,
                 widget.isSearchEmailRunning,
                 widget.searchQuery
               )),
-        Expanded(child: Container(
+        Expanded(
           child: buildEmailPartialContent(
             context,
             widget.presentationEmail,
             widget.isSearchEmailRunning,
             widget.searchQuery
-          ))
+          ),
         ),
       ]);
     });

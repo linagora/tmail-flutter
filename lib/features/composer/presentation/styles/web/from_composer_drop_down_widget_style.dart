@@ -1,8 +1,11 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 
 class FromComposerDropDownWidgetStyle {
+  FromComposerDropDownWidgetStyle._();
+
   static const double space = 8.0;
   static const double dropdownItemSpace = 12.0;
   static const double avatarSize = 48.0;
@@ -89,5 +92,8 @@ class FromComposerDropDownWidgetStyle {
     fontSize: 16,
     fontWeight: FontWeight.w500,
     color: AppColor.colorLabelComposer
+  );
+  static final TextStyle prefixLabelTextStyle = ThemeUtils.textStyleBodyBody1(
+    color: AppColor.m3Tertiary,
   );
 }

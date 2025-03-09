@@ -168,16 +168,17 @@ class EmailRulesController extends BaseController {
     } else {
       Get.dialog(
         PointerInterceptor(
-          child: (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
-            ..title(AppLocalizations.of(context).deleteEmailRule)
-            ..content(AppLocalizations.of(context).messageConfirmationDialogDeleteEmailRule(emailRule.name))
-            ..onCloseButtonAction(() => popBack())
-            ..onConfirmButtonAction(AppLocalizations.of(context).delete, () {
-              _handleDeleteEmailRuleAction(emailRule);
-            })
-            ..onCancelButtonAction(AppLocalizations.of(context).cancel, () =>
-                popBack()))
-          .build()
+          child: ConfirmationDialogBuilder(
+            imagePath: imagePaths,
+            useIconAsBasicLogo: true,
+            title: AppLocalizations.of(context).deleteEmailRule,
+            textContent: AppLocalizations.of(context).messageConfirmationDialogDeleteEmailRule(emailRule.name),
+            confirmText: AppLocalizations.of(context).delete,
+            cancelText: AppLocalizations.of(context).cancel,
+            onConfirmButtonAction: () => _handleDeleteEmailRuleAction(emailRule),
+            onCancelButtonAction: popBack,
+            onCloseButtonAction: popBack,
+          ),
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );

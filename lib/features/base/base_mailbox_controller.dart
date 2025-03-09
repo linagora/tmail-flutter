@@ -436,14 +436,19 @@ abstract class BaseMailboxController extends BaseController {
     } else {
       Get.dialog(
         PointerInterceptor(
-          child: (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
-          ..key(const Key('confirm_dialog_delete_mailbox'))
-          ..title(AppLocalizations.of(context).deleteFolders)
-          ..content(AppLocalizations.of(context).message_confirmation_dialog_delete_folder(presentationMailbox.getDisplayName(context)))
-          ..onCloseButtonAction(() => popBack())
-          ..onConfirmButtonAction(AppLocalizations.of(context).delete, () => onDeleteMailboxAction(presentationMailbox))
-          ..onCancelButtonAction(AppLocalizations.of(context).cancel, () => popBack())
-        ).build()),
+          child: ConfirmationDialogBuilder(
+            key: const Key('confirm_dialog_delete_mailbox'),
+            imagePath: imagePaths,
+            useIconAsBasicLogo: true,
+            title: AppLocalizations.of(context).deleteFolders,
+            textContent: AppLocalizations.of(context).message_confirmation_dialog_delete_folder(presentationMailbox.getDisplayName(context)),
+            confirmText: AppLocalizations.of(context).delete,
+            cancelText: AppLocalizations.of(context).cancel,
+            onConfirmButtonAction: () => onDeleteMailboxAction(presentationMailbox),
+            onCancelButtonAction: popBack,
+            onCloseButtonAction: popBack,
+          ),
+        ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }

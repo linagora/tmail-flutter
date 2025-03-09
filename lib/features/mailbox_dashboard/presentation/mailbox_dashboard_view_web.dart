@@ -6,7 +6,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
-import 'package:model/extensions/username_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
@@ -65,21 +64,22 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   child: Column(children: [
                     Obx(() {
                       final accountId = controller.accountId.value;
-                      if (accountId == null) {
-                        return const SizedBox.shrink();
-                      } else {
-                        return NavigationBarWidget(
-                          imagePaths: controller.imagePaths,
-                          avatarUserName: controller.sessionCurrent?.username.firstCharacter ?? '',
-                          contactSupportCapability: controller.sessionCurrent?.getContactSupportCapability(accountId),
-                          searchForm: SearchInputFormWidget(),
-                          appGridController: controller.appGridDashboardController,
-                          onTapApplicationLogoAction: controller.redirectToInboxAction,
-                          onTapAvatarAction: (position) => controller.handleClickAvatarAction(context, position),
-                          onTapContactSupportAction: (contactSupport) =>
+
+                      return NavigationBarWidget(
+                        imagePaths: controller.imagePaths,
+                        accountId: accountId,
+                        avatarUserName: controller.getOwnEmailAddress().firstCharacterToUpperCase,
+                        contactSupportCapability: accountId != null
+                          ? controller.sessionCurrent?.getContactSupportCapability(accountId)
+                          : null,
+                        searchForm: SearchInputFormWidget(),
+                        appGridController: controller.appGridDashboardController,
+                        onTapApplicationLogoAction: controller.redirectToInboxAction,
+                        onTapAvatarAction: (position) =>
+                            controller.handleClickAvatarAction(context, position),
+                        onTapContactSupportAction: (contactSupport) =>
                             controller.onGetHelpOrReportBug(contactSupport),
-                        );
-                      }
+                      );
                     }),
                     Expanded(child: Row(children: [
                       Column(children: [

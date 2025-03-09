@@ -369,12 +369,7 @@ mixin MailboxWidgetMixin {
           maxLines: 1,
           overflow: CommonTextStyle.defaultTextOverFlow,
           softWrap: CommonTextStyle.defaultSoftWrap,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontSize: 14,
-            height: 18 / 14,
-            color: Colors.black,
-            fontWeight: FontWeight.w400,
-          )
+          style: ThemeUtils.textStyleBodyBody3(color: Colors.black)
         )),
       ])
     );

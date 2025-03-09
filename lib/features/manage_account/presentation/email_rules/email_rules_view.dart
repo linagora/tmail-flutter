@@ -1,7 +1,8 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/widgets/email_rules_header_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/widgets/list_email_rules_widget.dart';
@@ -13,15 +14,16 @@ class EmailRulesView extends GetWidget<EmailRulesController> with AppLoaderMixin
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: controller.responsiveUtils.isWebDesktop(context)
-          ? AppColor.colorBgDesktop
-          : Colors.white,
-      body: Container(
-        width: double.infinity,
-        margin: SettingsUtils.getMarginViewForSettingDetails(context, controller.responsiveUtils),
-        child: SingleChildScrollView(
-          physics: const ClampingScrollPhysics(),
+    return SettingDetailViewBuilder(
+      responsiveUtils: controller.responsiveUtils,
+      backgroundColor: Colors.transparent,
+      child: SingleChildScrollView(
+        physics: const ClampingScrollPhysics(),
+        child: Padding(
+          padding: SettingsUtils.getSettingContentWithoutHeaderPadding(
+            context,
+            controller.responsiveUtils,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -30,7 +32,7 @@ class EmailRulesView extends GetWidget<EmailRulesController> with AppLoaderMixin
                 responsiveUtils: controller.responsiveUtils,
                 createRule: () => controller.goToCreateNewRule(context),
               ),
-              SizedBox(height: controller.responsiveUtils.isWebDesktop(context) ? 24 : 16),
+              const SizedBox(height: 16),
               _buildLoadingView(),
               const ListEmailRulesWidget()
             ],

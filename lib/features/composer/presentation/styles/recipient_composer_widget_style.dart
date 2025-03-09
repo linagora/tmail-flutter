@@ -1,5 +1,7 @@
 
+import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 
@@ -30,15 +32,19 @@ class RecipientComposerWidgetStyle {
   static const EdgeInsetsGeometry enableRecipientButtonMargin = EdgeInsetsDirectional.only(top: 10);
 
   static const TextStyle prefixButtonTextStyle = TextStyle(
+    fontFamily: ConstantsUI.fontApp,
     fontSize: 15,
-    fontWeight: FontWeight.normal,
+    fontWeight: FontWeight.w400,
+    height: 24 / 15,
+    letterSpacing: -0.01,
     decoration: TextDecoration.underline,
     decorationColor: AppColor.m3Neutral70,
     color: AppColor.m3Neutral70,
   );
-  static const TextStyle inputTextStyle = TextStyle(
-    fontSize: 16,
-    fontWeight: FontWeight.w500,
-    color: Colors.black
+  static final TextStyle inputTextStyle = ThemeUtils.textStyleBodyBody1(
+    color: AppColor.m3SurfaceBackground,
+  );
+  static final TextStyle prefixLabelTextStyle = ThemeUtils.textStyleBodyBody1(
+    color: AppColor.m3Tertiary,
   );
 }

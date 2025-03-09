@@ -237,18 +237,18 @@ mixin EmailActionController {
           .show();
     } else {
       Get.dialog(
-        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths, useIconAsBasicLogo: true)
-          ..key(const Key('confirm_dialog_delete_email_permanently'))
-          ..title(DeleteActionType.single.getTitleDialog(context))
-          ..content(DeleteActionType.single.getContentDialog(context))
-          ..onCloseButtonAction(() => popBack())
-          ..onConfirmButtonAction(
-              DeleteActionType.single.getConfirmActionName(context),
-              () => _deleteEmailPermanentlyAction(context, email))
-          ..onCancelButtonAction(
-              AppLocalizations.of(context).cancel,
-              () => popBack()))
-        .build()),
+        PointerInterceptor(child: ConfirmationDialogBuilder(
+          key: const Key('confirm_dialog_delete_email_permanently'),
+          imagePath: imagePaths,
+          useIconAsBasicLogo: true,
+          title: DeleteActionType.single.getTitleDialog(context),
+          textContent: DeleteActionType.single.getContentDialog(context),
+          confirmText: DeleteActionType.single.getConfirmActionName(context),
+          cancelText: AppLocalizations.of(context).cancel,
+          onConfirmButtonAction: () => _deleteEmailPermanentlyAction(context, email),
+          onCancelButtonAction: popBack,
+          onCloseButtonAction: popBack,
+        )),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }

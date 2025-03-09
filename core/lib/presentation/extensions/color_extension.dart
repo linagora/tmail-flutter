@@ -111,7 +111,6 @@ extension AppColor on Color {
   static const colorBorderIdentityInfo = Color(0xFFE7E8EC);
   static const colorBgMailboxSelected = Color(0x99E4E8EC);
   static const colorLoading = Color(0x2999A2AD);
-  static const colorActionButtonHover = Color(0xFFA2AAB3);
   static const colorBgMenuItemDropDownSelected = Color(0x80DEE2E7);
   static const colorButtonCancelDialog = Color(0x0D000000);
   static const colorShadowComposerButton = Color(0x99007AFF);
@@ -245,7 +244,7 @@ extension AppColor on Color {
   static const blue400 = Color(0xFF80BDFF);
   static const m3Tertiary = Color(0xFF8C9CAF);
   static const m3Neutral70 = Color(0xFFAEAAAE);
-  static const colorF3F6F9 = Color(0xFFF3F6F9);
+  static const grayBackgroundColor = Color(0xFFF3F6F9);
   static const m3SurfaceBackground = Color(0xFF1C1B1F);
 
   static const mapGradientColor = [

@@ -207,7 +207,17 @@ mixin BaseEmailItemTile {
         imagePaths.icAttachment,
         width: 16,
         height: 16,
+        colorFilter: ItemEmailTileStyles.actionIconColor.asFilter(),
         fit: BoxFit.fill);
+  }
+
+  Widget buildIconUnreadStatus() {
+    return SvgPicture.asset(
+      imagePaths.icUnreadStatus,
+      width: 9,
+      height: 9,
+      fit: BoxFit.fill,
+    );
   }
 
   Widget buildIconStar() {
@@ -321,7 +331,7 @@ mixin BaseEmailItemTile {
       iconPath,
       width: width ?? 20,
       height: height ?? 20,
-      colorFilter: AppColor.colorAttachmentIcon.asFilter(),
+      colorFilter: ItemEmailTileStyles.actionIconColor.asFilter(),
       fit: BoxFit.fill);
   }
 
@@ -349,7 +359,7 @@ mixin BaseEmailItemTile {
         height: 20,
         fit: BoxFit.fill,
         colorFilter: presentationEmail.hasRead
-          ? AppColor.steelGray400.asFilter()
+          ? ItemEmailTileStyles.actionIconColor.asFilter()
           : Colors.black.asFilter(),
       ),
     );
@@ -367,7 +377,7 @@ mixin BaseEmailItemTile {
         width: 20,
         height: 20,
         fit: BoxFit.fill,
-        colorFilter: AppColor.steelGray200.asFilter(),
+        colorFilter: ItemEmailTileStyles.actionIconColor.asFilter(),
       ),
     );
   }

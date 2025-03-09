@@ -2,7 +2,6 @@ import 'package:core/core.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
@@ -119,12 +118,6 @@ class MailboxView extends BaseMailboxView {
               child: ApplicationVersionWidget(
                 padding: EdgeInsets.zero,
                 title: '${AppLocalizations.of(context).version.toLowerCase()} ',
-                textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  fontSize: 13,
-                  height: 16 / 13,
-                  color: AppColor.steelGray400,
-                  fontWeight: FontWeight.w400,
-                ),
               ),
             ),
           ]),
@@ -142,8 +135,8 @@ class MailboxView extends BaseMailboxView {
         if (!controller.responsiveUtils.isDesktop(context))
           Obx(() => UserInformationWidget(
             userName: controller.mailboxDashBoardController.accountId.value != null
-              ? UserName(controller.mailboxDashBoardController.sessionCurrent!.getOwnEmailAddress())
-              : null,
+              ? controller.mailboxDashBoardController.getOwnEmailAddress()
+              : '',
             subtitle: AppLocalizations.of(context).manage_account,
             onSubtitleClick: controller.mailboxDashBoardController.goToSettings,
             border: const Border(

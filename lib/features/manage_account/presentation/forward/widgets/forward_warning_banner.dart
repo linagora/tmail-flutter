@@ -1,21 +1,27 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class ForwardWarningBanner extends StatelessWidget {
 
-  final ImagePaths _imagePaths = Get.find<ImagePaths>();
+  final ImagePaths imagePaths;
+  final ResponsiveUtils responsiveUtils;
 
-  ForwardWarningBanner({super.key});
+  const ForwardWarningBanner({
+    super.key,
+    required this.imagePaths,
+    required this.responsiveUtils,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsetsDirectional.only(top: 16, start: 16, end: 16),
+      margin: SettingsUtils.getForwardBannerPadding(context, responsiveUtils),
       padding: const EdgeInsets.all(12),
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.all(Radius.circular(8)),
@@ -23,7 +29,7 @@ class ForwardWarningBanner extends StatelessWidget {
       ),
       child: Row(children: [
         SvgPicture.asset(
-          _imagePaths.icInfoCircleOutline,
+          imagePaths.icInfoCircleOutline,
           colorFilter: AppColor.colorQuotaError.asFilter(),
         ),
         const SizedBox(width: 12),

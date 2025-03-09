@@ -1,11 +1,15 @@
 
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/cupertino.dart';
 
 class ItemEmailTileStyles {
+  ItemEmailTileStyles._();
 
   static const double avatarIconSize = 60.0;
   static const double horizontalTitleGap = 8.0;
+
+  static const Color actionIconColor = AppColor.steelGray200;
 
   static EdgeInsetsGeometry getSpaceCalendarEventIcon(BuildContext context, ResponsiveUtils responsiveUtils) {
     if (responsiveUtils.isScreenWithShortestSide(context)) {

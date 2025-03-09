@@ -66,7 +66,10 @@ class ConfirmationDialogActionSheetBuilder {
                     child: Text(
                         _messageText ?? '',
                         textAlign: TextAlign.center,
-                        style: _styleMessage ?? const TextStyle(fontSize: 14, color: AppColor.colorMessageConfirmDialog)),
+                        style: _styleMessage ?? Theme.of(context).textTheme.bodyLarge?.copyWith(
+                          color: AppColor.steelGrayA540,
+                        ),
+                    ),
                     onPressed: () => {},
                   ),
                 )
@@ -79,7 +82,9 @@ class ConfirmationDialogActionSheetBuilder {
                 cursor: PlatformInfo.isWeb ? WidgetStateMouseCursor.clickable : MouseCursor.defer,
                 child: CupertinoActionSheetAction(
                   child: RichText(text: TextSpan(
-                    style: _styleMessage ?? const TextStyle(fontSize: 14, color: AppColor.colorMessageConfirmDialog),
+                    style: _styleMessage ?? Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: AppColor.steelGrayA540,
+                    ),
                     children: listTextSpan
                   )),
                   onPressed: () => {},
@@ -93,7 +98,9 @@ class ConfirmationDialogActionSheetBuilder {
                 child: CupertinoActionSheetAction(
                   child: Text(
                       _confirmText ?? '',
-                      style: _styleConfirmButton ?? const TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorActionDeleteConfirmDialog)),
+                      style: _styleConfirmButton ?? Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color: AppColor.steelGray600,
+                      )),
                   onPressed: () => _onConfirmActionClick?.call(),
                 ),
               )
@@ -104,7 +111,9 @@ class ConfirmationDialogActionSheetBuilder {
           child: CupertinoActionSheetAction(
             child: Text(
                 _cancelText ?? '',
-                style: _styleCancelButton ?? const TextStyle(fontWeight: FontWeight.w500, fontSize: 20, color: AppColor.colorActionCancelDialog)),
+                style: _styleCancelButton ??  Theme.of(context).textTheme.bodyLarge?.copyWith(
+                  color: Colors.white,
+                )),
             onPressed: () => _onCancelActionClick?.call(),
           ),
         ),

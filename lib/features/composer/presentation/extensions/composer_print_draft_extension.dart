@@ -85,7 +85,7 @@ extension ComposerPrintDraftExtension on ComposerController {
       child: PrintDraftDialogView(
         emailPrint: DraftEmailPrint(
           appName: appLocalizations.app_name,
-          userName: mailboxDashBoardController.userEmail,
+          userName: mailboxDashBoardController.getOwnEmailAddress(),
           attachments: uploadController.allAttachmentsUploaded,
           emailContent: emailContent,
           fromPrefix: appLocalizations.from_email_address_prefix,
