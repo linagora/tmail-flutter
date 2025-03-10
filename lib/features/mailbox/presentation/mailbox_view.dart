@@ -3,7 +3,6 @@ import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
@@ -133,7 +132,6 @@ class MailboxView extends BaseMailboxView {
                         Obx(() {
                           if (!controller.isSelectionEnabled() && controller.responsiveUtils.isPortraitMobile(context)) {
                             return Container(
-                              color: AppColor.colorBgMailbox,
                               width: double.infinity,
                               padding: const EdgeInsets.all(16),
                               child: SafeArea(
@@ -141,11 +139,6 @@ class MailboxView extends BaseMailboxView {
                                 child: ApplicationVersionWidget(
                                   padding: EdgeInsets.zero,
                                   title: '${AppLocalizations.of(context).version} ',
-                                  textStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-                                    fontSize: 16,
-                                    color: AppColor.colorContentEmail,
-                                    fontWeight: FontWeight.w500
-                                  ),
                                 ),
                               ),
                             );
@@ -225,8 +218,8 @@ class MailboxView extends BaseMailboxView {
           }
           return UserInformationWidget(
             userName: controller.mailboxDashBoardController.accountId.value != null
-              ? UserName(controller.mailboxDashBoardController.sessionCurrent!.getOwnEmailAddress())
-              : null,
+              ? controller.mailboxDashBoardController.getOwnEmailAddress()
+              : '',
             subtitle: AppLocalizations.of(context).manage_account,
             onSubtitleClick: controller.mailboxDashBoardController.goToSettings,
             border: const Border(
@@ -288,31 +281,33 @@ class MailboxView extends BaseMailboxView {
                 child: Text(
                   AppLocalizations.of(context).folders,
                   style: const TextStyle(
-                    fontSize: 17,
+                    fontSize: 15,
                     color: Colors.black,
-                    fontWeight: FontWeight.bold
-                  )
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
               Row(children: [
                 TMailButtonWidget.fromIcon(
                   icon: controller.imagePaths.icSearchBar,
-                  iconColor: AppColor.primaryColor,
+                  iconColor: AppColor.steelGrayA540,
+                  iconSize: 20,
                   backgroundColor: Colors.transparent,
                   tooltipMessage: AppLocalizations.of(context).searchForFolders,
                   onTapActionCallback: () => controller.openSearchViewAction(context)
                 ),
                 TMailButtonWidget.fromIcon(
                   icon: controller.imagePaths.icAddNewFolder,
-                  iconColor: AppColor.primaryColor,
+                  iconColor: AppColor.steelGrayA540,
+                  iconSize: 20,
                   backgroundColor: Colors.transparent,
                   tooltipMessage: AppLocalizations.of(context).newFolder,
                   onTapActionCallback: () => controller.goToCreateNewMailboxView(context)
                 ),
               ]),
-            ]),
+            ],
           ),
-        const SizedBox(height: 8),
+        ),
         Obx(() {
           if (controller.personalMailboxIsNotEmpty) {
             return _buildMailboxCategory(
@@ -354,8 +349,9 @@ class MailboxView extends BaseMailboxView {
                   : controller.imagePaths.icArrowRight,
             tooltipMessage: AppLocalizations.of(context).collapse,
             backgroundColor: Colors.transparent,
-            padding: EdgeInsets.zero,
-            iconColor: AppColor.primaryColor,
+            padding: const EdgeInsets.all(5),
+            iconColor: Colors.black,
+            iconSize: 20,
             onTapActionCallback: () => controller.toggleMailboxCategories(categories)
           ),
           Expanded(
@@ -363,10 +359,8 @@ class MailboxView extends BaseMailboxView {
               categories.getTitle(context),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
-                fontSize: 17,
+              style: ThemeUtils.textStyleBodyBody3(
                 color: Colors.black,
-                fontWeight: FontWeight.bold
               )
             )
           ),

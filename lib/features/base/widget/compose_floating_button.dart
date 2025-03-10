@@ -46,7 +46,7 @@ class ComposeFloatingButton extends StatelessWidget {
         ),
         onPress: onTap,
         scrollController: scrollController,
-        color: AppColor.primaryColor,
+        color: AppColor.blue700,
         width: 154,
         height: 60,
         animateIcon: false

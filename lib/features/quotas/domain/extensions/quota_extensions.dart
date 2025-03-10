@@ -55,7 +55,7 @@ extension QuotasExtensions on Quota {
     if (isHardLimitReached) {
       return AppColor.colorQuotaError;
     } else {
-      return AppColor.colorLabelQuotas;
+      return AppColor.steelGray400;
     }
   }
 
@@ -65,7 +65,7 @@ extension QuotasExtensions on Quota {
     } else if (isWarnLimitReached) {
       return AppColor.colorBackgroundQuotasWarning;
     } else {
-      return AppColor.primaryColor;
+      return AppColor.blue400;
     }
   }
 

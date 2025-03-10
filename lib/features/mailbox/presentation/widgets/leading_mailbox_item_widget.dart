@@ -3,7 +3,6 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/select_mode.dart';
@@ -15,6 +14,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class LeadingMailboxItemWidget extends StatelessWidget {
 
+  final ImagePaths imagePaths;
   final MailboxNode mailboxNode;
   final SelectMode selectionMode;
   final OnSelectMailboxNodeAction? onSelectMailboxFolderClick;
@@ -22,6 +22,7 @@ class LeadingMailboxItemWidget extends StatelessWidget {
 
   const LeadingMailboxItemWidget({
     super.key,
+    required this.imagePaths,
     required this.mailboxNode,
     this.selectionMode = SelectMode.INACTIVE,
     this.onExpandFolderActionClick,
@@ -30,24 +31,23 @@ class LeadingMailboxItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final imagePaths = Get.find<ImagePaths>();
-
     return Row(children: [
-      if (mailboxNode.hasChildren())
-        TMailButtonWidget.fromIcon(
+      Visibility.maintain(
+        visible: mailboxNode.hasChildren(),
+        child: TMailButtonWidget.fromIcon(
           icon: _getExpandIcon(context, imagePaths),
           iconColor: _expandIconColor,
-          padding: EdgeInsets.zero,
-          margin: const EdgeInsetsDirectional.only(start: 4),
+          iconSize: 20,
+          padding: const EdgeInsets.all(5),
           backgroundColor: Colors.transparent,
           tooltipMessage: _getExpandTooltipMessage(context),
           onTapActionCallback: () => onExpandFolderActionClick?.call(mailboxNode)
-        )
-      else
-        const SizedBox(width: LeadingMailboxItemWidgetStyles.emptyBoxSize),
+        ),
+      ),
       Transform(
         transform: LeadingMailboxItemWidgetStyles.mailboxIconTransform(context),
         child: MailboxIconWidget(
+          imagePaths: imagePaths,
           mailboxNode: mailboxNode,
           selectionMode: selectionMode,
           onSelectMailboxFolderClick: onSelectMailboxFolderClick

@@ -2,8 +2,6 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_controller.dart';
@@ -22,8 +20,8 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
       child: Column(children: [
         Obx(() => UserInformationWidget(
           userName: controller.manageAccountDashboardController.accountId.value != null
-            ? UserName(controller.manageAccountDashboardController.sessionCurrent!.getOwnEmailAddress())
-            : null,
+            ? controller.manageAccountDashboardController.getOwnEmailAddress()
+            : '',
           padding: SettingsUtils.getPaddingInFirstLevel(context, controller.responsiveUtils),
           titlePadding: const EdgeInsetsDirectional.only(start: 16))),
         Divider(
@@ -48,7 +46,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           if (controller.manageAccountDashboardController.isRuleFilterCapabilitySupported) {
             return Column(children: [
               SettingFirstLevelTileBuilder(
-                AccountMenuItem.emailRules.getName(context),
+                AccountMenuItem.emailRules.getName(AppLocalizations.of(context)),
                 AccountMenuItem.emailRules.getIcon(controller.imagePaths),
                 subtitle: AppLocalizations.of(context).emailRuleSettingExplanation,
                 () => controller.selectSettings(AccountMenuItem.emailRules)
@@ -68,7 +66,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           if (controller.manageAccountDashboardController.isServerSettingsCapabilitySupported) {
             return Column(children: [
               SettingFirstLevelTileBuilder(
-                AccountMenuItem.preferences.getName(context),
+                AccountMenuItem.preferences.getName(AppLocalizations.of(context)),
                 AccountMenuItem.preferences.getIcon(controller.imagePaths),
                 subtitle: AppLocalizations.of(context).emailReadReceiptsSettingExplanation,
                 () => controller.selectSettings(AccountMenuItem.preferences)
@@ -88,7 +86,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           if (controller.manageAccountDashboardController.isForwardCapabilitySupported) {
             return Column(children: [
               SettingFirstLevelTileBuilder(
-                AccountMenuItem.forward.getName(context),
+                AccountMenuItem.forward.getName(AppLocalizations.of(context)),
                 AccountMenuItem.forward.getIcon(controller.imagePaths),
                 subtitle: AppLocalizations.of(context).forwardingSettingExplanation,
                 () => controller.selectSettings(AccountMenuItem.forward)
@@ -108,7 +106,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           if (controller.manageAccountDashboardController.isVacationCapabilitySupported) {
             return Column(children: [
               SettingFirstLevelTileBuilder(
-                AccountMenuItem.vacation.getName(context),
+                AccountMenuItem.vacation.getName(AppLocalizations.of(context)),
                 AccountMenuItem.vacation.getIcon(controller.imagePaths),
                 subtitle: AppLocalizations.of(context).vacationSettingExplanation,
                 () => controller.selectSettings(AccountMenuItem.vacation)
@@ -125,7 +123,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           }
         }),
         SettingFirstLevelTileBuilder(
-          AccountMenuItem.mailboxVisibility.getName(context),
+          AccountMenuItem.mailboxVisibility.getName(AppLocalizations.of(context)),
           AccountMenuItem.mailboxVisibility.getIcon(controller.imagePaths),
           subtitle: AppLocalizations.of(context).folderVisibilitySubtitle,
           () => controller.selectSettings(AccountMenuItem.mailboxVisibility)
@@ -137,7 +135,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
         ),
         SettingFirstLevelTileBuilder(
-          AccountMenuItem.languageAndRegion.getName(context),
+          AccountMenuItem.languageAndRegion.getName(AppLocalizations.of(context)),
           AccountMenuItem.languageAndRegion.getIcon(controller.imagePaths),
           () => controller.selectSettings(AccountMenuItem.languageAndRegion)
         ),
@@ -190,7 +188,7 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
               ),
             ),
             SettingFirstLevelTileBuilder(
-              AccountMenuItem.contactSupport.getName(context),
+              AccountMenuItem.contactSupport.getName(AppLocalizations.of(context)),
               AccountMenuItem.contactSupport.getIcon(controller.imagePaths),
               () => controller.onGetHelpOrReportBug(
                 contactSupportCapability!,

@@ -1,9 +1,11 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnSelectAccountMenuItemAction = void Function(AccountMenuItem);
 
@@ -53,12 +55,8 @@ class AccountMenuItemTileBuilder extends StatelessWidget {
                   fit: BoxFit.fill),
                 const SizedBox(width: 12),
                 Expanded(child: Text(
-                  menuItem.getName(context),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.normal,
-                    fontSize: 15,
-                    color: Colors.black
-                  )
+                  menuItem.getName(AppLocalizations.of(context)),
+                  style: ThemeUtils.textStyleBodyBody3(color: Colors.black)
                 ))
               ]),
             ])

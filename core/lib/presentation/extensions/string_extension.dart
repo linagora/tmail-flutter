@@ -38,4 +38,6 @@ extension StringExtension on String {
       return '';
     }
   }
+
+  String get firstCharacterToUpperCase => isNotEmpty ? this[0].toUpperCase() : '';
 }

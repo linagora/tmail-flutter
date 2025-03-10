@@ -1,5 +1,4 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
@@ -199,27 +198,6 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
       title: AppLocalizations.of(currentContext!).deleteOfflineEmail,
       icon: SvgPicture.asset(imagePaths.icDeleteDialogRecipients),
       alignCenter: true,
-      messageStyle: const TextStyle(
-        color: AppColor.colorTitleSendingItem,
-        fontSize: 15,
-        fontWeight: FontWeight.normal
-      ),
-      titleStyle: const TextStyle(
-        color: AppColor.colorDeletePermanentlyButton,
-        fontSize: 20,
-        fontWeight: FontWeight.bold
-      ),
-      actionButtonColor: AppColor.colorDeletePermanentlyButton,
-      actionStyle: const TextStyle(
-        color: Colors.white,
-        fontSize: 17,
-        fontWeight: FontWeight.w500
-      ),
-      cancelStyle: const TextStyle(
-        color: AppColor.colorDeletePermanentlyButton,
-        fontSize: 17,
-        fontWeight: FontWeight.w500
-      ),
       onConfirmAction: () => _handleDeleteListSendingEmail(listSendingEmails),
     );
   }

@@ -1,17 +1,17 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:model/extensions/username_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/material_text_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnSubtitleClick = void Function();
 
 class UserInformationWidget extends StatelessWidget {
-  final UserName? userName;
+
+  final String userName;
   final String? subtitle;
   final EdgeInsetsGeometry? titlePadding;
   final OnSubtitleClick? onSubtitleClick;
@@ -20,7 +20,7 @@ class UserInformationWidget extends StatelessWidget {
 
   const UserInformationWidget({
     Key? key,
-    this.userName,
+    required this.userName,
     this.subtitle,
     this.titlePadding,
     this.onSubtitleClick,
@@ -35,7 +35,7 @@ class UserInformationWidget extends StatelessWidget {
       decoration: BoxDecoration(border: border),
       child: Row(children: [
         (AvatarBuilder()
-            ..text(userName?.firstCharacter ?? '')
+            ..text(userName.firstCharacterToUpperCase)
             ..backgroundColor(Colors.white)
             ..textColor(Colors.black)
             ..addBoxShadows([const BoxShadow(
@@ -48,7 +48,7 @@ class UserInformationWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SelectableText(
-              userName?.value ?? '',
+              userName,
               maxLines: 1,
               style: const TextStyle(
                 fontSize: 17,

@@ -45,7 +45,13 @@ class ListEmailRulesWidget extends GetWidget<EmailRulesController> {
                         fontWeight: FontWeight.w500,
                         color: AppColor.colorTextButtonHeaderThread)),
               ),
-              const Divider(),
+              Obx(() {
+                if (controller.listEmailRule.isNotEmpty) {
+                  return const Divider();
+                } else {
+                  return const SizedBox.shrink();
+                }
+              }),
               Obx(() {
                 log('ListEmailRulesWidget::build(): ${controller.listEmailRule}');
                 return ListView.separated(

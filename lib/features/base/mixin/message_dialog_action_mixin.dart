@@ -1,5 +1,10 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
+import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -38,58 +43,48 @@ mixin MessageDialogActionMixin {
         PopInvokedWithResultCallback? onPopInvoked,
         bool isArrangeActionButtonsVertical = false,
         int? titleActionButtonMaxLines,
-        EdgeInsetsGeometry? titlePadding,
+        bool useIconAsBasicLogo = false,
       }
   ) async {
     final responsiveUtils = Get.find<ResponsiveUtils>();
     final imagePaths = Get.find<ImagePaths>();
 
-    final paddingTitle = titlePadding ??
-        (icon != null
-            ? const EdgeInsetsDirectional.only(top: 24, start: 24, end: 24)
-            : const EdgeInsetsDirectional.symmetric(horizontal: 24));
-
     if (alignCenter) {
       final childWidget = PointerInterceptor(
-        child: (ConfirmDialogBuilder(
-            imagePaths,
-            listTextSpan: listTextSpan,
-            titleActionButtonMaxLines: titleActionButtonMaxLines,
-            isArrangeActionButtonsVertical: isArrangeActionButtonsVertical
-          )
-          ..key(key)
-          ..title(title ?? '')
-          ..content(message)
-          ..addIcon(icon)
-          ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
-          ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
-          ..marginIcon(icon != null ? (marginIcon ?? const EdgeInsets.only(top: 24)) : null)
-          ..paddingTitle(paddingTitle)
-          ..radiusButton(12)
-          ..paddingButton(paddingButton)
-          ..paddingContent(const EdgeInsets.only(left: 24, right: 24, bottom: 24, top: 12))
-          ..marginButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 24, left: 24, right: 24))
-          ..styleTitle(titleStyle ?? const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
-          ..styleContent(messageStyle ?? const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
-          ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
-          ..styleTextConfirmButton(actionStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
-          ..onConfirmButtonAction(actionName, () {
+        child: ConfirmationDialogBuilder(
+          key: key,
+          imagePath: imagePaths,
+          listTextSpan: listTextSpan,
+          titleActionButtonMaxLines: titleActionButtonMaxLines,
+          isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
+          useIconAsBasicLogo: useIconAsBasicLogo,
+          title: title ?? '',
+          textContent: message,
+          confirmText: actionName,
+          cancelText: hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
+          iconWidget: icon,
+          colorCancelButton: cancelButtonColor,
+          colorConfirmButton: actionButtonColor,
+          styleTextCancelButton: cancelStyle,
+          styleTextConfirmButton: actionStyle,
+          styleTitle: titleStyle,
+          styleContent: messageStyle,
+          paddingButton: paddingButton,
+          marginIcon: marginIcon,
+          onConfirmButtonAction: () {
             if (autoPerformPopBack) {
               popBack();
             }
             onConfirmAction?.call();
-          })
-          ..onCancelButtonAction(
-              hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
-                  () {
-                if (autoPerformPopBack) {
-                  popBack();
-                }
-                onCancelAction?.call();
-              }
-          )
-          ..onCloseButtonAction(onCloseButtonAction)
-        ).build()
+          },
+          onCancelButtonAction: () {
+            if (autoPerformPopBack) {
+              popBack();
+            }
+            onCancelAction?.call();
+          },
+          onCloseButtonAction: onCloseButtonAction,
+        ),
       );
       return await Get.dialog(
         usePopScope && PlatformInfo.isMobile
@@ -101,48 +96,41 @@ mixin MessageDialogActionMixin {
     } else {
       if (responsiveUtils.isMobile(context)) {
         final childWidget = PointerInterceptor(
-          child: (ConfirmDialogBuilder(
-              imagePaths,
-              showAsBottomSheet: true,
-              listTextSpan: listTextSpan,
-              maxWith: responsiveUtils.getSizeScreenShortestSide(context) - 16,
-              titleActionButtonMaxLines: titleActionButtonMaxLines,
-              isArrangeActionButtonsVertical: isArrangeActionButtonsVertical
-            )
-            ..key(key)
-            ..title(title ?? '')
-            ..content(message)
-            ..addIcon(icon)
-            ..paddingButton(paddingButton)
-            ..margin(const EdgeInsets.only(bottom: 42))
-            ..widthDialog(responsiveUtils.getSizeScreenWidth(context))
-            ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
-            ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
-            ..paddingTitle(paddingTitle)
-            ..marginIcon(EdgeInsets.zero)
-            ..paddingContent(const EdgeInsets.only(left: 44, right: 44, bottom: 24, top: 12))
-            ..marginButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 16, left: 44, right: 44))
-            ..styleTitle(titleStyle ?? const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
-            ..styleContent(messageStyle ?? const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
-            ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
-            ..styleTextConfirmButton(actionStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
-            ..onConfirmButtonAction(actionName, () {
+          child: ConfirmationDialogBuilder(
+            key: key,
+            imagePath: imagePaths,
+            showAsBottomSheet: true,
+            listTextSpan: listTextSpan,
+            maxWidth: responsiveUtils.getSizeScreenShortestSide(context) - 16,
+            titleActionButtonMaxLines: titleActionButtonMaxLines,
+            isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
+            textContent: message,
+            title: title ?? '',
+            iconWidget: icon,
+            widthDialog: responsiveUtils.getSizeScreenWidth(context),
+            colorConfirmButton: actionButtonColor,
+            colorCancelButton: cancelButtonColor,
+            styleContent: messageStyle,
+            styleTitle: titleStyle,
+            styleTextCancelButton: cancelStyle,
+            styleTextConfirmButton: actionStyle,
+            confirmText: actionName,
+            cancelText: hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
+            useIconAsBasicLogo: useIconAsBasicLogo,
+            onConfirmButtonAction: () {
               if (autoPerformPopBack) {
                 popBack();
               }
               onConfirmAction?.call();
-            })
-            ..onCancelButtonAction(
-                hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
-                    () {
-                  if (autoPerformPopBack) {
-                    popBack();
-                  }
-                  onCancelAction?.call();
-                }
-            )
-            ..onCloseButtonAction(onCloseButtonAction ?? () => popBack())
-          ).build()
+            },
+            onCancelButtonAction: () {
+              if (autoPerformPopBack) {
+                popBack();
+              }
+              onCancelAction?.call();
+            },
+            onCloseButtonAction: onCloseButtonAction ?? popBack
+          ),
         );
         if (showAsBottomSheet) {
           return await Get.bottomSheet(
@@ -160,7 +148,7 @@ mixin MessageDialogActionMixin {
         } else {
           return (ConfirmationDialogActionSheetBuilder(context, listTextSpan: listTextSpan)
             ..messageText(message)
-            ..styleConfirmButton(const TextStyle(fontSize: 20, fontWeight: FontWeight.normal, color: Colors.black))
+            ..styleConfirmButton(actionStyle)
             ..styleMessage(messageStyle)
             ..styleCancelButton(cancelStyle)
             ..onCancelAction(
@@ -181,45 +169,39 @@ mixin MessageDialogActionMixin {
         }
       } else {
         final childWidget = PointerInterceptor(
-          child: (ConfirmDialogBuilder(
-              imagePaths,
-              listTextSpan: listTextSpan,
-              titleActionButtonMaxLines: titleActionButtonMaxLines,
-              isArrangeActionButtonsVertical: isArrangeActionButtonsVertical
-            )
-            ..key(key)
-            ..title(title ?? '')
-            ..content(message)
-            ..addIcon(icon)
-            ..paddingButton(paddingButton)
-            ..colorConfirmButton(actionButtonColor ?? AppColor.colorTextButton)
-            ..colorCancelButton(cancelButtonColor ?? AppColor.colorCancelButton)
-            ..marginIcon(icon != null ? const EdgeInsets.only(top: 24) : null)
-            ..paddingTitle(paddingTitle)
-            ..marginIcon(EdgeInsets.zero)
-            ..paddingContent(const EdgeInsets.only(left: 44, right: 44, bottom: 24, top: 12))
-            ..marginButton(hasCancelButton ? null : const EdgeInsets.only(bottom: 16, left: 44, right: 44))
-            ..styleTitle(titleStyle ?? const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black))
-            ..styleContent(messageStyle ?? const TextStyle(fontSize: 14, fontWeight: FontWeight.normal, color: AppColor.colorContentEmail))
-            ..styleTextCancelButton(cancelStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: AppColor.colorTextButton))
-            ..styleTextConfirmButton(actionStyle ?? const TextStyle(fontSize: 17, fontWeight: FontWeight.w500, color: Colors.white))
-            ..onConfirmButtonAction(actionName, () {
+          child: ConfirmationDialogBuilder(
+            key: key,
+            imagePath: imagePaths,
+            listTextSpan: listTextSpan,
+            titleActionButtonMaxLines: titleActionButtonMaxLines,
+            isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
+            useIconAsBasicLogo: useIconAsBasicLogo,
+            title: title ?? '',
+            textContent: message,
+            iconWidget: icon,
+            colorConfirmButton: actionButtonColor,
+            colorCancelButton: cancelButtonColor,
+            styleContent: messageStyle,
+            styleTitle: titleStyle,
+            styleTextCancelButton: cancelStyle,
+            styleTextConfirmButton: actionStyle,
+            confirmText: actionName,
+            cancelText: hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
+            onConfirmButtonAction: () {
               if (autoPerformPopBack) {
                 popBack();
               }
               onConfirmAction?.call();
-            })
-            ..onCancelButtonAction(
-                hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
-                    () {
-                  if (autoPerformPopBack) {
-                    popBack();
-                  }
-                  onCancelAction?.call();
-                }
-            )
-            ..onCloseButtonAction(onCloseButtonAction ?? () => popBack())
-          ).build()
+            },
+            onCancelButtonAction: () {
+              if (autoPerformPopBack) {
+                popBack();
+              } else {
+                onCancelAction?.call();
+              }
+            },
+            onCloseButtonAction: onCloseButtonAction ?? popBack,
+          ),
         );
         return await Get.dialog(
           usePopScope && PlatformInfo.isMobile

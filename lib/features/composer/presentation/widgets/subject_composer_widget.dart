@@ -38,7 +38,7 @@ class SubjectComposerWidget extends StatelessWidget {
         children: [
           Text(
             '${AppLocalizations.of(context).subject_email}:',
-            style: SubjectComposerWidgetStyle.labelTextStyle
+            style: SubjectComposerWidgetStyle.labelTextStyle,
           ),
           const SizedBox(width:SubjectComposerWidgetStyle.space),
           Expanded(

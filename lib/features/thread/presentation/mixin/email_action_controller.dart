@@ -7,7 +7,6 @@ import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart'
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -238,25 +237,18 @@ mixin EmailActionController {
           .show();
     } else {
       Get.dialog(
-        PointerInterceptor(child: (ConfirmDialogBuilder(imagePaths)
-          ..key(const Key('confirm_dialog_delete_email_permanently'))
-          ..title(DeleteActionType.single.getTitleDialog(context))
-          ..content(DeleteActionType.single.getContentDialog(context))
-          ..addIcon(SvgPicture.asset(imagePaths.icRemoveDialog, fit: BoxFit.fill))
-          ..colorConfirmButton(AppColor.colorConfirmActionDialog)
-          ..styleTextConfirmButton(
-              const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.w500,
-                color: AppColor.colorActionDeleteConfirmDialog))
-          ..onCloseButtonAction(() => popBack())
-          ..onConfirmButtonAction(
-              DeleteActionType.single.getConfirmActionName(context),
-              () => _deleteEmailPermanentlyAction(context, email))
-          ..onCancelButtonAction(
-              AppLocalizations.of(context).cancel,
-              () => popBack()))
-        .build()),
+        PointerInterceptor(child: ConfirmationDialogBuilder(
+          key: const Key('confirm_dialog_delete_email_permanently'),
+          imagePath: imagePaths,
+          useIconAsBasicLogo: true,
+          title: DeleteActionType.single.getTitleDialog(context),
+          textContent: DeleteActionType.single.getContentDialog(context),
+          confirmText: DeleteActionType.single.getConfirmActionName(context),
+          cancelText: AppLocalizations.of(context).cancel,
+          onConfirmButtonAction: () => _deleteEmailPermanentlyAction(context, email),
+          onCancelButtonAction: popBack,
+          onCloseButtonAction: popBack,
+        )),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }

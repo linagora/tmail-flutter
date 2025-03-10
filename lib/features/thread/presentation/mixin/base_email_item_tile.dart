@@ -63,7 +63,7 @@ mixin BaseEmailItemTile {
       !email.hasRead ? FontWeight.w600 : FontWeight.normal;
 
   Color buildTextColorForReadEmail(PresentationEmail email) =>
-      email.hasRead ? AppColor.colorContentEmail : AppColor.colorNameEmail;
+      email.hasRead ? AppColor.steelGray400 : Colors.black;
 
   bool hasMailboxLabel(bool isSearchEmailRunning, PresentationEmail email) {
     return isSearchEmailRunning && email.mailboxContain != null;
@@ -161,12 +161,12 @@ mixin BaseEmailItemTile {
         ensureHighlightVisible: true,
         styleOrigin: const TextStyle(
           fontSize: 13,
-          color: AppColor.colorContentEmail,
+          color: AppColor.steelGray400,
           fontWeight: FontWeight.normal
         ),
         styleWord: TextStyle(
           fontSize: 13,
-          color: AppColor.colorContentEmail,
+          color: AppColor.steelGray400,
           backgroundColor: Colors.amberAccent[200],
         )
       );
@@ -175,7 +175,7 @@ mixin BaseEmailItemTile {
         email.getPartialContent(),
         style: const TextStyle(
           fontSize: 13,
-          color: AppColor.colorContentEmail,
+          color: AppColor.steelGray400,
           fontWeight: FontWeight.normal)
       );
     }
@@ -207,7 +207,17 @@ mixin BaseEmailItemTile {
         imagePaths.icAttachment,
         width: 16,
         height: 16,
+        colorFilter: ItemEmailTileStyles.actionIconColor.asFilter(),
         fit: BoxFit.fill);
+  }
+
+  Widget buildIconUnreadStatus() {
+    return SvgPicture.asset(
+      imagePaths.icUnreadStatus,
+      width: 9,
+      height: 9,
+      fit: BoxFit.fill,
+    );
   }
 
   Widget buildIconStar() {
@@ -321,7 +331,7 @@ mixin BaseEmailItemTile {
       iconPath,
       width: width ?? 20,
       height: height ?? 20,
-      colorFilter: AppColor.colorAttachmentIcon.asFilter(),
+      colorFilter: ItemEmailTileStyles.actionIconColor.asFilter(),
       fit: BoxFit.fill);
   }
 
@@ -349,8 +359,8 @@ mixin BaseEmailItemTile {
         height: 20,
         fit: BoxFit.fill,
         colorFilter: presentationEmail.hasRead
-          ? AppColor.colorCalendarEventRead.asFilter()
-          : AppColor.colorCalendarEventUnread.asFilter(),
+          ? ItemEmailTileStyles.actionIconColor.asFilter()
+          : Colors.black.asFilter(),
       ),
     );
   }
@@ -367,7 +377,7 @@ mixin BaseEmailItemTile {
         width: 20,
         height: 20,
         fit: BoxFit.fill,
-        colorFilter: AppColor.steelGray200.asFilter(),
+        colorFilter: ItemEmailTileStyles.actionIconColor.asFilter(),
       ),
     );
   }

@@ -19,10 +19,12 @@ import 'package:tmail_ui_user/features/composer/presentation/mixin/rich_text_but
 import 'package:tmail_ui_user/features/composer/presentation/model/button_layout_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/base/setting_detail_view_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/date_type.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/vacation/vacation_responder_status.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/vacation/utils/vacation_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_explanation_widget.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_header_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
@@ -36,31 +38,18 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
       physics: const ClampingScrollPhysics(),
       controller: controller.scrollController,
       child: Padding(
-        padding: VacationUtils.getPaddingView(context, controller.responsiveUtils),
+        padding: SettingsUtils.getSettingContentPadding(
+          context,
+          controller.responsiveUtils,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (controller.responsiveUtils.isWebDesktop(context))
-              ...[
-                Text(
-                  AppLocalizations.of(context).vacation,
-                  style: const TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.black
-                  )
-                ),
-                const SizedBox(height: 8)
-              ],
-            Text(
-              AppLocalizations.of(context).vacationSettingExplanation,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.normal,
-                color: AppColor.colorVacationSettingExplanation
-              )
-            ),
-            const SizedBox(height: 24),
+            if (!controller.responsiveUtils.isWebDesktop(context))
+              const SettingExplanationWidget(
+                menuItem: AccountMenuItem.vacation,
+                padding: EdgeInsets.only(bottom: 24)
+              ),
             Row(children: [
               Obx(() {
                 return InkWell(
@@ -86,6 +75,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
                   AppLocalizations.of(context).vacationSettingToggleButtonAutoReply,
                   style: const TextStyle(
                     fontSize: 16,
+                    height: 20 / 16,
                     fontWeight: FontWeight.normal,
                     color: Colors.black
                   )
@@ -93,182 +83,177 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
               )
             ]),
             const SizedBox(height: 28),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-              child: Column(children: [
-                Obx(() => AbsorbPointer(
-                  absorbing: controller.isVacationDeactivated,
-                  child: Opacity(
-                    opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
-                    child: controller.responsiveUtils.isPortraitMobile(context)
-                      ? Column(children: [
-                          BorderButtonField<DateTime>(
-                            label: AppLocalizations.of(context).startDate,
-                            value: controller.vacationPresentation.value.startDate,
-                            mouseCursor: SystemMouseCursors.text,
-                            backgroundColor: AppColor.colorBackgroundVacationSettingField,
-                            isEmpty: !controller.isVacationDeactivated && controller.vacationPresentation.value.startDateIsNull,
-                            hintText: AppLocalizations.of(context).startDate,
-                            tapActionCallback: (value) => controller.selectDate(context, DateType.start, value)
-                          ),
-                          const SizedBox(height: 18),
-                          BorderButtonField<TimeOfDay>(
-                            label: AppLocalizations.of(context).startTime,
-                            value: controller.vacationPresentation.value.startTime,
-                            mouseCursor: SystemMouseCursors.text,
-                            backgroundColor: AppColor.colorBackgroundVacationSettingField,
-                            isEmpty: !controller.isVacationDeactivated && controller.vacationPresentation.value.starTimeIsNull,
-                            hintText: AppLocalizations.of(context).noStartTime,
-                            tapActionCallback: (value) => controller.selectTime(context, DateType.start, value)
-                          ),
-                        ])
-                      : Row(children: [
-                          Expanded(child: BorderButtonField<DateTime>(
-                            label: AppLocalizations.of(context).startDate,
-                            value: controller.vacationPresentation.value.startDate,
-                            mouseCursor: SystemMouseCursors.text,
-                            backgroundColor: AppColor.colorBackgroundVacationSettingField,
-                            isEmpty: !controller.isVacationDeactivated && controller.vacationPresentation.value.startDateIsNull,
-                            hintText: AppLocalizations.of(context).startDate,
-                            tapActionCallback: (value) => controller.selectDate(context, DateType.start, value))
-                          ),
-                          const SizedBox(width: 24),
-                          Expanded(child: BorderButtonField<TimeOfDay>(
-                            label: AppLocalizations.of(context).startTime,
-                            value: controller.vacationPresentation.value.startTime,
-                            mouseCursor: SystemMouseCursors.text,
-                            backgroundColor: AppColor.colorBackgroundVacationSettingField,
-                            isEmpty: !controller.isVacationDeactivated && controller.vacationPresentation.value.starTimeIsNull,
-                            hintText: AppLocalizations.of(context).noStartTime,
-                            tapActionCallback: (value) => controller.selectTime(context, DateType.start, value))
-                          ),
-                        ]),
-                  ),
-                )),
-                const SizedBox(height: 24),
-                Obx(() => AbsorbPointer(
-                  absorbing: controller.isVacationDeactivated,
-                  child: Opacity(
-                    opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
-                    child: Row(children: [
-                      Obx(() => InkWell(
-                        onTap: () {
-                          final value = !controller.vacationPresentation.value.vacationStopEnabled;
-                          controller.updateVacationPresentation(vacationStopEnabled: value);
-                        },
-                        child: SvgPicture.asset(
-                          controller.vacationPresentation.value.vacationStopEnabled
-                            ? controller.imagePaths.icSwitchOn
-                            : controller.imagePaths.icSwitchOff,
-                          fit: BoxFit.fill,
-                          width: 24,
-                          height: 24
-                        )
-                      )),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Text(
-                          AppLocalizations.of(context).vacationStopsAt,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.normal,
-                            color: Colors.black
-                          )
-                        ),
-                      )
+            Obx(() => AbsorbPointer(
+              absorbing: controller.isVacationDeactivated,
+              child: Opacity(
+                opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
+                child: controller.responsiveUtils.isPortraitMobile(context)
+                  ? Column(children: [
+                      BorderButtonField<DateTime>(
+                        label: AppLocalizations.of(context).startDate,
+                        value: controller.vacationPresentation.value.startDate,
+                        mouseCursor: SystemMouseCursors.text,
+                        backgroundColor: AppColor.colorBackgroundVacationSettingField,
+                        isEmpty: !controller.isVacationDeactivated && controller.vacationPresentation.value.startDateIsNull,
+                        hintText: AppLocalizations.of(context).startDate,
+                        tapActionCallback: (value) => controller.selectDate(context, DateType.start, value)
+                      ),
+                      const SizedBox(height: 18),
+                      BorderButtonField<TimeOfDay>(
+                        label: AppLocalizations.of(context).startTime,
+                        value: controller.vacationPresentation.value.startTime,
+                        mouseCursor: SystemMouseCursors.text,
+                        backgroundColor: AppColor.colorBackgroundVacationSettingField,
+                        isEmpty: !controller.isVacationDeactivated && controller.vacationPresentation.value.starTimeIsNull,
+                        hintText: AppLocalizations.of(context).noStartTime,
+                        tapActionCallback: (value) => controller.selectTime(context, DateType.start, value)
+                      ),
+                    ])
+                  : Row(children: [
+                      Expanded(child: BorderButtonField<DateTime>(
+                        label: AppLocalizations.of(context).startDate,
+                        value: controller.vacationPresentation.value.startDate,
+                        mouseCursor: SystemMouseCursors.text,
+                        backgroundColor: AppColor.colorBackgroundVacationSettingField,
+                        isEmpty: !controller.isVacationDeactivated && controller.vacationPresentation.value.startDateIsNull,
+                        hintText: AppLocalizations.of(context).startDate,
+                        tapActionCallback: (value) => controller.selectDate(context, DateType.start, value))
+                      ),
+                      const SizedBox(width: 24),
+                      Expanded(child: BorderButtonField<TimeOfDay>(
+                        label: AppLocalizations.of(context).startTime,
+                        value: controller.vacationPresentation.value.startTime,
+                        mouseCursor: SystemMouseCursors.text,
+                        backgroundColor: AppColor.colorBackgroundVacationSettingField,
+                        isEmpty: !controller.isVacationDeactivated && controller.vacationPresentation.value.starTimeIsNull,
+                        hintText: AppLocalizations.of(context).noStartTime,
+                        tapActionCallback: (value) => controller.selectTime(context, DateType.start, value))
+                      ),
                     ]),
-                  )
-                )),
-                const SizedBox(height: 24),
-                Obx(() => AbsorbPointer(
-                  absorbing: !controller.canChangeEndDate,
-                  child: Opacity(
-                    opacity: !controller.canChangeEndDate ? 0.3 : 1.0,
-                    child: controller.responsiveUtils.isPortraitMobile(context)
-                      ? Column(children: [
-                          BorderButtonField<DateTime>(
-                            label: AppLocalizations.of(context).endDate,
-                            value: controller.vacationPresentation.value.endDate,
-                            mouseCursor: SystemMouseCursors.text,
-                            backgroundColor: AppColor.colorBackgroundVacationSettingField,
-                            isEmpty: controller.canChangeEndDate && controller.vacationPresentation.value.endDateIsNull,
-                            hintText: AppLocalizations.of(context).noEndDate,
-                            tapActionCallback: (value) => controller.selectDate(context, DateType.end, value)
-                          ),
-                          const SizedBox(height: 18),
-                          BorderButtonField<TimeOfDay>(
-                            label: AppLocalizations.of(context).endTime,
-                            value: controller.vacationPresentation.value.endTime,
-                            mouseCursor: SystemMouseCursors.text,
-                            backgroundColor: AppColor.colorBackgroundVacationSettingField,
-                            isEmpty: controller.canChangeEndDate && controller.vacationPresentation.value.endTimeIsNull,
-                            hintText: AppLocalizations.of(context).noEndTime,
-                            tapActionCallback: (value) => controller.selectTime(context, DateType.end, value)
-                          ),
-                        ])
-                      : Row(children: [
-                          Expanded(child: BorderButtonField<DateTime>(
-                            label: AppLocalizations.of(context).endDate,
-                            value: controller.vacationPresentation.value.endDate,
-                            mouseCursor: SystemMouseCursors.text,
-                            backgroundColor: AppColor.colorBackgroundVacationSettingField,
-                            isEmpty: controller.canChangeEndDate && controller.vacationPresentation.value.endDateIsNull,
-                            hintText: AppLocalizations.of(context).noEndDate,
-                            tapActionCallback: (value) => controller.selectDate(context, DateType.end, value))
-                          ),
-                          const SizedBox(width: 24),
-                          Expanded(child: BorderButtonField<TimeOfDay>(
-                            label: AppLocalizations.of(context).endTime,
-                            value: controller.vacationPresentation.value.endTime,
-                            mouseCursor: SystemMouseCursors.text,
-                            backgroundColor: AppColor.colorBackgroundVacationSettingField,
-                            isEmpty: controller.canChangeEndDate && controller.vacationPresentation.value.endTimeIsNull,
-                            hintText: AppLocalizations.of(context).noEndTime,
-                            tapActionCallback: (value) => controller.selectTime(context, DateType.end, value))
-                          ),
-                        ]),
-                  )
-                )),
-                const SizedBox(height: 24),
-                Obx(() => AbsorbPointer(
-                  absorbing: controller.isVacationDeactivated,
-                  child: controller.responsiveUtils.isPortraitMobile(context)
-                    ? Opacity(
-                        opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
-                        child: TextInputFieldBuilder(
-                          label: AppLocalizations.of(context).subject,
-                          hint: AppLocalizations.of(context).hintSubjectInputVacationSetting,
-                          editingController: controller.subjectTextController,
-                          focusNode: controller.subjectTextFocusNode,
-                        ),
+              ),
+            )),
+            const SizedBox(height: 24),
+            Obx(() => AbsorbPointer(
+              absorbing: controller.isVacationDeactivated,
+              child: Opacity(
+                opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
+                child: Row(children: [
+                  Obx(() => InkWell(
+                    onTap: () {
+                      final value = !controller.vacationPresentation.value.vacationStopEnabled;
+                      controller.updateVacationPresentation(vacationStopEnabled: value);
+                    },
+                    child: SvgPicture.asset(
+                      controller.vacationPresentation.value.vacationStopEnabled
+                        ? controller.imagePaths.icSwitchOn
+                        : controller.imagePaths.icSwitchOff,
+                      fit: BoxFit.fill,
+                      width: 24,
+                      height: 24
+                    )
+                  )),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Text(
+                      AppLocalizations.of(context).vacationStopsAt,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black
                       )
-                    : Row(children: [
-                        Expanded(child: Opacity(
-                          opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
-                          child: TextInputFieldBuilder(
-                            label: AppLocalizations.of(context).subject,
-                            hint: AppLocalizations.of(context).hintSubjectInputVacationSetting,
-                            editingController: controller.subjectTextController,
-                            focusNode: controller.subjectTextFocusNode,
-                          ),
-                        )),
-                        const SizedBox(width: 24),
-                        const Expanded(child: SizedBox.shrink())
-                      ])
-                )),
-                const SizedBox(height: 24),
-                Obx(() => AbsorbPointer(
-                  absorbing: controller.isVacationDeactivated,
-                  child: Opacity(
+                    ),
+                  )
+                ]),
+              )
+            )),
+            const SizedBox(height: 24),
+            Obx(() => AbsorbPointer(
+              absorbing: !controller.canChangeEndDate,
+              child: Opacity(
+                opacity: !controller.canChangeEndDate ? 0.3 : 1.0,
+                child: controller.responsiveUtils.isPortraitMobile(context)
+                  ? Column(children: [
+                      BorderButtonField<DateTime>(
+                        label: AppLocalizations.of(context).endDate,
+                        value: controller.vacationPresentation.value.endDate,
+                        mouseCursor: SystemMouseCursors.text,
+                        backgroundColor: AppColor.colorBackgroundVacationSettingField,
+                        isEmpty: controller.canChangeEndDate && controller.vacationPresentation.value.endDateIsNull,
+                        hintText: AppLocalizations.of(context).noEndDate,
+                        tapActionCallback: (value) => controller.selectDate(context, DateType.end, value)
+                      ),
+                      const SizedBox(height: 18),
+                      BorderButtonField<TimeOfDay>(
+                        label: AppLocalizations.of(context).endTime,
+                        value: controller.vacationPresentation.value.endTime,
+                        mouseCursor: SystemMouseCursors.text,
+                        backgroundColor: AppColor.colorBackgroundVacationSettingField,
+                        isEmpty: controller.canChangeEndDate && controller.vacationPresentation.value.endTimeIsNull,
+                        hintText: AppLocalizations.of(context).noEndTime,
+                        tapActionCallback: (value) => controller.selectTime(context, DateType.end, value)
+                      ),
+                    ])
+                  : Row(children: [
+                      Expanded(child: BorderButtonField<DateTime>(
+                        label: AppLocalizations.of(context).endDate,
+                        value: controller.vacationPresentation.value.endDate,
+                        mouseCursor: SystemMouseCursors.text,
+                        backgroundColor: AppColor.colorBackgroundVacationSettingField,
+                        isEmpty: controller.canChangeEndDate && controller.vacationPresentation.value.endDateIsNull,
+                        hintText: AppLocalizations.of(context).noEndDate,
+                        tapActionCallback: (value) => controller.selectDate(context, DateType.end, value))
+                      ),
+                      const SizedBox(width: 24),
+                      Expanded(child: BorderButtonField<TimeOfDay>(
+                        label: AppLocalizations.of(context).endTime,
+                        value: controller.vacationPresentation.value.endTime,
+                        mouseCursor: SystemMouseCursors.text,
+                        backgroundColor: AppColor.colorBackgroundVacationSettingField,
+                        isEmpty: controller.canChangeEndDate && controller.vacationPresentation.value.endTimeIsNull,
+                        hintText: AppLocalizations.of(context).noEndTime,
+                        tapActionCallback: (value) => controller.selectTime(context, DateType.end, value))
+                      ),
+                    ]),
+              )
+            )),
+            const SizedBox(height: 24),
+            Obx(() => AbsorbPointer(
+              absorbing: controller.isVacationDeactivated,
+              child: controller.responsiveUtils.isPortraitMobile(context)
+                ? Opacity(
                     opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
-                    child: _buildVacationMessage(context),
-                  ),
-                )),
-                const SizedBox(height: 24),
-                _buildListButtonAction(context),
-                const SizedBox(height: 24),
-              ]),
-            )
+                    child: TextInputFieldBuilder(
+                      label: AppLocalizations.of(context).subject,
+                      hint: AppLocalizations.of(context).hintSubjectInputVacationSetting,
+                      editingController: controller.subjectTextController,
+                      focusNode: controller.subjectTextFocusNode,
+                    ),
+                  )
+                : Row(children: [
+                    Expanded(child: Opacity(
+                      opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
+                      child: TextInputFieldBuilder(
+                        label: AppLocalizations.of(context).subject,
+                        hint: AppLocalizations.of(context).hintSubjectInputVacationSetting,
+                        editingController: controller.subjectTextController,
+                        focusNode: controller.subjectTextFocusNode,
+                      ),
+                    )),
+                    const SizedBox(width: 24),
+                    const Expanded(child: SizedBox.shrink())
+                  ])
+            )),
+            const SizedBox(height: 24),
+            Obx(() => AbsorbPointer(
+              absorbing: controller.isVacationDeactivated,
+              child: Opacity(
+                opacity: controller.isVacationDeactivated ? 0.3 : 1.0,
+                child: _buildVacationMessage(context),
+              ),
+            )),
+            const SizedBox(height: 24),
+            _buildListButtonAction(context),
+            const SizedBox(height: 24)
           ]
         ),
       ),
@@ -277,9 +262,18 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
     if (PlatformInfo.isWeb) {
       return SettingDetailViewBuilder(
         responsiveUtils: controller.responsiveUtils,
-        padding: const EdgeInsets.symmetric(horizontal: 4),
         onTapGestureDetector: () => controller.clearFocusEditor(context),
-        child: vacationInputForm,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (controller.responsiveUtils.isWebDesktop(context))
+              ...[
+                const SettingHeaderWidget(menuItem: AccountMenuItem.vacation),
+                const Divider(height: 1, color: AppColor.colorDividerHeaderSetting),
+              ],
+            Expanded(child: vacationInputForm),
+          ],
+        ),
       );
     } else {
       return ResponsiveWidget(

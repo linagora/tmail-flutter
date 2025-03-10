@@ -58,7 +58,6 @@ export 'extensions/presentation_email_extension.dart';
 export 'extensions/presentation_mailbox_extension.dart';
 export 'extensions/properties_extension.dart';
 export 'extensions/session_extension.dart';
-export 'extensions/username_extension.dart';
 export 'extensions/utc_date_extension.dart';
 export 'extensions/contact_support_capability_extension.dart';
 export 'extensions/list_id_extension.dart';

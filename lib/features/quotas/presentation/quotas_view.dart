@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -43,18 +44,21 @@ class QuotasView extends GetWidget<QuotasController> {
                       controller.imagePaths.icQuotas,
                       width: QuotasViewStyles.iconSize,
                       height: QuotasViewStyles.iconSize,
+                      colorFilter: AppColor.steelGray400.asFilter(),
                       fit: BoxFit.fill,
                     ),
                     const SizedBox(width: QuotasViewStyles.iconPadding),
-                    Text(
-                      AppLocalizations.of(context).storageQuotas,
-                      style: const TextStyle(
-                        fontSize: QuotasViewStyles.labelTextSize,
-                        fontWeight: QuotasViewStyles.labelFontWeight,
-                        color: QuotasViewStyles.labelTextColor
+                    Expanded(
+                      child: Text(
+                        AppLocalizations.of(context).storageQuotas,
+                        style: const TextStyle(
+                          fontSize: QuotasViewStyles.labelTextSize,
+                          fontWeight: QuotasViewStyles.labelFontWeight,
+                          color: QuotasViewStyles.labelTextColor
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     )
                   ],
                 ),

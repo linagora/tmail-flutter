@@ -354,9 +354,10 @@ mixin MailboxWidgetMixin {
               : DirectionUtils.isDirectionRTLByLanguage(context)
                   ? imagePaths.icArrowLeft
                   : imagePaths.icArrowRight,
-            iconColor: AppColor.primaryColor,
+            iconColor: Colors.black,
+            iconSize: 20,
             backgroundColor: Colors.transparent,
-            padding: EdgeInsets.zero,
+            padding: const EdgeInsets.all(5),
             tooltipMessage: expandMode == ExpandMode.EXPAND
               ? AppLocalizations.of(context).collapse
               : AppLocalizations.of(context).expand,
@@ -368,11 +369,7 @@ mixin MailboxWidgetMixin {
           maxLines: 1,
           overflow: CommonTextStyle.defaultTextOverFlow,
           softWrap: CommonTextStyle.defaultSoftWrap,
-          style: const TextStyle(
-            fontSize: 17,
-            color: Colors.black,
-            fontWeight: FontWeight.bold
-          )
+          style: ThemeUtils.textStyleBodyBody3(color: Colors.black)
         )),
       ])
     );

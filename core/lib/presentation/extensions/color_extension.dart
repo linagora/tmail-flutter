@@ -103,7 +103,7 @@ extension AppColor on Color {
   static const colorTextSettingDescriptions = colorTextButtonHeaderThread;
   static const colorButtonHeaderThread = Color(0x99EBEDF0);
   static const colorBorderBodyThread = Color(0x5CB8C1CC);
-  static const colorBgDesktop = Color(0xFFF6F6F6);
+  static const colorBgDesktop = Color(0xFFF3F6F9);
   static const colorItemEmailSelectedDesktop = Color(0xFFDFEEFF);
   static const colorAvatar = Color(0xFFDE5E5E);
   static const colorFocusButton = Color(0x14818C99);
@@ -111,7 +111,6 @@ extension AppColor on Color {
   static const colorBorderIdentityInfo = Color(0xFFE7E8EC);
   static const colorBgMailboxSelected = Color(0x99E4E8EC);
   static const colorLoading = Color(0x2999A2AD);
-  static const colorActionButtonHover = Color(0xFFA2AAB3);
   static const colorBgMenuItemDropDownSelected = Color(0x80DEE2E7);
   static const colorButtonCancelDialog = Color(0x0D000000);
   static const colorShadowComposerButton = Color(0x99007AFF);
@@ -206,7 +205,6 @@ extension AppColor on Color {
   static const colorLineComposer = Color(0xFFF4F4F4);
   static const colorPrefixButtonComposer = Color(0xFF8B9CAF);
   static const colorRichButtonComposer = Color(0xFFAEAEC0);
-  static const colorMobileRichButtonComposer = Color(0xFF8C9CAF);
   static const colorSelected = Color(0xFFE3F1FF);
   static const colorAttachmentBorder = Color(0xFFE5ECF3);
   static const colorProgressLoadingBackground = Color(0xFFE3F1FF);
@@ -227,7 +225,6 @@ extension AppColor on Color {
   static const thumbScrollbarColor = Color(0xFFC1C1C1);
   static const loginViewShadowColor = Color(0x3DBCBCBC);
   static const colorEmailTileCheckboxUnhover = Color(0xFFAEB7C2);
-  static const colorEmailTileHoverWeb = Color(0xFFDFEEFF);
   static const colorSearchFilterButton = Color(0xFFECEEF1);
   static const colorSearchFilterTitle = Color(0xFF686E76);
   static const colorSearchFilterIcon = Color(0xFF686E76);
@@ -241,6 +238,14 @@ extension AppColor on Color {
   static const steelGrayA540 = Color(0xFF55687D);
   static const steelGray200 = Color(0xFFAEB7C2);
   static const blue700 = Color(0xFF208BFF);
+  static const steelGray400 = Color(0xFF818C99);
+  static const steelGray600 = Color(0xFF4E5966);
+  static const blue100 = Color(0xFFDFEEFF);
+  static const blue400 = Color(0xFF80BDFF);
+  static const m3Tertiary = Color(0xFF8C9CAF);
+  static const m3Neutral70 = Color(0xFFAEAAAE);
+  static const grayBackgroundColor = Color(0xFFF3F6F9);
+  static const m3SurfaceBackground = Color(0xFF1C1B1F);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

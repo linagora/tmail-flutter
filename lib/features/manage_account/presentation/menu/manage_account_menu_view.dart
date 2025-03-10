@@ -20,13 +20,14 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
   @override
   Widget build(BuildContext context) {
      return Scaffold(
-       backgroundColor: Colors.white,
+       backgroundColor: controller.responsiveUtils.isWebDesktop(context)
+           ? AppColor.colorBgDesktop
+           : Colors.white,
        body: SafeArea(right: false, bottom: false,
            child: Column(
                children: [
                  if (!controller.responsiveUtils.isWebDesktop(context))
-                   Container(
-                       color: Colors.white,
+                   Padding(
                        padding: const EdgeInsetsDirectional.only(top: 16, bottom: 16, start: 16),
                        child: Row(children: [
                          ApplicationLogoWidthTextWidget(),
@@ -76,28 +77,30 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                          )
                        ),
                        const SizedBox(height: 12),
-                       Obx(() {
-                         if (controller.listAccountMenuItem.isNotEmpty) {
-                           return ListView.builder(
-                             key: const Key('list_manage_account_menu_item'),
-                             padding: const EdgeInsetsDirectional.only(start: 16, end: 8),
-                             shrinkWrap: true,
-                             itemCount: controller.listAccountMenuItem.length,
-                             itemBuilder: (context, index) => Obx(() {
-                               final menuItem = controller.listAccountMenuItem[index];
-                               return AccountMenuItemTileBuilder(
-                                 imagePaths: controller.imagePaths,
-                                 responsiveUtils: controller.responsiveUtils,
-                                 menuItem: menuItem,
-                                 menuItemSelected: controller.dashBoardController.accountMenuItemSelected.value,
-                                 onSelectAccountMenuItemAction: controller.selectAccountMenuItem
-                               );
-                             })
-                           );
-                         } else {
-                           return const SizedBox.shrink();
-                         }
-                       }),
+                       Flexible(
+                         child: Obx(() {
+                           if (controller.listAccountMenuItem.isNotEmpty) {
+                             return ListView.builder(
+                               key: const Key('list_manage_account_menu_item'),
+                               padding: const EdgeInsetsDirectional.only(start: 16, end: 8),
+                               shrinkWrap: true,
+                               itemCount: controller.listAccountMenuItem.length,
+                               itemBuilder: (context, index) => Obx(() {
+                                 final menuItem = controller.listAccountMenuItem[index];
+                                 return AccountMenuItemTileBuilder(
+                                   imagePaths: controller.imagePaths,
+                                   responsiveUtils: controller.responsiveUtils,
+                                   menuItem: menuItem,
+                                   menuItemSelected: controller.dashBoardController.accountMenuItemSelected.value,
+                                   onSelectAccountMenuItemAction: controller.selectAccountMenuItem
+                                 );
+                               })
+                             );
+                           } else {
+                             return const SizedBox.shrink();
+                           }
+                         }),
+                       ),
                        const Padding(
                            padding: EdgeInsets.symmetric(vertical: 16),
                            child: Divider()),
@@ -146,7 +149,7 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                    ),
                  )),
                  Container(
-                   color: AppColor.colorBgMailbox,
+                   color: AppColor.colorBgDesktop,
                    width: double.infinity,
                    alignment: controller.responsiveUtils.isDesktop(context)
                      ? AlignmentDirectional.centerStart
@@ -155,11 +158,6 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                    child: ApplicationVersionWidget(
                      padding: EdgeInsets.zero,
                      title: '${AppLocalizations.of(context).version.toLowerCase()} ',
-                     textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
-                       fontSize: 13,
-                       color: AppColor.colorTextBody,
-                       fontWeight: FontWeight.normal
-                     ),
                    ),
                  ),
                ]

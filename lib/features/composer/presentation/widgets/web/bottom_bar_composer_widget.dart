@@ -61,9 +61,9 @@ class BottomBarComposerWidget extends StatelessWidget {
           TMailButtonWidget.fromIcon(
             icon: imagePaths.icRichToolbar,
             borderRadius: BottomBarComposerWidgetStyle.iconRadius,
-            padding: BottomBarComposerWidgetStyle.richTextIconPadding,
+            padding: BottomBarComposerWidgetStyle.iconPadding,
             backgroundColor: Colors.transparent,
-            iconSize: BottomBarComposerWidgetStyle.richTextIconSize,
+            iconSize: BottomBarComposerWidgetStyle.iconSize,
             iconColor: isFormattingOptionsEnabled
               ? BottomBarComposerWidgetStyle.selectedIconColor
               : BottomBarComposerWidgetStyle.iconColor,

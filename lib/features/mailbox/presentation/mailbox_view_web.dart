@@ -2,7 +2,6 @@ import 'package:core/core.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
@@ -111,7 +110,6 @@ class MailboxView extends BaseMailboxView {
                 ],
               ),
             Container(
-              color: AppColor.colorBgMailbox,
               width: double.infinity,
               alignment: controller.responsiveUtils.isDesktop(context)
                 ? AlignmentDirectional.centerStart
@@ -120,11 +118,6 @@ class MailboxView extends BaseMailboxView {
               child: ApplicationVersionWidget(
                 padding: EdgeInsets.zero,
                 title: '${AppLocalizations.of(context).version.toLowerCase()} ',
-                textStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  fontSize: 13,
-                  color: AppColor.colorTextBody,
-                  fontWeight: FontWeight.normal
-                ),
               ),
             ),
           ]),
@@ -142,8 +135,8 @@ class MailboxView extends BaseMailboxView {
         if (!controller.responsiveUtils.isDesktop(context))
           Obx(() => UserInformationWidget(
             userName: controller.mailboxDashBoardController.accountId.value != null
-              ? UserName(controller.mailboxDashBoardController.sessionCurrent!.getOwnEmailAddress())
-              : null,
+              ? controller.mailboxDashBoardController.getOwnEmailAddress()
+              : '',
             subtitle: AppLocalizations.of(context).manage_account,
             onSubtitleClick: controller.mailboxDashBoardController.goToSettings,
             border: const Border(
@@ -193,7 +186,7 @@ class MailboxView extends BaseMailboxView {
                   child: Text(
                     AppLocalizations.of(context).folders,
                     style: const TextStyle(
-                      fontSize: 17,
+                      fontSize: 15,
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
@@ -207,14 +200,16 @@ class MailboxView extends BaseMailboxView {
                     TMailButtonWidget.fromIcon(
                       icon: controller.imagePaths.icSearchBar,
                       backgroundColor: Colors.transparent,
-                      iconColor: AppColor.primaryColor,
+                      iconColor: AppColor.steelGrayA540,
+                      iconSize: 20,
                       tooltipMessage: AppLocalizations.of(context).searchForFolders,
                       onTapActionCallback: () => controller.openSearchViewAction(context)
                     ),
                     TMailButtonWidget.fromIcon(
                       icon: controller.imagePaths.icAddNewFolder,
                       backgroundColor: Colors.transparent,
-                      iconColor: AppColor.primaryColor,
+                      iconColor: AppColor.steelGrayA540,
+                      iconSize: 20,
                       tooltipMessage: AppLocalizations.of(context).newFolder,
                       onTapActionCallback: () => controller.goToCreateNewMailboxView(context)
                     ),

@@ -331,11 +331,11 @@ class ComposerView extends GetWidget<ComposerController> {
             onTap: () => controller.clearFocus(context),
             child: Column(children: [
               Obx(() => DesktopAppBarComposerWidget(
+                imagePaths: controller.imagePaths,
                 emailSubject: controller.subjectEmail.value ?? '',
                 displayMode: controller.screenDisplayMode.value,
                 onCloseViewAction: () => controller.handleClickCloseComposer(context),
                 onChangeDisplayModeAction: controller.displayScreenTypeComposerAction,
-                constraints: constraints,
               )),
               ConstrainedBox(
                 constraints: BoxConstraints(
@@ -645,9 +645,9 @@ class ComposerView extends GetWidget<ComposerController> {
             onTap: () => controller.clearFocus(context),
             child: Column(children: [
               Obx(() => DesktopAppBarComposerWidget(
+                imagePaths: controller.imagePaths,
                 emailSubject: controller.subjectEmail.value ?? '',
                 onCloseViewAction: () => controller.handleClickCloseComposer(context),
-                constraints: constraints,
               )),
               ConstrainedBox(
                 constraints: BoxConstraints(

@@ -1,15 +1,13 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/base/state/banner_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/forward_warning_banner.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/mailbox_visibility/mailbox_visibility_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
@@ -28,26 +26,24 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: controller.responsiveUtils.isWebDesktop(context)
+          ? AppColor.colorBgDesktop
+          : Colors.white,
       drawerEnableOpenDragGesture: false,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: ResponsiveWidget(
             responsiveUtils: controller.responsiveUtils,
             desktop: Column(children: [
-              Obx(() {
-                final accountId = controller.accountId.value;
-                if (accountId == null) {
-                  return const SizedBox.shrink();
-                } else {
-                  return NavigationBarWidget(
-                    imagePaths: controller.imagePaths,
-                    avatarUserName: controller.sessionCurrent?.username.firstCharacter ?? '',
-                    onTapApplicationLogoAction: () => controller.backToMailboxDashBoard(context: context),
-                    onTapAvatarAction: (position) => controller.handleClickAvatarAction(context, position),
-                  );
-                }
-              }),
+              Obx(() => NavigationBarWidget(
+                imagePaths: controller.imagePaths,
+                accountId: controller.accountId.value,
+                avatarUserName: controller.getOwnEmailAddress().firstCharacterToUpperCase,
+                onTapApplicationLogoAction: () =>
+                    controller.backToMailboxDashBoard(context: context),
+                onTapAvatarAction: (position) =>
+                    controller.handleClickAvatarAction(context, position),
+              )),
               Expanded(child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -55,7 +51,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                     width: ResponsiveUtils.defaultSizeMenu,
                     child: ManageAccountMenuView()
                   ),
-                  Expanded(child: Container(
+                  Expanded(child: ColoredBox(
                     color: AppColor.colorBgDesktop,
                     child: Column(children: [
                       Obx(() {
@@ -85,14 +81,6 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
                           return const SizedBox.shrink();
                         }
                       }),
-                      Obx(() {
-                        if (controller.forwardWarningBannerState.value == BannerState.enabled &&
-                          controller.accountMenuItemSelected.value == AccountMenuItem.forward) {
-                          return ForwardWarningBanner();
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      }),
                       Expanded(child: _viewDisplayedOfAccountMenuItem())
                     ]),
                   ))
@@ -113,7 +101,7 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
     return Obx(() {
       switch(controller.accountMenuItemSelected.value) {
         case AccountMenuItem.profiles:
-          return ProfilesView();
+          return ProfilesView(responsiveUtils: controller.responsiveUtils);
         case AccountMenuItem.languageAndRegion:
           return const LanguageAndRegionView();
         case AccountMenuItem.emailRules:

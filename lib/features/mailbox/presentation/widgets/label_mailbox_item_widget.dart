@@ -1,7 +1,6 @@
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -12,19 +11,21 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/trailing_mai
 
 class LabelMailboxItemWidget extends StatelessWidget {
 
+  final ResponsiveUtils responsiveUtils;
   final MailboxNode mailboxNode;
   final bool showTrailing;
   final bool isItemHovered;
+  final bool isSelected;
   final OnClickOpenMenuMailboxNodeAction? onMenuActionClick;
   final OnEmptyMailboxActionCallback? onEmptyMailboxActionCallback;
 
-  final _responsiveUtils = Get.find<ResponsiveUtils>();
-
-  LabelMailboxItemWidget({
+  const LabelMailboxItemWidget({
     super.key,
     required this.mailboxNode,
+    required this.responsiveUtils,
     this.showTrailing = true,
     this.isItemHovered = false,
+    this.isSelected = false,
     this.onMenuActionClick,
     this.onEmptyMailboxActionCallback,
   });
@@ -33,6 +34,7 @@ class LabelMailboxItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         if (showTrailing)
           Row(
@@ -40,14 +42,14 @@ class LabelMailboxItemWidget extends StatelessWidget {
               Expanded(
                 child: TextOverflowBuilder(
                   mailboxNode.item.getDisplayName(context),
-                  style: TextStyle(
-                    fontSize: _mailboxNameTextSize,
-                    color: _mailboxNameTextColor,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontSize: LabelMailboxItemWidgetStyles.labelFolderTextSize,
+                    color: LabelMailboxItemWidgetStyles.labelFolderTextColor,
                     fontWeight: _mailboxNameTextFontWeight
                   ),
                 ),
               ),
-              if (_responsiveUtils.isWebDesktop(context) && mailboxNode.item.allowedHasEmptyAction)
+              if (responsiveUtils.isWebDesktop(context) && mailboxNode.item.allowedHasEmptyAction)
                 EmptyMailboxPopupDialogWidget(
                   mailboxNode: mailboxNode,
                   onEmptyMailboxActionCallback: (mailboxNode) => onEmptyMailboxActionCallback?.call(mailboxNode),
@@ -62,34 +64,30 @@ class LabelMailboxItemWidget extends StatelessWidget {
         else
           TextOverflowBuilder(
             mailboxNode.item.getDisplayName(context),
-            style: TextStyle(
-              fontSize: _mailboxNameTextSize,
-              color: _mailboxNameTextColor,
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontSize: LabelMailboxItemWidgetStyles.labelFolderTextSize,
+              color: LabelMailboxItemWidgetStyles.labelFolderTextColor,
               fontWeight: _mailboxNameTextFontWeight
             ),
           ),
         if (mailboxNode.item.isTeamMailboxes)
           TextOverflowBuilder(
             mailboxNode.item.emailTeamMailBoxes,
-            style: const TextStyle(
-              fontSize: LabelMailboxItemWidgetStyles.teamMailboxTextSize,
-              color: LabelMailboxItemWidgetStyles.teamMailboxTextColor,
-              fontWeight: LabelMailboxItemWidgetStyles.teamMailboxTextFontWeight
+            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+              fontSize: LabelMailboxItemWidgetStyles.labelFolderTextSize,
+              color: LabelMailboxItemWidgetStyles.teamMailboxEmailTextColor,
+              fontWeight: LabelMailboxItemWidgetStyles.labelFolderTextFontWeight
             ),
           )
       ],
     );
   }
 
-  double get _mailboxNameTextSize => mailboxNode.item.isTeamMailboxes
-    ? LabelMailboxItemWidgetStyles.labelTeamMailboxTextSize
-    : LabelMailboxItemWidgetStyles.labelFolderTextSize;
-
-  Color get _mailboxNameTextColor => mailboxNode.item.isTeamMailboxes
-    ? LabelMailboxItemWidgetStyles.labelTeamMailboxTextColor
-    : LabelMailboxItemWidgetStyles.labelFolderTextColor;
-
-  FontWeight get _mailboxNameTextFontWeight => mailboxNode.item.isTeamMailboxes
-    ? LabelMailboxItemWidgetStyles.labelTeamMailboxTextFontWeight
-    : LabelMailboxItemWidgetStyles.labelFolderTextFontWeight;
+  FontWeight get _mailboxNameTextFontWeight {
+    if (isSelected || mailboxNode.item.isTeamMailboxes) {
+      return LabelMailboxItemWidgetStyles.labelFolderSelectedFontWeight;
+    } else {
+      return LabelMailboxItemWidgetStyles.labelFolderTextFontWeight;
+    }
+  }
 }

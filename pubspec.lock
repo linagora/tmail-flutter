@@ -2280,7 +2280,7 @@ packages:
     source: hosted
     version: "2.4.4"
   win32:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: win32
       sha256: a79dbe579cb51ecd6d30b17e0cae4e0ea15e2c0e66f69ad4198f22a6789e94f4

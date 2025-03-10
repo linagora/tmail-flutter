@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identities_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identities_header_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/widgets/identities_radio_list_builder.dart';
@@ -12,8 +13,11 @@ class IdentitiesView extends GetWidget<IdentitiesController> with PopupMenuWidge
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(24),
+    return Padding(
+      padding: SettingsUtils.getSettingContentPadding(
+        context,
+        controller.responsiveUtils,
+      ),
       child: controller.responsiveUtils.isWebDesktop(context)
         ? _buildIdentitiesViewWebDesktop(context)
         : _buildIdentitiesViewMobile(context),

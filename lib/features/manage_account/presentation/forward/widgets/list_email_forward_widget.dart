@@ -8,7 +8,6 @@ import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/widgets/email_forward_item_widget.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/recipient_forward.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -18,39 +17,35 @@ class ListEmailForwardsWidget extends GetWidget<ForwardController> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      color: Colors.transparent,
-      padding: SettingsUtils.getPaddingListRecipientForwarding(context, controller.responsiveUtils),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          _buildTitleHeader(context),
-          Obx(() {
-            if (controller.listRecipientForward.isEmpty) {
-              return const SizedBox.shrink();
-            } else {
-              return ListView.builder(
-                shrinkWrap: true,
-                primary: false,
-                itemCount: controller.listRecipientForward.length,
-                padding: EdgeInsets.zero,
-                itemBuilder: (context, index) {
-                  return EmailForwardItemWidget(
-                    recipientForward: controller.listRecipientForward[index],
-                    internalDomain: controller.accountDashBoardController.sessionCurrent?.internalDomain ?? '',
-                    selectionMode: controller.selectionMode.value,
-                    onSelectRecipientCallback: controller.selectRecipientForward,
-                    onDeleteRecipientCallback: (recipientForward) {
-                      controller.deleteRecipients(context, recipientForward.emailAddress.emailAddress);
-                    },
-                  );
-                }
-              );
-            }
-          }),
-        ]
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildTitleHeader(context),
+        Obx(() {
+          if (controller.listRecipientForward.isEmpty) {
+            return const SizedBox.shrink();
+          } else {
+            return ListView.builder(
+              shrinkWrap: true,
+              primary: false,
+              itemCount: controller.listRecipientForward.length,
+              padding: EdgeInsets.zero,
+              itemBuilder: (context, index) {
+                return EmailForwardItemWidget(
+                  recipientForward: controller.listRecipientForward[index],
+                  internalDomain: controller.accountDashBoardController.sessionCurrent?.internalDomain ?? '',
+                  selectionMode: controller.selectionMode.value,
+                  onSelectRecipientCallback: controller.selectRecipientForward,
+                  onDeleteRecipientCallback: (recipientForward) {
+                    controller.deleteRecipients(context, recipientForward.emailAddress.emailAddress);
+                  },
+                );
+              }
+            );
+          }
+        }),
+      ]
     );
   }
 

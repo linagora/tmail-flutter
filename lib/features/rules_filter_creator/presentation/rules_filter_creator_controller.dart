@@ -260,7 +260,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
   }
 
   void _setUpRuleFilterActions() {
-    if (_currentTMailRule!.action.appendIn.mailboxIds.isNotEmpty != true) return;
+    if (_currentTMailRule?.action.appendIn.mailboxIds.isNotEmpty != true) return;
 
     final mailboxNode = findMailboxNodeById(
       _currentTMailRule!.action.appendIn.mailboxIds.first);

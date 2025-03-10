@@ -396,18 +396,7 @@ class UploadController extends BaseController {
         height: 40,
         colorFilter: AppColor.colorBackgroundQuotasWarning.asFilter(),
       ),
-      messageStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-        fontSize: 14,
-        color: Colors.black
-      ),
-      actionStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-        fontSize: 17,
-        color: Colors.white
-      ),
-      cancelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-        fontSize: 17,
-        color: Colors.black
-      ));
+    );
   }
 
   bool get allUploadAttachmentsCompleted {

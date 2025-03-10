@@ -1,10 +1,8 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:forward/forward/tmail_forward.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -47,6 +45,7 @@ class ForwardController extends BaseController {
   final selectionMode = Rx<SelectMode>(SelectMode.INACTIVE);
   final listRecipientForward = RxList<RecipientForward>();
   final currentForward = Rxn<TMailForward>();
+  final forwardWarningBannerState = Rxn<BannerState>();
 
   bool get currentForwardLocalCopyState => currentForward.value?.localCopy ?? false;
 
@@ -115,27 +114,14 @@ class ForwardController extends BaseController {
   }
 
   void deleteRecipients(BuildContext context, String emailAddress) {
-    showConfirmDialogAction(context,
+    showConfirmDialogAction(
+      context,
       title: AppLocalizations.of(context).deleteRecipient,
       AppLocalizations.of(context).messageConfirmationDialogDeleteRecipientForward(emailAddress),
       AppLocalizations.of(context).remove,
       onConfirmAction: () => _handleDeleteRecipientAction({emailAddress}),
       showAsBottomSheet: true,
-      icon: SvgPicture.asset(imagePaths.icDeleteDialogRecipients, fit: BoxFit.fill),
-      titleStyle: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        color: AppColor.colorDeletePermanentlyButton),
-      actionStyle: const TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w500,
-        color: Colors.white),
-      cancelStyle: const TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w500,
-        color: AppColor.colorTextButton),
-      actionButtonColor: AppColor.colorDeletePermanentlyButton,
-      cancelButtonColor: AppColor.colorButtonCancelDialog,
+      useIconAsBasicLogo: true,
     );
   }
 
@@ -217,21 +203,7 @@ class ForwardController extends BaseController {
       AppLocalizations.of(currentContext!).remove,
       onConfirmAction: () => _handleDeleteRecipientAction(listEmailAddress),
       showAsBottomSheet: true,
-      icon: SvgPicture.asset(imagePaths.icDeleteDialogRecipients, fit: BoxFit.fill),
-      titleStyle: const TextStyle(
-        fontSize: 20,
-        fontWeight: FontWeight.w600,
-        color: AppColor.colorDeletePermanentlyButton),
-      actionStyle: const TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w500,
-        color: Colors.white),
-      cancelStyle: const TextStyle(
-        fontSize: 17,
-        fontWeight: FontWeight.w500,
-        color: AppColor.colorTextButton),
-      actionButtonColor: AppColor.colorDeletePermanentlyButton,
-      cancelButtonColor: AppColor.colorButtonCancelDialog,
+      useIconAsBasicLogo: true,
     );
   }
 
@@ -333,9 +305,9 @@ class ForwardController extends BaseController {
   }
 
   void _updateForwardWarningBannerState() {
-    accountDashBoardController.forwardWarningBannerState.value = _isExistRecipientSameServerDomain
+    forwardWarningBannerState.value = _isExistRecipientSameServerDomain
       ? BannerState.enabled
       : BannerState.disabled;
-    log('ForwardController::_updateForwardWarningBannerState: forwardWarningBannerState = ${accountDashBoardController.forwardWarningBannerState.value}');
+    log('ForwardController::_updateForwardWarningBannerState: forwardWarningBannerState = ${forwardWarningBannerState.value}');
   }
 }

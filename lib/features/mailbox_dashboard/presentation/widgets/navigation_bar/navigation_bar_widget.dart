@@ -5,6 +5,7 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:model/support/contact_support_capability.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/application_logo_with_text_widget.dart';
@@ -16,6 +17,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 class NavigationBarWidget extends StatelessWidget {
 
   final ImagePaths imagePaths;
+  final AccountId? accountId;
   final String avatarUserName;
   final ContactSupportCapability? contactSupportCapability;
   final Widget? searchForm;
@@ -27,6 +29,7 @@ class NavigationBarWidget extends StatelessWidget {
   const NavigationBarWidget({
     super.key,
     required this.imagePaths,
+    required this.accountId,
     required this.avatarUserName,
     this.contactSupportCapability,
     this.searchForm,
@@ -83,22 +86,23 @@ class NavigationBarWidget extends StatelessWidget {
                     return const SizedBox.shrink();
                   }),
                 const SizedBox(width: 16),
-                (AvatarBuilder()
-                  ..text(avatarUserName)
-                  ..backgroundColor(Colors.white)
-                  ..textColor(Colors.black)
-                  ..context(context)
-                  ..size(48)
-                  ..addOnTapAvatarActionWithPositionClick(onTapAvatarAction)
-                  ..addBoxShadows([
-                    const BoxShadow(
-                      color: AppColor.colorShadowBgContentEmail,
-                      spreadRadius: 1,
-                      blurRadius: 1,
-                      offset: Offset(0, 0.5)
-                    )
-                  ])
-                ).build()
+                if (accountId != null)
+                  (AvatarBuilder()
+                    ..text(avatarUserName)
+                    ..backgroundColor(Colors.white)
+                    ..textColor(Colors.black)
+                    ..context(context)
+                    ..size(48)
+                    ..addOnTapAvatarActionWithPositionClick(onTapAvatarAction)
+                    ..addBoxShadows([
+                      const BoxShadow(
+                        color: AppColor.colorShadowBgContentEmail,
+                        spreadRadius: 1,
+                        blurRadius: 1,
+                        offset: Offset(0, 0.5)
+                      )
+                    ])
+                  ).build()
               ]
             );
           }))
@@ -125,22 +129,23 @@ class NavigationBarWidget extends StatelessWidget {
                 return const SizedBox.shrink();
               }),
             const SizedBox(width: 16),
-            (AvatarBuilder()
-              ..text(avatarUserName)
-              ..backgroundColor(Colors.white)
-              ..textColor(Colors.black)
-              ..context(context)
-              ..size(48)
-              ..addOnTapAvatarActionWithPositionClick(onTapAvatarAction)
-              ..addBoxShadows([
-                const BoxShadow(
-                  color: AppColor.colorShadowBgContentEmail,
-                  spreadRadius: 1,
-                  blurRadius: 1,
-                  offset: Offset(0, 0.5)
-                )
-              ])
-            ).build()
+            if (accountId != null)
+              (AvatarBuilder()
+                ..text(avatarUserName)
+                ..backgroundColor(Colors.white)
+                ..textColor(Colors.black)
+                ..context(context)
+                ..size(48)
+                ..addOnTapAvatarActionWithPositionClick(onTapAvatarAction)
+                ..addBoxShadows([
+                  const BoxShadow(
+                    color: AppColor.colorShadowBgContentEmail,
+                    spreadRadius: 1,
+                    blurRadius: 1,
+                    offset: Offset(0, 0.5)
+                  )
+                ])
+              ).build()
           ]
       ]),
     );

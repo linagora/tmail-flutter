@@ -22,7 +22,6 @@ import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_inpu
 import 'package:tmail_ui_user/features/contact/presentation/widgets/contact_suggestion_box_item.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/exceptions/forward_exception.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings_utils.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
@@ -179,28 +178,23 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
     );
 
     if (widget.hasAddContactButton == true) {
-      return Container(
-        color: Colors.transparent,
-        width: double.infinity,
-        padding: SettingsUtils.getPaddingInputRecipientForwarding(context, _responsiveUtils),
-        child: _responsiveUtils.isScreenWithShortestSide(context)
-          ? Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                itemTagEditor,
-                const SizedBox(height: 16),
-                _buildAddRecipientButton(context, maxWidth: double.infinity)
-              ],
-            )
-          : Row(
-              children: [
-                Expanded(child: itemTagEditor),
-                const SizedBox(width: 12),
-                _buildAddRecipientButton(context)
-              ],
-            )
-      );
+      return _responsiveUtils.isScreenWithShortestSide(context)
+        ? Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              itemTagEditor,
+              const SizedBox(height: 16),
+              _buildAddRecipientButton(context, maxWidth: double.infinity)
+            ],
+          )
+        : Row(
+            children: [
+              Expanded(child: itemTagEditor),
+              const SizedBox(width: 12),
+              _buildAddRecipientButton(context)
+            ],
+          );
     } else {
       return itemTagEditor;
     }
@@ -460,22 +454,6 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
         width: 40,
         height: 40,
         colorFilter: AppColor.colorQuotaError.asFilter(),
-      ),
-      messageStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-        fontSize: 17,
-        color: Colors.black
-      ),
-      titleStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-        fontSize: 14,
-        color: AppColor.colorMessageConfirmDialog
-      ),
-      actionStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-        fontSize: 17,
-        color: Colors.white
-      ),
-      cancelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-        fontSize: 17,
-        color: Colors.black
       ),
     );
   }

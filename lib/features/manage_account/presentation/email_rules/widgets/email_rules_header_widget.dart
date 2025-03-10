@@ -3,6 +3,9 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/account_menu_item.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_explanation_widget.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/widgets/setting_header_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class EmailRulesHeaderWidget extends StatelessWidget {
@@ -21,26 +24,23 @@ class EmailRulesHeaderWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(24),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: AppColor.colorBackgroundWrapIconStyleCode,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
-      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-        Text(AppLocalizations.of(context).emailRules,
-            style: const TextStyle(
-                fontSize: 17,
-                fontWeight: FontWeight.bold,
-                color: Colors.black)),
-        const SizedBox(height: 4),
-        Text(AppLocalizations.of(context).emailRuleSettingExplanation,
-            style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.normal,
-                color: AppColor.colorTextButtonHeaderThread)),
-        const SizedBox(height: 24),
-        _buildButtonAddNewRule(context),
-      ]),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (responsiveUtils.isWebDesktop(context))
+            const SettingHeaderWidget(menuItem: AccountMenuItem.emailRules)
+          else
+            const SettingExplanationWidget(menuItem: AccountMenuItem.emailRules),
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: _buildButtonAddNewRule(context),
+          ),
+        ],
+      ),
     );
   }
 

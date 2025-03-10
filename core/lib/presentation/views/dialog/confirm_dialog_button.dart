@@ -1,25 +1,26 @@
 
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 
 class ConfirmDialogButton extends StatelessWidget {
 
   final String label;
   final double? borderRadius;
-  final Color? backgroundColor;
+  final Color backgroundColor;
   final EdgeInsetsGeometry? padding;
   final int? maxLines;
   final TextStyle? textStyle;
+  final Color? textColor;
   final VoidCallback? onTapAction;
 
   const ConfirmDialogButton({
     super.key,
     required this.label,
+    required this.backgroundColor,
+    this.textStyle,
     this.borderRadius,
-    this.backgroundColor,
     this.padding,
     this.maxLines,
-    this.textStyle,
+    this.textColor,
     this.onTapAction
   });
 
@@ -34,7 +35,7 @@ class ConfirmDialogButton extends StatelessWidget {
           width: double.infinity,
           height: maxLines == 1 ? 44 : null,
           decoration: BoxDecoration(
-            color: backgroundColor ?? AppColor.primaryColor,
+            color: backgroundColor,
             borderRadius: BorderRadius.all(Radius.circular(borderRadius ?? 10)),
           ),
           alignment: Alignment.center,
@@ -46,11 +47,8 @@ class ConfirmDialogButton extends StatelessWidget {
             textAlign: TextAlign.center,
             maxLines: maxLines,
             overflow: TextOverflow.ellipsis,
-            style: textStyle ?? Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontSize: 16,
-              height: 20 / 16,
-              fontWeight: FontWeight.w500,
-              color: Colors.white
+            style: textStyle ?? Theme.of(context).textTheme.bodyLarge?.copyWith(
+              color: textColor,
             )
           ),
         ),

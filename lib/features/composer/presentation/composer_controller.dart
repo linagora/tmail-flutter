@@ -1187,18 +1187,6 @@ class ComposerController extends BaseController
         height: 40,
         colorFilter: AppColor.colorBackgroundQuotasWarning.asFilter(),
       ),
-      messageStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-        fontSize: 14,
-        color: AppColor.colorTextBody
-      ),
-      actionStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-        fontSize: 17,
-        color: Colors.white
-      ),
-      cancelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-        fontSize: 17,
-        color: Colors.black
-      )
     );
   }
 
@@ -2258,30 +2246,12 @@ class ComposerController extends BaseController
           _autoFocusFieldWhenLauncher();
         }
       },
-      marginIcon: EdgeInsets.zero,
       icon: SvgPicture.asset(
         imagePaths.icQuotasWarning,
         width: 40,
         height: 40,
         colorFilter: AppColor.colorBackgroundQuotasWarning.asFilter(),
       ),
-      titleStyle: Theme.of(context).textTheme.labelLarge?.copyWith(
-        fontSize: 20,
-        fontWeight: FontWeight.bold,
-        color: Colors.black
-      ),
-      messageStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-        fontSize: 14,
-        color: AppColor.colorTextBody
-      ),
-      actionStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-        fontSize: 17,
-        color: Colors.white
-      ),
-      cancelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-        fontSize: 17,
-        color: Colors.black
-      )
     );
   }
 
@@ -2483,18 +2453,6 @@ class ComposerController extends BaseController
         height: 40,
         colorFilter: AppColor.colorBackgroundQuotasWarning.asFilter(),
       ),
-      messageStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-        fontSize: 14,
-        color: AppColor.colorTextBody
-      ),
-      actionStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-        fontSize: 17,
-        color: Colors.white
-      ),
-      cancelStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-        fontSize: 17,
-        color: Colors.black
-      )
     );
   }
 

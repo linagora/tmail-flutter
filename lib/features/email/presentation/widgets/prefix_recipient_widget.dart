@@ -18,7 +18,7 @@ class PrefixRecipientWidget extends StatelessWidget {
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
           fontSize: 16,
           fontWeight: FontWeight.w500,
-          color: AppColor.colorEmailAddressFull
+          color: AppColor.steelGray400
         )
       ),
     );
