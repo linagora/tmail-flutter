@@ -3,12 +3,16 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 
 class EmailAttachmentsStyles {
+  EmailAttachmentsStyles._();
+
   static const double headerTextSize = 15;
   static const double headerIconSize = 20;
   static const double headerSpace = 8;
   static const double marginHeader = 6;
   static const double buttonTextSize = 16;
   static const double buttonMoreAttachmentsTextSize = 14;
+  static const double buttonMoreMaxWidth = 120;
+  static const double buttonDownloadAllMaxWidth = 200;
   static const double buttonBorderRadius = 8;
   static const double listSpace = 8;
 
@@ -23,6 +27,8 @@ class EmailAttachmentsStyles {
 
   static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.only(start: 16, end: 16, bottom: 12);
   static const EdgeInsetsGeometry buttonPadding = EdgeInsets.symmetric(vertical: 8, horizontal: 12);
+  static const EdgeInsetsGeometry mobileButtonPadding = EdgeInsets.symmetric(vertical: 8, horizontal: 3);
   static const EdgeInsetsGeometry moreButtonMargin = EdgeInsetsDirectional.only(bottom: 2, start: 8);
+  static const EdgeInsetsGeometry mobileMoreButtonMargin = EdgeInsetsDirectional.only(end: 8);
   static const attachmentsInfoPadding = EdgeInsetsDirectional.only(end: 8);
 }

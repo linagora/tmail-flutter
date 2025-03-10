@@ -7,8 +7,8 @@ import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/extensions/list_attachment_extension.dart';
-import 'package:tmail_ui_user/features/email/presentation/styles/attachment/attachment_item_widget_style.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_attachments_styles.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachments_info.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/draggable_attachment_item_widget.dart';
@@ -44,19 +44,22 @@ class EmailAttachmentsWidget extends StatelessWidget {
   Widget _buildMoreAttachmentButton(
     BuildContext context,
     int hideItemsCount, {
-    EdgeInsetsGeometry padding = EdgeInsets.zero,
+    EdgeInsetsGeometry? padding,
+    EdgeInsetsGeometry? margin,
   }) {
     return TMailButtonWidget(
       text: AppLocalizations.of(context).moreAttachments(hideItemsCount),
       backgroundColor: Colors.transparent,
       borderRadius: EmailAttachmentsStyles.buttonBorderRadius,
       padding: padding,
-      margin: EmailAttachmentsStyles.moreButtonMargin,
+      maxWidth: EmailAttachmentsStyles.buttonMoreMaxWidth,
+      margin: margin,
       textStyle: const TextStyle(
         fontSize: EmailAttachmentsStyles.buttonMoreAttachmentsTextSize,
         color: EmailAttachmentsStyles.buttonMoreAttachmentsTextColor,
         fontWeight: EmailAttachmentsStyles.buttonMoreAttachmentsFontWeight,
       ),
+      maxLines: 1,
       onTapActionCallback: onTapShowAllAttachmentFile,
     );
   }
@@ -64,12 +67,19 @@ class EmailAttachmentsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
-      final attachmentDisplayed = _getAttachmentDisplayed(
-        context,
-        constraints.maxWidth
+      final attachmentDisplayed = EmailUtils.getAttachmentDisplayed(
+        context: context,
+        maxWidth: constraints.maxWidth
           - EmailAttachmentsStyles.padding.horizontal
-          - EmailAttachmentsStyles.listSpace * 2);
+          - EmailAttachmentsStyles.listSpace * 2,
+        platformIsMobile: PlatformInfo.isMobile,
+        attachments: attachments,
+        responsiveUtils: responsiveUtils,
+      );
       int hideItemsCount = attachments.length - attachmentDisplayed.length;
+      if (hideItemsCount > 999) {
+        hideItemsCount = 999;
+      }
       return Padding(
         padding: EmailAttachmentsStyles.padding,
         child: Column(
@@ -118,6 +128,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
                     context,
                     hideItemsCount,
                     padding: EmailAttachmentsStyles.buttonPadding,
+                    margin: EmailAttachmentsStyles.moreButtonMargin,
                   ),
               ]
             ),
@@ -126,7 +137,12 @@ class EmailAttachmentsWidget extends StatelessWidget {
               Row(
                 children: [
                   if (hideItemsCount > 0)
-                    _buildMoreAttachmentButton(context, hideItemsCount),
+                    _buildMoreAttachmentButton(
+                      context,
+                      hideItemsCount,
+                      padding: EmailAttachmentsStyles.mobileButtonPadding,
+                      margin: EmailAttachmentsStyles.mobileMoreButtonMargin,
+                    ),
                   const Spacer(),
                   if (showDownloadAllAttachmentsButton)
                     TMailButtonWidget(
@@ -135,12 +151,16 @@ class EmailAttachmentsWidget extends StatelessWidget {
                       iconAlignment: TextDirection.rtl,
                       backgroundColor: Colors.transparent,
                       borderRadius: EmailAttachmentsStyles.buttonBorderRadius,
-                      padding: EmailAttachmentsStyles.buttonPadding,
+                      padding: EmailAttachmentsStyles.mobileButtonPadding,
                       textStyle: const TextStyle(
                         fontSize: EmailAttachmentsStyles.buttonTextSize,
                         color: EmailAttachmentsStyles.buttonTextColor,
                         fontWeight: EmailAttachmentsStyles.buttonFontWeight
                       ),
+                      maxWidth: EmailAttachmentsStyles.buttonDownloadAllMaxWidth,
+                      maxLines: 1,
+                      mainAxisSize: MainAxisSize.min,
+                      flexibleText: true,
                       onTapActionCallback: onTapDownloadAllButton,
                     ),
                 ]
@@ -149,19 +169,5 @@ class EmailAttachmentsWidget extends StatelessWidget {
         ),
       );
     });
-  }
-
-  List<Attachment> _getAttachmentDisplayed(BuildContext context, double maxWidth) {
-    const moreAttachmentButtonWidth = 120; // Asumming 999 more items 
-    final maxWidthItem = AttachmentItemWidgetStyle.getMaxWidthItem(
-      platformIsMobile: PlatformInfo.isMobile,
-      responsiveIsMobile: responsiveUtils.isMobile(context),
-      responsiveIsTablet: responsiveUtils.isTablet(context),
-      responsiveIsTabletLarge: responsiveUtils.isTabletLarge(context),
-    );
-    final possibleNumberOfDisplayedAttachments = (maxWidth - moreAttachmentButtonWidth) ~/ maxWidthItem;
-    return possibleNumberOfDisplayedAttachments >= attachments.length
-      ? attachments
-      : attachments.sublist(0, possibleNumberOfDisplayedAttachments);
   }
 }
