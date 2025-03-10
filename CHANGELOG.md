@@ -1,3 +1,20 @@
+## [0.14.15] - 2025-03-10
+### Added
+- #3349 Sender can set priority in composer
+- #3349 Display priority in Email list 
+
+### Fixed
+- #3517 Fix "Reply to *me*" field is added when save an email as draft
+- #3407 Enable SelectableText for email display name in EmailAddressDialogBuilder
+- #3318 Fix black pixel when clicking on attachment with long name
+- #3316 Fix inconsistent vacation message
+- #3293 Fix blue bar cannot select action banner text
+- #3461 Add sort by message size
+- #3472 Only display attachment in one line
+- #3514 Detect base64 image and transform to CID attachment
+- #3539 Autocomplete not show display name
+- #3539 Can not paste emails in mouse out focus and tab button
+
 ## [0.14.14] - 2025-02-25
 ### Added
 - Translation vi, ta, ru, fr, de
