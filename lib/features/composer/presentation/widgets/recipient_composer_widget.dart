@@ -606,8 +606,12 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
 
   EmailAddress _subAddressingValidatedEmailAddress(EmailAddress emailAddress) {
     try {
-      final mailAddress = MailAddress.validateAddress(emailAddress.emailAddress);
-      return mailAddress.asEmailAddress();
+      if (emailAddress.displayName.isNotEmpty) {
+        return emailAddress;
+      } else {
+        final mailAddress = MailAddress.validateAddress(emailAddress.emailAddress);
+        return mailAddress.asEmailAddress();
+      }
     } catch (e) {
       return emailAddress;
     }
