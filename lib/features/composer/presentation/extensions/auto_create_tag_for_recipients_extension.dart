@@ -1,5 +1,6 @@
 
 import 'package:core/utils/mail/mail_address.dart';
+import 'package:core/utils/string_convert.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/prefix_email_address.dart';
@@ -39,21 +40,33 @@ extension AutoCreateTagForRecipientsExtension on ComposerController {
   };
 
   void autoCreateEmailTagForType(PrefixEmailAddress type, String input) {
-    final emailAddressRecord = _generateEmailAddressFromString(input);
+    final addressSet = StringConvert.extractEmailAddress(input).toSet();
+    if (addressSet.isEmpty) return;
 
     final emailList = _emailLists[type]!;
     final keyEditor = _emailEditors[type]!;
+    final listEmailAddressRecord = addressSet
+        .map((address) => _generateEmailAddressFromString(address))
+        .toList();
 
-    final emailSet = emailList.toSet();
-    if (emailSet.any((email) => email.email == emailAddressRecord.$1)) return;
+    final emailSet = emailList.map((email) => email.email).toSet();
 
-    emailSet.add(emailAddressRecord.$2);
-    emailList
-      ..clear()
-      ..addAll(emailSet);
+    final newEmails = addressSet.difference(emailSet);
 
-    isInitialRecipient.value = true;
-    isInitialRecipient.refresh();
+    if (newEmails.isEmpty) return;
+
+    final listEmailAddress = listEmailAddressRecord
+        .where((emailRecord) => newEmails.contains(emailRecord.$1))
+        .map((emailRecord) => emailRecord.$2)
+        .toList();
+
+    emailList.addAll(listEmailAddress);
+
+    if (!isInitialRecipient.value) {
+      isInitialRecipient.value = true;
+      isInitialRecipient.refresh();
+    }
+
     updateStatusEmailSendButton();
 
     keyEditor.currentState?.resetTextField();

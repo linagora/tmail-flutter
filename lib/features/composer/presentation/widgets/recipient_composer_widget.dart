@@ -531,7 +531,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
   ) => _createMailTag(value, stateSetter);
 
   void _createMailTag(String value, StateSetter stateSetter) {
-    final listString = StringConvert.extractStrings(value.trim()).toSet();
+    final listString = StringConvert.extractEmailAddress(value.trim()).toSet();
 
     if (listString.isEmpty && !_isDuplicatedRecipient(value)) {
       _onEmailAddressReceived(value, stateSetter);
