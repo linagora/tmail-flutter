@@ -140,7 +140,6 @@ class HtmlAnalyzer {
     }
 
     final Set<EmailBodyPart> inlineAttachmentsSet = {};
-    final List<Future<void>> asyncTasks = [];
 
     for (final imgTag in listImgTag) {
       final attributes = imgTag.attributes;
@@ -166,29 +165,25 @@ class HtmlAnalyzer {
         ? idImg!.substring(cidPrefixKey.length)
         : _uuid.v1();
 
-      asyncTasks.add(_retrieveAttachmentFromUpload(
+      final attachmentRecord = await _retrieveAttachmentFromUpload(
         taskId: taskId,
         uploadUri: uploadUri,
         base64ImageTag: imageSrc!,
-      ).then((attachmentRecord) {
-        if (attachmentRecord == null) return;
+      );
 
-        final newInlineAttachment = attachmentRecord.$1.toAttachmentWithDisposition(
-          disposition: ContentDisposition.inline,
-          cid: attachmentRecord.$2,
-        );
+      if (attachmentRecord == null) continue;
 
-        final newCid = newInlineAttachment.cid!;
-        inlineAttachments[newCid] = newInlineAttachment;
-        attributes['src'] = '$cidPrefixKey$newCid';
-        attributes.remove('id');
+      final newInlineAttachment = attachmentRecord.$1.toAttachmentWithDisposition(
+        disposition: ContentDisposition.inline,
+        cid: attachmentRecord.$2,
+      );
 
-        inlineAttachmentsSet.add(newInlineAttachment.toEmailBodyPart(charset: Constant.base64Charset));
-      }));
-    }
+      final newCid = newInlineAttachment.cid!;
+      inlineAttachments[newCid] = newInlineAttachment;
+      attributes['src'] = '$cidPrefixKey$newCid';
+      attributes.remove('id');
 
-    if (asyncTasks.isNotEmpty) {
-      await Future.wait(asyncTasks);
+      inlineAttachmentsSet.add(newInlineAttachment.toEmailBodyPart(charset: Constant.base64Charset));
     }
 
     return Tuple2(document.body?.innerHtml ?? emailContent, inlineAttachmentsSet);
