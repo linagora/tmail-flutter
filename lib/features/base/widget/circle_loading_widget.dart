@@ -5,12 +5,12 @@ class CircleLoadingWidget extends StatelessWidget {
 
   final double? size;
   final double? strokeWidth;
-  final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? margin;
 
   const CircleLoadingWidget({
     super.key,
     this.size,
-    this.padding,
+    this.margin,
     this.strokeWidth,
   });
 
@@ -20,7 +20,7 @@ class CircleLoadingWidget extends StatelessWidget {
     final loadingStrokeWidth = strokeWidth ?? CircleLoadingWidgetStyles.width;
 
     return Container(
-      padding: padding,
+      margin: margin,
       width: loadingSize,
       height: loadingSize,
       child: CircularProgressIndicator(

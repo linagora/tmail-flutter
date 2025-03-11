@@ -24,7 +24,7 @@ class IdentityLoadingWidget extends StatelessWidget {
         (failure) => const SizedBox.shrink(),
         (success) {
           if (success is GetAllIdentitiesLoading || success is GetSessionLoading) {
-            return const CircleLoadingWidget(padding: EdgeInsets.all(16.0));
+            return const CircleLoadingWidget(margin: EdgeInsets.all(16.0));
           } else {
             return const SizedBox.shrink();
           }
@@ -34,7 +34,7 @@ class IdentityLoadingWidget extends StatelessWidget {
         (failure) => const SizedBox.shrink(),
         (success) {
           if (success is GetAllIdentitiesLoading || success is GetSessionLoading) {
-            return const CircleLoadingWidget(padding: EdgeInsets.all(16.0));
+            return const CircleLoadingWidget(margin: EdgeInsets.all(16.0));
           } else {
             return const SizedBox.shrink();
           }
