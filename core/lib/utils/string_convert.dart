@@ -5,7 +5,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:core/domain/exceptions/string_exception.dart';
 
 class StringConvert {
-  static const String emailSeparatorPattern = r'[,;]+';
+  static const String emailSeparatorPattern = r'[ ,;]+';
 
   static String? writeEmptyToNull(String text) {
     if (text.isEmpty) return null;

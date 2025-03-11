@@ -45,7 +45,7 @@ void main() {
     group('Basic Functionality', () {
       test('should not extract strings separated by spaces', () {
         const input = 'user1@example.com user2@example.com';
-        final expected = ['user1@example.com user2@example.com'];
+        final expected = ['user1@example.com', 'user2@example.com'];
         expect(StringConvert.extractEmailAddress(input), equals(expected));
       });
 
@@ -130,7 +130,9 @@ void main() {
       test('should handle URL encoded input', () {
         String input = 'user1%40example.com%20user2%40example.com%20user3%40example.com';
         final expected = [
-          'user1@example.com user2@example.com user3@example.com'
+          'user1@example.com',
+          'user2@example.com',
+          'user3@example.com'
         ];
         expect(StringConvert.extractEmailAddress(input), equals(expected));
       });
@@ -138,7 +140,9 @@ void main() {
       test('should handle Base64 encoded input', () {
         String input = 'dXNlcjFAZXhhbXBsZS5jb20gdXNlcjJAZXhhbXBsZS5jb20gdXNlcjNAZXhhbXBsZS5jb20=';
         final expected = [
-          'user1@example.com user2@example.com user3@example.com'
+          'user1@example.com',
+          'user2@example.com',
+          'user3@example.com'
         ];
         expect(StringConvert.extractEmailAddress(input), equals(expected));
       });
@@ -146,7 +150,9 @@ void main() {
       test('should handle input with both URL encoding and Base64 encoding', () {
         String input = Uri.encodeComponent(base64.encode(utf8.encode('user1@example.com user2@example.com user3@example.com')));
         final expected = [
-          'user1@example.com user2@example.com user3@example.com'
+          'user1@example.com',
+          'user2@example.com',
+          'user3@example.com'
         ];
         expect(StringConvert.extractEmailAddress(input), equals(expected));
       });
@@ -182,7 +188,8 @@ void main() {
         // Arrange
         String input = 'user1@example.com\nuser2@example.com;user3@example.com';
         final expected = [
-          'user1@example.com user2@example.com',
+          'user1@example.com',
+          'user2@example.com',
           'user3@example.com'
         ];
         expect(StringConvert.extractEmailAddress(input), equals(expected));
