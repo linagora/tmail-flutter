@@ -21,6 +21,7 @@ class ComposerManager extends GetxController {
 
   void addComposer(ComposerArguments composerArguments) {
     final id = DateTime.now().millisecondsSinceEpoch.toString();
+    log('ComposerManager::addComposer:Id = $id');
     ComposerBindings(composerId: id, composerArguments: composerArguments).dependencies();
 
     composers[id] = ComposerView(key: Key(id), composerId: id);
@@ -30,6 +31,7 @@ class ComposerManager extends GetxController {
   }
 
   void removeComposer(String id) {
+    log('ComposerManager::removeComposer:Id = $id');
     if (!composers.containsKey(id)) return;
 
     composerIdsQueue.remove(id);
@@ -70,7 +72,7 @@ class ComposerManager extends GetxController {
       - ComposerStyle.composerExpandMoreButtonMaxWidth
       - ComposerStyle.padding * 2
       - (countDisplayedComposer - 1) * ComposerStyle.space;
-    log('ComposerManager::_getSizeToArrangeComposers:screenWidth = $screenWidth | availableScreenWidth = $availableScreenWidth | totalOpenedComposersWidth = $totalOpenedComposersWidth');
+    log('ComposerManager::_getSizeToArrangeComposers:ScreenWidth = $screenWidth | AvailableScreenWidth = $availableScreenWidth | TotalOpenedComposersWidth = $totalOpenedComposersWidth');
     return (
       availableScreenWidth,
       totalOpenedComposersWidth,
@@ -78,29 +80,12 @@ class ComposerManager extends GetxController {
     );
   }
 
-  void _showMinimizedComposersIfOverflow({
-    required double availableScreenWidth,
-    required double totalOpenedComposersWidth,
-    required Map<String, ComposerController> composerControllers,
-  }) {
-    final currentHiddenComposerIds = hiddenComposerIds;
-    if (currentHiddenComposerIds.isEmpty) return;
-
-    for (var index = currentHiddenComposerIds.length - 1; index >= 0; index--) {
-      final newTotalWidth = totalOpenedComposersWidth + ComposerStyle.minimizeWidth;
-      if (newTotalWidth > availableScreenWidth) break;
-
-      final id = currentHiddenComposerIds.elementAt(index);
-      composerControllers[id]!.setScreenDisplayMode(ScreenDisplayMode.minimize);
-      totalOpenedComposersWidth = newTotalWidth;
-    }
-  }
-
   void _hideComposersIfFit({
     required double availableScreenWidth,
     required double totalOpenedComposersWidth,
     required Map<String, ComposerController> composerControllers,
   }) {
+    log('ComposerManager::_hideComposersIfFit:');
     final currentDisplayedComposerIds = displayedComposerIds;
     if (currentDisplayedComposerIds.isEmpty) return;
 
@@ -129,16 +114,11 @@ class ComposerManager extends GetxController {
   }
 
   void arrangeComposerWhenComposerQueueChanged({required double screenWidth}) {
+    log('ComposerManager::arrangeComposerWhenComposerQueueChanged:ScreenWidth = $screenWidth');
     var (availableScreenWidth, totalOpenedComposersWidth, composerControllers) =
       _getSizeToArrangeComposer(screenWidth: screenWidth);
 
-    if (totalOpenedComposersWidth < availableScreenWidth) {
-      _showMinimizedComposersIfOverflow(
-        availableScreenWidth: availableScreenWidth,
-        totalOpenedComposersWidth: totalOpenedComposersWidth,
-        composerControllers: composerControllers,
-      );
-    } else if (totalOpenedComposersWidth > availableScreenWidth) {
+    if (totalOpenedComposersWidth > availableScreenWidth) {
       _hideComposersIfFit(
         availableScreenWidth: availableScreenWidth,
         totalOpenedComposersWidth: totalOpenedComposersWidth,
@@ -197,13 +177,7 @@ class ComposerManager extends GetxController {
     var (availableScreenWidth, totalOpenedComposersWidth, composerControllers) =
       _getSizeToArrangeComposer(screenWidth: screenWidth);
 
-    if (totalOpenedComposersWidth < availableScreenWidth) {
-      _showMinimizedComposersIfOverflow(
-        availableScreenWidth: availableScreenWidth,
-        totalOpenedComposersWidth: totalOpenedComposersWidth,
-        composerControllers: composerControllers,
-      );
-    } else if (totalOpenedComposersWidth > availableScreenWidth) {
+    if (totalOpenedComposersWidth > availableScreenWidth) {
       _hideComposersPreferringMinimizedIfFit(
         updatedComposerId: updatedComposerId,
         availableScreenWidth: availableScreenWidth,
@@ -279,12 +253,19 @@ class ComposerManager extends GetxController {
   }
 
   void showComposerIfHidden(String composerId) {
+    log('ComposerManager::showComposerIfHidden:Id = $composerId');
     if (!composers.containsKey(composerId)) return;
     composerIdsQueue.remove(composerId);
     composerIdsQueue.add(composerId);
     final composerView = getComposerView(composerId);
     composerView.controller.setScreenDisplayMode(ScreenDisplayMode.normal);
-    _arrangeComposerIfNeeded();
+    if (currentContext != null) {
+      arrangeComposerWhenComposerDisplayModeChanged(
+        screenWidth: _responsiveUtils.getSizeScreenWidth(currentContext!),
+        updatedComposerId: composerId,
+        newDisplayMode: ScreenDisplayMode.normal,
+      );
+    }
   }
 
   ComposerView getComposerView(String id) => composers[id]!;
