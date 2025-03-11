@@ -50,8 +50,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
   @override
   Widget build(BuildContext context) {
-    controller.hideMailboxMenuWhenScreenSizeChange(context);
-
     return Portal(
       child: Stack(children: [
         ResponsiveWidget(
@@ -193,7 +191,32 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               }
             }),
         ),
-        ComposerOverlayView(),
+        Align(
+          alignment: AlignmentDirectional.bottomEnd,
+          child: LayoutBuilder(
+            builder: ((context, constraints) {
+              log('MailboxDashBoardView::build:LayoutBuilder:Constraints = $constraints');
+              final screenWidth = constraints.maxWidth;
+              final composerManager = controller.composerManager;
+              final isDesktopScreen = controller.responsiveUtils.isMatchedDesktopWidth(screenWidth);
+              log('MailboxDashBoardView::build:ScreenWidth = $screenWidth | isDesktopScreen = $isDesktopScreen');
+
+              if (isDesktopScreen)  {
+                controller.hideMailboxMenuWhenScreenSizeChange();
+              }
+
+              if (composerManager.composers.isNotEmpty) {
+                log('ComposerOverlayView::build:arrangeComposerWhenResponsiveChanged');
+                composerManager.arrangeComposerWhenResponsiveChanged(screenWidth: screenWidth);
+              }
+
+              return ComposerOverlayView(
+                composerManager: composerManager,
+                isDesktopScreen: isDesktopScreen,
+              );
+            }),
+          ),
+        ),
         Obx(() => controller.searchMailboxActivated.value == true && !controller.responsiveUtils.isWebDesktop(context)
           ? const SearchMailboxView()
           : const SizedBox.shrink()

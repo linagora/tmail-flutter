@@ -108,5 +108,7 @@ class ResponsiveUtils {
     }
   }
 
+  bool isMatchedDesktopWidth(double width) => width >= minDesktopWidth;
+
   static bool isMatchedMobileWidth(double width) => width < minTabletWidth;
 }
