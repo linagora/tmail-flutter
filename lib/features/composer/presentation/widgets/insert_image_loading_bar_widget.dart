@@ -10,13 +10,13 @@ class InsertImageLoadingBarWidget extends StatelessWidget {
 
   final Either<Failure, Success> viewState;
   final Either<Failure, Success> uploadInlineViewState;
-  final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? margin;
 
   const InsertImageLoadingBarWidget({
     super.key,
     required this.viewState,
     required this.uploadInlineViewState,
-    this.padding,
+    this.margin,
   });
 
   @override
@@ -25,7 +25,7 @@ class InsertImageLoadingBarWidget extends StatelessWidget {
       (failure) => _viewStateToUI(viewState),
       (success) {
         if (success is UploadingAttachmentUploadState) {
-          return CircleLoadingWidget(padding: padding);
+          return CircleLoadingWidget(margin: margin);
         } else {
           return _viewStateToUI(viewState);
         }
@@ -38,7 +38,7 @@ class InsertImageLoadingBarWidget extends StatelessWidget {
       (failure) => const SizedBox.shrink(),
       (success) {
         if (success is DownloadingImageAsBase64) {
-          return CircleLoadingWidget(padding: padding);
+          return CircleLoadingWidget(margin: margin);
         } else {
           return const SizedBox.shrink();
         }
