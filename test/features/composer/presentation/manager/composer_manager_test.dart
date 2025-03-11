@@ -66,7 +66,7 @@ void main() {
   });
 
   group('ComposerManager::arrangeComposerWhenComposerQueueChanged::', () {
-    test('Should display all hidden composers as minimized on a large screen (2500px)', () {
+    test('Should persist display all hidden composers on a large screen (2500px)', () {
       const screenWidth = 2500.0; // Total width for 3 normal composers: 1978px < 2500px
 
       screenDisplayMode1.value = ScreenDisplayMode.hidden;
@@ -75,9 +75,9 @@ void main() {
 
       composerManager.arrangeComposerWhenComposerQueueChanged(screenWidth: screenWidth);
 
-      expect(screenDisplayMode1.value, ScreenDisplayMode.minimize);
-      expect(screenDisplayMode2.value, ScreenDisplayMode.minimize);
-      expect(screenDisplayMode3.value, ScreenDisplayMode.minimize);
+      expect(screenDisplayMode1.value, ScreenDisplayMode.hidden);
+      expect(screenDisplayMode2.value, ScreenDisplayMode.hidden);
+      expect(screenDisplayMode3.value, ScreenDisplayMode.hidden);
     });
 
     test('Should keep all normal composers unchanged on a medium screen that fits perfectly (1978px)', () {
@@ -136,7 +136,7 @@ void main() {
       expect(screenDisplayMode3.value, ScreenDisplayMode.hidden);
     });
 
-    test('Should display all hidden composers as minimized on an extra large screen (4000px)', () {
+    test('Should persist display all hidden composers on an extra large screen (4000px)', () {
       const screenWidth = 4000.0; // Plenty of space for 3 normal composers (1978px < 4000px)
 
       screenDisplayMode1.value = ScreenDisplayMode.hidden;
@@ -145,9 +145,9 @@ void main() {
 
       composerManager.arrangeComposerWhenComposerQueueChanged(screenWidth: screenWidth);
 
-      expect(screenDisplayMode1.value, ScreenDisplayMode.minimize);
-      expect(screenDisplayMode2.value, ScreenDisplayMode.minimize);
-      expect(screenDisplayMode3.value, ScreenDisplayMode.minimize);
+      expect(screenDisplayMode1.value, ScreenDisplayMode.hidden);
+      expect(screenDisplayMode2.value, ScreenDisplayMode.hidden);
+      expect(screenDisplayMode3.value, ScreenDisplayMode.hidden);
     });
 
     test('Should hide all composers on a very narrow screen when space is extremely limited (200px)', () {
@@ -197,7 +197,7 @@ void main() {
       expect(screenDisplayMode3.value, ScreenDisplayMode.normal);
     });
 
-    test('Should show other hidden composers as minimized on a large screen when one changes to normal (2500px)', () {
+    test('Should persist show other hidden composers on a large screen when one changes to normal (2500px)', () {
       const screenWidth = 2500.0; // Plenty of space for 3 normal composers
 
       screenDisplayMode1.value = ScreenDisplayMode.hidden;
@@ -210,9 +210,9 @@ void main() {
         newDisplayMode: ScreenDisplayMode.normal,
       );
 
-      expect(screenDisplayMode1.value, ScreenDisplayMode.minimize);
-      expect(screenDisplayMode2.value, ScreenDisplayMode.minimize);
-      expect(screenDisplayMode3.value, ScreenDisplayMode.minimize);
+      expect(screenDisplayMode1.value, ScreenDisplayMode.hidden);
+      expect(screenDisplayMode2.value, ScreenDisplayMode.hidden);
+      expect(screenDisplayMode3.value, ScreenDisplayMode.hidden);
     });
 
     test('Should hide one minimized composer on a small screen when one changes to normal (1000px)', () {
