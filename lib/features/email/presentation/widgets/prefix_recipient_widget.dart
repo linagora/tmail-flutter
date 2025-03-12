@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/prefix_email_address_extension.dart';
@@ -15,11 +16,7 @@ class PrefixRecipientWidget extends StatelessWidget {
       padding: const EdgeInsets.only(top: 6),
       child: Text(
         '${prefixEmailAddress.asName(context)}:',
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: AppColor.steelGray400
-        )
+        style: ThemeUtils.textStyleBodyBody1(color: AppColor.steelGray400),
       ),
     );
   }
