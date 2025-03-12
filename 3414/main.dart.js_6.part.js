@@ -111,23 +111,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     LinkBrowserWidget_build_closure: function LinkBrowserWidget_build_closure(t0) {
       this.$this = t0;
     },
-    MaterialTextButton$(borderRadius, customStyle, label, labelColor, labelSize, labelWeight, onLongPress, onTap, overflow, padding, softWrap) {
-      return new C.MaterialTextButton(label, onTap, onLongPress, borderRadius, labelColor, labelSize, labelWeight, customStyle, padding, overflow, softWrap, null);
+    MaterialTextButton$(borderRadius, customStyle, label, onLongPress, onTap, overflow, padding, softWrap) {
+      return new C.MaterialTextButton(label, onTap, onLongPress, borderRadius, customStyle, padding, overflow, softWrap, null);
     },
-    MaterialTextButton: function MaterialTextButton(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) {
+    MaterialTextButton: function MaterialTextButton(t0, t1, t2, t3, t4, t5, t6, t7, t8) {
       var _ = this;
       _.label = t0;
       _.onTap = t1;
       _.onLongPress = t2;
       _.borderRadius = t3;
-      _.labelColor = t4;
-      _.labelSize = t5;
-      _.labelWeight = t6;
-      _.customStyle = t7;
-      _.padding = t8;
-      _.overflow = t9;
-      _.softWrap = t10;
-      _.key = t11;
+      _.customStyle = t4;
+      _.padding = t5;
+      _.overflow = t6;
+      _.softWrap = t7;
+      _.key = t8;
     },
     UserInformationWidget$(border, onSubtitleClick, padding, subtitle, titlePadding, userName) {
       return new C.UserInformationWidget(userName, subtitle, onSubtitleClick, padding, border, null);
@@ -236,9 +233,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.$this = t0;
       this.context = t1;
     },
-    ThemeUtils_textStyleBodyBody1(color) {
-      var _null = null;
-      return A.TextStyle$(_null, _null, color, _null, _null, _null, _null, _null, "Inter", _null, _null, 16, _null, _null, B.FontWeight_4_500, _null, 1.25, true, _null, 0, _null, _null, _null, _null, _null, _null);
+    ThemeUtils_textStyleBodyBody1(color, fontSize) {
+      var _null = null,
+        t1 = fontSize == null,
+        t2 = t1 ? 16 : fontSize;
+      return A.TextStyle$(_null, _null, color, _null, _null, _null, _null, _null, "Inter", _null, _null, t2, _null, _null, B.FontWeight_4_500, _null, 20 / (t1 ? 16 : fontSize), true, _null, 0, _null, _null, _null, _null, _null, _null);
     },
     buildSVGIconButton(icon, iconColor, iconSize, onTap, onTapDown, padding, tooltip) {
       var _null = null,
@@ -559,20 +558,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.MaterialTextButton.prototype = {
     build$1(context) {
-      var t3, _this = this, _null = null,
-        t1 = A.BorderRadius$circular(_this.borderRadius),
-        t2 = _this.customStyle;
-      if (t2 == null) {
-        t2 = _this.labelColor;
-        if (t2 == null)
-          t2 = B.Color_4278221567;
-        t3 = _this.labelWeight;
-        if (t3 == null)
-          t3 = B.FontWeight_3_400;
-        t3 = A.TextStyle$(_null, _null, t2, _null, _null, _null, _null, _null, _null, _null, _null, _this.labelSize, _null, _null, t3, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null);
-        t2 = t3;
-      }
-      return A.Material$(B.Duration_200000, true, _null, A.InkWell$(false, _null, true, new A.Padding(_this.padding, A.Text$(_this.label, _null, _null, _null, _this.overflow, _null, _null, _this.softWrap, _null, t2, _null, _null, _null, _null, _null), _null), new A.RoundedRectangleBorder(t1, B.BorderSide_Q1M), true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onLongPress, _this.onTap, _null, _null, _null, _null, _null, _null, _null), B.Clip_0, B.Color_0, 0, _null, _null, _null, _null, _null, B.MaterialType_0);
+      var _this = this, _null = null,
+        t1 = A.BorderRadius$circular(_this.borderRadius);
+      return A.Material$(B.Duration_200000, true, _null, A.InkWell$(false, _null, true, new A.Padding(_this.padding, A.Text$(_this.label, _null, _null, _null, _this.overflow, _null, _null, _this.softWrap, _null, _this.customStyle, _null, _null, _null, _null, _null), _null), new A.RoundedRectangleBorder(t1, B.BorderSide_Q1M), true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onLongPress, _this.onTap, _null, _null, _null, _null, _null, _null, _null), B.Clip_0, B.Color_0, 0, _null, _null, _null, _null, _null, B.MaterialType_0);
     }
   };
   C.UserInformationWidget.prototype = {
@@ -594,7 +582,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (_this.subtitle != null) {
         t5 = A.Matrix4_Matrix4$translationValues(-8, 0, 0);
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-        t3.push(new A.Padding(D.EdgeInsetsDirectional_0_10_0_0, A.Transform$(_null, C.MaterialTextButton$(20, F.TextStyle_OkG0, A.Intl__message("Manage account", _null, "manage_account", _null, _null), _null, 15, _null, _null, _this.onSubtitleClick, _null, B.EdgeInsetsDirectional_8_8_8_8, _null), _null, t5, true), _null));
+        t3.push(new A.Padding(D.EdgeInsetsDirectional_0_10_0_0, A.Transform$(_null, C.MaterialTextButton$(20, F.TextStyle_OkG0, A.Intl__message("Manage account", _null, "manage_account", _null, _null), _null, _this.onSubtitleClick, _null, B.EdgeInsetsDirectional_8_8_8_8, _null), _null, t5, true), _null));
       }
       return A.Container$(_null, A.Row$(A._setArrayType([t2, B.SizedBox_16_null_null_null, A.Expanded$(A.Column$(t3, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), 1), B.SizedBox_16_null_null_null], t4), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.Clip_0, _null, _null, new A.BoxDecoration(_null, _null, _this.border, _null, _null, _null, _null, B.BoxShape_0), _null, _null, _null, _null, t1, _null, _null, _null);
     }
@@ -860,7 +848,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1815
+    $signature: 1817
   };
   C._AppGridDashboardIconState_build_closure.prototype = {
     call$3(context, isExpanded, child) {
@@ -876,7 +864,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.imagePaths;
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(new A.Aligned(_null, _null, t5, t4, B.Alignment_0_0, B.C_AxisFlag, B.C_AxisFlag, B.Offset_0_0, _null), A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 1816
+    $signature: 1818
   };
   C.AppGridDashboardItem_build_closure.prototype = {
     call$0() {
@@ -949,7 +937,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return new C.AppGridDashboardIcon(t1.imagePaths, t2, null);
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 3
+    $signature: 4
   };
   C.NavigationBarWidget_build_closure0.prototype = {
     call$0() {
@@ -974,7 +962,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return new C.AppGridDashboardIcon(t1.imagePaths, t2, null);
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 3
+    $signature: 4
   };
   C.DefaultLinkDelegate_build_closure.prototype = {
     call$0() {
@@ -1078,5 +1066,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "7whOZbYjkPfnvbkydHww9NQ6jEQ=");
+})($__dart_deferred_initializers__, "iJk5ju1Av7/i/ni6zRMdmVWwQSg=");
 ;
