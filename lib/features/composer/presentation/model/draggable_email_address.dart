@@ -5,12 +5,14 @@ import 'package:model/email/prefix_email_address.dart';
 class DraggableEmailAddress with EquatableMixin {
   final EmailAddress emailAddress;
   final PrefixEmailAddress prefix;
+  final String? composerId;
 
   DraggableEmailAddress({
     required this.emailAddress,
     required this.prefix,
+    this.composerId,
   });
 
   @override
-  List<Object?> get props => [emailAddress, prefix];
+  List<Object?> get props => [emailAddress, prefix, composerId];
 }

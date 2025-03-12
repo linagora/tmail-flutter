@@ -31,6 +31,7 @@ class RecipientTagItemWidget extends StatelessWidget {
   final OnShowFullListEmailAddressAction? onShowFullAction;
   final OnDeleteTagAction? onDeleteTagAction;
   final bool isTestingForWeb;
+  final String? composerId;
 
   const RecipientTagItemWidget({
     super.key,
@@ -47,6 +48,7 @@ class RecipientTagItemWidget extends StatelessWidget {
     this.onShowFullAction,
     this.onDeleteTagAction,
     this.maxWidth,
+    this.composerId,
   });
 
   @override
@@ -89,7 +91,11 @@ class RecipientTagItemWidget extends StatelessWidget {
 
     if (PlatformInfo.isWeb || isTestingForWeb) {
       tagWidget = Draggable<DraggableEmailAddress>(
-        data: DraggableEmailAddress(emailAddress: currentEmailAddress, prefix: prefix),
+        data: DraggableEmailAddress(
+          emailAddress: currentEmailAddress,
+          prefix: prefix,
+          composerId: composerId,
+        ),
         feedback: DraggableRecipientTagWidget(emailAddress: currentEmailAddress),
         childWhenDragging: DraggableRecipientTagWidget(emailAddress: currentEmailAddress),
         child: MouseRegion(

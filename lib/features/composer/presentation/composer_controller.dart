@@ -68,7 +68,6 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/list_sha
 import 'package:tmail_ui_user/features/composer/presentation/extensions/update_screen_display_mode_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/saved_email_draft.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/signature_status.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
@@ -2130,33 +2129,7 @@ class ComposerController extends BaseController
 
   void setSubjectEmail(String subject) => subjectEmail.value = subject;
 
-  void removeDraggableEmailAddress(DraggableEmailAddress draggableEmailAddress) {
-    log('ComposerController::removeDraggableEmailAddress: $draggableEmailAddress');
-    switch(draggableEmailAddress.prefix) {
-      case PrefixEmailAddress.to:
-        listToEmailAddress.remove(draggableEmailAddress.emailAddress);
-        toAddressExpandMode.value = ExpandMode.EXPAND;
-        break;
-      case PrefixEmailAddress.cc:
-        listCcEmailAddress.remove(draggableEmailAddress.emailAddress);
-        ccAddressExpandMode.value = ExpandMode.EXPAND;
-        break;
-      case PrefixEmailAddress.bcc:
-        listBccEmailAddress.remove(draggableEmailAddress.emailAddress);
-        bccAddressExpandMode.value = ExpandMode.EXPAND;
-        break;
-      case PrefixEmailAddress.replyTo:
-        listReplyToEmailAddress.remove(draggableEmailAddress.emailAddress);
-        replyToAddressExpandMode.value = ExpandMode.EXPAND;
-        break;
-      default:
-        break;
-    }
-    isInitialRecipient.value = true;
-    isInitialRecipient.refresh();
 
-    updateStatusEmailSendButton();
-  }
 
   void onAttachmentDropZoneListener(Attachment attachment) {
     log('ComposerController::onAttachmentDropZoneListener: attachment = $attachment');
