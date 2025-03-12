@@ -34,29 +34,17 @@ class ComposerOverlayView extends StatelessWidget {
       if (composerIdsQueue.length == 1) {
         final composerView = composerManager.getComposerView(composerIdsQueue.first);
 
-        if (composerView.controller.isHiddenScreen) {
-          return Stack(
-            children: [
-              Align(
-                alignment: AlignmentDirectional.bottomEnd,
-                child: SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: Padding(
-                    padding: const EdgeInsetsDirectional.all(ComposerStyle.padding),
-                    child: ExpandComposerButton(
-                      countComposerHidden: 1,
-                      onRemoveHiddenComposerItem: (controller) =>
-                        controller.handleClickCloseComposer(context),
-                      onShowComposerAction: composerManager.showComposerIfHidden,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          );
-        } else {
-          return composerView;
-        }
+        return Padding(
+          padding: const EdgeInsetsDirectional.all(ComposerStyle.padding),
+          child: composerView.controller.isHiddenScreen
+            ? ExpandComposerButton(
+                countComposerHidden: 1,
+                onRemoveHiddenComposerItem: (controller) =>
+                  controller.handleClickCloseComposer(context),
+                onShowComposerAction: composerManager.showComposerIfHidden,
+              )
+            : composerView,
+        );
       }
 
       final countComposerHidden = composerManager.countComposerHidden;
@@ -65,32 +53,25 @@ class ComposerOverlayView extends StatelessWidget {
           .where((view) => !view.controller.isHiddenScreen)
           .toList();
 
-      return Stack(
-        children: [
-          Align(
-            alignment: AlignmentDirectional.bottomEnd,
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Padding(
-                padding: const EdgeInsetsDirectional.all(ComposerStyle.padding),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (countComposerHidden > 0)
-                      ExpandComposerButton(
-                        countComposerHidden: countComposerHidden,
-                        onRemoveHiddenComposerItem: (controller) =>
-                            controller.handleClickCloseComposer(context),
-                        onShowComposerAction: composerManager.showComposerIfHidden,
-                      ),
-                    ...visibleComposers,
-                  ],
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Padding(
+          padding: const EdgeInsetsDirectional.all(ComposerStyle.padding),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (countComposerHidden > 0)
+                ExpandComposerButton(
+                  countComposerHidden: countComposerHidden,
+                  onRemoveHiddenComposerItem: (controller) =>
+                      controller.handleClickCloseComposer(context),
+                  onShowComposerAction: composerManager.showComposerIfHidden,
                 ),
-              ),
-            ),
+              ...visibleComposers,
+            ],
           ),
-        ],
+        ),
       );
     });
   }
