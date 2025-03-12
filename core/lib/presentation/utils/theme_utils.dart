@@ -110,16 +110,24 @@ class ThemeUtils {
     color: color,
   );
 
-  static TextStyle textStyleBodyBody2({Color? color, FontWeight? fontWeight}) => TextStyle(
+  static TextStyle textStyleBodyBody2({
+    Color? color,
+    Color? backgroundColor,
+    FontWeight? fontWeight,
+  }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
     fontWeight: fontWeight ?? FontWeight.w400,
     letterSpacing: 0.0,
     fontSize: 15,
     height: 20 / 15,
     color: color,
+    backgroundColor: backgroundColor,
   );
 
-  static TextStyle textStyleBodyBody3({Color? color, FontWeight? fontWeight}) => TextStyle(
+  static TextStyle textStyleBodyBody3({
+    Color? color,
+    FontWeight? fontWeight,
+  }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
     fontWeight: fontWeight ?? FontWeight.w400,
     letterSpacing: 0.0,
@@ -128,12 +136,41 @@ class ThemeUtils {
     color: color,
   );
 
-  static TextStyle textStyleHeadingH6({Color? color, FontWeight? fontWeight}) => TextStyle(
+  static TextStyle textStyleBodyContact({
+    Color? color,
+    Color? backgroundColor,
+    FontWeight? fontWeight,
+  }) => TextStyle(
+    fontFamily: ConstantsUI.fontApp,
+    fontWeight: fontWeight ?? FontWeight.w600,
+    letterSpacing: 0.0,
+    fontSize: 15,
+    height: 20 / 15,
+    color: color,
+    backgroundColor: backgroundColor,
+  );
+
+  static TextStyle textStyleHeadingH6({
+    Color? color,
+    FontWeight? fontWeight,
+  }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
     fontWeight: fontWeight ?? FontWeight.w700,
     letterSpacing: 0.0,
     fontSize: 20,
     height: 24 / 20,
+    color: color,
+  );
+
+  static TextStyle textStyleHeadingHeadingSmall({
+    Color? color,
+    FontWeight? fontWeight,
+  }) => TextStyle(
+    fontFamily: ConstantsUI.fontApp,
+    fontWeight: fontWeight ?? FontWeight.w500,
+    letterSpacing: 0.0,
+    fontSize: 17,
+    height: 22 / 17,
     color: color,
   );
 

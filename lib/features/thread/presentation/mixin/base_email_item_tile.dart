@@ -1,8 +1,10 @@
 
+import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/rich_text_builder.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:core/utils/platform_info.dart';
@@ -35,19 +37,20 @@ mixin BaseEmailItemTile {
     if (hasMailboxLabel(isSearchEmailRunning, email)) {
       return Container(
           margin: const EdgeInsetsDirectional.only(start: 8),
-          padding: const EdgeInsetsDirectional.symmetric(
-              horizontal: 8,
-              vertical: 3),
+          padding: const EdgeInsetsDirectional.symmetric(horizontal: 8),
           constraints: const BoxConstraints(maxWidth: 100),
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
+          decoration: const BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(100)),
               color: AppColor.backgroundCounterMailboxColor),
           child: TextOverflowBuilder(
             email.mailboxContain?.getDisplayName(context) ?? '',
             style: const TextStyle(
-                fontSize: 10,
-                color: AppColor.mailboxTextColor,
-                fontWeight: FontWeight.bold),
+              fontFamily: ConstantsUI.fontApp,
+              fontSize: 10,
+              color: AppColor.emailMailboxContainColor,
+              height: 24 / 10,
+              fontWeight: FontWeight.w500,
+            ),
           )
       );
     } else {
@@ -88,26 +91,25 @@ mixin BaseEmailItemTile {
       return RichTextBuilder(
         textOrigin: informationSender(email, mailbox),
         wordToStyle: query?.value ?? '',
-        styleOrigin: TextStyle(
-          fontSize: 15,
-          color: buildTextColorForReadEmail(email),
-          fontWeight: buildFontForReadEmail(email)
-        ),
-        styleWord: TextStyle(
-          fontSize: 15,
-          color: buildTextColorForReadEmail(email),
-          backgroundColor: Colors.amberAccent[200],
-          fontWeight: buildFontForReadEmail(email)
-        )
+        styleOrigin: !email.hasRead
+          ? ThemeUtils.textStyleBodyContact(color: Colors.black)
+          : ThemeUtils.textStyleBodyBody2(color: AppColor.steelGray400),
+        styleWord: !email.hasRead
+          ? ThemeUtils.textStyleBodyContact(
+              color: Colors.black,
+              backgroundColor: Colors.amberAccent[200],
+            )
+          : ThemeUtils.textStyleBodyBody2(
+              color: AppColor.steelGray400,
+              backgroundColor: Colors.amberAccent[200],
+            ),
       );
     } else {
       return TextOverflowBuilder(
         informationSender(email, mailbox),
-        style: TextStyle(
-          fontSize: 15,
-          overflow: CommonTextStyle.defaultTextOverFlow,
-          color: buildTextColorForReadEmail(email),
-          fontWeight: buildFontForReadEmail(email))
+        style: !email.hasRead
+          ? ThemeUtils.textStyleBodyContact(color: Colors.black)
+          : ThemeUtils.textStyleBodyBody2(color: AppColor.steelGray400)
       );
     }
   }
@@ -124,25 +126,23 @@ mixin BaseEmailItemTile {
         wordToStyle: query?.value ?? '',
         preMarkedText: email.sanitizedSearchSnippetSubject,
         ensureHighlightVisible: true,
-        styleOrigin: TextStyle(
-          fontSize: 13,
+        styleOrigin: Theme.of(context).textTheme.bodySmall?.copyWith(
           color: buildTextColorForReadEmail(email),
-          fontWeight: buildFontForReadEmail(email)
+          fontWeight: buildFontForReadEmail(email),
         ),
-        styleWord: TextStyle(
-          fontSize: 13,
+        styleWord: Theme.of(context).textTheme.bodySmall?.copyWith(
           backgroundColor: Colors.amberAccent[200],
           color: buildTextColorForReadEmail(email),
-          fontWeight: buildFontForReadEmail(email)
-        )
+          fontWeight: buildFontForReadEmail(email),
+        ),
       );
     } else {
       return TextOverflowBuilder(
         email.getEmailTitle(),
-        style: TextStyle(
-          fontSize: 13,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
           color: buildTextColorForReadEmail(email),
-          fontWeight: buildFontForReadEmail(email))
+          fontWeight: buildFontForReadEmail(email),
+        ),
       );
     }
   }
@@ -159,24 +159,19 @@ mixin BaseEmailItemTile {
         wordToStyle: query?.value ?? '',
         preMarkedText: email.sanitizedSearchSnippetPreview,
         ensureHighlightVisible: true,
-        styleOrigin: const TextStyle(
-          fontSize: 13,
+        styleOrigin: Theme.of(context).textTheme.bodySmall?.copyWith(
           color: AppColor.steelGray400,
-          fontWeight: FontWeight.normal
         ),
-        styleWord: TextStyle(
-          fontSize: 13,
-          color: AppColor.steelGray400,
+        styleWord: Theme.of(context).textTheme.bodySmall?.copyWith(
           backgroundColor: Colors.amberAccent[200],
-        )
+        ),
       );
     } else {
       return TextOverflowBuilder(
         email.getPartialContent(),
-        style: const TextStyle(
-          fontSize: 13,
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
           color: AppColor.steelGray400,
-          fontWeight: FontWeight.normal)
+        )
       );
     }
   }
@@ -187,10 +182,10 @@ mixin BaseEmailItemTile {
         maxLines: 1,
         softWrap: CommonTextStyle.defaultSoftWrap,
         overflow: CommonTextStyle.defaultTextOverFlow,
-        style:  TextStyle(
-            fontSize: 13,
-            color: buildTextColorForReadEmail(email),
-            fontWeight: buildFontForReadEmail(email))
+        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: buildTextColorForReadEmail(email),
+          fontWeight: buildFontForReadEmail(email),
+        ),
     );
   }
 
@@ -250,11 +245,9 @@ mixin BaseEmailItemTile {
       ),
       child: Text(
         email.getAvatarText(),
-        style: textStyle ?? const TextStyle(
-          fontSize: 22,
+        style: textStyle ?? ThemeUtils.textStyleHeadingHeadingSmall(
           color: Colors.white,
-          fontWeight: FontWeight.w500
-        )
+        ),
       )
     );
   }
