@@ -242,6 +242,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         iconWidget = new A.Padding(t1, A.SvgPicture$asset(icon, B.Alignment_0_0, t2, B.BoxFit_0, iconSize, _null, _null, iconSize), _null);
       return A.Material$(B.Duration_200000, true, _null, A.InkWell$(false, _null, true, tooltip != null ? A.Tooltip$(iconWidget, _null, tooltip) : iconWidget, B.CircleBorder_0, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, onTap, _null, onTapDown, _null, _null, _null, _null, _null), B.Clip_0, B.Color_0, 0, _null, _null, _null, _null, _null, B.MaterialType_0);
     },
+    Aligned$(follower, offset, target) {
+      return new A.Aligned(null, null, follower, target, B.Alignment_0_0, B.C_AxisFlag, B.C_AxisFlag, offset, null);
+    },
     UsernameExtension_get_firstCharacter(_this) {
       var t1 = _this.value;
       return t1.length !== 0 ? t1[0].toUpperCase() : "";
@@ -867,11 +870,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = A.GestureDetector$(B.HitTestBehavior_1, _null, B.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t2, _null, _null, _null, _null, _null, _null, _null, false, B.Offset_7BT),
         t4 = type$._LocalizationsScope,
         t5 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t4).localizationsState._localizations$_locale.get$languageCode(0)) ? B.Alignment_m1_m1 : B.Alignment_1_m1;
-      t4 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t4).localizationsState._localizations$_locale.get$languageCode(0)) ? B.Alignment_m1_1 : B.Alignment_1_1;
+      t5 = C.Aligned$(t5, B.Offset_0_0, A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t4).localizationsState._localizations$_locale.get$languageCode(0)) ? B.Alignment_m1_1 : B.Alignment_1_1);
       t1 = t1._widget;
       t6 = t1.linagoraApps;
       t1 = t1.imagePaths;
-      return A.PortalTarget$(B.C_Filled, A.PortalTarget$(new A.Aligned(_null, _null, t5, t4, B.Alignment_0_0, B.C_AxisFlag, B.C_AxisFlag, B.Offset_0_0, _null), A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
+      return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
     },
     $signature: 1835
   };
@@ -919,7 +922,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2.push(t3.build$0());
       return A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 289
+    $signature: 372
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -1070,5 +1073,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "v9Zjd7Gdo5PeQliT2JdlWXQN1hU=");
+})($__dart_deferred_initializers__, "1sqggEFJig9/i+kOq8MjPfwLEDk=");
 ;
