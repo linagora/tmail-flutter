@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class EmailViewBackButtonStyles {
@@ -9,8 +10,7 @@ class EmailViewBackButtonStyles {
 
   static const EdgeInsetsGeometry rtlPadding = EdgeInsetsDirectional.symmetric(horizontal: 8);
 
-  static const TextStyle labelTextStyle = TextStyle(
-    fontSize: 17,
-    color: AppColor.steelGrayA540
+  static final TextStyle labelTextStyle = ThemeUtils.textStyleBodyBody2(
+    color: AppColor.steelGrayA540,
   );
 }
