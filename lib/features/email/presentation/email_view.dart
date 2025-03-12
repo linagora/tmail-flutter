@@ -281,30 +281,28 @@ class EmailView extends GetWidget<SingleEmailController> {
   
   List<Widget> _buildNavigatorPageViewWidgets(BuildContext context) {
     return [
-      TMailButtonWidget.fromIcon(
-        icon: DirectionUtils.isDirectionRTLByLanguage(context)
-          ? controller.imagePaths.icOlder
-          : controller.imagePaths.icNewer,
-        iconColor: controller.emailSupervisorController.nextEmailActivated
-          ? AppColor.primaryColor
-          : EmailViewStyles.iconColor,
-        iconSize: EmailViewStyles.pageViewIconSize,
-        backgroundColor: Colors.transparent,
-        tooltipMessage: AppLocalizations.of(context).newer,
-        onTapActionCallback: controller.emailSupervisorController.moveToNextEmail
-      ),
-      TMailButtonWidget.fromIcon(
-        icon: DirectionUtils.isDirectionRTLByLanguage(context)
-          ? controller.imagePaths.icNewer
-          : controller.imagePaths.icOlder,
-        iconColor: controller.emailSupervisorController.previousEmailActivated
-          ? AppColor.primaryColor
-          : EmailViewStyles.iconColor,
-        iconSize: EmailViewStyles.pageViewIconSize,
-        backgroundColor: Colors.transparent,
-        tooltipMessage: AppLocalizations.of(context).older,
-        onTapActionCallback: controller.emailSupervisorController.backToPreviousEmail
-      ),
+      if (controller.emailSupervisorController.nextEmailActivated)
+        TMailButtonWidget.fromIcon(
+          icon: DirectionUtils.isDirectionRTLByLanguage(context)
+            ? controller.imagePaths.icOlder
+            : controller.imagePaths.icNewer,
+          iconColor: EmailViewStyles.iconColor,
+          iconSize: EmailViewStyles.pageViewIconSize,
+          backgroundColor: Colors.transparent,
+          tooltipMessage: AppLocalizations.of(context).newer,
+          onTapActionCallback: controller.emailSupervisorController.moveToNextEmail
+        ),
+      if (controller.emailSupervisorController.previousEmailActivated)
+        TMailButtonWidget.fromIcon(
+          icon: DirectionUtils.isDirectionRTLByLanguage(context)
+            ? controller.imagePaths.icNewer
+            : controller.imagePaths.icOlder,
+          iconColor: EmailViewStyles.iconColor,
+          iconSize: EmailViewStyles.pageViewIconSize,
+          backgroundColor: Colors.transparent,
+          tooltipMessage: AppLocalizations.of(context).older,
+          onTapActionCallback: controller.emailSupervisorController.backToPreviousEmail
+        ),
     ];
   }
 
