@@ -174,6 +174,18 @@ class ThemeUtils {
     color: color,
   );
 
+  static TextStyle textStyleM3BodyMedium2({
+    Color? color,
+    FontWeight? fontWeight,
+  }) => TextStyle(
+    fontFamily: ConstantsUI.fontApp,
+    fontWeight: fontWeight ?? FontWeight.w600,
+    letterSpacing: 0.25,
+    fontSize: 14,
+    height: 20 / 14,
+    color: color,
+  );
+
   static TextSelectionThemeData get _textSelectionTheme {
     return const TextSelectionThemeData(
       cursorColor: AppColor.primaryColor,
