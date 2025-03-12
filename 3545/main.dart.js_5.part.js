@@ -1460,12 +1460,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this._draggable_recipient_tag_widget$_imagePaths = t1;
       this.key = t2;
     },
-    InsertImageLoadingBarWidget: function InsertImageLoadingBarWidget(t0, t1, t2, t3) {
-      var _ = this;
-      _.viewState = t0;
-      _.uploadInlineViewState = t1;
-      _.margin = t2;
-      _.key = t3;
+    InsertImageLoadingBarWidget: function InsertImageLoadingBarWidget(t0, t1, t2) {
+      this.viewState = t0;
+      this.uploadInlineViewState = t1;
+      this.key = t2;
     },
     InsertImageLoadingBarWidget_build_closure: function InsertImageLoadingBarWidget_build_closure(t0) {
       this.$this = t0;
@@ -1475,8 +1473,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     InsertImageLoadingBarWidget__viewStateToUI_closure: function InsertImageLoadingBarWidget__viewStateToUI_closure() {
     },
-    InsertImageLoadingBarWidget__viewStateToUI_closure0: function InsertImageLoadingBarWidget__viewStateToUI_closure0(t0) {
-      this.$this = t0;
+    InsertImageLoadingBarWidget__viewStateToUI_closure0: function InsertImageLoadingBarWidget__viewStateToUI_closure0() {
     },
     FromComposerMobileWidget: function FromComposerMobileWidget(t0, t1, t2, t3, t4, t5) {
       var _ = this;
@@ -4829,9 +4826,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     PresentationMailboxExtension_get_isOutbox(_this) {
       var t1 = _this.name;
       return (t1 == null ? null : t1.name) === "outbox" || J.$eq$(_this.role, $.$get$PresentationMailbox_roleOutbox());
-    },
-    CircleLoadingWidget$(margin) {
-      return new A.CircleLoadingWidget(null, null, margin, null);
     },
     ComposerPrintDraftExtension_printDraft(_this, context) {
       var $async$goto = 0,
@@ -8735,10 +8729,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.InsertImageLoadingBarWidget.prototype = {
     build$1(context) {
-      return this.uploadInlineViewState.fold$2(0, new B.InsertImageLoadingBarWidget_build_closure(this), new B.InsertImageLoadingBarWidget_build_closure0(this));
+      var _null = null;
+      return A.Container$(_null, this.uploadInlineViewState.fold$2(0, new B.InsertImageLoadingBarWidget_build_closure(this), new B.InsertImageLoadingBarWidget_build_closure0(this)), C.Clip_0, _null, _null, _null, _null, 5, _null, _null, C.EdgeInsets_16_0_16_0, _null, _null, _null);
     },
     _viewStateToUI$1(viewState) {
-      return viewState.fold$2(0, new B.InsertImageLoadingBarWidget__viewStateToUI_closure(), new B.InsertImageLoadingBarWidget__viewStateToUI_closure0(this));
+      return viewState.fold$2(0, new B.InsertImageLoadingBarWidget__viewStateToUI_closure(), new B.InsertImageLoadingBarWidget__viewStateToUI_closure0());
     }
   };
   B.FromComposerMobileWidget.prototype = {
@@ -14893,7 +14888,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       t4 = t3._as(t2.get(t1)).uploadController.uploadInlineViewState.get$value(0);
       A.Expando__checkType(t1);
-      return new B.InsertImageLoadingBarWidget(t3._as(t2.get(t1)).viewState.get$value(0), t4, D.EdgeInsetsDirectional_0_12_0_0, null);
+      return new B.InsertImageLoadingBarWidget(t3._as(t2.get(t1)).viewState.get$value(0), t4, null);
     },
     $signature: typesOffset + 3
   };
@@ -15437,7 +15432,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       t4 = t3._as(t2.get(t1)).uploadController.uploadInlineViewState.get$value(0);
       A.Expando__checkType(t1);
-      return new B.InsertImageLoadingBarWidget(t3._as(t2.get(t1)).viewState.get$value(0), t4, D.EdgeInsetsDirectional_0_12_0_0, null);
+      return new B.InsertImageLoadingBarWidget(t3._as(t2.get(t1)).viewState.get$value(0), t4, null);
     },
     $signature: typesOffset + 3
   };
@@ -15959,7 +15954,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       t4 = t3._as(t2.get(t1)).uploadController.uploadInlineViewState.get$value(0);
       A.Expando__checkType(t1);
-      return new B.InsertImageLoadingBarWidget(t3._as(t2.get(t1)).viewState.get$value(0), t4, D.EdgeInsetsDirectional_0_12_0_0, null);
+      return new B.InsertImageLoadingBarWidget(t3._as(t2.get(t1)).viewState.get$value(0), t4, null);
     },
     $signature: typesOffset + 3
   };
@@ -16156,11 +16151,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.InsertImageLoadingBarWidget_build_closure0.prototype = {
     call$1(success) {
-      var t1 = this.$this;
+      var t1;
       if (success instanceof A.UploadingAttachmentUploadState)
-        return B.CircleLoadingWidget$(t1.margin);
-      else
+        return D.LinearProgressIndicator_C97;
+      else {
+        t1 = this.$this;
         return t1._viewStateToUI$1(t1.viewState);
+      }
     },
     $signature: 52
   };
@@ -16173,7 +16170,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.InsertImageLoadingBarWidget__viewStateToUI_closure0.prototype = {
     call$1(success) {
       if (success instanceof A.DownloadingImageAsBase64)
-        return B.CircleLoadingWidget$(this.$this.margin);
+        return D.LinearProgressIndicator_C97;
       else
         return C.SizedBox_0_0_null_null;
     },
@@ -22943,6 +22940,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.QuotasView_null = new B.QuotasView(null);
     D.Expanded_qBY = new A.Expanded(1, C.FlexFit_0, D.QuotasView_null, null);
     D.InputDecoration_LLF = new A.InputDecoration(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, C._NoInputBorder_i5L, true, null, null, null);
+    D.LinearProgressIndicator_C97 = new A.LinearProgressIndicator(null, C.BorderRadius_ww8, null, null, C.Color_4278221567, null, null, null, null);
     D.Color_251658240 = new A.Color(251658240);
     D.BoxShadow_NMc33 = new A.BoxShadow(0, C.BlurStyle_0, D.Color_251658240, C.Offset_0_0, 4);
     D.List_B6x3 = A._setArrayType(makeConstList([D.BoxShadow_NMc31, D.BoxShadow_NMc33]), type$.JSArray_BoxShadow);
@@ -23127,5 +23125,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "vkvQtsz5t5f5J7/mgeHrW9+IPnw=");
+})($__dart_deferred_initializers__, "rkeBkCPsL3LXrshsB6YOtPytd4E=");
 ;
