@@ -1,8 +1,8 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
-import 'package:tmail_ui_user/features/base/widget/circle_loading_widget.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/download_image_as_base64_state.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 
@@ -21,15 +21,21 @@ class InsertImageLoadingBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return uploadInlineViewState.fold(
+    final child = uploadInlineViewState.fold(
       (failure) => _viewStateToUI(viewState),
       (success) {
         if (success is UploadingAttachmentUploadState) {
-          return CircleLoadingWidget(margin: margin);
+          return const LinearProgressIndicator(color: AppColor.primaryColor);
         } else {
           return _viewStateToUI(viewState);
         }
       }
+    );
+
+    return Container(
+      height: 5,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: child,
     );
   }
 
@@ -38,7 +44,7 @@ class InsertImageLoadingBarWidget extends StatelessWidget {
       (failure) => const SizedBox.shrink(),
       (success) {
         if (success is DownloadingImageAsBase64) {
-          return CircleLoadingWidget(margin: margin);
+          return const LinearProgressIndicator(color: AppColor.primaryColor);
         } else {
           return const SizedBox.shrink();
         }
