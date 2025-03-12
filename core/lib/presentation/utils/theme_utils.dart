@@ -101,12 +101,16 @@ class ThemeUtils {
     );
   }
 
-  static TextStyle textStyleBodyBody1({Color? color, FontWeight? fontWeight}) => TextStyle(
+  static TextStyle textStyleBodyBody1({
+    Color? color,
+    FontWeight? fontWeight,
+    double? fontSize,
+  }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
     fontWeight: fontWeight ?? FontWeight.w500,
     letterSpacing: 0.0,
-    fontSize: 16,
-    height: 20 / 16,
+    fontSize: fontSize ?? 16,
+    height: 20 / (fontSize ?? 16),
     color: color,
   );
 
