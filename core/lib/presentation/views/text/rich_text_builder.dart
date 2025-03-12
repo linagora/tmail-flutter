@@ -4,8 +4,8 @@ class RichTextBuilder extends StatefulWidget {
 
   final String textOrigin;
   final String wordToStyle;
-  final TextStyle styleOrigin;
-  final TextStyle styleWord;
+  final TextStyle? styleOrigin;
+  final TextStyle? styleWord;
   final String? preMarkedText;
   final bool ensureHighlightVisible;
 
@@ -91,8 +91,8 @@ class _RichTextBuilderState extends State<RichTextBuilder> with AutomaticKeepAli
   List<InlineSpan> _getSpans({
     required String text,
     required String word,
-    required TextStyle styleOrigin,
-    required TextStyle styleWord,
+    required TextStyle? styleOrigin,
+    required TextStyle? styleWord,
   }) {
     if (word.isEmpty) {
       return [TextSpan(text: text, style: styleOrigin)];

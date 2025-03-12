@@ -26,6 +26,7 @@ extension AppColor on Color {
   static const mailboxBackgroundColor = Color(0xFFFFFFFF);
   static const mailboxSelectedTextColor = Color(0xFF3840F7);
   static const mailboxTextColor = Color(0xFF182952);
+  static const emailMailboxContainColor = Color(0xFF162546);
   static const mailboxSelectedTextNumberColor = Color(0xFF182952);
   static const mailboxSelectedIconColor = Color(0xFF3840F7);
   static const mailboxIconColor = Color(0xFF7E869B);
@@ -36,7 +37,7 @@ extension AppColor on Color {
   static const myFolderTitleColor = Color(0xFF7E869B);
   static const titleAppBarMailboxListMail = Color(0xFF182952);
   static const counterMailboxColor = Color(0xFF3840F7);
-  static const backgroundCounterMailboxColor = Color(0xFFE6E5FF);
+  static const backgroundCounterMailboxColor = Color(0xFFE3E1FD);
   static const backgroundCounterMailboxSelectedColor = Color(0x17313131);
   static const bgMailboxListMail = Color(0xFFFBFBFF);
   static const bgMessenger = Color(0xFFF2F2F5);
