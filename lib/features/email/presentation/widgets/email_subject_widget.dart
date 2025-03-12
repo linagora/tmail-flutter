@@ -1,3 +1,4 @@
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_subject_styles.dart';
@@ -19,11 +20,7 @@ class EmailSubjectWidget extends StatelessWidget {
       child: Text(
         presentationEmail.getEmailTitle(),
         maxLines: EmailSubjectStyles.maxLines,
-        style: const TextStyle(
-          fontSize: EmailSubjectStyles.textSize,
-          color: EmailSubjectStyles.textColor,
-          fontWeight: EmailSubjectStyles.fontWeight
-        )
+        style: ThemeUtils.textStyleHeadingH5(color: Colors.black)
       )
     );
   }
