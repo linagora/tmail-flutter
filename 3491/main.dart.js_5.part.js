@@ -8425,7 +8425,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t12 = new C.AvatarTagItemWidget0(t13 ? "" : t12, _null);
       else
         t12 = _null;
-      t5 = A._setArrayType([new A.Padding(new A.EdgeInsetsDirectional(0, 8, t2, 0), A.Draggable$(A.TextFieldTapRegion$(A.InkWell$(false, _null, true, A.MouseRegion$(A.Chip$(t12, t10, t9, t8, new A.EdgeInsetsDirectional(4, t7, 4, t7), B.TextStyle_69t5, _null, new C.AutoCompleteTagItemWidgetWeb_build_closure(_this), B.EdgeInsets_0_0_0_0, new A.RoundedRectangleBorder(B.BorderRadius_ww811, t11), _null), B.SystemMouseCursor_grab, _null, _null, _null, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.AutoCompleteTagItemWidgetWeb_build_closure0(_this), _null, _null, _null, _null, _null, _null, _null), _null, B.Type_EditableText_NMc, _null), t6, new A.DraggableEmailAddress(t3, t4), A.drag_target__childDragAnchorStrategy$closure(), t5, _null, _null, _null, type$.DraggableEmailAddress), _null)], type$.JSArray_Widget);
+      t5 = A._setArrayType([new A.Padding(new A.EdgeInsetsDirectional(0, 8, t2, 0), A.Draggable$(A.TextFieldTapRegion$(A.InkWell$(false, _null, true, A.MouseRegion$(A.Chip$(t12, t10, t9, t8, new A.EdgeInsetsDirectional(4, t7, 4, t7), B.TextStyle_69t5, _null, new C.AutoCompleteTagItemWidgetWeb_build_closure(_this), B.EdgeInsets_0_0_0_0, new A.RoundedRectangleBorder(B.BorderRadius_ww811, t11), _null), B.SystemMouseCursor_grab, _null, _null, _null, _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.AutoCompleteTagItemWidgetWeb_build_closure0(_this), _null, _null, _null, _null, _null, _null, _null), _null, B.Type_EditableText_NMc, _null), t6, new A.DraggableEmailAddress(t3, t4, _null), A.drag_target__childDragAnchorStrategy$closure(), t5, _null, _null, _null, type$.DraggableEmailAddress), _null)], type$.JSArray_Widget);
       if (t1)
         t5.push(A.TMailButtonWidget_TMailButtonWidget$fromText(B.Color_4294243572, 10, _null, B.EdgeInsets_0_8_0_0, 1 / 0, _null, 1 / 0, 0, _null, new C.AutoCompleteTagItemWidgetWeb_build_closure1(_this), B.EdgeInsetsDirectional_8_4_8_4, "+" + (_this.currentListEmailAddress.length - _this.collapsedListEmailAddress.length), _null, B.TextStyle_69t5, _null, _null));
       return new A.Stack(B.AlignmentDirectional_1_0, _null, B.StackFit_0, B.Clip_1, t5, _null);
@@ -11834,19 +11834,17 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         if (t3 == null)
           t3 = $.GetInstance__getInstance = B.C_GetInstance;
         if (t3.find$1$1$tag(0, t1.composerId, type$.ComposerController).screenDisplayMode.get$value(0) === B.ScreenDisplayMode_3)
-          return new A.Stack(B.AlignmentDirectional_m1_m1, _null, B.StackFit_0, B.Clip_1, A._setArrayType([new A.Align(D.AlignmentDirectional_1_1, _null, _null, A.SingleChildScrollView$(new A.Padding(B.EdgeInsetsDirectional_16_16_16_16, new C.ExpandComposerButton(1, new C.ComposerOverlayView_build__closure(this.context), t2.get$showComposerIfHidden(), _null), _null), _null, _null, _null, _null, _null, B.Axis_0), _null)], type$.JSArray_Widget), _null);
-        else
-          return t1;
+          t1 = new C.ExpandComposerButton(1, new C.ComposerOverlayView_build__closure(this.context), t2.get$showComposerIfHidden(), _null);
+        return new A.Padding(B.EdgeInsetsDirectional_16_16_16_16, t1, _null);
       }
       countComposerHidden = t2.get$countComposerHidden();
       t1 = new A.MappedListIterable(composerIdsQueue, t2.get$getComposerView(), composerIdsQueue.$ti._eval$1("MappedListIterable<ListIterable.E,ComposerView>")).super$Iterable$where(0, new C.ComposerOverlayView_build__closure0());
       visibleComposers = A.List_List$of(t1, true, t1.$ti._eval$1("Iterable.E"));
-      t1 = type$.JSArray_Widget;
-      t3 = A._setArrayType([], t1);
+      t1 = A._setArrayType([], type$.JSArray_Widget);
       if (countComposerHidden > 0)
-        t3.push(new C.ExpandComposerButton(countComposerHidden, new C.ComposerOverlayView_build__closure1(this.context), t2.get$showComposerIfHidden(), _null));
-      B.JSArray_methods.addAll$1(t3, visibleComposers);
-      return new A.Stack(B.AlignmentDirectional_m1_m1, _null, B.StackFit_0, B.Clip_1, A._setArrayType([new A.Align(D.AlignmentDirectional_1_1, _null, _null, A.SingleChildScrollView$(new A.Padding(B.EdgeInsetsDirectional_16_16_16_16, A.Row$(t3, B.CrossAxisAlignment_1, _null, B.MainAxisAlignment_0, B.MainAxisSize_0, _null), _null), _null, _null, _null, _null, _null, B.Axis_0), _null)], t1), _null);
+        t1.push(new C.ExpandComposerButton(countComposerHidden, new C.ComposerOverlayView_build__closure1(this.context), t2.get$showComposerIfHidden(), _null));
+      B.JSArray_methods.addAll$1(t1, visibleComposers);
+      return A.SingleChildScrollView$(new A.Padding(B.EdgeInsetsDirectional_16_16_16_16, A.Row$(t1, B.CrossAxisAlignment_1, _null, B.MainAxisAlignment_0, B.MainAxisSize_0, _null), _null), _null, _null, _null, _null, _null, B.Axis_0);
     },
     $signature: 3
   };
@@ -18149,5 +18147,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "1oA32YRjKX8BSPgzQFPQka4ZtBQ=");
+})($__dart_deferred_initializers__, "+pn+SCfL/hjDD45GQshDWUHdcSY=");
 ;
