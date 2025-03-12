@@ -32,6 +32,12 @@ class ComposerAttachmentAndInlineScenario extends BaseTestScenario {
 
     _expectAttachment(pngName);
     await _expectInline();
+
+    await composerRobot.addAttachment(png);
+    await composerRobot.addAttachment(png);
+    await $.pumpAndSettle();
+
+    _expectMultipleAttachments(3);
   }
 
   Future<void> _expectInline() async {
@@ -51,6 +57,13 @@ class ComposerAttachmentAndInlineScenario extends BaseTestScenario {
          (widget) => widget.fileName.contains(pngName)
         ),
       findsOneWidget,
+    );
+  }
+
+  void _expectMultipleAttachments(int numberOfAttachments) {
+    return expect(
+      $(AttachmentItemComposerWidget),
+      findsNWidgets(numberOfAttachments),
     );
   }
   
