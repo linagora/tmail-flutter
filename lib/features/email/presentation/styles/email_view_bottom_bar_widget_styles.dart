@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 
@@ -28,7 +29,7 @@ class EmailViewBottomBarWidgetStyles {
     BuildContext context,
     ResponsiveUtils responsiveUtils
   ) {
-    return TextStyle(
+    return ThemeUtils.textStyleBodyBody1(
       fontSize: responsiveUtils.isPortraitMobile(context) ? 12 : 16,
       color: EmailViewBottomBarWidgetStyles.iconColor,
     );
