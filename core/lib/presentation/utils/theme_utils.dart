@@ -162,6 +162,18 @@ class ThemeUtils {
     color: color,
   );
 
+  static TextStyle textStyleHeadingH4({
+    Color? color,
+    FontWeight? fontWeight,
+  }) => TextStyle(
+    fontFamily: ConstantsUI.fontApp,
+    fontWeight: fontWeight ?? FontWeight.w500,
+    letterSpacing: 0.0,
+    fontSize: 32,
+    height: 40 / 32,
+    color: color,
+  );
+
   static TextStyle textStyleHeadingHeadingSmall({
     Color? color,
     FontWeight? fontWeight,

@@ -103,7 +103,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
 
   String getAvatarText() {
     if (getSenderName().isNotEmpty) {
-      return getSenderName().firstLetterToUpperCase;
+      return getSenderName().firstCharacterToUpperCase;
     }
     return '';
   }
