@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 
@@ -25,9 +26,12 @@ class BottomBarComposerWidgetStyle {
   static const EdgeInsetsGeometry popupItemPadding = EdgeInsetsDirectional.symmetric(horizontal: 12);
 
   static const TextStyle sendButtonTextStyle = TextStyle(
+    fontFamily: ConstantsUI.fontApp,
     fontWeight: FontWeight.w500,
-    fontSize: 15,
+    fontSize: 17,
+    height: 22 / 17,
     color: Colors.white,
+    letterSpacing: -0.41,
   );
   static const TextStyle popupItemTextStyle = TextStyle(
     color: Colors.black,
