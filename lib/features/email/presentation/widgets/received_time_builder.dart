@@ -2,6 +2,7 @@
 import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
@@ -27,11 +28,7 @@ class ReceivedTimeBuilder extends StatelessWidget {
         maxLines: 1,
         overflow: CommonTextStyle.defaultTextOverFlow,
         softWrap: CommonTextStyle.defaultSoftWrap,
-        style: const TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.normal,
-          color: AppColor.colorEmailAddressFull
-        )
+        style: ThemeUtils.textStyleBodyBody3(color: AppColor.steelGray400)
       ),
     );
   }

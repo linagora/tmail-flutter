@@ -3,6 +3,7 @@ import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
@@ -87,9 +88,8 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
             ),
             TMailButtonWidget.fromText(
               text: AppLocalizations.of(context).hide,
-              textStyle: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: AppColor.primaryColor,
-                fontSize: 15
+              textStyle: ThemeUtils.textStyleBodyBody1(
+                color: AppColor.steelGray400,
               ),
               backgroundColor: Colors.transparent,
               onTapActionCallback: () => setState(() => _isDisplayAll = false),
@@ -134,7 +134,10 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
             ),
             if (widget.emailSelected.countRecipients > 1)
               TMailButtonWidget.fromIcon(
-                icon: _imagePaths.icChevronDown,
+                icon: _imagePaths.icChevronDownOutline,
+                iconColor: AppColor.steelGray400,
+                padding: const EdgeInsets.all(3),
+                iconSize: 20,
                 backgroundColor: Colors.transparent,
                 onTapActionCallback: () => setState(() => _isDisplayAll = true),
               )
@@ -235,11 +238,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
         text: index == listEmailAddress.length - 1
           ? emailAddress.asString()
           : '${emailAddress.asString()},',
-        textStyle: Theme.of(context).textTheme.labelSmall?.copyWith(
-          color: AppColor.steelGray400,
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-        ),
+        textStyle: ThemeUtils.textStyleBodyBody1(color: AppColor.steelGray400),
         padding: const EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8),
         backgroundColor: Colors.transparent,
         onTapActionCallback: () => widget.openEmailAddressDetailAction?.call(context, emailAddress),

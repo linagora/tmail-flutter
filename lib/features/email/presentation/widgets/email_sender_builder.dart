@@ -1,6 +1,7 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/extensions/email_address_extension.dart';
@@ -38,9 +39,9 @@ class EmailSenderBuilder extends StatelessWidget {
               },
               borderRadius: 8,
               padding: const EdgeInsets.all(3),
-              labelSize: 20,
-              labelColor: Colors.black,
-              labelWeight: FontWeight.bold,
+              customStyle: ThemeUtils.textStyleHeadingHeadingSmall(
+                color: Colors.black,
+              ),
               overflow: CommonTextStyle.defaultTextOverFlow,
               softWrap: CommonTextStyle.defaultSoftWrap
             ),
@@ -54,9 +55,9 @@ class EmailSenderBuilder extends StatelessWidget {
               },
               borderRadius: 8,
               padding: const EdgeInsets.all(3),
-              labelSize: 16,
-              labelColor: AppColor.colorEmailAddressFull,
-              labelWeight: FontWeight.w500,
+              customStyle: ThemeUtils.textStyleBodyBody1(
+                color: AppColor.steelGray400,
+              ),
               overflow: CommonTextStyle.defaultTextOverFlow,
               softWrap: CommonTextStyle.defaultSoftWrap
             ),
