@@ -48,7 +48,7 @@ class ComposerManager extends GetxController {
       composerIdsQueue.add(composerId);
     }
 
-    _syncQueueIfNeeded();
+    _arrangeComposerIfNeeded();
   }
 
   void removeComposer(String id) {
