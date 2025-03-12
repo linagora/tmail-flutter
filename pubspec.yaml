@@ -60,7 +60,7 @@ dependencies:
   html_editor_enhanced:
     git:
       url: https://github.com/linagora/html-editor-enhanced.git
-      ref: main
+      ref: bugfix/cannot-break-quote-when-press-enter-key
 
   jmap_dart_client:
     git:
