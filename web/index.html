@@ -84,18 +84,6 @@
         </div>
     </div>
 
-    <!-- This script installs pdf.js for pdf_render -->
-    <script
-        src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/build/pdf.min.js"
-        type="text/javascript"
-    ></script>
-    <script type="text/javascript">
-      pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/build/pdf.worker.min.js";
-      pdfRenderOptions = {
-        cMapUrl: "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.4.120/cmaps/",
-        cMapPacked: true,
-      };
-    </script>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
