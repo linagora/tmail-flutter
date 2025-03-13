@@ -53,24 +53,21 @@ class ComposerOverlayView extends StatelessWidget {
           .where((view) => !view.controller.isHiddenScreen)
           .toList();
 
-      return SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Padding(
-          padding: const EdgeInsetsDirectional.all(ComposerStyle.padding),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              if (countComposerHidden > 0)
-                ExpandComposerButton(
-                  countComposerHidden: countComposerHidden,
-                  onRemoveHiddenComposerItem: (controller) =>
-                      controller.handleClickCloseComposer(context),
-                  onShowComposerAction: composerManager.showComposerIfHidden,
-                ),
-              ...visibleComposers,
-            ],
-          ),
+      return Padding(
+        padding: const EdgeInsetsDirectional.all(ComposerStyle.padding),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (countComposerHidden > 0)
+              ExpandComposerButton(
+                countComposerHidden: countComposerHidden,
+                onRemoveHiddenComposerItem: (controller) =>
+                    controller.handleClickCloseComposer(context),
+                onShowComposerAction: composerManager.showComposerIfHidden,
+              ),
+            ...visibleComposers,
+          ],
         ),
       );
     });
