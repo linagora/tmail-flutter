@@ -68,6 +68,7 @@ class RecipientComposerWidget extends StatefulWidget {
   final OnEnableAllRecipientsInputAction? onEnableAllRecipientsInputAction;
   final bool isTestingForWeb;
   final int minInputLengthAutocomplete;
+  final String? composerId;
 
   const RecipientComposerWidget({
     super.key,
@@ -89,6 +90,7 @@ class RecipientComposerWidget extends StatefulWidget {
     this.nextFocusNode,
     this.padding,
     this.margin,
+    this.composerId,
     this.onUpdateListEmailAddressAction,
     this.onSuggestionEmailAddress,
     this.onAddEmailAddressTypeAction,
@@ -205,6 +207,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                               index: index,
                               imagePaths: widget.imagePaths,
                               prefix: widget.prefix,
+                              composerId: widget.composerId,
                               currentEmailAddress: currentEmailAddress,
                               currentListEmailAddress: _currentListEmailAddress,
                               collapsedListEmailAddress: _collapsedListEmailAddress,
@@ -296,6 +299,7 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
                           index: index,
                           imagePaths: widget.imagePaths,
                           prefix: widget.prefix,
+                          composerId: widget.composerId,
                           currentEmailAddress: currentEmailAddress,
                           currentListEmailAddress: _currentListEmailAddress,
                           collapsedListEmailAddress: _collapsedListEmailAddress,
@@ -567,7 +571,26 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
     StateSetter stateSetter
   ) {
     log('_RecipientComposerWidgetState::_handleAcceptDraggableEmailAddressAction: $draggableEmailAddress');
-    if (draggableEmailAddress.prefix != widget.prefix) {
+    if (draggableEmailAddress.composerId == widget.composerId) {
+      if (draggableEmailAddress.prefix != widget.prefix) {
+        if (!_currentListEmailAddress.contains(draggableEmailAddress.emailAddress)) {
+          stateSetter(() {
+            _currentListEmailAddress.add(draggableEmailAddress.emailAddress);
+            _isDragging = false;
+          });
+          _updateListEmailAddressAction();
+        } else {
+          if (_isDragging) {
+            stateSetter(() => _isDragging = false);
+          }
+        }
+        widget.onRemoveDraggableEmailAddressAction?.call(draggableEmailAddress);
+      } else {
+        if (_isDragging) {
+          stateSetter(() => _isDragging = false);
+        }
+      }
+    } else {
       if (!_currentListEmailAddress.contains(draggableEmailAddress.emailAddress)) {
         stateSetter(() {
           _currentListEmailAddress.add(draggableEmailAddress.emailAddress);
@@ -580,10 +603,6 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
         }
       }
       widget.onRemoveDraggableEmailAddressAction?.call(draggableEmailAddress);
-    } else {
-      if (_isDragging) {
-        stateSetter(() => _isDragging = false);
-      }
     }
   }
 

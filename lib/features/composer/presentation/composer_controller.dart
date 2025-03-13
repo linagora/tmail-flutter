@@ -65,7 +65,6 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/list_sha
 import 'package:tmail_ui_user/features/composer/presentation/extensions/update_screen_display_mode_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/draggable_email_address.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/saved_email_draft.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/signature_status.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.dart';
@@ -85,7 +84,7 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/presentatio
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
@@ -145,7 +144,7 @@ class ComposerController extends BaseController
   final GetEmailContentInteractor _getEmailContentInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final UploadController uploadController;
-  final RemoveComposerCacheOnWebInteractor _removeComposerCacheOnWebInteractor;
+  final RemoveComposerCacheByIdOnWebInteractor _removeComposerCacheByIdOnWebInteractor;
   final SaveComposerCacheOnWebInteractor _saveComposerCacheOnWebInteractor;
   final DownloadImageAsBase64Interactor _downloadImageAsBase64Interactor;
   final TransformHtmlEmailContentInteractor _transformHtmlEmailContentInteractor;
@@ -239,7 +238,7 @@ class ComposerController extends BaseController
     this._getEmailContentInteractor,
     this._getAllIdentitiesInteractor,
     this.uploadController,
-    this._removeComposerCacheOnWebInteractor,
+    this._removeComposerCacheByIdOnWebInteractor,
     this._saveComposerCacheOnWebInteractor,
     this._downloadImageAsBase64Interactor,
     this._transformHtmlEmailContentInteractor,
@@ -417,7 +416,15 @@ class ComposerController extends BaseController
 
   @override
   Future<void> onUnloadBrowserListener(html.Event event) async {
-    await _removeComposerCacheOnWebInteractor.execute();
+    final username = mailboxDashBoardController.sessionCurrent?.username;
+    final accountId = mailboxDashBoardController.accountId.value;
+    if (composerId != null && username != null && accountId != null) {
+      await _removeComposerCacheByIdOnWebInteractor.execute(
+        accountId,
+        username,
+        composerId!,
+      );
+    }
     await _saveComposerCacheOnWebAction();
   }
 
@@ -488,6 +495,10 @@ class ComposerController extends BaseController
     }
     
     final emailContent = await getContentInEditor();
+
+    final composerIndex = composerId != null
+      ? mailboxDashBoardController.composerManager.getComposerIndex(composerId!)
+      : null;
     
     return CreateEmailRequest(
       session: mailboxDashBoardController.sessionCurrent!,
@@ -513,7 +524,9 @@ class ComposerController extends BaseController
       messageId: composerArguments.value!.messageId,
       references: composerArguments.value!.references,
       emailSendingQueue: composerArguments.value!.sendingEmail,
-      displayMode: screenDisplayMode.value
+      displayMode: screenDisplayMode.value,
+      composerIndex: composerIndex,
+      composerId: composerId,
     );
   }
 
@@ -1334,9 +1347,12 @@ class ComposerController extends BaseController
 
     isEmailChanged.value = draftEmailHash != emptyDraftEmailHash;
 
-    if (composerArguments.value?.emailActionType == EmailActionType.compose ||
-        composerArguments.value?.emailActionType == EmailActionType.editDraft) {
+    final emailActionType = composerArguments.value?.emailActionType;
+    if (emailActionType == EmailActionType.compose
+        || emailActionType == EmailActionType.editDraft) {
       _savedEmailDraftHash = draftEmailHash;
+    } else if (emailActionType == EmailActionType.reopenComposerBrowser) {
+      _savedEmailDraftHash = emptyDraftEmailHash;
     }
   }
 
@@ -1430,7 +1446,7 @@ class ComposerController extends BaseController
     required AccountId accountId,
     required String downloadUrl
   }) {
-    _restoreEmailInlineImagesInteractor = getBinding<RestoreEmailInlineImagesInteractor>();
+    _restoreEmailInlineImagesInteractor = getBinding<RestoreEmailInlineImagesInteractor>(tag: composerId);
     if (_restoreEmailInlineImagesInteractor == null) return;
     consumeState(_restoreEmailInlineImagesInteractor!.execute(
       htmlContent: htmlContent,
@@ -2075,33 +2091,7 @@ class ComposerController extends BaseController
 
   void setSubjectEmail(String subject) => subjectEmail.value = subject;
 
-  void removeDraggableEmailAddress(DraggableEmailAddress draggableEmailAddress) {
-    log('ComposerController::removeDraggableEmailAddress: $draggableEmailAddress');
-    switch(draggableEmailAddress.prefix) {
-      case PrefixEmailAddress.to:
-        listToEmailAddress.remove(draggableEmailAddress.emailAddress);
-        toAddressExpandMode.value = ExpandMode.EXPAND;
-        break;
-      case PrefixEmailAddress.cc:
-        listCcEmailAddress.remove(draggableEmailAddress.emailAddress);
-        ccAddressExpandMode.value = ExpandMode.EXPAND;
-        break;
-      case PrefixEmailAddress.bcc:
-        listBccEmailAddress.remove(draggableEmailAddress.emailAddress);
-        bccAddressExpandMode.value = ExpandMode.EXPAND;
-        break;
-      case PrefixEmailAddress.replyTo:
-        listReplyToEmailAddress.remove(draggableEmailAddress.emailAddress);
-        replyToAddressExpandMode.value = ExpandMode.EXPAND;
-        break;
-      default:
-        break;
-    }
-    isInitialRecipient.value = true;
-    isInitialRecipient.refresh();
 
-    updateStatusEmailSendButton();
-  }
 
   void onAttachmentDropZoneListener(Attachment attachment) {
     log('ComposerController::onAttachmentDropZoneListener: attachment = $attachment');

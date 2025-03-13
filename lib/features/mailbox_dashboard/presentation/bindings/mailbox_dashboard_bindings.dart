@@ -81,7 +81,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_com
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spam_mailbox_cached_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spam_report_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_last_time_dismissed_spam_reported_interactor.dart';
@@ -194,7 +195,8 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<UnsubscribeEmailInteractor>(),
       Get.find<RestoredDeletedMessageInteractor>(),
       Get.find<GetRestoredDeletedMessageInterator>(),
-      Get.find<RemoveComposerCacheOnWebInteractor>(),
+      Get.find<RemoveAllComposerCacheOnWebInteractor>(),
+      Get.find<RemoveComposerCacheByIdOnWebInteractor>(),
       Get.find<GetAllIdentitiesInteractor>(),
     ));
     Get.put(AdvancedFilterController());
@@ -308,7 +310,8 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => QuickSearchEmailInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => MarkAsMailboxReadInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => GetComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
-    Get.lazyPut(() => RemoveComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
+    Get.lazyPut(() => RemoveComposerCacheByIdOnWebInteractor(Get.find<ComposerCacheRepository>()));
+    Get.lazyPut(() => RemoveAllComposerCacheOnWebInteractor(Get.find<ComposerCacheRepository>()));
     Get.lazyPut(() => MarkAsEmailReadInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsStarEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsMultipleEmailReadInteractor(

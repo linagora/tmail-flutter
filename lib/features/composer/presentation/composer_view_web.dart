@@ -6,6 +6,7 @@ import 'package:model/email/prefix_email_address.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/composer_print_draft_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/remove_draggable_email_address_between_recipient_fields_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/web/desktop_responsive_container_view.dart';
@@ -89,6 +90,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             ),
                           ),
                         RecipientComposerWidget(
+                          composerId: composerId,
                           prefix: PrefixEmailAddress.to,
                           listEmailAddress: controller.listToEmailAddress,
                           imagePaths: controller.imagePaths,
@@ -119,6 +121,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         ),
                         if (controller.ccRecipientState.value == PrefixRecipientState.enabled)
                           RecipientComposerWidget(
+                            composerId: composerId,
                             prefix: PrefixEmailAddress.cc,
                             listEmailAddress: controller.listCcEmailAddress,
                             imagePaths: controller.imagePaths,
@@ -145,6 +148,7 @@ class ComposerView extends GetWidget<ComposerController> {
                           ),
                         if (controller.bccRecipientState.value == PrefixRecipientState.enabled)
                           RecipientComposerWidget(
+                            composerId: composerId,
                             prefix: PrefixEmailAddress.bcc,
                             listEmailAddress: controller.listBccEmailAddress,
                             imagePaths: controller.imagePaths,
@@ -171,6 +175,7 @@ class ComposerView extends GetWidget<ComposerController> {
                           ),
                         if (controller.replyToRecipientState.value == PrefixRecipientState.enabled)
                           RecipientComposerWidget(
+                            composerId: composerId,
                             prefix: PrefixEmailAddress.replyTo,
                             listEmailAddress: controller.listReplyToEmailAddress,
                             imagePaths: controller.imagePaths,
@@ -363,6 +368,7 @@ class ComposerView extends GetWidget<ComposerController> {
                           onChangeIdentity: controller.onChangeIdentity,
                         ),
                       RecipientComposerWidget(
+                        composerId: composerId,
                         prefix: PrefixEmailAddress.to,
                         listEmailAddress: controller.listToEmailAddress,
                         imagePaths: controller.imagePaths,
@@ -393,6 +399,7 @@ class ComposerView extends GetWidget<ComposerController> {
                       ),
                       if (controller.ccRecipientState.value == PrefixRecipientState.enabled)
                         RecipientComposerWidget(
+                          composerId: composerId,
                           prefix: PrefixEmailAddress.cc,
                           listEmailAddress: controller.listCcEmailAddress,
                           imagePaths: controller.imagePaths,
@@ -419,6 +426,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         ),
                       if (controller.bccRecipientState.value == PrefixRecipientState.enabled)
                         RecipientComposerWidget(
+                          composerId: composerId,
                           prefix: PrefixEmailAddress.bcc,
                           listEmailAddress: controller.listBccEmailAddress,
                           imagePaths: controller.imagePaths,
@@ -445,6 +453,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         ),
                       if (controller.replyToRecipientState.value == PrefixRecipientState.enabled)
                         RecipientComposerWidget(
+                          composerId: composerId,
                           prefix: PrefixEmailAddress.replyTo,
                           listEmailAddress: controller.listReplyToEmailAddress,
                           imagePaths: controller.imagePaths,
@@ -677,6 +686,7 @@ class ComposerView extends GetWidget<ComposerController> {
                           onChangeIdentity: controller.onChangeIdentity,
                         ),
                       RecipientComposerWidget(
+                        composerId: composerId,
                         prefix: PrefixEmailAddress.to,
                         listEmailAddress: controller.listToEmailAddress,
                         imagePaths: controller.imagePaths,
@@ -707,6 +717,7 @@ class ComposerView extends GetWidget<ComposerController> {
                       ),
                       if (controller.ccRecipientState.value == PrefixRecipientState.enabled)
                         RecipientComposerWidget(
+                          composerId: composerId,
                           prefix: PrefixEmailAddress.cc,
                           listEmailAddress: controller.listCcEmailAddress,
                           imagePaths: controller.imagePaths,
@@ -733,6 +744,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         ),
                       if (controller.bccRecipientState.value == PrefixRecipientState.enabled)
                         RecipientComposerWidget(
+                          composerId: composerId,
                           prefix: PrefixEmailAddress.bcc,
                           listEmailAddress: controller.listBccEmailAddress,
                           imagePaths: controller.imagePaths,
@@ -759,6 +771,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         ),
                       if (controller.replyToRecipientState.value == PrefixRecipientState.enabled)
                         RecipientComposerWidget(
+                          composerId: composerId,
                           prefix: PrefixEmailAddress.replyTo,
                           listEmailAddress: controller.listReplyToEmailAddress,
                           imagePaths: controller.imagePaths,

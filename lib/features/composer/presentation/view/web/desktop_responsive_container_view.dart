@@ -33,7 +33,7 @@ class DesktopResponsiveContainerView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (displayMode == ScreenDisplayMode.minimize) {
-      final composerWidget = PointerInterceptor(
+      return PointerInterceptor(
         child: MinimizeComposerWidget(
           imagePaths: imagePaths,
           emailSubject: emailSubject,
@@ -41,16 +41,8 @@ class DesktopResponsiveContainerView extends StatelessWidget {
           onChangeDisplayModeAction: onChangeDisplayModeAction,
         ),
       );
-
-      return composerManager.composerIdsQueue.length == 1
-        ? PositionedDirectional(
-            end: DesktopResponsiveContainerViewStyle.margin,
-            bottom: DesktopResponsiveContainerViewStyle.margin,
-            child: composerWidget,
-          )
-        : composerWidget;
     } else if (displayMode == ScreenDisplayMode.normal) {
-      final composerWidget = Card(
+      return Card(
         elevation: DesktopResponsiveContainerViewStyle.elevation,
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.circular(DesktopResponsiveContainerViewStyle.radius)),
@@ -67,14 +59,6 @@ class DesktopResponsiveContainerView extends StatelessWidget {
           ),
         ),
       );
-
-      return composerManager.composerIdsQueue.length == 1
-        ? PositionedDirectional(
-            end: DesktopResponsiveContainerViewStyle.margin,
-            bottom: DesktopResponsiveContainerViewStyle.margin,
-            child: composerWidget,
-          )
-        : composerWidget;
     } else if (displayMode == ScreenDisplayMode.fullScreen) {
       final maxWidth = responsiveUtils.getSizeScreenWidth(context) * 0.85;
       final maxHeight = responsiveUtils.getSizeScreenHeight(context) * 0.9;
