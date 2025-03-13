@@ -2255,8 +2255,16 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         ),
       ));
     } else {
-      handleDownloadAttachmentAction(context, attachment, forPreview: true);
+      handleDownloadAttachmentAction(
+        context,
+        attachment,
+        forPreview: attachmentPreviewSupported(attachment),
+      );
     }
+  }
+
+  bool attachmentPreviewSupported(Attachment attachment) {
+    return attachment.isImage || attachment.isText;
   }
 
   ({
