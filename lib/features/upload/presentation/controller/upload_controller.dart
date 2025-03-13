@@ -388,6 +388,10 @@ class UploadController extends BaseController {
       AppLocalizations.of(context).warningMessageWhenExceedGenerallySizeInComposer,
       AppLocalizations.of(context).continueAction,
       cancelTitle: AppLocalizations.of(context).cancel,
+      cancelButtonColor: AppColor.blue700,
+      cancelLabelButtonColor: Colors.white,
+      actionButtonColor: AppColor.grayBackgroundColor,
+      confirmLabelButtonColor: AppColor.steelGray600,
       alignCenter: true,
       onConfirmAction: confirmAction,
       icon: SvgPicture.asset(
