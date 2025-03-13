@@ -17,8 +17,10 @@ class ConfirmationDialogBuilder extends StatelessWidget {
   final String cancelText;
   final Widget? iconWidget;
   final Widget? additionalWidgetContent;
-  final Color? colorCancelButton;
-  final Color? colorConfirmButton;
+  final Color? cancelBackgroundButtonColor;
+  final Color? confirmBackgroundButtonColor;
+  final Color? cancelLabelButtonColor;
+  final Color? confirmLabelButtonColor;
   final TextStyle? styleTextCancelButton;
   final TextStyle? styleTextConfirmButton;
   final TextStyle? styleTitle;
@@ -53,8 +55,10 @@ class ConfirmationDialogBuilder extends StatelessWidget {
     this.cancelText = '',
     this.iconWidget,
     this.additionalWidgetContent,
-    this.colorCancelButton,
-    this.colorConfirmButton,
+    this.cancelBackgroundButtonColor,
+    this.confirmBackgroundButtonColor,
+    this.cancelLabelButtonColor,
+    this.confirmLabelButtonColor,
     this.styleTextCancelButton,
     this.styleTextConfirmButton,
     this.styleTitle,
@@ -92,8 +96,10 @@ class ConfirmationDialogBuilder extends StatelessWidget {
             cancelText: cancelText,
             iconWidget: iconWidget,
             additionalWidgetContent: additionalWidgetContent,
-            colorCancelButton: colorCancelButton,
-            colorConfirmButton: colorConfirmButton,
+            cancelBackgroundButtonColor: cancelBackgroundButtonColor,
+            confirmBackgroundButtonColor: confirmBackgroundButtonColor,
+            cancelLabelButtonColor: cancelLabelButtonColor,
+            confirmLabelButtonColor: confirmLabelButtonColor,
             styleTextCancelButton: styleTextCancelButton,
             styleTextConfirmButton: styleTextConfirmButton,
             styleTitle: styleTitle,
@@ -129,8 +135,10 @@ class ConfirmationDialogBuilder extends StatelessWidget {
               cancelText: cancelText,
               iconWidget: iconWidget,
               additionalWidgetContent: additionalWidgetContent,
-              colorCancelButton: colorCancelButton,
-              colorConfirmButton: colorConfirmButton,
+              cancelBackgroundButtonColor: cancelBackgroundButtonColor,
+              confirmBackgroundButtonColor: confirmBackgroundButtonColor,
+              cancelLabelButtonColor: cancelLabelButtonColor,
+              confirmLabelButtonColor: confirmLabelButtonColor,
               styleTextCancelButton: styleTextCancelButton,
               styleTextConfirmButton: styleTextConfirmButton,
               styleTitle: styleTitle,
@@ -164,8 +172,10 @@ class _BodyContent extends StatelessWidget {
   final String cancelText;
   final Widget? iconWidget;
   final Widget? additionalWidgetContent;
-  final Color? colorCancelButton;
-  final Color? colorConfirmButton;
+  final Color? cancelBackgroundButtonColor;
+  final Color? confirmBackgroundButtonColor;
+  final Color? cancelLabelButtonColor;
+  final Color? confirmLabelButtonColor;
   final TextStyle? styleTextCancelButton;
   final TextStyle? styleTextConfirmButton;
   final TextStyle? styleTitle;
@@ -195,8 +205,10 @@ class _BodyContent extends StatelessWidget {
     required this.cancelText,
     this.iconWidget,
     this.additionalWidgetContent,
-    this.colorCancelButton,
-    this.colorConfirmButton,
+    this.cancelBackgroundButtonColor,
+    this.confirmBackgroundButtonColor,
+    this.cancelLabelButtonColor,
+    this.confirmLabelButtonColor,
     this.styleTextCancelButton,
     this.styleTextConfirmButton,
     this.styleTitle,
@@ -366,7 +378,8 @@ class _BodyContent extends StatelessWidget {
                   context,
                   cancelText,
                   onCancelButtonAction,
-                  colorCancelButton,
+                  cancelBackgroundButtonColor,
+                  cancelLabelButtonColor,
                   styleTextCancelButton,
                 ),
               ),
@@ -377,7 +390,8 @@ class _BodyContent extends StatelessWidget {
                   context,
                   confirmText,
                   onConfirmButtonAction,
-                  colorConfirmButton,
+                  confirmBackgroundButtonColor,
+                  confirmLabelButtonColor,
                   styleTextConfirmButton,
                 ),
               ),
@@ -396,7 +410,8 @@ class _BodyContent extends StatelessWidget {
                   context,
                   cancelText,
                   onCancelButtonAction,
-                  colorCancelButton,
+                  cancelBackgroundButtonColor,
+                  cancelLabelButtonColor,
                   styleTextCancelButton,
                 ),
               ),
@@ -408,7 +423,8 @@ class _BodyContent extends StatelessWidget {
                   context,
                   confirmText,
                   onConfirmButtonAction,
-                  colorConfirmButton,
+                  confirmBackgroundButtonColor,
+                  confirmLabelButtonColor,
                   styleTextConfirmButton,
                 ),
               ),
@@ -423,20 +439,22 @@ class _BodyContent extends StatelessWidget {
     String label,
     VoidCallback? onTapAction,
     Color? bgColor,
+    Color? textColor,
     TextStyle? textStyle,
   ) {
     return ConfirmDialogButton(
       label: label,
       backgroundColor: bgColor ??
           (onTapAction == onConfirmButtonAction
-              ? AppColor.grayBackgroundColor
-              : AppColor.blue700),
+              ? AppColor.blue700
+              : AppColor.grayBackgroundColor),
       borderRadius: radiusButton,
       textStyle: textStyle,
       padding: paddingButton,
-      textColor: onTapAction == onConfirmButtonAction
-          ? AppColor.steelGray600
-          : Colors.white,
+      textColor: textColor ??
+        (onTapAction == onConfirmButtonAction
+          ? Colors.white
+          : AppColor.steelGray600),
       maxLines: titleActionButtonMaxLines,
       onTapAction: onTapAction,
     );

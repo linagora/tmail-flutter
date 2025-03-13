@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
@@ -63,6 +64,10 @@ class DeleteIdentityDialogBuilder extends StatelessWidget {
       alignment: alignment,
       outsideDialogPadding: outsideDialogPadding,
       widthDialog: widthDialog,
+      cancelBackgroundButtonColor: AppColor.blue700,
+      cancelLabelButtonColor: Colors.white,
+      confirmBackgroundButtonColor: AppColor.grayBackgroundColor,
+      confirmLabelButtonColor: AppColor.steelGray600,
       onConfirmButtonAction: onDeleteIdentityAction,
       onCancelButtonAction: popBack,
       onCloseButtonAction: popBack,

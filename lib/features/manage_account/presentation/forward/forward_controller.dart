@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
@@ -122,6 +123,10 @@ class ForwardController extends BaseController {
       onConfirmAction: () => _handleDeleteRecipientAction({emailAddress}),
       showAsBottomSheet: true,
       useIconAsBasicLogo: true,
+      cancelButtonColor: AppColor.blue700,
+      cancelLabelButtonColor: Colors.white,
+      actionButtonColor: AppColor.grayBackgroundColor,
+      confirmLabelButtonColor: AppColor.steelGray600,
     );
   }
 
@@ -204,6 +209,10 @@ class ForwardController extends BaseController {
       onConfirmAction: () => _handleDeleteRecipientAction(listEmailAddress),
       showAsBottomSheet: true,
       useIconAsBasicLogo: true,
+      cancelButtonColor: AppColor.blue700,
+      cancelLabelButtonColor: Colors.white,
+      actionButtonColor: AppColor.grayBackgroundColor,
+      confirmLabelButtonColor: AppColor.steelGray600,
     );
   }
 

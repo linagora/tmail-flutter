@@ -1007,6 +1007,10 @@ class ComposerController extends BaseController
         onCancelAction: popBack,
         autoPerformPopBack: false,
         title: AppLocalizations.of(context).empty_subject,
+        cancelButtonColor: AppColor.blue700,
+        cancelLabelButtonColor: Colors.white,
+        actionButtonColor: AppColor.grayBackgroundColor,
+        confirmLabelButtonColor: AppColor.steelGray600,
         showAsBottomSheet: true,
         icon: SvgPicture.asset(imagePaths.icEmpty, fit: BoxFit.fill),
       ).whenComplete(() => _sendButtonState = ButtonState.enabled);
