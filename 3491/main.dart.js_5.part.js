@@ -11844,7 +11844,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (countComposerHidden > 0)
         t1.push(new C.ExpandComposerButton(countComposerHidden, new C.ComposerOverlayView_build__closure1(this.context), t2.get$showComposerIfHidden(), _null));
       B.JSArray_methods.addAll$1(t1, visibleComposers);
-      return A.SingleChildScrollView$(new A.Padding(B.EdgeInsetsDirectional_16_16_16_16, A.Row$(t1, B.CrossAxisAlignment_1, _null, B.MainAxisAlignment_0, B.MainAxisSize_0, _null), _null), _null, _null, _null, _null, _null, B.Axis_0);
+      return new A.Padding(B.EdgeInsetsDirectional_16_16_16_16, A.Row$(t1, B.CrossAxisAlignment_1, _null, B.MainAxisAlignment_0, B.MainAxisSize_0, _null), _null);
     },
     $signature: 3
   };
@@ -18147,5 +18147,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "+pn+SCfL/hjDD45GQshDWUHdcSY=");
+})($__dart_deferred_initializers__, "Ds6K6o+xpOyFPQYoLvpBVC2mNf0=");
 ;
