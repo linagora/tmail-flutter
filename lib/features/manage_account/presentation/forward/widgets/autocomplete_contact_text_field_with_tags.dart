@@ -449,6 +449,10 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
       alignCenter: true,
       onConfirmAction: confirmAction,
       onCancelAction: cancelAction,
+      cancelButtonColor: AppColor.blue700,
+      cancelLabelButtonColor: Colors.white,
+      actionButtonColor: AppColor.grayBackgroundColor,
+      confirmLabelButtonColor: AppColor.steelGray600,
       icon: SvgPicture.asset(
         _imagePaths.icQuotasWarning,
         width: 40,

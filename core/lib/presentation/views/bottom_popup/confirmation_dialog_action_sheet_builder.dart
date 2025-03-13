@@ -99,7 +99,7 @@ class ConfirmationDialogActionSheetBuilder {
                   child: Text(
                       _confirmText ?? '',
                       style: _styleConfirmButton ?? Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColor.steelGray600,
+                        color: AppColor.colorActionDeleteConfirmDialog,
                       )),
                   onPressed: () => _onConfirmActionClick?.call(),
                 ),
@@ -112,7 +112,7 @@ class ConfirmationDialogActionSheetBuilder {
             child: Text(
                 _cancelText ?? '',
                 style: _styleCancelButton ??  Theme.of(context).textTheme.bodyLarge?.copyWith(
-                  color: Colors.white,
+                  color: AppColor.blue700,
                 )),
             onPressed: () => _onCancelActionClick?.call(),
           ),

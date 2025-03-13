@@ -86,6 +86,10 @@ mixin MailboxActionHandlerMixin {
             confirmText: AppLocalizations.of(context).delete,
             cancelText: AppLocalizations.of(context).cancel,
             useIconAsBasicLogo: true,
+            cancelBackgroundButtonColor: AppColor.blue700,
+            cancelLabelButtonColor: Colors.white,
+            confirmBackgroundButtonColor: AppColor.grayBackgroundColor,
+            confirmLabelButtonColor: AppColor.steelGray600,
             onCloseButtonAction: popBack,
             onConfirmButtonAction: () {
               popBack();
@@ -149,6 +153,10 @@ mixin MailboxActionHandlerMixin {
             confirmText: AppLocalizations.of(context).delete_all,
             cancelText: AppLocalizations.of(context).cancel,
             useIconAsBasicLogo: true,
+            cancelBackgroundButtonColor: AppColor.blue700,
+            cancelLabelButtonColor: Colors.white,
+            confirmBackgroundButtonColor: AppColor.grayBackgroundColor,
+            confirmLabelButtonColor: AppColor.steelGray600,
             onCloseButtonAction: popBack,
             onConfirmButtonAction: () {
               popBack();

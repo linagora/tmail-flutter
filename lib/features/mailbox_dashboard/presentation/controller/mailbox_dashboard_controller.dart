@@ -1564,6 +1564,10 @@ class MailboxDashBoardController extends ReloadableController
           ),
           confirmText: actionType.getConfirmActionName(context),
           cancelText: AppLocalizations.of(context).cancel,
+          cancelBackgroundButtonColor: AppColor.blue700,
+          cancelLabelButtonColor: Colors.white,
+          confirmBackgroundButtonColor: AppColor.grayBackgroundColor,
+          confirmLabelButtonColor: AppColor.steelGray600,
           onConfirmButtonAction: () => _deleteSelectionEmailsPermanentlyAction(
             actionType,
             listEmails: listEmails,
@@ -2704,6 +2708,10 @@ class MailboxDashBoardController extends ReloadableController
           textContent: AppLocalizations.of(context).emptySpamMessageDialog,
           confirmText: AppLocalizations.of(context).delete_all,
           cancelText: AppLocalizations.of(context).cancel,
+          cancelBackgroundButtonColor: AppColor.blue700,
+          cancelLabelButtonColor: Colors.white,
+          confirmBackgroundButtonColor: AppColor.grayBackgroundColor,
+          confirmLabelButtonColor: AppColor.steelGray600,
           onConfirmButtonAction: () {
             popBack();
             if (spamMailbox.countTotalEmails > 0) {
