@@ -157,7 +157,7 @@ class _PDFViewerState extends State<PDFViewer> {
             };
             
             return TwakePdfPreviewer(
-              bytes: bytes,
+              bytes: Uint8List.fromList(bytes ?? []),
               previewerOptions: PreviewerOptions(
                 previewerState: previewerState,
                 onError: (error) {
