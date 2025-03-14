@@ -256,7 +256,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             child: InsertImageLoadingBarWidget(
                               uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
                               viewState: controller.viewState.value,
-                              padding: ComposerStyle.insertImageLoadingBarPadding,
+                              margin: ComposerStyle.insertImageLoadingBarMargin,
                             ),
                           )),
                           Obx(() => Padding(
@@ -435,7 +435,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         child: InsertImageLoadingBarWidget(
                           uploadInlineViewState: controller.uploadController.uploadInlineViewState.value,
                           viewState: controller.viewState.value,
-                          padding: ComposerStyle.insertImageLoadingBarPadding,
+                          margin: ComposerStyle.insertImageLoadingBarMargin,
                         ),
                       )),
                       Obx(() => Padding(
