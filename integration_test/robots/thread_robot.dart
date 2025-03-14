@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
+import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
@@ -40,4 +41,14 @@ class ThreadRobot extends CoreRobot {
   Future<void> tapDeleteAllButtonOnEmptyTrashConfirmDialog(
     AppLocalizations appLocalizations,
   ) => $(appLocalizations.delete_all).tap();
+
+  Future<void> scrollToEmailWithSubject(String subject) async {
+    await $.scrollUntilVisible(finder: $(subject), delta: 300);
+    await $.pumpAndSettle();
+  }
+
+  Future<void> scrollToTop() async {
+    await $(ScrollToTopButtonWidget).$(InkWell).tap();
+    await $.pumpAndSettle();
+  }
 }
