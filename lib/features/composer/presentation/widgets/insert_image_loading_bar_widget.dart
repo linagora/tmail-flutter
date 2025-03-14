@@ -25,7 +25,10 @@ class InsertImageLoadingBarWidget extends StatelessWidget {
       (failure) => _viewStateToUI(viewState),
       (success) {
         if (success is UploadingAttachmentUploadState) {
-          return const LinearProgressIndicator(color: AppColor.primaryColor);
+          return const LinearProgressIndicator(
+            color: AppColor.primaryColor,
+            backgroundColor: AppColor.colorBgMailboxSelected,  
+          );
         } else {
           return _viewStateToUI(viewState);
         }
