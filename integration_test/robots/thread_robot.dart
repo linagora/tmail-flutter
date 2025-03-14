@@ -51,4 +51,20 @@ class ThreadRobot extends CoreRobot {
     await $(ScrollToTopButtonWidget).$(InkWell).tap();
     await $.pumpAndSettle();
   }
+
+  Future<void> openQuickFilter() async {
+    await $(#mobile_filter_message_button).tap();
+  }
+
+  Future<void> selectAttachmentFilter() async {
+    await $(#filter_email_attachments).tap();
+  }
+
+  Future<void> selectUnreadFilter() async {
+    await $(#filter_email_unread).tap();
+  }
+
+  Future<void> selectStarredFilter() async {
+    await $(#filter_email_starred).tap();
+  }
 }
