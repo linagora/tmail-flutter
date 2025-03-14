@@ -54,16 +54,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.Scaffold$(_null, C.Color_4294967295, new A.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, A._setArrayType([new A.Obx(new B.EmailPreviewerView_build_closure(this, context), _null), new A.Align(C.AlignmentDirectional_0_m1, _null, _null, new A.Obx(new B.EmailPreviewerView_build_closure0(this), _null), _null)], type$.JSArray_Widget), _null), _null, _null, true, _null, _null, _null);
     },
     _buildEMLPreviewerWidget$2(context, emlPreviewer) {
-      var t3, t4,
+      var t3, t4, _null = null,
         t1 = type$.MediaQuery,
-        t2 = A.InheritedModel_inheritFrom(context, null, t1).data;
-      t1 = A.InheritedModel_inheritFrom(context, null, t1).data;
+        t2 = A.InheritedModel_inheritFrom(context, _null, t1).data;
+      t1 = A.InheritedModel_inheritFrom(context, _null, t1).data;
       t3 = A.Directionality_maybeOf(context);
       if (t3 == null)
         t3 = C.TextDirection_1;
       t4 = $.$get$GetWidget__cache();
       A.Expando__checkType(this);
-      return A.HtmlContentViewerOnWeb$(true, emlPreviewer.content, t3, t1.size._dy, false, null, A._instanceType(this)._eval$1("GetWidget.S")._as(t4._jsWeakMap.get(this)).get$onClickHyperLink(), t2.size._dx);
+      return A.HtmlContentViewerOnWeb$(true, emlPreviewer.content, _null, t3, t1.size._dy, false, _null, A._instanceType(this)._eval$1("GetWidget.S")._as(t4._jsWeakMap.get(this)).get$onClickHyperLink(), false, t2.size._dx);
     }
   };
   var typesOffset = hunkHelpers.updateTypes(["DownloadAttachmentLoadingBar()"]);
@@ -76,7 +76,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = this.context;
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).emlContentViewState.get$value(0).fold$2(0, new B.EmailPreviewerView_build__closure(t3), new B.EmailPreviewerView_build__closure0(t1, t3));
     },
-    $signature: 3
+    $signature: 4
   };
   B.EmailPreviewerView_build__closure.prototype = {
     call$1(failure) {
@@ -98,7 +98,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return D.Center_yTp;
     },
-    $signature: 53
+    $signature: 50
   };
   B.EmailPreviewerView_build_closure0.prototype = {
     call$0() {
@@ -132,5 +132,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_11", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "19wKmL71+h+uGWH6DoF5cVw5yqg=");
+})($__dart_deferred_initializers__, "qERen9/x53uhOErShMPzdSq/IyY=");
 ;
