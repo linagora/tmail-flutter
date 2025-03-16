@@ -2,7 +2,7 @@
 
 # Define users and folders
 users=("alice" "bob" "brian" "charlotte" "david" "emma")
-bobFolders=("Search Emails" "Forward Emails" "Disposition" "MailBase64")
+bobFolders=("Search Emails" "Forward Emails" "Disposition" "MailBase64" "Reply Emails")
 
 # Add users
 for user in "${users[@]}"; do
@@ -62,3 +62,12 @@ james-cli ImportEml \#private "bob@example.com" "Disposition" "/root/conf/integr
 # Import email into 'MailBase64' folder for user Bob
 echo "Importing 0.eml into 'MailBase64' folder for user bob"
 james-cli ImportEml \#private "bob@example.com" "MailBase64" "/root/conf/integration_test/eml/reply_email_with_image_base64/0.eml"
+
+# For test reply email
+# Import emails into 'Reply Emails' folder for user Bob
+replyEmailsEML=("reply-all.eml" "reply-to-list.eml" "with-reply-to.eml" "without-reply-to.eml")
+
+for eml in "${replyEmailsEML[@]}"; do
+  echo "Importing $eml into 'Reply Emails' folder for user bob"
+  james-cli ImportEml \#private "bob@example.com" "Reply Emails" "/root/conf/integration_test/eml/reply_email/$eml"
+done
