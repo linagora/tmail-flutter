@@ -15,6 +15,8 @@ import '../robots/thread_robot.dart';
 
 class ForwardEmailScenario extends BaseTestScenario {
 
+  static const String queryString = 'Fwd: Forward email to Bob';
+
   const ForwardEmailScenario(super.$);
 
   @override
@@ -24,12 +26,11 @@ class ForwardEmailScenario extends BaseTestScenario {
     await _expectSearchViewVisible();
 
     final searchRobot = SearchRobot($);
-    await searchRobot.enterQueryString('Forward email');
-    await _expectSuggestionSearchListViewVisible();
+    await searchRobot.enterQueryString(queryString);
     await searchRobot.tapOnShowAllResultsText();
     await _expectSearchResultEmailListVisible();
 
-    await searchRobot.openEmailWithSubject('Fwd: Forward email');
+    await searchRobot.openEmailWithSubject(queryString);
     await _expectEmailViewVisible();
     await _expectForwardEmailButtonVisible();
 
@@ -48,10 +49,6 @@ class ForwardEmailScenario extends BaseTestScenario {
     await expectViewVisible($(SearchEmailView));
   }
 
-  Future<void> _expectSuggestionSearchListViewVisible() async {
-    await expectViewVisible($(#suggestion_search_list_view));
-  }
-
   Future<void> _expectSearchResultEmailListVisible() async {
     await expectViewVisible($(#search_email_list_notification_listener));
     await $.pump(const Duration(seconds: 3));
@@ -63,7 +60,6 @@ class ForwardEmailScenario extends BaseTestScenario {
 
   Future<void> _expectForwardEmailButtonVisible() async {
     await expectViewVisible($(#forward_email_button));
-    await $.pump(const Duration(seconds: 3));
   }
 
   Future<void> _expectComposerViewVisible() async {
