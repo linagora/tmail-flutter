@@ -207,4 +207,14 @@ mixin ScenarioUtilsMixin {
       },
     );
   }
+
+  bool isMatchingEmailList(List<EmailAddress> emailList, Set<String> allowedEmails) {
+    if (emailList.length != allowedEmails.length) {
+      return false;
+    }
+
+    final Set<String> emails = emailList.map((e) => e.email).whereType<String>().toSet();
+
+    return emails.length == allowedEmails.length && emails.containsAll(allowedEmails);
+  }
 }
