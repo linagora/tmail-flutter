@@ -21,6 +21,14 @@ class EmailRobot extends CoreRobot {
     await $(#reply_email_button).tap();
   }
 
+  Future<void> onTapReplyToListEmail() async {
+    await $(#reply_to_list_email_button).tap();
+  }
+
+  Future<void> onTapReplyAllEmail() async {
+    await $(#reply_all_emails_button).tap();
+  }
+
   Future<void> onTapBackButton() async {
     await $(find.byType(EmailViewBackButton)).first.tap();
   }
