@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 abstract class PlatformInfo {
   @visibleForTesting
   static bool isTestingForWeb = false;
+  @visibleForTesting
+  static bool isIntegrationTesting = false;
 
   static bool get isWeb => kIsWeb || isTestingForWeb;
   static bool get isLinux => !isWeb && defaultTargetPlatform == TargetPlatform.linux;
