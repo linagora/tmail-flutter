@@ -11,32 +11,60 @@ import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
 class PreferencesInteractorsBindings extends InteractorsBindings {
 
+  final String? composerId;
+
+  PreferencesInteractorsBindings({this.composerId});
+
   @override
   void bindingsDataSource() {
-    Get.lazyPut<ServerSettingsDataSource>(() => Get.find<RemoteServerSettingsDataSourceImpl>());
+    Get.lazyPut<ServerSettingsDataSource>(
+      () => Get.find<RemoteServerSettingsDataSourceImpl>(tag: composerId),
+      tag: composerId,
+    );
   }
 
   @override
   void bindingsDataSourceImpl() {
     Get.lazyPut(() => RemoteServerSettingsDataSourceImpl(
-      Get.find<ServerSettingsAPI>(), 
+      Get.find<ServerSettingsAPI>(),
       Get.find<RemoteExceptionThrower>(),
-    ));
+    ), tag: composerId);
   }
 
   @override
   void bindingsInteractor() {
-    Get.lazyPut(() => GetServerSettingInteractor(Get.find<ServerSettingsRepository>()));
-    Get.lazyPut(() => UpdateServerSettingInteractor(Get.find<ServerSettingsRepository>()));
+    Get.lazyPut(
+      () => GetServerSettingInteractor(Get.find<ServerSettingsRepository>(tag: composerId)),
+      tag: composerId,
+    );
+    Get.lazyPut(
+      () => UpdateServerSettingInteractor(Get.find<ServerSettingsRepository>(tag: composerId)),
+      tag: composerId,
+    );
   }
 
   @override
   void bindingsRepository() {
-    Get.lazyPut<ServerSettingsRepository>(() => Get.find<ServerSettingsRepositoryImpl>());
+    Get.lazyPut<ServerSettingsRepository>(
+      () => Get.find<ServerSettingsRepositoryImpl>(tag: composerId),
+      tag: composerId,
+    );
   }
 
   @override
   void bindingsRepositoryImpl() {
-    Get.lazyPut(() => ServerSettingsRepositoryImpl(Get.find<ServerSettingsDataSource>()));
+    Get.lazyPut(
+      () => ServerSettingsRepositoryImpl(Get.find<ServerSettingsDataSource>(tag: composerId)),
+      tag: composerId,
+    );
+  }
+
+  void dispose() {
+    Get.delete<RemoteServerSettingsDataSourceImpl>(tag: composerId);
+    Get.delete<ServerSettingsDataSource>(tag: composerId);
+    Get.delete<ServerSettingsRepositoryImpl>(tag: composerId);
+    Get.delete<ServerSettingsRepository>(tag: composerId);
+    Get.delete<UpdateServerSettingInteractor>(tag: composerId);
+    Get.delete<GetServerSettingInteractor>(tag: composerId);
   }
 }

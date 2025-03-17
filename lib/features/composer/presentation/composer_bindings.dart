@@ -84,7 +84,7 @@ class ComposerBindings extends BaseBindings {
   @override
   void bindingsDataSourceImpl() {
     Get.lazyPut(() => AttachmentUploadDataSourceImpl(
-      Get.find<FileUploader>(tag: composerId),
+      Get.find<FileUploader>(),
       Get.find<Uuid>(),
       Get.find<RemoteExceptionThrower>(),
     ), tag: composerId);
@@ -142,6 +142,10 @@ class ComposerBindings extends BaseBindings {
       Get.find<SessionStorageManager>(),
       Get.find<CacheExceptionThrower>(),
     ), tag: composerId);
+    Get.lazyPut(() => SessionStorageComposerDatasourceImpl(
+      Get.find<HtmlTransform>(),
+      Get.find<CacheExceptionThrower>(),
+    ), tag: composerId);
   }
 
   @override
@@ -176,6 +180,10 @@ class ComposerBindings extends BaseBindings {
     );
     Get.lazyPut<PrintFileDataSource>(
       () => Get.find<PrintFileDataSourceImpl>(tag: composerId),
+      tag: composerId,
+    );
+    Get.lazyPut<SessionStorageComposerDatasource>(
+      () => Get.find<SessionStorageComposerDatasourceImpl>(tag: composerId),
       tag: composerId,
     );
   }
@@ -293,7 +301,7 @@ class ComposerBindings extends BaseBindings {
     );
 
     IdentityInteractorsBindings(composerId: composerId).dependencies();
-    PreferencesInteractorsBindings().dependencies();
+    PreferencesInteractorsBindings(composerId: composerId).dependencies();
   }
 
   @override
@@ -347,7 +355,6 @@ class ComposerBindings extends BaseBindings {
     Get.delete<EmailHiveCacheDataSourceImpl>(tag: composerId);
     Get.delete<EmailLocalStorageDataSourceImpl>(tag: composerId);
     Get.delete<EmailSessionStorageDatasourceImpl>(tag: composerId);
-    Get.delete<RemoteServerSettingsDataSourceImpl>(tag: composerId);
     Get.delete<SessionStorageComposerDatasourceImpl>(tag: composerId);
 
     Get.delete<AttachmentUploadDataSource>(tag: composerId);
@@ -358,7 +365,6 @@ class ComposerBindings extends BaseBindings {
     Get.delete<HtmlDataSource>(tag: composerId);
     Get.delete<StateDataSource>(tag: composerId);
     Get.delete<PrintFileDataSource>(tag: composerId);
-    Get.delete<ServerSettingsDataSource>(tag: composerId);
     Get.delete<SessionStorageComposerDatasource>(tag: composerId);
 
     Get.delete<ComposerRepositoryImpl>(tag: composerId);
@@ -366,14 +372,12 @@ class ComposerBindings extends BaseBindings {
     Get.delete<ContactRepositoryImpl>(tag: composerId);
     Get.delete<MailboxRepositoryImpl>(tag: composerId);
     Get.delete<EmailRepositoryImpl>(tag: composerId);
-    Get.delete<ServerSettingsRepositoryImpl>(tag: composerId);
 
     Get.delete<ComposerRepository>(tag: composerId);
     Get.delete<ComposerCacheRepository>(tag: composerId);
     Get.delete<ContactRepository>(tag: composerId);
     Get.delete<MailboxRepository>(tag: composerId);
     Get.delete<EmailRepository>(tag: composerId);
-    Get.delete<ServerSettingsRepository>(tag: composerId);
 
     Get.delete<LocalFilePickerInteractor>(tag: composerId);
     Get.delete<LocalImagePickerInteractor>(tag: composerId);
@@ -383,14 +387,12 @@ class ComposerBindings extends BaseBindings {
     Get.delete<SaveComposerCacheOnWebInteractor>(tag: composerId);
     Get.delete<DownloadImageAsBase64Interactor>(tag: composerId);
     Get.delete<TransformHtmlEmailContentInteractor>(tag: composerId);
-    Get.delete<GetAlwaysReadReceiptSettingInteractor>(tag: composerId);
     Get.delete<CreateNewAndSendEmailInteractor>(tag: composerId);
     Get.delete<CreateNewAndSaveEmailToDraftsInteractor>(tag: composerId);
     Get.delete<RestoreEmailInlineImagesInteractor>(tag: composerId);
     Get.delete<PrintEmailInteractor>(tag: composerId);
 
-    Get.delete<FileUploader>(tag: composerId);
-
     IdentityInteractorsBindings(composerId: composerId).dispose();
+    PreferencesInteractorsBindings(composerId: composerId).dispose();
   }
 }
