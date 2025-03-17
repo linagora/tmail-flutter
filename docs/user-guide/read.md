@@ -88,7 +88,8 @@ our anti-spam).
 
 One can select email by clicking on the sender icon:
 
-![Actions on selected mails](images/action2.png)
+![Group 2](https://github.com/user-attachments/assets/023f8b4d-9439-4f7f-af40-cc0378f2b187)
+
 
 Actions on selected emails are applied on all selected mails and include:
 
@@ -101,22 +102,31 @@ in this mailbox).
 
 Actions can also be performed on opened emails:
 
-![Group 34 (1)](https://github.com/user-attachments/assets/bcca4a7f-7e0f-4aa3-8a63-3ed585b7293a)
+![Group 5](https://github.com/user-attachments/assets/cfb4c6ed-9746-44d7-8fdb-2331cd0d213d)
+
 
 Actions on opened email include:
 
- - (1) Reply/Reply all. It opens a composer, adds `Re:` prefix before the topics, set the sender of the previous email as a `To` recipients and quotes the previous email.
- - (2) Forward this mail. It opens a composer, adds `Fwd:` prefix before the topics, quotes the previous email, and let you sepcify the recipients you want.
- - (3) Move this message into another folder. It opens a dialog window to let you choose the target folder.
- - (4) Mark this message as `starred`
- - (5) Move this email to the tash. Same as (3) but you do not have to select the target folder. Note that emails can only be deleted in the Trash (this action is then replaced by "Delete Permanently"
+ - (1) Reply all: It opens a composer, adds `Re:` prefix before the topics, set the sender and other recipients of the previous email as a `To` recipients and quotes the previous email.
+ - (2) Reply to list:Allows you to reply to all recipients included in the mailing list 
+ - (3) Reply: It opens a composer, adds `Re:` prefix before the topics, set the sender email and the sender of the previous as a "To" recipient and quotes the previous email
+ - (4) Forward: It opens a composer, adds `Fwd:` prefix before the topics, quotes the previous email, and let you sepcify the recipients you want.
+ - (5) New message:It opens a new composer 
+ - (6) Move this message into another folder. It opens a dialog window to let you choose the target folder.
+ - (7) Mark this message as `starred`
+ - (8) Print: Clicking it will open the print preview window.
+ - (9) Move this email to the trash. Same as (6) but you do not have to select the target folder. Note that emails can only be deleted in the Trash (this action is then replaced by "Delete Permanently"
 in this mailbox).
- - (6) Extra actions are also available. They are detailed below.
- - (7) Mark as read / mark as unread
- - (8) Report this email as Spam (which moves this email into the Spam mailbox. This email will eventually be reported as Spam to our anti-spam).
- - (9) Create an [email rule](profile.md#email-rule) for this email. Email rules allow to declare criteria upon which matching emails would be moved to a folder.
- - (10) Archive message: This action will move the message to Archive Folder
- - (11) Download message as eml
+
+Extra actions are also available. They are detailed below:
+
+ - (10) Mark as read / mark as unread
+ - (11) Report this email as Spam (which moves this email into the Spam mailbox. This email will eventually be reported as Spam to our anti-spam).
+ - (12) Create an [email rule](profile.md#email-rule) for this email. Email rules allow to declare criteria upon which matching emails would be moved to a folder.
+ - (13) Unsubscribe: Click this button to request removal from the sender’s mailing list. A popup will appear to confirm the unsubscription. 
+ - (14) Archive message: This action will move the message to Archive Folder
+ - (15) Download message as eml
+ - (16) Edit as a new email: A new email composer will open with the original email's content prefilled. User can ddit the subject, recipients, or message body as needed.
 
 **On mobile**
 
@@ -135,25 +145,29 @@ in this mailbox).
 
 Actions can also be performed on opened emails:
 
-![Frame 28 (1)](https://github.com/linagora/tmail-flutter/assets/68209176/47dc1bf2-ce81-403e-be90-e44a4c11ed96)
+![Frame 1](https://github.com/user-attachments/assets/7e76612a-054b-45a1-9f31-18141849de8f)
 
 
-- (1) Reply/Reply all: It opens a composer, adds `Re:` prefix before the topics, set the sender email and all other recipients of the previous  as a `To` recipients and quotes the previous email.
-- (2) Forward this mail. It opens a composer, adds `Fwd:` prefix before the topics, quotes the previous email, and let you sepcify the recipients you want.
-- (3) New message: It opens a new composer 
- - (5) Move this message into another folder. It opens a dialog window to let you choose the target folder.
- - (6) Mark this message as `starred`
- - (7) Move this email to the trash. Same as (3) but you do not have to select the target folder. Note that emails can only be deleted in the Trash (this action is then replaced by "Delete Permanently"
+- (1) Reply all: It opens a composer, adds `Re:` prefix before the topics, set the sender email and all other recipients of the previous  as a `To` recipients and quotes the previous email.
+- (2) Reply to list: If the email was sent to a mailing list (e.g., team@company.com), clicking "Reply to List" will send your response to the entire list instead of just the sender.
+- (3) Reply : It opens a composer, adds `Re:` prefix before the topics, set the sender email and the sender of the previous as a "To" recipient and quotes the previous email
+- (4) Forward:  It opens a composer, adds `Fwd:` prefix before the topics, quotes the previous email, and let you sepcify the recipients you want.
+- (5) New message: It opens a new composer 
+- (6) Move this message into another folder. It opens a dialog window to let you choose the target folder.
+- (7) Mark this message as `starred`
+- (8) Move this email to the trash. Same as (3) but you do not have to select the target folder. Note that emails can only be deleted in the Trash (this action is then replaced by "Delete Permanently"
 in this mailbox).
 
  Extra actions are also available when you click on 3-dot button on top right. They are detailed below:
 
-![Frame 20 (1)](https://github.com/user-attachments/assets/7983bea0-ace3-4657-8525-4311957c0728)
+![Frame 2](https://github.com/user-attachments/assets/0b8d16fe-ed63-48fc-b170-a0787459f7e5)
 
 
- - (8) Mark as read / mark as unread
- - (9) Report this email as Spam (which moves this email into the Spam mailbox. This email will eventually be reported as Spam to our anti-spam).
- - (10) Create an [email rule](profile.md#email-rule) for this email. Email rules allow to declare criteria upon which matching emails would be moved to a folder.
- - (11) Archive message: This action will move the message to Archive folder.
+ - (9) Mark as read / mark as unread
+ - (10) Report this email as Spam (which moves this email into the Spam mailbox. This email will eventually be reported as Spam to our anti-spam).
+ - (11) Create an [email rule](profile.md#email-rule) for this email. Email rules allow to declare criteria upon which matching emails would be moved to a folder.
+ - (12) Unsubscribe: Click this button to request removal from the sender’s mailing list. A popup will appear to confirm the unsubscription.
+ - (13) Archive message: This action will move the message to Archive folder.
+ - (14) Edit as a new message: A new email composer will open with the original email's content prefilled. User can ddit the subject, recipients, or message body as needed.
 
 
