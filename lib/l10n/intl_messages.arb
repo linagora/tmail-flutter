@@ -3212,6 +3212,16 @@
       "limit": {}
     }
   },
+  "quotaExceedAmount": "{amount} exceeded",
+  "@quotaExceedAmount": {
+    "type": "text",
+    "placeholders_order": [
+      "amount"
+    ],
+    "placeholders": {
+      "amount": {}
+    }
+  },
   "quotaErrorBannerTitle": "You have run out of storage space",
   "@quotaErrorBannerTitle": {
     "type": "text",

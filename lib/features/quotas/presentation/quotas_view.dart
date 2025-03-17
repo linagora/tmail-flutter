@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/quotas/domain/extensions/quota_extensions.dart';
+import 'package:tmail_ui_user/features/quotas/domain/state/get_quotas_state.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/styles/quotas_view_styles.dart';
+import 'package:tmail_ui_user/features/quotas/presentation/widget/quota_reload_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class QuotasView extends GetWidget<QuotasController> {
@@ -16,6 +18,10 @@ class QuotasView extends GetWidget<QuotasController> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      final isLoading = controller.viewState.value.fold(
+        (failure) => false,
+        (success) => success is GetQuotasLoading,
+      );
       if (controller.octetsQuota.value != null && controller.octetsQuota.value!.storageAvailable) {
         final octetQuota = controller.octetsQuota.value!;
         return LayoutBuilder(builder: (context, constraints) {
@@ -48,7 +54,7 @@ class QuotasView extends GetWidget<QuotasController> {
                       fit: BoxFit.fill,
                     ),
                     const SizedBox(width: QuotasViewStyles.iconPadding),
-                    Expanded(
+                    Flexible(
                       child: Text(
                         AppLocalizations.of(context).storageQuotas,
                         style: const TextStyle(
@@ -59,7 +65,13 @@ class QuotasView extends GetWidget<QuotasController> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                    )
+                    ),
+                    const SizedBox(width: QuotasViewStyles.iconPadding),
+                    QuotaReloadButton(
+                      icon: controller.imagePaths.icRefresh,
+                      isLoading: isLoading,
+                      onTap: controller.reloadQuota,
+                    ),
                   ],
                 ),
                 const SizedBox(height: QuotasViewStyles.space),
