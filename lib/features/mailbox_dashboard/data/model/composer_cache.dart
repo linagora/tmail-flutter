@@ -19,7 +19,7 @@ class ComposerCache with EquatableMixin {
     this.email,
     this.hasRequestReadReceipt,
     this.isMarkAsImportant,
-    this.displayMode = ScreenDisplayMode.normal
+    this.displayMode = ScreenDisplayMode.normal,
     this.composerIndex,
     this.composerId,
   });
@@ -33,7 +33,7 @@ class ComposerCache with EquatableMixin {
     email,
     hasRequestReadReceipt,
     isMarkAsImportant,
-    displayMode
+    displayMode,
     composerIndex,
     composerId,
   ];

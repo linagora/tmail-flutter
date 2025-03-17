@@ -84,7 +84,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         ComposeButtonWidget(
                           imagePaths: controller.imagePaths,
                           onTapAction: () =>
-                            controller.goToComposer(ComposerArguments()),
+                            controller.openComposer(ComposerArguments()),
                         ),
                         Expanded(child: SizedBox(
                           width: ResponsiveUtils.defaultSizeMenu,
