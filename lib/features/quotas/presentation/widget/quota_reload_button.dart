@@ -1,6 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 
 class QuotaReloadButton extends StatefulWidget {
   const QuotaReloadButton({
@@ -52,6 +52,7 @@ class _QuotaReloadButtonState extends State<QuotaReloadButton> with SingleTicker
       child: TMailButtonWidget.fromIcon(
         icon: widget.icon,
         iconColor: AppColor.steelGray400,
+        backgroundColor: Colors.transparent,
         iconSize: 20,
         padding: EdgeInsets.zero,
         onTapActionCallback: () {
