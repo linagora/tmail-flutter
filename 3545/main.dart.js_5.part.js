@@ -8728,7 +8728,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.InsertImageLoadingBarWidget.prototype = {
     build$1(context) {
       var _null = null;
-      return A.Container$(_null, this.uploadInlineViewState.fold$2(0, new B.InsertImageLoadingBarWidget_build_closure(this), new B.InsertImageLoadingBarWidget_build_closure0(this)), C.Clip_0, _null, _null, _null, _null, 1, _null, _null, C.EdgeInsets_16_0_16_0, _null, _null, _null);
+      return A.Container$(_null, this.uploadInlineViewState.fold$2(0, new B.InsertImageLoadingBarWidget_build_closure(this), new B.InsertImageLoadingBarWidget_build_closure0(this)), C.Clip_0, _null, _null, _null, _null, 2, _null, _null, C.EdgeInsets_16_0_16_0, _null, _null, _null);
     },
     _viewStateToUI$1(viewState) {
       return viewState.fold$2(0, new B.InsertImageLoadingBarWidget__viewStateToUI_closure(), new B.InsertImageLoadingBarWidget__viewStateToUI_closure0());
@@ -23099,5 +23099,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "ZxiY4RCGelVazeEx+VzJjBHCNs4=");
+})($__dart_deferred_initializers__, "xcvpn5BludLJhpO9sWnfSl+uvq4=");
 ;
