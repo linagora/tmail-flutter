@@ -67,4 +67,14 @@ class ThreadRobot extends CoreRobot {
   Future<void> selectStarredFilter() async {
     await $(#starred_filter).tap();
   }
+
+  Future<void> pullToRefreshByEmailSubject(String subject) async {
+    await $(subject).waitUntilVisible();
+    await $.tester.fling(
+      $(subject),
+      const Offset(0, 300),
+      1000,
+    );
+    await $.pumpAndSettle();
+  }
 }
