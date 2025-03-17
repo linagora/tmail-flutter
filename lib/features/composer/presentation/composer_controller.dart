@@ -71,6 +71,7 @@ import 'package:tmail_ui_user/features/composer/presentation/model/inline_image.
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
+import 'package:tmail_ui_user/features/composer/presentation/view/editor_view_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_message_dialog_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/sending_message_dialog_view.dart';
@@ -113,7 +114,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 
 class ComposerController extends BaseController
-    with DragDropFileMixin, AutoCompleteResultMixin
+    with DragDropFileMixin, AutoCompleteResultMixin, EditorViewMixin
     implements BeforeReconnectHandler {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
@@ -209,7 +210,6 @@ class ComposerController extends BaseController
 
   List<Attachment> initialAttachments = <Attachment>[];
   String? _textEditorWeb;
-  String? _initTextEditor;
   double? maxWithEditor;
   EmailId? _emailIdEditing;
   bool isAttachmentCollapsed = false;
@@ -221,6 +221,7 @@ class ComposerController extends BaseController
   int? _savedEmailDraftHash;
   bool _restoringSignatureButton = false;
   GlobalKey? responsiveContainerKey;
+  Worker? emailContentViewStateWorker;
 
   @visibleForTesting
   bool get restoringSignatureButton => _restoringSignatureButton;
@@ -282,7 +283,6 @@ class ComposerController extends BaseController
 
   @override
   void onClose() {
-    _initTextEditor = null;
     _textEditorWeb = null;
     dispatchState(Right(UIClosedState()));
     composerArguments.value = null;
@@ -301,6 +301,8 @@ class ComposerController extends BaseController
       responsiveContainerKey = null;
       menuMoreOptionController?.dispose();
       menuMoreOptionController = null;
+      emailContentViewStateWorker?.dispose();
+      emailContentViewStateWorker = null;
     } else {
       richTextMobileTabletController = null;
     }
@@ -437,6 +439,39 @@ class ComposerController extends BaseController
         }
       });
     });
+
+    if (PlatformInfo.isWeb) {
+      emailContentViewStateWorker = ever(emailContentsViewState, (state) {
+        state?.fold((_) => null, (success) {
+          if (success is GetEmailContentSuccess) {
+            onChangeTextEditorWeb(success.htmlEmailContent);
+          } else if (success is TransformHtmlEmailContentSuccess) {
+            final arguments = composerArguments.value;
+            if (arguments == null ||
+                currentContext == null ||
+                arguments.presentationEmail == null) return;
+
+            final emailActionType = arguments.emailActionType;
+
+            if (emailActionType == EmailActionType.reply ||
+                emailActionType == EmailActionType.replyAll ||
+                emailActionType == EmailActionType.replyToList ||
+                emailActionType == EmailActionType.forward) {
+
+              final emailContentQuoted = getEmailContentQuotedAsHtml(
+                  locale: Localizations.localeOf(currentContext!),
+                  appLocalizations: AppLocalizations.of(currentContext!),
+                  emailContent: success.htmlContent,
+                  emailActionType: arguments.emailActionType,
+                  presentationEmail: arguments.presentationEmail!
+              );
+
+              onChangeTextEditorWeb(emailContentQuoted);
+            }
+          }
+        });
+      });
+    }
   }
 
   void _triggerBrowserEventListener() {
@@ -584,9 +619,6 @@ class ComposerController extends BaseController
   }
 
   void onCreatedMobileEditorAction(BuildContext context, HtmlEditorApi editorApi, String? content) {
-    if (identitySelected.value != null) {
-      initTextEditor(content);
-    }
     richTextMobileTabletController?.htmlEditorApi = editorApi;
     richTextMobileTabletController?.richTextController.onCreateHTMLEditor(
       editorApi,
@@ -2067,11 +2099,7 @@ class ComposerController extends BaseController
   HtmlEditorApi? get htmlEditorApi => richTextMobileTabletController?.htmlEditorApi;
 
   void onChangeTextEditorWeb(String? text) {
-    if (identitySelected.value != null) {
-      initTextEditor(text);
-    }
     _textEditorWeb = text;
-
     _initEmailDraftHashAfterSignatureButtonRestored(text);
   }
 
@@ -2085,13 +2113,7 @@ class ComposerController extends BaseController
     _initEmailDraftHash();
   }
 
-  void initTextEditor(String? text) {
-    _initTextEditor ??= text;
-  }
-
   void setSubjectEmail(String subject) => subjectEmail.value = subject;
-
-
 
   void onAttachmentDropZoneListener(Attachment attachment) {
     log('ComposerController::onAttachmentDropZoneListener: attachment = $attachment');
