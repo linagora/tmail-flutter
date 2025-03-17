@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 abstract class PlatformInfo {
   @visibleForTesting
   static bool isTestingForWeb = false;
-  @visibleForTesting
+  // @visibleForTesting
   static bool isIntegrationTesting = false;
 
   static bool get isWeb => kIsWeb || isTestingForWeb;
