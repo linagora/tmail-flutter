@@ -42,7 +42,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
+    final child = LayoutBuilder(builder: (context, constraints) {
       return Container(
         height: PlatformInfo.isIOS
           ? EmailViewAppBarWidgetStyles.heightIOS(context, _responsiveUtils)
@@ -150,6 +150,15 @@ class EmailViewAppBarWidget extends StatelessWidget {
         ])
       );
     });
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (_, __) {
+        onBackAction();
+        return;
+      },
+      child: child,
+    );
   }
 
   bool _supportDisplayMailboxNameTitle(BuildContext context) {
