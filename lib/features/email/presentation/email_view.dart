@@ -478,7 +478,13 @@ class EmailView extends GetWidget<SingleEmailController> {
             } else {
               return const SizedBox.shrink();
             }
-          })
+          }),
+        if (PlatformInfo.isIntegrationTesting)
+          const Divider(
+            key: Key('integration_testing_email_detailed_divider'),
+            height: 5,
+            color: Colors.transparent,
+          ),
       ],
     );
   }

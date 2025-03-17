@@ -1,6 +1,9 @@
 
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
+import 'package:core/utils/platform_info.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_subject_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 
 import '../../base/base_test_scenario.dart';
@@ -18,6 +21,8 @@ class DisplayAndScrollEmailWithLongContentScenario extends BaseTestScenario {
 
   @override
   Future<void> runTestLogic() async {
+    PlatformInfo.isIntegrationTesting = true;
+
     const emailUser = String.fromEnvironment('BASIC_AUTH_EMAIL');
     final provisioningEmail = ProvisioningEmail(
       toEmail: emailUser,
@@ -35,6 +40,9 @@ class DisplayAndScrollEmailWithLongContentScenario extends BaseTestScenario {
     await $.pumpAndSettle(duration: const Duration(seconds: 3));
 
     await _expectEmailViewWithLongContent();
+    await _expectEmailViewScrollableWithLongContent();
+
+    PlatformInfo.isIntegrationTesting = false;
   }
 
   Future<void> _expectDisplayedEmailWithSubject() async {
@@ -53,5 +61,19 @@ class DisplayAndScrollEmailWithLongContentScenario extends BaseTestScenario {
       }),
       findsOneWidget,
     );
+  }
+
+  Future<void> _expectEmailViewScrollableWithLongContent() async {
+    expect($(EmailSubjectWidget).visible, isTrue);
+
+    await $.scrollUntilVisible(
+      finder: $(#integration_testing_email_detailed_divider),
+      scrollDirection: AxisDirection.down,
+      delta: 150,
+      maxScrolls: 100,
+    );
+    await $.pumpAndSettle();
+
+    expect($(EmailSubjectWidget).visible, isFalse);
   }
 }
