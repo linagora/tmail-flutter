@@ -141,6 +141,7 @@ class FileUtils {
 
   Future<String> getCharsetFromBytes(Uint8List bytes) async {
     try {
+      if (PlatformInfo.isIOS || PlatformInfo.isMacOS) return DEFAULT_CHARSET;
       final decodedResult = await CharsetDetector.autoDecode(bytes);
       log('FileUtils::getCharsetFromBytes: FILE_CHARSET = ${decodedResult.charset}');
       return decodedResult.charset;
