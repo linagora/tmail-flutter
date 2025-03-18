@@ -11,12 +11,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   var typesOffset = hunkHelpers.updateTypes([]);
   (function constants() {
     B.CupertinoLoadingWidget_null_null_null = new A.CupertinoLoadingWidget(null, null, null);
-    B.Color_4293128703 = new A.Color(4293128703);
   })();
 };
 ;
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_7", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "mgO/Ezb/dgTth0hpCBoKFWNNdQY=");
+})($__dart_deferred_initializers__, "RN9Mi4BIacGBButSjIMnTWQTg2A=");
 ;

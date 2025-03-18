@@ -44,7 +44,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t1 instanceof A.StartDownloadAttachmentForWeb)
         return D.LinearProgressIndicator_UVb;
       if (t1 instanceof A.DownloadingAttachmentForWeb)
-        return A.LinearPercentIndicator$(E.Color_4293128703, C.Radius_1_1, 5, C.EdgeInsets_0_0_0_0, t1.progress / 100, C.Color_4278221567);
+        return A.LinearPercentIndicator$(C.Color_4293128703, C.Radius_1_1, 5, C.EdgeInsets_0_0_0_0, t1.progress / 100, C.Color_4278221567);
       else
         return C.SizedBox_0_0_null_null;
     }
@@ -77,7 +77,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = this.context;
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).emlContentViewState.get$value(0).fold$2(0, new B.EmailPreviewerView_build__closure(t3), new B.EmailPreviewerView_build__closure0(t1, t3));
     },
-    $signature: 3
+    $signature: 4
   };
   B.EmailPreviewerView_build__closure.prototype = {
     call$1(failure) {
@@ -85,7 +85,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       return A.Center$(A.Text$(A.Intl__message("Cannot preview this eml file", _null, "previewEmailFromEMLFileFailed", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null);
     },
-    $signature: 1846
+    $signature: 1868
   };
   B.EmailPreviewerView_build__closure0.prototype = {
     call$1(success) {
@@ -99,7 +99,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return D.Center_yTp;
     },
-    $signature: 50
+    $signature: 51
   };
   B.EmailPreviewerView_build_closure0.prototype = {
     call$0() {
@@ -126,12 +126,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   (function constants() {
     D.Center_yTp = new A.Center(C.Alignment_0_0, null, null, E.CupertinoLoadingWidget_null_null_null, null);
-    D.LinearProgressIndicator_UVb = new A.LinearProgressIndicator(5, C.BorderRadius_ww8, null, E.Color_4293128703, C.Color_4278221567, null, null, null, null);
+    D.LinearProgressIndicator_UVb = new A.LinearProgressIndicator(5, C.BorderRadius_ww8, null, C.Color_4293128703, C.Color_4278221567, null, null, null, null);
   })();
 };
 ;
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_12", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "YxsjdwVxZMdwhwknAVGjfApJwiU=");
+})($__dart_deferred_initializers__, "msCz9yWeGVbRD8dUFLFAQ+8egvU=");
 ;
