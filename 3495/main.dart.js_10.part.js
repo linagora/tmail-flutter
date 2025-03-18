@@ -5774,7 +5774,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Color_4294637559 = new A.Color(4294637559);
     D.BoxDecoration_NYu = new A.BoxDecoration(D.Color_4294637559, null, null, B.BorderRadius_ww810, null, null, null, B.BoxShape_0);
     D.BoxDecoration_eWd = new A.BoxDecoration(F.Color_4294964674, null, null, B.BorderRadius_ww83, null, null, null, B.BoxShape_0);
-    D.CircleLoadingWidget_FVJ = new E.CircleLoadingWidget(null, B.EdgeInsets_16_16_16_16, null);
+    D.CircleLoadingWidget_FVJ = new E.CircleLoadingWidget0(null, B.EdgeInsets_16_16_16_16, null);
     D.Color_4292665573 = new A.Color(4292665573);
     D.Divider_SfU0 = new A.Divider(1, null, null, null, B.Color_4293190884, null);
     D.EdgeInsetsDirectional_10_0_0_0 = new A.EdgeInsetsDirectional(10, 0, 0, 0);
@@ -5873,5 +5873,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_10", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "7MobYulAw8dNCTS8ct4pvEfPzv8=");
+})($__dart_deferred_initializers__, "iT4OdlFHC1QTDQrWeg/RerJXsuo=");
 ;
