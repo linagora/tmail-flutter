@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' hide HttpClient;
 
 import 'package:collection/collection.dart';
@@ -125,6 +126,16 @@ mixin ScenarioUtilsMixin {
     final directory = await getTemporaryDirectory();
     final file = File('${directory.path}/test.txt');
     return file.writeAsString(content);
+  }
+
+  Future<File> generateImageFromBase64({
+    required String fileName,
+    required String base64Data,
+  }) async {
+    final bytes = base64Decode(base64Data);
+    final directory = await getTemporaryDirectory();
+    final file = File('${directory.path}/$fileName');
+    return file.writeAsBytes(bytes);
   }
 
   Future<List<Attachment>> uploadAttachments(
