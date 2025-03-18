@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:model/email/prefix_email_address.dart';
+import 'package:model/upload/file_info.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
@@ -10,7 +13,9 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/app_
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_suggestion_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
+import 'package:tmail_ui_user/features/upload/domain/state/local_image_picker_state.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 import '../base/core_robot.dart';
 import '../extensions/patrol_finder_extension.dart';
@@ -92,5 +97,20 @@ class ComposerRobot extends CoreRobot {
 
   Future<void> tapMarkAsImportantPopupItemOnMenu() async {
     await $(#mark_as_important_popup_item).tap();
+  }
+
+  Future<void> addInlineImageFromFile(File file) async {
+    final controller = getBinding<ComposerController>();
+
+    final filePath = file.path;
+    final fileSize = await file.length();
+    final fileName = filePath.split('/').last;
+
+    final fileInfo = FileInfo(
+      filePath: filePath,
+      fileSize: fileSize,
+      fileName: fileName,
+    );
+    controller?.handleSuccessViewState(LocalImagePickerSuccess(fileInfo));
   }
 }

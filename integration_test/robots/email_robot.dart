@@ -1,4 +1,6 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_item_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -23,5 +25,9 @@ class EmailRobot extends CoreRobot {
 
   Future<void> onTapBackButton() async {
     await $(find.byType(EmailViewBackButton)).first.tap();
+  }
+
+  Future<void> onTapAttachmentItem() async {
+    await $(AttachmentItemWidget).$(InkWell).tap();
   }
 }
