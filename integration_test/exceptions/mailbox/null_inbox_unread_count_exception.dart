@@ -1,0 +1,1 @@
+class NullInboxUnreadCountException implements Exception {}
