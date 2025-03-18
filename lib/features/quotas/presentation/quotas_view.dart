@@ -18,10 +18,6 @@ class QuotasView extends GetWidget<QuotasController> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final isLoading = controller.viewState.value.fold(
-        (failure) => false,
-        (success) => success is GetQuotasLoading,
-      );
       if (controller.octetsQuota.value != null && controller.octetsQuota.value!.storageAvailable) {
         final octetQuota = controller.octetsQuota.value!;
         return LayoutBuilder(builder: (context, constraints) {
@@ -67,11 +63,18 @@ class QuotasView extends GetWidget<QuotasController> {
                       ),
                     ),
                     const SizedBox(width: QuotasViewStyles.iconPadding),
-                    QuotaReloadButton(
-                      icon: controller.imagePaths.icRefresh,
-                      isLoading: isLoading,
-                      onTap: controller.reloadQuota,
-                    ),
+                    Obx(() {
+                      final isLoading = controller.viewState.value.fold(
+                        (failure) => false,
+                        (success) => success is GetQuotasLoading,
+                      );
+
+                      return QuotaReloadButton(
+                        icon: controller.imagePaths.icRefresh,
+                        isLoading: isLoading,
+                        onTap: controller.reloadQuota,
+                      );
+                    }),
                   ],
                 ),
                 const SizedBox(height: QuotasViewStyles.space),
