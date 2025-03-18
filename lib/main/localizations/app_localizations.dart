@@ -3302,14 +3302,6 @@ class AppLocalizations {
     );
   }
 
-  String quotaExceedAmount(String amount) {
-    return Intl.message(
-      '$amount exceeded',
-      name: 'quotaExceedAmount',
-      args: [amount],
-    );
-  }
-
   String get quotaErrorBannerTitle {
     return Intl.message(
       'You have run out of storage space',

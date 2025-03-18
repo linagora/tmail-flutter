@@ -15,12 +15,6 @@ extension QuotasExtensions on Quota {
 
   String get hardLimitStorageAsString => presentationHardLimit != null ? filesize(presentationHardLimit!.value) : '';
 
-  String get exceeded {
-    if (!isHardLimitReached) return '';
-
-    return filesize((used!.value - presentationHardLimit!.value));
-  }
-
   bool get isWarnLimitReached {
     if (used != null && warnLimit != null) {
       return used!.value >= warnLimit!.value * 0.9;
