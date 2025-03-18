@@ -42,6 +42,12 @@ class QuotasController extends BaseController {
     });
   }
 
+  void reloadQuota() {
+    if (mailboxDashBoardController.accountId.value == null) return;
+    
+    _getQuotasAction(mailboxDashBoardController.accountId.value!);
+  }
+
   @override
   void onInit() {
     _initWorker();

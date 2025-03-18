@@ -45,7 +45,8 @@ extension QuotasExtensions on Quota {
 
   String getQuotasStateTitle(BuildContext context) {
     if (isHardLimitReached) {
-      return AppLocalizations.of(context).textQuotasOutOfStorage;
+      return '${AppLocalizations.of(context).textQuotasOutOfStorage}'
+        '\n${AppLocalizations.of(context).quotaStateLabel(usedStorageAsString, hardLimitStorageAsString)}';
     } else {
       return AppLocalizations.of(context).quotaStateLabel(usedStorageAsString, hardLimitStorageAsString);
     }
