@@ -10,10 +10,10 @@
 5.  Use the "CC" (Carbon Copy) and "BCC" (Blind Carbon Copy) fields for additional recipients as needed.
 - (5.1)`CC`: Carbon Copy:  Anyone in this field will see the other recipients of the message.
 - (5.2) `BCC`: Blind Carbon Copy: The recipients won't know that you added anyone to 'Bcc'.
+- (5.3) `Reply to`: If a sender sets a Reply-To address, when you click Reply, your response will go to that address instead of the one in the From field. If no Reply-To is set, replies go to the From address by default.
 6. Signature button: You can click on this button to unfold/fold your signature. The setting of identities and its signature ycan be edited on the [profile page](profile.md).
 
-![Group 1 (1)](https://github.com/user-attachments/assets/8dcd67da-c15e-4bea-9fd8-45c4cdc5efc6)
-
+![Group 7](https://github.com/user-attachments/assets/bb874749-866a-4c78-9009-8c987e86349d)
 
 
 7. Text Formatting
@@ -37,43 +37,49 @@ Use the formatting options provided to style your email's text. These include :
 8. Adding Attachments
 To attach files, click on the `attachment icon` and select the files you want to include. 
 9. Insert images
-To insert images to the email body as an inline image, clock on `image icon` then select images that you want to include 
-10. Code view
-When you click on `Code view button`, the email your are writing is displayed in Code view mode. This option is helpfull for developpers who want to debug the sources of the generated email.
-11. Sending Your Email
-- Click the "Send" button to send your email. Once sent, it will appear in your "Sent" folder.
-- You can also click button `Save to Draft` (12) then the email is moved to Draft folder, you can then open it again and continue composing it.
-- If you click `Cancel button` (13), the email will be discarded 
+To insert images to the email body as an inline image, clock on `image icon` then select images that you want to include
 
-14. Managing Sent Emails
+![Group 8](https://github.com/user-attachments/assets/f7454160-072b-4e2f-9c3a-b08bdd26a9c9)
 
-To access sent emails or track the status of your sent email, navigate to the `Sent` folder (14) within your email client. Email currently being sent are located within  the `Outbox` (15) and will eventually be moved into the `Sent` folder.
-
-16. Read receipt
+10. Mark as important: When you click this button, the email you are writing is marked as important  for easy identification and quick access. You can enabled or disabled this option 
+11. Embeded code: The "Embed Code" feature in Tmail allows users to insert external content (such as videos, iframes, or interactive elements) into an email using HTML embed codes. When you click Embed code button, the email body will switch to HTML mode, allowing you to paste your embed code.
+12. Request Read receipt
 
 This feature allows the sender of an email to know when the recipient has opened and read the email. It provides a way for the sender to confirm that the message has been received and viewed by the recipient.
 
 Here's how read receipt  work:
-- Sender Requests a Read Receipt: When composing an email, the sender can enable the option to request a read receipt by click on icon (16) then  to turn on Request read receipt 
+- Sender Requests a Read Receipt: When composing an email, the sender can enable the option to request a read receipt by select option (12) to turn on Request read receipt 
 - When the recipient receives the email and opens it, they are typically presented with a message or notification asking if they want to send a read receipt back to the sender. The recipient can choose to either send the read receipt or decline the request.
 - If the recipient chooses to send a read receipt, their email client will automatically generate and send a notification to the sender, indicating that the email has been opened and read.
 - The sender receives the read receipt as a separate email or notification, confirming that the recipient has indeed read the email.
+13. Print: Clicking it will open the print preview window. Then you can select your printer and click Print or Choose "Save as PDF" as the destination to save a digital copy.
+14. Sending Your Email
+- Click the "Send" button to send your email. Once sent, it will appear in your "Sent" folder.
+- You can also click button `Save to Draft` (15) then the email is moved to Draft folder, you can then open it again and continue composing it.
+- If you click `Cancel button` (16), the email will be discarded 
 
-![Group 3 (1)](https://github.com/user-attachments/assets/e2a0b743-164f-4e0b-87c5-8d0617c2d3ed)
+17. Managing Sent Emails
+
+To access sent emails or track the status of your sent email, navigate to the `Sent` folder (17) within your email client. Email currently being sent are located within  the `Outbox` (18) and will eventually be moved into the `Sent` folder.
+
+
+![Group 9](https://github.com/user-attachments/assets/31de5e94-0088-446c-9f9c-7b7f5679cb15)
 
 
  #  Creating a New Email in Mobile
 
 1. Click on the "Compose" button, the composer screen will be shown.
-2. From: By default it will display your default identity. When you click on `Edit` icon (2.1)- a drop-down list of your identities will be shown and you can select one of them. The identities you can use in the `From` field can be edited on the [profile page](profile.md).
+2. From: By default it will display your default identity. When you click on it, the drop-down list of your identities will be shown and you can select one of them. The identities you can use in the `From` field can be edited on the [profile page](profile.md).
 3. Fill in the recipient's email address in the "To" field.
 4. Enter a subject for your email in the "Subject" field.
-5. Adding Recipients
 You can add multiple recipients by separating their email addresses with commas. Use the "CC" (Carbon Copy) and "BCC" (Blind Carbon Copy) fields for additional recipients as needed.
-- (5.1)`CC`: Carbon Copy:  Anyone in this field will see the other recipients of the message.
-- (5.2) `BCC`: Blind Carbon Copy: The recipients won't know that you added anyone to 'Bcc'.
+5.1. `CC`: Carbon Copy:  Anyone in this field will see the other recipients of the message.
+5.2. `BCC`: Blind Carbon Copy: The recipients won't know that you added anyone to 'Bcc'.
+5.3. `Reply to`: If a sender sets a Reply-To address, when you click Reply, your response will go to that address instead of the one in the From field. If no Reply-To is set, replies go to the From address by default.
 
-![Frame 2 (4)](https://github.com/user-attachments/assets/9c49dca6-f464-4a76-8733-a3753bae579f)
+![Group 10](https://github.com/user-attachments/assets/fd6d831e-bf75-48eb-9679-12a78e89b9bd)
+
+
 
 6. Text Formatting
 Use the formatting options provided to style your email's text. 
