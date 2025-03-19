@@ -64,6 +64,7 @@ class SelectionMobileAppBarThreadWidget extends StatelessWidget {
         ),
         ...emailSelectionActionTypes.map(
           (type) => TMailButtonWidget.fromIcon(
+            key: Key('${type.name}_selected_email_button'),
             icon: type.getIcon(imagePaths),
             iconColor: type.getIconColor(),
             iconSize: type.getIconSize(),
