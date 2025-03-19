@@ -127,4 +127,23 @@ class ThreadRobot extends CoreRobot {
     await $(#moveToTrash_selected_email_button).tap();
     await $.pumpAndTrySettle();
   }
+
+  Future<void> tapMarkAsReadButton() async {
+    await $(#markAsRead_selected_email_button).tap();
+    await $.pumpAndTrySettle();
+  }
+
+  Future<void> tapMarkAsStarAction() async {
+    await $(#moreAction_selected_email_button).tap();
+    await $.pumpAndTrySettle();
+    await $(#markAsStarred_action).tap();
+    await $.pumpAndTrySettle();
+  }
+
+  Future<void> tapMarkAsSpamAction() async {
+    await $(#moreAction_selected_email_button).tap();
+    await $.pumpAndTrySettle();
+    await $(#moveToSpam_action).tap();
+    await $.pumpAndTrySettle();
+  }
 }
