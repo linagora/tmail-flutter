@@ -1096,7 +1096,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "manageEmailAsATeam": "Gérer les messages en équipe",
+  "manageEmailAsATeam": "Gérer la boîte e-mail en équipe",
   "@manageEmailAsATeam": {
     "type": "text",
     "placeholders_order": [],
@@ -4270,7 +4270,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "descriptionWelcomeTo": "La nouvelle référence Open Source pour\nla messagerie sécurisée professionnelle",
+  "descriptionWelcomeTo": "La nouvelle référence Open Source pour\nla messagerie professionnelle sécurisée",
   "@descriptionWelcomeTo": {
     "type": "text",
     "placeholders_order": [],
@@ -4324,7 +4324,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "parseEmailByBlobIdFailed": "Impossible de récupérer cet email",
+  "parseEmailByBlobIdFailed": "Impossible de récupérer ce message",
   "@parseEmailByBlobIdFailed": {
     "type": "text",
     "placeholders_order": [],
@@ -4370,7 +4370,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youAreCurrentlyLoggedInWith": "Vous êtes connecté(e) en tant que",
+  "youAreCurrentlyLoggedInWith": "Vous êtes connecté⋅e en tant que",
   "@youAreCurrentlyLoggedInWith": {
     "type": "text",
     "placeholders_order": [],
