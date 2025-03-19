@@ -33,4 +33,23 @@ class ThreadRobot extends CoreRobot {
   Future<void> openMailbox() async {
     await $(#mobile_mailbox_menu_button).tap();
   }
+
+  Future<void> longPressEmailWithSubject(String subject) async {
+    await $(subject).longPress();
+  }
+
+  Future<void> selectToggleRead() async {
+    await $(#mark_as_read_selected_email_button).tap();
+    await $.pumpAndSettle(duration: const Duration(seconds: 2));
+  }
+
+  Future<void> selectToggleStar() async {
+    await $(#mark_as_star_selected_email_button).tap();
+    await $.pumpAndSettle(duration: const Duration(seconds: 2));
+  }
+
+  Future<void> selectToggleSpam() async {
+    await $(#move_selected_email_to_spam_button).tap();
+    await $.pumpAndSettle(duration: const Duration(seconds: 2));
+  }
 }
