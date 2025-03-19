@@ -1,3 +1,17 @@
+## [0.15.0] - 2025-03-19
+### Added
+- #1192 Support multiple composer
+- #3450 Preview of other simple attachments (`image/*`, `text/plain`, `text/markdown`, `application/json`)
+- Translation zh_Hans, ga, de
+
+### Fixed
+- #3410 Reduce color noise
+- #3511 Android email view system back action
+- #3502 Composer image loading icon
+- #3533 Migrate android gradle plugins
+- #3548 Handle exceeded quota
+- Disable charset detector on iOS as workaround to fix build ios fail
+
 ## [0.14.15] - 2025-03-10
 ### Added
 - #3349 Sender can set priority in composer
