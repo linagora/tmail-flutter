@@ -4308,5 +4308,83 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "markAsImportantIsEnabled": "Tá an marc tábhachtach cumasaithe",
+  "@markAsImportantIsEnabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAsImportantIsDisabled": "Tá an marc tábhachtach díchumasaithe",
+  "@markAsImportantIsDisabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOnMarkAsImportant": "Cas ar an marc chomh tábhachtach",
+  "@turnOnMarkAsImportant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "senderSetImportantFlag": "Bratach thábhachtach socraithe ag an seoltóir",
+  "@senderSetImportantFlag": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hideAll": "Folaigh go léir",
+  "@hideAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exitFullscreen": "Scoir lánscáileán",
+  "@exitFullscreen": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOffMarkAsImportant": "Múch an marc tábhachtach",
+  "@turnOffMarkAsImportant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sizeDescending": "Méid íslitheach",
+  "@sizeDescending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "senderImportantSettingToggleDescription": "Taispeáin bratach thábhachtach atá socraithe ag an seoltóir",
+  "@senderImportantSettingToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "preferences": "Roghanna",
+  "@preferences": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sizeAscending": "Méid ardaitheach",
+  "@sizeAscending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "senderImportantSettingExplanation": "Cumasaíonn sé seo bratach ríomhphoist thábhachtacha a thaispeáint i do bhosca isteach. Tá an ghné seo á rialú ag an seoltóir agus mar sin d'fhéadfadh mí-úsáid a bheith mar thoradh air.",
+  "@senderImportantSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAsImportant": "Marcáil chomh tábhachtach",
+  "@markAsImportant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
