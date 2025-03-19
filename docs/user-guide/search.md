@@ -41,6 +41,10 @@ Those criteria includes:
 
 Clicking the (11) search button will launch the search and display all corresponding emails. `Clear filer` (10) will reset your input.
 
+By default, the search result is sorted by the criteria "Most recent". You can click on sort icon to select another sort criteria from the list: Oldest, Relevance, Sender name, Subject, Size 
+
+![Group 12](https://github.com/user-attachments/assets/52fd5008-a2c7-4065-a8d8-89df69251a8a)
+
 
 ### Folder filters
 
@@ -53,6 +57,7 @@ Filters includes:
  - (1) All emails in this folder with attachments
  - (2) All emails in this folder that are not read
  - (3) All emails in this folder that are starred
+
 
 ## On Mobile
 
