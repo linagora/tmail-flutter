@@ -4537,5 +4537,83 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "markAsImportantIsEnabled": "Đã kích hoạt đánh dấu ưu tiên",
+  "@markAsImportantIsEnabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sizeAscending": "Kích thước tăng dần",
+  "@sizeAscending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "sizeDescending": "Kích thước giảm dần",
+  "@sizeDescending": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAsImportant": "Quan trọng",
+  "@markAsImportant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "preferences": "Cài đặt",
+  "@preferences": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "senderSetImportantFlag": "Cờ ưu tiên",
+  "@senderSetImportantFlag": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOffMarkAsImportant": "Tắt đánh dấu ưu tiên",
+  "@turnOffMarkAsImportant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "markAsImportantIsDisabled": "Đã vô hiệu đánh dấu ưu tiên",
+  "@markAsImportantIsDisabled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "senderImportantSettingExplanation": "Cho phép hiển thị cờ đánh dấu email quan trọng trong hộp thư đến của bạn. Tính năng này do người gửi kiểm soát, do đó có thể bị lạm dụng.",
+  "@senderImportantSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "senderImportantSettingToggleDescription": "Hiển thị cờ ưu tiên",
+  "@senderImportantSettingToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "hideAll": "Ẩn tất cả",
+  "@hideAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exitFullscreen": "Thoát toàn màn hình",
+  "@exitFullscreen": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "turnOnMarkAsImportant": "Bật đánh dấu ưu tiên",
+  "@turnOnMarkAsImportant": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
