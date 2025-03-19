@@ -113,13 +113,18 @@ class ThreadRobot extends CoreRobot {
   }
 
   Future<void> moveEmailToMailboxWithName(String mailboxName) async {
-    await $(#move_selected_email_to_mailbox_button).tap();
+    await $(#moreAction_selected_email_button).tap();
+    await $.pumpAndTrySettle();
+
+    await $(#moveToMailbox_action).tap();
+    await $.pumpAndTrySettle();
+
     await $(mailboxName).tap();
-    await $.pumpAndSettle();
+    await $.pumpAndTrySettle();
   }
 
   Future<void> moveEmailToTrash() async {
-    await $(#delete_selected_email_button).tap();
-    await $.pumpAndSettle();
+    await $(#moveToTrash_selected_email_button).tap();
+    await $.pumpAndTrySettle();
   }
 }

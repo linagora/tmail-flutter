@@ -175,4 +175,9 @@ class MailboxMenuRobot extends CoreRobot {
   Future<void> tapAddNewFolderButton() async {
     await $(#add_new_folder_button).tap();
   }
+
+  Future<void> tapMarkAsRead() async {
+    await $(AppLocalizations().mark_as_read).tap();
+    await $.pumpAndSettle();
+  }
 }

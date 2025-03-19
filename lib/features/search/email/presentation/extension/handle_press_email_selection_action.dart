@@ -71,6 +71,7 @@ extension HandlePressEmailSelectionActionExtension on SearchEmailController {
               AppLocalizations.of(context),
               imagePaths,
               category: action.category,
+              key: '${action.name}_action',
             ))
         .toList();
 
