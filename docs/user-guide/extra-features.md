@@ -110,3 +110,11 @@ On details-view of an email, you can see description of calendar events which ha
 ![Group 5 (1)](https://github.com/user-attachments/assets/4e60aa71-0e1c-4c3e-9637-a31afb538117)
 
 ![Group 6 (2)](https://github.com/user-attachments/assets/3a8b3554-055d-45c8-bcad-7918429dbdad)
+
+## IV. Get help or report a bug
+
+A question mark (?) icon is located at the top right of the screen. When you click on it, a new email composer will open. The 'To' field is pre-filled with the Twake support team's email address. You can describe your question or the bug you encountered and send the email for assistance.
+
+![Group 13](https://github.com/user-attachments/assets/0fc6bafa-e551-49ed-867b-2c64033738e4)
+
+
