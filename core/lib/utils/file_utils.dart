@@ -2,8 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:core/domain/exceptions/download_file_exception.dart';
+import 'package:core/domain/exceptions/file_exception.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_charset_detector/flutter_charset_detector.dart';
 import 'package:path_provider/path_provider.dart';
@@ -71,6 +73,18 @@ class FileUtils {
     }
   }
 
+  Future<void> deleteFileByFolderName({required String nameFile, String? folderPath}) async {
+    final internalStorageDirPath = await _getInternalStorageDirPath(
+      nameFile: nameFile,
+      folderPath: folderPath);
+
+    final file = File(internalStorageDirPath);
+
+    if (await file.exists()) {
+      await file.delete();
+    }
+  }
+
   Future<String> getContentFromFile({
     required String nameFile,
     String? folderPath,
@@ -118,6 +132,20 @@ class FileUtils {
     }
   }
 
+  static Future<void> removeFolderPath(String path) async {
+    final dir = Directory(path);
+    debugPrint('FileUtils::removeFolderPath: path = $path');
+    final exists = await dir.exists();
+    debugPrint('FileUtils::removeFolderPath:dir exists = $exists');
+    final items = await dir.list().toList();
+    debugPrint('FileUtils::removeFolderPath:items = $items');
+    if (exists && items.isNotEmpty) {
+      await dir.delete(recursive: true);
+    } else {
+      throw Exception('No file logs to delete');
+    }
+  }
+
   Future<String> convertImageAssetToBase64(String assetImage) async {
     ByteData bytes = await rootBundle.load(assetImage);
     final buffer = bytes.buffer;
@@ -148,6 +176,45 @@ class FileUtils {
     } catch (e) {
       logError('FileUtils::getCharsetFromBytes: Exception: $e');
       return DEFAULT_CHARSET;
+    }
+  }
+
+  static Future<String> getExternalDocumentPath({String? folderPath}) async {
+    Directory directory = Directory('');
+    if (Platform.isAndroid) {
+      if (folderPath?.isNotEmpty == true) {
+        directory = Directory('/storage/emulated/0/Download/$folderPath');
+      } else {
+        directory = Directory('/storage/emulated/0/Download');
+      }
+    } else {
+      directory = await getApplicationDocumentsDirectory();
+      if (folderPath?.isNotEmpty == true) {
+        directory = Directory('${directory.absolute.path}/$folderPath');
+      }
+    }
+
+    final exPath = directory.path;
+    await Directory(exPath).create(recursive: true);
+    return exPath;
+  }
+
+  static Future<String> copyInternalFilesToDownloadExternal(List<String> listFilePaths) async {
+    final externalPath = await getExternalDocumentPath();
+
+    List<String> externalListPaths = [];
+    for (var filePath in listFilePaths) {
+      final file = File(filePath);
+      final fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
+      final externalFile = File('$externalPath/$fileName');
+      await externalFile.writeAsBytes(file.readAsBytesSync());
+      externalListPaths.add(externalFile.path);
+    }
+
+    if (externalListPaths.isNotEmpty) {
+      return externalPath;
+    } else {
+      throw NotFoundFileInFolderException();
     }
   }
 }

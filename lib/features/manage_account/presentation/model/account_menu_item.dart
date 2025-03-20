@@ -13,6 +13,7 @@ enum AccountMenuItem {
   notification,
   contactSupport,
   signOut,
+  traceLog,
   none;
 
   String getIcon(ImagePaths imagePaths) {
@@ -39,6 +40,8 @@ enum AccountMenuItem {
         return imagePaths.icSignOut;
       case AccountMenuItem.none:
         return imagePaths.icProfiles;
+      case AccountMenuItem.traceLog:
+        return imagePaths.icSetting;
     }
   }
 
@@ -66,9 +69,11 @@ enum AccountMenuItem {
         return appLocalizations.sign_out;
       case AccountMenuItem.none:
         return appLocalizations.profiles;
+      case AccountMenuItem.traceLog:
+        return appLocalizations.traceLog;
     }
   }
-  
+
   String getExplanation(AppLocalizations appLocalizations) {
     switch(this) {
       case AccountMenuItem.profiles:
@@ -83,6 +88,8 @@ enum AccountMenuItem {
         return appLocalizations.vacationSettingExplanation;
       case AccountMenuItem.mailboxVisibility:
         return appLocalizations.folderVisibilitySubtitle;
+      case AccountMenuItem.traceLog:
+        return appLocalizations.traceLog;
       default:
         return '';
     }
@@ -112,6 +119,8 @@ enum AccountMenuItem {
         return 'sign-out';
       case AccountMenuItem.none:
         return 'profiles';
+      case AccountMenuItem.traceLog:
+        return 'trace-log';
     }
   }
 }

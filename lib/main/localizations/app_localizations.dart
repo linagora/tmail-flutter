@@ -4597,4 +4597,66 @@ class AppLocalizations {
       name: 'exitFullscreen',
     );
   }
+
+  String get traceLog {
+    return Intl.message(
+      'Trace Log',
+      name: 'traceLog');
+  }
+
+  String get traceLogSettingExplanation {
+    return Intl.message(
+        'Trace log to easily monitor log on mobile devices',
+        name: 'traceLogSettingExplanation');
+  }
+
+  String get totalSize {
+    return Intl.message(
+        'Total Size',
+        name: 'totalSize');
+  }
+
+  String get exportFile {
+    return Intl.message(
+        'Export file',
+        name: 'exportFile');
+  }
+
+  String get youNeedToGrantFilesPermissionToExportFile {
+    return Intl.message(
+        'You need to grant files permission to export files',
+        name: 'youNeedToGrantFilesPermissionToExportFile'
+    );
+  }
+
+  String exportTraceLogSuccess(String path) {
+    return Intl.message(
+      'Export successful tracking logs at "$path"',
+      name: 'exportTraceLogSuccess',
+      args: [path]);
+  }
+
+  String get exportTraceLogFailed {
+    return Intl.message(
+      'Export trace log failed',
+      name: 'exportTraceLogFailed');
+  }
+
+  String get deleteTraceLogSuccess {
+    return Intl.message(
+      'Delete successful tracking logs',
+      name: 'deleteTraceLogSuccess');
+  }
+
+  String get deleteTraceLogFailed {
+    return Intl.message(
+      'Delete trace log failed',
+      name: 'deleteTraceLogFailed');
+  }
+
+  String get clearLogCache {
+    return Intl.message(
+      'Clear log cache',
+      name: 'clearLogCache');
+  }
 }

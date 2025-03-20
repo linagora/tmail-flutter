@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-02-20T19:41:05.121752",
+  "@@last_modified": "2025-03-20T11:04:56.826410",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2962,6 +2962,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "errorWhileFetchingSubaddress": "Error while fetching the subaddress",
+  "@errorWhileFetchingSubaddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "connectedToTheInternet": "Connected to the internet",
   "@connectedToTheInternet": {
     "type": "text",
@@ -4238,12 +4244,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "Your session expired. We need to take you back to the login page in order to refresh it. You might want to save the email you are currently editing before we do so.",
-  "@messageWarningDialogWhenExpiredOIDCTokenAndReconnection": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "replyToList": "Reply to list",
   "@replyToList": {
     "type": "text",
@@ -4372,6 +4372,70 @@
   },
   "exitFullscreen": "Exit fullscreen",
   "@exitFullscreen": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "traceLog": "Trace Log",
+  "@traceLog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "traceLogSettingExplanation": "Trace log to easily monitor log on mobile devices",
+  "@traceLogSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "totalSize": "Total Size",
+  "@totalSize": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exportFile": "Export file",
+  "@exportFile": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youNeedToGrantFilesPermissionToExportFile": "You need to grant files permission to export files",
+  "@youNeedToGrantFilesPermissionToExportFile": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exportTraceLogSuccess": "Export successful tracking logs at \"{path}\"",
+  "@exportTraceLogSuccess": {
+    "type": "text",
+    "placeholders_order": [
+      "path"
+    ],
+    "placeholders": {
+      "path": {}
+    }
+  },
+  "exportTraceLogFailed": "Export trace log failed",
+  "@exportTraceLogFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteTraceLogSuccess": "Delete successful tracking logs",
+  "@deleteTraceLogSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteTraceLogFailed": "Delete trace log failed",
+  "@deleteTraceLogFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "clearLogCache": "Clear log cache",
+  "@clearLogCache": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
