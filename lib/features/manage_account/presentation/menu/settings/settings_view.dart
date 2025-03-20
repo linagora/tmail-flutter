@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/utils/direction_utils.dart';
+import 'package:core/utils/log_tracking.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -18,6 +19,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/setting
 import 'package:tmail_ui_user/features/manage_account/presentation/notification/notification_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/preferences_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/trace_log/trace_log_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -210,6 +212,12 @@ class SettingsView extends GetWidget<SettingsController> {
           return MailboxVisibilityView();
         case AccountMenuItem.notification:
           return const NotificationView();
+        case AccountMenuItem.traceLog:
+          if (LogTracking().enableTraceLog) {
+            return const TraceLogView();
+          } else {
+            return const SizedBox.shrink();
+          }
         default:
           return const SizedBox.shrink();
       }

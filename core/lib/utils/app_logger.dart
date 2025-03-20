@@ -1,13 +1,14 @@
 import 'dart:async';
 
+import 'package:core/utils/log_tracking.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 final logHistory = _Dispatcher('');
 
-void log(String? value, {Level level = Level.info}) {
-  if (!kDebugMode) return;
+Future<void> log(String? value, {Level level = Level.info}) async {
+  if (!kDebugMode && !LogTracking().enableTraceLog) return;
 
   String logsStr = value ?? '';
   logHistory.value = '$logsStr\n${logHistory.value}';
@@ -41,11 +42,16 @@ void log(String? value, {Level level = Level.info}) {
         break;
     }
   }
+
   // ignore: avoid_print
   print('[TwakeMail] $logsStr');
+
+  if (LogTracking().enableTraceLog) {
+    await LogTracking().addLog(message: logsStr);
+  }
 }
 
-void logError(String? value) => log(value, level: Level.error);
+Future<void> logError(String? value) => log(value, level: Level.error);
 
 // Take from: https://flutter.dev/docs/testing/errors
 void initLogger(VoidCallback runApp) {
