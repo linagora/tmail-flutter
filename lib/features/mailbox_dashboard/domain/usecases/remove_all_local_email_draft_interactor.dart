@@ -3,20 +3,20 @@ import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/local_email_draft_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_composer_cache_state.dart';
 
-class RemoveAllComposerCacheOnWebInteractor {
-  final ComposerCacheRepository composerCacheRepository;
+class RemoveAllLocalEmailDraftInteractor {
+  final LocalEmailDraftRepository _localEmailDraftRepository;
 
-  RemoveAllComposerCacheOnWebInteractor(this.composerCacheRepository);
+  RemoveAllLocalEmailDraftInteractor(this._localEmailDraftRepository);
 
   Future<Either<Failure, Success>> execute(AccountId accountId, UserName userName) async {
     try {
-      composerCacheRepository.removeAllComposerCacheOnWeb(accountId, userName);
-      return Right(RemoveComposerCacheSuccess());
+      _localEmailDraftRepository.removeAllLocalEmailDraft(accountId, userName);
+      return Right(RemoveLocalEmailDraftSuccess());
     } catch (exception) {
-      return Left(RemoveComposerCacheFailure(exception));
+      return Left(RemoveLocalEmailDraftFailure(exception));
     }
   }
 }

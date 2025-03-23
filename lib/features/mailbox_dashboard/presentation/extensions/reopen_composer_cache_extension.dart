@@ -4,15 +4,15 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_compos
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 
-extension ReopenComposerCacheExtension on MailboxDashBoardController {
+extension ReopenLocalEmailDraftExtension on MailboxDashBoardController {
 
-  void handleGetComposerCacheSuccess(GetComposerCacheSuccess success) {
-    removeAllComposerCacheOnWeb();
+  void handleGetLocalEmailDraftSuccess(GetLocalEmailDraftSuccess success) {
+    removeAllLocalEmailDraft();
 
-    final listComposerCacheSortByIndex = success.listComposerCache
+    final listLocalEmailDraftSortByIndex = success.listLocalEmailDraft
       ..sort((a, b) => (a.composerIndex ?? 0).compareTo(b.composerIndex ?? 0));
 
-    final listArguments = listComposerCacheSortByIndex
+    final listArguments = listLocalEmailDraftSortByIndex
       .map((composerCache) => ComposerArguments.fromSessionStorageBrowser(composerCache))
       .toList();
 

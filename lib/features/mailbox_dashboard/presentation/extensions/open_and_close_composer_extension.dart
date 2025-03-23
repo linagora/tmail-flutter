@@ -114,7 +114,7 @@ extension OpenAndCloseComposerExtension on MailboxDashBoardController {
     _handleResultAfterCloseComposer(result);
 
     if (composerId != null) {
-      await removeComposerCacheByIdOnWeb(composerId);
+      await removeLocalEmailDraft(composerId);
     }
   }
 

@@ -54,7 +54,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomp
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/restore_email_inline_images_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/save_local_email_draft_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/auto_create_tag_for_recipients_extension.dart';
@@ -88,7 +88,7 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/presentatio
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_local_email_draft_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
@@ -149,8 +149,8 @@ class ComposerController extends BaseController
   final GetEmailContentInteractor _getEmailContentInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final UploadController uploadController;
-  final RemoveComposerCacheByIdOnWebInteractor _removeComposerCacheByIdOnWebInteractor;
-  final SaveComposerCacheOnWebInteractor _saveComposerCacheOnWebInteractor;
+  final RemoveLocalEmailDraftInteractor _removeLocalEmailDraftInteractor;
+  final SaveLocalEmailDraftInteractor _saveLocalEmailDraftInteractor;
   final DownloadImageAsBase64Interactor _downloadImageAsBase64Interactor;
   final TransformHtmlEmailContentInteractor _transformHtmlEmailContentInteractor;
   final GetServerSettingInteractor _getServerSettingInteractor;
@@ -243,8 +243,8 @@ class ComposerController extends BaseController
     this._getEmailContentInteractor,
     this._getAllIdentitiesInteractor,
     this.uploadController,
-    this._removeComposerCacheByIdOnWebInteractor,
-    this._saveComposerCacheOnWebInteractor,
+    this._removeLocalEmailDraftInteractor,
+    this._saveLocalEmailDraftInteractor,
     this._downloadImageAsBase64Interactor,
     this._transformHtmlEmailContentInteractor,
     this._getServerSettingInteractor,
@@ -425,13 +425,13 @@ class ComposerController extends BaseController
     final username = mailboxDashBoardController.sessionCurrent?.username;
     final accountId = mailboxDashBoardController.accountId.value;
     if (composerId != null && username != null && accountId != null) {
-      await _removeComposerCacheByIdOnWebInteractor.execute(
+      await _removeLocalEmailDraftInteractor.execute(
         accountId,
         username,
         composerId!,
       );
     }
-    await _saveComposerCacheOnWebAction();
+    await _saveLocalEmailDraftAction();
   }
 
   void _listenStreamEvent() {
@@ -512,13 +512,13 @@ class ComposerController extends BaseController
     });
   }
 
-  Future<void> _saveComposerCacheOnWebAction() async {
+  Future<void> _saveLocalEmailDraftAction() async {
     autoCreateEmailTag();
 
     final createEmailRequest = await _generateCreateEmailRequest();
     if (createEmailRequest == null) return;
 
-    await _saveComposerCacheOnWebInteractor.execute(
+    await _saveLocalEmailDraftInteractor.execute(
       createEmailRequest,
       mailboxDashBoardController.accountId.value!,
       mailboxDashBoardController.sessionCurrent!.username);
@@ -2504,7 +2504,7 @@ class ComposerController extends BaseController
     if (mailboxDashBoardController.accountId.value != null &&
         mailboxDashBoardController.sessionCurrent?.username != null
     ) {
-      await _saveComposerCacheOnWebAction();
+      await _saveLocalEmailDraftAction();
     }
   }
 
