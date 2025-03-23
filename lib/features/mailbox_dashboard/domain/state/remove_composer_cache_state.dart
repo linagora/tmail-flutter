@@ -1,15 +1,15 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 
-class RemoveComposerCacheSuccess extends UIState {
+class RemoveLocalEmailDraftSuccess extends UIState {
 
-  RemoveComposerCacheSuccess();
+  RemoveLocalEmailDraftSuccess();
 
   @override
   List<Object?> get props => [];
 }
 
-class RemoveComposerCacheFailure extends FeatureFailure {
+class RemoveLocalEmailDraftFailure extends FeatureFailure {
 
-  RemoveComposerCacheFailure(dynamic exception) : super(exception: exception);
+  RemoveLocalEmailDraftFailure(dynamic exception) : super(exception: exception);
 }

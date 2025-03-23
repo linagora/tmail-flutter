@@ -1,18 +1,18 @@
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/local_email_draft.dart';
 
-class GetComposerCacheSuccess extends UIState {
+class GetLocalEmailDraftSuccess extends UIState {
 
-  final List<ComposerCache> listComposerCache;
+  final List<LocalEmailDraft> listLocalEmailDraft;
 
-  GetComposerCacheSuccess(this.listComposerCache);
+  GetLocalEmailDraftSuccess(this.listLocalEmailDraft);
 
   @override
-  List<Object> get props => [listComposerCache];
+  List<Object> get props => [listLocalEmailDraft];
 }
 
-class GetComposerCacheFailure extends FeatureFailure {
+class GetLocalEmailDraftFailure extends FeatureFailure {
 
-  GetComposerCacheFailure(dynamic exception) : super(exception: exception);
+  GetLocalEmailDraftFailure(dynamic exception) : super(exception: exception);
 }

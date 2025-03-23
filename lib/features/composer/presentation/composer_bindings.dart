@@ -15,7 +15,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_s
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/restore_email_inline_images_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/save_local_email_draft_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
@@ -49,11 +49,11 @@ import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/session_storage_composer_datasource.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/session_storage_composer_datasoure_impl.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/composer_cache_repository_impl.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/composer_cache_repository.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/local_email_draft_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/local_email_draft_datasource_impl.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/local_email_draft_repository_impl.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/local_email_draft_repository.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_local_email_draft_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/identities/identity_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/bindings/preferences_interactors_bindings.dart';
@@ -144,7 +144,7 @@ class ComposerBindings extends BaseBindings {
       Get.find<SessionStorageManager>(),
       Get.find<CacheExceptionThrower>(),
     ), tag: composerId);
-    Get.lazyPut(() => SessionStorageComposerDatasourceImpl(
+    Get.lazyPut(() => LocalEmailDraftDataSourceImpl(
       Get.find<HtmlTransform>(),
       Get.find<CacheExceptionThrower>(),
     ), tag: composerId);
@@ -184,8 +184,8 @@ class ComposerBindings extends BaseBindings {
       () => Get.find<PrintFileDataSourceImpl>(tag: composerId),
       tag: composerId,
     );
-    Get.lazyPut<SessionStorageComposerDatasource>(
-      () => Get.find<SessionStorageComposerDatasourceImpl>(tag: composerId),
+    Get.lazyPut<LocalEmailDraftDatasource>(
+      () => Get.find<LocalEmailDraftDataSourceImpl>(tag: composerId),
       tag: composerId,
     );
   }
@@ -200,7 +200,7 @@ class ComposerBindings extends BaseBindings {
       Get.find<Uuid>(),
     ), tag: composerId);
     Get.lazyPut(
-      () => ComposerCacheRepositoryImpl(Get.find<SessionStorageComposerDatasource>(tag: composerId)),
+      () => LocalEmailDraftRepositoryImpl(Get.find<LocalEmailDraftDatasource>(tag: composerId)),
       tag: composerId,
     );
     Get.lazyPut(
@@ -233,8 +233,8 @@ class ComposerBindings extends BaseBindings {
       () => Get.find<ComposerRepositoryImpl>(tag: composerId),
       tag: composerId,
     );
-    Get.lazyPut<ComposerCacheRepository>(
-      () => Get.find<ComposerCacheRepositoryImpl>(tag: composerId),
+    Get.lazyPut<LocalEmailDraftRepository>(
+      () => Get.find<LocalEmailDraftRepositoryImpl>(tag: composerId),
       tag: composerId,
     );
     Get.lazyPut<ContactRepository>(
@@ -270,11 +270,11 @@ class ComposerBindings extends BaseBindings {
       tag: composerId,
     );
     Get.lazyPut(
-      () => RemoveComposerCacheByIdOnWebInteractor(Get.find<ComposerCacheRepository>(tag: composerId)),
+      () => RemoveLocalEmailDraftInteractor(Get.find<LocalEmailDraftRepository>(tag: composerId)),
       tag: composerId,
     );
-    Get.lazyPut(() => SaveComposerCacheOnWebInteractor(
-      Get.find<ComposerCacheRepository>(tag: composerId),
+    Get.lazyPut(() => SaveLocalEmailDraftInteractor(
+      Get.find<LocalEmailDraftRepository>(tag: composerId),
       Get.find<ComposerRepository>(tag: composerId),
     ), tag: composerId);
     Get.lazyPut(
@@ -294,7 +294,7 @@ class ComposerBindings extends BaseBindings {
       Get.find<ComposerRepository>(tag: composerId),
     ), tag: composerId);
     Get.lazyPut(
-      () => RestoreEmailInlineImagesInteractor(Get.find<ComposerCacheRepository>(tag: composerId)),
+      () => RestoreEmailInlineImagesInteractor(Get.find<LocalEmailDraftRepository>(tag: composerId)),
       tag: composerId,
     );
     Get.lazyPut(
@@ -328,8 +328,8 @@ class ComposerBindings extends BaseBindings {
       Get.find<GetEmailContentInteractor>(tag: composerId),
       Get.find<GetAllIdentitiesInteractor>(tag: composerId),
       Get.find<UploadController>(tag: composerId),
-      Get.find<RemoveComposerCacheByIdOnWebInteractor>(tag: composerId),
-      Get.find<SaveComposerCacheOnWebInteractor>(tag: composerId),
+      Get.find<RemoveLocalEmailDraftInteractor>(tag: composerId),
+      Get.find<SaveLocalEmailDraftInteractor>(tag: composerId),
       Get.find<DownloadImageAsBase64Interactor>(tag: composerId),
       Get.find<TransformHtmlEmailContentInteractor>(tag: composerId),
       Get.find<GetServerSettingInteractor>(tag: composerId),
@@ -364,7 +364,7 @@ class ComposerBindings extends BaseBindings {
     Get.delete<EmailHiveCacheDataSourceImpl>(tag: composerId);
     Get.delete<EmailLocalStorageDataSourceImpl>(tag: composerId);
     Get.delete<EmailSessionStorageDatasourceImpl>(tag: composerId);
-    Get.delete<SessionStorageComposerDatasourceImpl>(tag: composerId);
+    Get.delete<LocalEmailDraftDataSourceImpl>(tag: composerId);
 
     Get.delete<AttachmentUploadDataSource>(tag: composerId);
     Get.delete<ComposerDataSource>(tag: composerId);
@@ -374,16 +374,16 @@ class ComposerBindings extends BaseBindings {
     Get.delete<HtmlDataSource>(tag: composerId);
     Get.delete<StateDataSource>(tag: composerId);
     Get.delete<PrintFileDataSource>(tag: composerId);
-    Get.delete<SessionStorageComposerDatasource>(tag: composerId);
+    Get.delete<LocalEmailDraftDatasource>(tag: composerId);
 
     Get.delete<ComposerRepositoryImpl>(tag: composerId);
-    Get.delete<ComposerCacheRepositoryImpl>(tag: composerId);
+    Get.delete<LocalEmailDraftRepositoryImpl>(tag: composerId);
     Get.delete<ContactRepositoryImpl>(tag: composerId);
     Get.delete<MailboxRepositoryImpl>(tag: composerId);
     Get.delete<EmailRepositoryImpl>(tag: composerId);
 
     Get.delete<ComposerRepository>(tag: composerId);
-    Get.delete<ComposerCacheRepository>(tag: composerId);
+    Get.delete<LocalEmailDraftRepository>(tag: composerId);
     Get.delete<ContactRepository>(tag: composerId);
     Get.delete<MailboxRepository>(tag: composerId);
     Get.delete<EmailRepository>(tag: composerId);
@@ -392,8 +392,8 @@ class ComposerBindings extends BaseBindings {
     Get.delete<LocalImagePickerInteractor>(tag: composerId);
     Get.delete<UploadAttachmentInteractor>(tag: composerId);
     Get.delete<GetEmailContentInteractor>(tag: composerId);
-    Get.delete<RemoveComposerCacheByIdOnWebInteractor>(tag: composerId);
-    Get.delete<SaveComposerCacheOnWebInteractor>(tag: composerId);
+    Get.delete<RemoveLocalEmailDraftInteractor>(tag: composerId);
+    Get.delete<SaveLocalEmailDraftInteractor>(tag: composerId);
     Get.delete<DownloadImageAsBase64Interactor>(tag: composerId);
     Get.delete<TransformHtmlEmailContentInteractor>(tag: composerId);
     Get.delete<CreateNewAndSendEmailInteractor>(tag: composerId);

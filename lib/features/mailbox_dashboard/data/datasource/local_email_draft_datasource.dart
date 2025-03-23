@@ -1,25 +1,25 @@
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/local_email_draft.dart';
 
-abstract class SessionStorageComposerDatasource {
-  Future<void> saveComposerCacheOnWeb({
+abstract class LocalEmailDraftDatasource {
+  Future<void> saveLocalEmailDraft({
     required AccountId accountId,
     required UserName userName,
-    required ComposerCache composerCache,
+    required LocalEmailDraft composerCache,
   });
 
-  Future<List<ComposerCache>> getComposerCacheOnWeb(
+  Future<List<LocalEmailDraft>> getLocalEmailDraft(
     AccountId accountId,
     UserName userName);
 
-  Future<void> removeAllComposerCacheOnWeb(
+  Future<void> removeAllLocalEmailDraft(
     AccountId accountId,
     UserName userName,
   );
 
-  Future<void> removeComposerCacheByIdOnWeb(
+  Future<void> removeLocalEmailDraft(
     AccountId accountId,
     UserName userName,
     String composerId,

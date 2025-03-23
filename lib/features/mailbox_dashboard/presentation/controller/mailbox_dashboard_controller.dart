@@ -107,14 +107,14 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_compos
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_stored_email_sort_order_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_text_formatting_menu_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_email_drafts_state.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_stored_email_sort_order_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_text_formatting_menu_state_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_on_web_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_local_email_draft_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_local_email_draft_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_text_formatting_menu_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/store_email_sort_order_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_local_email_draft_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/download_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
@@ -241,7 +241,7 @@ class MailboxDashBoardController extends ReloadableController
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
   final MarkAsMailboxReadInteractor _markAsMailboxReadInteractor;
-  final GetComposerCacheOnWebInteractor _getEmailCacheOnWebInteractor;
+  final GetAllLocalEmailDraftInteractor _getAllLocalEmailDraftInteractor;
   final GetIdentityCacheOnWebInteractor _getIdentityCacheOnWebInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
   final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
@@ -261,8 +261,8 @@ class MailboxDashBoardController extends ReloadableController
   final UnsubscribeEmailInteractor _unsubscribeEmailInteractor;
   final RestoredDeletedMessageInteractor _restoreDeletedMessageInteractor;
   final GetRestoredDeletedMessageInterator _getRestoredDeletedMessageInteractor;
-  final RemoveComposerCacheByIdOnWebInteractor _removeComposerCacheByIdOnWebInteractor;
-  final RemoveAllComposerCacheOnWebInteractor _removeAllComposerCacheOnWebInteractor;
+  final RemoveLocalEmailDraftInteractor _removeLocalEmailDraftInteractor;
+  final RemoveAllLocalEmailDraftInteractor _removeAllLocalEmailDraftInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final ClearMailboxInteractor clearMailboxInteractor;
   final StoreEmailSortOrderInteractor storeEmailSortOrderInteractor;
@@ -350,7 +350,7 @@ class MailboxDashBoardController extends ReloadableController
     this._moveToMailboxInteractor,
     this._deleteEmailPermanentlyInteractor,
     this._markAsMailboxReadInteractor,
-    this._getEmailCacheOnWebInteractor,
+    this._getAllLocalEmailDraftInteractor,
     this._getIdentityCacheOnWebInteractor,
     this._markAsEmailReadInteractor,
     this._markAsStarEmailInteractor,
@@ -370,8 +370,8 @@ class MailboxDashBoardController extends ReloadableController
     this._unsubscribeEmailInteractor,
     this._restoreDeletedMessageInteractor,
     this._getRestoredDeletedMessageInteractor,
-    this._removeAllComposerCacheOnWebInteractor,
-    this._removeComposerCacheByIdOnWebInteractor,
+    this._removeAllLocalEmailDraftInteractor,
+    this._removeLocalEmailDraftInteractor,
     this._getAllIdentitiesInteractor,
     this.clearMailboxInteractor,
     this.storeEmailSortOrderInteractor,
@@ -409,11 +409,11 @@ class MailboxDashBoardController extends ReloadableController
     super.onReady();
   }
 
-  void _handleComposerCache() async {
+  void _handleLocalEmailDraft() async {
     if (accountId.value == null || sessionCurrent == null) return;
 
     consumeState(
-      _getEmailCacheOnWebInteractor.execute(
+      _getAllLocalEmailDraftInteractor.execute(
         accountId.value!,
         sessionCurrent!.username));
   }
@@ -501,8 +501,8 @@ class MailboxDashBoardController extends ReloadableController
       _handleGetRestoredDeletedMessageSuccess(success);
     } else if (success is GetAllIdentitiesSuccess) {
       _handleGetAllIdentitiesSuccess(success);
-    } else if (success is GetComposerCacheSuccess) {
-      handleGetComposerCacheSuccess(success);
+    } else if (success is GetLocalEmailDraftSuccess) {
+      handleGetLocalEmailDraftSuccess(success);
     } else if (success is GetIdentityCacheOnWebSuccess) {
       goToSettings();
     } else if (success is MarkAsStarEmailSuccess) {
@@ -564,7 +564,7 @@ class MailboxDashBoardController extends ReloadableController
       _handleEmptyTrashFolderFailure(failure);
     } else if (failure is MoveMultipleEmailToMailboxFailure) {
       toastManager.showMessageFailure(failure);
-    } else if (failure is GetComposerCacheFailure) {
+    } else if (failure is GetLocalEmailDraftFailure) {
       _handleIdentityCache();
     } else if (failure is GetServerSettingFailure) {
       isSenderImportantFlagEnabled.value = true;
@@ -847,7 +847,7 @@ class MailboxDashBoardController extends ReloadableController
     _setUpComponentsFromSession(session);
 
     if (PlatformInfo.isWeb) {
-      _handleComposerCache();
+      _handleLocalEmailDraft();
     }
 
     if (PlatformInfo.isAndroid && !_notificationManager.isNotificationClickedOnTerminate) {
@@ -1912,7 +1912,7 @@ class MailboxDashBoardController extends ReloadableController
     _getRouteParameters();
     _setUpComponentsFromSession(session);
     if (PlatformInfo.isWeb) {
-      _handleComposerCache();
+      _handleLocalEmailDraft();
     }
   }
 
@@ -3265,20 +3265,20 @@ class MailboxDashBoardController extends ReloadableController
     isRecoveringDeletedMessage.value = true;
   }
 
-  Future<void> removeComposerCacheByIdOnWeb(String composerId) async {
+  Future<void> removeLocalEmailDraft(String composerId) async {
     if (accountId.value == null || sessionCurrent == null) return;
 
-    await _removeComposerCacheByIdOnWebInteractor.execute(
+    await _removeLocalEmailDraftInteractor.execute(
       accountId.value!,
       sessionCurrent!.username,
       composerId,
     );
   }
 
-  Future<void> removeAllComposerCacheOnWeb() async {
+  Future<void> removeAllLocalEmailDraft() async {
     if (accountId.value == null || sessionCurrent == null) return;
 
-    await _removeAllComposerCacheOnWebInteractor.execute(
+    await _removeAllLocalEmailDraftInteractor.execute(
       accountId.value!,
       sessionCurrent!.username,
     );

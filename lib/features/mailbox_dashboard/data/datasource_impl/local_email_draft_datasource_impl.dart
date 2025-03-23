@@ -7,20 +7,19 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/session_storage_composer_datasource.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/local_email_draft_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/local_email_draft.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 import 'package:universal_html/html.dart' as html;
 
-class SessionStorageComposerDatasourceImpl
-    extends SessionStorageComposerDatasource {
-  SessionStorageComposerDatasourceImpl(this._htmlTransform, this._exceptionThrower);
+class LocalEmailDraftDataSourceImpl extends LocalEmailDraftDatasource {
+  LocalEmailDraftDataSourceImpl(this._htmlTransform, this._exceptionThrower);
 
   final HtmlTransform _htmlTransform;
   final ExceptionThrower _exceptionThrower;
 
   @override
-  Future<List<ComposerCache>> getComposerCacheOnWeb(
+  Future<List<LocalEmailDraft>> getLocalEmailDraft(
     AccountId accountId,
     UserName userName
   ) async {
@@ -36,7 +35,7 @@ class SessionStorageComposerDatasourceImpl
 
       if (listEntries.isNotEmpty) {
         return listEntries
-          .map((entry) => ComposerCache.fromJson(jsonDecode(entry.value)))
+          .map((entry) => LocalEmailDraft.fromJson(jsonDecode(entry.value)))
           .toList();
       } else {
         throw NotFoundInWebSessionException();
@@ -45,10 +44,10 @@ class SessionStorageComposerDatasourceImpl
   }
 
   @override
-  Future<void> saveComposerCacheOnWeb({
+  Future<void> saveLocalEmailDraft({
     required AccountId accountId,
     required UserName userName,
-    required ComposerCache composerCache,
+    required LocalEmailDraft composerCache,
   }) async {
     return Future.sync(() {
       final composerCacheKey = TupleKey(
@@ -78,7 +77,7 @@ class SessionStorageComposerDatasourceImpl
   }
 
   @override
-  Future<void> removeAllComposerCacheOnWeb(AccountId accountId, UserName userName) {
+  Future<void> removeAllLocalEmailDraft(AccountId accountId, UserName userName) {
     return Future.sync(() {
       final keyWithIdentity = TupleKey(
         EmailActionType.reopenComposerBrowser.name,
@@ -91,7 +90,7 @@ class SessionStorageComposerDatasourceImpl
   }
 
   @override
-  Future<void> removeComposerCacheByIdOnWeb(AccountId accountId, UserName userName, String composerId) {
+  Future<void> removeLocalEmailDraft(AccountId accountId, UserName userName, String composerId) {
     return Future.sync(() {
       final keyWithIdentity = TupleKey(
         EmailActionType.reopenComposerBrowser.name,

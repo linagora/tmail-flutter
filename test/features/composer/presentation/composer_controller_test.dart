@@ -33,7 +33,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/download_image_as_base64_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/save_local_email_draft_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
@@ -50,7 +50,7 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_local_email_draft_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
@@ -172,8 +172,8 @@ class MockMailboxDashBoardController extends Mock implements MailboxDashBoardCon
   MockSpec<GetEmailContentInteractor>(),
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<UploadController>(fallbackGenerators: fallbackGenerators),
-  MockSpec<RemoveComposerCacheByIdOnWebInteractor>(),
-  MockSpec<SaveComposerCacheOnWebInteractor>(),
+  MockSpec<RemoveLocalEmailDraftInteractor>(),
+  MockSpec<SaveLocalEmailDraftInteractor>(),
   MockSpec<DownloadImageAsBase64Interactor>(),
   MockSpec<TransformHtmlEmailContentInteractor>(),
   MockSpec<GetServerSettingInteractor>(),
@@ -217,8 +217,8 @@ void main() {
   late MockGetEmailContentInteractor mockGetEmailContentInteractor;
   late MockGetAllIdentitiesInteractor mockGetAllIdentitiesInteractor;
   late MockUploadController mockUploadController;
-  late MockRemoveComposerCacheByIdOnWebInteractor mockRemoveComposerCacheByIdOnWebInteractor;
-  late MockSaveComposerCacheOnWebInteractor mockSaveComposerCacheOnWebInteractor;
+  late MockRemoveLocalEmailDraftInteractor mockRemoveLocalEmailDraftInteractor;
+  late MockSaveLocalEmailDraftInteractor mockSaveLocalEmailDraftInteractor;
   late MockDownloadImageAsBase64Interactor mockDownloadImageAsBase64Interactor;
   late MockTransformHtmlEmailContentInteractor mockTransformHtmlEmailContentInteractor;
   late MockGetServerSettingInteractor mockGetServerSettingInteractor;
@@ -288,8 +288,8 @@ void main() {
     mockGetEmailContentInteractor = MockGetEmailContentInteractor();
     mockGetAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
     mockUploadController = MockUploadController();
-    mockRemoveComposerCacheByIdOnWebInteractor = MockRemoveComposerCacheByIdOnWebInteractor();
-    mockSaveComposerCacheOnWebInteractor = MockSaveComposerCacheOnWebInteractor();
+    mockRemoveLocalEmailDraftInteractor = MockRemoveLocalEmailDraftInteractor();
+    mockSaveLocalEmailDraftInteractor = MockSaveLocalEmailDraftInteractor();
     mockDownloadImageAsBase64Interactor = MockDownloadImageAsBase64Interactor();
     mockTransformHtmlEmailContentInteractor = MockTransformHtmlEmailContentInteractor();
     mockGetServerSettingInteractor = MockGetServerSettingInteractor();
@@ -305,8 +305,8 @@ void main() {
       mockGetEmailContentInteractor,
       mockGetAllIdentitiesInteractor,
       mockUploadController,
-      mockRemoveComposerCacheByIdOnWebInteractor,
-      mockSaveComposerCacheOnWebInteractor,
+      mockRemoveLocalEmailDraftInteractor,
+      mockSaveLocalEmailDraftInteractor,
       mockDownloadImageAsBase64Interactor,
       mockTransformHtmlEmailContentInteractor,
       mockGetServerSettingInteractor,

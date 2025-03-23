@@ -5,17 +5,19 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 
-part 'composer_cache.g.dart';
+part 'local_email_draft.g.dart';
 
 @JsonSerializable(
-  explicitToJson: true,
-  includeIfNull: false,
-  converters: [
-    EmailIdNullableConverter(),
-  ]
+    explicitToJson: true,
+    includeIfNull: false,
+    converters: [
+      EmailIdNullableConverter(),
+    ]
 )
-class ComposerCache with EquatableMixin {
+class LocalEmailDraft with EquatableMixin {
 
+  final String? id;
+  final DateTime? timeStamp;
   final Email? email;
   final bool? hasRequestReadReceipt;
   final bool? isMarkAsImportant;
@@ -27,7 +29,9 @@ class ComposerCache with EquatableMixin {
   final EmailId? draftEmailId;
   final EmailId? templateEmailId;
 
-  ComposerCache({
+  LocalEmailDraft({
+    this.id,
+    this.timeStamp,
     this.email,
     this.hasRequestReadReceipt,
     this.isMarkAsImportant,
@@ -40,12 +44,14 @@ class ComposerCache with EquatableMixin {
     this.templateEmailId,
   });
 
-  factory ComposerCache.fromJson(Map<String, dynamic> json) => _$ComposerCacheFromJson(json);
+  factory LocalEmailDraft.fromJson(Map<String, dynamic> json) => _$LocalEmailDraftFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ComposerCacheToJson(this);
+  Map<String, dynamic> toJson() => _$LocalEmailDraftToJson(this);
 
   @override
   List<Object?> get props => [
+    id,
+    timeStamp,
     email,
     hasRequestReadReceipt,
     isMarkAsImportant,

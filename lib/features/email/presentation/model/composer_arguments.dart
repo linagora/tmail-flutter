@@ -6,7 +6,7 @@ import 'package:model/model.dart';
 import 'package:receive_sharing_intent/receive_sharing_intent.dart';
 
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/composer_cache.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/local_email_draft.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_action_type.dart';
 import 'package:tmail_ui_user/main/routes/router_arguments.dart';
@@ -124,7 +124,7 @@ class ComposerArguments extends RouterArguments {
     savedEmailTemplateId: savedEmailTemplateId,
   );
 
-  factory ComposerArguments.fromSessionStorageBrowser(ComposerCache composerCache) =>
+  factory ComposerArguments.fromSessionStorageBrowser(LocalEmailDraft composerCache) =>
     ComposerArguments(
       emailActionType: EmailActionType.reopenComposerBrowser,
       presentationEmail: composerCache.email?.toPresentationEmail(),
