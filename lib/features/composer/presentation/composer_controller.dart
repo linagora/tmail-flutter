@@ -2212,7 +2212,7 @@ class ComposerController extends BaseController
 
     _closeComposerButtonState = ButtonState.disabled;
 
-    if (composerArguments.value == null || !_isEmailBodyLoaded) {
+    if (_validateCloseComposerWithoutSave()) {
       log('ComposerController::handleClickCloseComposer: ARGUMENTS is NULL or EMAIL NOT LOADED');
       _closeComposerButtonState = ButtonState.enabled;
       clearFocus(context);
@@ -2233,6 +2233,18 @@ class ComposerController extends BaseController
       clearFocus(context);
       _closeComposerAction();
     }
+  }
+
+  bool _validateCloseComposerWithoutSave() {
+    if (composerArguments.value == null) return true;
+
+    if (PlatformInfo.isWeb &&
+        !_isEmailBodyLoaded &&
+        !screenDisplayMode.value.isNotContentVisible()) return true;
+
+    if (PlatformInfo.isMobile && !_isEmailBodyLoaded) return true;
+
+    return false;
   }
 
   Future<void> _showConfirmDialogSaveMessage(BuildContext context) async {
