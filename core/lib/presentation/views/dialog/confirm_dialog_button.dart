@@ -40,7 +40,7 @@ class ConfirmDialogButton extends StatelessWidget {
           ),
           alignment: Alignment.center,
           padding: maxLines == 1
-            ? null
+            ? const EdgeInsets.symmetric(horizontal: 8)
             : padding ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
           child: Text(
             label,
