@@ -524,10 +524,12 @@ class _RecipientComposerWidgetState extends State<RecipientComposerWidget> {
   void _handleSelectOptionAction(
     SuggestionEmailAddress suggestionEmailAddress,
     StateSetter stateSetter
-  ) => _onEmailAddressReceived(
-    suggestionEmailAddress.emailAddress.emailAddress,
-    stateSetter,
-  );
+  ) {
+    if (!_isDuplicatedRecipient(suggestionEmailAddress.emailAddress.emailAddress)) {
+      stateSetter(() => _currentListEmailAddress.add(suggestionEmailAddress.emailAddress));
+      _updateListEmailAddressAction();
+    }
+  }
 
   void _handleSubmitTagAction(
     String value,
