@@ -54,7 +54,7 @@ extension EmailExtension on Email {
     final mailboxCurrent = findMailboxContain(mapMailbox);
     return !hasMdnSent &&
         headers.readReceiptHasBeenRequested &&
-        mailboxCurrent?.isSent == false;
+        mailboxCurrent?.isSent != true;
   }
 
   String getReceivedAt({required String newLocale, String? pattern}) {

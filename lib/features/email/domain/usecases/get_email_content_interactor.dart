@@ -10,6 +10,7 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
 
@@ -109,16 +110,19 @@ class GetEmailContentInteractor {
     {Properties? additionalProperties}
   ) async* {
     try {
-      final detailedEmail = await emailRepository.getStoredOpenedEmail(session, accountId, emailId);
+      final tupleEmail = await Future.wait([
+        emailRepository.getStoredEmail(session, accountId, emailId),
+        emailRepository.getStoredOpenedEmail(session, accountId, emailId),
+      ], eagerError: true);
+      final emailCache = tupleEmail[0] as Email;
+      final detailedEmail = tupleEmail[1] as DetailedEmail;
       log('GetEmailContentInteractor::_getStoredOpenedEmail: attachments = ${detailedEmail.attachments?.length} | inlineImages = ${detailedEmail.inlineImages?.length}');
       yield Right<Failure, Success>(GetEmailContentFromCacheSuccess(
         htmlEmailContent: detailedEmail.htmlEmailContent ?? '',
         attachments: detailedEmail.attachments ?? [],
         inlineImages: detailedEmail.inlineImages ?? [],
-        emailCurrent: Email(
-          id: emailId,
+        emailCurrent: emailCache.copyWith(
           headers: detailedEmail.headers,
-          keywords: detailedEmail.keywords,
           sMimeStatusHeader: detailedEmail.sMimeStatusHeader,
         )
       ));
@@ -144,16 +148,19 @@ class GetEmailContentInteractor {
     {Properties? additionalProperties}
   ) async* {
     try {
-      final detailedEmail = await emailRepository.getStoredNewEmail(session, accountId, emailId);
+      final tupleEmail = await Future.wait([
+        emailRepository.getStoredEmail(session, accountId, emailId),
+        emailRepository.getStoredNewEmail(session, accountId, emailId),
+      ], eagerError: true);
+      final emailCache = tupleEmail[0] as Email;
+      final detailedEmail = tupleEmail[1] as DetailedEmail;
       log('GetEmailContentInteractor::_getStoredNewEmail: attachments = ${detailedEmail.attachments?.length} | inlineImages = ${detailedEmail.inlineImages?.length}');
       yield Right<Failure, Success>(GetEmailContentFromCacheSuccess(
         htmlEmailContent: detailedEmail.htmlEmailContent ?? '',
         attachments: detailedEmail.attachments ?? [],
         inlineImages: detailedEmail.inlineImages ?? [],
-        emailCurrent: Email(
-          id: emailId,
+        emailCurrent: emailCache.copyWith(
           headers: detailedEmail.headers,
-          keywords: detailedEmail.keywords,
           sMimeStatusHeader: detailedEmail.sMimeStatusHeader,
         )
       ));

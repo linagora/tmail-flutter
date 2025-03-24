@@ -735,6 +735,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         AppLocalizations.of(currentContext!).yes,
         onConfirmAction: () => _handleSendReceiptToSenderAction(currentContext!),
         showAsBottomSheet: true,
+        dialogMargin: MediaQuery.paddingOf(currentContext!).add(const EdgeInsets.only(bottom: 12)),
         title: AppLocalizations.of(currentContext!).titleReadReceiptRequestNotificationMessage,
         cancelTitle: AppLocalizations.of(currentContext!).no,
         icon: SvgPicture.asset(imagePaths.icReadReceiptMessage, fit: BoxFit.fill),
