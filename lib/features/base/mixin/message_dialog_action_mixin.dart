@@ -46,6 +46,7 @@ mixin MessageDialogActionMixin {
         bool isArrangeActionButtonsVertical = false,
         int? titleActionButtonMaxLines,
         bool useIconAsBasicLogo = false,
+        EdgeInsetsGeometry? dialogMargin,
       }
   ) async {
     final responsiveUtils = Get.find<ResponsiveUtils>();
@@ -111,6 +112,7 @@ mixin MessageDialogActionMixin {
             textContent: message,
             title: title ?? '',
             iconWidget: icon,
+            margin: dialogMargin,
             widthDialog: responsiveUtils.getSizeScreenWidth(context),
             confirmBackgroundButtonColor: actionButtonColor,
             cancelBackgroundButtonColor: cancelButtonColor,
