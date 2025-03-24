@@ -93,4 +93,8 @@ class ComposerRobot extends CoreRobot {
   Future<void> tapMarkAsImportantPopupItemOnMenu() async {
     await $(#mark_as_important_popup_item).tap();
   }
+
+  Future<void> tapReadReceiptPopupItemOnMenu() async {
+    await $(#read_receipt_popup_item).tap();
+  }
 }

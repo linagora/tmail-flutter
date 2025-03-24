@@ -517,6 +517,7 @@ class ComposerView extends GetWidget<ComposerController> {
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
+          key: const Key('read_receipt_popup_item'),
           iconAction: controller.imagePaths.icReadReceipt,
           nameAction: AppLocalizations.of(context).requestReadReceipt,
           styleName: ComposerStyle.popupItemTextStyle,
