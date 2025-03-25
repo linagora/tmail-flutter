@@ -5506,4 +5506,18 @@ class AppLocalizations {
       name: 'deletingLocalDraft',
     );
   }
+
+  String get deleteAllLocalDraftsSuccessfully {
+    return Intl.message(
+      'Delete all local drafts successfully',
+      name: 'deleteAllLocalDraftsSuccessfully',
+    );
+  }
+
+  String get restoreAllLocalDraftsSuccessfully {
+    return Intl.message(
+      'Restore all local drafts successfully',
+      name: 'restoreAllLocalDraftsSuccessfully',
+    );
+  }
 }

@@ -5177,5 +5177,17 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "deleteAllLocalDraftsSuccessfully": "Delete all local drafts successfully",
+  "@deleteAllLocalDraftsSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "restoreAllLocalDraftsSuccessfully": "Restore all local drafts successfully",
+  "@restoreAllLocalDraftsSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

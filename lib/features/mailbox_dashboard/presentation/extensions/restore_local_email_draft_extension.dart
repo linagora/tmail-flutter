@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/presentation_local_email_draft.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/local_email_draft/local_email_draft_list_dialog_builder.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension RestoreLocalEmailDraftExtension on MailboxDashBoardController {
@@ -71,5 +72,12 @@ extension RestoreLocalEmailDraftExtension on MailboxDashBoardController {
       .toList();
 
     openListComposer(listComposerArguments);
+
+    if (currentOverlayContext != null && currentContext != null) {
+      appToast.showToastSuccessMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).restoreAllLocalDraftsSuccessfully,
+      );
+    }
   }
 }
