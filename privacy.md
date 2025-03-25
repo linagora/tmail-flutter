@@ -16,7 +16,7 @@ Content : Content is defined as any data, regardless of nature (whether informat
 
 Personal data : Personal data means any information relating to an identified or identifiable natural person (data subject); an identifiable natural person is one who can be identified, directly or indirectly, in particular by reference to an identifier such as a name, an identification number, location data, an online identifier or to one or more factors specific to the physical, physiological, genetic, mental, economic, cultural or social identity of that natural person.
 
-Services: Twake, a secure open source collaboration platform which notably includes Team messaging, Storage space, Team calendar, and Task management features, which are extensible via plugins.
+Services: Twake Workplace, a secure open source collaboration platform which notably includes Team messaging, Storage space, Team calendar, and Task management features, which are extensible via plugins.
 
 User: An User means YOU as an individual, whether acting on your own account or on the behalf of any organization (company, association, or other) which requires you to access or use the Services in a professional context. When accessing and/or using Service features or purchasing a subscription to the Services on behalf of an organization, said organization is also considered to be a User, and, as such, is fully subject to the present Privacy policy.
 
@@ -24,15 +24,15 @@ User Content: User Content is defined as Content which is directly or indirectly
 
 ## Scope
 
-The present privacy policy is limited only to the Team-Mail mobile application. 
+The present privacy policy is limited only to the Twake Mail application. 
 
 ## Email server disclaimer
 
-The users need to be aware that the email server and its owner may have a different privacy policy. Team-Mail being usable 
+The users need to be aware that the email server and its owner may have a different privacy policy. Twake Mail being usable 
 with any email server, we cannot assume here which would be the terms of the emails server owner privacy policy. Users are responsible of consulting and validating the privacy policy of the email 
 server.
 
-By no means can LINAGORA be held accountable for the doings of arbitrary email servers owners that the users have been setting up with Team-Mail application.
+By no means can LINAGORA be held accountable for the doings of arbitrary email servers owners that the users have been setting up with Twake Mail application.
 
 ## Acceptance
 
@@ -47,20 +47,20 @@ The present Privacy policy may be amended or changed at any time at LINAGORA's d
 User is informed that none of its personnal data are collected.
 
 If supported by the email server, the fact that emails are received might transit through third party infrastructure ([firebase cloud messaging](https://firebase.google.com/docs/cloud-messaging)). 
-In the process, no personal data is being exposed, and the Team-Mail application need to contact directly the mail server in order to gather the notification information.
+In the process, no personal data is being exposed, and the Twake Mail application need to contact directly the mail server in order to gather the notification information.
 
 ## Application Permissions
 
-In order to work smoothly on your device the Team-Mail application needs the following authorization:
+In order to work smoothly on your device the Twake Mail application needs the following authorization:
 
- - `Files, documnents, and audio files`: This permission is used by Team-Mail to access files of your device and allows using those files as email attachments. Once selected files are uploaded to the remote 
+ - `Files, documnents, and audio files`: This permission is used by Twake Mail to access files of your device and allows using those files as email attachments. Once selected files are uploaded to the remote 
 email server.
- - `Photos and videos`: This permission is used by Team-Mail to access photos and videos and allows using those files as email attachments. Once selected files are uploaded to the remote 
+ - `Photos and videos`: This permission is used by Twake Mail to access photos and videos and allows using those files as email attachments. Once selected files are uploaded to the remote 
 email server.
- - `Contacts`: Used by Team-Mail for Email address auto-completion against local address book. Local address book are never uploaded to third-party. Only once an email is sent to a 
+ - `Contacts`: Used by Twake Mail for Email address auto-completion against local address book. Local address book are never uploaded to third-party. Only once an email is sent to a 
 local contact, does the email server become aware of the mail address and display names of the contact.
 
-Those rights are only intendeed to improve Team-Mail user experience. Team-Mail is still usable, with a reduced functional scope might the user deny permissions.
+Those rights are only intendeed to improve Twake Mail user experience. Twake Mail is still usable, with a reduced functional scope might the user deny permissions.
 
 ## Our guiding principles for privacy
 
