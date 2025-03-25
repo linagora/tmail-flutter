@@ -38,6 +38,7 @@ import 'package:tmail_ui_user/features/composer/domain/state/get_autocomplete_st
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/send_email_state.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/update_email_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
@@ -226,6 +227,7 @@ class MailboxDashBoardController extends ReloadableController
   GetServerSettingInteractor? getServerSettingInteractor;
   GetAllLocalEmailDraftInteractor? getAllLocalEmailDraftInteractor;
   RemoveAllLocalEmailDraftInteractor? removeAllLocalEmailDraftInteractor;
+  CreateNewAndSaveEmailToDraftsInteractor? createNewAndSaveEmailToDraftsInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -326,6 +328,8 @@ class MailboxDashBoardController extends ReloadableController
     if (PlatformInfo.isWeb) {
       listSearchFilterScrollController = ScrollController();
       getAllLocalEmailDraftInteractor = getBinding<GetAllLocalEmailDraftInteractor>();
+      removeAllLocalEmailDraftInteractor = getBinding<RemoveAllLocalEmailDraftInteractor>();
+      createNewAndSaveEmailToDraftsInteractor = getBinding<CreateNewAndSaveEmailToDraftsInteractor>();
     }
     if (PlatformInfo.isIOS) {
       _registerPendingCurrentEmailIdInNotification();
@@ -3160,7 +3164,7 @@ class MailboxDashBoardController extends ReloadableController
     try {
       return sessionCurrent?.getOwnEmailAddress() ?? '';
     } catch (e) {
-      logError('ManageAccountDashBoardController::getOwnEmailAddress:Exception: $e');
+      logError('MailboxDashBoardController::getOwnEmailAddress:Exception: $e');
       return '';
     }
   }

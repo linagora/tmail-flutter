@@ -1,6 +1,8 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
+import 'package:core/data/network/download/download_client.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
+import 'package:core/utils/application_manager.dart';
 import 'package:core/utils/config/app_config_loader.dart';
 import 'package:core/utils/file_utils.dart';
 import 'package:core/utils/print_utils.dart';
@@ -9,8 +11,13 @@ import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
+import 'package:tmail_ui_user/features/composer/data/datasource/composer_datasource.dart';
+import 'package:tmail_ui_user/features/composer/data/datasource_impl/composer_datasource_impl.dart';
+import 'package:tmail_ui_user/features/composer/data/repository/composer_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/contact_repository_impl.dart';
+import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/manager/composer_manager.dart';
 import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.dart';
@@ -135,9 +142,13 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_emai
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_bindings.dart';
+import 'package:tmail_ui_user/features/upload/data/datasource/attachment_upload_datasource.dart';
+import 'package:tmail_ui_user/features/upload/data/datasource_impl/attachment_upload_datasource_impl.dart';
+import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
+import 'package:uuid/uuid.dart';
 
 class MailboxDashBoardBindings extends BaseBindings {
 
@@ -217,6 +228,8 @@ class MailboxDashBoardBindings extends BaseBindings {
       () => Get.find<RemoteServerSettingsDataSourceImpl>());
     Get.lazyPut<IdentityCreatorDataSource>(() => Get.find<LocalIdentityCreatorDataSourceImpl>());
     Get.lazyPut<AppGridDatasource>(() => Get.find<AppGridDatasourceImpl>());
+    Get.lazyPut<AttachmentUploadDataSource>(() => Get.find<AttachmentUploadDataSourceImpl>());
+    Get.lazyPut<ComposerDataSource>(() => Get.find<ComposerDataSourceImpl>());
   }
 
   @override
@@ -296,6 +309,15 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<AppConfigLoader>(),
       Get.find<CacheExceptionThrower>(),
     ));
+    Get.lazyPut(() => AttachmentUploadDataSourceImpl(
+      Get.find<FileUploader>(),
+      Get.find<Uuid>(),
+      Get.find<RemoteExceptionThrower>(),
+    ));
+    Get.lazyPut(() => ComposerDataSourceImpl(
+      Get.find<DownloadClient>(),
+      Get.find<RemoteExceptionThrower>(),
+    ));
   }
 
   @override
@@ -346,6 +368,10 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<EmailRepository>(),
       Get.find<MailboxRepository>()
     ));
+    Get.lazyPut(() => CreateNewAndSaveEmailToDraftsInteractor(
+      Get.find<EmailRepository>(),
+      Get.find<ComposerRepository>(),
+    ));
 
     IdentityInteractorsBindings().dependencies();
     Get.lazyPut(() => GetAllIdentitiesInteractor(
@@ -370,6 +396,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut<ServerSettingsRepository>(() => Get.find<ServerSettingsRepositoryImpl>());
     Get.lazyPut<IdentityCreatorRepository>(() => Get.find<IdentityCreatorRepositoryImpl>());
     Get.lazyPut<AppGridRepository>(() => Get.find<AppGridRepositoryImpl>());
+    Get.lazyPut<ComposerRepository>(() => Get.find<ComposerRepositoryImpl>());
   }
 
   @override
@@ -422,5 +449,12 @@ class MailboxDashBoardBindings extends BaseBindings {
       DataSourceType.network: Get.find<AppGridDatasource>(),
       DataSourceType.local: Get.find<LocalAppGridDatasourceImpl>()
     },));
+    Get.lazyPut(() => ComposerRepositoryImpl(
+      Get.find<AttachmentUploadDataSource>(),
+      Get.find<ComposerDataSource>(),
+      Get.find<HtmlDataSource>(),
+      Get.find<ApplicationManager>(),
+      Get.find<Uuid>(),
+    ));
   }
 }

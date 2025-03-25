@@ -30,7 +30,8 @@ class CreateNewAndSaveEmailToDraftsInteractor {
     try {
       yield dartz.Right<Failure, Success>(GenerateEmailLoading());
 
-      final emailCreated = await _createEmailObject(createEmailRequest);
+      final emailCreated = createEmailRequest.emailCreated
+          ?? await _createEmailObject(createEmailRequest);
 
       if (emailCreated != null) {
         if (createEmailRequest.draftsEmailId == null) {
