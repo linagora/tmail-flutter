@@ -72,7 +72,7 @@ class _EmptyMailboxPopupDialogWidgetState extends State<EmptyMailboxPopupDialogW
             color: AppColor.steelGrayA540,
           ),
           backgroundColor: _visible
-            ? Theme.of(context).colorScheme.outline.withOpacity(0.08)
+            ? Theme.of(context).colorScheme.outline.withValues(alpha: 0.08)
             : Colors.transparent,
           padding: EmptyMailboxPopupDialogWidgetStyles.emptyButtonPadding,
           onTapActionCallback: () => _setVisible(true),

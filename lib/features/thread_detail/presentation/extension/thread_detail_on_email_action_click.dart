@@ -111,7 +111,9 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
     if (session == null ||
         accountId == null ||
         (presentationEmail.hasStarred && markStarAction == MarkStarAction.markStar) ||
-        (!presentationEmail.hasStarred && markStarAction == MarkStarAction.unMarkStar)) return;
+        (!presentationEmail.hasStarred && markStarAction == MarkStarAction.unMarkStar)) {
+      return;
+    }
 
     consumeState(emailActionReactor.markAsStarEmail(
       session!,

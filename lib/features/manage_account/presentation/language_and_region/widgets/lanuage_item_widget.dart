@@ -30,7 +30,7 @@ class LanguageItemWidget extends StatelessWidget {
       child: InkWell(
         onTap: () => onSelectLanguageAction.call(localeCurrent),
         borderRadius: const BorderRadius.all(Radius.circular(8)),
-        hoverColor: AppColor.lightGrayEBEDF0.withOpacity(0.6),
+        hoverColor: AppColor.lightGrayEBEDF0.withValues(alpha: 0.6),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 17),
           height: 51,
@@ -41,7 +41,7 @@ class LanguageItemWidget extends StatelessWidget {
                 letterSpacing: -0.15,
                 fontSize: 16,
                 height: 21.01 / 16,
-                color: AppColor.gray424244.withOpacity(0.9),
+                color: AppColor.gray424244.withValues(alpha: 0.9),
               ),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

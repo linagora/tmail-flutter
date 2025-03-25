@@ -1,4 +1,3 @@
-import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_manager.dart';
@@ -10,7 +9,7 @@ extension InitializeThreadDetailManager on ThreadDetailManager {
     availableThreadIds.value = currentDisplayedEmails
         .map((presentationEmail) => presentationEmail.threadId)
         .toSet()
-        .whereNotNull()
+        .nonNulls
         .toList();
     if (availableThreadIds.isEmpty) return;
 

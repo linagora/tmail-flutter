@@ -42,12 +42,12 @@ class ProfileSettingMenuOverlay extends StatelessWidget {
           borderRadius: const BorderRadius.all(Radius.circular(14)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.3),
+              color: Colors.black.withValues(alpha: 0.3),
               blurRadius: 2,
               spreadRadius: 0,
             ),
             BoxShadow(
-              color: Colors.black.withOpacity(0.15),
+              color: Colors.black.withValues(alpha: 0.15),
               blurRadius: 6,
               spreadRadius: 2,
               offset: const Offset(0, 2),
@@ -67,7 +67,7 @@ class ProfileSettingMenuOverlay extends StatelessWidget {
                 ),
                 const SizedBox(height: 4),
                 Divider(
-                  color: AppColor.profileMenuDivider.withOpacity(0.12),
+                  color: AppColor.profileMenuDivider.withValues(alpha: 0.12),
                   height: 1,
                 ),
                 ...settingActionTypes
