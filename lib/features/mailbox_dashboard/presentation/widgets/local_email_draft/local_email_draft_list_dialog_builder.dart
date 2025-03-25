@@ -2,16 +2,24 @@ import 'dart:ui';
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/user_name.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
+import 'package:tmail_ui_user/features/composer/domain/exceptions/compose_email_exception.dart';
+import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_save_email_to_drafts_interactor.dart';
+import 'package:tmail_ui_user/features/composer/presentation/mixin/handle_message_failure_mixin.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_message_dialog_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_local_email_draft_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/presentation_local_email_draft.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/local_email_draft/local_email_draft_item_widget.dart';
@@ -20,18 +28,18 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class LocalEmailDraftListDialogBuilder extends StatefulWidget {
   final AccountId? accountId;
-  final UserName? userName;
+  final Session? session;
+  final String ownEmailAddress;
   final List<PresentationLocalEmailDraft> presentationLocalEmailDrafts;
   final OnEditLocalEmailDraftAction? onEditLocalEmailDraftAction;
-  final OnSaveAsDraftLocalEmailDraftAction? onSaveAsDraftLocalEmailDraftAction;
 
   const LocalEmailDraftListDialogBuilder({
     super.key,
     required this.accountId,
-    required this.userName,
+    required this.session,
+    required this.ownEmailAddress,
     required this.presentationLocalEmailDrafts,
     this.onEditLocalEmailDraftAction,
-    this.onSaveAsDraftLocalEmailDraftAction,
   });
 
   @override
@@ -40,14 +48,17 @@ class LocalEmailDraftListDialogBuilder extends StatefulWidget {
 }
 
 class _LocalEmailDraftListDialogBuilderState
-    extends State<LocalEmailDraftListDialogBuilder> {
+    extends State<LocalEmailDraftListDialogBuilder>
+    with HandleMessageFailureMixin {
   static const double _maxHeight = 656.0;
   static const double _maxWidth = 556.0;
 
   late final ResponsiveUtils _responsiveUtils;
   late final ImagePaths _imagePaths;
+  late final AppToast _appToast;
   late final ScrollController _scrollController;
   late final RemoveLocalEmailDraftInteractor? _removeLocalEmailDraftInteractor;
+  late final CreateNewAndSaveEmailToDraftsInteractor? _createNewAndSaveEmailToDraftsInteractor;
 
   final ValueNotifier<List<PresentationLocalEmailDraft>> _listLocalEmailDraftsNotifier = ValueNotifier([]);
 
@@ -56,7 +67,9 @@ class _LocalEmailDraftListDialogBuilderState
     super.initState();
     _responsiveUtils = Get.find<ResponsiveUtils>();
     _imagePaths = Get.find<ImagePaths>();
+    _appToast = Get.find<AppToast>();
     _removeLocalEmailDraftInteractor = getBinding<RemoveLocalEmailDraftInteractor>();
+    _createNewAndSaveEmailToDraftsInteractor = getBinding<CreateNewAndSaveEmailToDraftsInteractor>();
     _scrollController = ScrollController();
     _listLocalEmailDraftsNotifier.value = widget.presentationLocalEmailDrafts;
   }
@@ -140,12 +153,10 @@ class _LocalEmailDraftListDialogBuilderState
                             imagePaths: _imagePaths,
                             onSelectLocalEmailDraftAction: widget.onEditLocalEmailDraftAction,
                             onEditLocalEmailDraftAction: widget.onEditLocalEmailDraftAction,
-                            onSaveAsDraftLocalEmailDraftAction: widget.onSaveAsDraftLocalEmailDraftAction,
+                            onSaveAsDraftLocalEmailDraftAction: (draftLocal) =>
+                                _saveAsDraftLocalEmailDraft(draftLocal, context),
                             onDiscardLocalEmailDraftAction: (draftLocal) =>
-                                _handleDiscardLocalEmailDraftAction(
-                                  draftLocal,
-                                  AppLocalizations.of(context),
-                                )
+                                _handleDiscardLocalEmailDraftAction(draftLocal, context)
                         );
                       },
                     );
@@ -235,8 +246,9 @@ class _LocalEmailDraftListDialogBuilderState
 
   void _handleDiscardLocalEmailDraftAction(
     PresentationLocalEmailDraft emailDraft,
-    AppLocalizations appLocalizations,
+    BuildContext context,
   ) {
+    final appLocalizations = AppLocalizations.of(context);
     Get.dialog(
       PointerInterceptor(child: ConfirmationDialogBuilder(
         imagePath: _imagePaths,
@@ -248,7 +260,10 @@ class _LocalEmailDraftListDialogBuilderState
         cancelLabelButtonColor: Colors.white,
         confirmBackgroundButtonColor: AppColor.grayBackgroundColor,
         confirmLabelButtonColor: AppColor.steelGray600,
-        onConfirmButtonAction: () => removeLocalEmailDraft(emailDraft.id),
+        onConfirmButtonAction: () {
+          popBack();
+          removeLocalEmailDraft(context, emailDraft.id);
+        },
         onCancelButtonAction: popBack,
         onCloseButtonAction: popBack,
       )),
@@ -256,13 +271,100 @@ class _LocalEmailDraftListDialogBuilderState
     );
   }
 
-  void removeLocalEmailDraft(String draftLocalId) {
-    log('_LocalEmailDraftListDialogBuilderState::removeLocalEmailDraft:draftLocalId = $draftLocalId');
-    popBack();
-
+  Future<void> removeLocalEmailDraft(BuildContext context, String draftLocalId) async {
     _listLocalEmailDraftsNotifier.value = List.from(_listLocalEmailDraftsNotifier.value)
       ..removeWhere((draftLocal) => draftLocal.id == draftLocalId);
 
-    _removeLocalEmailDraftInteractor?.execute(draftLocalId);
+    await _removeLocalEmailDraftInteractor?.execute(draftLocalId);
+
+    if (context.mounted) {
+      _appToast.showToastSuccessMessage(
+        context,
+        AppLocalizations.of(context).deleteLocalDraftSuccessfully,
+      );
+    }
+
+    if (_listLocalEmailDraftsNotifier.value.isEmpty) {
+      popBack();
+    }
+  }
+
+  Future<void> _saveAsDraftLocalEmailDraft(
+    PresentationLocalEmailDraft draftLocal,
+    BuildContext context,
+  ) async {
+    if (widget.accountId == null ||
+        widget.session == null ||
+        _createNewAndSaveEmailToDraftsInteractor == null) {
+      return;
+    }
+
+    final resultState = await _showSavingMessageToDraftsDialog(
+      session: widget.session!,
+      accountId: widget.accountId!,
+      ownEmailAddress: widget.ownEmailAddress,
+      draftLocal: draftLocal,
+      createNewAndSaveEmailToDraftsInteractor: _createNewAndSaveEmailToDraftsInteractor!,
+      cancelToken: CancelToken(),
+    );
+
+    if (!context.mounted) return;
+
+    if (resultState is SaveEmailAsDraftsSuccess) {
+      _appToast.showToastSuccessMessage(
+        context,
+        AppLocalizations.of(context).drafts_saved,
+        leadingSVGIcon: _imagePaths.icMailboxDrafts,
+        leadingSVGIconColor: Colors.white,
+      );
+
+      removeLocalEmailDraft(context, draftLocal.id);
+    } else if (resultState is SaveEmailAsDraftsFailure) {
+      final errorMessage = getMessageFailure(
+        appLocalizations: AppLocalizations.of(context),
+        exception: resultState.exception,
+        isDraft: true,
+      );
+
+      _appToast.showToastErrorMessage(
+        context,
+        errorMessage.message,
+        leadingSVGIcon: _imagePaths.icMailboxDrafts,
+        leadingSVGIconColor: Colors.white,
+      );
+    }
+  }
+
+  Future<dynamic> _showSavingMessageToDraftsDialog({
+    required Session session,
+    required AccountId accountId,
+    required String ownEmailAddress,
+    required PresentationLocalEmailDraft draftLocal,
+    required CreateNewAndSaveEmailToDraftsInteractor createNewAndSaveEmailToDraftsInteractor,
+    CancelToken? cancelToken,
+  }) {
+    final childWidget = PointerInterceptor(
+      child: SavingMessageDialogView(
+        createEmailRequest: CreateEmailRequest.fromLocalEmailDraft(
+          session: session,
+          accountId: accountId,
+          ownEmailAddress: ownEmailAddress,
+          draftLocal: draftLocal,
+        ),
+        createNewAndSaveEmailToDraftsInteractor: createNewAndSaveEmailToDraftsInteractor,
+        onCancelSavingEmailToDraftsAction: _handleCancelSavingMessageToDrafts,
+        cancelToken: cancelToken,
+      ),
+    );
+
+    return Get.dialog(
+      childWidget,
+      barrierDismissible: false,
+      barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+    );
+  }
+
+  void _handleCancelSavingMessageToDrafts({CancelToken? cancelToken}) {
+    cancelToken?.cancel([SavingEmailToDraftsCanceledException()]);
   }
 }

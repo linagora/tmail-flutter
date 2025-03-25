@@ -5485,4 +5485,11 @@ class AppLocalizations {
       name: 'messageWarningDialogDiscardLocalDraft',
     );
   }
+
+  String get deleteLocalDraftSuccessfully {
+    return Intl.message(
+      'Delete local draft successfully',
+      name: 'deleteLocalDraftSuccessfully',
+    );
+  }
 }

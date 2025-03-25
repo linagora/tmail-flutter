@@ -2,8 +2,6 @@ import 'package:core/utils/app_logger.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/auto_create_tag_for_recipients_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_draft_mailbox_id_for_composer_extension.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/get_outbox_mailbox_id_for_composer_extension.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/get_sent_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 
 extension HandleLocalEmailDraftExtension on ComposerController {
@@ -42,8 +40,6 @@ extension HandleLocalEmailDraftExtension on ComposerController {
       identity: identitySelected.value,
       attachments: uploadController.attachmentsUploaded,
       inlineAttachments: uploadController.mapInlineAttachments,
-      outboxMailboxId: getOutboxMailboxIdForComposer(),
-      sentMailboxId: getSentMailboxIdForComposer(),
       draftsMailboxId: getDraftMailboxIdForComposer(),
       draftsEmailId: getDraftEmailId(),
       answerForwardEmailId: arguments.presentationEmail?.id,

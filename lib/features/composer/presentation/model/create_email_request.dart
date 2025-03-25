@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/attachment.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/presentation_local_email_draft.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
 
 class CreateEmailRequest with EquatableMixin {
@@ -47,14 +48,15 @@ class CreateEmailRequest with EquatableMixin {
   final int? savedDraftHash;
   final EmailActionType? savedActionType;
   final EmailId? savedEmailDraftId;
+  final Email? emailCreated;
 
   CreateEmailRequest({
     required this.session,
     required this.accountId,
     required this.emailActionType,
     required this.ownEmailAddress,
-    required this.subject,
-    required this.emailContent,
+    this.subject = '',
+    this.emailContent = '',
     this.fromSender,
     this.toRecipients,
     this.ccRecipients,
@@ -83,7 +85,31 @@ class CreateEmailRequest with EquatableMixin {
     this.savedDraftHash,
     this.savedActionType,
     this.savedEmailDraftId,
+    this.emailCreated,
   });
+
+  factory CreateEmailRequest.fromLocalEmailDraft({
+    required Session session,
+    required AccountId accountId,
+    required String ownEmailAddress,
+    required PresentationLocalEmailDraft draftLocal,
+  }) {
+    return CreateEmailRequest(
+      session: session,
+      accountId: accountId,
+      ownEmailAddress: ownEmailAddress,
+      emailActionType: EmailActionType.composeFromLocalEmailDraft,
+      emailCreated: draftLocal.email,
+      hasRequestReadReceipt: draftLocal.hasRequestReadReceipt ?? false,
+      isMarkAsImportant: draftLocal.isMarkAsImportant ?? false,
+      displayMode: draftLocal.displayMode,
+      composerId: draftLocal.composerId,
+      composerIndex: draftLocal.composerIndex,
+      savedDraftHash: draftLocal.draftHash,
+      savedActionType: draftLocal.actionType,
+      savedEmailDraftId: draftLocal.draftEmailId,
+    );
+  }
 
   @override
   List<Object?> get props => [
@@ -121,5 +147,6 @@ class CreateEmailRequest with EquatableMixin {
     savedDraftHash,
     savedActionType,
     savedEmailDraftId,
+    emailCreated,
   ];
 }
