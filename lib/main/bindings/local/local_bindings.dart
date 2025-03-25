@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/caching/clients/encryption_key_cache_clie
 import 'package:tmail_ui_user/features/caching/clients/fcm_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/firebase_registration_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/hive_cache_version_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/local_email_draft_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/mailbox_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/new_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/oidc_configuration_cache_client.dart';
@@ -32,6 +33,8 @@ import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_email_draft_manager.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_email_draft_worker_queue.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
@@ -90,6 +93,8 @@ class LocalBindings extends Bindings {
     Get.put(SendingEmailCacheManager(Get.find<SendingEmailHiveCacheClient>()));
     Get.put(SessionHiveCacheClient());
     Get.put(LocalSpamReportManager(Get.find<SharedPreferences>()));
+    Get.put(LocalEmailDraftClient());
+    Get.put(LocalEmailDraftManager(Get.find<LocalEmailDraftClient>()));
     Get.put(CachingManager(
       Get.find<MailboxCacheClient>(),
       Get.find<StateCacheClient>(),
@@ -118,6 +123,7 @@ class LocalBindings extends Bindings {
   void _bindingWorkerQueue() {
     Get.put(NewEmailCacheWorkerQueue());
     Get.put(OpenedEmailCacheWorkerQueue());
+    Get.put(LocalEmailDraftWorkerQueue());
   }
 
   void _bindingKeychainSharing() {

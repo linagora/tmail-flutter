@@ -1,37 +1,19 @@
 import 'package:equatable/equatable.dart';
-import 'package:hive/hive.dart';
-import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 
-part 'local_email_draft.g.dart';
+class PresentationLocalEmailDraft with EquatableMixin {
 
-@HiveType(typeId: CachingConstants.LOCAL_EMAIL_DRAFT_CACHE_ID)
-class LocalEmailDraft with EquatableMixin {
-
-  @HiveField(0)
   final String id;
-
-  @HiveField(1)
   final String composerId;
-
-  @HiveField(2)
   final DateTime savedTime;
-
-  @HiveField(3)
-  final String? email;
-
-  @HiveField(4)
+  final Email? email;
   final bool? hasRequestReadReceipt;
-
-  @HiveField(5)
   final bool? isMarkAsImportant;
-
-  @HiveField(6)
-  final String? displayMode;
-
-  @HiveField(7)
+  final ScreenDisplayMode? displayMode;
   final int? composerIndex;
 
-  LocalEmailDraft({
+  PresentationLocalEmailDraft({
     required this.id,
     required this.composerId,
     required this.savedTime,

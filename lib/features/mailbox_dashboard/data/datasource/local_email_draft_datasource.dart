@@ -4,13 +4,9 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/local_email_draft.dart';
 
 abstract class LocalEmailDraftDatasource {
-  Future<void> saveLocalEmailDraft({
-    required AccountId accountId,
-    required UserName userName,
-    required LocalEmailDraft composerCache,
-  });
+  Future<void> saveLocalEmailDraft(LocalEmailDraft localEmailDraft);
 
-  Future<List<LocalEmailDraft>> getLocalEmailDraft(
+  Future<List<LocalEmailDraft>> getAllLocalEmailDraft(
     AccountId accountId,
     UserName userName);
 

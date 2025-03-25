@@ -4,7 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/local_email_draft_repository.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_composer_cache_state.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/get_all_local_email_draft_state.dart';
 
 class GetAllLocalEmailDraftInteractor {
   final LocalEmailDraftRepository _localEmailDraftRepository;
@@ -13,13 +13,12 @@ class GetAllLocalEmailDraftInteractor {
 
   Stream<Either<Failure, Success>> execute(AccountId accountId, UserName userName) async* {
     try {
-      final listLocalEmailDraft = await _localEmailDraftRepository.getLocalEmailDraft(
-        accountId,
-        userName,
-      );
-      yield Right(GetLocalEmailDraftSuccess(listLocalEmailDraft));
+      yield Right(GetAllLocalEmailDraftLoading());
+      final listLocalEmailDraft = await _localEmailDraftRepository
+        .getAllLocalEmailDraft(accountId, userName);
+      yield Right(GetAllLocalEmailDraftSuccess(listLocalEmailDraft));
     } catch (exception) {
-      yield Left(GetLocalEmailDraftFailure(exception));
+      yield Left(GetAllLocalEmailDraftFailure(exception));
     }
   }
 }
