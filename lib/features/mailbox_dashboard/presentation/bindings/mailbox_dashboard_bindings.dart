@@ -177,7 +177,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<MoveToMailboxInteractor>(),
       Get.find<DeleteEmailPermanentlyInteractor>(),
       Get.find<MarkAsMailboxReadInteractor>(),
-      Get.find<GetAllLocalEmailDraftInteractor>(),
       Get.find<GetIdentityCacheOnWebInteractor>(),
       Get.find<MarkAsEmailReadInteractor>(),
       Get.find<MarkAsStarEmailInteractor>(),
@@ -197,8 +196,6 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<UnsubscribeEmailInteractor>(),
       Get.find<RestoredDeletedMessageInteractor>(),
       Get.find<GetRestoredDeletedMessageInterator>(),
-      Get.find<RemoveAllLocalEmailDraftInteractor>(),
-      Get.find<RemoveLocalEmailDraftInteractor>(),
       Get.find<GetAllIdentitiesInteractor>(),
     ));
     Get.put(AdvancedFilterController());

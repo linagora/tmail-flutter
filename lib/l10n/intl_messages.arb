@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-03-25T17:40:33.041369",
+  "@@last_modified": "2025-03-25T21:35:20.366104",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4390,6 +4390,12 @@
   },
   "discardAll": "Discard all",
   "@discardAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageWarningDialogDiscardLocalDraft": "Are you sure you want to delete this local draft? You will not be able to restore it.",
+  "@messageWarningDialogDiscardLocalDraft": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

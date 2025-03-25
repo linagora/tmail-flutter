@@ -712,7 +712,7 @@ class ComposerController extends BaseController
             inlineImages: arguments.inlineImages);
           _transformHtmlEmailContent(arguments.emailContents);
           break;
-        case EmailActionType.reopenComposerBrowser:
+        case EmailActionType.composeFromLocalEmailDraft:
           if (!PlatformInfo.isWeb) return;
 
           screenDisplayMode.value = arguments.displayMode;
@@ -720,11 +720,11 @@ class ComposerController extends BaseController
 
           _initEmailAddress(
             presentationEmail: arguments.presentationEmail!,
-            actionType: EmailActionType.reopenComposerBrowser
+            actionType: EmailActionType.composeFromLocalEmailDraft
           );
           _initSubjectEmail(
             presentationEmail: arguments.presentationEmail!,
-            actionType: EmailActionType.reopenComposerBrowser
+            actionType: EmailActionType.composeFromLocalEmailDraft
           );
           _initAttachmentsAndInlineImages(
             attachments: arguments.attachments,
@@ -765,7 +765,7 @@ class ComposerController extends BaseController
           break;
       }
 
-      if (composerArguments.value?.emailActionType == EmailActionType.reopenComposerBrowser) {
+      if (composerArguments.value?.emailActionType == EmailActionType.composeFromLocalEmailDraft) {
         log('ComposerController::_initEmail: hasRequestReadReceipt = ${arguments.hasRequestReadReceipt}');
         hasRequestReadReceipt.value = arguments.hasRequestReadReceipt ?? false;
       } else if (composerArguments.value?.emailActionType != EmailActionType.editDraft) {
@@ -1340,7 +1340,7 @@ class ComposerController extends BaseController
     if (emailActionType == EmailActionType.compose
         || emailActionType == EmailActionType.editDraft) {
       _savedEmailDraftHash = draftEmailHash;
-    } else if (emailActionType == EmailActionType.reopenComposerBrowser) {
+    } else if (emailActionType == EmailActionType.composeFromLocalEmailDraft) {
       _savedEmailDraftHash = emptyDraftEmailHash;
     }
   }
@@ -1754,7 +1754,7 @@ class ComposerController extends BaseController
 
     final emailActionType = composerArguments.value?.emailActionType;
     switch (emailActionType) {
-      case EmailActionType.reopenComposerBrowser:
+      case EmailActionType.composeFromLocalEmailDraft:
       case EmailActionType.editDraft:
         if (_identityContentOnOpenPolicy == SignatureStatus.editedAvailable) {
           _identityContentOnOpenPolicy = SignatureStatus.editedApplied;

@@ -67,7 +67,7 @@ class LocalEmailDraftDataSourceImpl extends LocalEmailDraftDatasource {
   Future<void> removeAllLocalEmailDraft(AccountId accountId, UserName userName) {
     return Future.sync(() {
       final keyWithIdentity = TupleKey(
-        EmailActionType.reopenComposerBrowser.name,
+        EmailActionType.composeFromLocalEmailDraft.name,
         accountId.asString,
         userName.value,
       ).toString();
@@ -77,16 +77,9 @@ class LocalEmailDraftDataSourceImpl extends LocalEmailDraftDatasource {
   }
 
   @override
-  Future<void> removeLocalEmailDraft(AccountId accountId, UserName userName, String composerId) {
-    return Future.sync(() {
-      final keyWithIdentity = TupleKey(
-        EmailActionType.reopenComposerBrowser.name,
-        accountId.asString,
-        userName.value,
-        composerId,
-      ).toString();
-
-      html.window.sessionStorage.removeWhere((key, value) => key == keyWithIdentity);
+  Future<void> removeLocalEmailDraft(String draftLocalId) {
+    return Future.sync(() async {
+      return await _localEmailDraftManager.removeLocalEmailDraft(draftLocalId);
     }).catchError(_exceptionThrower.throwException);
   }
 }

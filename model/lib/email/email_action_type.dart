@@ -17,7 +17,7 @@ enum EmailActionType {
   composeFromEmailAddress,
   composeFromMailtoUri,
   editAsNewEmail,
-  reopenComposerBrowser,
+  composeFromLocalEmailDraft,
   moveToTrash,
   deletePermanently,
   preview,

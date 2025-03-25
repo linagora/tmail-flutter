@@ -10,12 +10,21 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnSelectLocalEmailDraftAction = void Function(
     PresentationLocalEmailDraft);
+typedef OnDiscardLocalEmailDraftAction = void Function(
+    PresentationLocalEmailDraft);
+typedef OnEditLocalEmailDraftAction = void Function(
+    PresentationLocalEmailDraft);
+typedef OnSaveAsDraftLocalEmailDraftAction = void Function(
+    PresentationLocalEmailDraft);
 
 class LocalEmailDraftItemWidget extends StatelessWidget {
   final PresentationLocalEmailDraft draftLocal;
   final bool isOldest;
   final ImagePaths imagePaths;
   final OnSelectLocalEmailDraftAction? onSelectLocalEmailDraftAction;
+  final OnEditLocalEmailDraftAction? onEditLocalEmailDraftAction;
+  final OnSaveAsDraftLocalEmailDraftAction? onSaveAsDraftLocalEmailDraftAction;
+  final OnDiscardLocalEmailDraftAction? onDiscardLocalEmailDraftAction;
 
   const LocalEmailDraftItemWidget({
     super.key,
@@ -23,6 +32,9 @@ class LocalEmailDraftItemWidget extends StatelessWidget {
     required this.imagePaths,
     required this.isOldest,
     this.onSelectLocalEmailDraftAction,
+    this.onEditLocalEmailDraftAction,
+    this.onSaveAsDraftLocalEmailDraftAction,
+    this.onDiscardLocalEmailDraftAction,
   });
 
   @override
@@ -136,7 +148,7 @@ class LocalEmailDraftItemWidget extends StatelessWidget {
                             maxLines: 1,
                             padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
                             margin: const EdgeInsetsDirectional.only(end: 8),
-                            onTapActionCallback: () {},
+                            onTapActionCallback: () => onEditLocalEmailDraftAction?.call(draftLocal),
                           ),
                         ),
                         Flexible(
@@ -149,7 +161,7 @@ class LocalEmailDraftItemWidget extends StatelessWidget {
                             maxLines: 1,
                             padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
                             margin: const EdgeInsetsDirectional.only(end: 8),
-                            onTapActionCallback: () {},
+                            onTapActionCallback: () => onSaveAsDraftLocalEmailDraftAction?.call(draftLocal),
                           ),
                         ),
                         Flexible(
@@ -162,7 +174,7 @@ class LocalEmailDraftItemWidget extends StatelessWidget {
                             maxLines: 1,
                             padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 8),
                             margin: const EdgeInsetsDirectional.only(end: 8),
-                            onTapActionCallback: () {},
+                            onTapActionCallback: () => onDiscardLocalEmailDraftAction?.call(draftLocal),
                           ),
                         ),
                       ],
@@ -170,7 +182,7 @@ class LocalEmailDraftItemWidget extends StatelessWidget {
                     if (!isOldest)
                       const Padding(
                         padding: EdgeInsets.only(top: 12),
-                        child: Divider(color: AppColor.colorDivider, height: 0.5)),
+                        child: Divider(color: AppColor.colorDivider, height: 0.5,)),
                   ],
                 ),
               ),

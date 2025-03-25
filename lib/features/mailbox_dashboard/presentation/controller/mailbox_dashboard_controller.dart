@@ -94,7 +94,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/state/remove_ema
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_local_email_draft_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_local_email_draft_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_local_email_draft_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/action/dashboard_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/download/download_controller.dart';
@@ -195,7 +194,6 @@ class MailboxDashBoardController extends ReloadableController
   final MoveToMailboxInteractor _moveToMailboxInteractor;
   final DeleteEmailPermanentlyInteractor _deleteEmailPermanentlyInteractor;
   final MarkAsMailboxReadInteractor _markAsMailboxReadInteractor;
-  final GetAllLocalEmailDraftInteractor _getAllLocalEmailDraftInteractor;
   final GetIdentityCacheOnWebInteractor _getIdentityCacheOnWebInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
   final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
@@ -215,8 +213,6 @@ class MailboxDashBoardController extends ReloadableController
   final UnsubscribeEmailInteractor _unsubscribeEmailInteractor;
   final RestoredDeletedMessageInteractor _restoreDeletedMessageInteractor;
   final GetRestoredDeletedMessageInterator _getRestoredDeletedMessageInteractor;
-  final RemoveLocalEmailDraftInteractor _removeLocalEmailDraftInteractor;
-  final RemoveAllLocalEmailDraftInteractor _removeAllLocalEmailDraftInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
@@ -228,6 +224,8 @@ class MailboxDashBoardController extends ReloadableController
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
   IOSNotificationManager? _iosNotificationManager;
   GetServerSettingInteractor? getServerSettingInteractor;
+  GetAllLocalEmailDraftInteractor? getAllLocalEmailDraftInteractor;
+  RemoveAllLocalEmailDraftInteractor? removeAllLocalEmailDraftInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -287,7 +285,6 @@ class MailboxDashBoardController extends ReloadableController
     this._moveToMailboxInteractor,
     this._deleteEmailPermanentlyInteractor,
     this._markAsMailboxReadInteractor,
-    this._getAllLocalEmailDraftInteractor,
     this._getIdentityCacheOnWebInteractor,
     this._markAsEmailReadInteractor,
     this._markAsStarEmailInteractor,
@@ -307,8 +304,6 @@ class MailboxDashBoardController extends ReloadableController
     this._unsubscribeEmailInteractor,
     this._restoreDeletedMessageInteractor,
     this._getRestoredDeletedMessageInteractor,
-    this._removeAllLocalEmailDraftInteractor,
-    this._removeLocalEmailDraftInteractor,
     this._getAllIdentitiesInteractor,
   );
 
@@ -330,6 +325,7 @@ class MailboxDashBoardController extends ReloadableController
   void onReady() {
     if (PlatformInfo.isWeb) {
       listSearchFilterScrollController = ScrollController();
+      getAllLocalEmailDraftInteractor = getBinding<GetAllLocalEmailDraftInteractor>();
     }
     if (PlatformInfo.isIOS) {
       _registerPendingCurrentEmailIdInNotification();
@@ -337,15 +333,6 @@ class MailboxDashBoardController extends ReloadableController
     _handleArguments();
     _loadAppGrid();
     super.onReady();
-  }
-
-  void _handleLocalEmailDraft() async {
-    if (accountId.value == null || sessionCurrent == null) return;
-
-    consumeState(
-      _getAllLocalEmailDraftInteractor.execute(
-        accountId.value!,
-        sessionCurrent!.username));
   }
 
   void _handleIdentityCache() async {
@@ -437,7 +424,7 @@ class MailboxDashBoardController extends ReloadableController
     } else if (success is GetAllIdentitiesSuccess) {
       _handleGetAllIdentitiesSuccess(success);
     } else if (success is GetAllLocalEmailDraftSuccess) {
-      restoreLocalEmailDraft(success.listLocalEmailDraft);
+      handlerGetAllLocalEmailDraft(success.listLocalEmailDraft);
     } else if (success is GetIdentityCacheOnWebSuccess) {
       goToSettings();
     } else if (success is MarkAsStarEmailSuccess) {
@@ -723,7 +710,7 @@ class MailboxDashBoardController extends ReloadableController
     _setUpComponentsFromSession(session);
 
     if (PlatformInfo.isWeb) {
-      _handleLocalEmailDraft();
+      restoreLocalEmailDraft();
     }
 
     if (PlatformInfo.isAndroid && !_notificationManager.isNotificationClickedOnTerminate) {
@@ -1697,7 +1684,7 @@ class MailboxDashBoardController extends ReloadableController
     _getRouteParameters();
     _setUpComponentsFromSession(session);
     if (PlatformInfo.isWeb) {
-      _handleLocalEmailDraft();
+      restoreLocalEmailDraft();
     }
   }
 
@@ -3061,20 +3048,10 @@ class MailboxDashBoardController extends ReloadableController
     isRecoveringDeletedMessage.value = true;
   }
 
-  Future<void> removeLocalEmailDraft(String composerId) async {
-    if (accountId.value == null || sessionCurrent == null) return;
-
-    await _removeLocalEmailDraftInteractor.execute(
-      accountId.value!,
-      sessionCurrent!.username,
-      composerId,
-    );
-  }
-
   Future<void> removeAllLocalEmailDraft() async {
     if (accountId.value == null || sessionCurrent == null) return;
 
-    await _removeAllLocalEmailDraftInteractor.execute(
+    await removeAllLocalEmailDraftInteractor?.execute(
       accountId.value!,
       sessionCurrent!.username,
     );

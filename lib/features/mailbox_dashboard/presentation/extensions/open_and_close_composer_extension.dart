@@ -112,10 +112,6 @@ extension OpenAndCloseComposerExtension on MailboxDashBoardController {
     }
 
     _handleResultAfterCloseComposer(result);
-
-    if (composerId != null) {
-      await removeLocalEmailDraft(composerId);
-    }
   }
 
   void _handleResultAfterCloseComposer(dynamic result) {

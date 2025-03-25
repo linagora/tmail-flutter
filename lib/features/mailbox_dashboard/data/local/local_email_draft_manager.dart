@@ -30,4 +30,8 @@ class LocalEmailDraftManager {
       localEmailDraft,
     );
   }
+
+  Future<void> removeLocalEmailDraft(String id) async {
+    await _localEmailDraftClient.deleteItem(id);
+  }
 }

@@ -10,7 +10,7 @@ class PresentationLocalEmailDraft with EquatableMixin {
   final Email? email;
   final bool? hasRequestReadReceipt;
   final bool? isMarkAsImportant;
-  final ScreenDisplayMode? displayMode;
+  final ScreenDisplayMode displayMode;
   final int? composerIndex;
 
   PresentationLocalEmailDraft({
@@ -20,9 +20,29 @@ class PresentationLocalEmailDraft with EquatableMixin {
     this.email,
     this.hasRequestReadReceipt,
     this.isMarkAsImportant,
-    this.displayMode,
+    this.displayMode = ScreenDisplayMode.normal,
     this.composerIndex,
   });
+
+  PresentationLocalEmailDraft copyWith({
+    String? id,
+    String? composerId,
+    DateTime? savedTime,
+    Email? email,
+    bool? hasRequestReadReceipt,
+    bool? isMarkAsImportant,
+    ScreenDisplayMode? displayMode,
+    int? composerIndex,
+  }) => PresentationLocalEmailDraft(
+    id: id ?? this.id,
+    composerId: composerId ?? this.composerId,
+    savedTime: savedTime ?? this.savedTime,
+    email: email ?? this.email,
+    hasRequestReadReceipt: hasRequestReadReceipt ?? this.hasRequestReadReceipt,
+    isMarkAsImportant: isMarkAsImportant ?? this.isMarkAsImportant,
+    displayMode: displayMode ?? this.displayMode,
+    composerIndex: composerIndex ?? this.composerIndex,
+  );
 
   @override
   List<Object?> get props => [

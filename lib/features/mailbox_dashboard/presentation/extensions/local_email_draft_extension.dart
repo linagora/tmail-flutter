@@ -18,7 +18,7 @@ extension LocalEmailDraftExtension on LocalEmailDraft {
       isMarkAsImportant: isMarkAsImportant,
       displayMode: ScreenDisplayMode.values.firstWhereOrNull(
         (type) => type.name == displayMode,
-      ),
+      ) ?? ScreenDisplayMode.normal,
       composerIndex: composerIndex,
     );
   }
