@@ -51,6 +51,8 @@ import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repositor
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/local_email_draft_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/local_email_draft_datasource_impl.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_email_draft_manager.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_email_draft_worker_queue.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/local_email_draft_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/local_email_draft_repository.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_local_email_draft_interactor.dart';
@@ -146,6 +148,8 @@ class ComposerBindings extends BaseBindings {
     ), tag: composerId);
     Get.lazyPut(() => LocalEmailDraftDataSourceImpl(
       Get.find<HtmlTransform>(),
+      Get.find<LocalEmailDraftManager>(),
+      Get.find<LocalEmailDraftWorkerQueue>(),
       Get.find<CacheExceptionThrower>(),
     ), tag: composerId);
   }
@@ -328,8 +332,6 @@ class ComposerBindings extends BaseBindings {
       Get.find<GetEmailContentInteractor>(tag: composerId),
       Get.find<GetAllIdentitiesInteractor>(tag: composerId),
       Get.find<UploadController>(tag: composerId),
-      Get.find<RemoveLocalEmailDraftInteractor>(tag: composerId),
-      Get.find<SaveLocalEmailDraftInteractor>(tag: composerId),
       Get.find<DownloadImageAsBase64Interactor>(tag: composerId),
       Get.find<TransformHtmlEmailContentInteractor>(tag: composerId),
       Get.find<GetServerSettingInteractor>(tag: composerId),

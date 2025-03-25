@@ -12,11 +12,11 @@ class LocalEmailDraftRepositoryImpl extends LocalEmailDraftRepository {
   LocalEmailDraftRepositoryImpl(this._localEmailDraftDatasource);
 
   @override
-  Future<List<LocalEmailDraft>> getLocalEmailDraft(
+  Future<List<LocalEmailDraft>> getAllLocalEmailDraft(
     AccountId accountId,
     UserName userName
   ) {
-    return _localEmailDraftDatasource.getLocalEmailDraft(accountId, userName);
+    return _localEmailDraftDatasource.getAllLocalEmailDraft(accountId, userName);
   }
 
   @override
@@ -30,15 +30,8 @@ class LocalEmailDraftRepositoryImpl extends LocalEmailDraftRepository {
   }
 
   @override
-  Future<void> saveLocalEmailDraft({
-    required AccountId accountId,
-    required UserName userName,
-    required LocalEmailDraft composerCache,
-  }) {
-    return _localEmailDraftDatasource.saveLocalEmailDraft(
-      accountId: accountId,
-      userName: userName,
-      composerCache: composerCache);
+  Future<void> saveLocalEmailDraft(LocalEmailDraft localEmailDraft) {
+    return _localEmailDraftDatasource.saveLocalEmailDraft(localEmailDraft);
   }
 
   @override

@@ -79,6 +79,8 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/lo
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/local_spam_report_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource_impl/search_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_sort_order_manager.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_email_draft_manager.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_email_draft_worker_queue.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/network/linagora_ecosystem_api.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/app_grid_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/repository/local_email_draft_repository_impl.dart';
@@ -303,6 +305,8 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => LocalEmailDraftDataSourceImpl(
       Get.find<HtmlTransform>(),
+      Get.find<LocalEmailDraftManager>(),
+      Get.find<LocalEmailDraftWorkerQueue>(),
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => LocalSpamReportDataSourceImpl(
       Get.find<PreferencesSettingManager>(),

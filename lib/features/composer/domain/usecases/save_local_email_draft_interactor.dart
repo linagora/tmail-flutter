@@ -5,8 +5,8 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/composer_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_local_email_draft_state.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/create_email_request_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/local_email_draft.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/repository/local_email_draft_repository.dart';
 
 class SaveLocalEmailDraftInteractor {
@@ -30,20 +30,12 @@ class SaveLocalEmailDraftInteractor {
         isDraft: true,
       );
       await _localEmailDraftRepository.saveLocalEmailDraft(
-        accountId: accountId,
-        userName: userName,
-        composerCache: LocalEmailDraft(
+        createEmailRequest.generateLocalEmailDraftFromEmail(
           email: emailCreated,
-          hasRequestReadReceipt: createEmailRequest.hasRequestReadReceipt,
-          isMarkAsImportant: createEmailRequest.isMarkAsImportant,
-          displayMode: createEmailRequest.displayMode,
-          composerIndex: createEmailRequest.composerIndex,
-          composerId: createEmailRequest.composerId,
-          draftHash: createEmailRequest.savedDraftHash,
-          actionType: createEmailRequest.savedActionType,
-          draftEmailId: createEmailRequest.draftsEmailId,
-          templateEmailId: createEmailRequest.templateEmailId,
-        ));
+          accountId: accountId,
+          userName: userName,
+        ),
+      );
       return Right(SaveLocalEmailDraftSuccess());
     } catch (exception) {
       return Left(SaveLocalEmailDraftFailure(exception));

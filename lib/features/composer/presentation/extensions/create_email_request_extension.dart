@@ -1,5 +1,7 @@
 import 'package:core/core.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
@@ -9,13 +11,18 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mail_priority_header.dart';
+import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/email_address_extension.dart';
+import 'package:model/extensions/email_extension.dart';
+import 'package:model/extensions/email_id_extensions.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/identity_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/local_email_draft.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/extensions/sending_email_extension.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/model/sending_email_arguments.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
@@ -218,6 +225,27 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
       accountId,
       createEmailRequest(emailObject: emailObject),
       createMailboxRequest()
+    );
+  }
+
+  LocalEmailDraft generateLocalEmailDraftFromEmail({
+    required Email email,
+    required AccountId accountId,
+    required UserName userName,
+  }) {
+    return LocalEmailDraft(
+      id: TupleKey(composerId!, accountId.asString, userName.value).encodeKey,
+      composerId: composerId!,
+      savedTime: DateTime.now(),
+      email: email.asString(),
+      hasRequestReadReceipt: hasRequestReadReceipt,
+      isMarkAsImportant: isMarkAsImportant,
+      displayMode: displayMode.name,
+      composerIndex: composerIndex,
+      draftHash: savedDraftHash,
+      actionType: savedActionType?.name,
+      draftEmailId: draftsEmailId?.asString,
+      templateEmailId: templateEmailId?.asString,
     );
   }
 }

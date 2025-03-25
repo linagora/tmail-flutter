@@ -1,5 +1,3 @@
-import 'dart:convert';
-import 'package:core/domain/exceptions/web_session_exception.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -8,58 +6,47 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/extensions/account_id_extensions.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/local_email_draft_datasource.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_email_draft_manager.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_email_draft_worker_queue.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/local_email_draft.dart';
+import 'package:tmail_ui_user/features/offline_mode/hive_worker/hive_task.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 import 'package:universal_html/html.dart' as html;
 
 class LocalEmailDraftDataSourceImpl extends LocalEmailDraftDatasource {
-  LocalEmailDraftDataSourceImpl(this._htmlTransform, this._exceptionThrower);
 
   final HtmlTransform _htmlTransform;
+  final LocalEmailDraftManager _localEmailDraftManager;
+  final LocalEmailDraftWorkerQueue _localEmailDraftWorkerQueue;
   final ExceptionThrower _exceptionThrower;
 
+  LocalEmailDraftDataSourceImpl(
+    this._htmlTransform,
+    this._localEmailDraftManager,
+    this._localEmailDraftWorkerQueue,
+    this._exceptionThrower,
+  );
+
   @override
-  Future<List<LocalEmailDraft>> getLocalEmailDraft(
+  Future<List<LocalEmailDraft>> getAllLocalEmailDraft(
     AccountId accountId,
     UserName userName
-  ) async {
+  ) {
     return Future.sync(() async {
-      final keyWithIdentity = TupleKey(
-        EmailActionType.reopenComposerBrowser.name,
-        accountId.asString,
-        userName.value).toString();
-        
-      final listEntries = html.window.sessionStorage.entries.where(
-        (entry) => entry.key.startsWith(keyWithIdentity),
-      );
-
-      if (listEntries.isNotEmpty) {
-        return listEntries
-          .map((entry) => LocalEmailDraft.fromJson(jsonDecode(entry.value)))
-          .toList();
-      } else {
-        throw NotFoundInWebSessionException();
-      }
+      return await _localEmailDraftManager.getAllLocalEmailDraft(accountId, userName);
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<void> saveLocalEmailDraft({
-    required AccountId accountId,
-    required UserName userName,
-    required LocalEmailDraft composerCache,
-  }) async {
-    return Future.sync(() {
-      final composerCacheKey = TupleKey(
-        EmailActionType.reopenComposerBrowser.name,
-        accountId.asString,
-        userName.value,
-        composerCache.composerId,
-      ).toString();
-      Map<String, String> entries = {
-        composerCacheKey: jsonEncode(composerCache.toJson())
-      };
-      html.window.sessionStorage.addAll(entries);
+  Future<void> saveLocalEmailDraft(LocalEmailDraft localEmailDraft) {
+    return Future.sync(() async {
+      final task = HiveTask(
+        id: localEmailDraft.id,
+        runnable: () async {
+          return await _localEmailDraftManager.saveLocalEmailDraft(localEmailDraft);
+        },
+      );
+      return _localEmailDraftWorkerQueue.addTask(task);
     }).catchError(_exceptionThrower.throwException);
   }
   

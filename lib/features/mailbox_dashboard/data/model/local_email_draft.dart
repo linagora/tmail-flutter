@@ -1,57 +1,67 @@
 import 'package:equatable/equatable.dart';
-import 'package:jmap_dart_client/http/converter/email_id_nullable_converter.dart';
-import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:json_annotation/json_annotation.dart';
-import 'package:model/email/email_action_type.dart';
-import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
+import 'package:hive_ce/hive.dart';
+import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 
 part 'local_email_draft.g.dart';
 
-@JsonSerializable(
-    explicitToJson: true,
-    includeIfNull: false,
-    converters: [
-      EmailIdNullableConverter(),
-    ]
-)
+@HiveType(typeId: CachingConstants.LOCAL_EMAIL_DRAFT_CACHE_ID)
 class LocalEmailDraft with EquatableMixin {
 
-  final String? id;
-  final DateTime? timeStamp;
-  final Email? email;
+  @HiveField(0)
+  final String id;
+
+  @HiveField(1)
+  final String composerId;
+
+  @HiveField(2)
+  final DateTime savedTime;
+
+  @HiveField(3)
+  final String? email;
+
+  @HiveField(4)
   final bool? hasRequestReadReceipt;
+
+  @HiveField(5)
   final bool? isMarkAsImportant;
-  final ScreenDisplayMode displayMode;
+
+  @HiveField(6)
+  final String? displayMode;
+
+  @HiveField(7)
   final int? composerIndex;
-  final String? composerId;
+
+  @HiveField(8)
   final int? draftHash;
-  final EmailActionType? actionType;
-  final EmailId? draftEmailId;
-  final EmailId? templateEmailId;
+
+  @HiveField(9)
+  final String? actionType;
+
+  @HiveField(10)
+  final String? draftEmailId;
+
+  @HiveField(11)
+  final String? templateEmailId;
 
   LocalEmailDraft({
-    this.id,
-    this.timeStamp,
+    required this.id,
+    required this.composerId,
+    required this.savedTime,
     this.email,
     this.hasRequestReadReceipt,
     this.isMarkAsImportant,
-    this.displayMode = ScreenDisplayMode.normal,
+    this.displayMode,
     this.composerIndex,
-    this.composerId,
     this.draftHash,
     this.actionType,
     this.draftEmailId,
     this.templateEmailId,
   });
 
-  factory LocalEmailDraft.fromJson(Map<String, dynamic> json) => _$LocalEmailDraftFromJson(json);
-
-  Map<String, dynamic> toJson() => _$LocalEmailDraftToJson(this);
-
   @override
   List<Object?> get props => [
     id,
-    timeStamp,
+    savedTime,
     email,
     hasRequestReadReceipt,
     isMarkAsImportant,
