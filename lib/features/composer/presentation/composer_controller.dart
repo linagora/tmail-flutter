@@ -423,7 +423,7 @@ class ComposerController extends BaseController
   }
 
   @override
-  Future<void> onUnloadBrowserListener(html.Event event) async {
+  Future<void> onBeforeUnloadBrowserListener(html.Event event) async {
     await saveLocalEmailDraftAction();
   }
 

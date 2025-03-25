@@ -5135,5 +5135,23 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "localDraftList": "Local Draft List",
+  "@localDraftList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "openAll": "Open all",
+  "@openAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discardAll": "Discard all",
+  "@discardAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

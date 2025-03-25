@@ -5457,4 +5457,25 @@ class AppLocalizations {
       name: 'startToAddFavoritesEmails',
     );
   }
+
+  String get localDraftList {
+    return Intl.message(
+      'Local Draft List',
+      name: 'localDraftList',
+    );
+  }
+
+  String get openAll {
+    return Intl.message(
+      'Open all',
+      name: 'openAll',
+    );
+  }
+
+  String get discardAll {
+    return Intl.message(
+      'Discard all',
+      name: 'discardAll',
+    );
+  }
 }
