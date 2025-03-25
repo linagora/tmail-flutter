@@ -34,12 +34,12 @@ class LanguageRegionOverlay extends StatelessWidget {
         borderRadius: const BorderRadius.all(Radius.circular(16)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.3),
+            color: Colors.black.withValues(alpha: 0.3),
             blurRadius: 2,
             offset: const Offset(0, 1),
           ),
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Colors.black.withValues(alpha: 0.15),
             blurRadius: 6,
             spreadRadius: 2,
             offset: const Offset(0, 2),

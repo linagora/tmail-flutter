@@ -27,7 +27,7 @@ class EmailRecoveryFormDesktopBuilder extends StatelessWidget {
     final appLocalizations = AppLocalizations.of(context);
 
     return Scaffold(
-      backgroundColor: Colors.black.withOpacity(0.20),
+      backgroundColor: Colors.black.withValues(alpha: 0.20),
       body: GestureDetector(
         onTap: FocusScope.of(context).unfocus,
         child: Center(

@@ -9,7 +9,9 @@ extension QuickCreateRuleFromCollapsedEmailSuccess on ThreadDetailController {
   ) {
     if (success.newListRules.isEmpty ||
         currentContext == null ||
-        currentOverlayContext == null) return;
+        currentOverlayContext == null) {
+      return;
+    }
 
     appToast.showToastSuccessMessage(
       currentOverlayContext!,

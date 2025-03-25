@@ -150,7 +150,7 @@ extension CalendarEventExtension on CalendarEvent {
     if (participants?.isNotEmpty == true) {
       final listMatchedAttendee = participants
         !.where((attendee) => attendee.mailto != null && listEmailAddressSender.contains(attendee.mailto!.mailAddress.value))
-        .whereNotNull();
+        .nonNulls;
       log('CalendarEventExtension::findAttendeeHasUpdatedStatus:listMatchedAttendee: $listMatchedAttendee');
       if (listMatchedAttendee.isNotEmpty) {
         return listMatchedAttendee.first;
@@ -363,12 +363,12 @@ extension CalendarEventExtension on CalendarEvent {
       final videoConferences = List<String>.empty(growable: true);
 
       final openPaasVideoConferences = extensionFields?.mapFields['X-OPENPAAS-VIDEOCONFERENCE']
-        ?.whereNotNull()
+        ?.nonNulls
         .where((link) => link.isNotEmpty)
         .toList() ?? [];
       log('CalendarEventExtension::openPaasVideoConferences: $openPaasVideoConferences');
       final googleVideoConferences = extensionFields!.mapFields['X-GOOGLE-CONFERENCE']
-        ?.whereNotNull()
+        ?.nonNulls
         .where((link) => link.isNotEmpty)
         .toList() ?? [];
       log('CalendarEventExtension::googleVideoConferences: $googleVideoConferences');

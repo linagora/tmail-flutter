@@ -119,7 +119,7 @@ class _DesktopListEmailActionHoverWidgetState
           padding: _getPaddingIcon(),
           margin: _getMarginIcon(),
           backgroundColor: _popupMenuVisible
-              ? Theme.of(context).colorScheme.outline.withOpacity(0.08)
+              ? Theme.of(context).colorScheme.outline.withValues(alpha: 0.08)
               : Colors.transparent,
           tooltipMessage: AppLocalizations.of(context).more,
           onTapActionAtPositionCallback: (position) {

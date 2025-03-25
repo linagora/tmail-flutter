@@ -14,7 +14,7 @@ abstract class ContextMenuItemAction<T> with EquatableMixin {
 
   String get actionName;
 
-  Color get actionNameColor => AppColor.gray424244.withOpacity(0.9);
+  Color get actionNameColor => AppColor.gray424244.withValues(alpha: 0.9);
 
   void onClick(OnContextMenuActionClick callback) => callback(this);
 }
@@ -22,7 +22,7 @@ abstract class ContextMenuItemAction<T> with EquatableMixin {
 mixin OptionalIcon {
   String get actionIcon;
 
-  Color get actionIconColor => AppColor.gray424244.withOpacity(0.72);
+  Color get actionIconColor => AppColor.gray424244.withValues(alpha: 0.72);
 }
 
 mixin OptionalSelectedIcon<T> {

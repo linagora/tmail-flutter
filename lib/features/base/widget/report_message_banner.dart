@@ -147,7 +147,7 @@ class ReportMessageBanner extends StatelessWidget {
 
   Color get _backgroundColor => isDesktop
       ? AppColor.lightGrayEAEDF2
-      : AppColor.m3LayerDarkOutline.withOpacity(0.08);
+      : AppColor.m3LayerDarkOutline.withValues(alpha: 0.08);
 
   double get _bannerHeight => isDesktop ? 44 : 52;
 }

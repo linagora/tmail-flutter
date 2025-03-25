@@ -62,11 +62,11 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
 
     final afterRefreshedEmailIds = ThreadDetailPresentationUtils.refreshEmailIds(
       original: emailIdsPresentation.keys.toList(),
-      created: emailsCreated.map((email) => email.id).whereNotNull().toList(),
+      created: emailsCreated.map((email) => email.id).nonNulls.toList(),
       destroyed: emailIdsDestroyed.toList(),
     );
     final afterRefreshedEmails = ThreadDetailPresentationUtils.refreshPresentationEmails(
-      original: emailIdsPresentation.values.whereNotNull().toList(),
+      original: emailIdsPresentation.values.nonNulls.toList(),
       created: emailsCreated,
       updated: emailsUpdated,
       destroyed: emailIdsDestroyed.toList(),

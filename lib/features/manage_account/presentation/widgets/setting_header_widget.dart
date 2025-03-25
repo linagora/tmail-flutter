@@ -36,7 +36,7 @@ class SettingHeaderWidget extends StatelessWidget {
               fontSize: 16,
               height: 21.01 / 16,
               letterSpacing: -0.15,
-              color: AppColor.gray424244.withOpacity(0.64),
+              color: AppColor.gray424244.withValues(alpha: 0.64),
             ),
           ),
         ),

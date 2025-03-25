@@ -61,7 +61,7 @@ void main() {
       expect(
         find.byWidgetPredicate(
           (widget) => widget is InkWell
-            && widget.hoverColor == Theme.of(context).colorScheme.outline.withOpacity(0.08)
+            && widget.hoverColor == Theme.of(context).colorScheme.outline.withValues(alpha: 0.08)
         ),
         findsOneWidget);
 
@@ -106,7 +106,7 @@ void main() {
       expect(
         find.byWidgetPredicate(
           (widget) => widget is InkWell
-            && widget.hoverColor == Theme.of(context).colorScheme.outline.withOpacity(0.08)
+            && widget.hoverColor == Theme.of(context).colorScheme.outline.withValues(alpha: 0.08)
         ),
         findsOneWidget);
     });

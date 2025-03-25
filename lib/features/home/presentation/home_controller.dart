@@ -129,9 +129,6 @@ class HomeController extends ReloadableController {
       case LoginNavigateType.autoSignIn:
         _handleAutoSignInViaDeepLinkSuccess(arguments.autoSignInViaDeepLinkSuccess!);
         break;
-      default:
-        _cleanupCache();
-        break;
     }
   }
 

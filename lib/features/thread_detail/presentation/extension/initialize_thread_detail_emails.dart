@@ -16,7 +16,9 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
     if (skipLoadThreadMetaData(
       selectedEmailId: selectedEmailId,
       updateCurrentThreadDetail: success.updateCurrentThreadDetail,
-    )) return;
+    )) {
+      return;
+    }
 
     List<EmailId> emailIdsToLoadMetaData = [];
     emailIdsToLoadMetaData = ThreadDetailPresentationUtils.getFirstLoadEmailIds(

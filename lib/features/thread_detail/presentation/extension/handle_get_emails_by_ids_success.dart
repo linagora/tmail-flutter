@@ -14,7 +14,7 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
     }
 
     final selectedEmailId = mailboxDashBoardController.selectedEmail.value?.id;
-    final isLoadMore = emailIdsPresentation.values.whereNotNull().isNotEmpty;
+    final isLoadMore = emailIdsPresentation.values.nonNulls.isNotEmpty;
     
     for (var presentationEmail in success.presentationEmails) {
       if (presentationEmail.id == null) continue;

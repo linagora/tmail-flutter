@@ -75,7 +75,7 @@ class _ChangeLanguageButtonWidgetState extends State<ChangeLanguageButtonWidget>
         fontSize: 14,
         height: 21.01 / 14,
         letterSpacing: -0.15,
-        color: AppColor.gray424244.withOpacity(0.64),
+        color: AppColor.gray424244.withValues(alpha: 0.64),
       ),
     );
   }
@@ -120,7 +120,7 @@ class _ChangeLanguageButtonWidgetState extends State<ChangeLanguageButtonWidget>
                 .getLanguageNameByCurrentLocale(AppLocalizations.of(context)),
               dropDownIcon: _imagePaths.icDropDown,
               backgroundColor: isVisible
-                ? AppColor.lightGrayEBEDF0.withOpacity(0.6)
+                ? AppColor.lightGrayEBEDF0.withValues(alpha: 0.6)
                 : null,
               onTap: () => _toggleLanguageMenuOverlay(true),
             )

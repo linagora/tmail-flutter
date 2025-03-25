@@ -408,7 +408,9 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
       || accountId == null
       || identityId == null
       || identityActionType == null
-      || publicAssetsInIdentityArguments == null) return;
+      || publicAssetsInIdentityArguments == null) {
+      return;
+    }
     
     final cleanUpPublicAssetsInteractor = getBinding<CleanUpPublicAssetsInteractor>(
       tag: BindingTag.cleanUpPublicAssetsInteractorBindingsTag);
@@ -461,7 +463,9 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
     final accountId = accountDashBoardController.accountId;
     if (session == null
       || accountId.value == null
-      || !PlatformInfo.isWeb) return;
+      || !PlatformInfo.isWeb) {
+      return;
+    }
     
     final getIdentityCacheOnWebInteractor = getBinding<GetIdentityCacheOnWebInteractor>(
       tag: BindingTag.restoreIdentityCacheInteractorBindingsTag);
