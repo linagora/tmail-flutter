@@ -20,8 +20,8 @@ class LocalEmailDraftRepositoryImpl extends LocalEmailDraftRepository {
   }
 
   @override
-  Future<void> removeAllLocalEmailDraft(AccountId accountId, UserName userName) {
-    return _localEmailDraftDatasource.removeAllLocalEmailDraft(accountId, userName);
+  Future<void> removeAllLocalEmailDrafts(AccountId accountId, UserName userName) {
+    return _localEmailDraftDatasource.removeAllLocalEmailDrafts(accountId, userName);
   }
 
   @override

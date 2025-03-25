@@ -5465,10 +5465,10 @@ class AppLocalizations {
     );
   }
 
-  String get openAll {
+  String get restoreAll {
     return Intl.message(
-      'Open all',
-      name: 'openAll',
+      'Restore all',
+      name: 'restoreAll',
     );
   }
 
@@ -5490,6 +5490,20 @@ class AppLocalizations {
     return Intl.message(
       'Delete local draft successfully',
       name: 'deleteLocalDraftSuccessfully',
+    );
+  }
+
+  String get messageWarningDialogDiscardAllLocalDrafts {
+    return Intl.message(
+      'Are you sure you want to delete all local drafts? They cannot be restored.',
+      name: 'messageWarningDialogDiscardAllLocalDrafts',
+    );
+  }
+
+  String get deletingLocalDraft {
+    return Intl.message(
+      'Deleting local draft...',
+      name: 'deletingLocalDraft',
     );
   }
 }

@@ -2,16 +2,12 @@ import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
-import 'package:model/email/email_action_type.dart';
-import 'package:model/extensions/account_id_extensions.dart';
-import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/local_email_draft_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_email_draft_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_email_draft_worker_queue.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/local_email_draft.dart';
 import 'package:tmail_ui_user/features/offline_mode/hive_worker/hive_task.dart';
 import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
-import 'package:universal_html/html.dart' as html;
 
 class LocalEmailDraftDataSourceImpl extends LocalEmailDraftDatasource {
 
@@ -64,15 +60,9 @@ class LocalEmailDraftDataSourceImpl extends LocalEmailDraftDatasource {
   }
 
   @override
-  Future<void> removeAllLocalEmailDraft(AccountId accountId, UserName userName) {
-    return Future.sync(() {
-      final keyWithIdentity = TupleKey(
-        EmailActionType.composeFromLocalEmailDraft.name,
-        accountId.asString,
-        userName.value,
-      ).toString();
-
-      html.window.sessionStorage.removeWhere((key, value) => key.startsWith(keyWithIdentity));
+  Future<void> removeAllLocalEmailDrafts(AccountId accountId, UserName userName) {
+    return Future.sync(() async {
+      return await _localEmailDraftManager.removeAllLocalEmailDrafts(accountId, userName);
     }).catchError(_exceptionThrower.throwException);
   }
 

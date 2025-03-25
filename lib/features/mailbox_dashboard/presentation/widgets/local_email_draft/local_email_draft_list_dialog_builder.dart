@@ -9,6 +9,7 @@ import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart'
 import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -20,6 +21,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/create_new_and_s
 import 'package:tmail_ui_user/features/composer/presentation/mixin/handle_message_failure_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/saving_message_dialog_view.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_local_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_local_email_draft_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/presentation_local_email_draft.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/local_email_draft/local_email_draft_item_widget.dart';
@@ -59,6 +61,7 @@ class _LocalEmailDraftListDialogBuilderState
   late final ScrollController _scrollController;
   late final RemoveLocalEmailDraftInteractor? _removeLocalEmailDraftInteractor;
   late final CreateNewAndSaveEmailToDraftsInteractor? _createNewAndSaveEmailToDraftsInteractor;
+  late final RemoveAllLocalEmailDraftsInteractor? _removeAllLocalEmailDraftsInteractor;
 
   final ValueNotifier<List<PresentationLocalEmailDraft>> _listLocalEmailDraftsNotifier = ValueNotifier([]);
 
@@ -70,6 +73,7 @@ class _LocalEmailDraftListDialogBuilderState
     _appToast = Get.find<AppToast>();
     _removeLocalEmailDraftInteractor = getBinding<RemoveLocalEmailDraftInteractor>();
     _createNewAndSaveEmailToDraftsInteractor = getBinding<CreateNewAndSaveEmailToDraftsInteractor>();
+    _removeAllLocalEmailDraftsInteractor = getBinding<RemoveAllLocalEmailDraftsInteractor>();
     _scrollController = ScrollController();
     _listLocalEmailDraftsNotifier.value = widget.presentationLocalEmailDrafts;
   }
@@ -78,6 +82,7 @@ class _LocalEmailDraftListDialogBuilderState
   void dispose() {
     _listLocalEmailDraftsNotifier.dispose();
     _scrollController.dispose();
+    if (SmartDialog.checkExist()) SmartDialog.dismiss();
     super.dispose();
   }
 
@@ -181,10 +186,10 @@ class _LocalEmailDraftListDialogBuilderState
                     borderRadius: 10,
                     margin: const EdgeInsetsDirectional.only(end: 8),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    onTapActionCallback: () {},
+                    onTapActionCallback: () => _handleDiscardAllLocalEmailDraftAction(context),
                   ),
                   TMailButtonWidget(
-                    text: AppLocalizations.of(context).openAll,
+                    text: AppLocalizations.of(context).restoreAll,
                     backgroundColor: AppColor.blue700,
                     textStyle: Theme.of(context)
                         .textTheme
@@ -262,7 +267,7 @@ class _LocalEmailDraftListDialogBuilderState
         confirmLabelButtonColor: AppColor.steelGray600,
         onConfirmButtonAction: () {
           popBack();
-          removeLocalEmailDraft(context, emailDraft.id);
+          _removeLocalEmailDraft(context, emailDraft.id);
         },
         onCancelButtonAction: popBack,
         onCloseButtonAction: popBack,
@@ -271,7 +276,7 @@ class _LocalEmailDraftListDialogBuilderState
     );
   }
 
-  Future<void> removeLocalEmailDraft(BuildContext context, String draftLocalId) async {
+  Future<void> _removeLocalEmailDraft(BuildContext context, String draftLocalId) async {
     _listLocalEmailDraftsNotifier.value = List.from(_listLocalEmailDraftsNotifier.value)
       ..removeWhere((draftLocal) => draftLocal.id == draftLocalId);
 
@@ -318,7 +323,7 @@ class _LocalEmailDraftListDialogBuilderState
         leadingSVGIconColor: Colors.white,
       );
 
-      removeLocalEmailDraft(context, draftLocal.id);
+      _removeLocalEmailDraft(context, draftLocal.id);
     } else if (resultState is SaveEmailAsDraftsFailure) {
       final errorMessage = getMessageFailure(
         appLocalizations: AppLocalizations.of(context),
@@ -366,5 +371,50 @@ class _LocalEmailDraftListDialogBuilderState
 
   void _handleCancelSavingMessageToDrafts({CancelToken? cancelToken}) {
     cancelToken?.cancel([SavingEmailToDraftsCanceledException()]);
+  }
+
+  void _handleDiscardAllLocalEmailDraftAction(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
+    Get.dialog(
+      PointerInterceptor(child: ConfirmationDialogBuilder(
+        imagePath: _imagePaths,
+        useIconAsBasicLogo: true,
+        textContent: appLocalizations.messageWarningDialogDiscardAllLocalDrafts,
+        confirmText: appLocalizations.yes,
+        cancelText: appLocalizations.no,
+        cancelBackgroundButtonColor: AppColor.blue700,
+        cancelLabelButtonColor: Colors.white,
+        confirmBackgroundButtonColor: AppColor.grayBackgroundColor,
+        confirmLabelButtonColor: AppColor.steelGray600,
+        onConfirmButtonAction: () {
+          popBack();
+          _removeAllLocalEmailDrafts(context);
+        },
+        onCancelButtonAction: popBack,
+        onCloseButtonAction: popBack,
+      )),
+      barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+    );
+  }
+
+  Future<void> _removeAllLocalEmailDrafts(BuildContext context) async {
+    if (widget.accountId == null ||
+        widget.session == null ||
+        _removeAllLocalEmailDraftsInteractor == null) {
+      return;
+    }
+
+    SmartDialog.showLoading(
+      msg: AppLocalizations.of(context).deletingLocalDraft,
+    );
+    _listLocalEmailDraftsNotifier.value = [];
+
+    await _removeAllLocalEmailDraftsInteractor!.execute(
+      widget.accountId!,
+      widget.session!.username,
+    );
+
+    SmartDialog.dismiss();
+    popBack();
   }
 }

@@ -5142,8 +5142,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "openAll": "Open all",
-  "@openAll": {
+  "restoreAll": "Restore all",
+  "@restoreAll": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
@@ -5162,6 +5162,18 @@
   },
   "deleteLocalDraftSuccessfully": "Delete local draft successfully",
   "@deleteLocalDraftSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageWarningDialogDiscardAllLocalDrafts": "Are you sure you want to delete all local drafts? They cannot be restored.",
+  "@messageWarningDialogDiscardAllLocalDrafts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deletingLocalDraft": "Deleting local draft...",
+  "@deletingLocalDraft": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
