@@ -1,5 +1,4 @@
 
-import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/account_id_extensions.dart';
@@ -26,7 +25,6 @@ class LocalEmailDraftManager {
   }
 
   Future<void> saveLocalEmailDraft(LocalEmailDraft localEmailDraft) async {
-    log('LocalEmailDraftManager::saveLocalEmailDraft: ID = ${localEmailDraft.id}');
     await _localEmailDraftClient.insertItem(
       localEmailDraft.id,
       localEmailDraft,
