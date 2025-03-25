@@ -7,7 +7,9 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view_web.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_local_email_draft_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/update_screen_display_mode_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/manager/composer_timer.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
@@ -19,6 +21,8 @@ class ComposerManager extends GetxController {
 
   final ResponsiveUtils _responsiveUtils = Get.find<ResponsiveUtils>();
 
+  ComposerTimer? _composerTimer;
+
   void addComposer(ComposerArguments composerArguments) {
     final id = DateTime.now().millisecondsSinceEpoch.toString();
     log('ComposerManager::addComposer:Id = $id');
@@ -28,6 +32,8 @@ class ComposerManager extends GetxController {
     composerIdsQueue.add(id);
 
     _arrangeComposerIfNeeded();
+
+    _initializeTimerIfNeeded();
   }
 
   void addListComposer(List<ComposerArguments> listArguments) {
@@ -49,6 +55,8 @@ class ComposerManager extends GetxController {
     }
 
     _arrangeComposerIfNeeded();
+
+    _initializeTimerIfNeeded();
   }
 
   void removeComposer(String id) {
@@ -60,6 +68,10 @@ class ComposerManager extends GetxController {
     ComposerBindings(composerId: id).dispose();
 
     _arrangeComposerIfNeeded();
+
+    if (!hasComposer) {
+      _clearTimerIfNeeded();
+    }
   }
 
   void _arrangeComposerIfNeeded() {
@@ -293,8 +305,31 @@ class ComposerManager extends GetxController {
 
   ComposerView getComposerView(String id) => composers[id]!;
 
+  void _initializeTimerIfNeeded() {
+    _composerTimer ??= ComposerTimer(onTick: _handleOnTick);
+
+    if (!_composerTimer!.isRunning) {
+      _composerTimer!.start();
+    }
+  }
+
+  void _clearTimerIfNeeded() {
+    _composerTimer?.stop();
+    _composerTimer = null;
+  }
+
+  void _handleOnTick() {
+    if (!hasComposer) return;
+
+    for (var id in composerIdsQueue) {
+      final controller = getComposerView(id).controller;
+      controller.saveLocalEmailDraftAction();
+    }
+  }
+
   @override
   void onClose() {
+    _clearTimerIfNeeded();
     composerIdsQueue.clear();
     super.onClose();
   }
