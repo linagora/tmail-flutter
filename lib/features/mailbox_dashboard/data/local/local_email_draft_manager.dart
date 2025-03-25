@@ -34,4 +34,9 @@ class LocalEmailDraftManager {
   Future<void> removeLocalEmailDraft(String id) async {
     await _localEmailDraftClient.deleteItem(id);
   }
+
+  Future<void> removeAllLocalEmailDrafts(AccountId accountId, UserName userName) async {
+    final nestedKey = TupleKey(accountId.asString, userName.value).encodeKey;
+    await _localEmailDraftClient.clearAllDataContainKey(nestedKey);
+  }
 }

@@ -90,7 +90,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_app
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spam_mailbox_cached_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_spam_report_state_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_local_email_draft_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_local_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_local_email_draft_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
@@ -334,7 +334,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => MarkAsMailboxReadInteractor(Get.find<MailboxRepository>()));
     Get.lazyPut(() => GetAllLocalEmailDraftInteractor(Get.find<LocalEmailDraftRepository>()));
     Get.lazyPut(() => RemoveLocalEmailDraftInteractor(Get.find<LocalEmailDraftRepository>()));
-    Get.lazyPut(() => RemoveAllLocalEmailDraftInteractor(Get.find<LocalEmailDraftRepository>()));
+    Get.lazyPut(() => RemoveAllLocalEmailDraftsInteractor(Get.find<LocalEmailDraftRepository>()));
     Get.lazyPut(() => MarkAsEmailReadInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsStarEmailInteractor(Get.find<EmailRepository>()));
     Get.lazyPut(() => MarkAsMultipleEmailReadInteractor(

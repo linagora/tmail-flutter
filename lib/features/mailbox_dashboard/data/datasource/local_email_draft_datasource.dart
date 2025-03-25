@@ -10,7 +10,7 @@ abstract class LocalEmailDraftDatasource {
     AccountId accountId,
     UserName userName);
 
-  Future<void> removeAllLocalEmailDraft(
+  Future<void> removeAllLocalEmailDrafts(
     AccountId accountId,
     UserName userName,
   );
