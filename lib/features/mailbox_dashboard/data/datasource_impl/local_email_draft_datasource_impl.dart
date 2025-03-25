@@ -69,7 +69,13 @@ class LocalEmailDraftDataSourceImpl extends LocalEmailDraftDatasource {
   @override
   Future<void> removeLocalEmailDraft(String draftLocalId) {
     return Future.sync(() async {
-      return await _localEmailDraftManager.removeLocalEmailDraft(draftLocalId);
+      final task = HiveTask(
+        id: draftLocalId,
+        runnable: () async {
+          return await _localEmailDraftManager.removeLocalEmailDraft(draftLocalId);
+        },
+      );
+      return _localEmailDraftWorkerQueue.addTask(task);
     }).catchError(_exceptionThrower.throwException);
   }
 }

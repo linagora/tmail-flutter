@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-03-25T23:46:35.150458",
+  "@@last_modified": "2025-03-26T03:05:38.715094",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4414,6 +4414,18 @@
   },
   "deletingLocalDraft": "Deleting local draft...",
   "@deletingLocalDraft": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteAllLocalDraftsSuccessfully": "Delete all local drafts successfully",
+  "@deleteAllLocalDraftsSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "restoreAllLocalDraftsSuccessfully": "Restore all local drafts successfully",
+  "@restoreAllLocalDraftsSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

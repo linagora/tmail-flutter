@@ -410,6 +410,13 @@ class _LocalEmailDraftListDialogBuilderState
       widget.session!.username,
     );
 
+    if (context.mounted) {
+      _appToast.showToastSuccessMessage(
+        context,
+        AppLocalizations.of(context).deleteAllLocalDraftsSuccessfully,
+      );
+    }
+
     SmartDialog.dismiss();
     popBack();
   }
