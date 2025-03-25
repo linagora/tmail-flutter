@@ -49,6 +49,7 @@ extension RestoreLocalEmailDraftExtension on MailboxDashBoardController {
           ownEmailAddress: ownEmailAddress.value,
           presentationLocalEmailDrafts: presentationLocalEmailDrafts,
           onEditLocalEmailDraftAction: _editLocalEmailDraft,
+          onRestoreAllLocalEmailDraftsAction: _restoreAllLocalEmailDrafts,
         ),
       ),
       barrierColor: AppColor.colorDefaultCupertinoActionSheet,
@@ -60,5 +61,15 @@ extension RestoreLocalEmailDraftExtension on MailboxDashBoardController {
     openComposer(ComposerArguments.fromLocalEmailDraft(
       draftLocal.copyWith(displayMode: ScreenDisplayMode.normal),
     ));
+  }
+
+  void _restoreAllLocalEmailDrafts(List<PresentationLocalEmailDraft> localDrafts) {
+    popBack();
+
+    final listComposerArguments = localDrafts
+      .map(ComposerArguments.fromLocalEmailDraft)
+      .toList();
+
+    openListComposer(listComposerArguments);
   }
 }

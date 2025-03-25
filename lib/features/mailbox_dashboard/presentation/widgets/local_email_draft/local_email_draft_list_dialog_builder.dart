@@ -6,7 +6,6 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -28,12 +27,15 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/lo
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
+typedef OnRestoreAllLocalEmailDraftsAction = Function(List<PresentationLocalEmailDraft>);
+
 class LocalEmailDraftListDialogBuilder extends StatefulWidget {
   final AccountId? accountId;
   final Session? session;
   final String ownEmailAddress;
   final List<PresentationLocalEmailDraft> presentationLocalEmailDrafts;
   final OnEditLocalEmailDraftAction? onEditLocalEmailDraftAction;
+  final OnRestoreAllLocalEmailDraftsAction? onRestoreAllLocalEmailDraftsAction;
 
   const LocalEmailDraftListDialogBuilder({
     super.key,
@@ -42,6 +44,7 @@ class LocalEmailDraftListDialogBuilder extends StatefulWidget {
     required this.ownEmailAddress,
     required this.presentationLocalEmailDrafts,
     this.onEditLocalEmailDraftAction,
+    this.onRestoreAllLocalEmailDraftsAction,
   });
 
   @override
@@ -144,7 +147,6 @@ class _LocalEmailDraftListDialogBuilderState
                 child: ValueListenableBuilder(
                   valueListenable: _listLocalEmailDraftsNotifier,
                   builder: (context, localDrafts, _) {
-                    log('_LocalEmailDraftListDialogBuilderState::build:_listLocalEmailDraftsNotifier:localDrafts = ${localDrafts.length}');
                     return ListView.builder(
                       itemCount: localDrafts.length,
                       shrinkWrap: true,
@@ -198,7 +200,10 @@ class _LocalEmailDraftListDialogBuilderState
                     maxLines: 1,
                     borderRadius: 10,
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                    onTapActionCallback: () {},
+                    onTapActionCallback: () =>
+                      widget.onRestoreAllLocalEmailDraftsAction?.call(
+                        _listLocalEmailDraftsNotifier.value,
+                      ),
                   ),
                 ],
               ),
