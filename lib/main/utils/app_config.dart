@@ -16,7 +16,7 @@ class AppConfig {
   static const String iOSKeychainSharingGroupId = 'KUT463DS29.com.linagora.ios.teammail.shared';
   static const String iOSKeychainSharingService = 'com.linagora.ios.teammail.sessions';
   static const String saasPlatform = 'saas';
-  static const String linagoraPrivacyUrl = 'https://www.linagora.com/en/legal/privacy';
+  static const String linagoraPrivacyUrl = 'https://github.com/linagora/tmail-flutter/blob/master/privacy.md';
   static const String saasRegistrationUrl = 'https://sign-up.twake.app';
   static const String saasJmapServerUrl = 'https://jmap.twake.app';
 
