@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/mailbox_rights_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_cache.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/local_email_draft.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/model/recent_search_cache.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/attachment_hive_cache.dart';
 import 'package:tmail_ui_user/features/offline_mode/model/detailed_email_hive_cache.dart';
@@ -191,6 +192,10 @@ class HiveCacheConfig {
     registerCacheAdapter<OidcConfigurationCache>(
       OidcConfigurationCacheAdapter(),
       CachingConstants.OIDC_CONFIGURATION_CACHE_ID,
+    );
+    registerCacheAdapter<LocalEmailDraft>(
+      LocalEmailDraftAdapter(),
+      CachingConstants.LOCAL_EMAIL_DRAFT_CACHE_ID
     );
   }
 

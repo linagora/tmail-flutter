@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-02-20T19:41:05.121752",
+  "@@last_modified": "2025-03-26T03:05:38.715094",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2962,6 +2962,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "errorWhileFetchingSubaddress": "Error while fetching the subaddress",
+  "@errorWhileFetchingSubaddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "connectedToTheInternet": "Connected to the internet",
   "@connectedToTheInternet": {
     "type": "text",
@@ -4238,12 +4244,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "Your session expired. We need to take you back to the login page in order to refresh it. You might want to save the email you are currently editing before we do so.",
-  "@messageWarningDialogWhenExpiredOIDCTokenAndReconnection": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "replyToList": "Reply to list",
   "@replyToList": {
     "type": "text",
@@ -4372,6 +4372,60 @@
   },
   "exitFullscreen": "Exit fullscreen",
   "@exitFullscreen": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "localDraftList": "Local Draft List",
+  "@localDraftList": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "restoreAll": "Restore all",
+  "@restoreAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "discardAll": "Discard all",
+  "@discardAll": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageWarningDialogDiscardLocalDraft": "Are you sure you want to delete this local draft? You will not be able to restore it.",
+  "@messageWarningDialogDiscardLocalDraft": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteLocalDraftSuccessfully": "Delete local draft successfully",
+  "@deleteLocalDraftSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageWarningDialogDiscardAllLocalDrafts": "Are you sure you want to delete all local drafts? They cannot be restored.",
+  "@messageWarningDialogDiscardAllLocalDrafts": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deletingLocalDraft": "Deleting local draft...",
+  "@deletingLocalDraft": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteAllLocalDraftsSuccessfully": "Delete all local drafts successfully",
+  "@deleteAllLocalDraftsSuccessfully": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "restoreAllLocalDraftsSuccessfully": "Restore all local drafts successfully",
+  "@restoreAllLocalDraftsSuccessfully": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

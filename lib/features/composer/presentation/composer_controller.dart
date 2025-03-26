@@ -54,7 +54,7 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/get_all_autocomp
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_autocomplete_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/get_device_contact_suggestions_interactor.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/restore_email_inline_images_interactor.dart';
-import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_cache_on_web_interactor.dart';
+import 'package:tmail_ui_user/features/composer/domain/usecases/save_local_email_draft_interactor.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/auto_create_tag_for_recipients_extension.dart';
@@ -62,11 +62,12 @@ import 'package:tmail_ui_user/features/composer/presentation/extensions/email_ac
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_draft_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_outbox_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_sent_mailbox_id_for_composer_extension.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_message_failure_extension.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_local_email_draft_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_identities_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/list_shared_media_file_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/update_screen_display_mode_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/mixin/drag_drog_file_mixin.dart';
+import 'package:tmail_ui_user/features/composer/presentation/mixin/handle_message_failure_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/saved_email_draft.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/signature_status.dart';
@@ -88,9 +89,9 @@ import 'package:tmail_ui_user/features/email/presentation/extensions/presentatio
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/remove_local_email_draft_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
@@ -117,7 +118,10 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 
 class ComposerController extends BaseController
-    with DragDropFileMixin, AutoCompleteResultMixin, EditorViewMixin
+    with DragDropFileMixin,
+        AutoCompleteResultMixin,
+        EditorViewMixin,
+        HandleMessageFailureMixin
     implements BeforeReconnectHandler {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
@@ -149,8 +153,6 @@ class ComposerController extends BaseController
   final GetEmailContentInteractor _getEmailContentInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final UploadController uploadController;
-  final RemoveComposerCacheByIdOnWebInteractor _removeComposerCacheByIdOnWebInteractor;
-  final SaveComposerCacheOnWebInteractor _saveComposerCacheOnWebInteractor;
   final DownloadImageAsBase64Interactor _downloadImageAsBase64Interactor;
   final TransformHtmlEmailContentInteractor _transformHtmlEmailContentInteractor;
   final GetServerSettingInteractor _getServerSettingInteractor;
@@ -164,6 +166,7 @@ class ComposerController extends BaseController
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
   GetDeviceContactSuggestionsInteractor? _getDeviceContactSuggestionsInteractor;
   RestoreEmailInlineImagesInteractor? _restoreEmailInlineImagesInteractor;
+  SaveLocalEmailDraftInteractor? saveLocalEmailDraftInteractor;
 
   List<EmailAddress> listToEmailAddress = <EmailAddress>[];
   List<EmailAddress> listCcEmailAddress = <EmailAddress>[];
@@ -243,8 +246,6 @@ class ComposerController extends BaseController
     this._getEmailContentInteractor,
     this._getAllIdentitiesInteractor,
     this.uploadController,
-    this._removeComposerCacheByIdOnWebInteractor,
-    this._saveComposerCacheOnWebInteractor,
     this._downloadImageAsBase64Interactor,
     this._transformHtmlEmailContentInteractor,
     this._getServerSettingInteractor,
@@ -264,6 +265,7 @@ class ComposerController extends BaseController
       responsiveContainerKey = GlobalKey();
       richTextWebController = getBinding<RichTextWebController>(tag: composerId);
       menuMoreOptionController = CustomPopupMenuController();
+      saveLocalEmailDraftInteractor = getBinding<SaveLocalEmailDraftInteractor>(tag: composerId);
     } else {
       richTextMobileTabletController = getBinding<RichTextMobileTabletController>(tag: composerId);
     }
@@ -421,17 +423,8 @@ class ComposerController extends BaseController
   }
 
   @override
-  Future<void> onUnloadBrowserListener(html.Event event) async {
-    final username = mailboxDashBoardController.sessionCurrent?.username;
-    final accountId = mailboxDashBoardController.accountId.value;
-    if (composerId != null && username != null && accountId != null) {
-      await _removeComposerCacheByIdOnWebInteractor.execute(
-        accountId,
-        username,
-        composerId!,
-      );
-    }
-    await _saveComposerCacheOnWebAction();
+  Future<void> onBeforeUnloadBrowserListener(html.Event event) async {
+    await saveLocalEmailDraftAction();
   }
 
   void _listenStreamEvent() {
@@ -512,74 +505,13 @@ class ComposerController extends BaseController
     });
   }
 
-  Future<void> _saveComposerCacheOnWebAction() async {
-    autoCreateEmailTag();
-
-    final createEmailRequest = await _generateCreateEmailRequest();
-    if (createEmailRequest == null) return;
-
-    await _saveComposerCacheOnWebInteractor.execute(
-      createEmailRequest,
-      mailboxDashBoardController.accountId.value!,
-      mailboxDashBoardController.sessionCurrent!.username);
-  }
-
-  Uri? _getUploadUriFromSession(Session session, AccountId accountId) {
+  Uri? getUploadUriFromSession(Session session, AccountId accountId) {
     try {
       return session.getUploadUri(accountId, jmapUrl: dynamicUrlInterceptors.jmapUrl);
     } catch (e) {
       logError('ComposerController::_getUploadUriFromSession:Exception = $e');
       return null;
     }
-  }
-
-  Future<CreateEmailRequest?> _generateCreateEmailRequest() async {
-    final arguments = composerArguments.value;
-    final session = mailboxDashBoardController.sessionCurrent;
-    final accountId = mailboxDashBoardController.accountId.value;
-
-    if (arguments == null || session == null || accountId == null) {
-      log('ComposerController::_generateCreateEmailRequest: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
-      return null;
-    }
-    
-    final emailContent = await getContentInEditor();
-    final uploadUri = _getUploadUriFromSession(session, accountId);
-
-    final composerIndex = composerId != null
-      ? mailboxDashBoardController.composerManager.getComposerIndex(composerId!)
-      : null;
-    
-    return CreateEmailRequest(
-      session: session,
-      accountId: accountId,
-      emailActionType: arguments.emailActionType,
-      subject: subjectEmail.value ?? '',
-      emailContent: emailContent,
-      fromSender: arguments.presentationEmail?.from ?? {},
-      toRecipients: listToEmailAddress.toSet(),
-      ccRecipients: listCcEmailAddress.toSet(),
-      bccRecipients: listBccEmailAddress.toSet(),
-      replyToRecipients: listReplyToEmailAddress.toSet(),
-      hasRequestReadReceipt: hasRequestReadReceipt.value,
-      isMarkAsImportant: isMarkAsImportant.value,
-      identity: identitySelected.value,
-      attachments: uploadController.attachmentsUploaded,
-      inlineAttachments: uploadController.mapInlineAttachments,
-      outboxMailboxId: getOutboxMailboxIdForComposer(),
-      sentMailboxId: getSentMailboxIdForComposer(),
-      draftsMailboxId: getDraftMailboxIdForComposer(),
-      draftsEmailId: getDraftEmailId(),
-      answerForwardEmailId: arguments.presentationEmail?.id,
-      unsubscribeEmailId: arguments.previousEmailId,
-      messageId: arguments.messageId,
-      references: arguments.references,
-      emailSendingQueue: arguments.sendingEmail,
-      displayMode: screenDisplayMode.value,
-      uploadUri: uploadUri,
-      composerIndex: composerIndex,
-      composerId: composerId,
-    );
   }
 
   void _scrollControllerEmailAddressListener() {
@@ -784,7 +716,7 @@ class ComposerController extends BaseController
             inlineImages: arguments.inlineImages);
           _transformHtmlEmailContent(arguments.emailContents);
           break;
-        case EmailActionType.reopenComposerBrowser:
+        case EmailActionType.composeFromLocalEmailDraft:
           if (!PlatformInfo.isWeb) return;
 
           screenDisplayMode.value = arguments.displayMode;
@@ -792,11 +724,11 @@ class ComposerController extends BaseController
 
           _initEmailAddress(
             presentationEmail: arguments.presentationEmail!,
-            actionType: EmailActionType.reopenComposerBrowser
+            actionType: EmailActionType.composeFromLocalEmailDraft
           );
           _initSubjectEmail(
             presentationEmail: arguments.presentationEmail!,
-            actionType: EmailActionType.reopenComposerBrowser
+            actionType: EmailActionType.composeFromLocalEmailDraft
           );
           _initAttachmentsAndInlineImages(
             attachments: arguments.attachments,
@@ -813,7 +745,7 @@ class ComposerController extends BaseController
           }
 
           if (accountId == null || downloadUrl == null) return;
-          _getEmailContentFromSessionStorageBrowser(
+          _getEmailContentFromLocalEmailDraft(
             htmlContent: arguments.emailContents ?? '',
             inlineImages: arguments.inlineImages ?? [],
             accountId: accountId,
@@ -837,7 +769,7 @@ class ComposerController extends BaseController
           break;
       }
 
-      if (composerArguments.value?.emailActionType == EmailActionType.reopenComposerBrowser) {
+      if (composerArguments.value?.emailActionType == EmailActionType.composeFromLocalEmailDraft) {
         log('ComposerController::_initEmail: hasRequestReadReceipt = ${arguments.hasRequestReadReceipt}');
         hasRequestReadReceipt.value = arguments.hasRequestReadReceipt ?? false;
       } else if (composerArguments.value?.emailActionType != EmailActionType.editDraft) {
@@ -1128,7 +1060,7 @@ class ComposerController extends BaseController
     }
 
     final emailContent = await getContentInEditor();
-    final uploadUri = _getUploadUriFromSession(session, accountId);
+    final uploadUri = getUploadUriFromSession(session, accountId);
     final cancelToken = CancelToken();
     final resultState = await _showSendingMessageDialog(
       session: session,
@@ -1141,6 +1073,9 @@ class ComposerController extends BaseController
     log('ComposerController::_handleSendMessages: resultState = $resultState');
     if (resultState is SendEmailSuccess || mailboxDashBoardController.validateSendingEmailFailedWhenNetworkIsLostOnMobile(resultState)) {
       _sendButtonState = ButtonState.enabled;
+      if (composerId != null) {
+        mailboxDashBoardController.removeLocalEmailDraft(composerId!);
+      }
       _closeComposerAction(result: resultState);
     } else if (resultState is SendEmailFailure && resultState.exception is SendingEmailCanceledException) {
       _sendButtonState = ButtonState.enabled;
@@ -1412,7 +1347,7 @@ class ComposerController extends BaseController
     if (emailActionType == EmailActionType.compose
         || emailActionType == EmailActionType.editDraft) {
       _savedEmailDraftHash = draftEmailHash;
-    } else if (emailActionType == EmailActionType.reopenComposerBrowser) {
+    } else if (emailActionType == EmailActionType.composeFromLocalEmailDraft) {
       _savedEmailDraftHash = emptyDraftEmailHash;
     }
   }
@@ -1440,7 +1375,7 @@ class ComposerController extends BaseController
     }
 
     final emailContent = await getContentInEditor();
-    final uploadUri = _getUploadUriFromSession(session, accountId);
+    final uploadUri = getUploadUriFromSession(session, accountId);
     final cancelToken = CancelToken();
     final resultState = await _showSavingMessageToDraftsDialog(
       session: session,
@@ -1510,7 +1445,7 @@ class ComposerController extends BaseController
     ));
   }
 
-  void _getEmailContentFromSessionStorageBrowser({
+  void _getEmailContentFromLocalEmailDraft({
     required String htmlContent,
     required List<Attachment> inlineImages,
     required AccountId accountId,
@@ -1826,7 +1761,7 @@ class ComposerController extends BaseController
 
     final emailActionType = composerArguments.value?.emailActionType;
     switch (emailActionType) {
-      case EmailActionType.reopenComposerBrowser:
+      case EmailActionType.composeFromLocalEmailDraft:
       case EmailActionType.editDraft:
         if (_identityContentOnOpenPolicy == SignatureStatus.editedAvailable) {
           _identityContentOnOpenPolicy = SignatureStatus.editedApplied;
@@ -1949,6 +1884,9 @@ class ComposerController extends BaseController
 
   void handleClickDeleteComposer(BuildContext context) {
     clearFocus(context);
+    if (composerId != null) {
+      mailboxDashBoardController.removeLocalEmailDraft(composerId!);
+    }
     _closeComposerAction();
   }
 
@@ -2337,7 +2275,7 @@ class ComposerController extends BaseController
     popBack();
 
     final emailContent = await getContentInEditor();
-    final uploadUri = _getUploadUriFromSession(session, accountId);
+    final uploadUri = getUploadUriFromSession(session, accountId);
     final draftEmailId = getDraftEmailId();
     log('ComposerController::_handleSaveMessageToDraft: draftEmailId = $draftEmailId');
     final cancelToken = CancelToken();
@@ -2353,6 +2291,9 @@ class ComposerController extends BaseController
 
     if (resultState is SaveEmailAsDraftsSuccess || resultState is UpdateEmailDraftsSuccess) {
       _closeComposerButtonState = ButtonState.enabled;
+      if (composerId != null) {
+        mailboxDashBoardController.removeLocalEmailDraft(composerId!);
+      }
       _closeComposerAction(result: resultState);
     } else if ((resultState is SaveEmailAsDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException) ||
         (resultState is UpdateEmailDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException)) {
@@ -2501,11 +2442,7 @@ class ComposerController extends BaseController
   
   @override
   Future<void> onBeforeReconnect() async {
-    if (mailboxDashBoardController.accountId.value != null &&
-        mailboxDashBoardController.sessionCurrent?.username != null
-    ) {
-      await _saveComposerCacheOnWebAction();
-    }
+    await saveLocalEmailDraftAction();
   }
 
   void _setUpMaxWidthInlineImage({
