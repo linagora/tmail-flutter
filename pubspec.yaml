@@ -133,7 +133,7 @@ dependencies:
 
   http_parser: 4.0.2
 
-  collection: 1.18.0
+  collection: 1.19.0
 
   filesize: 2.0.1
 
@@ -191,7 +191,7 @@ dependencies:
 
   firebase_messaging: 14.2.5
 
-  flutter_local_notifications: 17.2.1
+  flutter_local_notifications: 17.2.2
 
   fading_edge_scrollview: 4.1.1
 
@@ -219,7 +219,7 @@ dependencies:
 
   flutter_linkify: 6.0.0
 
-  flutter_slidable: 3.1.0
+  flutter_slidable: 3.1.2
 
   url_strategy: 0.2.0
 
@@ -239,7 +239,7 @@ dependencies:
 
   future_loading_dialog: 0.3.0
 
-  file_picker: 8.0.5
+  file_picker: 8.0.7
 
   app_settings: 5.1.1
 

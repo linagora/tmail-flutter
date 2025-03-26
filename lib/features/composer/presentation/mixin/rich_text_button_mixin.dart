@@ -97,8 +97,8 @@ mixin RichTextButtonMixin {
       icon: SvgPicture.asset(
           path,
           colorFilter: isSelected == true
-            ? Colors.black.withOpacity(opacity).asFilter()
-            : AppColor.colorDefaultRichTextButton.withOpacity(opacity).asFilter(),
+            ? Colors.black.withValues(alpha: opacity).asFilter()
+            : AppColor.colorDefaultRichTextButton.withValues(alpha: opacity).asFilter(),
           fit: BoxFit.fill),
       iconPadding: const EdgeInsets.all(4),
       colorFocus: Colors.white,
@@ -123,11 +123,11 @@ mixin RichTextButtonMixin {
           message: tooltip,
           child: SvgPicture.asset(
             path,
-            colorFilter: newColor?.withOpacity(opacity).asFilter(),
+            colorFilter: newColor?.withValues(alpha: opacity).asFilter(),
             fit: BoxFit.fill))
       : SvgPicture.asset(
           path,
-          colorFilter: newColor?.withOpacity(opacity).asFilter(),
+          colorFilter: newColor?.withValues(alpha: opacity).asFilter(),
           fit: BoxFit.fill);
   }
 
@@ -142,7 +142,7 @@ mixin RichTextButtonMixin {
 
     return SvgPicture.asset(
       path,
-      colorFilter: newColor?.withOpacity(opacity).asFilter(),
+      colorFilter: newColor?.withValues(alpha: opacity).asFilter(),
       fit: BoxFit.fill);
   }
 
@@ -155,7 +155,7 @@ mixin RichTextButtonMixin {
         ? AppColor.colorDefaultRichTextButton
         : colorSelected;
     return Icon(iconData,
-        color: (newColor ?? AppColor.colorDefaultRichTextButton).withOpacity(opacity),
+        color: (newColor ?? AppColor.colorDefaultRichTextButton).withValues(alpha: opacity),
         size: 20);
   }
 
@@ -171,7 +171,7 @@ mixin RichTextButtonMixin {
     return Tooltip(
       message: tooltip,
       child: Icon(iconData,
-          color: (newColor ?? AppColor.colorDefaultRichTextButton).withOpacity(opacity),
+          color: (newColor ?? AppColor.colorDefaultRichTextButton).withValues(alpha: opacity),
           size: 20),
     );
   }

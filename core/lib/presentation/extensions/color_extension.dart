@@ -261,7 +261,15 @@ extension AppColor on Color {
     [Color(0xFF87A6F8), Color(0xFF645FF6)],
   ];
 
-  String toHexTriplet() => '#${(value & 0xFFFFFF)
+  int toInt() {
+    final alpha = (a * 255).toInt();
+    final red = (r * 255).toInt();
+    final green = (g * 255).toInt();
+    final blue = (b * 255).toInt();
+    return (alpha << 24) | (red << 16) | (green << 8) | blue;
+  }
+
+  String toHexTriplet() => '#${(toInt() & 0xFFFFFF)
       .toRadixString(16)
       .padLeft(6, '0')
       .toUpperCase()}';

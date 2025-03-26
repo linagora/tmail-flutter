@@ -75,7 +75,7 @@ dependencies:
 
   path_provider: 2.1.5
 
-  collection: 1.18.0
+  collection: 1.19.0
 
   intl: 0.19.0
 
@@ -94,7 +94,7 @@ dependencies:
   # https://gitlab.freedesktop.org/uchardet/uchardet.git
   flutter_charset_detector:
     git:
-      url: https://github.com/dab246/flutter_charset_detector.git
+      url: https://github.com/tddang-linagora/flutter_charset_detector.git
       ref: main
       path: flutter_charset_detector
 

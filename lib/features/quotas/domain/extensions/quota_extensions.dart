@@ -72,9 +72,9 @@ extension QuotasExtensions on Quota {
 
   Color getQuotaBannerBackgroundColor() {
     if (isHardLimitReached) {
-      return AppColor.colorQuotaError.withOpacity(0.12);
+      return AppColor.colorQuotaError.withValues(alpha: 0.12);
     } else if (isWarnLimitReached) {
-      return AppColor.colorBackgroundQuotasWarning.withOpacity(0.12);
+      return AppColor.colorBackgroundQuotasWarning.withValues(alpha: 0.12);
     } else {
       return AppColor.colorNetworkConnectionBannerBackground;
     }

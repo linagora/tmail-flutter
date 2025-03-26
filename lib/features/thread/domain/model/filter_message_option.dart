@@ -129,9 +129,9 @@ extension FilterMessageOptionExtension on FilterMessageOption {
 
   Color getBackgroundColor({bool isSelected = false}) {
     if (isSelected) {
-      return AppColor.primaryColor.withOpacity(0.06);
+      return AppColor.primaryColor.withValues(alpha: 0.06);
     } else {
-      return AppColor.colorFilterMessageButton.withOpacity(0.6);
+      return AppColor.colorFilterMessageButton.withValues(alpha: 0.6);
     }
   }
 

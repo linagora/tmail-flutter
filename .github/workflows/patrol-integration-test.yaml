@@ -7,7 +7,7 @@ on:
 
 env:
   JAVA_VERSION: 17
-  FLUTTER_VERSION: 3.24.5
+  FLUTTER_VERSION: 3.27.4
 
 jobs:
   mobile_integration_test:

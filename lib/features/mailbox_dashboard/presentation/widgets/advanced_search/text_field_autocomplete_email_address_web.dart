@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:math';
 
-import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
@@ -282,7 +281,7 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
     }
     return _currentListEmailAddress
       .map((emailAddress) => emailAddress.email)
-      .whereNotNull()
+      .nonNulls
       .contains(inputEmail);
   }
 

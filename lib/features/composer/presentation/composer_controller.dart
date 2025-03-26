@@ -453,7 +453,9 @@ class ComposerController extends BaseController
             final arguments = composerArguments.value;
             if (arguments == null ||
                 currentContext == null ||
-                arguments.presentationEmail == null) return;
+                arguments.presentationEmail == null) {
+              return;
+            }
 
             final emailActionType = arguments.emailActionType;
 
