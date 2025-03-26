@@ -1235,11 +1235,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: b979266ead13c1b4e5d3756b6d2b1e13318f41fc
+      ref: "bugfix/cannot-break-quote-when-press-enter-key"
+      resolved-ref: "6588b9a205b309038b34b0cad82915ee4768faae"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
-    version: "3.1.3"
+    version: "3.1.4"
   http:
     dependency: transitive
     description:
