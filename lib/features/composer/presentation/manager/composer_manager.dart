@@ -23,39 +23,30 @@ class ComposerManager extends GetxController {
 
   ComposerTimer? _composerTimer;
 
-  void addComposer(ComposerArguments composerArguments) {
-    final id = DateTime.now().millisecondsSinceEpoch.toString();
+  void addComposer(ComposerArguments composerArguments, {bool isSynchronous = true}) {
+    final id = composerArguments.composerId
+        ?? DateTime.now().millisecondsSinceEpoch.toString();
     log('ComposerManager::addComposer:Id = $id');
-    ComposerBindings(composerId: id, composerArguments: composerArguments).dependencies();
+    ComposerBindings(
+      composerId: id,
+      composerArguments: composerArguments,
+    ).dependencies();
 
     composers[id] = ComposerView(key: Key(id), composerId: id);
     composerIdsQueue.add(id);
 
-    _arrangeComposerIfNeeded();
-
-    _initializeTimerIfNeeded();
+    if (isSynchronous) {
+      _arrangeComposerIfNeeded();
+      _initializeTimerIfNeeded();
+    }
   }
 
   void addListComposer(List<ComposerArguments> listArguments) {
     for (var argument in listArguments) {
-      final composerId = argument.composerId;
-
-      if (composerId == null) continue;
-
-      ComposerBindings(
-        composerId: composerId,
-        composerArguments: argument,
-      ).dependencies();
-
-      composers[composerId] = ComposerView(
-        key: Key(composerId),
-        composerId: composerId,
-      );
-      composerIdsQueue.add(composerId);
+      addComposer(argument, isSynchronous: false);
     }
 
     _arrangeComposerIfNeeded();
-
     _initializeTimerIfNeeded();
   }
 

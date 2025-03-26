@@ -279,13 +279,17 @@ class _LocalEmailDraftListDialogBuilderState
     );
   }
 
-  Future<void> _removeLocalEmailDraft(BuildContext context, String draftLocalId) async {
+  Future<void> _removeLocalEmailDraft(
+    BuildContext context,
+    String draftLocalId,
+    {bool showToast = true}
+  ) async {
     _listLocalEmailDraftsNotifier.value = List.from(_listLocalEmailDraftsNotifier.value)
       ..removeWhere((draftLocal) => draftLocal.id == draftLocalId);
 
     await _removeLocalEmailDraftInteractor?.execute(draftLocalId);
 
-    if (context.mounted) {
+    if (showToast && context.mounted) {
       _appToast.showToastSuccessMessage(
         context,
         AppLocalizations.of(context).deleteLocalDraftSuccessfully,
@@ -323,7 +327,7 @@ class _LocalEmailDraftListDialogBuilderState
         leadingSVGIconColor: Colors.white,
       );
 
-      _removeLocalEmailDraft(context, draftLocal.id);
+      _removeLocalEmailDraft(context, draftLocal.id, showToast: false);
     } else if (resultState is SaveEmailAsDraftsFailure) {
       final errorMessage = getMessageFailure(
         appLocalizations: AppLocalizations.of(context),
