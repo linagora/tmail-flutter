@@ -41,6 +41,7 @@ class CreateEmailRequest with EquatableMixin {
   final Uri? uploadUri;
   final int? composerIndex;
   final String? composerId;
+  final int? draftHash;
 
   CreateEmailRequest({
     required this.session,
@@ -71,6 +72,7 @@ class CreateEmailRequest with EquatableMixin {
     this.uploadUri,
     this.composerIndex,
     this.composerId,
+    this.draftHash,
   });
 
   @override
@@ -103,5 +105,6 @@ class CreateEmailRequest with EquatableMixin {
     uploadUri,
     composerIndex,
     composerId,
+    draftHash,
   ];
 }

@@ -35,6 +35,7 @@ class ComposerArguments extends RouterArguments {
   final List<EmailAddress>? bcc;
   final String? listPost;
   final String? composerId;
+  final int? draftHash;
 
   ComposerArguments({
     this.emailActionType = EmailActionType.compose,
@@ -60,6 +61,7 @@ class ComposerArguments extends RouterArguments {
     this.listPost,
     this.isMarkAsImportant,
     this.composerId,
+    this.draftHash,
   });
 
   factory ComposerArguments.fromSendingEmail(SendingEmail sendingEmail) =>
@@ -125,6 +127,7 @@ class ComposerArguments extends RouterArguments {
       displayMode: composerCache.displayMode,
       isMarkAsImportant: composerCache.isMarkAsImportant,
       composerId: composerCache.composerId,
+      draftHash: composerCache.draftHash,
     );
 
   factory ComposerArguments.replyEmail({
@@ -246,6 +249,7 @@ class ComposerArguments extends RouterArguments {
     bcc,
     listPost,
     composerId,
+    draftHash,
   ];
 
   ComposerArguments copyWith({
@@ -272,6 +276,7 @@ class ComposerArguments extends RouterArguments {
     List<EmailAddress>? bcc,
     String? listPost,
     String? composerId,
+    int? draftHash,
   }) {
     return ComposerArguments(
       emailActionType: emailActionType ?? this.emailActionType,
@@ -297,6 +302,7 @@ class ComposerArguments extends RouterArguments {
       bcc: bcc ?? this.bcc,
       listPost: listPost ?? this.listPost,
       composerId: composerId ?? this.composerId,
+      draftHash: draftHash ?? this.draftHash,
     );
   }
 }

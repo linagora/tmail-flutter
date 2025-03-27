@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:model/email/email_action_type.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/screen_display_mode.dart';
 
 part 'composer_cache.g.dart';
@@ -14,6 +15,7 @@ class ComposerCache with EquatableMixin {
   final ScreenDisplayMode displayMode;
   final int? composerIndex;
   final String? composerId;
+  final int? draftHash;
 
   ComposerCache({
     this.email,
@@ -22,6 +24,7 @@ class ComposerCache with EquatableMixin {
     this.displayMode = ScreenDisplayMode.normal,
     this.composerIndex,
     this.composerId,
+    this.draftHash,
   });
 
   factory ComposerCache.fromJson(Map<String, dynamic> json) => _$ComposerCacheFromJson(json);
@@ -36,5 +39,6 @@ class ComposerCache with EquatableMixin {
     displayMode,
     composerIndex,
     composerId,
+    draftHash,
   ];
 }
