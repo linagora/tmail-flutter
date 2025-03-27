@@ -79,7 +79,7 @@ class ConfirmationDialogBuilder extends StatelessWidget {
     this.listTextSpan,
     this.titleActionButtonMaxLines,
     this.isArrangeActionButtonsVertical = false,
-    this.useIconAsBasicLogo = false,
+    this.useIconAsBasicLogo = true,
     this.onConfirmButtonAction,
     this.onCancelButtonAction,
     this.onCloseButtonAction,

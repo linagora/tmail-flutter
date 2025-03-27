@@ -83,15 +83,10 @@ mixin MailboxActionHandlerMixin {
             imagePath: imagePaths,
             title: AppLocalizations.of(context).emptyTrash,
             textContent: AppLocalizations.of(context).empty_trash_dialog_message,
-            confirmText: AppLocalizations.of(context).delete,
-            cancelText: AppLocalizations.of(context).cancel,
-            useIconAsBasicLogo: true,
-            cancelBackgroundButtonColor: AppColor.blue700,
-            cancelLabelButtonColor: Colors.white,
-            confirmBackgroundButtonColor: AppColor.grayBackgroundColor,
-            confirmLabelButtonColor: AppColor.steelGray600,
+            confirmText: AppLocalizations.of(context).cancel,
+            cancelText: AppLocalizations.of(context).delete,
             onCloseButtonAction: popBack,
-            onConfirmButtonAction: () {
+            onCancelButtonAction: () {
               popBack();
               if (mailbox.countTotalEmails > 0) {
                 dashboardController.emptyTrashFolderAction(
@@ -105,7 +100,7 @@ mixin MailboxActionHandlerMixin {
                 );
               }
             },
-            onCancelButtonAction: popBack,
+            onConfirmButtonAction: popBack,
           ),
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
@@ -150,15 +145,10 @@ mixin MailboxActionHandlerMixin {
             imagePath: imagePaths,
             title: AppLocalizations.of(context).emptySpamFolder,
             textContent: AppLocalizations.of(context).emptySpamMessageDialog,
-            confirmText: AppLocalizations.of(context).delete_all,
-            cancelText: AppLocalizations.of(context).cancel,
-            useIconAsBasicLogo: true,
-            cancelBackgroundButtonColor: AppColor.blue700,
-            cancelLabelButtonColor: Colors.white,
-            confirmBackgroundButtonColor: AppColor.grayBackgroundColor,
-            confirmLabelButtonColor: AppColor.steelGray600,
+            confirmText: AppLocalizations.of(context).cancel,
+            cancelText: AppLocalizations.of(context).delete_all,
             onCloseButtonAction: popBack,
-            onConfirmButtonAction: () {
+            onCancelButtonAction: () {
               popBack();
               if (mailbox.countTotalEmails > 0) {
                 dashboardController.emptySpamFolderAction(spamFolderId: mailbox.id, totalEmails: mailbox.countTotalEmails);
@@ -169,7 +159,7 @@ mixin MailboxActionHandlerMixin {
                 );
               }
             },
-            onCancelButtonAction: popBack,
+            onConfirmButtonAction: popBack,
           ),
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,

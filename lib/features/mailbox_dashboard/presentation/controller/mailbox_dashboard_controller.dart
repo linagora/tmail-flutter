@@ -1554,25 +1554,20 @@ class MailboxDashBoardController extends ReloadableController
         PointerInterceptor(child: ConfirmationDialogBuilder(
           key: const Key('confirm_dialog_delete_emails_permanently'),
           imagePath: imagePaths,
-          useIconAsBasicLogo: true,
           title: actionType.getTitleDialog(context),
           textContent: actionType.getContentDialog(
             context,
             count: listEmails?.length,
             mailboxName: mailboxCurrent?.getDisplayName(context),
           ),
-          confirmText: actionType.getConfirmActionName(context),
-          cancelText: AppLocalizations.of(context).cancel,
-          cancelBackgroundButtonColor: AppColor.blue700,
-          cancelLabelButtonColor: Colors.white,
-          confirmBackgroundButtonColor: AppColor.grayBackgroundColor,
-          confirmLabelButtonColor: AppColor.steelGray600,
-          onConfirmButtonAction: () => _deleteSelectionEmailsPermanentlyAction(
+          cancelText: actionType.getConfirmActionName(context),
+          confirmText: AppLocalizations.of(context).cancel,
+          onCancelButtonAction: () => _deleteSelectionEmailsPermanentlyAction(
             actionType,
             listEmails: listEmails,
             onCancelSelectionEmail: onCancelSelectionEmail,
           ),
-          onCancelButtonAction: popBack,
+          onConfirmButtonAction: popBack,
           onCloseButtonAction: popBack,
         )),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
@@ -2627,16 +2622,11 @@ class MailboxDashBoardController extends ReloadableController
         PointerInterceptor(child: ConfirmationDialogBuilder(
           key: const Key('confirm_dialog_empty_spam'),
           imagePath: imagePaths,
-          useIconAsBasicLogo: true,
           title: AppLocalizations.of(context).emptySpamFolder,
           textContent: AppLocalizations.of(context).emptySpamMessageDialog,
-          confirmText: AppLocalizations.of(context).delete_all,
-          cancelText: AppLocalizations.of(context).cancel,
-          cancelBackgroundButtonColor: AppColor.blue700,
-          cancelLabelButtonColor: Colors.white,
-          confirmBackgroundButtonColor: AppColor.grayBackgroundColor,
-          confirmLabelButtonColor: AppColor.steelGray600,
-          onConfirmButtonAction: () {
+          cancelText: AppLocalizations.of(context).delete_all,
+          confirmText: AppLocalizations.of(context).cancel,
+          onCancelButtonAction: () {
             popBack();
             if (spamMailbox.countTotalEmails > 0) {
               emptySpamFolderAction(
@@ -2650,7 +2640,7 @@ class MailboxDashBoardController extends ReloadableController
               );
             }
           },
-          onCancelButtonAction: popBack,
+          onConfirmButtonAction: popBack,
           onCloseButtonAction: popBack,
         )),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
