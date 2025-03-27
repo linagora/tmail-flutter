@@ -1,12 +1,29 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:jmap_dart_client/http/converter/id_nullable_converter.dart';
+import 'package:jmap_dart_client/http/converter/media_type_nullable_converter.dart';
+import 'package:jmap_dart_client/http/converter/part_id_nullable_converter.dart';
+import 'package:jmap_dart_client/http/converter/unsigned_int_nullable_converter.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:uri/uri.dart';
 
+part 'attachment.g.dart';
+
+@JsonSerializable(
+  includeIfNull: false,
+  explicitToJson: true,
+  converters: [
+    PartIdNullableConverter(),
+    IdNullableConverter(),
+    UnsignedIntNullableConverter(),
+    MediaTypeNullableConverter(),
+  ],
+)
 class Attachment with EquatableMixin {
 
   static const String eventICSSubtype = 'ics';
@@ -61,6 +78,10 @@ class Attachment with EquatableMixin {
       return '${blobId?.value}.${type?.subtype}';
     }
   }
+
+  factory Attachment.fromJson(Map<String, dynamic> json) => _$AttachmentFromJson(json);
+
+  Map<String, dynamic> toJson() => _$AttachmentToJson(this);
 
   @override
   List<Object?> get props => [
