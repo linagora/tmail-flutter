@@ -3,7 +3,6 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
@@ -195,11 +194,11 @@ class SendingQueueController extends BaseController with MessageDialogActionMixi
     showConfirmDialogAction(
       context,
       AppLocalizations.of(context).messageDialogDeleteSendingEmail,
-      AppLocalizations.of(currentContext!).delete,
-      title: AppLocalizations.of(currentContext!).deleteOfflineEmail,
-      icon: SvgPicture.asset(imagePaths.icDeleteDialogRecipients),
+      AppLocalizations.of(context).cancel,
+      title: AppLocalizations.of(context).deleteOfflineEmail,
       alignCenter: true,
-      onConfirmAction: () => _handleDeleteListSendingEmail(listSendingEmails),
+      cancelTitle: AppLocalizations.of(context).delete,
+      onCancelAction: () => _handleDeleteListSendingEmail(listSendingEmails),
     );
   }
 
