@@ -77,7 +77,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = this.context;
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).emlContentViewState.get$value(0).fold$2(0, new B.EmailPreviewerView_build__closure(t3), new B.EmailPreviewerView_build__closure0(t1, t3));
     },
-    $signature: 4
+    $signature: 3
   };
   B.EmailPreviewerView_build__closure.prototype = {
     call$1(failure) {
@@ -85,7 +85,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       return A.Center$(A.Text$(A.Intl__message("Cannot preview this eml file", _null, "previewEmailFromEMLFileFailed", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null);
     },
-    $signature: 1868
+    $signature: 1874
   };
   B.EmailPreviewerView_build__closure0.prototype = {
     call$1(success) {
@@ -99,7 +99,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return D.Center_yTp;
     },
-    $signature: 51
+    $signature: 50
   };
   B.EmailPreviewerView_build_closure0.prototype = {
     call$0() {
@@ -133,5 +133,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_12", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "msCz9yWeGVbRD8dUFLFAQ+8egvU=");
+})($__dart_deferred_initializers__, "KKQmF38pt56zbbWYu/itMf3htXA=");
 ;
