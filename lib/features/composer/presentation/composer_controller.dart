@@ -14,7 +14,6 @@ import 'package:filesize/filesize.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:html/parser.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
@@ -1021,7 +1020,6 @@ class ComposerController extends BaseController
         AppLocalizations.of(context).message_dialog_send_email_without_recipient,
         AppLocalizations.of(context).add_recipients,
         title: AppLocalizations.of(context).sending_failed,
-        icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
         hasCancelButton: false,
         showAsBottomSheet: true,
       ).whenComplete(() => _sendButtonState = ButtonState.enabled);
@@ -1044,7 +1042,6 @@ class ComposerController extends BaseController
         },
         showAsBottomSheet: true,
         title: AppLocalizations.of(context).sending_failed,
-        icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
         hasCancelButton: false
       ).whenComplete(() => _sendButtonState = ButtonState.enabled);
       return;
@@ -1053,17 +1050,13 @@ class ComposerController extends BaseController
     if (subjectEmail.value == null || subjectEmail.isEmpty == true) {
       showConfirmDialogAction(context,
         AppLocalizations.of(context).message_dialog_send_email_without_a_subject,
-        AppLocalizations.of(context).send_anyway,
-        onConfirmAction: () => _handleSendMessages(context),
-        onCancelAction: popBack,
+        AppLocalizations.of(context).cancel,
+        cancelTitle: AppLocalizations.of(context).send_anyway,
+        onCancelAction: () => _handleSendMessages(context),
+        onConfirmAction: popBack,
         autoPerformPopBack: false,
         title: AppLocalizations.of(context).empty_subject,
-        cancelButtonColor: AppColor.blue700,
-        cancelLabelButtonColor: Colors.white,
-        actionButtonColor: AppColor.grayBackgroundColor,
-        confirmLabelButtonColor: AppColor.steelGray600,
         showAsBottomSheet: true,
-        icon: SvgPicture.asset(imagePaths.icEmpty, fit: BoxFit.fill),
       ).whenComplete(() => _sendButtonState = ButtonState.enabled);
       return;
     }
@@ -1075,7 +1068,6 @@ class ComposerController extends BaseController
         AppLocalizations.of(context).got_it,
         title: AppLocalizations.of(context).sending_failed,
         showAsBottomSheet: true,
-        icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
         hasCancelButton: false
       ).whenComplete(() => _sendButtonState = ButtonState.enabled);
       return;
@@ -1088,7 +1080,6 @@ class ComposerController extends BaseController
             filesize(mailboxDashBoardController.maxSizeAttachmentsPerEmail?.value ?? 0, 0)),
         AppLocalizations.of(context).got_it,
         title: AppLocalizations.of(context).sending_failed,
-        icon: SvgPicture.asset(imagePaths.icSendToastError, fit: BoxFit.fill),
         hasCancelButton: false
       ).whenComplete(() => _sendButtonState = ButtonState.enabled);
       return;
@@ -1236,12 +1227,6 @@ class ComposerController extends BaseController
         _sendButtonState = ButtonState.enabled;
         _closeComposerAction(closeOverlays: true);
       },
-      icon: SvgPicture.asset(
-        imagePaths.icQuotasWarning,
-        width: 40,
-        height: 40,
-        colorFilter: AppColor.colorBackgroundQuotasWarning.asFilter(),
-      ),
     );
   }
 
@@ -2266,12 +2251,6 @@ class ComposerController extends BaseController
           _autoFocusFieldWhenLauncher();
         }
       },
-      icon: SvgPicture.asset(
-        imagePaths.icQuotasWarning,
-        width: 40,
-        height: 40,
-        colorFilter: AppColor.colorBackgroundQuotasWarning.asFilter(),
-      ),
     );
   }
 
@@ -2467,12 +2446,6 @@ class ComposerController extends BaseController
         _closeComposerButtonState = ButtonState.enabled;
         _closeComposerAction(closeOverlays: true);
       },
-      icon: SvgPicture.asset(
-        imagePaths.icQuotasWarning,
-        width: 40,
-        height: 40,
-        colorFilter: AppColor.colorBackgroundQuotasWarning.asFilter(),
-      ),
     );
   }
 

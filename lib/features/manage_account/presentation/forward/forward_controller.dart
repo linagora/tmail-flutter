@@ -1,4 +1,3 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
@@ -119,14 +118,10 @@ class ForwardController extends BaseController {
       context,
       title: AppLocalizations.of(context).deleteRecipient,
       AppLocalizations.of(context).messageConfirmationDialogDeleteRecipientForward(emailAddress),
-      AppLocalizations.of(context).remove,
-      onConfirmAction: () => _handleDeleteRecipientAction({emailAddress}),
+      AppLocalizations.of(context).cancel,
+      cancelTitle: AppLocalizations.of(context).remove,
+      onCancelAction: () => _handleDeleteRecipientAction({emailAddress}),
       showAsBottomSheet: true,
-      useIconAsBasicLogo: true,
-      cancelButtonColor: AppColor.blue700,
-      cancelLabelButtonColor: Colors.white,
-      actionButtonColor: AppColor.grayBackgroundColor,
-      confirmLabelButtonColor: AppColor.steelGray600,
     );
   }
 
@@ -202,17 +197,14 @@ class ForwardController extends BaseController {
   }
 
   void deleteMultipleRecipients(BuildContext context, Set<String> listEmailAddress) {
-    showConfirmDialogAction(currentContext!,
+    showConfirmDialogAction(
+      context,
       title: AppLocalizations.of(context).deleteRecipient,
       AppLocalizations.of(context).messageConfirmationDialogDeleteAllRecipientForward,
-      AppLocalizations.of(currentContext!).remove,
-      onConfirmAction: () => _handleDeleteRecipientAction(listEmailAddress),
+      AppLocalizations.of(context).cancel,
+      cancelTitle: AppLocalizations.of(context).remove,
+      onCancelAction: () => _handleDeleteRecipientAction(listEmailAddress),
       showAsBottomSheet: true,
-      useIconAsBasicLogo: true,
-      cancelButtonColor: AppColor.blue700,
-      cancelLabelButtonColor: Colors.white,
-      actionButtonColor: AppColor.grayBackgroundColor,
-      confirmLabelButtonColor: AppColor.steelGray600,
     );
   }
 

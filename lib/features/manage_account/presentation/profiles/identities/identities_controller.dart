@@ -315,7 +315,6 @@ class IdentitiesController extends ReloadableController implements BeforeReconne
         ConfirmationDialogBuilder(
           key: const Key('dialog_message_delete_identity_failed'),
           imagePath: imagePaths,
-          useIconAsBasicLogo: true,
           title: AppLocalizations.of(currentContext!).delete_failed,
           confirmText: '${AppLocalizations.of(currentContext!).got_it}!',
           onConfirmButtonAction: popBack,

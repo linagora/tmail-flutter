@@ -9,7 +9,6 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
@@ -443,22 +442,12 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
     await showConfirmDialogAction(
       context,
       AppLocalizations.of(context).doYouWantToProceed,
-      AppLocalizations.of(context).yes,
+      AppLocalizations.of(context).no,
       title: AppConfig.getForwardWarningMessage(context),
-      cancelTitle: AppLocalizations.of(context).no,
+      cancelTitle: AppLocalizations.of(context).yes,
       alignCenter: true,
-      onConfirmAction: confirmAction,
-      onCancelAction: cancelAction,
-      cancelButtonColor: AppColor.blue700,
-      cancelLabelButtonColor: Colors.white,
-      actionButtonColor: AppColor.grayBackgroundColor,
-      confirmLabelButtonColor: AppColor.steelGray600,
-      icon: SvgPicture.asset(
-        _imagePaths.icQuotasWarning,
-        width: 40,
-        height: 40,
-        colorFilter: AppColor.colorQuotaError.asFilter(),
-      ),
+      onConfirmAction: cancelAction,
+      onCancelAction: confirmAction,
     );
   }
 }

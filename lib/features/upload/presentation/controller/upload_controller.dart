@@ -3,7 +3,6 @@ import 'dart:async';
 
 import 'package:async/async.dart';
 import 'package:collection/collection.dart';
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -11,7 +10,6 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:filesize/filesize.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_body_part.dart';
 import 'package:model/email/attachment.dart';
@@ -386,20 +384,10 @@ class UploadController extends BaseController {
       context,
       title: '',
       AppLocalizations.of(context).warningMessageWhenExceedGenerallySizeInComposer,
-      AppLocalizations.of(context).continueAction,
-      cancelTitle: AppLocalizations.of(context).cancel,
-      cancelButtonColor: AppColor.blue700,
-      cancelLabelButtonColor: Colors.white,
-      actionButtonColor: AppColor.grayBackgroundColor,
-      confirmLabelButtonColor: AppColor.steelGray600,
+      AppLocalizations.of(context).cancel,
+      cancelTitle: AppLocalizations.of(context).continueAction,
       alignCenter: true,
-      onConfirmAction: confirmAction,
-      icon: SvgPicture.asset(
-        imagePaths.icQuotasWarning,
-        width: 40,
-        height: 40,
-        colorFilter: AppColor.colorBackgroundQuotasWarning.asFilter(),
-      ),
+      onCancelAction: confirmAction,
     );
   }
 

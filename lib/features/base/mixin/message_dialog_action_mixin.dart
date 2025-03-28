@@ -45,7 +45,7 @@ mixin MessageDialogActionMixin {
         PopInvokedWithResultCallback? onPopInvoked,
         bool isArrangeActionButtonsVertical = false,
         int? titleActionButtonMaxLines,
-        bool useIconAsBasicLogo = false,
+        bool useIconAsBasicLogo = true,
         EdgeInsetsGeometry? dialogMargin,
       }
   ) async {

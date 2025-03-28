@@ -738,7 +738,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         dialogMargin: MediaQuery.paddingOf(currentContext!).add(const EdgeInsets.only(bottom: 12)),
         title: AppLocalizations.of(currentContext!).titleReadReceiptRequestNotificationMessage,
         cancelTitle: AppLocalizations.of(currentContext!).no,
-        icon: SvgPicture.asset(imagePaths.icReadReceiptMessage, fit: BoxFit.fill),
       );
     }
   }
@@ -1553,17 +1552,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         PointerInterceptor(child: ConfirmationDialogBuilder(
           key: const Key('confirm_dialog_delete_email_permanently'),
           imagePath: imagePaths,
-          useIconAsBasicLogo: true,
           title: DeleteActionType.single.getTitleDialog(context),
           textContent: DeleteActionType.single.getContentDialog(context),
-          confirmText: DeleteActionType.single.getConfirmActionName(context),
-          cancelText: AppLocalizations.of(context).cancel,
-          cancelBackgroundButtonColor: AppColor.blue700,
-          cancelLabelButtonColor: Colors.white,
-          confirmBackgroundButtonColor: AppColor.grayBackgroundColor,
-          confirmLabelButtonColor: AppColor.steelGray600,
-          onConfirmButtonAction: () => _deleteEmailPermanentlyAction(context, email),
-          onCancelButtonAction: popBack,
+          cancelText: DeleteActionType.single.getConfirmActionName(context),
+          confirmText: AppLocalizations.of(context).cancel,
+          onCancelButtonAction: () => _deleteEmailPermanentlyAction(context, email),
+          onConfirmButtonAction: popBack,
           onCloseButtonAction: popBack,
         )),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
@@ -1948,7 +1942,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       },
       showAsBottomSheet: true,
       title: AppLocalizations.of(context).unsubscribeMail,
-      icon: SvgPicture.asset(imagePaths.icEmpty),
       messageStyle: ThemeUtils.textStyleBodyBody2(color: AppColor.steelGray400),
       listTextSpan: [
         TextSpan(text: AppLocalizations.of(context).unsubscribeMailDialogMessage),
