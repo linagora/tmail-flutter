@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-02-20T19:41:05.121752",
+  "@@last_modified": "2025-03-31T03:40:41.454034",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2962,6 +2962,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "errorWhileFetchingSubaddress": "Error while fetching the subaddress",
+  "@errorWhileFetchingSubaddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "connectedToTheInternet": "Connected to the internet",
   "@connectedToTheInternet": {
     "type": "text",
@@ -4238,12 +4244,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "Your session expired. We need to take you back to the login page in order to refresh it. You might want to save the email you are currently editing before we do so.",
-  "@messageWarningDialogWhenExpiredOIDCTokenAndReconnection": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "replyToList": "Reply to list",
   "@replyToList": {
     "type": "text",
@@ -4372,6 +4372,18 @@
   },
   "exitFullscreen": "Exit fullscreen",
   "@exitFullscreen": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageClipped": "[Message clipped]",
+  "@messageClipped": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "viewEntireMessage": "View entire message",
+  "@viewEntireMessage": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

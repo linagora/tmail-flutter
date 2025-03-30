@@ -390,7 +390,7 @@ class EmailView extends GetWidget<SingleEmailController> {
         else if (presentationEmail.id == controller.currentEmail?.id)
           Obx(() {
             if (controller.emailContents.value != null) {
-              final allEmailContents = controller.emailContents.value ?? '';
+              String allEmailContents = controller.emailContents.value ?? '';
 
               if (PlatformInfo.isWeb) {
                 return Expanded(
@@ -429,29 +429,68 @@ class EmailView extends GetWidget<SingleEmailController> {
                     }),
                   ),
                 );
-              } else if (PlatformInfo.isIOS
-                  && !controller.responsiveUtils.isScreenWithShortestSide(context)) {
+              } else if (PlatformInfo.isIOS) {
                 return Obx(() {
-                  if (controller.isEmailContentHidden.isTrue) {
+                  if (controller.isEmailContentHidden.isTrue && !controller.responsiveUtils.isScreenWithShortestSide(context)) {
                     return const SizedBox.shrink();
                   } else {
-                    return Padding(
-                      padding: const EdgeInsetsDirectional.symmetric(
-                        vertical: EmailViewStyles.mobileContentVerticalMargin,
-                        horizontal: EmailViewStyles.mobileContentHorizontalMargin
-                      ),
-                      child: LayoutBuilder(builder: (context, constraints) {
-                        return HtmlContentViewer(
-                          contentHtml: allEmailContents,
-                          initialWidth: constraints.maxWidth,
-                          direction: AppUtils.getCurrentDirection(context),
-                          contentPadding: 0,
-                          useDefaultFont: true,
-                          onMailtoDelegateAction: controller.openMailToLink,
-                          onScrollHorizontalEnd: controller.toggleScrollPhysicsPagerView,
-                          onLoadWidthHtmlViewer: controller.emailSupervisorController.updateScrollPhysicPageView,
-                        );
-                      })
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsetsDirectional.symmetric(
+                            vertical: EmailViewStyles.mobileContentVerticalMargin,
+                            horizontal: EmailViewStyles.mobileContentHorizontalMargin,
+                          ),
+                          child: LayoutBuilder(builder: (context, constraints) {
+                            return HtmlContentViewer(
+                              contentHtml: allEmailContents,
+                              initialWidth: constraints.maxWidth,
+                              direction: AppUtils.getCurrentDirection(context),
+                              contentPadding: 0,
+                              useDefaultFont: true,
+                              onMailtoDelegateAction: controller.openMailToLink,
+                              onScrollHorizontalEnd: controller.toggleScrollPhysicsPagerView,
+                              onLoadWidthHtmlViewer: controller.emailSupervisorController.updateScrollPhysicPageView,
+                              onHtmlContentClippedAction: controller.onHtmlContentClippedAction,
+                            );
+                          }),
+                        ),
+                        Obx(() {
+                          if (controller.isEmailContentClipped.isTrue) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  child: Text(
+                                    AppLocalizations.of(context).messageClipped,
+                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColor.steelGray400,
+                                    ),
+                                  ),
+                                ),
+                                TMailButtonWidget.fromText(
+                                  text: AppLocalizations.of(context).viewEntireMessage.toUpperCase(),
+                                  textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                    color: AppColor.primaryColor,
+                                    fontSize: 14,
+                                  ),
+                                  margin: const EdgeInsetsDirectional.only(
+                                    start: 8,
+                                    end: 8,
+                                    bottom: 24,
+                                  ),
+                                  backgroundColor: Colors.transparent,
+                                  onTapActionCallback: () {},
+                                ),
+                              ],
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        }),
+                      ],
                     );
                   }
                 });
@@ -471,6 +510,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                       onMailtoDelegateAction: controller.openMailToLink,
                       onScrollHorizontalEnd: controller.toggleScrollPhysicsPagerView,
                       onLoadWidthHtmlViewer: controller.emailSupervisorController.updateScrollPhysicPageView,
+                      onHtmlContentClippedAction: controller.onHtmlContentClippedAction,
                     );
                   })
                 );

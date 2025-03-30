@@ -19,6 +19,7 @@ typedef OnLoadWidthHtmlViewerAction = Function(bool isScrollPageViewActivated);
 typedef OnMailtoDelegateAction = Future<void> Function(Uri? uri);
 typedef OnPreviewEMLDelegateAction = Future<void> Function(Uri? uri);
 typedef OnDownloadAttachmentDelegateAction = Future<void> Function(Uri? uri);
+typedef OnHtmlContentClippedAction = Function(bool isClipped);
 
 class HtmlContentViewer extends StatefulWidget {
 
@@ -34,6 +35,7 @@ class HtmlContentViewer extends StatefulWidget {
   final OnScrollHorizontalEndAction? onScrollHorizontalEnd;
   final OnPreviewEMLDelegateAction? onPreviewEMLDelegateAction;
   final OnDownloadAttachmentDelegateAction? onDownloadAttachmentDelegateAction;
+  final OnHtmlContentClippedAction? onHtmlContentClippedAction;
 
   const HtmlContentViewer({
     Key? key,
@@ -48,6 +50,7 @@ class HtmlContentViewer extends StatefulWidget {
     this.onScrollHorizontalEnd,
     this.onPreviewEMLDelegateAction,
     this.onDownloadAttachmentDelegateAction,
+    this.onHtmlContentClippedAction,
   }) : super(key: key);
 
   @override
@@ -57,6 +60,7 @@ class HtmlContentViewer extends StatefulWidget {
 class _HtmlContentViewState extends State<HtmlContentViewer> {
 
   static const double _minHeight = 100.0;
+  static const double _iOSHtmlContentMaxHeight = 22000.0;
   static const double _offsetHeight = 30.0;
 
   late InAppWebViewController _webViewController;
@@ -184,12 +188,25 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     Size oldContentSize,
     Size newContentSize
   ) async {
+    if (!mounted || _loadingBarNotifier.value) return;
+
     final maxContentHeight = math.max(oldContentSize.height, newContentSize.height);
-    log('_HtmlContentViewState::_onContentSizeChanged:maxContentHeight: $maxContentHeight');
-    if (maxContentHeight > _actualHeight && !_loadingBarNotifier.value && mounted) {
-      log('_HtmlContentViewState::_onContentSizeChanged:HEIGHT_UPDATED: $maxContentHeight');
+    if (maxContentHeight <= _actualHeight) return;
+
+    double currentHeight = maxContentHeight + _offsetHeight;
+
+    if (PlatformInfo.isIOS) {
+      final isClipped = currentHeight > _iOSHtmlContentMaxHeight;
+      if (isClipped) {
+        widget.onHtmlContentClippedAction?.call(true);
+      }
+      currentHeight = currentHeight.clamp(_minHeight, _iOSHtmlContentMaxHeight);
+    }
+
+    if (_actualHeight != currentHeight) {
+      log('_HtmlContentViewState::_onContentSizeChanged: currentHeight = $currentHeight');
       setState(() {
-        _actualHeight = maxContentHeight + _offsetHeight;
+        _actualHeight = currentHeight;
       });
     }
   }
@@ -205,55 +222,84 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   }
 
   void _onHandleContentSizeChangedEvent(List<dynamic> parameters) async {
-    final maxContentHeight = await _webViewController.evaluateJavascript(source: 'document.body.scrollHeight');
-    log('_HtmlContentViewState::_onHandleContentSizeChangedEvent:maxContentHeight: $maxContentHeight');
-    if (maxContentHeight is num && maxContentHeight > _actualHeight && !_loadingBarNotifier.value && mounted) {
-      log('_HtmlContentViewState::_onHandleContentSizeChangedEvent:HEIGHT_UPDATED: $maxContentHeight');
+    if (!mounted || _loadingBarNotifier.value) return;
+
+    final dynamic result = await _webViewController.evaluateJavascript(source: 'document.body.scrollHeight');
+    if (result is! num) return;
+
+    final double maxContentHeight = result.toDouble();
+    if (maxContentHeight <= _actualHeight) return;
+
+    double currentHeight = maxContentHeight + _offsetHeight;
+
+    if (PlatformInfo.isIOS) {
+      final bool isClipped = currentHeight > _iOSHtmlContentMaxHeight;
+      if (isClipped) {
+        widget.onHtmlContentClippedAction?.call(true);
+      }
+      currentHeight = currentHeight.clamp(_minHeight, _iOSHtmlContentMaxHeight);
+    }
+
+    if (_actualHeight != currentHeight) {
+      log('_HtmlContentViewState::_onHandleContentSizeChangedEvent: currentHeight = $currentHeight');
       setState(() {
-        _actualHeight = maxContentHeight + _offsetHeight;
+        _actualHeight = currentHeight;
       });
     }
   }
 
   Future<void> _getActualSizeHtmlViewer() async {
-    final listSize = await Future.wait([
-      _webViewController.evaluateJavascript(source: 'document.getElementsByClassName("tmail-content")[0].scrollWidth'),
-      _webViewController.evaluateJavascript(source: 'document.getElementsByClassName("tmail-content")[0].offsetWidth'),
-      _webViewController.evaluateJavascript(source: 'document.body.scrollHeight'),
+    if (!mounted) return;
+
+    final List<dynamic> listSize = await Future.wait([
+      _webViewController.evaluateJavascript(source: 'document.getElementsByClassName("tmail-content")[0]?.scrollWidth'),
+      _webViewController.evaluateJavascript(source: 'document.getElementsByClassName("tmail-content")[0]?.offsetWidth'),
+      _webViewController.evaluateJavascript(source: 'document.body?.scrollHeight'),
     ]);
-    log('_HtmlContentViewState::_getActualSizeHtmlViewer():listSize: $listSize');
-    Set<Factory<OneSequenceGestureRecognizer>>? newGestureRecognizers;
+
+    log('_HtmlContentViewState::_getActualSizeHtmlViewer(): listSize: $listSize');
+
     bool isScrollActivated = false;
+    Set<Factory<OneSequenceGestureRecognizer>>? newGestureRecognizers;
 
-    if (listSize[0] is num && listSize[1] is num) {
-      final scrollWidth = listSize[0] as num;
-      final offsetWidth = listSize[1] as num;
+    final double? scrollWidth = listSize[0] is num ? (listSize[0] as num).toDouble() : null;
+    final double? offsetWidth = listSize[1] is num ? (listSize[1] as num).toDouble() : null;
+    final double? scrollHeight = listSize[2] is num ? (listSize[2] as num).toDouble() : null;
+
+    if (scrollWidth != null && offsetWidth != null) {
       isScrollActivated = scrollWidth.round() == offsetWidth.round();
-
       if (!isScrollActivated && PlatformInfo.isIOS) {
         newGestureRecognizers = {
           Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer(duration: _longPressGestureDurationIOS)),
-          Factory<HorizontalDragGestureRecognizer>(() => HorizontalDragGestureRecognizer())
+          Factory<HorizontalDragGestureRecognizer>(() => HorizontalDragGestureRecognizer()),
         };
       }
     }
 
-    if (listSize[2] is num) {
-      final scrollHeight = listSize[2] as num;
-      if (mounted && scrollHeight > 0) {
+    if (scrollHeight != null && scrollHeight > 0) {
+      double currentHeight = scrollHeight + _offsetHeight;
+
+      if (PlatformInfo.isIOS) {
+        final bool isClipped = currentHeight > _iOSHtmlContentMaxHeight;
+        if (isClipped) {
+          widget.onHtmlContentClippedAction?.call(true);
+        }
+        currentHeight = currentHeight.clamp(_minHeight, _iOSHtmlContentMaxHeight);
+      }
+
+      if (_actualHeight != currentHeight || newGestureRecognizers != null) {
+        log('_HtmlContentViewState::_getActualSizeHtmlViewer: currentHeight = $currentHeight');
         setState(() {
-          _actualHeight = scrollHeight + _offsetHeight;
+          _actualHeight = currentHeight;
           if (newGestureRecognizers != null) {
             _gestureRecognizers = newGestureRecognizers;
           }
         });
       }
-    } else {
-      if (mounted && newGestureRecognizers != null) {
-        setState(() {
-          _gestureRecognizers = newGestureRecognizers!;
-        });
-      }
+    } else if (newGestureRecognizers != null) {
+      setState(() {
+        _gestureRecognizers = newGestureRecognizers!;
+      });
     }
 
     if (!isScrollActivated) {
