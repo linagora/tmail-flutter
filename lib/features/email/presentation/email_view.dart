@@ -482,7 +482,12 @@ class EmailView extends GetWidget<SingleEmailController> {
                                     bottom: 24,
                                   ),
                                   backgroundColor: Colors.transparent,
-                                  onTapActionCallback: () {},
+                                  onTapActionCallback: () =>
+                                    controller.onViewEntireMessage(
+                                      context: context,
+                                      emailContent: allEmailContents,
+                                      presentationEmail: presentationEmail,
+                                    ),
                                 ),
                               ],
                             );

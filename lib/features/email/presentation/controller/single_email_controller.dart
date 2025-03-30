@@ -54,6 +54,7 @@ import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/send_receipt_to_sender_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/view_entire_message_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_accept_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_maybe_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reject_state.dart';
@@ -64,6 +65,7 @@ import 'package:tmail_ui_user/features/email/domain/state/download_attachments_s
 import 'package:tmail_ui_user/features/email/domain/state/export_all_attachments_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/export_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/get_entire_message_as_document_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_html_content_from_attachment_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_star_state.dart';
@@ -79,6 +81,7 @@ import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_stat
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_all_attachments_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachments_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_entire_message_as_document_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/maybe_calendar_event_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_reject_interactor.dart';
@@ -2549,5 +2552,51 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void onHtmlContentClippedAction(bool isClipped) {
     log('SingleEmailController::onHtmlContentClippedAction:isClipped = $isClipped');
     isEmailContentClipped.value = isClipped;
+  }
+
+  Future<void> onViewEntireMessage({
+    required BuildContext context,
+    required PresentationEmail presentationEmail,
+    required String emailContent,
+  }) async {
+    final getEntireMessageAsDocumentInteractor = getBinding<GetEntireMessageAsDocumentInteractor>();
+    if (getEntireMessageAsDocumentInteractor == null) return;
+
+    final appLocalizations = AppLocalizations.of(context);
+    SmartDialog.showLoading(
+      msg: appLocalizations.loadingPleaseWait,
+      maskColor: Colors.black38,
+    );
+
+    final viewEntireMessageRequest = ViewEntireMessageRequest(
+      userName: userName ?? UserName(''),
+      presentationEmail: presentationEmail,
+      attachments: attachments,
+      emailContent: emailContent,
+      locale: Localizations.localeOf(context),
+      appLocalizations: appLocalizations,
+    );
+
+    final resultState = await getEntireMessageAsDocumentInteractor
+      .execute(viewEntireMessageRequest)
+      .last;
+
+    resultState.foldSuccess<GetEntireMessageAsDocumentSuccess>(
+      onSuccess: (success) {
+        SmartDialog.dismiss();
+
+        showDialogToPreviewEMLAttachment(
+          context,
+          EMLPreviewer(
+            id: presentationEmail.id?.asString ?? '',
+            title: presentationEmail.subject ?? '',
+            content: success.messageDocument,
+          ),
+        );
+      },
+      onFailure: (_) {
+        SmartDialog.dismiss();
+      }
+    );
   }
 }

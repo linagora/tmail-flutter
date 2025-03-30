@@ -58,6 +58,16 @@ extension PresentationEmailExtension on PresentationEmail {
     return '';
   }
 
+  String getSentAt(String newLocale, {String? pattern}) {
+    if (sentAt != null) {
+      return sentAt!.formatDateToLocal(
+        pattern: pattern ?? sentAt!.value.toLocal().toPattern(),
+        locale: newLocale,
+      );
+    }
+    return '';
+  }
+
   Set<EmailAddress> get listEmailAddressSender => from.asSet()..addAll(replyTo.asSet());
 
   PresentationEmail toggleSelect() {

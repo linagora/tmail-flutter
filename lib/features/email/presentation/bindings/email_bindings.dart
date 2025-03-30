@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment
 import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_entire_message_as_document_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_stored_email_state_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
@@ -134,6 +135,7 @@ class EmailBindings extends BaseBindings {
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => EmailLocalStorageDataSourceImpl(
       Get.find<LocalStorageManager>(),
+      Get.find<PreviewEmlFileUtils>(),
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => EmailSessionStorageDatasourceImpl(
       Get.find<SessionStorageManager>(),
@@ -182,6 +184,11 @@ class EmailBindings extends BaseBindings {
       Get.find<AccountRepository>(),
       Get.find<AuthenticationOIDCRepository>(),
       Get.find<CredentialRepository>()));
+    if (PlatformInfo.isIOS) {
+      Get.lazyPut(() => GetEntireMessageAsDocumentInteractor(
+        Get.find<EmailRepository>(),
+      ));
+    }
   }
 
   @override

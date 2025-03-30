@@ -34,6 +34,7 @@ import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/view_entire_message_request.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/eml_previewer.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
@@ -567,4 +568,9 @@ class EmailRepositoryImpl extends EmailRepository {
     outputFileName,
     accountRequest,
   );
+
+  @override
+  Future<String> generateEntireMessageAsDocument(ViewEntireMessageRequest entireMessageRequest) {
+    return emailDataSource[DataSourceType.local]!.generateEntireMessageAsDocument(entireMessageRequest);
+  }
 }
