@@ -190,6 +190,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final attachmentsViewState = RxMap<Id, Either<Failure, Success>>();
   final isEmailContentHidden = RxBool(false);
   final currentEmailLoaded = Rxn<EmailLoaded>();
+  final isEmailContentClipped = RxBool(false);
 
   EmailId? _currentEmailId;
   Identity? _identitySelected;
@@ -750,6 +751,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     blobCalendarEvent.value = null;
     emailUnsubscribe.value = null;
     _identitySelected = null;
+    isEmailContentClipped.value = false;
     if (isEmailClosing) {
       emailLoadedViewState.value = Right(UIState.idle);
       viewState.value = Right(UIState.idle);
@@ -2519,5 +2521,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } catch (e) {
       return '';
     }
+  }
+
+  void onHtmlContentClippedAction(bool isClipped) {
+    log('SingleEmailController::onHtmlContentClippedAction:isClipped = $isClipped');
+    isEmailContentClipped.value = isClipped;
   }
 }

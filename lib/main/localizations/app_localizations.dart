@@ -4597,4 +4597,18 @@ class AppLocalizations {
       name: 'exitFullscreen',
     );
   }
+
+  String get messageClipped {
+    return Intl.message(
+      '[Message clipped]',
+      name: 'messageClipped',
+    );
+  }
+
+  String get viewEntireMessage {
+    return Intl.message(
+      'View entire message',
+      name: 'viewEntireMessage',
+    );
+  }
 }
