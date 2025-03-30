@@ -26,6 +26,7 @@ import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/view_entire_message_request.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/eml_previewer.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/sending_queue/domain/model/sending_email.dart';
@@ -221,4 +222,6 @@ abstract class EmailDataSource {
     AccountRequest accountRequest,
     {CancelToken? cancelToken}
   );
+
+  Future<String> generateEntireMessageAsDocument(ViewEntireMessageRequest entireMessageRequest);
 }

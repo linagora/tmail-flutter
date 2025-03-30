@@ -3,6 +3,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/html_transformer/html_transform.dart';
 import 'package:core/utils/config/app_config_loader.dart';
 import 'package:core/utils/file_utils.dart';
+import 'package:core/utils/preview_eml_file_utils.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
@@ -276,6 +277,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => EmailLocalStorageDataSourceImpl(
       Get.find<LocalStorageManager>(),
+      Get.find<PreviewEmlFileUtils>(),
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => EmailSessionStorageDatasourceImpl(
       Get.find<SessionStorageManager>(),

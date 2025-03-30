@@ -1,6 +1,7 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/utils/file_utils.dart';
+import 'package:core/utils/preview_eml_file_utils.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/interactors_bindings.dart';
@@ -95,6 +96,7 @@ class SendEmailInteractorBindings extends InteractorsBindings {
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => EmailLocalStorageDataSourceImpl(
       Get.find<LocalStorageManager>(),
+      Get.find<PreviewEmlFileUtils>(),
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => EmailSessionStorageDatasourceImpl(
       Get.find<SessionStorageManager>(),

@@ -136,6 +136,7 @@ class ComposerBindings extends BaseBindings {
     ), tag: composerId);
     Get.lazyPut(() => EmailLocalStorageDataSourceImpl(
       Get.find<LocalStorageManager>(),
+      Get.find<PreviewEmlFileUtils>(),
       Get.find<CacheExceptionThrower>(),
     ), tag: composerId);
     Get.lazyPut(() => EmailSessionStorageDatasourceImpl(

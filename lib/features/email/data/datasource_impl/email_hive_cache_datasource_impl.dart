@@ -36,6 +36,7 @@ import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
+import 'package:tmail_ui_user/features/email/domain/model/view_entire_message_request.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/eml_previewer.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
 import 'package:tmail_ui_user/features/offline_mode/extensions/list_sending_email_hive_cache_extension.dart';
@@ -580,6 +581,11 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
   
   @override
   Future<DownloadedResponse> exportAllAttachments(AccountId accountId, EmailId emailId, String baseDownloadAllUrl, String outputFileName, AccountRequest accountRequest, {CancelToken? cancelToken}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<String> generateEntireMessageAsDocument(ViewEntireMessageRequest entireMessageRequest) {
     throw UnimplementedError();
   }
 }
