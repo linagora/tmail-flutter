@@ -2428,9 +2428,17 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         return;
       }
 
-      showModalSheetToPreviewEMLAttachment(
-        currentContext!,
-        success.emlPreviewer);
+      if (PlatformInfo.isAndroid) {
+        showModalSheetToPreviewEMLAttachment(
+          currentContext!,
+          success.emlPreviewer,
+        );
+      } if (PlatformInfo.isIOS) {
+        showDialogToPreviewEMLAttachment(
+          currentContext!,
+          success.emlPreviewer,
+        );
+      }
     }
   }
 
@@ -2454,6 +2462,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           initialChildSize: 1.0,
           builder: (context, ___) => EmailPreviewerDialogView(
             emlPreviewer: emlPreviewer,
+            imagePaths: imagePaths,
             onMailtoDelegateAction: openMailToLink,
             onPreviewEMLDelegateAction: (uri) => _openEMLPreviewer(context, uri),
             onDownloadAttachmentDelegateAction: (uri) =>
@@ -2461,6 +2470,20 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           ),
         );
       },
+    );
+  }
+
+  void showDialogToPreviewEMLAttachment(BuildContext context, EMLPreviewer emlPreviewer) {
+    Get.dialog(
+      EmailPreviewerDialogView(
+        emlPreviewer: emlPreviewer,
+        imagePaths: imagePaths,
+        onMailtoDelegateAction: openMailToLink,
+        onPreviewEMLDelegateAction: (uri) => _openEMLPreviewer(context, uri),
+        onDownloadAttachmentDelegateAction: (uri) =>
+            _downloadAttachmentInEMLPreview(context, uri),
+      ),
+      barrierColor: AppColor.colorDefaultCupertinoActionSheet,
     );
   }
 
