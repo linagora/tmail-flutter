@@ -1127,6 +1127,13 @@ class ComposerController extends BaseController
     emailContent = await _composerRepository.removeCollapsedExpandedSignatureEffect(
       emailContent: emailContent,
     );
+    if (emailIdEditing != null &&
+        savedActionType == EmailActionType.compose &&
+        currentEmailActionType == EmailActionType.reopenComposerBrowser) {
+      emailContent = await _composerRepository.removeStyleLazyLoadDisplayInlineImages(
+        emailContent: emailContent,
+      );
+    }
 
     final savedEmailDraft = SavedEmailDraft(
       subject: subjectEmail.value ?? '',

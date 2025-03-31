@@ -23,4 +23,6 @@ abstract class HtmlDataSource {
   });
 
   Future<String> removeCollapsedExpandedSignatureEffect({required String emailContent});
+
+  Future<String> removeStyleLazyLoadDisplayInlineImages({required String emailContent});
 }

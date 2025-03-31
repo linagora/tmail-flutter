@@ -27,6 +27,7 @@ class ComposerDataSourceImpl extends ComposerDataSource {
         cid,
         fileInfo.fileExtension,
         fileInfo.fileName,
+        fileInfo.mimeType,
         filePath: fileInfo.filePath,
         maxWidth: maxWidth,
         compress: compress);

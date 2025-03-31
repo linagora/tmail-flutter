@@ -11,6 +11,7 @@ class StandardizeHtmlSanitizingTransformers extends TextTransformer {
     'bgcolor',
     'id',
     'class',
+    'data-mimetype',
   ];
 
   static const List<String> mailAllowedHtmlTags = [
