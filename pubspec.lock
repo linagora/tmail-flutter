@@ -312,6 +312,13 @@ packages:
       relative: true
     source: path
     version: "1.0.0+1"
+  cozy:
+    dependency: "direct main"
+    description:
+      path: cozy
+      relative: true
+    source: path
+    version: "0.1.0"
   cross_file:
     dependency: transitive
     description:
@@ -1399,7 +1406,7 @@ packages:
     description:
       path: "."
       ref: master
-      resolved-ref: "0f666ca14fd4f0710775ca3de03cde73b21de7d6"
+      resolved-ref: "083cbf597cce8bedcc7ccda76a0c49eb06a71e9e"
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
     version: "0.0.1"

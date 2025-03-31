@@ -51,6 +51,9 @@ dependencies:
   server_settings:
     path: server_settings
 
+  cozy:
+    path: cozy
+
   ### Dependencies from git ###
   rich_text_composer:
     git:
