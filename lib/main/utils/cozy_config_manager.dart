@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:js_interop';
 
-import 'package:core/utils/app_logger.dart';
 import 'package:tmail_ui_user/main/utils/cozy_contact.dart';
 import 'package:tmail_ui_user/main/utils/cozy_js_interop.dart';
 import 'package:universal_html/js_util.dart';
@@ -19,7 +18,7 @@ class CozyConfigManager {
 
   bool get isInsideCozy {
     _isInsideCozy = isInsideCozyJs() ?? false;
-    log('isInsideCozy: $_isInsideCozy'); 
+    print('isInsideCozy: $_isInsideCozy'); 
     return _isInsideCozy!;
   }
 
@@ -28,7 +27,7 @@ class CozyConfigManager {
       setupBridgeJs();
       startHistorySyncingJs();
     } catch (e) {
-      log('Error initializing Cozy bridge: $e');
+      print('Error initializing Cozy bridge: $e');
     }
   }
 
@@ -40,7 +39,7 @@ class CozyConfigManager {
         .map((contact) => CozyContact.fromJson(jsonDecode(stringify(contact))))
         .toList();
     } catch (e) {
-      log('Error getting cozy contacts: $e');
+      print('Error getting cozy contacts: $e');
       return [];
     }
   }
@@ -54,7 +53,7 @@ class CozyConfigManager {
         _ => false,
       };
     } catch (e) {
-      log('Error getting cozy feature flag: $e');
+      print('Error getting cozy feature flag: $e');
       return null;
     }
   }

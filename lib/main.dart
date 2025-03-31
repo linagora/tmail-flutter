@@ -68,12 +68,12 @@ class _TMailAppState extends State<TMailApp> {
         
         // Get contacts example
         cozyManager.getCozyContacts().then((contacts) {
-          log('Contacts: $contacts');
+          print('Contacts: $contacts');
         });
         
         // Get flag example
         cozyManager.getCozyFeatureFlag('cozy.search.enabled').then((flag) {
-          log('Search enabled: $flag');
+          print('Search enabled: $flag');
         });
       }
     }
