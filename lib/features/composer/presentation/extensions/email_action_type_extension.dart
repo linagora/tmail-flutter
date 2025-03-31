@@ -75,11 +75,11 @@ extension EmailActionTypeExtension on EmailActionType {
 
         final subject = presentationEmail.subject?.escapeLtGtHtmlString() ?? '';
         final receivedAt = presentationEmail.receivedAt;
-        final fromEmailAddress = presentationEmail.from.listEmailAddressToString(isFullEmailAddress: true);
-        final toEmailAddress = presentationEmail.to.listEmailAddressToString(isFullEmailAddress: true);
-        final ccEmailAddress = presentationEmail.cc.listEmailAddressToString(isFullEmailAddress: true);
-        final bccEmailAddress = presentationEmail.bcc.listEmailAddressToString(isFullEmailAddress: true);
-        final replyToEmailAddress = presentationEmail.replyTo.listEmailAddressToString(isFullEmailAddress: true);
+        final fromEmailAddress = presentationEmail.from.toEscapeHtmlStringUseCommaSeparator();
+        final toEmailAddress = presentationEmail.to.toEscapeHtmlStringUseCommaSeparator();
+        final ccEmailAddress = presentationEmail.cc.toEscapeHtmlStringUseCommaSeparator();
+        final bccEmailAddress = presentationEmail.bcc.toEscapeHtmlStringUseCommaSeparator();
+        final replyToEmailAddress = presentationEmail.replyTo.toEscapeHtmlStringUseCommaSeparator();
 
         if (subject.isNotEmpty) {
           headerQuoted = headerQuoted
