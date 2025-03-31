@@ -52,7 +52,6 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/save_composer_ca
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_mobile_tablet_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/controller/rich_text_web_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/auto_create_tag_for_recipients_extension.dart';
-import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_draft_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_outbox_mailbox_id_for_composer_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/get_sent_mailbox_id_for_composer_extension.dart';
@@ -634,16 +633,6 @@ class ComposerController extends BaseController
     if (screenDisplayMode.value.isNotContentVisible()) {
       await setupSelectedIdentityWithoutApplySignature();
     }
-  }
-
-  void initSubjectEmail({
-    required PresentationEmail presentationEmail,
-    required EmailActionType actionType
-  }) {
-    final subjectEmail = presentationEmail.getEmailTitle().trim();
-    final newSubject = actionType.getSubjectComposer(currentContext, subjectEmail);
-    setSubjectEmail(newSubject);
-    subjectEmailInputController.text = newSubject;
   }
 
   void initAttachmentsAndInlineImages({
