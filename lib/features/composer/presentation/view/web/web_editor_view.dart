@@ -7,11 +7,9 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
 import 'package:model/email/email_action_type.dart';
-import 'package:tmail_ui_user/features/composer/domain/state/restore_email_inline_images_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/editor_view_mixin.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/web_editor_widget.dart';
 import 'package:tmail_ui_user/features/email/domain/state/get_email_content_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/transform_html_email_content_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
@@ -115,12 +113,15 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
             onInitialContentLoadComplete: onInitialContentLoadComplete,
           ),
           (success) {
-            if (success is GetEmailContentLoading || success is RestoringEmailInlineImages) {
+            if (success is GetEmailContentLoading) {
               return const CupertinoLoadingWidget(padding: EdgeInsets.all(16.0));
             } else {
-              var newContent = success is GetEmailContentSuccess
-                ? success.htmlEmailContent
-                : HtmlExtension.editorStartTags;
+              var newContent = '';
+              if (success is GetEmailContentSuccess) {
+                newContent = success.htmlEmailContent;
+              } else if (success is GetEmailContentFromCacheSuccess) {
+                newContent = success.htmlEmailContent;
+              }
               if (newContent.isEmpty) {
                 newContent = HtmlExtension.editorStartTags;
               }
@@ -181,14 +182,14 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
             );
           },
           (success) {
-            if (success is TransformHtmlEmailContentLoading) {
+            if (success is GetEmailContentLoading) {
               return const CupertinoLoadingWidget(padding: EdgeInsets.all(16.0));
             } else {
               final emailContentQuoted = getEmailContentQuotedAsHtml(
                 locale: Localizations.localeOf(context),
                 appLocalizations: AppLocalizations.of(context),
-                emailContent: success is TransformHtmlEmailContentSuccess
-                  ? success.htmlContent
+                emailContent: success is GetEmailContentSuccess
+                  ? success.htmlEmailContent
                   : '',
                 emailActionType: arguments!.emailActionType,
                 presentationEmail: arguments!.presentationEmail!

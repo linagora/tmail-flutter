@@ -19,6 +19,8 @@ class HideDraftSignatureTransformer extends DomTransformer {
       final currentStyle = signature.attributes['style']?.trim();
       if (currentStyle == null) {
         signature.attributes['style'] = 'display: none;';
+      } else if (currentStyle.contains('display: block;') == true) {
+        signature.attributes['style'] = currentStyle.replaceFirst('display: block;', 'display: none;');
       } else if (currentStyle.endsWith(';')) {
         signature.attributes['style'] = '$currentStyle display: none;';
       } else {

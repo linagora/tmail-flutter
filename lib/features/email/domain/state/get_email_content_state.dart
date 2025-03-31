@@ -31,13 +31,13 @@ class GetEmailContentFromCacheSuccess extends UIState {
   final String htmlEmailContent;
   final List<Attachment>? attachments;
   final List<Attachment>? inlineImages;
-  final Email? emailCurrent;
+  final Email emailCurrent;
 
   GetEmailContentFromCacheSuccess({
     required this.htmlEmailContent,
+    required this.emailCurrent,
     this.attachments,
     this.inlineImages,
-    this.emailCurrent
   });
 
   @override

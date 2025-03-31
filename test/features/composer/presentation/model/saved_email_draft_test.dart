@@ -26,9 +26,9 @@ void main() {
       final props = savedEmailDraft.props;
       
       // assert
-      expect(props[2], equals({0: savedEmailDraft.toRecipients}));
-      expect(props[3], equals({1: savedEmailDraft.ccRecipients}));
-      expect(props[4], equals({2: savedEmailDraft.bccRecipients}));
+      expect(props[2], equals(savedEmailDraft.toRecipients));
+      expect(props[3], equals(savedEmailDraft.ccRecipients));
+      expect(props[4], equals(savedEmailDraft.bccRecipients));
     });
 
     test(
@@ -123,11 +123,11 @@ void main() {
           attachments: [],
           hasReadReceipt: false
       );
-      final hashCodeBeforeChange = savedEmailDraft.hashCode;
+      final hashCodeBeforeChange = savedEmailDraft.asString().hashCode;
 
       // act
       listToRecipients.add(EmailAddress('to name 2', 'to email 2'));
-      final hashCodeAfterChange = savedEmailDraft.hashCode;
+      final hashCodeAfterChange = savedEmailDraft.asString().hashCode;
 
       // assert
       expect(hashCodeBeforeChange, isNot(hashCodeAfterChange));
@@ -163,7 +163,10 @@ void main() {
       );
 
       // assert
-      expect(savedEmailDraft.hashCode, equals(savedEmailDraft2.hashCode));
+      expect(
+        savedEmailDraft.asString().hashCode,
+        equals(savedEmailDraft2.asString().hashCode),
+      );
     });
   });
 }
