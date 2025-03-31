@@ -1,8 +1,14 @@
+import 'dart:convert';
+
 import 'package:equatable/equatable.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:model/email/attachment.dart';
 
+part 'saved_email_draft.g.dart';
+
+@JsonSerializable(includeIfNull: false, explicitToJson: true)
 class SavedEmailDraft with EquatableMixin {
   final String content;
   final String subject;
@@ -28,29 +34,20 @@ class SavedEmailDraft with EquatableMixin {
     this.isMarkAsImportant = false,
   });
 
-  factory SavedEmailDraft.empty() {
-    return SavedEmailDraft(
-      subject: '',
-      content: '',
-      toRecipients: {},
-      ccRecipients: {},
-      bccRecipients: {},
-      replyToRecipients: {},
-      attachments: [],
-      identity: null,
-      hasReadReceipt: false,
-    );
-  }
+  factory SavedEmailDraft.fromJson(Map<String, dynamic> json) => _$SavedEmailDraftFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SavedEmailDraftToJson(this);
+
+  String asString() => jsonEncode(toJson());
 
   @override
   List<Object?> get props => [
     content,
     subject,
-    // Prevent identical Set<EmailAddress>
-    {0: toRecipients},
-    {1: ccRecipients},
-    {2: bccRecipients},
-    {3: replyToRecipients},
+    toRecipients,
+    ccRecipients,
+    bccRecipients,
+    replyToRecipients,
     attachments,
     identity,
     hasReadReceipt,

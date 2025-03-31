@@ -329,6 +329,7 @@ class ComposerBindings extends BaseBindings {
       Get.find<CreateNewAndSendEmailInteractor>(tag: composerId),
       Get.find<CreateNewAndSaveEmailToDraftsInteractor>(tag: composerId),
       Get.find<PrintEmailInteractor>(tag: composerId),
+      Get.find<ComposerRepository>(tag: composerId),
       composerId: composerId,
       composerArgs: composerArguments,
     ), tag: composerId);

@@ -619,7 +619,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     if (emailSupervisorController.presentationEmailsLoaded.length > ThreadConstants.defaultLimit.value.toInt()) {
       emailSupervisorController.popFirstEmailQueue();
     }
-    emailSupervisorController.popEmailQueue(success.emailCurrent?.id);
+    emailSupervisorController.popEmailQueue(success.emailCurrent.id);
 
     currentEmailLoaded.value = EmailLoaded(
       htmlContent: success.htmlEmailContent,
@@ -629,7 +629,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     );
     emailSupervisorController.pushEmailQueue(currentEmailLoaded.value!);
 
-    if (success.emailCurrent?.id == currentEmail?.id) {
+    if (success.emailCurrent.id == currentEmail?.id) {
       attachments.value = success.attachments ?? [];
       attachmentsViewState.value = {
         for (var attachment in attachments.where((item) => item.blobId != null))
@@ -645,13 +645,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         emailContents.value = success.htmlEmailContent;
       }
 
-      final isShowMessageReadReceipt = success.emailCurrent?.hasReadReceipt(mailboxDashBoardController.mapMailboxById) == true;
+      final isShowMessageReadReceipt = success.emailCurrent.hasReadReceipt(mailboxDashBoardController.mapMailboxById) == true;
       if (isShowMessageReadReceipt) {
         _handleReadReceipt();
       }
 
-      if (currentEmail?.isSubscribed == false && success.emailCurrent?.hasListUnsubscribe == true) {
-        _handleUnsubscribe(success.emailCurrent!.listUnsubscribe);
+      if (currentEmail?.isSubscribed == false && success.emailCurrent.hasListUnsubscribe == true) {
+        _handleUnsubscribe(success.emailCurrent.listUnsubscribe);
       } else {
         emailUnsubscribe.value = null;
       }

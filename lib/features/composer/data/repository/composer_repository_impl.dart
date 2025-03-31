@@ -63,7 +63,7 @@ class ComposerRepositoryImpl extends ComposerRepository {
     emailContent = tupleContentInlineAttachments.value1;
     emailAttachments.addAll(tupleContentInlineAttachments.value2);
 
-    emailContent = await _removeCollapsedExpandedSignatureEffect(emailContent: emailContent);
+    emailContent = await removeCollapsedExpandedSignatureEffect(emailContent: emailContent);
 
     final userAgent = await _applicationManager.generateApplicationUserAgent();
     final emailBodyPartId = PartId(_uuid.v1());
@@ -104,7 +104,8 @@ class ComposerRepositoryImpl extends ComposerRepository {
     }
   }
 
-  Future<String> _removeCollapsedExpandedSignatureEffect({required String emailContent}) {
+  @override
+  Future<String> removeCollapsedExpandedSignatureEffect({required String emailContent}) {
     try {
       return _htmlDataSource.removeCollapsedExpandedSignatureEffect(emailContent: emailContent);
     } catch (e) {

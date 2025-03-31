@@ -190,23 +190,24 @@ class HtmlAnalyzer {
   }
 
   Future<String> removeCollapsedExpandedSignatureEffect({required String emailContent}) async {
-    log('HtmlAnalyzer::removeCollapsedExpandedSignatureEffect: BEFORE = $emailContent');
-    final document = parse(emailContent);
-    final signatureElements = document.querySelectorAll('div.tmail-signature');
-    await Future.wait(signatureElements.map((signatureTag) async {
-      final signatureChildren = signatureTag.children;
-      for (var child in signatureChildren) {
-        log('HtmlAnalyzer::removeCollapsedExpandedSignatureEffect: CHILD = ${child.outerHtml}');
-        if (child.attributes['class']?.contains('tmail-signature-button') == true) {
-          child.remove();
-        } else if (child.attributes['class']?.contains('tmail-signature-content') == true) {
-          signatureTag.innerHtml = child.innerHtml;
+    try {
+      final document = parse(emailContent);
+      final signatureElements = document.querySelectorAll('div.tmail-signature');
+      await Future.wait(signatureElements.map((signatureTag) async {
+        final signatureChildren = signatureTag.children;
+        for (var child in signatureChildren) {
+          if (child.attributes['class']?.contains('tmail-signature-button') == true) {
+            child.remove();
+          } else if (child.attributes['class']?.contains('tmail-signature-content') == true) {
+            signatureTag.innerHtml = child.innerHtml;
+          }
         }
-      }
-    }));
-    final newContent = document.body?.innerHtml ?? emailContent;
-    log('HtmlAnalyzer::removeCollapsedExpandedSignatureEffect: AFTER = $newContent');
-    return newContent;
+      }));
+      return document.body?.innerHtml ?? emailContent;
+    } catch (e) {
+      logError('HtmlAnalyzer::removeCollapsedExpandedSignatureEffect:Exception = $e');
+      return emailContent;
+    }
   }
 
   Future<(Attachment attachment, String taskId)?> _retrieveAttachmentFromUpload({

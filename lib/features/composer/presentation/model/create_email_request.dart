@@ -41,6 +41,9 @@ class CreateEmailRequest with EquatableMixin {
   final Uri? uploadUri;
   final int? composerIndex;
   final String? composerId;
+  final int? savedDraftHash;
+  final EmailActionType? savedActionType;
+  final EmailId? savedEmailDraftId;
 
   CreateEmailRequest({
     required this.session,
@@ -71,6 +74,9 @@ class CreateEmailRequest with EquatableMixin {
     this.uploadUri,
     this.composerIndex,
     this.composerId,
+    this.savedDraftHash,
+    this.savedActionType,
+    this.savedEmailDraftId,
   });
 
   @override
@@ -103,5 +109,8 @@ class CreateEmailRequest with EquatableMixin {
     uploadUri,
     composerIndex,
     composerId,
+    savedDraftHash,
+    savedActionType,
+    savedEmailDraftId,
   ];
 }

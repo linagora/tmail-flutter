@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:core/domain/exceptions/string_exception.dart';
+import 'package:html/parser.dart';
 import 'package:http_parser/http_parser.dart';
 
 class StringConvert {
@@ -105,6 +106,18 @@ class StringConvert {
     } catch (e) {
       logError('StringConvert::getMimeTypeFromBase64ImageTag:Exception = $e');
       return null;
+    }
+  }
+
+  static String getContentOriginal(String content) {
+    try {
+      final emailDocument = parse(content);
+      final contentOriginal = emailDocument.body?.innerHtml ?? content;
+      log('StringConvert::getContentOriginal:contentOriginal = $contentOriginal');
+      return contentOriginal;
+    } catch (e) {
+      logError('StringConvert::getContentOriginal:Exception = $e');
+      return content;
     }
   }
 }

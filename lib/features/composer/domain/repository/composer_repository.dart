@@ -15,4 +15,6 @@ abstract class ComposerRepository {
   Future<UploadAttachment> uploadAttachment(FileInfo fileInfo, Uri uploadUri, {CancelToken? cancelToken});
 
   Future<String?> downloadImageAsBase64(String url, String cid, FileInfo fileInfo, {double? maxWidth, bool? compress});
+
+  Future<String> removeCollapsedExpandedSignatureEffect({required String emailContent});
 }

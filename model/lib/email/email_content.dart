@@ -1,10 +1,8 @@
+import 'package:core/utils/string_convert.dart';
 import 'package:equatable/equatable.dart';
 import 'package:model/email/email_content_type.dart';
 
 class EmailContent with EquatableMixin {
-
-  static const defaultHtmlTagsWrapContent = '<html><head></head><body></body></html>';
-
   final String content;
   final EmailContentType type;
 
@@ -23,28 +21,6 @@ extension EmailContentExtension on EmailContent {
           .replaceAll('\n', '<br/>')
           .replaceAll('\n\n', '<br/>');
     }
-    final newContent = _getContentOriginal(content);
-    return newContent;
-  }
-
-  String _getContentOriginal(String content) {
-    if (content == EmailContent.defaultHtmlTagsWrapContent ||
-        content.trim().isEmpty) {
-      return '';
-    }
-
-    const firstTags = '<html><head></head><body>';
-    const latestTags = '</body></html>';
-    if (content.startsWith(firstTags) && content.endsWith(latestTags)) {
-      const firstIndex = firstTags.length;
-      final latestIndex = content.length - latestTags.length;
-
-      if (latestIndex > firstIndex) {
-        final contentOriginal = content.substring(firstIndex, latestIndex);
-        return contentOriginal;
-      }
-    }
-
-    return content;
+    return StringConvert.getContentOriginal(content);
   }
 }

@@ -127,9 +127,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             listEmailAddress: controller.listToEmailAddress,
                             imagePaths: controller.imagePaths,
                             maxWidth: constraints.maxWidth,
-                            minInputLengthAutocomplete: controller
-                              .mailboxDashBoardController
-                              .minInputLengthAutocomplete,
+                            minInputLengthAutocomplete: controller.minInputLengthAutocomplete,
                             fromState: controller.fromRecipientState.value,
                             ccState: controller.ccRecipientState.value,
                             bccState: controller.bccRecipientState.value,
@@ -157,9 +155,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                 listEmailAddress: controller.listCcEmailAddress,
                                 imagePaths: controller.imagePaths,
                                 maxWidth: constraints.maxWidth,
-                                minInputLengthAutocomplete: controller
-                                  .mailboxDashBoardController
-                                  .minInputLengthAutocomplete,
+                                minInputLengthAutocomplete: controller.minInputLengthAutocomplete,
                                 expandMode: controller.ccAddressExpandMode.value,
                                 controller: controller.ccEmailAddressController,
                                 focusNode: controller.ccAddressFocusNode,
@@ -186,9 +182,7 @@ class ComposerView extends GetWidget<ComposerController> {
                                 listEmailAddress: controller.listBccEmailAddress,
                                 imagePaths: controller.imagePaths,
                                 maxWidth: constraints.maxWidth,
-                                minInputLengthAutocomplete: controller
-                                  .mailboxDashBoardController
-                                  .minInputLengthAutocomplete,
+                                minInputLengthAutocomplete: controller.minInputLengthAutocomplete,
                                 expandMode: controller.bccAddressExpandMode.value,
                                 controller: controller.bccEmailAddressController,
                                 focusNode: controller.bccAddressFocusNode,
@@ -320,9 +314,7 @@ class ComposerView extends GetWidget<ComposerController> {
                             listEmailAddress: controller.listToEmailAddress,
                             imagePaths: controller.imagePaths,
                             maxWidth: constraints.maxWidth,
-                            minInputLengthAutocomplete: controller
-                              .mailboxDashBoardController
-                              .minInputLengthAutocomplete,
+                            minInputLengthAutocomplete: controller.minInputLengthAutocomplete,
                             fromState: controller.fromRecipientState.value,
                             ccState: controller.ccRecipientState.value,
                             bccState: controller.bccRecipientState.value,
@@ -349,9 +341,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               listEmailAddress: controller.listCcEmailAddress,
                               imagePaths: controller.imagePaths,
                               maxWidth: constraints.maxWidth,
-                              minInputLengthAutocomplete: controller
-                                .mailboxDashBoardController
-                                .minInputLengthAutocomplete,
+                              minInputLengthAutocomplete: controller.minInputLengthAutocomplete,
                               expandMode: controller.ccAddressExpandMode.value,
                               controller: controller.ccEmailAddressController,
                               focusNode: controller.ccAddressFocusNode,
@@ -373,9 +363,7 @@ class ComposerView extends GetWidget<ComposerController> {
                               listEmailAddress: controller.listBccEmailAddress,
                               imagePaths: controller.imagePaths,
                               maxWidth: constraints.maxWidth,
-                              minInputLengthAutocomplete: controller
-                                .mailboxDashBoardController
-                                .minInputLengthAutocomplete,
+                              minInputLengthAutocomplete: controller.minInputLengthAutocomplete,
                               expandMode: controller.bccAddressExpandMode.value,
                               controller: controller.bccEmailAddressController,
                               focusNode: controller.bccAddressFocusNode,
