@@ -169,7 +169,7 @@ extension SetupEmailContentExtension on ComposerController {
 
         if (content.trim().isEmpty) {
           emailContentsViewState.value = Left(GetEmailContentFailure(EmptyEmailContentException()));
-        } else if (displayMode.isNotContentVisible()) {
+        } else if (displayMode.isNotContentVisible() && inlineImages.isEmpty) {
           final successState = GetEmailContentSuccess(htmlEmailContent: content);
           setTextEditorWeb(content);
           emailContentsViewState.value = Right(successState);
