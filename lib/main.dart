@@ -2,6 +2,7 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/build_utils.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:cozy/cozy_config/cozy_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -15,6 +16,7 @@ import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/pages/app_pages.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:worker_manager/worker_manager.dart';
@@ -59,6 +61,15 @@ class _TMailAppState extends State<TMailApp> {
     if (PlatformInfo.isMobile) {
       _deepLinksManager = getBinding<DeepLinksManager>();
       _deepLinksManager?.registerDeepLinkStreamListener();
+    } else if (AppConfig.isCozyIntegrationEnabled) {
+      final cozyConfig = CozyConfig();
+  
+      cozyConfig.manager.injectCozyScript().then((_) async {
+        final isInsideCozy = await cozyConfig.isInsideCozy;
+        if (!isInsideCozy) return;
+
+        await cozyConfig.manager.initialize();
+      });
     }
   }
 

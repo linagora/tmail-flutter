@@ -71,4 +71,6 @@ class AppConfig {
   static bool get isSaasPlatForm => _platformEnv.toLowerCase() == saasPlatform;
 
   static bool get isWebSocketEchoPingEnabled => dotenv.get('WS_ECHO_PING', fallback: 'false') == 'true';
+
+  static bool get isCozyIntegrationEnabled => dotenv.get('COZY_INTEGRATION', fallback: 'false') == 'true';
 }
