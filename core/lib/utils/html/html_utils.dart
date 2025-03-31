@@ -99,13 +99,10 @@ class HtmlUtils {
     required String base64Data,
     required String mimeType
   }) {
-    log('HtmlUtils::convertBase64ToImageResourceData:');
-    mimeType = validateHtmlImageResourceMimeType(mimeType);
     if (!base64Data.endsWith('==')) {
       base64Data.append('==');
     }
-    final imageResource = 'data:$mimeType;base64,$base64Data';
-    return imageResource;
+    return 'data:$mimeType;base64,$base64Data';
   }
 
   static String generateHtmlDocument({

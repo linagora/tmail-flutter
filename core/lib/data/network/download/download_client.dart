@@ -39,6 +39,7 @@ class DownloadClient {
       String cid,
       String fileExtension,
       String fileName,
+      String mimeType,
       {
         String? filePath,
         double? maxWidth,
@@ -58,10 +59,14 @@ class DownloadClient {
         return null;
       }
 
+      final imageType = mimeType == 'application/octet-stream'
+        ? 'image/$fileExtension'
+        : mimeType;
+
       if (PlatformInfo.isWeb) {
         final base64Uri = encodeToBase64Uri({
           'bytesData': bytesData,
-          'mimeType': 'image/$fileExtension',
+          'mimeType': imageType,
           'cid': cid,
           'fileName': fileName,
           'maxWidth': maxWidth
@@ -76,7 +81,7 @@ class DownloadClient {
 
           final base64Uri = await compute(encodeToBase64Uri, {
             'bytesData': bytesDataCompressed,
-            'mimeType': 'image/$fileExtension',
+            'mimeType': imageType,
             'cid': cid,
             'fileName': fileName,
             'maxWidth': maxWidth
@@ -86,7 +91,7 @@ class DownloadClient {
         }  else {
           final base64Uri = await compute(encodeToBase64Uri, {
             'bytesData': bytesData,
-            'mimeType': 'image/$fileExtension',
+            'mimeType': imageType,
             'cid': cid,
             'fileName': fileName,
             'maxWidth': maxWidth
@@ -113,7 +118,8 @@ class DownloadClient {
     if (fileName.contains('.')) {
       fileName = fileName.split('.').first;
     }
-    final base64Uri = '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" alt="$fileName" id="cid:$cid" style="max-width: $maxWidth;" />';
+    mimeType = HtmlUtils.validateHtmlImageResourceMimeType(mimeType);
+    final base64Uri = '<img src="${HtmlUtils.convertBase64ToImageResourceData(base64Data: base64Data, mimeType: mimeType)}" alt="$fileName" style="max-width: $maxWidth;" data-mimetype="$mimeType" id="cid:$cid" />';
     return base64Uri;
   }
 }

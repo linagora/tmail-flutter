@@ -62,4 +62,13 @@ class HtmlDataSourceImpl extends HtmlDataSource {
       );
     }).catchError(_exceptionThrower.throwException);
   }
+
+  @override
+  Future<String> removeStyleLazyLoadDisplayInlineImages({required String emailContent}) {
+    return Future.sync(() async {
+      return await _htmlAnalyzer.removeStyleLazyLoadDisplayInlineImages(
+        emailContent: emailContent,
+      );
+    }).catchError(_exceptionThrower.throwException);
+  }
 }

@@ -237,4 +237,30 @@ class HtmlAnalyzer {
       return null;
     }
   }
+
+  Future<String> removeStyleLazyLoadDisplayInlineImages({required String emailContent}) async {
+    try {
+      final document = parse(emailContent);
+      final imgElements = document.querySelectorAll('img[style], img[loading]');
+      await Future.wait(imgElements.map((img) async {
+        String? style = img.attributes['style'];
+        if (style != null) {
+          style = style.replaceAll(RegExp(r'display\s*:\s*inline;?'), '').trim();
+          if (style.isEmpty) {
+            img.attributes.remove('style');
+          } else {
+            img.attributes['style'] = style;
+          }
+        }
+
+        if (img.attributes['loading'] == 'lazy') {
+          img.attributes.remove('loading');
+        }
+      }));
+      return document.body?.innerHtml ?? emailContent;
+    } catch (e) {
+      logError('HtmlAnalyzer::removeStyleLazyLoadDisplayInlineImages:Exception = $e');
+      return emailContent;
+    }
+  }
 }

@@ -113,4 +113,14 @@ class ComposerRepositoryImpl extends ComposerRepository {
       return Future.value(emailContent);
     }
   }
+
+  @override
+  Future<String> removeStyleLazyLoadDisplayInlineImages({required String emailContent}) {
+    try {
+      return _htmlDataSource.removeStyleLazyLoadDisplayInlineImages(emailContent: emailContent);
+    } catch (e) {
+      logError('ComposerRepositoryImpl::removeStyleLazyLoadDisplayInlineImages: Exception: $e');
+      return Future.value(emailContent);
+    }
+  }
 }

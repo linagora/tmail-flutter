@@ -17,4 +17,6 @@ abstract class ComposerRepository {
   Future<String?> downloadImageAsBase64(String url, String cid, FileInfo fileInfo, {double? maxWidth, bool? compress});
 
   Future<String> removeCollapsedExpandedSignatureEffect({required String emailContent});
+
+  Future<String> removeStyleLazyLoadDisplayInlineImages({required String emailContent});
 }

@@ -45,12 +45,13 @@ class ImageTransformer extends DomTransformer {
         final src = imageElement.attributes['src'];
 
         if (src == null) return;
-
+        final mimeType = imageElement.attributes['data-mimetype'];
         if (src.startsWith('cid:') && mapUrlDownloadCID != null) {
           final imageBase64 = await _convertCidToBase64Image(
             dioClient: dioClient,
             mapUrlDownloadCID: mapUrlDownloadCID,
-            imageSource: src
+            imageSource: src,
+            mimeType: mimeType,
           );
           imageElement.attributes['src'] = imageBase64 ?? src;
           imageElement.attributes['id'] ??= src;
@@ -68,7 +69,8 @@ class ImageTransformer extends DomTransformer {
   Future<String?> _convertCidToBase64Image({
     required DioClient dioClient,
     required Map<String, String> mapUrlDownloadCID,
-    required String imageSource
+    required String imageSource,
+    required String? mimeType,
   }) async {
     final cid = imageSource.replaceFirst('cid:', '').trim();
     final urlDownloadCid = mapUrlDownloadCID[cid];
@@ -79,7 +81,8 @@ class ImageTransformer extends DomTransformer {
     final imgBase64Uri = await loadAsyncNetworkImageToBase64(
       dioClient,
       compressFileUtils,
-      urlDownloadCid
+      urlDownloadCid,
+      mimeType,
     );
 
     if (imgBase64Uri.isEmpty) return null;
@@ -90,7 +93,8 @@ class ImageTransformer extends DomTransformer {
   Future<String> loadAsyncNetworkImageToBase64(
       DioClient dioClient,
       CompressFileUtils compressFileUtils,
-      String imageUrl
+      String imageUrl,
+      String? mimeType,
   ) async {
     try {
       var responseData = await dioClient.get(
@@ -99,10 +103,16 @@ class ImageTransformer extends DomTransformer {
 
       if (responseData != null) {
         if (PlatformInfo.isWeb) {
-          return encodeToBase64Uri(responseData);
+          return encodeToBase64Uri({
+            'bytesData': responseData,
+            'mimeType': mimeType,
+          });
         } else {
           final bytesCompressed = await compressFileUtils.compressBytesDataImage(responseData);
-          final base64Uri = await compute(encodeToBase64Uri, bytesCompressed);
+          final base64Uri = await compute(encodeToBase64Uri, {
+            'bytesData': bytesCompressed,
+            'mimeType': mimeType,
+          });
           return base64Uri;
         }
       } else {
@@ -113,12 +123,12 @@ class ImageTransformer extends DomTransformer {
     }
   }
 
-  static String encodeToBase64Uri(dynamic bytesData) {
-    final base64Data = base64Encode(bytesData);
+  static String encodeToBase64Uri(Map<String, dynamic> entryParam) {
+    final base64Data = base64Encode(entryParam['bytesData']);
     if (!base64Data.endsWith('==')) {
       base64Data.append('==');
     }
-    final base64Uri = 'data:image/jpeg;base64,$base64Data';
-    return base64Uri;
+    final mimeType = entryParam['mimeType'] ?? 'image/jpeg';
+    return 'data:$mimeType;base64,$base64Data';
   }
 }
