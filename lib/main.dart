@@ -17,6 +17,7 @@ import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 import 'package:tmail_ui_user/main/utils/asset_preloader.dart';
+import 'package:tmail_ui_user/main/utils/cozy_integration.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:worker_manager/worker_manager.dart';
 
@@ -31,13 +32,14 @@ Future<void> runTmail() async {
   ThemeUtils.setSystemLightUIStyle();
   
   await Future.wait([
-     MainBindings().dependencies(),
-     HiveCacheConfig.instance.setUp(),
-     Executor().warmUp(log: BuildUtils.isDebugMode),
-     AppUtils.loadEnvFile(),
-     if (PlatformInfo.isWeb)
-       AssetPreloader.preloadHtmlEditorAssets(),
+    MainBindings().dependencies(),
+    HiveCacheConfig.instance.setUp(),
+    Executor().warmUp(log: BuildUtils.isDebugMode),
+    AppUtils.loadEnvFile(),
+    if (PlatformInfo.isWeb)
+      AssetPreloader.preloadHtmlEditorAssets(),
   ]);
+  await CozyIntegration.integrateCozy();
   await HiveCacheConfig.instance.initializeEncryptionKey();
   
   setPathUrlStrategy();

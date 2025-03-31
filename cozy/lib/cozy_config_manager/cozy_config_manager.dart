@@ -1,0 +1,1 @@
+export 'cozy_config_manager_stub.dart' if (dart.library.html) 'cozy_config_manager_web.dart';
