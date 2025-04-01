@@ -133,6 +133,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
                   }
                 ),
                 TMailButtonWidget.fromIcon(
+                  key: const Key('email_detailed_more_button'),
                   icon: _imagePaths.icMoreVertical,
                   iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
                   iconColor: EmailViewAppBarWidgetStyles.iconColor,
