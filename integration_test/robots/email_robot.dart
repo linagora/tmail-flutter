@@ -36,4 +36,8 @@ class EmailRobot extends CoreRobot {
   Future<void> tapEmailDetailedStarButton() async {
     await $(#email_detailed_star_button).tap();
   }
+
+  Future<void> tapEmailDetailedMoveEmailButton() async {
+    await $(#email_detailed_move_email_button).tap();
+  }
 }

@@ -77,6 +77,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
             children: [
                 if (optionsWidget != null) ... optionsWidget!,
                 TMailButtonWidget.fromIcon(
+                  key: const Key('email_detailed_move_email_button'),
                   icon: _imagePaths.icMoveEmail,
                   iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
                   iconColor: EmailViewAppBarWidgetStyles.iconColor,
