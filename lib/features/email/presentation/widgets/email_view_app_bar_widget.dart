@@ -176,6 +176,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
   );
 
   Widget _getMarkStarButton(AppLocalizations applocalizations) => TMailButtonWidget.fromIcon(
+    key: const Key('email_detailed_star_button'),
     icon: presentationEmail.hasStarred
       ? _imagePaths.icStar
       : _imagePaths.icUnStar,
