@@ -32,4 +32,12 @@ class EmailRobot extends CoreRobot {
   Future<void> onTapBackButton() async {
     await $(find.byType(EmailViewBackButton)).first.tap();
   }
+
+  Future<void> tapEmailDetailedMoreButton() async {
+    await $(#email_detailed_more_button).tap();
+  }
+
+  Future<void> tapMarkAsUnreadOptionInContextMenu() async {
+    await $(#markAsUnread_action).tap();
+  }
 }

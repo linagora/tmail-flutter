@@ -208,6 +208,7 @@ mixin BaseEmailItemTile {
 
   Widget buildIconUnreadStatus() {
     return SvgPicture.asset(
+      key: const Key('unread_status_icon'),
       imagePaths.icUnreadStatus,
       width: 9,
       height: 9,

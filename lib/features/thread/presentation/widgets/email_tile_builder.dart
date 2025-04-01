@@ -1,6 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -73,11 +72,8 @@ class EmailTileBuilder extends StatelessWidget with BaseEmailItemTile {
             if (!presentationEmail.hasRead)
               Padding(
                   padding: const EdgeInsetsDirectional.only(end: 5),
-                  child: SvgPicture.asset(
-                      imagePaths.icUnreadStatus,
-                      width: 9,
-                      height: 9,
-                      fit: BoxFit.fill)),
+                  child: buildIconUnreadStatus(),
+              ),
             Expanded(child: buildInformationSender(
               context,
               presentationEmail,
