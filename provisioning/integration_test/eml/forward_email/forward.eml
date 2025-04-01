@@ -1,12 +1,11 @@
 Return-Path: <emma@example.com>
 MIME-Version: 1.0
 References: <Mime4j.4c.b3b452d18f0d0ef9.192d67aaafc@example.com>
-Subject: Fwd: Forward email to Bob
+Subject: Forward email
 From: emma@example.com
-To: "bob@example.com" <bob@example.com>
-Cc: "alice@example.com" <alice@example.com>
-Bcc: "brian@example.com" <brian@example.com>
-Reply-To: emma@example.com
+To: "bob" <bob@example.com>
+Cc: "alice" <alice@example.com>
+Bcc: "brian" <brian@example.com>
 Date: Tue, 17 Dec 2024 16:31:00 +0000
 Message-ID: <Mime4j.4e.728b2b72b23cc182.192d67ae03c@example.com>
 User-Agent: Twake-Mail/0.13.2 Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15;
@@ -20,7 +19,7 @@ Content-Transfer-Encoding: quoted-printable
 Accept-Language: fr-FR, en-US, vi-VN, ru-RU, ar-TN, it-IT
 Content-Language: en-US
 
-Forward email to Bob
+Forward email
 
 Invite you in to a meeting: Event OPEN TECH TALK: INNOVATION FOR THE TWAKE WORKPLACE
 
@@ -31,12 +30,5 @@ Our 3rd Open Tech Talk in 2024!
  ► Topic: "Websocket: Real-time Update
 
 We are waiting for you!
-
----=Part.4f.450e1cfbcd355387.192d67ae03d.c367d8042fea24dd=-
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Accept-Language: fr-FR, en-US, vi-VN, ru-RU, ar-TN, it-IT
-Content-Language: en-US
-
 
 ---=Part.4f.450e1cfbcd355387.192d67ae03d.c367d8042fea24dd=---
