@@ -1,3 +1,13 @@
+## [0.15.1] - 2025-04-01
+### Changed
+- Update User guide
+
+### Fixed 
+- Display name of auto completion
+- #3584 PDF viewer in old Safari (16.6)
+- #3585 Read receipt was not showed in mobile
+- #3593 Close composer after reload maybe lost email
+
 ## [0.15.0] - 2025-03-19
 ### Added
 - #1192 Support multiple composer
