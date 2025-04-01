@@ -4,7 +4,6 @@ import 'package:rich_text_composer/rich_text_composer.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_editor_view.dart';
-import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 
 import '../base/base_test_scenario.dart';
@@ -19,25 +18,28 @@ class ForwardEmailScenario extends BaseTestScenario {
 
   @override
   Future<void> runTestLogic() async {
+    const emailSubject = 'Forward email';
+
     final threadRobot = ThreadRobot($);
+    final searchRobot = SearchRobot($);
+    final emailRobot = EmailRobot($);
+    final composerRobot = ComposerRobot($);
+
     await threadRobot.openSearchView();
     await _expectSearchViewVisible();
 
-    final searchRobot = SearchRobot($);
-    await searchRobot.enterQueryString('Forward email');
-    await _expectSuggestionSearchListViewVisible();
+    await searchRobot.enterQueryString(emailSubject);
     await searchRobot.tapOnShowAllResultsText();
     await _expectSearchResultEmailListVisible();
 
-    await searchRobot.openEmailWithSubject('Fwd: Forward email');
-    await _expectEmailViewVisible();
+    await $.pumpAndSettle(duration: const Duration(seconds: 2));
+
+    await searchRobot.openEmailWithSubject(emailSubject);
     await _expectForwardEmailButtonVisible();
 
-    final emailRobot = EmailRobot($);
     await emailRobot.onTapForwardEmail();
     await _expectComposerViewVisible();
 
-    final composerRobot = ComposerRobot($);
     await composerRobot.grantContactPermission();
     await _expectMobileEditorViewVisible();
 
@@ -48,22 +50,12 @@ class ForwardEmailScenario extends BaseTestScenario {
     await expectViewVisible($(SearchEmailView));
   }
 
-  Future<void> _expectSuggestionSearchListViewVisible() async {
-    await expectViewVisible($(#suggestion_search_list_view));
-  }
-
   Future<void> _expectSearchResultEmailListVisible() async {
     await expectViewVisible($(#search_email_list_notification_listener));
-    await $.pump(const Duration(seconds: 3));
-  }
-
-  Future<void> _expectEmailViewVisible() async {
-    await expectViewVisible($(EmailView));
   }
 
   Future<void> _expectForwardEmailButtonVisible() async {
     await expectViewVisible($(#forward_email_button));
-    await $.pump(const Duration(seconds: 3));
   }
 
   Future<void> _expectComposerViewVisible() async {

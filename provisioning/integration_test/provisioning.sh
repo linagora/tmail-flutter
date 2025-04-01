@@ -50,8 +50,8 @@ done
 
 # For test forward email
 # Import emails into 'Forward Emails' folder for user Bob
-echo "Importing 0.eml into 'Forward Emails' folder for user bob"
-james-cli ImportEml \#private "bob@example.com" "Forward Emails" "/root/conf/integration_test/eml/forward_email/0.eml"
+echo "Importing forward.eml into 'Forward Emails' folder for user bob"
+james-cli ImportEml \#private "bob@example.com" "Forward Emails" "/root/conf/integration_test/eml/forward_email/forward.eml"
 
 # For test email with no-disposition inline image
 # Import email into 'Disposition' folder for user Bob
