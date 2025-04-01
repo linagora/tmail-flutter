@@ -1,6 +1,8 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+
 import 'package:core/presentation/views/text/text_field_builder.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/label_mailbox_item_widget.dart';
@@ -42,29 +44,26 @@ class MailboxMenuRobot extends CoreRobot {
     await $(AppLocalizations().newSubfolder).tap();
   }
 
-  Future<void> enterNewSubFolderName(String name) async {
+  Future<void> enterNewFolderName(String name) async {
     await $(MailboxCreatorView)
-      .$(TextFieldBuilder)
-      .enterText(name);
+        .$(TextFieldBuilder)
+        .enterText(name);
   }
 
-  Future<void> confirmCreateNewSubFolder() async {
+  Future<void> confirmCreateNewFolder() async {
     await $(MailboxCreatorView)
-      .$(AppLocalizations().done)
-      .tap();
+        .$(AppLocalizations().createFolder)
+        .tap();
   }
 
   Future<void> expandMailboxWithName(String name) async {
     await $(MailboxItemWidget)
-      .which<MailboxItemWidget>((widget) {
-        return widget.mailboxNode.item.name?.name.toLowerCase() ==
-          name.toLowerCase();
-      })
-      .$(TMailButtonWidget)
-      .which<TMailButtonWidget>((widget) {
-        return widget.icon == ImagePaths().icArrowRight;
-      })
-      .tap();
+        .which<MailboxItemWidget>((widget) {
+          return widget.mailboxNode.item.name?.name.toLowerCase() ==
+              name.toLowerCase();
+        })
+        .$(#expand_mailbox_button)
+        .tap();
   }
 
   Future<void> openMailboxSearch() async {
@@ -136,5 +135,44 @@ class MailboxMenuRobot extends CoreRobot {
     }
     await $(AppLocalizations().restore).tap();
     await $.pumpAndSettle();
+  }
+
+  Future<void> tapRenameMailbox() async {
+    await $(AppLocalizations().renameFolder).tap();
+  }
+
+  Future<void> enterRenameSubFolderName(String name) async {
+    await $(#rename_mailbox_dialog)
+        .$(TextField)
+        .enterText(name);
+    await $.pumpAndSettle(duration: const Duration(seconds: 1));
+  }
+
+  Future<void> confirmRenameSubFolder() async {
+    await $(#rename_mailbox_dialog)
+        .$(AppLocalizations().rename.toUpperCase())
+        .tap();
+  }
+
+  Future<void> tapMoveMailbox() async {
+    await $(AppLocalizations().moveFolder).tap();
+  }
+
+  Future<void> tapMailboxWithName(String name) async {
+    await $(name).tap();
+    await $.pumpAndSettle(duration: const Duration(seconds: 2));
+  }
+
+  Future<void> tapDeleteMailbox() async {
+    await $(AppLocalizations().deleteFolder).tap();
+  }
+
+  Future<void> confirmDeleteMailbox() async {
+    await $(AppLocalizations().delete).tap();
+    await $.pumpAndSettle(duration: const Duration(seconds: 2));
+  }
+
+  Future<void> tapAddNewFolderButton() async {
+    await $(#add_new_folder_button).tap();
   }
 }

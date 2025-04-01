@@ -22,8 +22,8 @@ class CreateAndHideSubFolderScenario extends BaseTestScenario {
       appLocalizations.inboxMailboxDisplayName,
     );
     await mailboxMenuRobot.tapCreateNewSubFolder();
-    await mailboxMenuRobot.enterNewSubFolderName(subFolderName);
-    await mailboxMenuRobot.confirmCreateNewSubFolder();
+    await mailboxMenuRobot.enterNewFolderName(subFolderName);
+    await mailboxMenuRobot.confirmCreateNewFolder();
     await _expectMailboxWithNameVisible(subFolderName);
 
     await threadRobot.openMailbox();
