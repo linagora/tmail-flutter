@@ -56,4 +56,8 @@ class EmailRobot extends CoreRobot {
   Future<void> tapMarkAsSpamOptionInContextMenu() async {
     await $(#moveToSpam_action).tap();
   }
+
+  Future<void> tapArchiveMessageOptionInContextMenu() async {
+    await $(#archiveMessage_action).tap();
+  }
 }
