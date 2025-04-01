@@ -28,6 +28,7 @@ class MailboxExpandButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TMailButtonWidget.fromIcon(
+      key: const Key('expand_mailbox_button'),
       icon: mailboxNode.expandMode.getIcon(
         imagePaths,
         DirectionUtils.isDirectionRTLByLanguage(context),

@@ -55,6 +55,7 @@ class FoldersBarWidget extends StatelessWidget {
     }
 
     Widget newFolderIcon = TMailButtonWidget.fromIcon(
+      key: const Key('add_new_folder_button'),
       icon: imagePaths.icAddNewFolder,
       backgroundColor: Colors.transparent,
       iconColor: AppColor.steelGrayA540,
