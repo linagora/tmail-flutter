@@ -85,6 +85,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
                   onTapActionCallback: () => onEmailActionClick?.call(presentationEmail, EmailActionType.moveToMailbox)
                 ),
                 TMailButtonWidget.fromIcon(
+                  key: const Key('email_detailed_star_button'),
                   icon: presentationEmail.hasStarred
                     ? _imagePaths.icStar
                     : _imagePaths.icUnStar,

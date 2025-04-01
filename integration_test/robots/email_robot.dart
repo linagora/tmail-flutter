@@ -32,4 +32,8 @@ class EmailRobot extends CoreRobot {
   Future<void> tapMarkAsUnreadOptionInContextMenu() async {
     await $(#markAsUnread_action).tap();
   }
+
+  Future<void> tapEmailDetailedStarButton() async {
+    await $(#email_detailed_star_button).tap();
+  }
 }
