@@ -52,4 +52,8 @@ class EmailRobot extends CoreRobot {
   Future<void> tapEmailDetailedDeleteEmailButton() async {
     await $(#email_detailed_delete_email_button).tap();
   }
+
+  Future<void> tapMarkAsSpamOptionInContextMenu() async {
+    await $(#moveToSpam_action).tap();
+  }
 }
