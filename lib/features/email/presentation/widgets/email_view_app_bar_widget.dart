@@ -200,6 +200,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
   );
 
   Widget _getDeleteButton(AppLocalizations applocalizations) => TMailButtonWidget.fromIcon(
+    key: const Key('email_detailed_delete_email_button'),
     icon: _imagePaths.icDeleteComposer,
     iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
     iconColor: EmailViewAppBarWidgetStyles.iconColor,
