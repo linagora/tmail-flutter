@@ -162,6 +162,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
   );
 
   Widget _getMoveEmailButton(AppLocalizations appLocalizations) => TMailButtonWidget.fromIcon(
+    key: const Key('email_detailed_move_email_button'),
     icon: _imagePaths.icMoveEmail,
     iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
     iconColor: EmailViewAppBarWidgetStyles.iconColor,
