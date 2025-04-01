@@ -9,13 +9,13 @@ import '../../robots/email_robot.dart';
 import '../../robots/mailbox_menu_robot.dart';
 import '../../robots/thread_robot.dart';
 
-class DeleteEmailScenario extends BaseTestScenario {
+class MarkAsSpamEmailScenario extends BaseTestScenario {
 
-  const DeleteEmailScenario(super.$);
+  const MarkAsSpamEmailScenario(super.$);
 
   @override
   Future<void> runTestLogic() async {
-    const subject = 'Delete email';
+    const subject = 'Mark as spam email';
     const emailUser = String.fromEnvironment('BASIC_AUTH_EMAIL');
     final threadRobot = ThreadRobot($);
     final emailRobot = EmailRobot($);
@@ -36,22 +36,29 @@ class DeleteEmailScenario extends BaseTestScenario {
 
     await threadRobot.openEmailWithSubject(subject);
     await $.pumpAndSettle();
+    _expectEmailDetailedMoreButtonVisible();
 
-    await emailRobot.tapEmailDetailedDeleteEmailButton();
+    await emailRobot.tapEmailDetailedMoreButton();
+    await $.pumpAndSettle(duration: const Duration(seconds: 2));
+
+    await emailRobot.tapMarkAsSpamOptionInContextMenu();
     await $.pumpAndSettle(duration: const Duration(seconds: 3));
-
     _expectEmailViewInvisible();
 
     await threadRobot.openMailbox();
-    await mailboxMenuRobot.openFolderByName(appLocalizations.trashMailboxDisplayName);
-    await _expectEmailWithSubjectInTrashFolderVisible(subject);
+    await mailboxMenuRobot.openFolderByName(appLocalizations.spamMailboxDisplayName);
+    await _expectEmailWithSubjectInSpamFolderVisible(subject);
+  }
+
+  void _expectEmailDetailedMoreButtonVisible() {
+    expect($(#email_detailed_more_button), findsOneWidget);
   }
 
   void _expectEmailViewInvisible() {
     expect($(EmailView).visible, isFalse);
   }
 
-  Future<void> _expectEmailWithSubjectInTrashFolderVisible(String subject) async {
+  Future<void> _expectEmailWithSubjectInSpamFolderVisible(String subject) async {
     await expectViewVisible($(subject));
   }
 }
