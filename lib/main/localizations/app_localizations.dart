@@ -4591,6 +4591,13 @@ class AppLocalizations {
     );
   }
 
+  String get youHaveAnotherEventAtThatSameTime {
+    return Intl.message(
+      'You have another event at that same time',
+      name: 'youHaveAnotherEventAtThatSameTime',
+    );
+  }
+
   String get exitFullscreen {
     return Intl.message(
       'Exit fullscreen',

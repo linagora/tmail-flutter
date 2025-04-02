@@ -32,6 +32,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
   final PresentationEmail? presentationEmail;
   final OnMailtoAttendeesAction? onMailtoAttendeesAction;
   final OnOpenEmailAddressDetailAction? openEmailAddressDetailAction;
+  final bool isFree;
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
@@ -40,6 +41,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
     required this.calendarEvent,
     required this.onCalendarEventReplyActionClick,
     required this.calendarEventReplying,
+    required this.isFree,
     this.onOpenNewTabAction,
     this.onOpenComposerAction,
     this.presentationEmail,
@@ -250,7 +252,10 @@ class CalendarEventInformationWidget extends StatelessWidget {
     if (dateTimeEvent.isNotEmpty) {
       return Padding(
         padding: const EdgeInsets.only(top: CalendarEventInformationWidgetStyles.fieldTopPadding),
-        child: EventTimeInformationWidget(timeEvent: dateTimeEvent),
+        child: EventTimeInformationWidget(
+          timeEvent: dateTimeEvent,
+          isFree: isFree,
+        ),
       );
     } else {
       return const SizedBox.shrink();

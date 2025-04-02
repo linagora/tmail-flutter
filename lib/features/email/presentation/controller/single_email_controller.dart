@@ -211,6 +211,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   CalendarEvent? get calendarEvent => blobCalendarEvent.value?.calendarEventList.firstOrNull;
   Id? get _displayingEventBlobId => blobCalendarEvent.value?.blobId;
+  bool get isCalendarEventFree => blobCalendarEvent.value?.isFree ?? true;
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
 

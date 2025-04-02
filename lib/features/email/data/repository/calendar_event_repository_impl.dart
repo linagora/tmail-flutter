@@ -66,6 +66,7 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
         calendarEventList: await Future.wait(blobCalendarEvent.calendarEventList.map((calendarEvent) {
           return _transformCalendarEventDescription(calendarEvent, transformConfiguration);
         })),
+        isFree: blobCalendarEvent.isFree,
       );
     }));
   }

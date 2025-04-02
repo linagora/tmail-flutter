@@ -4370,6 +4370,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "youHaveAnotherEventAtThatSameTime": "You have another event at that same time",
+  "@youHaveAnotherEventAtThatSameTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "exitFullscreen": "Exit fullscreen",
   "@exitFullscreen": {
     "type": "text",
