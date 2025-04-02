@@ -5929,6 +5929,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t1 == null)
         t1 = $.GetInstance__getInstance = B.C_GetInstance;
       t1.find$1$1$tag(0, _null, type$.ResponsiveUtils);
+      t1 = $.GetInstance__getInstance;
+      if (t1 == null)
+        t1 = $.GetInstance__getInstance = B.C_GetInstance;
+      t1.find$1$1$tag(0, _null, type$.ImagePaths);
       t1 = type$.AppLocalizations;
       A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
       t2 = A.Text$(A.Intl__message("When", _null, "when", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_MIj, _null, _null, _null, _null, _null);
@@ -5940,7 +5944,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t5 = A._setArrayType([new A.SizedBox(100, _null, t2, _null), new A.Flexible(1, B.FlexFit_1, A.Text$(this.timeEvent, _null, _null, t3, t4, _null, _null, t5, _null, B.TextStyle_69t7, _null, _null, _null, _null, _null), _null)], t6);
       if (!this.isFree) {
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
-        B.JSArray_methods.addAll$1(t5, A._setArrayType([B.SizedBox_8_null_null_null, A.Tooltip$(D.Icon_f8d, _null, A.Intl__message("You have another event at that same time", _null, "youHaveAnotherEventAtThatSameTime", _null, _null))], t6));
+        t1 = A.Intl__message("You have another event at that same time", _null, "youHaveAnotherEventAtThatSameTime", _null, _null);
+        B.JSArray_methods.addAll$1(t5, A._setArrayType([B.SizedBox_8_null_null_null, A.Tooltip$(A.SvgPicture$asset("assets/images/ic_error.svg", B.Alignment_0_0, A.ColorNullableExtension_asFilter(B.Color_4294951175), B.BoxFit_0, 20, _null, _null, 20), _null, t1)], t6));
       }
       return A.Row$(t5, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     }
@@ -16348,8 +16353,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Expanded_0EQ = new A.Expanded(1, B.FlexFit_0, D.EmailView_null, null);
     D.QuotasView_null = new C.QuotasView(null);
     D.Expanded_qBY = new A.Expanded(1, B.FlexFit_0, D.QuotasView_null, null);
-    D.IconData_58172_false = new A.IconData(58172, false);
-    D.Icon_f8d = new A.Icon(D.IconData_58172_false, null, B.Color_4294951175, null, null);
     D.Color_251658240 = new A.Color(251658240);
     D.BoxShadow_NMc33 = new A.BoxShadow(0, B.BlurStyle_0, D.Color_251658240, B.Offset_0_0, 4);
     D.List_B6x3 = A._setArrayType(makeConstList([D.BoxShadow_NMc31, D.BoxShadow_NMc33]), type$.JSArray_BoxShadow);
@@ -16498,5 +16501,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "ksuP9+9mxsdaNlUcbW08BvamwU8=");
+})($__dart_deferred_initializers__, "+oSXS/rijyEuSkjeoCFnjrPoMGI=");
 ;
