@@ -2,6 +2,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/label_mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
 
@@ -17,5 +18,15 @@ class MailboxMenuRobot extends CoreRobot {
       .$(LabelMailboxItemWidget)
       .$(find.text(name))
       .tap();
+  }
+
+  Future<void> longPressMailboxWithName(String name) async {
+    await $(name).longPress();
+    await $.pumpAndSettle();
+  }
+
+  Future<void> tapMarkAsRead() async {
+    await $(AppLocalizations().mark_as_read).tap();
+    await $.pumpAndSettle();
   }
 }
