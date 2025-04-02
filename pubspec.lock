@@ -1588,10 +1588,10 @@ packages:
     dependency: "direct dev"
     description:
       name: patrol_finders
-      sha256: "4c6d78e00362fd15d7c21cfac110e501d08ada7d77000bad139b0c3c2e27ccaf"
+      sha256: "8787f9d5c3417b72e8959a55ad51c024cc0594d15e5db85bc179c4d8faa0c493"
       url: "https://pub.dev"
     source: hosted
-    version: "2.7.0"
+    version: "2.7.2"
   patrol_log:
     dependency: "direct dev"
     description:
