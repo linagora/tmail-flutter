@@ -237,7 +237,9 @@ class ThreadView extends GetWidget<ThreadController>
                             ),
                           );
                         } else {
-                          return const SizedBox.shrink();
+                          return const SizedBox.shrink(
+                            key: Key('clean_message_banner_not_visible'),
+                          );
                         }
                       }),
                       if (!controller.responsiveUtils.isDesktop(context))
