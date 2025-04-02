@@ -136,6 +136,16 @@ mixin ScenarioUtilsMixin {
     return file.writeAsBytes(bytes);
   }
 
+  Future<File> generateImageFromBase64({
+    required String fileName,
+    required String base64Data,
+  }) async {
+    final bytes = base64Decode(base64Data);
+    final directory = await getTemporaryDirectory();
+    final file = File('${directory.path}/$fileName');
+    return file.writeAsBytes(bytes);
+  }
+
   Future<List<Attachment>> uploadAttachments(
     List<String> attachmentPaths
   ) async {
