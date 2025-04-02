@@ -371,6 +371,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 presentationEmail: controller.currentEmail,
                 onMailtoAttendeesAction: controller.handleMailToAttendees,
                 openEmailAddressDetailAction: controller.openEmailAddressDialog,
+                isFree: controller.isCalendarEventFree,
               )),
               if (_validateDisplayEventActionBanner(
                   context: context,
