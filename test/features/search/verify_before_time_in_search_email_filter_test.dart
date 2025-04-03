@@ -66,6 +66,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_spam_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
@@ -157,6 +158,7 @@ const fallbackGenerators = {
   MockSpec<RemoveComposerCacheByIdOnWebInteractor>(),
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<ComposerManager>(fallbackGenerators: fallbackGenerators),
+  MockSpec<CleanAndGetEmailsInMailboxInteractor>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -169,6 +171,7 @@ void main() {
   late MockSearchEmailInteractor mockSearchEmailInteractor;
   late MockSearchMoreEmailInteractor mockSearchMoreEmailInteractor;
   late MockGetEmailByIdInteractor mockGetEmailByIdInteractor;
+  late MockCleanAndGetEmailsInMailboxInteractor mockCleanAndGetEmailsInMailboxInteractor;
 
   // Declaration search controller
   late SearchController searchController;
@@ -275,6 +278,7 @@ void main() {
     mockSearchEmailInteractor = MockSearchEmailInteractor();
     mockSearchMoreEmailInteractor = MockSearchMoreEmailInteractor();
     mockGetEmailByIdInteractor = MockGetEmailByIdInteractor();
+    mockCleanAndGetEmailsInMailboxInteractor = MockCleanAndGetEmailsInMailboxInteractor();
 
     // Mock search controller
     mockQuickSearchEmailInteractor = MockQuickSearchEmailInteractor();
@@ -366,6 +370,7 @@ void main() {
       mockSearchEmailInteractor,
       mockSearchMoreEmailInteractor,
       mockGetEmailByIdInteractor,
+      mockCleanAndGetEmailsInMailboxInteractor,
     );
 
     mailboxDashboardController.sessionCurrent = SessionFixtures.aliceSession;

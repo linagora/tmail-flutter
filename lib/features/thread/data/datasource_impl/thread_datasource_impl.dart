@@ -140,4 +140,9 @@ class ThreadDataSourceImpl extends ThreadDataSource {
       return email.toPresentationEmail();
     }).catchError(_exceptionThrower.throwException);
   }
+
+  @override
+  Future<void> clearEmailCacheAndStateCache(AccountId accountId, Session session) {
+    throw UnimplementedError();
+  }
 }

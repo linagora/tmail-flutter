@@ -37,6 +37,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
@@ -87,6 +88,7 @@ const fallbackGenerators = {
   MockSpec<SearchEmailInteractor>(),
   MockSpec<SearchMoreEmailInteractor>(),
   MockSpec<GetEmailByIdInteractor>(),
+  MockSpec<CleanAndGetEmailsInMailboxInteractor>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -102,6 +104,7 @@ void main() {
   late MockSearchEmailInteractor mockSearchEmailInteractor;
   late MockSearchMoreEmailInteractor mockSearchMoreEmailInteractor;
   late MockGetEmailByIdInteractor mockGetEmailByIdInteractor;
+  late MockCleanAndGetEmailsInMailboxInteractor mockCleanAndGetEmailsInMailboxInteractor;
 
   // Declaration base controller
   late MockCachingManager mockCachingManager;
@@ -166,6 +169,7 @@ void main() {
     mockSearchEmailInteractor = MockSearchEmailInteractor();
     mockSearchMoreEmailInteractor = MockSearchMoreEmailInteractor();
     mockGetEmailByIdInteractor = MockGetEmailByIdInteractor();
+    mockCleanAndGetEmailsInMailboxInteractor = MockCleanAndGetEmailsInMailboxInteractor();
 
     Get.put<NetworkConnectionController>(mockNetworkConnectionController);
     Get.put<SearchController>(mockSearchController);
@@ -177,7 +181,9 @@ void main() {
       mockLoadMoreEmailsInMailboxInteractor,
       mockSearchEmailInteractor,
       mockSearchMoreEmailInteractor,
-      mockGetEmailByIdInteractor);
+      mockGetEmailByIdInteractor,
+      mockCleanAndGetEmailsInMailboxInteractor,
+    );
   });
 
   group('ThreadController::test', () {
