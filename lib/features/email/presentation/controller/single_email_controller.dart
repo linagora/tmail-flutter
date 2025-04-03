@@ -25,6 +25,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/attendance/calendar_event_attendance.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/attendee/calendar_attendee.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/properties/calendar_organizer.dart';
@@ -76,7 +77,6 @@ import 'package:tmail_ui_user/features/email/domain/state/preview_email_from_eml
 import 'package:tmail_ui_user/features/email/domain/state/preview_pdf_file_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/print_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/send_receipt_to_sender_state.dart';
-import 'package:tmail_ui_user/features/email/domain/state/store_event_attendance_status_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_all_attachments_for_web_interactor.dart';
@@ -97,7 +97,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/preview_email_from_
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_html_content_from_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sender_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/store_event_attendance_status_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_event_interactor_bindings.dart';
@@ -105,6 +104,7 @@ import 'package:tmail_ui_user/features/email/presentation/controller/email_super
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_attendee_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_organizer_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/update_attendance_status_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/blob_calendar_event.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
@@ -171,7 +171,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
   final StoreOpenedEmailInteractor _storeOpenedEmailInteractor;
   final PrintEmailInteractor _printEmailInteractor;
-  final StoreEventAttendanceStatusInteractor _storeEventAttendanceStatusInteractor;
   final ParseEmailByBlobIdInteractor _parseEmailByBlobIdInteractor;
   final PreviewEmailFromEmlFileInteractor _previewEmailFromEmlFileInteractor;
   final GetHtmlContentFromAttachmentInteractor _getHtmlContentFromAttachmentInteractor;
@@ -194,6 +193,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final isEmailContentHidden = RxBool(false);
   final currentEmailLoaded = Rxn<EmailLoaded>();
   final isEmailContentClipped = RxBool(false);
+  final attendanceStatus = Rxn<AttendanceStatus>();
 
   EmailId? _currentEmailId;
   Identity? _identitySelected;
@@ -207,7 +207,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   bool get calendarEventProcessing => viewState.value.fold(
     (failure) => false,
-    (success) => success is CalendarEventReplying || success is StoreEventAttendanceStatusLoading);
+    (success) => success is CalendarEventReplying);
 
   CalendarEvent? get calendarEvent => blobCalendarEvent.value?.calendarEventList.firstOrNull;
   Id? get _displayingEventBlobId => blobCalendarEvent.value?.blobId;
@@ -231,7 +231,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._getAllIdentitiesInteractor,
     this._storeOpenedEmailInteractor,
     this._printEmailInteractor,
-    this._storeEventAttendanceStatusInteractor,
     this._parseEmailByBlobIdInteractor,
     this._previewEmailFromEmlFileInteractor,
     this._getHtmlContentFromAttachmentInteractor,
@@ -294,8 +293,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _handlePrintEmailSuccess(success);
     } else if (success is CalendarEventReplySuccess) {
       calendarEventSuccess(success);
-    } else if (success is StoreEventAttendanceStatusSuccess) {
-      _showToastMessageEventAttendanceSuccess(success);
     } else if (success is ParseEmailByBlobIdSuccess) {
       _handleParseEmailByBlobIdSuccess(success);
     } else if (success is PreviewEmailFromEmlFileSuccess) {
@@ -338,8 +335,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       emailLoadedViewState.value = Left<Failure, Success>(failure);
     } else if (failure is PrintEmailFailure) {
       _showMessageWhenEmailPrintingFailed(failure);
-    } else if (failure is CalendarEventReplyFailure
-        || failure is StoreEventAttendanceStatusFailure) {
+    } else if (failure is CalendarEventReplyFailure) {
       _calendarEventFailure(failure);
     } else if (failure is ParseEmailByBlobIdFailure) {
       _handleParseEmailByBlobIdFailure(failure);
@@ -1869,10 +1865,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _handleParseCalendarEventSuccess(ParseCalendarEventSuccess success) {
     emailLoadedViewState.value = Right<Failure, Success>(success);
-    blobCalendarEvent.value = success.blobCalendarEventList.first;
+    blobCalendarEvent.value = success.blobCalendarEventList.firstOrNull;
     if (PlatformInfo.isMobile) {
       _enableScrollPageView();
     }
+    updateAttendanceStatus(success);
   }
 
   void _handleParseCalendarEventFailure(ParseCalendarEventFailure failure) {
@@ -2142,24 +2139,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void calendarEventSuccess(CalendarEventReplySuccess success) {
-    if (session == null || accountId == null) {
-      consumeState(Stream.value(Left(StoreEventAttendanceStatusFailure(exception: NotFoundSessionException()))));
-      return;
-    }
-
-    consumeState(_storeEventAttendanceStatusInteractor.execute(
-      session!,
-      accountId!,
-      success.emailId,
-      success.getEventActionType()
-    ));
-  }
-
-  void _showToastMessageEventAttendanceSuccess(StoreEventAttendanceStatusSuccess success) {
-    final newEmail = currentEmail?.updateKeywords(
-      success.eventActionType.getMapKeywords(),
-    );
-    mailboxDashBoardController.setSelectedEmail(newEmail);
+    updateAttendanceStatus(success);
 
     if (currentOverlayContext == null || currentContext == null) {
       return;
@@ -2167,7 +2147,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     appToast.showToastSuccessMessage(
       currentOverlayContext!,
-      success.eventActionType.getToastMessageSuccess(currentContext!));
+      success.getEventActionType().getToastMessageSuccess(currentContext!));
   }
 
   void _calendarEventFailure(Failure failure) {

@@ -58,7 +58,10 @@ class CalendarEventAPI {
       (calendarEventAttendanceGetResponse?.list ?? []).map(
         (calendarEventAttendance) => MapEntry(
           calendarEventAttendance.blobId,
-          calendarEventAttendance.isFree,
+          (
+            isFree: calendarEventAttendance.isFree,
+            attendanceStatus: calendarEventAttendance.eventAttendanceStatus,
+          ),
         ),
       ),
     );
@@ -67,7 +70,8 @@ class CalendarEventAPI {
       return calendarEventParseResponse!.parsed!.entries
         .map((entry) => BlobCalendarEvent(
           blobId: entry.key,
-          isFree: calendarBlobIdStatusMap[entry.key] ?? true,
+          isFree: calendarBlobIdStatusMap[entry.key]?.isFree ?? true,
+          attendanceStatus: calendarBlobIdStatusMap[entry.key]?.attendanceStatus,
           calendarEventList: entry.value))
         .toList();
     } else if (calendarEventParseResponse?.notParsable?.isNotEmpty == true) {
