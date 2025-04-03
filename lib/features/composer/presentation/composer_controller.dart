@@ -1004,6 +1004,7 @@ class ComposerController extends BaseController
           .then((value) => handleAutoCompleteResultState(
             resultState: value,
             queryString: queryString,
+            onFailureCallback: (failure) => consumeState(Stream.value(Left(failure))),
           )
         );
       } else if (_getDeviceContactSuggestionsInteractor != null) {
@@ -1023,6 +1024,7 @@ class ComposerController extends BaseController
         .then((value) => handleAutoCompleteResultState(
           resultState: value,
           queryString: queryString,
+          onFailureCallback: (failure) => consumeState(Stream.value(Left(failure))),
         )
       ) ?? <EmailAddress>[];
     }
