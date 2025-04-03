@@ -67,6 +67,7 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
           return _transformCalendarEventDescription(calendarEvent, transformConfiguration);
         })),
         isFree: blobCalendarEvent.isFree,
+        attendanceStatus: blobCalendarEvent.attendanceStatus,
       );
     }));
   }

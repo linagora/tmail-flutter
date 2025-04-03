@@ -368,7 +368,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 onCalendarEventReplyActionClick: (eventActionType) =>
                     controller.onCalendarEventReplyAction(eventActionType, presentationEmail.id!),
                 calendarEventReplying: controller.calendarEventProcessing,
-                presentationEmail: controller.currentEmail,
+                attendanceStatus: controller.attendanceStatus.value,
                 onMailtoAttendeesAction: controller.handleMailToAttendees,
                 openEmailAddressDetailAction: controller.openEmailAddressDialog,
                 isFree: controller.isCalendarEventFree,

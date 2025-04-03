@@ -3,7 +3,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
-import 'package:model/email/presentation_email.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/attendance/calendar_event_attendance.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_detail_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_information_widget_styles.dart';
@@ -29,7 +29,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
   final OnOpenComposerAction? onOpenComposerAction;
   final OnCalendarEventReplyActionClick onCalendarEventReplyActionClick;
   final bool calendarEventReplying;
-  final PresentationEmail? presentationEmail;
+  final AttendanceStatus? attendanceStatus;
   final OnMailtoAttendeesAction? onMailtoAttendeesAction;
   final OnOpenEmailAddressDetailAction? openEmailAddressDetailAction;
   final bool isFree;
@@ -44,7 +44,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
     required this.isFree,
     this.onOpenNewTabAction,
     this.onOpenComposerAction,
-    this.presentationEmail,
+    this.attendanceStatus,
     this.onMailtoAttendeesAction,
     this.openEmailAddressDetailAction,
   });
@@ -143,7 +143,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                         margin: EdgeInsetsDirectional.zero,
                         onCalendarEventReplyActionClick: onCalendarEventReplyActionClick,
                         calendarEventReplying: calendarEventReplying,
-                        presentationEmail: presentationEmail,
+                        attendanceStatus: attendanceStatus,
                         onMailToAttendeesAction: () => onMailtoAttendeesAction?.call(
                           calendarEvent.organizer,
                           calendarEvent.participants,
@@ -229,7 +229,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                           margin: EdgeInsetsDirectional.zero,
                           onCalendarEventReplyActionClick: onCalendarEventReplyActionClick,
                           calendarEventReplying: calendarEventReplying,
-                          presentationEmail: presentationEmail,
+                          attendanceStatus: attendanceStatus,
                           onMailToAttendeesAction: () => onMailtoAttendeesAction?.call(
                             calendarEvent.organizer,
                             calendarEvent.participants,
