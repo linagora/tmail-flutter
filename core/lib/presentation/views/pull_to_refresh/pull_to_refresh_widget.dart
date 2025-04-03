@@ -53,9 +53,18 @@ class _PullToRefreshWidgetState extends State<PullToRefreshWidget> {
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         if (notification is ScrollUpdateNotification) {
-          setState(() {
-            _scrollOffset = notification.metrics.pixels;
-          });
+          final newOffset = notification.metrics.pixels;
+          final crossedThreshold =
+              (_scrollOffset.abs() <= widget.deepRefreshThreshold &&
+                      newOffset.abs() > widget.deepRefreshThreshold) ||
+                  (_scrollOffset.abs() > widget.deepRefreshThreshold &&
+                      newOffset.abs() <= widget.deepRefreshThreshold);
+
+          if (crossedThreshold || _scrollOffset != newOffset) {
+            setState(() {
+              _scrollOffset = newOffset;
+            });
+          }
         }
         return false;
       },
