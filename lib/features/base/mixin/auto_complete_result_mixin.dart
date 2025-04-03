@@ -15,9 +15,13 @@ mixin AutoCompleteResultMixin {
   FutureOr<List<EmailAddress>> handleAutoCompleteResultState({
     required Either<Failure, Success> resultState,
     required String queryString,
+    Function(Failure failure)? onFailureCallback,
   }) {
     return resultState.fold(
-      (failure) => <EmailAddress>[],
+      (failure) {
+        onFailureCallback?.call(failure);
+        return <EmailAddress>[];
+      },
       (success) => handleAutoCompleteSuccess(success, queryString)
     );
   }
