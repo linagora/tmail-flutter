@@ -20,10 +20,12 @@ import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widg
 import 'package:tmail_ui_user/features/network_connection/presentation/network_connection_banner_widget.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/clean_and_get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_pull_to_refresh_list_email_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
@@ -341,90 +343,94 @@ class ThreadView extends GetWidget<ThreadController>
   }
 
   Widget _buildResultListEmail(BuildContext context, List<PresentationEmail> listPresentationEmail) {
-    if (controller.mailboxDashBoardController.currentSelectMode.value == SelectMode.INACTIVE) {
-      return listPresentationEmail.isNotEmpty
-        ? RefreshIndicator(
-            color: AppColor.colorTextButton,
-            onRefresh: () async => controller.refreshAllEmail(),
-            child: _buildListEmailBody(context, listPresentationEmail))
-        : RefreshIndicator(
-            color: AppColor.colorTextButton,
-            onRefresh: () async => controller.refreshAllEmail(),
-            child: _buildEmptyEmail(context));
-    } else {
-      return listPresentationEmail.isNotEmpty
+    return listPresentationEmail.isNotEmpty
         ? _buildListEmailBody(context, listPresentationEmail)
         : _buildEmptyEmail(context);
-    }
   }
 
   Widget _buildListEmailBody(BuildContext context, List<PresentationEmail> listPresentationEmail) {
+    Widget listView = ListView.separated(
+      key: const PageStorageKey('list_presentation_email_in_threads'),
+      controller: controller.listEmailController,
+      physics: const AlwaysScrollableScrollPhysics(),
+      itemCount: listPresentationEmail.length + 2,
+      itemBuilder: (context, index) => Obx(() {
+        if (index == listPresentationEmail.length) {
+          return _buildLoadMoreButton(
+            context,
+            controller.loadingMoreStatus.value,
+          );
+        }
+        if (index == listPresentationEmail.length + 1) {
+          return _buildLoadMoreProgressBar(controller.loadingMoreStatus.value);
+        }
+
+        if (PlatformInfo.isMobile) {
+          return _buildEmailItemNotDraggable(
+            context,
+            listPresentationEmail[index],
+          );
+        } else {
+          return _buildEmailItem(
+            context,
+            listPresentationEmail[index],
+          );
+        }
+      }),
+      separatorBuilder: (context, index) {
+        if (PlatformInfo.isMobile) {
+          if (index < listPresentationEmail.length - 1) {
+            return Padding(
+              padding: ItemEmailTileStyles.getMobilePaddingItemList(
+                context,
+                controller.responsiveUtils,
+              ),
+              child: const Divider(),
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        } else {
+          return Padding(
+            padding: ItemEmailTileStyles.getPaddingDividerWeb(
+              context,
+              controller.responsiveUtils,
+            ),
+            child: Divider(
+              color: index < listPresentationEmail.length - 1 && controller.mailboxDashBoardController.currentSelectMode.value == SelectMode.INACTIVE
+                ? null
+                : Colors.white,
+            ),
+          );
+        }
+      },
+    );
+
+    if (!controller.mailboxDashBoardController.isSelectionEnabled()) {
+      listView = PullToRefreshWidget(
+        onNormalRefresh: controller.onRefresh,
+        onDeepRefresh: controller.onCleanAndRefresh,
+        pullDownToRefreshText: AppLocalizations.of(context).pullDownToRefresh,
+        normalRefreshText: AppLocalizations.of(context).refresh,
+        deepRefreshText: AppLocalizations.of(context).deepRefresh,
+        refreshingText: AppLocalizations.of(context).refreshing,
+        pullingText: AppLocalizations.of(context).pulling,
+        pullFurtherForText: AppLocalizations.of(context).pullFurtherFor,
+        pullHarderForText: AppLocalizations.of(context).pullHarderFor,
+        child: listView,
+      );
+    }
+
     return NotificationListener<ScrollNotification>(
       onNotification: _handleScrollNotificationListener,
       child: PlatformInfo.isMobile
-        ? ListView.separated(
-            key: const PageStorageKey('list_presentation_email_in_threads'),
-            controller: controller.listEmailController,
-            physics: const AlwaysScrollableScrollPhysics(),
-            itemCount: listPresentationEmail.length + 2,
-            itemBuilder: (context, index) => Obx(() {
-              if (index == listPresentationEmail.length) {
-                return _buildLoadMoreButton(
-                  context,
-                  controller.loadingMoreStatus.value);
-              }
-              if (index == listPresentationEmail.length + 1) {
-                return _buildLoadMoreProgressBar(controller.loadingMoreStatus.value);
-              }
-              return _buildEmailItemNotDraggable(
-                context,
-                listPresentationEmail[index]);
-            }),
-            separatorBuilder: (context, index) {
-              if (index < listPresentationEmail.length - 1) {
-                return Padding(
-                  padding: ItemEmailTileStyles.getMobilePaddingItemList(context, controller.responsiveUtils),
-                  child: const Divider());
-              } else {
-                return const SizedBox.shrink();
-              }
-            },
-          )
+        ? listView
         : Focus(
             focusNode: controller.focusNodeKeyBoard,
             autofocus: true,
             onKeyEvent: controller.handleKeyEvent,
-            child: ListView.separated(
-              key: const PageStorageKey('list_presentation_email_in_threads'),
-              controller: controller.listEmailController,
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: listPresentationEmail.length + 2,
-              itemBuilder: (context, index) => Obx(() {
-                if (index == listPresentationEmail.length) {
-                  return _buildLoadMoreButton(
-                    context,
-                    controller.loadingMoreStatus.value);
-                }
-                if (index == listPresentationEmail.length + 1) {
-                  return _buildLoadMoreProgressBar(controller.loadingMoreStatus.value);
-                }
-                return _buildEmailItem(
-                  context,
-                  listPresentationEmail[index]);
-              }),
-              separatorBuilder: (context, index) {
-                return Padding(
-                  padding: ItemEmailTileStyles.getPaddingDividerWeb(context, controller.responsiveUtils),
-                  child: Divider(
-                    color: index < listPresentationEmail.length - 1 &&
-                      controller.mailboxDashBoardController.currentSelectMode.value == SelectMode.INACTIVE
-                        ? null
-                        : Colors.white,
-                  )
-                );
-              },
-            ),
-          )
+            child: listView,
+          ),
     );
   }
 
@@ -677,7 +683,9 @@ class ThreadView extends GetWidget<ThreadController>
     return Obx(() => controller.viewState.value.fold(
       (failure) => const SizedBox.shrink(),
       (success) {
-        if (success is GetAllEmailLoading || success is SearchingState) {
+        if (success is GetAllEmailLoading ||
+            success is SearchingState ||
+            success is CleanAndGetAllEmailLoading) {
           return const SizedBox.shrink();
         }
 
@@ -685,12 +693,23 @@ class ThreadView extends GetWidget<ThreadController>
             && success.currentMailboxId != controller.selectedMailboxId) {
           return const SizedBox.shrink();
         } else {
-          return EmptyEmailsWidget(
-            key: const Key('empty_thread_view'),
-            isNetworkConnectionAvailable: controller.networkConnectionController.isNetworkConnectionAvailable(),
-            isSearchActive: controller.isSearchActive,
-            isFilterMessageActive: controller.mailboxDashBoardController.filterMessageOption.value != FilterMessageOption.all,
-            onCreateFiltersActionCallback: controller.goToCreateEmailRuleView
+          return PullToRefreshWidget(
+            onNormalRefresh: controller.onRefresh,
+            onDeepRefresh: controller.onCleanAndRefresh,
+            pullDownToRefreshText: AppLocalizations.of(context).pullDownToRefresh,
+            normalRefreshText: AppLocalizations.of(context).refresh,
+            deepRefreshText: AppLocalizations.of(context).deepRefresh,
+            refreshingText: AppLocalizations.of(context).refreshing,
+            pullingText: AppLocalizations.of(context).pulling,
+            pullFurtherForText: AppLocalizations.of(context).pullFurtherFor,
+            pullHarderForText: AppLocalizations.of(context).pullHarderFor,
+            child: EmptyEmailsWidget(
+              key: const Key('empty_thread_view'),
+              isNetworkConnectionAvailable: controller.networkConnectionController.isNetworkConnectionAvailable(),
+              isSearchActive: controller.isSearchActive,
+              isFilterMessageActive: controller.mailboxDashBoardController.filterMessageOption.value != FilterMessageOption.all,
+              onCreateFiltersActionCallback: controller.goToCreateEmailRuleView
+            ),
           );
         }
       }

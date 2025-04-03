@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/utils/file_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
@@ -14,6 +16,10 @@ import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
+import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
+import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
+import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/local/email_cache_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
@@ -25,9 +31,18 @@ import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 class LocalThreadDataSourceImpl extends ThreadDataSource {
 
   final EmailCacheManager _emailCacheManager;
+  final FCMCacheManager _fcmCacheManager;
+  final StateCacheManager _stateCacheManager;
+  final FileUtils _fileUtils;
   final ExceptionThrower _exceptionThrower;
 
-  LocalThreadDataSourceImpl(this._emailCacheManager, this._exceptionThrower);
+  LocalThreadDataSourceImpl(
+    this._emailCacheManager,
+    this._fcmCacheManager,
+    this._stateCacheManager,
+    this._fileUtils,
+    this._exceptionThrower,
+  );
 
   @override
   Future<EmailsResponse> getAllEmail(
@@ -124,5 +139,21 @@ class LocalThreadDataSourceImpl extends ThreadDataSource {
   @override
   Future<PresentationEmail> getEmailById(Session session, AccountId accountId, EmailId emailId, {Properties? properties}) {
     throw UnimplementedError();
+  }
+
+  @override
+  Future<void> clearEmailCacheAndStateCache(AccountId accountId, Session session) {
+    return Future.sync(() async {
+      return await Future.wait([
+        _stateCacheManager.deleteState(accountId, session.username, StateType.email),
+        _emailCacheManager.clearAll(),
+        if (PlatformInfo.isMobile)
+          ...[
+            _fileUtils.removeFolder(CachingConstants.newEmailsContentFolderName),
+            _fileUtils.removeFolder(CachingConstants.openedEmailContentFolderName),
+            _fcmCacheManager.clearAllEmailState(accountId, session),
+          ],
+      ]);
+    }).catchError(_exceptionThrower.throwException);
   }
 }

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-02-20T19:41:05.121752",
+  "@@last_modified": "2025-04-03T14:19:11.171517",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2962,6 +2962,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "errorWhileFetchingSubaddress": "Error while fetching the subaddress",
+  "@errorWhileFetchingSubaddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "connectedToTheInternet": "Connected to the internet",
   "@connectedToTheInternet": {
     "type": "text",
@@ -4238,12 +4244,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "Your session expired. We need to take you back to the login page in order to refresh it. You might want to save the email you are currently editing before we do so.",
-  "@messageWarningDialogWhenExpiredOIDCTokenAndReconnection": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "replyToList": "Reply to list",
   "@replyToList": {
     "type": "text",
@@ -4372,6 +4372,54 @@
   },
   "exitFullscreen": "Exit fullscreen",
   "@exitFullscreen": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "refresh": "Refresh",
+  "@refresh": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deepRefresh": "Deep refresh",
+  "@deepRefresh": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pullDownToRefresh": "Pull down to refresh",
+  "@pullDownToRefresh": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "refreshing": "Refreshing",
+  "@refreshing": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pulling": "Pulling",
+  "@pulling": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "releaseTo": "Release to",
+  "@releaseTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pullFurtherFor": "Pull further for",
+  "@pullFurtherFor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pullHarderFor": "Pull harder for",
+  "@pullHarderFor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
