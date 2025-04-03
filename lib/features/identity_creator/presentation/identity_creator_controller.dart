@@ -4,6 +4,7 @@ import 'dart:math' as math;
 import 'dart:typed_data';
 
 import 'package:collection/collection.dart';
+import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/list_nullable_extensions.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -116,7 +117,6 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
   PublicAssetController? publicAssetController;
 
   final GlobalKey htmlKey = GlobalKey();
-  final htmlEditorMinHeight = 150;
   bool isLoadSignatureCompleted = false;
   bool _userScrolled = false;
 
@@ -658,7 +658,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     await Future.delayed(const Duration(milliseconds: 500), () {
       final offset = scrollController.position.pixels +
         defaultKeyboardToolbarHeight +
-        htmlEditorMinHeight;
+        ConstantsUI.htmlContentMinHeight;
       scrollController.animateTo(
         offset,
         duration: const Duration(milliseconds: 1),

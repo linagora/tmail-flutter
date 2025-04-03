@@ -1,5 +1,6 @@
 import 'package:core/presentation/views/context_menu/simple_context_menu_action_builder.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/composer_controller.dart';
+import 'package:tmail_ui_user/features/composer/presentation/extensions/handle_content_height_exceeded_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/mark_as_important_extension.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/prefix_recipient_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
@@ -25,6 +27,7 @@ import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/tabl
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/web/from_composer_drop_down_widget.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/view_entire_message_with_message_clipped_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -107,6 +110,7 @@ class ComposerView extends GetWidget<ComposerController> {
                       controller: controller.scrollController,
                       physics: const ClampingScrollPhysics(),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Obx(() {
                             if (controller.fromRecipientState.value == PrefixRecipientState.enabled) {
@@ -260,8 +264,20 @@ class ComposerView extends GetWidget<ComposerController> {
                               contentViewState: controller.emailContentsViewState.value,
                               onCreatedEditorAction: controller.onCreatedMobileEditorAction,
                               onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
+                              onEditorContentHeightChanged: controller.onEditorContentHeightChangedOnIOS,
                             ),
                           )),
+                          Obx(() {
+                            if (controller.isContentHeightExceeded.isTrue && PlatformInfo.isIOS) {
+                              return ViewEntireMessageWithMessageClippedWidget(
+                                buttonActionName: AppLocalizations.of(context).viewEntireMessage.toUpperCase(),
+                                onViewEntireMessageAction: () => controller.viewEntireContent(context),
+                                topPadding: 12,
+                              );
+                            } else {
+                              return const SizedBox.shrink();
+                            }
+                          }),
                           SizedBox(height: MediaQuery.viewInsetsOf(context).bottom + 64),
                         ],
                       ),
@@ -296,6 +312,7 @@ class ComposerView extends GetWidget<ComposerController> {
                   controller: controller.scrollController,
                   physics: const ClampingScrollPhysics(),
                   child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Obx(() => Column(
                         children: [
@@ -433,8 +450,20 @@ class ComposerView extends GetWidget<ComposerController> {
                           contentViewState: controller.emailContentsViewState.value,
                           onCreatedEditorAction: controller.onCreatedMobileEditorAction,
                           onLoadCompletedEditorAction: controller.onLoadCompletedMobileEditorAction,
+                          onEditorContentHeightChanged: controller.onEditorContentHeightChangedOnIOS,
                         ),
                       )),
+                      Obx(() {
+                        if (controller.isContentHeightExceeded.isTrue && PlatformInfo.isIOS) {
+                          return ViewEntireMessageWithMessageClippedWidget(
+                            buttonActionName: AppLocalizations.of(context).viewEntireMessage.toUpperCase(),
+                            onViewEntireMessageAction: () => controller.viewEntireContent(context),
+                            topPadding: 12,
+                          );
+                        } else {
+                          return const SizedBox.shrink();
+                        }
+                      }),
                       SizedBox(height: MediaQuery.viewInsetsOf(context).bottom + 64),
                     ],
                   ),

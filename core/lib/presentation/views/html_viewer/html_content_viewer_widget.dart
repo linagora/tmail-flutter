@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:core/data/constants/constant.dart';
+import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/views/loading/cupertino_loading_widget.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_interaction.dart';
@@ -29,6 +29,9 @@ class HtmlContentViewer extends StatefulWidget {
   final bool keepWidthWhileLoading;
   final double? contentPadding;
   final bool useDefaultFont;
+  final double? maxHtmlContentHeight;
+  final double minHtmlContentHeight;
+  final double offsetHtmlContentHeight;
 
   final OnLoadWidthHtmlViewerAction? onLoadWidthHtmlViewer;
   final OnMailtoDelegateAction? onMailtoDelegateAction;
@@ -42,9 +45,12 @@ class HtmlContentViewer extends StatefulWidget {
     required this.contentHtml,
     this.initialWidth,
     this.direction,
+    this.minHtmlContentHeight = ConstantsUI.htmlContentMinHeight,
+    this.offsetHtmlContentHeight = ConstantsUI.htmlContentMinHeight,
     this.keepWidthWhileLoading = false,
     this.contentPadding,
     this.useDefaultFont = false,
+    this.maxHtmlContentHeight,
     this.onLoadWidthHtmlViewer,
     this.onMailtoDelegateAction,
     this.onScrollHorizontalEnd,
@@ -58,10 +64,6 @@ class HtmlContentViewer extends StatefulWidget {
 }
 
 class _HtmlContentViewState extends State<HtmlContentViewer> {
-
-  static const double _minHeight = 100.0;
-  static const double _iOSHtmlContentMaxHeight = 22000.0;
-  static const double _offsetHeight = 30.0;
 
   late InAppWebViewController _webViewController;
   late double _actualHeight;
@@ -109,7 +111,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   }
 
   void _initialData() {
-    _actualHeight = _minHeight;
+    _actualHeight = widget.minHtmlContentHeight;
     _htmlData = HtmlUtils.generateHtmlDocument(
       content: widget.contentHtml,
       direction: widget.direction,
@@ -172,7 +174,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     if (PlatformInfo.isAndroid) {
       controller.addJavaScriptHandler(
         handlerName: HtmlInteraction.contentSizeChangedEventJSChannelName,
-        callback: _onHandleContentSizeChangedEvent
+        callback: (_) => _handleContentSizeChanged(),
       );
     }
   }
@@ -187,29 +189,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     InAppWebViewController controller,
     Size oldContentSize,
     Size newContentSize
-  ) async {
-    if (!mounted || _loadingBarNotifier.value) return;
-
-    final maxContentHeight = math.max(oldContentSize.height, newContentSize.height);
-    if (maxContentHeight <= _actualHeight) return;
-
-    double currentHeight = maxContentHeight + _offsetHeight;
-
-    if (PlatformInfo.isIOS) {
-      final isClipped = currentHeight > _iOSHtmlContentMaxHeight;
-      if (isClipped) {
-        widget.onHtmlContentClippedAction?.call(true);
-      }
-      currentHeight = currentHeight.clamp(_minHeight, _iOSHtmlContentMaxHeight);
-    }
-
-    if (_actualHeight != currentHeight) {
-      log('_HtmlContentViewState::_onContentSizeChanged: currentHeight = $currentHeight');
-      setState(() {
-        _actualHeight = currentHeight;
-      });
-    }
-  }
+  ) => _handleContentSizeChanged();
 
   void _onHandleScrollEvent(List<dynamic> parameters) {
     log('_HtmlContentViewState::_onHandleScrollEvent():parameters: $parameters');
@@ -221,7 +201,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     }
   }
 
-  void _onHandleContentSizeChangedEvent(List<dynamic> parameters) async {
+  void _handleContentSizeChanged() async {
     if (!mounted || _loadingBarNotifier.value) return;
 
     final dynamic result = await _webViewController.evaluateJavascript(source: 'document.body.scrollHeight');
@@ -230,14 +210,17 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     final double maxContentHeight = result.toDouble();
     if (maxContentHeight <= _actualHeight) return;
 
-    double currentHeight = maxContentHeight + _offsetHeight;
+    double currentHeight = maxContentHeight + widget.offsetHtmlContentHeight;
 
-    if (PlatformInfo.isIOS) {
-      final bool isClipped = currentHeight > _iOSHtmlContentMaxHeight;
+    if (PlatformInfo.isIOS && widget.maxHtmlContentHeight != null) {
+      final bool isClipped = currentHeight > widget.maxHtmlContentHeight!;
       if (isClipped) {
         widget.onHtmlContentClippedAction?.call(true);
       }
-      currentHeight = currentHeight.clamp(_minHeight, _iOSHtmlContentMaxHeight);
+      currentHeight = currentHeight.clamp(
+        widget.minHtmlContentHeight,
+        widget.maxHtmlContentHeight!,
+      );
     }
 
     if (_actualHeight != currentHeight) {
@@ -277,14 +260,17 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     }
 
     if (scrollHeight != null && scrollHeight > 0) {
-      double currentHeight = scrollHeight + _offsetHeight;
+      double currentHeight = scrollHeight + widget.offsetHtmlContentHeight;
 
-      if (PlatformInfo.isIOS) {
-        final bool isClipped = currentHeight > _iOSHtmlContentMaxHeight;
+      if (PlatformInfo.isIOS && widget.maxHtmlContentHeight != null) {
+        final bool isClipped = currentHeight > widget.maxHtmlContentHeight!;
         if (isClipped) {
           widget.onHtmlContentClippedAction?.call(true);
         }
-        currentHeight = currentHeight.clamp(_minHeight, _iOSHtmlContentMaxHeight);
+        currentHeight = currentHeight.clamp(
+          widget.minHtmlContentHeight,
+          widget.maxHtmlContentHeight!,
+        );
       }
 
       if (_actualHeight != currentHeight || newGestureRecognizers != null) {

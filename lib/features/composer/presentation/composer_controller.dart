@@ -138,6 +138,7 @@ class ComposerController extends BaseController
   final listFromIdentities = RxList<Identity>();
   final isEmailChanged = Rx<bool>(false);
   final isMarkAsImportant = Rx<bool>(false);
+  final isContentHeightExceeded = Rx<bool>(false);
 
   final LocalFilePickerInteractor _localFilePickerInteractor;
   final LocalImagePickerInteractor _localImagePickerInteractor;

@@ -33,7 +33,6 @@ class VacationController extends BaseController {
   final subjectTextController = TextEditingController();
   final subjectTextFocusNode = FocusNode();
   final richTextControllerForMobile = RichTextController();
-  final htmlEditorMinHeight = 150;
 
   final GlobalKey htmlKey = GlobalKey();
 
@@ -338,7 +337,7 @@ class VacationController extends BaseController {
     await Scrollable.ensureVisible(htmlKey.currentContext!);
     await Future.delayed(const Duration(milliseconds: 500), () {
       scrollController.animateTo(
-        scrollController.position.pixels + defaultKeyboardToolbarHeight + htmlEditorMinHeight,
+        scrollController.position.pixels + defaultKeyboardToolbarHeight + ConstantsUI.htmlContentMinHeight,
         duration: const Duration(milliseconds: 1),
         curve: Curves.linear,
       );

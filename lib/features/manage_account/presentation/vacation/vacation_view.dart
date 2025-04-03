@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/keyboard_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
@@ -503,7 +504,8 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
     } else {
       return HtmlEditor(
           key: controller.htmlKey,
-          minHeight: controller.htmlEditorMinHeight,
+          minHeight: ConstantsUI.htmlContentMinHeight.toInt(),
+          maxHeight: PlatformInfo.isIOS ? ConstantsUI.composerHtmlContentMaxHeight : null,
           addDefaultSelectionMenuItems: false,
           initialContent: controller.vacationMessageHtmlText ?? '',
           customStyleCss: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context)),

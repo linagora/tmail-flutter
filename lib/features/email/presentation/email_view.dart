@@ -1,3 +1,4 @@
+import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
@@ -32,6 +33,7 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_emp
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/mail_unsubscribed_banner.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/view_entire_message_with_message_clipped_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -390,7 +392,7 @@ class EmailView extends GetWidget<SingleEmailController> {
         else if (presentationEmail.id == controller.currentEmail?.id)
           Obx(() {
             if (controller.emailContents.value != null) {
-              String allEmailContents = controller.emailContents.value ?? '';
+              final allEmailContents = controller.emailContents.value ?? '';
 
               if (PlatformInfo.isWeb) {
                 return Expanded(
@@ -449,6 +451,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                               direction: AppUtils.getCurrentDirection(context),
                               contentPadding: 0,
                               useDefaultFont: true,
+                              maxHtmlContentHeight: ConstantsUI.htmlContentMaxHeight,
                               onMailtoDelegateAction: controller.openMailToLink,
                               onScrollHorizontalEnd: controller.toggleScrollPhysicsPagerView,
                               onLoadWidthHtmlViewer: controller.emailSupervisorController.updateScrollPhysicPageView,
@@ -458,38 +461,13 @@ class EmailView extends GetWidget<SingleEmailController> {
                         ),
                         Obx(() {
                           if (controller.isEmailContentClipped.isTrue) {
-                            return Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                                  child: Text(
-                                    AppLocalizations.of(context).messageClipped,
-                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                      color: AppColor.steelGray400,
-                                    ),
-                                  ),
-                                ),
-                                TMailButtonWidget.fromText(
-                                  text: AppLocalizations.of(context).viewEntireMessage.toUpperCase(),
-                                  textStyle: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                    color: AppColor.primaryColor,
-                                    fontSize: 14,
-                                  ),
-                                  margin: const EdgeInsetsDirectional.only(
-                                    start: 8,
-                                    end: 8,
-                                    bottom: 24,
-                                  ),
-                                  backgroundColor: Colors.transparent,
-                                  onTapActionCallback: () =>
-                                    controller.onViewEntireMessage(
-                                      context: context,
-                                      emailContent: allEmailContents,
-                                      presentationEmail: presentationEmail,
-                                    ),
-                                ),
-                              ],
+                            return ViewEntireMessageWithMessageClippedWidget(
+                              buttonActionName: AppLocalizations.of(context).viewEntireMessage.toUpperCase(),
+                              onViewEntireMessageAction: () => controller.onViewEntireMessage(
+                                context: context,
+                                emailContent: allEmailContents,
+                                presentationEmail: presentationEmail,
+                              ),
                             );
                           } else {
                             return const SizedBox.shrink();
@@ -515,7 +493,6 @@ class EmailView extends GetWidget<SingleEmailController> {
                       onMailtoDelegateAction: controller.openMailToLink,
                       onScrollHorizontalEnd: controller.toggleScrollPhysicsPagerView,
                       onLoadWidthHtmlViewer: controller.emailSupervisorController.updateScrollPhysicPageView,
-                      onHtmlContentClippedAction: controller.onHtmlContentClippedAction,
                     );
                   })
                 );
