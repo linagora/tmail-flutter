@@ -70,4 +70,16 @@ class MailboxMenuRobot extends CoreRobot {
       })
       .tap();
   }
+
+  Future<void> tapRecoverDeletedMessages() async {
+    await $(AppLocalizations().recoverDeletedMessages).tap();
+  }
+
+  Future<void> tapConfirmRecoverDeletedMessages() async {
+    if (await $.native.isPermissionDialogVisible(timeout: const Duration(seconds: 2))) {
+      await $.native.grantPermissionWhenInUse();
+    }
+    await $(AppLocalizations().restore).tap();
+    await $.pumpAndSettle();
+  }
 }

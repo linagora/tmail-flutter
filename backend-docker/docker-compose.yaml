@@ -10,6 +10,8 @@ services:
       - ./mailetcontainer.xml:/root/conf/mailetcontainer.xml
       - ./imapserver.xml:/root/conf/imapserver.xml
       - ./jmap.properties:/root/conf/jmap.properties
+      - ./deletedMessageVault.properties:/root/conf/deletedMessageVault.properties
+      - ./listeners.xml:/root/conf/listeners.xml
       - ./linagora-ecosystem.properties:/root/conf/linagora-ecosystem.properties
       - ../provisioning/integration_test/provisioning.sh:/root/conf/integration_test/provisioning.sh
       - ../provisioning/integration_test/eml:/root/conf/integration_test/eml

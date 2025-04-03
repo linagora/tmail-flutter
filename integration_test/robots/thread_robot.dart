@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart'
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
 
@@ -59,5 +60,22 @@ class ThreadRobot extends CoreRobot {
 
   Future<void> selectStarredFilter() async {
     await $(#filter_email_starred).tap();
+  }
+
+  Future<void> tapEmptyTrashBanner() async {
+    await $(AppLocalizations().empty_trash_now).tap();
+  }
+
+  Future<void> confirmEmptyTrash() async {
+    await $(AppLocalizations().delete_all).tap();
+  }
+
+  Future<void> tapEmptySpamBanner() async {
+    await $(AppLocalizations().deleteAllSpamEmailsNow).waitUntilVisible();
+    await $(AppLocalizations().deleteAllSpamEmailsNow).tap();
+  }
+
+  Future<void> confirmEmptySpam() async {
+    await $(AppLocalizations().delete_all).tap();
   }
 }
