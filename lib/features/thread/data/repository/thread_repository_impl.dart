@@ -432,4 +432,13 @@ class ThreadRepositoryImpl extends ThreadRepository {
 
     return listEmailIdDeleted;
   }
+
+  @override
+  Future<void> clearEmailCacheAndStateCache(
+    AccountId accountId,
+    Session session,
+  ) => mapDataSource[DataSourceType.local]!.clearEmailCacheAndStateCache(
+    accountId,
+    session,
+  );
 }

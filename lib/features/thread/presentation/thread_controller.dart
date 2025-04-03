@@ -48,6 +48,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/get_email_request.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/domain/state/clean_and_get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_email_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
@@ -56,6 +57,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/refresh_all_email_sta
 import 'package:tmail_ui_user/features/thread/domain/state/refresh_changes_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_more_email_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
@@ -89,6 +91,7 @@ class ThreadController extends BaseController with EmailActionController {
   final SearchEmailInteractor _searchEmailInteractor;
   final SearchMoreEmailInteractor _searchMoreEmailInteractor;
   final GetEmailByIdInteractor _getEmailByIdInteractor;
+  final CleanAndGetEmailsInMailboxInteractor cleanAndGetEmailsInMailboxInteractor;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
 
@@ -101,11 +104,11 @@ class ThreadController extends BaseController with EmailActionController {
   bool canSearchMore = false;
   MailboxId? _currentMemoryMailboxId;
   final ScrollController listEmailController = ScrollController();
-  final FocusNode focusNodeKeyBoard = FocusNode();
   final latestEmailSelectedOrUnselected = Rxn<PresentationEmail>();
   @visibleForTesting
   bool isListEmailScrollViewJumping = false;
   WebSocketQueueHandler? _webSocketQueueHandler;
+  FocusNode? focusNodeKeyBoard;
 
   StreamSubscription<html.Event>? _resizeBrowserStreamSubscription;
 
@@ -130,12 +133,14 @@ class ThreadController extends BaseController with EmailActionController {
     this._searchEmailInteractor,
     this._searchMoreEmailInteractor,
     this._getEmailByIdInteractor,
+    this.cleanAndGetEmailsInMailboxInteractor,
   );
 
   @override
   void onInit() {
     _registerObxStreamListener();
     if (PlatformInfo.isWeb) {
+      focusNodeKeyBoard = FocusNode();
       _registerBrowserResizeListener();
     }
     _initWebSocketQueueHandler();
@@ -152,7 +157,8 @@ class ThreadController extends BaseController with EmailActionController {
   void onClose() {
     _currentMemoryMailboxId = null;
     listEmailController.dispose();
-    focusNodeKeyBoard.dispose();
+    focusNodeKeyBoard?.dispose();
+    focusNodeKeyBoard = null;
     if (PlatformInfo.isWeb) {
       _resizeBrowserStreamSubscription?.cancel();
     }
@@ -211,7 +217,7 @@ class ThreadController extends BaseController with EmailActionController {
     } else if (failure is GetEmailByIdFailure) {
       openingEmail.value = false;
       popAndPush(AppRoutes.unknownRoutePage);
-    } else if (failure is GetAllEmailFailure) {
+    } else if (failure is GetAllEmailFailure || failure is CleanAndGetAllEmailFailure) {
       mailboxDashBoardController.updateRefreshAllEmailState(Left(RefreshAllEmailFailure()));
       canLoadMore = true;
     }
@@ -262,7 +268,7 @@ class ThreadController extends BaseController with EmailActionController {
         _currentMemoryMailboxId = mailbox.id;
         consumeState(Stream.value(Right(GetAllEmailLoading())));
         _resetToOriginalValue();
-        _getAllEmailAction(
+        getAllEmailAction(
           getLatestChanges: mailboxDashBoardController.isFirstSessionLoad,
         );
         mailboxDashBoardController.setIsFirstSessionLoad(false);
@@ -542,7 +548,7 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  void _getAllEmailAction({
+  void getAllEmailAction({
     bool getLatestChanges = true,
   }) {
     log('ThreadController::_getAllEmailAction:getLatestChanges = $getLatestChanges');
@@ -553,7 +559,7 @@ class ThreadController extends BaseController with EmailActionController {
         limit: ThreadConstants.defaultLimit,
         sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
         emailFilter: EmailFilter(
-          filter: _getFilterCondition(mailboxIdSelected: selectedMailboxId),
+          filter: getFilterCondition(mailboxIdSelected: selectedMailboxId),
           filterOption: mailboxDashBoardController.filterMessageOption.value,
           mailboxId: selectedMailboxId
         ),
@@ -566,16 +572,7 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  @visibleForTesting
-  EmailFilterCondition getFilterCondition({
-    PresentationEmail? oldestEmail,
-    MailboxId? mailboxIdSelected,
-  }) => _getFilterCondition(
-    oldestEmail: oldestEmail,
-    mailboxIdSelected: mailboxIdSelected,
-  );
-
-  EmailFilterCondition _getFilterCondition({PresentationEmail? oldestEmail, MailboxId? mailboxIdSelected}) {
+  EmailFilterCondition getFilterCondition({PresentationEmail? oldestEmail, MailboxId? mailboxIdSelected}) {
     switch(mailboxDashBoardController.filterMessageOption.value) {
       case FilterMessageOption.all:
         return EmailFilterCondition(
@@ -617,7 +614,7 @@ class ThreadController extends BaseController with EmailActionController {
     if (searchController.isSearchEmailRunning) {
       _searchEmail(limit: limitEmailFetched);
     } else {
-      _getAllEmailAction();
+      getAllEmailAction();
     }
   }
 
@@ -689,7 +686,7 @@ class ThreadController extends BaseController with EmailActionController {
       position: _searchEmailFilter.position,
       sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
       filter: _searchEmailFilter.mappingToEmailFilterCondition(
-        moreFilterCondition: _getFilterCondition(),
+        moreFilterCondition: getFilterCondition(),
       ),
       properties: EmailUtils.getPropertiesForEmailGetMethod(
         _session!,
@@ -724,7 +721,7 @@ class ThreadController extends BaseController with EmailActionController {
       ),
       propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
       emailFilter: EmailFilter(
-        filter: _getFilterCondition(mailboxIdSelected: selectedMailboxId),
+        filter: getFilterCondition(mailboxIdSelected: selectedMailboxId),
         filterOption: mailboxDashBoardController.filterMessageOption.value,
         mailboxId: selectedMailboxId,
       ),
@@ -759,7 +756,7 @@ class ThreadController extends BaseController with EmailActionController {
           limit: ThreadConstants.defaultLimit,
           sort: EmailSortOrderType.mostRecent.getSortOrder().toNullable(),
           filterOption: mailboxDashBoardController.filterMessageOption.value,
-          filter: _getFilterCondition(oldestEmail: oldestEmail, mailboxIdSelected: selectedMailboxId),
+          filter: getFilterCondition(oldestEmail: oldestEmail, mailboxIdSelected: selectedMailboxId),
           properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
           lastEmailId: oldestEmail?.id
         )
@@ -873,8 +870,8 @@ class ThreadController extends BaseController with EmailActionController {
     latestEmailSelectedOrUnselected.value = emailsInCurrentMailbox
       .firstWhereOrNull((e) => e.id == presentationEmailSelected.id);
 
-    if (!PlatformInfo.isMobile) {
-      focusNodeKeyBoard.requestFocus();
+    if (PlatformInfo.isWeb) {
+      focusNodeKeyBoard?.requestFocus();
     }
 
     if (_isUnSelectedAll()) {
@@ -986,7 +983,7 @@ class ThreadController extends BaseController with EmailActionController {
         position: _searchEmailFilter.position,
         sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
         filter: _searchEmailFilter.mappingToEmailFilterCondition(
-          moreFilterCondition: _getFilterCondition()
+          moreFilterCondition: getFilterCondition()
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
         needRefreshSearchState: needRefreshSearchState
@@ -1066,7 +1063,7 @@ class ThreadController extends BaseController with EmailActionController {
         sort: _searchEmailFilter.sortOrderType.getSortOrder().toNullable(),
         position: _searchEmailFilter.position,
         filter: _searchEmailFilter.mappingToEmailFilterCondition(
-          moreFilterCondition: _getFilterCondition()
+          moreFilterCondition: getFilterCondition()
         ),
         properties: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
         lastEmailId: lastEmail?.id

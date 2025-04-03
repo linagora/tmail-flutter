@@ -4625,4 +4625,60 @@ class AppLocalizations {
       name: 'retry',
     );
   }
+
+  String get refresh {
+    return Intl.message(
+      'Refresh',
+      name: 'refresh',
+    );
+  }
+
+  String get deepRefresh {
+    return Intl.message(
+      'Deep refresh',
+      name: 'deepRefresh',
+    );
+  }
+
+  String get pullDownToRefresh {
+    return Intl.message(
+      'Pull down to refresh',
+      name: 'pullDownToRefresh',
+    );
+  }
+
+  String get refreshing {
+    return Intl.message(
+      'Refreshing',
+      name: 'refreshing',
+    );
+  }
+
+  String get pulling {
+    return Intl.message(
+      'Pulling',
+      name: 'pulling',
+    );
+  }
+
+  String get releaseTo {
+    return Intl.message(
+      'Release to',
+      name: 'releaseTo',
+    );
+  }
+
+  String get pullFurtherFor {
+    return Intl.message(
+      'Pull further for',
+      name: 'pullFurtherFor',
+    );
+  }
+
+  String get pullHarderFor {
+    return Intl.message(
+      'Pull harder for',
+      name: 'pullHarderFor',
+    );
+  }
 }

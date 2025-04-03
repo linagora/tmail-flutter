@@ -1,5 +1,6 @@
 import 'package:fcm/model/type_name.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/account_id_extensions.dart';
@@ -61,5 +62,21 @@ class FCMCacheManager {
 
   Future<void> deleteFirebaseRegistration() async {
     await _firebaseRegistrationCacheClient.deleteItem(FirebaseRegistrationCache.keyCacheValue);
+  }
+
+  Future<void> clearAllEmailState(
+    AccountId accountId,
+    Session session,
+  ) async {
+    await deleteStateToRefresh(
+      accountId,
+      session.username,
+      TypeName.emailDelivery,
+    );
+    await deleteStateToRefresh(
+      accountId,
+      session.username,
+      TypeName.emailType,
+    );
   }
 }

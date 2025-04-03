@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-03-31T03:40:41.454034",
+  "@@last_modified": "2025-04-03T14:19:11.171517",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2968,6 +2968,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "errorWhileFetchingSubaddress": "Error while fetching the subaddress",
+  "@errorWhileFetchingSubaddress": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "connectedToTheInternet": "Connected to the internet",
   "@connectedToTheInternet": {
     "type": "text",
@@ -4396,6 +4402,54 @@
   },
   "retry": "Retry",
   "@retry": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "refresh": "Refresh",
+  "@refresh": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deepRefresh": "Deep refresh",
+  "@deepRefresh": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pullDownToRefresh": "Pull down to refresh",
+  "@pullDownToRefresh": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "refreshing": "Refreshing",
+  "@refreshing": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pulling": "Pulling",
+  "@pulling": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "releaseTo": "Release to",
+  "@releaseTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pullFurtherFor": "Pull further for",
+  "@pullFurtherFor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pullHarderFor": "Pull harder for",
+  "@pullHarderFor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

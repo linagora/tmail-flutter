@@ -1,10 +1,12 @@
 import 'package:core/data/model/source_type/data_source_type.dart';
+import 'package:core/utils/file_utils.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/email/domain/repository/email_repository.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource/state_datasource.dart';
 import 'package:tmail_ui_user/features/mailbox/data/datasource_impl/state_datasource_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
+import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource/thread_datasource.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/local_thread_datasource_impl.dart';
 import 'package:tmail_ui_user/features/thread/data/datasource_impl/thread_datasource_impl.dart';
@@ -13,6 +15,7 @@ import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_isolate_worker.dart';
 import 'package:tmail_ui_user/features/thread/data/repository/thread_repository_impl.dart';
 import 'package:tmail_ui_user/features/thread/domain/repository/thread_repository.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/load_more_emails_in_mailbox_interactor.dart';
@@ -35,6 +38,7 @@ class ThreadBindings extends BaseBindings {
       Get.find<SearchEmailInteractor>(),
       Get.find<SearchMoreEmailInteractor>(),
       Get.find<GetEmailByIdInteractor>(),
+      Get.find<CleanAndGetEmailsInMailboxInteractor>(),
     ));
   }
 
@@ -50,7 +54,13 @@ class ThreadBindings extends BaseBindings {
       Get.find<ThreadAPI>(),
       Get.find<ThreadIsolateWorker>(),
       Get.find<RemoteExceptionThrower>()));
-    Get.lazyPut(() => LocalThreadDataSourceImpl(Get.find<EmailCacheManager>(), Get.find<CacheExceptionThrower>()));
+    Get.lazyPut(() => LocalThreadDataSourceImpl(
+      Get.find<EmailCacheManager>(),
+      Get.find<FCMCacheManager>(),
+      Get.find<StateCacheManager>(),
+      Get.find<FileUtils>(),
+      Get.find<CacheExceptionThrower>(),
+    ));
     Get.lazyPut(() => StateDataSourceImpl(
       Get.find<StateCacheManager>(),
       Get.find<IOSSharingManager>(),
@@ -66,6 +76,10 @@ class ThreadBindings extends BaseBindings {
     Get.lazyPut(() => SearchEmailInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => SearchMoreEmailInteractor(Get.find<ThreadRepository>()));
     Get.lazyPut(() => GetEmailByIdInteractor(Get.find<ThreadRepository>(), Get.find<EmailRepository>()));
+    Get.lazyPut(() => CleanAndGetEmailsInMailboxInteractor(
+      Get.find<ThreadRepository>(),
+      Get.find<GetEmailsInMailboxInteractor>(),
+    ));
   }
 
   @override

@@ -102,6 +102,8 @@ dependencies:
 
   win32: 5.5.1
 
+  pull_to_refresh: 2.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

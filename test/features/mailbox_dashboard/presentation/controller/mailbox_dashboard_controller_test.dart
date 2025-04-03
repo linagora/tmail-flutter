@@ -81,6 +81,7 @@ import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.
 import 'package:tmail_ui_user/features/thread/domain/model/email_filter.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_spam_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
@@ -182,6 +183,7 @@ const fallbackGenerators = {
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<GetIdentityCacheOnWebInteractor>(),
   MockSpec<ComposerManager>(fallbackGenerators: fallbackGenerators),
+  MockSpec<CleanAndGetEmailsInMailboxInteractor>(),
 ])
 void main() {
   // mock mailbox dashboard controller direct dependencies
@@ -203,6 +205,7 @@ void main() {
   final deleteMultipleEmailsPermanentlyInteractor =
       MockDeleteMultipleEmailsPermanentlyInteractor();
   final getEmailByIdInteractor = MockGetEmailByIdInteractor();
+  final cleanAndGetEmailsInMailboxInteractor = MockCleanAndGetEmailsInMailboxInteractor();
   final sendEmailInteractor = MockSendEmailInteractor();
   final storeSendingEmailInteractor = MockStoreSendingEmailInteractor();
   final updateSendingEmailInteractor = MockUpdateSendingEmailInteractor();
@@ -391,7 +394,8 @@ void main() {
         loadMoreEmailsInMailboxInteractor,
         searchEmailInteractor,
         searchMoreEmailInteractor,
-        getEmailByIdInteractor);
+        getEmailByIdInteractor,
+        cleanAndGetEmailsInMailboxInteractor);
       Get.put(threadController);
 
       advancedFilterController = AdvancedFilterController();
@@ -622,7 +626,9 @@ void main() {
           loadMoreEmailsInMailboxInteractor,
           searchEmailInteractor,
           searchMoreEmailInteractor,
-          getEmailByIdInteractor);
+          getEmailByIdInteractor,
+          cleanAndGetEmailsInMailboxInteractor,
+      );
       Get.put(threadController);
 
       advancedFilterController = AdvancedFilterController();

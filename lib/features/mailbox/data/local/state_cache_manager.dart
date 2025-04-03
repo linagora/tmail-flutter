@@ -25,5 +25,10 @@ class StateCacheManager {
     return await _stateCacheClient.insertItem(stateKey, stateCache);
   }
 
+  Future<void> deleteState(AccountId accountId, UserName userName, StateType stateType) async {
+    final stateKey = TupleKey(stateType.name, accountId.asString, userName.value).encodeKey;
+    return await _stateCacheClient.deleteItem(stateKey);
+  }
+
   Future<void> closeStateHiveCacheBox() => _stateCacheClient.closeBox();
 }
