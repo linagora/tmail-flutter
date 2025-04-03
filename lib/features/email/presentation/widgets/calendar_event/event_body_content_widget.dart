@@ -1,4 +1,5 @@
 
+import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
@@ -72,6 +73,9 @@ class EventBodyContentWidget extends StatelessWidget {
               return HtmlContentViewer(
                 contentHtml: content,
                 initialWidth: constraints.maxWidth,
+                maxHtmlContentHeight: PlatformInfo.isIOS
+                  ? ConstantsUI.htmlContentMaxHeight
+                  : null,
                 direction: AppUtils.getCurrentDirection(context),
                 onMailtoDelegateAction: onMailtoDelegateAction
               );

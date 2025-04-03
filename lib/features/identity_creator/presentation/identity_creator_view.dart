@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/capitalize_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
@@ -555,7 +556,8 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
   Widget _buildHtmlEditor(BuildContext context, {String? initialContent}) {
     return HtmlEditor(
       key: controller.htmlKey,
-      minHeight: controller.htmlEditorMinHeight,
+      minHeight: ConstantsUI.htmlContentMinHeight.toInt(),
+      maxHeight: PlatformInfo.isIOS ? ConstantsUI.composerHtmlContentMaxHeight : null,
       addDefaultSelectionMenuItems: false,
       initialContent: initialContent ?? '',
       customStyleCss: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context)),

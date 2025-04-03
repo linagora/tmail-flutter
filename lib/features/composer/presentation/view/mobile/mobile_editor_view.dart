@@ -18,6 +18,7 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
   final Either<Failure, Success>? contentViewState;
   final OnCreatedEditorAction onCreatedEditorAction;
   final OnLoadCompletedEditorAction onLoadCompletedEditorAction;
+  final OnEditorContentHeightChanged? onEditorContentHeightChanged;
 
   const MobileEditorView({
     super.key,
@@ -25,6 +26,7 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
     required this.onLoadCompletedEditorAction,
     this.arguments,
     this.contentViewState,
+    this.onEditorContentHeightChanged,
   });
 
   @override
@@ -41,7 +43,8 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
           content: HtmlExtension.editorStartTags,
           direction: AppUtils.getCurrentDirection(context),
           onCreatedEditorAction: onCreatedEditorAction,
-          onLoadCompletedEditorAction: onLoadCompletedEditorAction
+          onLoadCompletedEditorAction: onLoadCompletedEditorAction,
+          onEditorContentHeightChanged: onEditorContentHeightChanged,
         );
       case EmailActionType.editDraft:
       case EmailActionType.editSendingEmail:
@@ -58,7 +61,8 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
             content: HtmlExtension.editorStartTags,
             direction: AppUtils.getCurrentDirection(context),
             onCreatedEditorAction: onCreatedEditorAction,
-            onLoadCompletedEditorAction: onLoadCompletedEditorAction
+            onLoadCompletedEditorAction: onLoadCompletedEditorAction,
+            onEditorContentHeightChanged: onEditorContentHeightChanged,
           ),
           (success) {
             if (success is GetEmailContentLoading) {
@@ -77,7 +81,8 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
                 content: newContent,
                 direction: AppUtils.getCurrentDirection(context),
                 onCreatedEditorAction: onCreatedEditorAction,
-                onLoadCompletedEditorAction: onLoadCompletedEditorAction
+                onLoadCompletedEditorAction: onLoadCompletedEditorAction,
+                onEditorContentHeightChanged: onEditorContentHeightChanged,
               );
             }
           }
@@ -102,7 +107,8 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
               content: emailContentQuoted,
               direction: AppUtils.getCurrentDirection(context),
               onCreatedEditorAction: onCreatedEditorAction,
-              onLoadCompletedEditorAction: onLoadCompletedEditorAction
+              onLoadCompletedEditorAction: onLoadCompletedEditorAction,
+              onEditorContentHeightChanged: onEditorContentHeightChanged,
             );
           },
           (success) {
@@ -122,7 +128,8 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
                 content: emailContentQuoted,
                 direction: AppUtils.getCurrentDirection(context),
                 onCreatedEditorAction: onCreatedEditorAction,
-                onLoadCompletedEditorAction: onLoadCompletedEditorAction
+                onLoadCompletedEditorAction: onLoadCompletedEditorAction,
+                onEditorContentHeightChanged: onEditorContentHeightChanged,
               );
             }
           }
@@ -132,7 +139,8 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
           content: HtmlExtension.editorStartTags,
           direction: AppUtils.getCurrentDirection(context),
           onCreatedEditorAction: onCreatedEditorAction,
-          onLoadCompletedEditorAction: onLoadCompletedEditorAction
+          onLoadCompletedEditorAction: onLoadCompletedEditorAction,
+          onEditorContentHeightChanged: onEditorContentHeightChanged,
         );
     }
   }
