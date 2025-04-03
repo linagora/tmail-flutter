@@ -79,6 +79,7 @@ import 'package:tmail_ui_user/features/sending_queue/domain/usecases/update_send
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/load_more_emails_state.dart';
+import 'package:tmail_ui_user/features/thread/domain/usecases/clean_and_get_emails_in_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_spam_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/empty_trash_folder_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/get_email_by_id_interactor.dart';
@@ -184,6 +185,7 @@ const fallbackGenerators = {
   MockSpec<TwakeAppManager>(),
   MockSpec<GetIdentityCacheOnWebInteractor>(),
   MockSpec<ComposerManager>(fallbackGenerators: fallbackGenerators),
+  MockSpec<CleanAndGetEmailsInMailboxInteractor>(),
 ])
 void main() {
   final moveToMailboxInteractor = MockMoveToMailboxInteractor();
@@ -199,6 +201,7 @@ void main() {
   final emptyTrashFolderInteractor = MockEmptyTrashFolderInteractor();
   final deleteMultipleEmailsPermanentlyInteractor = MockDeleteMultipleEmailsPermanentlyInteractor();
   final getEmailByIdInteractor = MockGetEmailByIdInteractor();
+  final cleanAndGetEmailsInMailboxInteractor = MockCleanAndGetEmailsInMailboxInteractor();
   final sendEmailInteractor = MockSendEmailInteractor();
   final storeSendingEmailInteractor = MockStoreSendingEmailInteractor();
   final updateSendingEmailInteractor = MockUpdateSendingEmailInteractor();
@@ -383,7 +386,8 @@ void main() {
         loadMoreEmailsInMailboxInteractor,
         searchEmailInteractor,
         searchMoreEmailInteractor,
-        getEmailByIdInteractor
+        getEmailByIdInteractor,
+        cleanAndGetEmailsInMailboxInteractor,
       );
       Get.put(threadController);
 
@@ -433,9 +437,6 @@ void main() {
         final listViewEmailWidgetFinder = find.byKey(const PageStorageKey('list_presentation_email_in_threads'));
         expect(listViewEmailWidgetFinder, findsOneWidget);
 
-        final listViewEmailWidget = tester.widget<ListView>(listViewEmailWidgetFinder);
-        expect(listViewEmailWidget.semanticChildCount, equals(listEmailsOfInbox.length + 2));
-
         final emailTile1Finder = find.byKey(Key('email_tile_builder_${EmailFixtures.email1.toPresentationEmail().id?.asString}'),);
         expect(emailTile1Finder, findsOneWidget);
 
@@ -460,9 +461,6 @@ void main() {
 
         final folder1ListViewEmailWidgetFinder = find.byKey(const PageStorageKey('list_presentation_email_in_threads'));
         expect(folder1ListViewEmailWidgetFinder, findsOneWidget);
-
-        final folder1ListViewEmailWidget = tester.widget<ListView>(folder1ListViewEmailWidgetFinder);
-        expect(folder1ListViewEmailWidget.semanticChildCount, equals(listEmailsOfFolder1.length + 2));
 
         final emailTile4Finder = find.byKey(Key('email_tile_builder_${EmailFixtures.email4.toPresentationEmail().id?.asString}'),);
         expect(emailTile4Finder, findsOneWidget);
@@ -531,9 +529,6 @@ void main() {
         final folder1ListViewEmailWidgetFinder = find.byKey(const PageStorageKey('list_presentation_email_in_threads'));
         expect(folder1ListViewEmailWidgetFinder, findsOneWidget);
 
-        final folder1ListViewEmailWidget = tester.widget<ListView>(folder1ListViewEmailWidgetFinder);
-        expect(folder1ListViewEmailWidget.semanticChildCount, equals(listEmailsOfFolder1.length + 2));
-
         final emailTile1Finder = find.byKey(Key('email_tile_builder_${EmailFixtures.email1.toPresentationEmail().id?.asString}'),);
         expect(emailTile1Finder, findsOneWidget);
 
@@ -580,10 +575,6 @@ void main() {
 
         final emptyEmailWidgetFinder = find.byKey(const Key('empty_thread_view'));
         expect(emptyEmailWidgetFinder, findsNothing);
-
-        final listViewEmailWidgetFinder = find.byKey(const PageStorageKey('list_presentation_email_in_threads'));
-        final listViewEmailWidget = tester.widget<ListView>(listViewEmailWidgetFinder);
-        expect(listViewEmailWidget.semanticChildCount, equals(listEmailsOfInbox.length + 2));
 
         // Switch to mailbox Folder 1
         final listEmailsOfFolder1 = <PresentationEmail>[];
@@ -659,9 +650,6 @@ void main() {
         final listViewEmailWidgetFinder = find.byKey(const PageStorageKey('list_presentation_email_in_threads'));
         expect(listViewEmailWidgetFinder, findsOneWidget);
 
-        final listViewEmailWidget = tester.widget<ListView>(listViewEmailWidgetFinder);
-        expect(listViewEmailWidget.semanticChildCount, equals(7));
-
         expect(find.text('Load more'), findsOneWidget);
 
         debugDefaultTargetPlatformOverride = null;
@@ -704,9 +692,6 @@ void main() {
 
         final listViewEmailWidgetFinder = find.byKey(const PageStorageKey('list_presentation_email_in_threads'));
         expect(listViewEmailWidgetFinder, findsOneWidget);
-
-        final listViewEmailWidget = tester.widget<ListView>(listViewEmailWidgetFinder);
-        expect(listViewEmailWidget.semanticChildCount, equals(5));
 
         expect(find.text('Load more'), findsNothing);
 

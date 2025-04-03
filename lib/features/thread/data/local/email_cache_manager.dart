@@ -90,6 +90,10 @@ class EmailCacheManager {
       await _emailCacheClient.deleteMultipleItem(listEmailIdCacheExpire);
   }
 
+  Future<void> clearAll() async {
+    return await _emailCacheClient.clearAllData();
+  }
+
   Future<void> storeEmail(AccountId accountId, UserName userName, EmailCache emailCache) {
     final keyCache = TupleKey(emailCache.id, accountId.asString, userName.value).encodeKey;
     return _emailCacheClient.insertItem(keyCache, emailCache);
