@@ -1,4 +1,3 @@
-
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
@@ -7,6 +6,7 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/label_mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_view.dart';
+import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 
@@ -63,6 +63,19 @@ class MailboxMenuRobot extends CoreRobot {
         return widget.icon == ImagePaths().icArrowRight;
       })
       .tap();
+  }
+
+  Future<void> openMailboxSearch() async {
+    await $(TMailButtonWidget)
+      .which<TMailButtonWidget>((widget) {
+        return widget.icon == ImagePaths().icSearchBar;
+      })
+      .tap();
+  }
+
+  Future<void> searchMailbox(String query) async {
+    await $(SearchMailboxView).$(TextFieldBuilder).enterText(query);
+    await $.pumpAndSettle();
   }
 
   Future<void> tapHideMailbox() async {
