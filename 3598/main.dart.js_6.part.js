@@ -87,18 +87,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._needsSemanticsUpdate = true;
       _._semantics = null;
     },
-    log1(value, level) {
-      switch (level.index) {
-        case 1:
-          break;
-        case 0:
-          break;
-      }
-    },
-    Level0: function Level0(t0, t1) {
-      this.index = t0;
-      this._name = t1;
-    },
     LauncherApplicationMixin: function LauncherApplicationMixin() {
     },
     PopupMenuWidgetMixin: function PopupMenuWidgetMixin() {
@@ -441,11 +429,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return this.super$RenderProxyBoxMixin$hitTestChildren(result, position);
     }
   };
-  C.Level0.prototype = {
-    _enumToString$0() {
-      return "Level." + this._name;
-    }
-  };
   C.LauncherApplicationMixin.prototype = {
     launchApplication$4$androidPackageId$iosScheme$iosStoreLink$uri(androidPackageId, iosScheme, iosStoreLink, uri) {
       return this.launchApplication$body$LauncherApplicationMixin(androidPackageId, iosScheme, iosStoreLink, uri);
@@ -480,7 +463,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               $async$handler = 2;
               $async$exception = $async$currentError;
               e = A.unwrapException($async$exception);
-              C.log1("LauncherApplicationMixin::launchApplication:Exception = " + A.S(e), D.Level_10);
+              A.log1("LauncherApplicationMixin::launchApplication:Exception = " + A.S(e), B.Level_10);
               // goto after finally
               $async$goto = 5;
               break;
@@ -853,7 +836,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1863
+    $signature: 1866
   };
   C._AppGridDashboardIconState_build_closure.prototype = {
     call$3(context, isExpanded, child) {
@@ -869,7 +852,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.imagePaths;
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 1864
+    $signature: 1867
   };
   C.AppGridDashboardItem_build_closure.prototype = {
     call$0() {
@@ -917,7 +900,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 391
+    $signature: 392
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -942,7 +925,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return new C.AppGridDashboardIcon(t1.imagePaths, t2, null);
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 3
+    $signature: 4
   };
   C.NavigationBarWidget_build_closure0.prototype = {
     call$0() {
@@ -967,7 +950,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return new C.AppGridDashboardIcon(t1.imagePaths, t2, null);
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 3
+    $signature: 4
   };
   C.DefaultLinkDelegate_build_closure.prototype = {
     call$0() {
@@ -995,7 +978,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(C.PortalLinkScope, A.InheritedWidget);
     _inherit(C.PortalTheater, A.SingleChildRenderObjectWidget);
     _inherit(C.RenderPortalTheater, A.RenderProxyBox);
-    _inherit(C.Level0, A._Enum);
     _inheritMany(A.Closure2Args, [C.LinkBrowserWidget_build_closure, C.NavigationBarWidget_build_closure]);
     _inheritMany(A.Closure, [C._AppGridDashboardIconState_build_closure, C.AppDashboardOverlay_build_closure]);
     _inherit(C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin_ImageLoaderMixin, C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin);
@@ -1046,8 +1028,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_12_5_12_5 = new A.EdgeInsets(12, 5, 12, 5);
     D.EdgeInsets_32_16_32_16 = new A.EdgeInsets(32, 16, 32, 16);
     D.EdgeInsets_8_5_8_5 = new A.EdgeInsets(8, 5, 8, 5);
-    D.Level_0 = new C.Level0(0, "info");
-    D.Level_10 = new C.Level0(1, "error");
     D.PageStorageKey_mailbox_list = new A.PageStorageKey("mailbox_list", A.findType("PageStorageKey<String>"));
     D.SizedBox_24_null_null_null = new A.SizedBox(24, null, null, null);
     D.SizedBox_32_null_null_null = new A.SizedBox(32, null, null, null);
@@ -1064,5 +1044,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "omZ8qhQPIuo1plvrOu0TJ4P26lU=");
+})($__dart_deferred_initializers__, "9/9jhEuBT6EzfIoKwtUqmYANgP0=");
 ;
