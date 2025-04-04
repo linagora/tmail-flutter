@@ -90,28 +90,27 @@ class FileUtils {
     return emailContent;
   }
 
-  Future<bool> isFileExisted({
-    required String nameFile,
-    String? folderPath,
-    String? extensionFile
-  }) async {
-    final internalStorageDirPath = await _getInternalStorageDirPath(
-      nameFile: nameFile,
-      folderPath: folderPath,
-      extensionFile: extensionFile
-    );
-
-    return File(internalStorageDirPath).exists();
+  Future<Directory?> getFolder(String folderName) async {
+    try {
+      String folderPath = (await getApplicationDocumentsDirectory()).absolute.path;
+      folderPath = '$folderPath/$folderName';
+      log('FileUtils::getFolder(): $folderPath');
+      return Directory(folderPath);
+    } catch (e) {
+      logError('FileUtils::getFolder():EXCEPTION: $e');
+      return null;
+    }
   }
 
   Future<void> removeFolder(String folderName) async {
     try {
-      String folderPath = (await getApplicationDocumentsDirectory()).absolute.path;
-      folderPath = '$folderPath/$folderName';
-      log('FileUtils::removeFolder():folderPath: $folderPath');
-      final dir = Directory(folderPath);
+      final dir = await getFolder(folderName);
+      if (dir == null) return;
+
       if (await dir.exists()) {
         await dir.delete(recursive: true);
+        await dir.create(); // Re-create folder
+        log('FileUtils::removeFolder: Remove ${dir.path} success');
       }
     } catch (e) {
       logError('FileUtils::removeFolder():EXCEPTION: $e');

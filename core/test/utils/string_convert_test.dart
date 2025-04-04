@@ -373,6 +373,14 @@ void main() {
       expect(StringConvert.isTextTable(table), isTrue);
     });
 
+    test('should return true for separator-only Markdown', () {
+      const text = """
+        |----------|----------|
+        |----------|----------|
+      """;
+      expect(StringConvert.isTextTable(text), isTrue);
+    });
+
     // ---------------------------
     // Test cases cho ASCII art tables
     // ---------------------------
@@ -435,14 +443,6 @@ void main() {
 
     test('should return false for whitespace-only string', () {
       expect(StringConvert.isTextTable('   \n   \n   '), isFalse);
-    });
-
-    test('should return true for separator-only Markdown', () {
-      const text = """
-        |----------|----------|
-        |----------|----------|
-      """;
-      expect(StringConvert.isTextTable(text), isTrue);
     });
 
     test('should return false for single-line Markdown', () {
