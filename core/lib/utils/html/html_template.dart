@@ -216,4 +216,6 @@ class HtmlTemplate {
       }
      </style>
   ''';
+
+  static const String markDownAndASCIIArtStyleCSS = 'display: block; font-family: monospace; white-space: pre; margin: 1em 0px;';
 }
