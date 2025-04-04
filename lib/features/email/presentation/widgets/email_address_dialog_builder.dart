@@ -52,6 +52,7 @@ class EmailAddressDialogBuilder extends StatelessWidget {
             Align(
               alignment: Alignment.centerRight,
               child: TMailButtonWidget.fromIcon(
+                key: const Key('email_address_dialog_close_button'),
                 onTapActionCallback: onCloseDialogAction,
                 icon: imagePaths.icCircleClose,
                 backgroundColor: Colors.transparent,
