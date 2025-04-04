@@ -244,7 +244,7 @@ class ComposerController extends BaseController
   ButtonState _saveToDraftButtonState = ButtonState.enabled;
   ButtonState _sendButtonState = ButtonState.enabled;
   ButtonState printDraftButtonState = ButtonState.enabled;
-  int? _savedEmailDraftHash;
+  int? savedEmailDraftHash;
   bool restoringSignatureButton = false;
   bool synchronizeInitDraftHash = false;
   GlobalKey? responsiveContainerKey;
@@ -252,9 +252,6 @@ class ComposerController extends BaseController
   EmailActionType? savedActionType;
   int minInputLengthAutocomplete = AppConfig.defaultMinInputLengthAutocomplete;
   EmailId? currentTemplateEmailId;
-
-  @visibleForTesting
-  int? get savedEmailDraftHash => _savedEmailDraftHash;
 
   GetEmailContentInteractor get getEmailContentInteractor => _getEmailContentInteractor;
 
@@ -326,7 +323,7 @@ class ComposerController extends BaseController
   void onClose() {
     _textEditorWeb = null;
     savedActionType = null;
-    _savedEmailDraftHash = null;
+    savedEmailDraftHash = null;
     currentEmailActionType = null;
     emailIdEditing = null;
     maxWithEditor = null;
@@ -1142,7 +1139,7 @@ class ComposerController extends BaseController
 
   Future<bool> _validateEmailChange() async {
     final newDraftHash = await _hashComposingEmail();
-    return _savedEmailDraftHash != newDraftHash;
+    return savedEmailDraftHash != newDraftHash;
   }
 
   Future<int> _hashComposingEmail() async {
@@ -1178,7 +1175,7 @@ class ComposerController extends BaseController
   }
 
   Future<void> _updateSavedEmailDraftHash() async {
-    _savedEmailDraftHash = await _hashComposingEmail();
+    savedEmailDraftHash = await _hashComposingEmail();
   }
 
   Future<void> initEmailDraftHash() async {
@@ -1188,13 +1185,13 @@ class ComposerController extends BaseController
 
     if (currentEmailActionType == EmailActionType.compose ||
         currentEmailActionType == EmailActionType.editDraft) {
-      _savedEmailDraftHash = currentDraftHash;
+      savedEmailDraftHash = currentDraftHash;
     } else if (currentEmailActionType == EmailActionType.composeFromLocalEmailDraft) {
-      _savedEmailDraftHash = oldSavedDraftHash;
+      savedEmailDraftHash = oldSavedDraftHash;
     }
-    log('ComposerController::initEmailDraftHash:oldSavedDraftHash = $oldSavedDraftHash | currentDraftHash = $currentDraftHash | _savedEmailDraftHash = $_savedEmailDraftHash');
+    log('ComposerController::initEmailDraftHash:oldSavedDraftHash = $oldSavedDraftHash | currentDraftHash = $currentDraftHash | savedEmailDraftHash = $savedEmailDraftHash');
 
-    isEmailChanged.value = currentDraftHash != _savedEmailDraftHash;
+    isEmailChanged.value = currentDraftHash != savedEmailDraftHash;
   }
 
   void handleClickSaveAsDraftsButton(BuildContext context) async {

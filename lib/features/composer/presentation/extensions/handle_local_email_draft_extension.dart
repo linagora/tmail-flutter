@@ -51,6 +51,9 @@ extension HandleLocalEmailDraftExtension on ComposerController {
       uploadUri: uploadUri,
       composerIndex: composerIndex,
       composerId: composerId,
+      savedDraftHash: arguments.savedDraftHash ?? savedEmailDraftHash,
+      savedActionType: savedActionType ?? currentEmailActionType,
+      savedEmailDraftId: emailIdEditing,
     );
   }
 

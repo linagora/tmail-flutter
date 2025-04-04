@@ -35,10 +35,11 @@ extension RestoreLocalEmailDraftExtension on MailboxDashBoardController {
     final listPresentationLocalEmailDraft = localEmailDrafts
       .map((localEmailDraft) => localEmailDraft.toPresentation())
       .toList();
-    final listLocalEmailDraftSortByIndex = listPresentationLocalEmailDraft
-      ..sort((a, b) => (a.composerIndex ?? 0).compareTo(b.composerIndex ?? 0));
 
-    showLocalEmailDraftListDialog(listLocalEmailDraftSortByIndex);
+    final listLocalEmailDraftSortByTime = listPresentationLocalEmailDraft
+      ..sort((a, b) => b.savedTime.compareTo(a.savedTime));
+
+    showLocalEmailDraftListDialog(listLocalEmailDraftSortByTime);
   }
 
   void showLocalEmailDraftListDialog(List<PresentationLocalEmailDraft> presentationLocalEmailDrafts) {
@@ -67,7 +68,11 @@ extension RestoreLocalEmailDraftExtension on MailboxDashBoardController {
   void _restoreAllLocalEmailDrafts(List<PresentationLocalEmailDraft> localDrafts) {
     popBack();
 
-    final listComposerArguments = localDrafts
+
+    final listLocalEmailDraftSortByIndex = localDrafts
+      ..sort((a, b) => (a.composerIndex ?? 0).compareTo(b.composerIndex ?? 0));
+
+    final listComposerArguments = listLocalEmailDraftSortByIndex
       .map(ComposerArguments.fromLocalEmailDraft)
       .toList();
 

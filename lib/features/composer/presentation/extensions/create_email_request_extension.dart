@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/data/constants/constant.dart';
+import 'package:core/presentation/extensions/capitalize_extension.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
