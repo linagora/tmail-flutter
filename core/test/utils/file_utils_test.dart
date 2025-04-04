@@ -11,13 +11,15 @@ void main() {
   const fileContent = 'Hello, World!';
 
   group('fileUtils test', () {
+    final fileUtils = FileUtils();
+
     setUp(() async {
       PathProviderPlatform.instance = FakePathProviderPlatform();
     });
 
     test('Store private HTLM String to File', () async {
 
-      final file = await FileUtils().saveToFile(nameFile: fileName, content: fileContent);
+      final file = await fileUtils.saveToFile(nameFile: fileName, content: fileContent);
 
       expect(await file.exists(), equals(true));
 
@@ -29,9 +31,9 @@ void main() {
     test('Get HTML String from File Private', () async {
 
       /// Create a temporary file that will be deleted after `getFromFile` is done
-      final file = await FileUtils().saveToFile(nameFile: fileName, content: fileContent);
+      final file = await fileUtils.saveToFile(nameFile: fileName, content: fileContent);
 
-      final htmlString = await FileUtils().getContentFromFile(nameFile: fileName);
+      final htmlString = await fileUtils.getContentFromFile(nameFile: fileName);
 
       expect(htmlString.isNotEmpty, equals(true));
 
@@ -47,10 +49,10 @@ void main() {
       'and Platform is mobile',
     () async {
       // arrange
-      final file = await FileUtils().saveToFile(nameFile: fileName, content: fileContent);
+      final file = await fileUtils.saveToFile(nameFile: fileName, content: fileContent);
 
       // act
-      await FileUtils().deleteCompressedFileOnMobile(file.path, pathContains: fileName);
+      await fileUtils.deleteCompressedFileOnMobile(file.path, pathContains: fileName);
 
       // assert
       expect(await file.exists(), equals(false));
@@ -64,11 +66,11 @@ void main() {
     () async {
       // arrange
       debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
-      final file = await FileUtils().saveToFile(nameFile: fileName, content: fileContent);
+      final file = await fileUtils.saveToFile(nameFile: fileName, content: fileContent);
       expect(await file.exists(), equals(true));
 
       // act
-      await FileUtils().deleteCompressedFileOnMobile(file.path, pathContains: fileName);
+      await fileUtils.deleteCompressedFileOnMobile(file.path, pathContains: fileName);
 
       // assert
       expect(await file.exists(), equals(true));
