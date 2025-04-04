@@ -330,4 +330,190 @@ void main() {
       expect(() => StringConvert.getMediaTypeFromBase64ImageTag(nullTag!), throwsA(isA<TypeError>()));
     });
   });
+
+  group('StringConvert::isTextTable::', () {
+    // ---------------------------
+    // Test cases cho Markdown tables
+    // ---------------------------
+    test('should return true for standard Markdown table', () {
+      const table = """
+        | Header 1 | Header 2 |
+        |----------|----------|
+        | Cell 1   | Cell 2   |
+      """;
+      expect(StringConvert.isTextTable(table), isTrue);
+    });
+
+    test('should return true for Markdown table with alignment', () {
+      const table = """
+| Left | Center | Right |
+|:-----|:------:|------:|
+| 1    | 2      | 3     |
+""";
+      expect(StringConvert.isTextTable(table), isTrue);
+    });
+
+    test('should return true for Markdown table without outer pipes', () {
+      const table = """
+        Header 1 | Header 2
+        ---------|---------
+        Cell 1   | Cell 2
+      """;
+      expect(StringConvert.isTextTable(table), isTrue);
+    });
+
+    test('should return true for multi-line Markdown table', () {
+      const table = """
+        | Column 1 | Column 2 |
+        |----------|----------|
+        | Line 1   | Data 1   |
+        | Line 2   | Data 2   |
+        | Line 3   | Data 3   |
+      """;
+      expect(StringConvert.isTextTable(table), isTrue);
+    });
+
+    // ---------------------------
+    // Test cases cho ASCII art tables
+    // ---------------------------
+    test('should return true for basic ASCII art table', () {
+      const table = """
+        +--------+--------+
+        | Cell 1 | Cell 2 |
+        +--------+--------+
+        | Data 1 | Data 2 |
+        +--------+--------+
+      """;
+      expect(StringConvert.isTextTable(table), isTrue);
+    });
+
+    test('should return true for complex ASCII art table', () {
+      const table = """
+        ---------++-----------------++-----------------|
+                 ||      Global     ||  Working hours  |
+        Requests ||-----------------++-----------------|
+                 ||   LB   | Proxy  ||   LB   | Proxy  |
+        ---------++--------|--------++--------+--------|
+           50%   ||  0.04s |  0.07s ||  0.04s |  3.26s |
+        ---------++--------|--------++--------+--------|
+      """;
+      expect(StringConvert.isTextTable(table), isTrue);
+    });
+
+    test('should return true for ASCII table with mixed borders', () {
+      const table = """
+        /===========\\===========/
+        |  Column 1 |  Column 2 |
+        \\===========/===========/
+        |   Data 1  |   Data 2  |
+        /===========\\===========/
+      """;
+      expect(StringConvert.isTextTable(table), isTrue);
+    });
+
+    // ---------------------------
+    // Test cases cho invalid tables
+    // ---------------------------
+    test('should return false for plain text', () {
+      const text = 'This is not a table at all';
+      expect(StringConvert.isTextTable(text), isFalse);
+    });
+
+    test('should return false for single pipe character', () {
+      const text = '|';
+      expect(StringConvert.isTextTable(text), isFalse);
+    });
+
+    test('should return false for text with random pipes', () {
+      const text = 'This | is | not | a | table';
+      expect(StringConvert.isTextTable(text), isFalse);
+    });
+
+    test('should return false for empty string', () {
+      expect(StringConvert.isTextTable(''), isFalse);
+    });
+
+    test('should return false for whitespace-only string', () {
+      expect(StringConvert.isTextTable('   \n   \n   '), isFalse);
+    });
+
+    test('should return true for separator-only Markdown', () {
+      const text = """
+        |----------|----------|
+        |----------|----------|
+      """;
+      expect(StringConvert.isTextTable(text), isTrue);
+    });
+
+    test('should return false for single-line Markdown', () {
+      const text = '| Header 1 | Header 2 |';
+      expect(StringConvert.isTextTable(text), isFalse);
+    });
+
+    test('should return false for malformed ASCII art', () {
+      const text = """
+        +--------+--------+
+         Just some text
+        +--------+--------+
+      """;
+      expect(StringConvert.isTextTable(text), isFalse);
+    });
+
+    // ---------------------------
+    // Edge cases
+    // ---------------------------
+    test('should handle very wide tables', () {
+      final table = """
+        | ${'a' * 100} | ${'b' * 100} |
+        | ${'-' * 100} | ${'-' * 100} |
+        | ${'c' * 100} | ${'d' * 100} |
+      """;
+      expect(StringConvert.isTextTable(table), isTrue);
+    });
+
+    test('should handle tables with many columns', () {
+      const table = """
+        | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
+        |---|---|---|---|---|---|---|---|---|----|
+        | a | b | c | d | e | f | g | h | i | j  |
+      """;
+      expect(StringConvert.isTextTable(table), isTrue);
+    });
+
+    test('should handle tables with empty cells', () {
+      const table = """
+        | Header 1 | Header 2 |
+        |----------|----------|
+        |          | Cell 2   |
+        | Cell 1   |          |
+      """;
+      expect(StringConvert.isTextTable(table), isTrue);
+    });
+
+    test('should handle tables with special characters', () {
+      const table = """
+        |  \$  |  %  |  &  |
+        |-----|-----|-----|
+        |  #  |  @  |  !  |
+      """;
+      expect(StringConvert.isTextTable(table), isTrue);
+    });
+
+    test('should handle tables with only horizontal borders', () {
+      const table = """
+        -----------------
+           Data  |  Data  
+        -----------------
+      """;
+      expect(StringConvert.isTextTable(table), isTrue);
+    });
+
+    test('should return true for text with only borders', () {
+      const text = """
+        +-----+-----+
+        +-----+-----+
+      """;
+      expect(StringConvert.isTextTable(text), isTrue);
+    });
+  });
 }
