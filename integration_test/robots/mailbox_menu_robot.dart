@@ -21,10 +21,9 @@ class MailboxMenuRobot extends CoreRobot {
   }
 
   Future<void> openFolderByName(String name) async {
-    await $(MailboxItemWidget)
-      .$(LabelMailboxItemWidget)
-      .$(find.text(name))
-      .tap();
+    final mailboxItem = $(MailboxItemWidget).$(LabelMailboxItemWidget).$(name);
+    await $.scrollUntilVisible(finder: mailboxItem);
+    await mailboxItem.tap();
   }
 
   Future<void> openSetting() async {
