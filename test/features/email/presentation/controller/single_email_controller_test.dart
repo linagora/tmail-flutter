@@ -435,9 +435,9 @@ void main() {
       const eventDescription = '\nhttps://example1.com\nhttps://example2.com';
       const expectedEventDescription = '<html><head></head><body>'
         '<br>'
-        '<a href="https://example1.com" target="_blank" rel="noreferrer">example1.com</a>'
+        '<a href="https://example1.com" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">example1.com</a>'
         '<br>'
-        '<a href="https://example2.com" target="_blank" rel="noreferrer">example2.com</a>'
+        '<a href="https://example2.com" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">example2.com</a>'
         '</body></html>';
       final blobId = Id('abc123');
       final calendarEvent = CalendarEvent(
@@ -491,9 +491,9 @@ void main() {
         '\n<a href="javascript:alert(1)">href xss</a>';
       const expectedEventDescription = '<html><head></head><body>'
         '<br>'
-        '<a href="https://example1.com" target="_blank" rel="noreferrer">example1.com</a>'
+        '<a href="https://example1.com" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">example1.com</a>'
         '<br>'
-        '<a href="https://example2.com" target="_blank" rel="noreferrer">example2.com</a>'
+        '<a href="https://example2.com" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">example2.com</a>'
         '<br>'
         '<br>'
         '<a>href xss</a>'

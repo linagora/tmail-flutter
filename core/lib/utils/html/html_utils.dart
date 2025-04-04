@@ -138,6 +138,8 @@ class HtmlUtils {
           min-height: ${minHeight ?? 0}px;
           min-width: ${minWidth ?? 0}px;
           overflow: auto;
+          overflow-wrap: break-word;
+          word-break: break-word;
         }
         ${hideScrollBar ? '''
           .tmail-content::-webkit-scrollbar {

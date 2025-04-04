@@ -120,4 +120,22 @@ class StringConvert {
       return content;
     }
   }
+
+  /// Checks if the given text is a table (supports Markdown or ASCII art format).
+  static bool isTextTable(String text) {
+    final lines =
+        text.split('\n').where((line) => line.trim().isNotEmpty).toList();
+    if (lines.length < 2) return false;
+
+    // Check for Markdown table
+    final mdSeparatorRegex = RegExp(r'^\|?(\s*:?-+:?\s*\|)+(\s*:?-+:?\s*)\|?$');
+    final isMarkdown = lines.any((line) => mdSeparatorRegex.hasMatch(line));
+
+    // Check for ASCII art table (with borders made of +, -, |, /, \, =)
+    final asciiArtRegex = RegExp(r'[\+\-\|/\\=]');
+    final isAsciiArt = lines.every((line) =>
+        line.contains(asciiArtRegex) && line.split(asciiArtRegex).length > 1);
+    log('StringConvert::isTextTable:isMarkdown = $isMarkdown | isAscii = $isAsciiArt');
+    return isMarkdown || isAsciiArt;
+  }
 }

@@ -14,7 +14,7 @@ void main() {
         final htmlValidate = sanitizeAutolinkFilter.process('See https://linagora.com at Hanoi');
         expect(
           htmlValidate,
-          equals('See <a href="https://linagora.com" target="_blank" rel="noreferrer">linagora.com</a> at Hanoi')
+          equals('See <a href="https://linagora.com" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">linagora.com</a> at Hanoi')
         );
       }
     );
@@ -25,7 +25,7 @@ void main() {
         final htmlValidate = sanitizeAutolinkFilter.process('See http://linagora.com at Hanoi');
         expect(
           htmlValidate,
-          equals('See <a href="http://linagora.com" target="_blank" rel="noreferrer">linagora.com</a> at Hanoi')
+          equals('See <a href="http://linagora.com" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">linagora.com</a> at Hanoi')
         );
       }
     );
@@ -36,7 +36,7 @@ void main() {
         final htmlValidate = sanitizeAutolinkFilter.process('See www.linagora.com at Hanoi');
         expect(
           htmlValidate,
-          equals('See <a href="https://www.linagora.com" target="_blank" rel="noreferrer">linagora.com</a> at Hanoi')
+          equals('See <a href="https://www.linagora.com" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">linagora.com</a> at Hanoi')
         );
       }
     );
@@ -47,7 +47,7 @@ void main() {
         final htmlValidate = sanitizeAutolinkFilter.process('See tdvu@linagora.com at Hanoi');
         expect(
           htmlValidate,
-          equals('See <a href="mailto:tdvu@linagora.com">tdvu@linagora.com</a> at Hanoi')
+          equals('See <a href="mailto:tdvu@linagora.com" style="white-space: nowrap; word-break: keep-all;">tdvu@linagora.com</a> at Hanoi')
         );
       }
     );
