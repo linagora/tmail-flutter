@@ -76,4 +76,11 @@ class EmailRobot extends CoreRobot {
         .first
         .tap();
   }
+
+  Future<void> longPressSenderEmailAddress(String email) async {
+    await $(MaterialTextButton)
+        .which<MaterialTextButton>((widget) => widget.label.contains(email))
+        .first
+        .longPress();
+  }
 }
