@@ -32,7 +32,6 @@ class SanitizeAutolinkFilter {
         options: _linkifyOption,
         linkifiers: _linkifier,
       );
-      log('AutolinkFilter::process:elements: $elements');
       final htmlTextBuffer = StringBuffer();
 
       for (var element in elements) {
@@ -53,8 +52,9 @@ class SanitizeAutolinkFilter {
           htmlTextBuffer.write(urlLinkTag);
         }
       }
-
-      return htmlTextBuffer.toString();
+      final textSanitized = htmlTextBuffer.toString();
+      log('SanitizeAutolinkFilter::process:htmlTextBuffer = $textSanitized');
+      return textSanitized;
     } catch (e) {
       logError('$runtimeType::process:Exception = $e');
       return inputText;
@@ -62,10 +62,10 @@ class SanitizeAutolinkFilter {
   }
 
   String _buildUrlLinkTag({required String urlLink, required String value}) {
-    return '<a href="$urlLink" target="_blank" rel="noreferrer">$value</a>';
+    return '<a href="$urlLink" target="_blank" rel="noreferrer" style="white-space: nowrap; word-break: keep-all;">$value</a>';
   }
 
   String _buildEmailLinkTag({required String mailToLink, required String value}) {
-    return '<a href="$mailToLink">$value</a>';
+    return '<a href="$mailToLink" style="white-space: nowrap; word-break: keep-all;">$value</a>';
   }
 }
