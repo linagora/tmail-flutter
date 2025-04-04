@@ -1,4 +1,6 @@
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:tmail_ui_user/features/base/widget/material_text_button.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -59,5 +61,19 @@ class EmailRobot extends CoreRobot {
 
   Future<void> tapArchiveMessageOptionInContextMenu() async {
     await $(#archiveMessage_action).tap();
+  }
+
+  Future<void> tapSenderEmailAddress(String email) async {
+    await $(MaterialTextButton)
+        .which<MaterialTextButton>((widget) => widget.label.contains(email))
+        .first
+        .tap();
+  }
+
+  Future<void> tapRecipientEmailAddress(String email) async {
+    await $(TMailButtonWidget)
+        .which<TMailButtonWidget>((widget) => widget.text.contains(email))
+        .first
+        .tap();
   }
 }
