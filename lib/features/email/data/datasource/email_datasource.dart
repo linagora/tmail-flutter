@@ -22,7 +22,6 @@ import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
-import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
@@ -172,12 +171,6 @@ abstract class EmailDataSource {
   Future<EmailRecoveryAction> restoreDeletedMessage(RestoredDeletedMessageRequest restoredDeletedMessageRequest);
 
   Future<EmailRecoveryAction> getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId);
-
-  Future<void> storeEventAttendanceStatus(
-    Session session,
-    AccountId accountId,
-    EmailId emailId,
-    EventActionType eventActionType);
 
   Future<void> markAsAnswered(
     Session session,

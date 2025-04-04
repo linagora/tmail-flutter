@@ -25,7 +25,6 @@ import 'package:model/email/read_actions.dart';
 import 'package:tmail_ui_user/features/composer/domain/model/email_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
 import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
-import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
@@ -176,12 +175,6 @@ abstract class EmailRepository {
   Future<EmailRecoveryAction> getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId);
 
   Future<void> printEmail(EmailPrint emailPrint);
-
-  Future<void> storeEventAttendanceStatus(
-    Session session,
-    AccountId accountId,
-    EmailId emailId,
-    EventActionType eventActionType);
 
   Future<List<Email>> parseEmailByBlobIds(AccountId accountId, Set<Id> blobIds);
 

@@ -14,7 +14,6 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
-import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_accept_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -25,7 +24,6 @@ import 'package:tmail_ui_user/features/email/data/datasource_impl/html_datasourc
 import 'package:tmail_ui_user/features/email/data/local/html_analyzer.dart';
 import 'package:tmail_ui_user/features/email/data/repository/calendar_event_repository_impl.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
-import 'package:tmail_ui_user/features/email/domain/state/calendar_event_accept_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/parse_calendar_event_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_all_attachments_for_web_interactor.dart';
@@ -44,7 +42,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/parse_calendar_even
 import 'package:tmail_ui_user/features/email/domain/usecases/parse_email_by_blob_id_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/preview_email_from_eml_file_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
-import 'package:tmail_ui_user/features/email/domain/usecases/store_event_attendance_status_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
@@ -65,7 +62,6 @@ import 'package:tmail_ui_user/main/utils/twake_app_manager.dart';
 import 'package:uuid/uuid.dart';
 
 import '../../../../fixtures/account_fixtures.dart';
-import '../../../../fixtures/email_fixtures.dart';
 import 'single_email_controller_test.mocks.dart';
 
 mockControllerCallback() => InternalFinalCallback<void>(callback: () {});
@@ -103,7 +99,6 @@ const fallbackGenerators = {
   MockSpec<AcceptCalendarEventInteractor>(),
   MockSpec<MaybeCalendarEventInteractor>(),
   MockSpec<RejectCalendarEventInteractor>(),
-  MockSpec<StoreEventAttendanceStatusInteractor>(),
   MockSpec<ParseEmailByBlobIdInteractor>(),
   MockSpec<PreviewEmailFromEmlFileInteractor>(),
   MockSpec<PrintUtils>(),
@@ -146,7 +141,6 @@ void main() {
   final responsiveUtils = MockResponsiveUtils();
   final uuid = MockUuid();
   final printEmailInteractor = MockPrintEmailInteractor();
-  final storeEventAttendanceStatusInteractor = MockStoreEventAttendanceStatusInteractor();
   final parseEmailByBlobIdInteractor = MockParseEmailByBlobIdInteractor();
   final previewEmailFromEmlFileInteractor = MockPreviewEmailFromEmlFileInteractor();
   final printUtils = MockPrintUtils();
@@ -211,7 +205,6 @@ void main() {
       getAllIdentitiesInteractor,
       storeOpenedEmailInteractor,
       printEmailInteractor,
-      storeEventAttendanceStatusInteractor,
       parseEmailByBlobIdInteractor,
       previewEmailFromEmlFileInteractor,
       getHtmlContentFromAttachmentInteractor,
@@ -312,88 +305,6 @@ void main() {
 
         // assert
         verify(rejectCalendarEventInteractor.execute(testAccountId, {blobId}, emailId, locale.languageCode)).called(1);
-      });
-    });
-
-    tearDown(() {
-      debugDefaultTargetPlatformOverride = null;
-    });
-  });
-
-  group('StoreEventAttendanceStatusInteractor test', () {
-
-    setUp(() {
-      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
-    });
-
-    group('calendarEventSuccess method test', () {
-      test(
-        'SHOULD call execute on StoreEventAttendanceStatusInteractor\n'
-        'WHEN calendarEventSuccess method is called',
-      () {
-        when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
-
-        final eventAcceptedSuccess = CalendarEventAccepted(
-          CalendarEventAcceptResponse(testAccountId, null),
-          EmailFixtures.emailId);
-
-        singleEmailController.calendarEventSuccess(eventAcceptedSuccess);
-
-        verify(storeEventAttendanceStatusInteractor.execute(
-          testSession,
-          testAccountId,
-          EmailFixtures.emailId,
-          EventActionType.yes,
-        )).called(1);
-      });
-    });
-
-    group('onCalendarEventReplyAction method test', () {
-      test(
-        'SHOULD call execute on StoreEventAttendanceStatusInteractor\n'
-        'WHEN onCalendarEventReplyAction is called on EventActionType.yes\n'
-        'AND return success',
-      () async {
-        final acceptCalendarEventInteractor = MockAcceptCalendarEventInteractor();
-        final blobId = Id('abc123');
-        final emailId = EmailId(Id('xyz123'));
-        final calendarEvent = CalendarEvent();
-
-        when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
-        when(mailboxDashboardController.selectedEmail).thenReturn(Rxn(null));
-        when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
-        when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
-
-        singleEmailController.onInit();
-
-        Get.put<AcceptCalendarEventInteractor>(acceptCalendarEventInteractor);
-
-        mailboxDashboardController.accountId.refresh();
-
-        singleEmailController.handleSuccessViewState(
-          ParseCalendarEventSuccess([
-            BlobCalendarEvent(
-              blobId: blobId,
-              calendarEventList: [calendarEvent]
-            )
-          ])
-        );
-
-        singleEmailController.onCalendarEventReplyAction(EventActionType.yes, emailId);
-
-        singleEmailController.calendarEventSuccess(CalendarEventAccepted(
-          CalendarEventAcceptResponse(testAccountId, null),
-          emailId
-        ));
-
-        await untilCalled(storeEventAttendanceStatusInteractor.execute(any, any, any, any));
-
-        verify(storeEventAttendanceStatusInteractor.execute(
-          testSession,
-          testAccountId,
-          emailId,
-          EventActionType.yes,
-        )).called(1);
       });
     });
 

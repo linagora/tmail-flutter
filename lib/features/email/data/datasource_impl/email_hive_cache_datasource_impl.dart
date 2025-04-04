@@ -32,7 +32,6 @@ import 'package:tmail_ui_user/features/email/data/datasource/email_datasource.da
 import 'package:tmail_ui_user/features/email/domain/extensions/detailed_email_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/detailed_email_hive_cache_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
-import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_to_mailbox_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/restore_deleted_message_request.dart';
@@ -472,11 +471,6 @@ class EmailHiveCacheDataSourceImpl extends EmailDataSource {
 
   @override
   Future<EmailRecoveryAction> getRestoredDeletedMessage(EmailRecoveryActionId emailRecoveryActionId) {
-    throw UnimplementedError();
-  }
-
-  @override
-  Future<Email> storeEventAttendanceStatus(Session session, AccountId accountId, EmailId emailId, EventActionType eventActionType) {
     throw UnimplementedError();
   }
 
