@@ -77,6 +77,7 @@ class EmailAddressBottomSheetBuilder {
                   Align(
                       alignment: Alignment.centerRight,
                       child: IconButton(
+                          key: const Key('email_address_dialog_close_button'),
                           padding: const EdgeInsets.only(top: 16, right: 16),
                           onPressed: () => _onCloseBottomSheetAction?.call(),
                           icon: SvgPicture.asset(
