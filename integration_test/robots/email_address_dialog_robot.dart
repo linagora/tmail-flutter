@@ -18,4 +18,8 @@ class EmailAddressDialogRobot extends CoreRobot {
   Future<void> tapComposeEmailButton(AppLocalizations appLocalizations) async {
     await $(appLocalizations.compose_email).tap();
   }
+
+  Future<void> tapCreateRuleWithThisEmailAddressButton(AppLocalizations appLocalizations) async {
+    await $(appLocalizations.quickCreatingRule).tap();
+  }
 }
