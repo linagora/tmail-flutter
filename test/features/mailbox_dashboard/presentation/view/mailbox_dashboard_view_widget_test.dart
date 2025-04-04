@@ -53,10 +53,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_b
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/spam_report_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/quick_search_email_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_all_composer_cache_on_web_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_composer_cache_by_id_on_web_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/remove_email_drafts_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/save_recent_search_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/app_grid_dashboard_controller.dart';
@@ -118,7 +115,6 @@ const fallbackGenerators = {
   MockSpec<MarkAsEmailReadInteractor>(),
   MockSpec<DeleteEmailPermanentlyInteractor>(),
   MockSpec<MarkAsMailboxReadInteractor>(),
-  MockSpec<GetComposerCacheOnWebInteractor>(),
   MockSpec<MarkAsMultipleEmailReadInteractor>(),
   MockSpec<MarkAsStarMultipleEmailInteractor>(),
   MockSpec<MoveMultipleEmailToMailboxInteractor>(),
@@ -175,8 +171,6 @@ const fallbackGenerators = {
   MockSpec<Uuid>(),
   MockSpec<CachingManager>(),
   MockSpec<LanguageCacheManager>(),
-  MockSpec<RemoveAllComposerCacheOnWebInteractor>(),
-  MockSpec<RemoveComposerCacheByIdOnWebInteractor>(),
   MockSpec<ApplicationManager>(),
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<GetQuotasInteractor>(),
@@ -189,7 +183,6 @@ void main() {
   final moveToMailboxInteractor = MockMoveToMailboxInteractor();
   final deleteEmailPermanentlyInteractor = MockDeleteEmailPermanentlyInteractor();
   final markAsMailboxReadInteractor = MockMarkAsMailboxReadInteractor();
-  final getEmailCacheOnWebInteractor = MockGetComposerCacheOnWebInteractor();
   final getIdentityCacheOnWebInteractor = MockGetIdentityCacheOnWebInteractor();
   final markAsEmailReadInteractor = MockMarkAsEmailReadInteractor();
   final markAsStarEmailInteractor = MockMarkAsStarEmailInteractor();
@@ -252,8 +245,6 @@ void main() {
   final verifyNameInteractor = MockVerifyNameInteractor();
   final getAllMailboxInteractor = MockGetAllMailboxInteractor();
   final refreshAllMailboxInteractor = MockRefreshAllMailboxInteractor();
-  final removeAllComposerCacheOnWebInteractor = MockRemoveAllComposerCacheOnWebInteractor();
-  final removeComposerCacheByIdOnWebInteractor = MockRemoveComposerCacheByIdOnWebInteractor();
   final getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
   final composerManager = MockComposerManager();
 
@@ -317,8 +308,6 @@ void main() {
       Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
       Get.put<UpdateAccountCacheInteractor>(updateAccountCacheInteractor);
       Get.put<GetAllIdentitiesInteractor>(getAllIdentitiesInteractor);
-      Get.put<RemoveAllComposerCacheOnWebInteractor>(removeAllComposerCacheOnWebInteractor);
-      Get.put<RemoveComposerCacheByIdOnWebInteractor>(removeComposerCacheByIdOnWebInteractor);
       Get.put<ComposerManager>(composerManager);
 
       when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));
@@ -334,7 +323,6 @@ void main() {
         moveToMailboxInteractor,
         deleteEmailPermanentlyInteractor,
         markAsMailboxReadInteractor,
-        getEmailCacheOnWebInteractor,
         getIdentityCacheOnWebInteractor,
         markAsEmailReadInteractor,
         markAsStarEmailInteractor,
@@ -354,8 +342,6 @@ void main() {
         unsubscribeEmailInteractor,
         restoreDeletedMessageInteractor,
         getRestoredDeletedMessageInteractor,
-        removeAllComposerCacheOnWebInteractor,
-        removeComposerCacheByIdOnWebInteractor,
         getAllIdentitiesInteractor,
       );
       Get.put(mailboxDashboardController);

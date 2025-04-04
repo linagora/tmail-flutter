@@ -48,7 +48,10 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
           ? CrossAxisAlignment.start
           : CrossAxisAlignment.center,
         children: [
-          EmailAvatarBuilder(emailSelected: emailSelected),
+          EmailAvatarBuilder(
+            avatarText: emailSelected.getAvatarText(),
+            avatarColors: emailSelected.avatarColors,
+          ),
           const SizedBox(width: 16),
           Expanded(child: LayoutBuilder(builder: (context, constraints) {
             return Transform(
