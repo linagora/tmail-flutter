@@ -833,9 +833,14 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
     return compressedFilePath;
   }
 
-  bool isMobile(BuildContext context) =>
-    responsiveUtils.isPortraitMobile(context) ||
-    responsiveUtils.isLandscapeMobile(context);
+  bool isMobile(BuildContext context) {
+    if (PlatformInfo.isMobile) {
+      return responsiveUtils.isPortraitMobile(context) ||
+          responsiveUtils.isLandscapeMobile(context);
+    } else {
+      return responsiveUtils.isMobile(context);
+    }
+  }
 
   double _getMaxWidthInlineImage(BuildContext context) {
     if (isMobile(context)) {
