@@ -37,8 +37,8 @@ extension SetupEmailSubjectExtension on ComposerController {
     );
 
     if (newSubject.isNotEmpty) {
-      setSubjectEmail(subject);
-      subjectEmailInputController.text = subject;
+      setSubjectEmail(newSubject);
+      subjectEmailInputController.text = newSubject;
     }
   }
 }
