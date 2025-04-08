@@ -1,4 +1,5 @@
 import 'package:core/presentation/state/success.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
@@ -41,6 +42,9 @@ class QuotasController extends BaseController {
       }
     });
   }
+
+  @visibleForTesting
+  void refreshQuota() => _getQuotasAction(mailboxDashBoardController.accountId.value!);
 
   @override
   void onInit() {

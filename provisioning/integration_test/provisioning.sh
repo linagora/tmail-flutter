@@ -71,3 +71,11 @@ for eml in "${replyEmailsEML[@]}"; do
   echo "Importing $eml into 'Reply Emails' folder for user bob"
   james-cli ImportEml \#private "bob@example.com" "Reply Emails" "/root/conf/integration_test/eml/reply_email/$eml"
 done
+
+# For test team mailbox
+curl -XPUT http://172.18.0.2:8000/domains/example.com/team-mailboxes/bob-guests
+curl -XPUT http://172.18.0.2:8000/domains/example.com/team-mailboxes/bob-guests/members/bob@example.com?role=member
+curl -XPUT http://172.18.0.2:8000/domains/example.com/team-mailboxes/bob-guests/members/alice@example.com?role=member
+
+# For test quota
+curl -X PUT http://172.18.0.2:8000/quota/users/bob@example.com -d '{"count":200,"size":50000000}' -H "Content-Type: application/json" # 200 emails, 50MB

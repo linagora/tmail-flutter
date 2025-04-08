@@ -1,0 +1,1 @@
+class NullQuotaException implements Exception {}
