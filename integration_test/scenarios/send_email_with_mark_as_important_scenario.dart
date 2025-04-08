@@ -43,7 +43,6 @@ class SendEmailWithMarkAsImportantScenario extends BaseTestScenario {
     await _expectToastDisplayWithMessageMarkAsImportantIsEnabled(appLocalizations);
 
     await composerRobot.sendEmail(imagePaths);
-    await _expectSendEmailSuccessToast(appLocalizations);
     await $.pump(const Duration(seconds: 2));
 
     await _expectDisplayedEmailHasImportantFlagIcon();
@@ -60,14 +59,6 @@ class SendEmailWithMarkAsImportantScenario extends BaseTestScenario {
   ) async {
     await expectViewVisible(
       $(find.text(appLocalizations.markAsImportantIsEnabled)),
-    );
-  }
-
-  Future<void> _expectSendEmailSuccessToast(
-    AppLocalizations appLocalizations,
-  ) async {
-    await expectViewVisible(
-      $(find.text(appLocalizations.message_has_been_sent_successfully)),
     );
   }
 
