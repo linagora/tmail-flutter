@@ -68,7 +68,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   late InAppWebViewController _webViewController;
   late double _actualHeight;
   late Set<Factory<OneSequenceGestureRecognizer>> _gestureRecognizers;
-  late String _customScripts;
+  late StringBuffer _customScriptsBuilder;
 
   final _loadingBarNotifier = ValueNotifier(true);
 
@@ -92,10 +92,13 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
         Factory<LongPressGestureRecognizer>(() => LongPressGestureRecognizer(duration: _longPressGestureDurationIOS)),
       };
     }
+    _customScriptsBuilder = StringBuffer();
+    _customScriptsBuilder.write(HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage);
+    if (widget.initialWidth != null) {
+      _customScriptsBuilder.write(HtmlInteraction.generateNormalizeImageScript(widget.initialWidth!));
+    }
     if (PlatformInfo.isAndroid) {
-      _customScripts = HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage + HtmlInteraction.scriptsHandleContentSizeChanged;
-    } else {
-      _customScripts = HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage;
+      _customScriptsBuilder.write(HtmlInteraction.scriptsHandleContentSizeChanged);
     }
     _initialData();
   }
@@ -115,7 +118,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     _htmlData = HtmlUtils.generateHtmlDocument(
       content: widget.contentHtml,
       direction: widget.direction,
-      javaScripts: _customScripts,
+      javaScripts: _customScriptsBuilder.toString(),
       contentPadding: widget.contentPadding,
       useDefaultFont: widget.useDefaultFont,
     );
