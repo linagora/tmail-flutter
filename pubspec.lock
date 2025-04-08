@@ -1381,8 +1381,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: master
-      resolved-ref: "0f666ca14fd4f0710775ca3de03cde73b21de7d6"
+      ref: cozy-integration
+      resolved-ref: "26b86c80f07d89690cf1be151136f87931b04f5c"
       url: "https://github.com/linagora/linagora-design-flutter.git"
     source: git
     version: "0.0.1"

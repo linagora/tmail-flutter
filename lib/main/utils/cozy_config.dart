@@ -4,32 +4,19 @@ import 'dart:js_interop';
 
 import 'package:tmail_ui_user/main/utils/cozy_contact.dart';
 import 'package:tmail_ui_user/main/utils/cozy_js_interop.dart';
+import 'package:linagora_design_flutter/cozy_config_manager/cozy_config_manager.dart';
 import 'package:universal_html/js_util.dart';
 
-class CozyConfigManager {
-  static final CozyConfigManager _instance = CozyConfigManager._internal();
-  bool? _isInsideCozy;
+class CozyConfig {
+  static final CozyConfig _instance = CozyConfig._internal();
 
-  factory CozyConfigManager() {
+  factory CozyConfig() {
     return _instance;
   }
 
-  CozyConfigManager._internal();
+  CozyConfig._internal();
 
-  bool get isInsideCozy {
-    _isInsideCozy = isInsideCozyJs() ?? false;
-    print('isInsideCozy: $_isInsideCozy'); 
-    return _isInsideCozy!;
-  }
-
-  void initialize() {
-    try {
-      setupBridgeJs();
-      startHistorySyncingJs();
-    } catch (e) {
-      print('Error initializing Cozy bridge: $e');
-    }
-  }
+  final manager = CozyConfigManager();
 
   Future<List<CozyContact>> getCozyContacts() async {
     try {
@@ -49,8 +36,10 @@ class CozyConfigManager {
       final flag = await promiseToFuture(getFlagJs(flagName));
       return switch (flag) {
         JSBoolean() => flag.toDart,
-        JSString() => flag.toDart == 'true',
-        _ => false,
+        JSString() => flag.toDart,
+        JSNumber() => flag.toDartDouble,
+        JSObject() => stringify(flag),
+        _ => null,
       };
     } catch (e) {
       print('Error getting cozy feature flag: $e');

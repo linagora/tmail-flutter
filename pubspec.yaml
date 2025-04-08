@@ -97,7 +97,7 @@ dependencies:
   linagora_design_flutter:
     git:
       url: https://github.com/linagora/linagora-design-flutter.git
-      ref: master
+      ref: cozy-integration
 
   # TODO: Fix bug where apps cannot be launched on iOS 18. We will change it when the PR in upstream repository will be merged
   # https://github.com/GeekyAnts/external_app_launcher/pull/42
