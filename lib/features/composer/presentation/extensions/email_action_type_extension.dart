@@ -19,7 +19,7 @@ extension EmailActionTypeExtension on EmailActionType {
         } else {
           return context != null
             ? '${AppLocalizations.of(context).prefix_reply_email} $subject'
-            : subject;
+            : 'Re: $subject';
         }
       case EmailActionType.forward:
         if (subject.toLowerCase().startsWith('fwd:')) {
@@ -27,7 +27,7 @@ extension EmailActionTypeExtension on EmailActionType {
         } else {
           return context != null
             ? '${AppLocalizations.of(context).prefix_forward_email} $subject'
-            : subject;
+            : 'Fwd: $subject';
         }
       case EmailActionType.editDraft:
       case EmailActionType.editSendingEmail:
