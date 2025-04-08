@@ -63,7 +63,8 @@ class _TMailAppState extends State<TMailApp> {
     } else {
       final cozyConfig = CozyConfig();
   
-      cozyConfig.manager.isInsideCozy.then((isInsideCozy) async {
+      cozyConfig.manager.injectCozyScript().then((_) async {
+        final isInsideCozy = await cozyConfig.manager.isInsideCozy;
         if (!isInsideCozy) return;
 
         await cozyConfig.manager.initialize();
