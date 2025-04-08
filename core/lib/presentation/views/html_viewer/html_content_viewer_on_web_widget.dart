@@ -267,7 +267,10 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       minHeight: minHeight,
       minWidth: _minWidth,
       styleCSS: HtmlTemplate.tooltipLinkCss,
-      javaScripts: webViewActionScripts + scriptsDisableZoom + HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
+      javaScripts: webViewActionScripts
+          + scriptsDisableZoom
+          + HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage
+          + HtmlInteraction.generateNormalizeImageScript(widget.widthContent),
       direction: widget.direction,
       contentPadding: widget.contentPadding,
       useDefaultFont: widget.useDefaultFont,
