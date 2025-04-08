@@ -164,6 +164,26 @@ void main() {
         expect(logicOperator.operator, Operator.AND);
         expect(logicOperator.conditions.length, greaterThan(1));
       });
+
+      test('SHOULD wrap a simple EmailFilterCondition inside a NOT LogicFilterOperator when notKeyword is given', () {
+        // Arrange
+        final filter = SearchEmailFilter(
+          notKeyword: {'hello'},
+        );
+
+        // Act
+        final result = filter.mappingToEmailFilterCondition();
+
+        // Assert
+        expect(result, isA<LogicFilterOperator>());
+        final logicFilter = result as LogicFilterOperator;
+        expect(result.conditions.isNotEmpty, isTrue);
+        expect(logicFilter.operator, equals(Operator.NOT));
+
+        final emailCondition = result.conditions.first as EmailFilterCondition;
+        expect(emailCondition.text, 'hello');
+        expect(emailCondition.notKeyword, isNull);
+      });
     });
   });
 }
