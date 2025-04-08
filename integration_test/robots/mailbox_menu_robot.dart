@@ -6,12 +6,15 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/label_mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/mailbox_creator_view.dart';
+import 'package:tmail_ui_user/features/quotas/presentation/quotas_controller.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 import '../base/core_robot.dart';
 import '../exceptions/mailbox/null_inbox_unread_count_exception.dart';
+import '../integration_test/exceptions/mailbox/null_quota_exception.dart';
 
 class MailboxMenuRobot extends CoreRobot {
   MailboxMenuRobot(super.$);
@@ -108,5 +111,18 @@ class MailboxMenuRobot extends CoreRobot {
 
   Future<void> confirmSignOut() async {
     await $(AppLocalizations().yesLogout).tap();
+  }
+
+  int getUsedQuota() {
+    final usedQuota =
+        getBinding<QuotasController>()?.octetsQuota.value?.used?.value.toInt();
+    if (usedQuota == null) throw NullQuotaException();
+
+    return usedQuota;
+  }
+
+  Future<void> refreshQuota() async {
+    getBinding<QuotasController>()?.reloadQuota();
+    await $.pumpAndSettle(duration: const Duration(seconds: 2));
   }
 }
