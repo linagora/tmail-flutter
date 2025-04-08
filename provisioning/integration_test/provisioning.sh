@@ -90,3 +90,6 @@ done
 curl -XPUT http://172.18.0.2:8000/domains/example.com/team-mailboxes/bob-guests
 curl -XPUT http://172.18.0.2:8000/domains/example.com/team-mailboxes/bob-guests/members/bob@example.com?role=member
 curl -XPUT http://172.18.0.2:8000/domains/example.com/team-mailboxes/bob-guests/members/alice@example.com?role=member
+
+# For test quota
+curl -X PUT http://172.18.0.2:8000/quota/users/bob@example.com -d '{"count":200,"size":50000000}' -H "Content-Type: application/json" # 200 emails, 50MB
