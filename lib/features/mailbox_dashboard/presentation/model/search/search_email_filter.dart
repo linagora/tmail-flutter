@@ -109,9 +109,6 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
       from: from.length == 1
         ? from.first
         : null,
-      notKeyword: notKeyword.length == 1
-        ? notKeyword.first
-        : null,
       hasKeyword: hasKeyword.length == 1
         ? hasKeyword.first
         : null,
@@ -127,7 +124,7 @@ class SearchEmailFilter with EquatableMixin, OptionParamMixin {
           Operator.OR,
           from.map((e) => EmailFilterCondition(from: e)).toSet(),
         ),
-      if (notKeyword.length > 1)
+      if (notKeyword.isNotEmpty)
         LogicFilterOperator(
           Operator.NOT,
           notKeyword.map((e) => EmailFilterCondition(text: e)).toSet(),
