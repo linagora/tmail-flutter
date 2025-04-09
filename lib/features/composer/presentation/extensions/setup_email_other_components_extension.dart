@@ -13,7 +13,7 @@ extension SetupEmailOtherComponentsExtension on ComposerController {
       case EmailActionType.editSendingEmail:
         emailIdEditing = arguments.sendingEmail?.presentationEmail.id;
         break;
-      case EmailActionType.reopenComposerBrowser:
+      case EmailActionType.composeFromLocalEmailDraft:
         screenDisplayMode.value = arguments.displayMode;
         break;
       default:
