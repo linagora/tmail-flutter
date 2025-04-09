@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<listeners>
+  <preDeletionHook>
+    <class>org.apache.james.vault.DeletedMessageVaultHook</class>
+  </preDeletionHook>
+</listeners>

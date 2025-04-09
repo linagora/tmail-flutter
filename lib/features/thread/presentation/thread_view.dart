@@ -153,7 +153,7 @@ class ThreadView extends GetWidget<ThreadController>
                               DeleteActionType.all)
                           );
                         } else {
-                          return const SizedBox.shrink();
+                          return const SizedBox.shrink(key: ValueKey('trash_banner_not_visible'));
                         }
                       }),
                       Obx(() {
@@ -163,7 +163,7 @@ class ThreadView extends GetWidget<ThreadController>
                             onTapAction: () => controller.mailboxDashBoardController.openDialogEmptySpamFolder(context)
                           );
                         } else {
-                          return const SizedBox.shrink();
+                          return const SizedBox.shrink(key: ValueKey('spam_banner_not_visible'));
                         }
                       }),
                       if (!controller.responsiveUtils.isDesktop(context))
