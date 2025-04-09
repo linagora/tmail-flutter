@@ -103,4 +103,8 @@ class ThreadRobot extends CoreRobot {
     await $(AppLocalizations().delete).tap();
     await $.pumpAndSettle(duration: const Duration(seconds: 2));
   }
+
+  Future<void> tapEmptySpamAfterLongPress() async {
+    await $(AppLocalizations().deleteAllSpamEmails).tap();
+  }
 }
