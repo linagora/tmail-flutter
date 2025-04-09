@@ -88,4 +88,13 @@ class MailboxMenuRobot extends CoreRobot {
 
     return inboxCount;
   }
+
+  Future<void> tapSignOut() async {
+    await $.scrollUntilVisible(finder: $(AppLocalizations().sign_out));
+    await $(AppLocalizations().sign_out).tap();
+  }
+
+  Future<void> confirmSignOut() async {
+    await $(AppLocalizations().yesLogout).tap();
+  }
 }
