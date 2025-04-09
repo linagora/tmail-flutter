@@ -1796,7 +1796,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requestReadReceipt": "Demander un accusé de lecture",
+  "requestReadReceipt": "Demander un accusé de réception",
   "@requestReadReceipt": {
     "type": "text",
     "placeholders_order": [],
@@ -1808,7 +1808,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "titleReadReceiptRequestNotificationMessage": "Demander un accusé de lecture",
+  "titleReadReceiptRequestNotificationMessage": "Demander un accusé de réception",
   "@titleReadReceiptRequestNotificationMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -2204,7 +2204,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "subTitleReadReceiptRequestNotificationMessage": "L'expéditeur a demandé l'envoi d'un accusé de lecture pour ce message. Envoyer un accusé de lecture ?",
+  "subTitleReadReceiptRequestNotificationMessage": "L'expéditeur a demandé l'envoi d'un accusé de réception pour ce message. Envoyer un accusé de réception ?",
   "@subTitleReadReceiptRequestNotificationMessage": {
     "type": "text",
     "placeholders_order": [],
@@ -2578,7 +2578,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "textBodySendReceiptToSender": "Le message a été lu par {receiver} le {time}\n\nSujet : {subject}\n\nRemarque : Cet accusé de lecture confirme uniquement que le message a été affiché sur l'ordinateur du destinataire. Il n'y a aucune garantie que le destinataire ait lu ou compris le contenu du message.",
+  "textBodySendReceiptToSender": "Le message a été lu par {receiver} le {time}\n\nSujet : {subject}\n\nRemarque : Cet accusé de réception confirme uniquement que le message a été affiché sur l'ordinateur du destinataire. Il n'y a aucune garantie que le destinataire ait lu ou compris le contenu du message.",
   "@textBodySendReceiptToSender": {
     "type": "text",
     "placeholders_order": [
@@ -2592,7 +2592,7 @@
       "time": {}
     }
   },
-  "toastMessageSendReceiptSuccess": "Un accusé de lecture a été envoyé.",
+  "toastMessageSendReceiptSuccess": "Un accusé de réception a été envoyé.",
   "@toastMessageSendReceiptSuccess": {
     "type": "text",
     "placeholders_order": [],
@@ -3418,7 +3418,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "embedCode": "Intégrer du code",
+  "embedCode": "Éditer en HTML",
   "@embedCode": {
     "type": "text",
     "placeholders_order": [],
@@ -3840,19 +3840,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailReadReceiptsToggleDescription": "Toujours exiger des accusés de lecture pour les messages sortants",
+  "emailReadReceiptsToggleDescription": "Toujours exiger des accusés de réception pour les messages sortants",
   "@emailReadReceiptsToggleDescription": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailReadReceipts": "Accusés de lecture",
+  "emailReadReceipts": "Accusés de réception",
   "@emailReadReceipts": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "emailReadReceiptsSettingExplanation": "Les accusés de lecture sont des notifications qui peuvent être envoyées à l'expéditeur pour confirmer que le destinataire a bien ouvert le message.",
+  "emailReadReceiptsSettingExplanation": "Les accusés de réception sont des notifications qui peuvent être envoyées à l'expéditeur pour confirmer que le destinataire a bien ouvert le message.",
   "@emailReadReceiptsSettingExplanation": {
     "type": "text",
     "placeholders_order": [],
@@ -4120,19 +4120,19 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "turnOffRequestReadReceipt": "Désactiver l'avis de lecture",
+  "turnOffRequestReadReceipt": "Désactiver l'accusé de réception",
   "@turnOffRequestReadReceipt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "turnOnRequestReadReceipt": "Activer l'avis de lecture",
+  "turnOnRequestReadReceipt": "Activer l'accusé de réception",
   "@turnOnRequestReadReceipt": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requestReadReceiptHasBeenEnabled": "L'avis de lecture a été activé",
+  "requestReadReceiptHasBeenEnabled": "L'accusé de réception a été activé",
   "@requestReadReceiptHasBeenEnabled": {
     "type": "text",
     "placeholders_order": [],
@@ -4174,7 +4174,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "requestReadReceiptHasBeenDisabled": "L'avis de lecture a été désactivé",
+  "requestReadReceiptHasBeenDisabled": "L'accusé de réception a été désactivé",
   "@requestReadReceiptHasBeenDisabled": {
     "type": "text",
     "placeholders_order": [],
