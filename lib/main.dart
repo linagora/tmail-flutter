@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/main/pages/app_pages.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
+import 'package:tmail_ui_user/main/utils/cozy_config.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:worker_manager/worker_manager.dart';
 
@@ -59,6 +60,26 @@ class _TMailAppState extends State<TMailApp> {
     if (PlatformInfo.isMobile) {
       _deepLinksManager = getBinding<DeepLinksManager>();
       _deepLinksManager?.registerDeepLinkStreamListener();
+    } else {
+      final cozyConfig = CozyConfig();
+  
+      cozyConfig.manager.injectCozyScript().then((_) async {
+        final isInsideCozy = await cozyConfig.manager.isInsideCozy;
+        if (!isInsideCozy) return;
+
+        await cozyConfig.manager.initialize();
+
+        // Get contacts example
+        cozyConfig.getCozyContacts().then((contacts) {
+          print('Contacts: $contacts');
+        });
+
+        // Get flag example
+        cozyConfig.getCozyFeatureFlag('cozy.search.enabled').then((flag) {
+          final isEnabled = flag == true || flag == 'true';
+          print('Search enabled: $isEnabled');
+        });
+      });
     }
   }
 
