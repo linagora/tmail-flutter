@@ -50,8 +50,12 @@ class DesktopResponsiveContainerView extends StatelessWidget {
         clipBehavior: Clip.antiAlias,
         child: Container(
           color: DesktopResponsiveContainerViewStyle.backgroundColor,
-          width: DesktopResponsiveContainerViewStyle.normalScreenMaxWidth,
-          height: DesktopResponsiveContainerViewStyle.normalScreenMaxHeight,
+          width: composerManager.composerIdsQueue.length > 1
+            ? DesktopResponsiveContainerViewStyle.normalScreenMaxWidth
+            : responsiveUtils.getSizeScreenWidth(context) * 0.5,
+          height: composerManager.composerIdsQueue.length > 1
+            ? DesktopResponsiveContainerViewStyle.normalScreenMaxHeight
+            : responsiveUtils.getSizeScreenHeight(context) * 0.75,
           child: LayoutBuilder(builder: (context, constraints) =>
             PointerInterceptor(
               child: childBuilder.call(context, constraints),
