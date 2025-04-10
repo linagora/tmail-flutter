@@ -177,12 +177,49 @@ void main() {
         // Assert
         expect(result, isA<LogicFilterOperator>());
         final logicFilter = result as LogicFilterOperator;
-        expect(result.conditions.isNotEmpty, isTrue);
+        expect(result.conditions.length, equals(1));
         expect(logicFilter.operator, equals(Operator.NOT));
 
         final emailCondition = result.conditions.first as EmailFilterCondition;
         expect(emailCondition.text, 'hello');
         expect(emailCondition.notKeyword, isNull);
+      });
+
+      test(
+        'SHOULD convert the notKeyword set into a NOT LogicFilterOperator containing multiple EmailFilterCondition instances,\n'
+        'each representing a keyword from the set',
+      () {
+        // Arrange
+        // Create a SearchEmailFilter with three keywords in the notKeyword field
+        final filter = SearchEmailFilter(
+          notKeyword: {'hello', 'hi', 'bye'},
+        );
+
+        // Act
+        // Call mappingToEmailFilterCondition to transform it into filter conditions
+        final result = filter.mappingToEmailFilterCondition();
+
+        // Assert
+        // The result should be a LogicFilterOperator with the NOT operator
+        expect(result, isA<LogicFilterOperator>());
+        final logicFilter = result as LogicFilterOperator;
+        expect(logicFilter.operator, equals(Operator.NOT));
+
+        // The LogicFilterOperator should contain 3 EmailFilterCondition objects, one for each keyword
+        expect(logicFilter.conditions.isNotEmpty, equals(true));
+        expect(logicFilter.conditions.length, equals(3));
+
+        // Verify each EmailFilterCondition's content
+        final listEmailCondition = logicFilter.conditions.map((e) => e as EmailFilterCondition).toList();
+
+        expect(listEmailCondition[0].text, 'hello');
+        expect(listEmailCondition[0].notKeyword, isNull);
+
+        expect(listEmailCondition[1].text, 'hi');
+        expect(listEmailCondition[1].notKeyword, isNull);
+
+        expect(listEmailCondition[2].text, 'bye');
+        expect(listEmailCondition[2].notKeyword, isNull);
       });
     });
   });
