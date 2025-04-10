@@ -14,7 +14,7 @@ dependencies:
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: main
+      ref: feature/get-thread
 
   ### Dependencies from pub.dev ###
   equatable: 2.0.5
