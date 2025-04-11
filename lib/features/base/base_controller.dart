@@ -231,6 +231,8 @@ abstract class BaseController extends GetxController
       return;
     }
 
+    if (twakeAppManager.isSessionExpiresDialogOpened) return;
+
     final appLocalizations = AppLocalizations.of(currentContext!);
     showConfirmDialogAction(
       currentContext!,
@@ -242,10 +244,21 @@ abstract class BaseController extends GetxController
       outsideDismissible: false,
       titleActionButtonMaxLines: 1,
       icon: SvgPicture.asset(imagePaths.icTMailLogo, width: 64, height: 64),
-      onConfirmAction: _performSaveAndReconnection,
-      onCancelAction: _performReconnection,
-      onCloseButtonAction: _performCloseReconnectionConfirmDialog
-    );
+      onConfirmAction: () {
+        twakeAppManager.setSessionExpiresDialogDisplayState(false);
+        _performSaveAndReconnection();
+      },
+      onCancelAction: () {
+        twakeAppManager.setSessionExpiresDialogDisplayState(false);
+        _performReconnection();
+      },
+      onCloseButtonAction: () {
+        twakeAppManager.setSessionExpiresDialogDisplayState(false);
+        _performCloseReconnectionConfirmDialog();
+      }
+    ).whenComplete(() => twakeAppManager.setSessionExpiresDialogDisplayState(false));
+
+    twakeAppManager.setSessionExpiresDialogDisplayState(true);
   }
 
   void _performSaveAndReconnection() {
@@ -265,6 +278,7 @@ abstract class BaseController extends GetxController
   }
 
   void onDataFailureViewState(Failure failure) {
+    log('$runtimeType::onDataFailureViewState:failure = ${failure.runtimeType}');
     if (failure is FeatureFailure) {
       final isUrgentException = validateUrgentException(failure.exception);
       if (isUrgentException) {
