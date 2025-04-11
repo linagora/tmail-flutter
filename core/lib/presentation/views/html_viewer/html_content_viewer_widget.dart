@@ -77,6 +77,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
   final _webViewSetting = InAppWebViewSettings(
     transparentBackground: true,
     verticalScrollBarEnabled: false,
+    supportZoom: false,
   );
 
   @override
