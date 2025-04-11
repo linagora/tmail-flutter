@@ -175,6 +175,7 @@ class ContactController extends BaseController with AutoCompleteResultMixin {
           .then((value) => handleAutoCompleteResultState(
             resultState: value,
             queryString: queryString,
+            onFailureCallback: (failure) => consumeState(Stream.value(Left(failure))),
           )
         );
       } else if (_getDeviceContactSuggestionsInteractor != null) {
@@ -194,6 +195,7 @@ class ContactController extends BaseController with AutoCompleteResultMixin {
         .then((value) => handleAutoCompleteResultState(
           resultState: value,
           queryString: queryString,
+          onFailureCallback: (failure) => consumeState(Stream.value(Left(failure))),
         )
       ) ?? <EmailAddress>[];
     }
