@@ -88,6 +88,7 @@ class UploadController extends BaseController {
                 (currentState) => currentState?.copyWith(uploadStatus: UploadFileStatus.uploadFailed));
             deleteFileUploaded(failure.uploadId);
             _showToastMessageWhenUploadAttachmentsFailure(failure);
+            consumeState(Stream.value((Left(failure))));
           }
         },
       (success) {
@@ -143,6 +144,7 @@ class UploadController extends BaseController {
               leadingSVGIconColor: Colors.white,
               leadingSVGIcon: imagePaths.icInsertImage);
           }
+          consumeState(Stream.value((Left(failure))));
         }
       },
       (success) {
