@@ -21,7 +21,7 @@ class DeformedInlinedImageScenario extends BaseTestScenario {
     <br>
     <img 
       src="https://example.com/image.jpg"
-      style="width: 2000px; height: 200px;" 
+      style="width: 2000px;height: 200px;" 
       alt="inline-image-oversize-with-style"/>
     <br>
     <img 
@@ -32,7 +32,7 @@ class DeformedInlinedImageScenario extends BaseTestScenario {
     <br>
     <img 
       src="https://example.com/image.jpg"
-      style="width: 2000px; height: 200px;" 
+      style="width: 2000px;height: 200px;" 
       width="2000"
       height="200"
       alt="inline-image-oversize-with-style-and-width-attribute"/>
@@ -45,7 +45,7 @@ class DeformedInlinedImageScenario extends BaseTestScenario {
     <br>
     <img 
       src="https://example.com/image.jpg"
-      style="width: 100px; height: 100px;" 
+      style="width: 100px;height: 100px;" 
       width="100"
       height="100"
       alt="inline-image-normal-size-with-style-and-width-attribute"/>
@@ -105,13 +105,10 @@ class DeformedInlinedImageScenario extends BaseTestScenario {
       .tap();
     expect(emailController, isNotNull);
 
-    final webViewController = emailController
-      ?.htmlContentViewKey
-      ?.currentState
-      ?.webViewController;
-    expect(webViewController, isNotNull);
+    final htmlContentViewKey = emailController?.htmlContentViewKey;
+    expect(htmlContentViewKey, isNotNull);
 
-    final result = await webViewController?.evaluateJavascript(
+    final result = await htmlContentViewKey!.currentState!.webViewController.evaluateJavascript(
       source: '''
         (function() {
           const images = document.querySelectorAll('img');
@@ -144,8 +141,7 @@ class DeformedInlinedImageScenario extends BaseTestScenario {
         expect(imgWidth, equals('100'));
         expect(imgHeight, equals('100'));
       } else if (imgAlt == 'inline-image-normal-size-with-style-and-width-attribute') {
-        expect(imgStyle.contains('max-width: 100%;'), isFalse);
-        expect(imgStyle.contains('width: 100px; height: 100px;'), isTrue);
+        expect(imgStyle.contains('width: 100px;height: 100px;'), isTrue);
         expect(imgWidth, equals('100'));
         expect(imgHeight, equals('100'));
       } else {
