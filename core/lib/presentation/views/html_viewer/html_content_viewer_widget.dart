@@ -77,6 +77,7 @@ class HtmlContentViewState extends State<HtmlContentViewer> {
   final _webViewSetting = InAppWebViewSettings(
     transparentBackground: true,
     verticalScrollBarEnabled: false,
+    supportZoom: false,
   );
 
   @visibleForTesting
