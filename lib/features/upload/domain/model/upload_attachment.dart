@@ -11,6 +11,7 @@ import 'package:model/upload/file_info.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
 import 'package:tmail_ui_user/features/upload/domain/model/upload_task_id.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
+import 'package:tmail_ui_user/main/exceptions/exception_thrower.dart';
 
 class UploadAttachment with EquatableMixin {
 
@@ -19,6 +20,7 @@ class UploadAttachment with EquatableMixin {
   final Uri uploadUri;
   final FileUploader fileUploader;
   final CancelToken? cancelToken;
+  final ExceptionThrower exceptionThrower;
 
   final StreamController<Either<Failure, Success>> _progressStateController
     = StreamController<Either<Failure, Success>>.broadcast();
@@ -29,6 +31,7 @@ class UploadAttachment with EquatableMixin {
     this.fileInfo,
     this.uploadUri,
     this.fileUploader,
+    this.exceptionThrower,
     {this.cancelToken});
 
   void _updateEvent(Either<Failure, Success> flowUploadState) {
@@ -57,12 +60,16 @@ class UploadAttachment with EquatableMixin {
       }
 
       _updateEvent(Right(SuccessAttachmentUploadState(uploadTaskId, attachment, fileInfo)));
-    } catch (e) {
-      logError('UploadAttachment::upload():ERROR: $e');
-      if (e is DioError && e.type == DioErrorType.cancel) {
+    } catch (error, stackTrace) {
+      logError('UploadAttachment::upload():ERROR: $error');
+      if (error is DioError && error.type == DioErrorType.cancel) {
         _updateEvent(Left(CancelAttachmentUploadState(uploadTaskId)));
       } else {
-        _updateEvent(Left(ErrorAttachmentUploadState(uploadId: uploadTaskId)));
+        try {
+          exceptionThrower.throwException(error, stackTrace);
+        } catch (e) {
+          _updateEvent(Left(ErrorAttachmentUploadState(uploadId: uploadTaskId, exception: e)));
+        }
       }
     } finally {
       await _progressStateController.close();
