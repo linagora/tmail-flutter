@@ -1002,11 +1002,19 @@ class ComposerController extends BaseController
       if (_getAllAutoCompleteInteractor != null) {
         return await _getAllAutoCompleteInteractor!
           .execute(autoCompletePattern)
-          .then((value) => handleAutoCompleteResultState(
-            resultState: value,
-            queryString: queryString,
-            onFailureCallback: (failure) => consumeState(Stream.value(Left(failure))),
-          )
+          .then(
+            (value) => handleAutoCompleteResultState(
+              resultState: value,
+              queryString: queryString,
+              onFailureCallback: (failure) {
+                logError('ComposerController::getAutoCompleteSuggestion:onFailureCallback: $failure');
+                consumeState(Stream.value(Left(failure)));
+              },
+            ),
+            onError: (error) {
+              logError('ComposerController::getAutoCompleteSuggestion:onError: $error');
+              consumeState(Stream.value(Left(error)));
+            },
         );
       } else if (_getDeviceContactSuggestionsInteractor != null) {
         return await _getDeviceContactSuggestionsInteractor!
@@ -1022,12 +1030,20 @@ class ComposerController extends BaseController
     } else {
       return await _getAutoCompleteInteractor
         ?.execute(autoCompletePattern)
-        .then((value) => handleAutoCompleteResultState(
-          resultState: value,
-          queryString: queryString,
-          onFailureCallback: (failure) => consumeState(Stream.value(Left(failure))),
-        )
-      ) ?? <EmailAddress>[];
+        .then(
+          (value) => handleAutoCompleteResultState(
+            resultState: value,
+            queryString: queryString,
+            onFailureCallback: (failure) {
+              logError('ComposerController::getAutoCompleteSuggestion:onFailureCallback: $failure');
+              consumeState(Stream.value(Left(failure)));
+            },
+          ),
+          onError: (error) {
+            logError('ComposerController::getAutoCompleteSuggestion:onError: $error');
+            consumeState(Stream.value(Left(error)));
+          },
+        ) ?? <EmailAddress>[];
     }
   }
 
