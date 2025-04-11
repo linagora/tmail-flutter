@@ -196,6 +196,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final isEmailContentClipped = RxBool(false);
   final attendanceStatus = Rxn<AttendanceStatus>();
 
+  GlobalKey<HtmlContentViewState>? htmlContentViewKey;
   EmailId? _currentEmailId;
   Identity? _identitySelected;
   ButtonState? _printEmailButtonState;
@@ -243,6 +244,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void onInit() {
     _registerObxStreamListener();
     _listenDownloadAttachmentProgressState();
+    if (PlatformInfo.isIntegrationTesting) {
+      htmlContentViewKey = GlobalKey<HtmlContentViewState>();
+    }
     super.onInit();
   }
 
@@ -250,6 +254,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void onClose() {
     _downloadProgressStateController.close();
     _attachmentListScrollController.dispose();
+    if (PlatformInfo.isIntegrationTesting) {
+      htmlContentViewKey = null;
+    }
     super.onClose();
   }
 

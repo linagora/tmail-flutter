@@ -120,6 +120,7 @@ class HtmlInteraction {
         }
     
         function removeWidthHeightFromStyle(style) {
+          // Remove width and height properties from style string
           style = style.replace(/width\\s*:\\s*[\\d.]+[a-zA-Z%]+\\s*;?/gi, '');
           style = style.replace(/height\\s*:\\s*[\\d.]+[a-zA-Z%]+\\s*;?/gi, '');
           style = style.trim();
@@ -130,6 +131,7 @@ class HtmlInteraction {
         }
     
         function extractWidthHeightFromStyle(style) {
+          // Extract width and height values with units from style string
           const result = {};
           const widthMatch = style.match(/width\\s*:\\s*([\\d.]+)([a-zA-Z%]+)\\s*;?/);
           const heightMatch = style.match(/height\\s*:\\s*([\\d.]+)([a-zA-Z%]+)\\s*;?/);
@@ -154,9 +156,24 @@ class HtmlInteraction {
         }
     
         function normalizeStyleAttribute(attrs) {
+          // Normalize style attribute to ensure proper responsive behavior
           let style = attrs['style'];
+          const widthStr = attrs['width'];
+          
           if (!style) {
-            attrs['style'] = 'display:inline;max-width:100%;';
+            if (!widthStr) {
+              attrs['style'] = 'max-width: 100%;height: auto;display: inline;';
+            } else {
+              if (!style.includes('height')) {
+                style += 'height: auto;';
+              }
+        
+              if (!style.includes('display')) {
+                style += 'display: inline;';
+              }
+        
+              attrs['style'] = style;
+            }
             return;
           }
     
@@ -175,40 +192,59 @@ class HtmlInteraction {
             }
           }
     
+          // Ensure proper style string formatting
           if (style.length && !style.endsWith(';')) {
             style += ';';
           }
     
+          // Add responsive defaults if missing
           if (!style.includes('max-width')) {
-            style += 'max-width:100%;height:auto;';
+            style += 'max-width: 100%;';
+          }
+    
+          if (!style.includes('height')) {
+            style += 'height: auto;';
           }
     
           if (!style.includes('display')) {
-            style += 'display:inline;';
+            style += 'display: inline;';
           }
     
           attrs['style'] = style;
         }
     
         function normalizeWidthHeightAttribute(attrs) {
+          // Normalize width/height attributes and remove if necessary
           const widthStr = attrs['width'];
           const heightStr = attrs['height'];
     
-          if (!widthStr || displayWidth === undefined) return;
+          // Remove attribute if value is null or undefined
+          if (widthStr === null || widthStr === undefined) {
+            delete attrs['width'];
+          } else if (displayWidth !== undefined) {
+            const widthValue = parseFloat(widthStr);
+            if (!isNaN(widthValue)) {
+              if (widthValue > displayWidth) {
+                delete attrs['width'];
+                delete attrs['height'];
+              }
+            }
+          }
     
-          const widthValue = parseFloat(widthStr);
-          if (isNaN(widthValue) || widthValue <= displayWidth) return;
-    
-          delete attrs['width'];
-          delete attrs['height'];
+          // Remove height attribute if value is null or undefined
+          if (heightStr === null || heightStr === undefined) {
+            delete attrs['height'];
+          }
         }
     
         function normalizeImageSize(attrs) {
-          normalizeStyleAttribute(attrs);
+          // Apply both style and attribute normalization
           normalizeWidthHeightAttribute(attrs);
+          normalizeStyleAttribute(attrs);
         }
     
         function applyImageNormalization() {
+          // Process all images on the page
           document.querySelectorAll('img').forEach(img => {
             const attrs = {
               style: img.getAttribute('style'),
@@ -218,16 +254,31 @@ class HtmlInteraction {
     
             normalizeImageSize(attrs);
     
-            if (attrs.style != null) img.setAttribute('style', attrs.style);
-            if ('width' in attrs) img.setAttribute('width', attrs.width);
-            else img.removeAttribute('width');
+            // Handle style attribute
+            if (attrs.style !== null && attrs.style !== undefined) {
+              img.setAttribute('style', attrs.style);
+            } else {
+              img.removeAttribute('style');
+            }
     
-            if ('height' in attrs) img.setAttribute('height', attrs.height);
-            else img.removeAttribute('height');
+            // Handle width attribute
+            if ('width' in attrs && attrs.width !== null && attrs.width !== undefined) {
+              img.setAttribute('width', attrs.width);
+            } else {
+              img.removeAttribute('width');
+            }
+    
+            // Handle height attribute
+            if ('height' in attrs && attrs.height !== null && attrs.height !== undefined) {
+              img.setAttribute('height', attrs.height);
+            } else {
+              img.removeAttribute('height');
+            }
           });
         }
         
         function safeApplyImageNormalization() {
+          // Error-safe wrapper for the normalization function
           try {
             applyImageNormalization();
           } catch (e) {
@@ -235,6 +286,7 @@ class HtmlInteraction {
           }
         }
         
+        // Run normalization when page loads
         window.onload = safeApplyImageNormalization;
       </script>
     ''';
