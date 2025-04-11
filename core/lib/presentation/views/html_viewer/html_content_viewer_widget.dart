@@ -60,10 +60,10 @@ class HtmlContentViewer extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _HtmlContentViewState();
+  State<StatefulWidget> createState() => HtmlContentViewState();
 }
 
-class _HtmlContentViewState extends State<HtmlContentViewer> {
+class HtmlContentViewState extends State<HtmlContentViewer> {
 
   late InAppWebViewController _webViewController;
   late double _actualHeight;
@@ -78,6 +78,9 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     transparentBackground: true,
     verticalScrollBarEnabled: false,
   );
+
+  @visibleForTesting
+  InAppWebViewController get webViewController => _webViewController;
 
   @override
   void initState() {
