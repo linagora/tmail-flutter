@@ -195,6 +195,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final currentEmailLoaded = Rxn<EmailLoaded>();
   final isEmailContentClipped = RxBool(false);
   final attendanceStatus = Rxn<AttendanceStatus>();
+  final htmlContentViewKey = GlobalKey<HtmlContentViewState>();
 
   EmailId? _currentEmailId;
   Identity? _identitySelected;

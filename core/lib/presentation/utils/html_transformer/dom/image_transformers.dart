@@ -27,24 +27,11 @@ class ImageTransformer extends DomTransformer {
       if (imageElements.isEmpty) return;
 
       await Future.wait(imageElements.map((imageElement) async {
-        var exStyle = imageElement.attributes['style'];
-        if (exStyle != null) {
-          if (!exStyle.trim().endsWith(';')) {
-            exStyle = '$exStyle;';
-          }
-          if (!exStyle.contains('display')) {
-            exStyle = '$exStyle display:inline;';
-          }
-          if (!exStyle.contains('max-width')) {
-            exStyle = '$exStyle max-width:100%;';
-          }
-          imageElement.attributes['style'] = exStyle;
-        } else {
-          imageElement.attributes['style'] = 'display:inline;max-width:100%;';
-        }
         final src = imageElement.attributes['src'];
 
         if (src == null) return;
+
+        final id = imageElement.attributes['id'] ?? '';
         final mimeType = imageElement.attributes['data-mimetype'];
         if (src.startsWith('cid:') && mapUrlDownloadCID != null) {
           final imageBase64 = await _convertCidToBase64Image(
@@ -54,7 +41,10 @@ class ImageTransformer extends DomTransformer {
             mimeType: mimeType,
           );
           imageElement.attributes['src'] = imageBase64 ?? src;
-          imageElement.attributes['id'] ??= src;
+
+          if (!id.startsWith('cid:')) {
+            imageElement.attributes['id'] = src;
+          }
         } else if (src.startsWith('https://') || src.startsWith('http://')) {
           if (!imageElement.attributes.containsKey('loading')) {
             imageElement.attributes['loading'] = 'lazy';

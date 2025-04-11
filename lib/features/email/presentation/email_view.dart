@@ -447,6 +447,9 @@ class EmailView extends GetWidget<SingleEmailController> {
                           ),
                           child: LayoutBuilder(builder: (context, constraints) {
                             return HtmlContentViewer(
+                              key: PlatformInfo.isIntegrationTesting
+                                ? controller.htmlContentViewKey
+                                : null,
                               contentHtml: allEmailContents,
                               initialWidth: constraints.maxWidth,
                               direction: AppUtils.getCurrentDirection(context),
@@ -486,6 +489,9 @@ class EmailView extends GetWidget<SingleEmailController> {
                   ),
                   child: LayoutBuilder(builder: (context, constraints) {
                     return HtmlContentViewer(
+                      key: PlatformInfo.isIntegrationTesting
+                        ? controller.htmlContentViewKey
+                        : null,
                       contentHtml: allEmailContents,
                       initialWidth: constraints.maxWidth,
                       direction: AppUtils.getCurrentDirection(context),
