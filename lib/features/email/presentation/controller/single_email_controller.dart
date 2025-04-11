@@ -177,6 +177,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final GetHtmlContentFromAttachmentInteractor _getHtmlContentFromAttachmentInteractor;
   final DownloadAllAttachmentsForWebInteractor _downloadAllAttachmentsForWebInteractor;
   final ExportAllAttachmentsInteractor _exportAllAttachmentsInteractor;
+  final PresentationEmail? initialEmail;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
@@ -236,8 +237,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._previewEmailFromEmlFileInteractor,
     this._getHtmlContentFromAttachmentInteractor,
     this._downloadAllAttachmentsForWebInteractor,
-    this._exportAllAttachmentsInteractor,
-  );
+    this._exportAllAttachmentsInteractor, {
+    this.initialEmail,
+  });
 
   @override
   void onInit() {
@@ -364,10 +366,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       }
     });
 
-    ever<PresentationEmail?>(
-      mailboxDashBoardController.selectedEmail,
-      _handleOpenEmailDetailedView
-    );
+    if (initialEmail == null) {
+      ever<PresentationEmail?>(
+        mailboxDashBoardController.selectedEmail,
+        _handleOpenEmailDetailedView
+      );
+    } else {
+      _handleOpenEmailDetailedView(initialEmail);
+    }
 
     ever(mailboxDashBoardController.emailUIAction, (action) {
       if (action is CloseEmailDetailedViewToRedirectToTheInboxAction) {
