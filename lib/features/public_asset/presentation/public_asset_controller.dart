@@ -186,7 +186,7 @@ class PublicAssetController extends BaseController {
     newlyPickedPublicAssetIds.add(publicAsset.id!);
     final imageTag = '<img '
       'src="${publicAsset.publicURI!}" '
-      'style="max-width: 100%;" '
+      'style="max-width:100%;" '
       'public-asset-id="${publicAsset.id!.value}">';
     if (PlatformInfo.isWeb) {
       Get
