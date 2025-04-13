@@ -158,22 +158,9 @@ class HtmlInteraction {
         function normalizeStyleAttribute(attrs) {
           // Normalize style attribute to ensure proper responsive behavior
           let style = attrs['style'];
-          const widthStr = attrs['width'];
           
           if (!style) {
-            if (!widthStr) {
-              attrs['style'] = 'max-width: 100%;height: auto;display: inline;';
-            } else {
-              if (!style.includes('height')) {
-                style += 'height: auto;';
-              }
-        
-              if (!style.includes('display')) {
-                style += 'display: inline;';
-              }
-        
-              attrs['style'] = style;
-            }
+            attrs['style'] = 'max-width:100%;height:auto;display:inline;';
             return;
           }
     
@@ -199,15 +186,15 @@ class HtmlInteraction {
     
           // Add responsive defaults if missing
           if (!style.includes('max-width')) {
-            style += 'max-width: 100%;';
+            style += 'max-width:100%;';
           }
     
           if (!style.includes('height')) {
-            style += 'height: auto;';
+            style += 'height:auto;';
           }
     
           if (!style.includes('display')) {
-            style += 'display: inline;';
+            style += 'display:inline;';
           }
     
           attrs['style'] = style;

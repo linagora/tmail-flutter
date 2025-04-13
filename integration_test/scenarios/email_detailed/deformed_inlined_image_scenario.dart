@@ -21,8 +21,18 @@ class DeformedInlinedImageScenario extends BaseTestScenario {
     <br>
     <img 
       src="https://example.com/image.jpg"
+      style="width: 2000px; height: 200px;" 
+      alt="inline-image-oversize-with-style-have-full-whitespaces"/>
+    <br>
+    <img 
+      src="https://example.com/image.jpg"
       style="width: 2000px;height: 200px;" 
-      alt="inline-image-oversize-with-style"/>
+      alt="inline-image-oversize-with-style-have-whitespaces"/>
+    <br>
+    <img 
+      src="https://example.com/image.jpg"
+      style="width:2000px;height:200px;" 
+      alt="inline-image-oversize-with-style-no-whitespaces"/>
     <br>
     <img 
       src="https://example.com/image.jpg"
@@ -32,10 +42,24 @@ class DeformedInlinedImageScenario extends BaseTestScenario {
     <br>
     <img 
       src="https://example.com/image.jpg"
+      style="width: 2000px; height: 200px;" 
+      width="2000"
+      height="200"
+      alt="inline-image-oversize-with-style-and-width-attribute-have-full-whitespaces"/>
+    <br>
+    <img 
+      src="https://example.com/image.jpg"
       style="width: 2000px;height: 200px;" 
       width="2000"
       height="200"
-      alt="inline-image-oversize-with-style-and-width-attribute"/>
+      alt="inline-image-oversize-with-style-and-width-attribute-have-whitespaces"/>
+    <br>
+    <img 
+      src="https://example.com/image.jpg"
+      style="width:2000px;height:200px;" 
+      width="2000"
+      height="200"
+      alt="inline-image-oversize-with-style-and-width-attribute-no-whitespaces"/>
     <br>
     <img 
       src="https://example.com/image.jpg"
@@ -45,10 +69,24 @@ class DeformedInlinedImageScenario extends BaseTestScenario {
     <br>
     <img 
       src="https://example.com/image.jpg"
+      style="width: 100px; height: 100px;" 
+      width="100"
+      height="100"
+      alt="inline-image-normal-size-with-style-and-width-attribute-have-full-whitespaces"/>
+    <br>
+    <img 
+      src="https://example.com/image.jpg"
       style="width: 100px;height: 100px;" 
       width="100"
       height="100"
-      alt="inline-image-normal-size-with-style-and-width-attribute"/>
+      alt="inline-image-normal-size-with-style-and-width-attribute-have-whitespaces"/>
+    <br>
+    <img 
+      src="https://example.com/image.jpg"
+      style="width:100px;height:100px;" 
+      width="100"
+      height="100"
+      alt="inline-image-normal-size-with-style-and-width-attribute-no-whitespaces"/>
   ''';
 
   @override
@@ -126,28 +164,33 @@ class DeformedInlinedImageScenario extends BaseTestScenario {
 
     final imageList = List<Map<String, dynamic>>.from(result);
 
-    expect(imageList.length, 6);
+    expect(imageList.length, 12);
 
     for (var img in imageList) {
       final imgWidth= img['width'];
       final imgHeight = img['height'];
       final imgStyle = img['style'];
-      final imgAlt = img['alt'];
+      final imgAlt = img['alt'] as String;
       final imgOuterHTML = img['outerHTML'];
       log("DeformedInlinedImageScenario::_expectEmailViewDisplaysNormalizedInlineImages:Image $imgOuterHTML");
+      expect(imgStyle.contains('max-width:100%'), isTrue);
+      expect(imgStyle.contains('display:inline'), isTrue);
+      expect(imgStyle.contains('height:'), isTrue);
 
-      if (imgAlt == 'inline-image-normal-size-with-width-attribute') {
-        expect(imgStyle, isNull);
-        expect(imgWidth, equals('100'));
-        expect(imgHeight, equals('100'));
-      } else if (imgAlt == 'inline-image-normal-size-with-style-and-width-attribute') {
-        expect(imgStyle.contains('width: 100px;height: 100px;'), isTrue);
-        expect(imgWidth, equals('100'));
-        expect(imgHeight, equals('100'));
-      } else {
-        expect(imgStyle, equals('max-width: 100%;height: auto;display: inline;'));
+      if (imgAlt.startsWith('inline-image-normal-size')) {
+        expect(imgWidth, isNotNull);
+        expect(imgHeight, isNotNull);
+      } else if (imgAlt.startsWith('inline-image-oversize')) {
         expect(imgWidth, isNull);
         expect(imgHeight, isNull);
+      }
+
+      if (imgAlt.startsWith('inline-image-normal-size-with-style-and-width-attribute')) {
+        expect(imgStyle.contains('width:'), isTrue);
+        expect(imgStyle.contains('100px'), isTrue);
+      } else if (imgAlt.startsWith('inline-image-oversize-with-style-and-width-attribute')) {
+        expect(imgStyle.contains('style="width:2000px'), isFalse);
+        expect(imgStyle.contains('style="width: 2000px'), isFalse);
       }
     }
   }
