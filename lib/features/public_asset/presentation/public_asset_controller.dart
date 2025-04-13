@@ -61,7 +61,15 @@ class PublicAssetController extends BaseController {
   void _handleUploadState(Either<Failure, Success> uploadState) {
     log('PublicAssetController::handleUploadState::${uploadState.runtimeType}');
     uploadState.fold(
-      (failure) => consumeState(Stream.value(Left(CreatePublicAssetFailureState()))),
+      (failure) {
+        if (failure is ErrorAttachmentUploadState) {
+          consumeState(Stream.value(Left(CreatePublicAssetFailureState(
+            exception: failure.exception,
+          ))));
+        } else {
+          consumeState(Stream.value(Left(CreatePublicAssetFailureState())));
+        }
+      },
       (success) {
         log('PublicAssetController::handleUploadState::success::$success');
         if (success is SuccessAttachmentUploadState) {
@@ -112,32 +120,34 @@ class PublicAssetController extends BaseController {
 
   @override
   void handleSuccessViewState(Success success) {
-    super.handleSuccessViewState(success);
     if (success is UploadAttachmentSuccess) {
       _handleUploadAttachmentSuccess(success);
     } else if (success is CreatePublicAssetSuccessState) {
       _handleCreatePublicAssetSuccessState(success);
+    } else {
+      super.handleSuccessViewState(success);
     }
   }
 
   @override
   void handleFailureViewState(Failure failure) {
-    super.handleFailureViewState(failure);
     if (failure is CreatePublicAssetFailureState) {
       _handleCreatePublicAssetFailureState();
     } else if (failure is PublicAssetOverQuotaFailureState) {
       _handlePublicAssetOverQuotaFailureState(failure);
     } else if (failure is UploadAttachmentFailure) {
       _handleUploadAttachmentFailure(failure);
+    } else {
+      super.handleFailureViewState(failure);
     }
   }
 
   @override
   void handleUrgentExceptionOnWeb({Failure? failure, Exception? exception}) {
-    super.handleUrgentExceptionOnWeb(failure: failure, exception: exception);
     if (failure is UploadAttachmentFailure) {
       isUploading.value = false;
     }
+    super.handleUrgentExceptionOnWeb(failure: failure, exception: exception);
   }
 
   void _handlePublicAssetOverQuotaFailureState(PublicAssetOverQuotaFailureState failure) {
