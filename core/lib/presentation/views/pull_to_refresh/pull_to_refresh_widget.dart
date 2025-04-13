@@ -13,11 +13,9 @@ class PullToRefreshWidget extends StatefulWidget {
   final String normalRefreshText;
   final String deepRefreshText;
   final String pullDownToRefreshText;
-  final String refreshingText;
-  final String pullingText;
   final String releaseToText;
-  final String pullFurtherForText;
   final String pullHarderForText;
+  final Icon? pullDownToRefreshIcon;
   final Icon? normalRefreshIcon;
   final Icon? deepRefreshIcon;
 
@@ -26,15 +24,13 @@ class PullToRefreshWidget extends StatefulWidget {
     required this.child,
     required this.onNormalRefresh,
     required this.onDeepRefresh,
-    this.deepRefreshThreshold = 200.0,
+    this.deepRefreshThreshold = 150.0,
     this.normalRefreshText = 'Refresh',
     this.deepRefreshText = 'Deep refresh',
     this.pullDownToRefreshText = 'Pull down to refresh',
-    this.refreshingText = 'Refreshing',
-    this.pullingText = 'Pulling',
     this.releaseToText = 'Release to',
-    this.pullFurtherForText = 'Pull further for',
     this.pullHarderForText = 'Pull harder for',
+    this.pullDownToRefreshIcon = const Icon(Icons.arrow_downward, size: 20),
     this.normalRefreshIcon = const Icon(Icons.refresh, size: 20),
     this.deepRefreshIcon = const Icon(Icons.autorenew, size: 20),
   }) : super(key: key);
@@ -46,23 +42,26 @@ class PullToRefreshWidget extends StatefulWidget {
 class _PullToRefreshWidgetState extends State<PullToRefreshWidget> {
   final RefreshController _refreshController = RefreshController();
   double _scrollOffset = 0.0;
-  String? _lastAction;
+  bool _shouldDeepRefresh = false;
+
+  bool get isReachDeepRefresh => _scrollOffset > widget.deepRefreshThreshold;
 
   @override
   Widget build(BuildContext context) {
     return NotificationListener<ScrollNotification>(
       onNotification: (notification) {
         if (notification is ScrollUpdateNotification) {
-          final newOffset = notification.metrics.pixels;
+          final newOffset = notification.metrics.pixels.abs();
           final crossedThreshold =
-              (_scrollOffset.abs() <= widget.deepRefreshThreshold &&
-                      newOffset.abs() > widget.deepRefreshThreshold) ||
-                  (_scrollOffset.abs() > widget.deepRefreshThreshold &&
-                      newOffset.abs() <= widget.deepRefreshThreshold);
+              (_scrollOffset <= widget.deepRefreshThreshold && newOffset > widget.deepRefreshThreshold) ||
+                  (isReachDeepRefresh && newOffset <= widget.deepRefreshThreshold);
 
           if (crossedThreshold || _scrollOffset != newOffset) {
             setState(() {
               _scrollOffset = newOffset;
+              if (notification.dragDetails != null) {
+                _shouldDeepRefresh = newOffset > widget.deepRefreshThreshold;
+              }
             });
           }
         }
@@ -74,32 +73,24 @@ class _PullToRefreshWidgetState extends State<PullToRefreshWidget> {
         enablePullUp: false,
         header: CustomHeader(
           builder: (context, mode) {
-            String statusText;
+            if (mode != RefreshStatus.idle &&
+                mode != RefreshStatus.canRefresh) {
+              return const SizedBox.shrink();
+            }
+
+            String? statusText;
             Icon? leadingIcon;
 
             if (mode == RefreshStatus.idle) {
               statusText = widget.pullDownToRefreshText;
-              leadingIcon = widget.normalRefreshIcon;
+              leadingIcon = widget.pullDownToRefreshIcon;
             } else if (mode == RefreshStatus.canRefresh) {
-              if (_scrollOffset.abs() > widget.deepRefreshThreshold) {
-                statusText = '${widget.releaseToText} ${widget.deepRefreshText}';
-                leadingIcon = widget.deepRefreshIcon;
-              } else {
-                statusText = '${widget.releaseToText} ${widget.normalRefreshText}';
-                leadingIcon = widget.normalRefreshIcon;
-              }
-            } else if (mode == RefreshStatus.refreshing || mode == RefreshStatus.completed) {
-              statusText = '${widget.refreshingText}...';
-              leadingIcon = _lastAction == widget.deepRefreshText
-                  ? widget.deepRefreshIcon
-                  : widget.normalRefreshIcon;
-            } else {
-              statusText = '${widget.pullingText}...';
-              leadingIcon = widget.normalRefreshIcon;
+              statusText = '${widget.releaseToText} ${isReachDeepRefresh ? widget.deepRefreshText : widget.normalRefreshText}';
+              leadingIcon = isReachDeepRefresh ? widget.deepRefreshIcon :  widget.normalRefreshIcon;
             }
 
             return SizedBox(
-              height: clampDouble(_scrollOffset.abs(), 60, widget.deepRefreshThreshold),
+              height: clampDouble(_scrollOffset, 60, widget.deepRefreshThreshold),
               child: Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -113,20 +104,18 @@ class _PullToRefreshWidgetState extends State<PullToRefreshWidget> {
                           child: Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8),
                             child: Text(
-                              statusText,
+                              statusText ?? '',
                               style: ThemeUtils.textStyleBodyBody1(color: Colors.black),
                             ),
                           ),
                         ),
                       ],
                     ),
-                    if (mode == RefreshStatus.canRefresh)
+                    if (mode == RefreshStatus.canRefresh && !isReachDeepRefresh)
                       Padding(
                         padding: const EdgeInsetsDirectional.only(top: 4, start: 8, end: 8),
                         child: Text(
-                          _scrollOffset.abs() > widget.deepRefreshThreshold
-                              ? '${widget.pullFurtherForText} ${widget.deepRefreshText.toLowerCase()}'
-                              : '${widget.pullHarderForText} ${widget.deepRefreshText.toLowerCase()}',
+                          '${widget.pullHarderForText} ${widget.deepRefreshText.toLowerCase()}',
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
                             color: AppColor.steelGray400,
                           ),
@@ -140,14 +129,12 @@ class _PullToRefreshWidgetState extends State<PullToRefreshWidget> {
           height: widget.deepRefreshThreshold,
         ),
         onRefresh: () {
-          if (_scrollOffset.abs() > widget.deepRefreshThreshold) {
-            _lastAction = widget.deepRefreshText;
+          if (_shouldDeepRefresh) {
             widget.onDeepRefresh();
           } else {
-            _lastAction = widget.normalRefreshText;
             widget.onNormalRefresh();
           }
-          _refreshController.refreshCompleted();
+          _refreshController.refreshToIdle();
         },
         child: widget.child,
       ),

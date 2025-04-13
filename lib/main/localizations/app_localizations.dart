@@ -4647,31 +4647,10 @@ class AppLocalizations {
     );
   }
 
-  String get refreshing {
-    return Intl.message(
-      'Refreshing',
-      name: 'refreshing',
-    );
-  }
-
-  String get pulling {
-    return Intl.message(
-      'Pulling',
-      name: 'pulling',
-    );
-  }
-
   String get releaseTo {
     return Intl.message(
       'Release to',
       name: 'releaseTo',
-    );
-  }
-
-  String get pullFurtherFor {
-    return Intl.message(
-      'Pull further for',
-      name: 'pullFurtherFor',
     );
   }
 

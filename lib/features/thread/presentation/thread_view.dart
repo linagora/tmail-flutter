@@ -413,9 +413,6 @@ class ThreadView extends GetWidget<ThreadController>
         pullDownToRefreshText: AppLocalizations.of(context).pullDownToRefresh,
         normalRefreshText: AppLocalizations.of(context).refresh,
         deepRefreshText: AppLocalizations.of(context).deepRefresh,
-        refreshingText: AppLocalizations.of(context).refreshing,
-        pullingText: AppLocalizations.of(context).pulling,
-        pullFurtherForText: AppLocalizations.of(context).pullFurtherFor,
         pullHarderForText: AppLocalizations.of(context).pullHarderFor,
         child: listView,
       );
@@ -699,9 +696,6 @@ class ThreadView extends GetWidget<ThreadController>
             pullDownToRefreshText: AppLocalizations.of(context).pullDownToRefresh,
             normalRefreshText: AppLocalizations.of(context).refresh,
             deepRefreshText: AppLocalizations.of(context).deepRefresh,
-            refreshingText: AppLocalizations.of(context).refreshing,
-            pullingText: AppLocalizations.of(context).pulling,
-            pullFurtherForText: AppLocalizations.of(context).pullFurtherFor,
             pullHarderForText: AppLocalizations.of(context).pullHarderFor,
             child: EmptyEmailsWidget(
               key: const Key('empty_thread_view'),
