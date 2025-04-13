@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-04-03T14:19:11.171517",
+  "@@last_modified": "2025-04-14T04:16:15.237055",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -2968,12 +2968,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "errorWhileFetchingSubaddress": "Error while fetching the subaddress",
-  "@errorWhileFetchingSubaddress": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "connectedToTheInternet": "Connected to the internet",
   "@connectedToTheInternet": {
     "type": "text",
@@ -4424,26 +4418,8 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "refreshing": "Refreshing",
-  "@refreshing": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "pulling": "Pulling",
-  "@pulling": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "releaseTo": "Release to",
   "@releaseTo": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "pullFurtherFor": "Pull further for",
-  "@pullFurtherFor": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

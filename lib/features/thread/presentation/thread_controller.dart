@@ -267,14 +267,14 @@ class ThreadController extends BaseController with EmailActionController {
           && mailbox.mailboxId != _currentMemoryMailboxId) {
         _currentMemoryMailboxId = mailbox.id;
         consumeState(Stream.value(Right(GetAllEmailLoading())));
-        _resetToOriginalValue();
+        resetToOriginalValue();
         getAllEmailAction(
           getLatestChanges: mailboxDashBoardController.isFirstSessionLoad,
         );
         mailboxDashBoardController.setIsFirstSessionLoad(false);
       } else if (mailbox == null) { // disable current mailbox when search active
         _currentMemoryMailboxId = null;
-        _resetToOriginalValue();
+        resetToOriginalValue();
       }
     });
 
@@ -468,7 +468,7 @@ class ThreadController extends BaseController with EmailActionController {
         accountId: _accountId,
         userName: _session?.username,
       );
-      _getAllEmailAction();
+      getAllEmailAction();
     } else if (error is MethodLevelErrors) {
       if (currentOverlayContext != null && error.message != null) {
         appToast.showToastErrorMessage(
@@ -480,8 +480,8 @@ class ThreadController extends BaseController with EmailActionController {
     }
   }
 
-  void _resetToOriginalValue() {
-    log('ThreadController::_resetToOriginalValue');
+  void resetToOriginalValue() {
+    log('ThreadController::resetToOriginalValue');
     mailboxDashBoardController.emailsInCurrentMailbox.clear();
     mailboxDashBoardController.listEmailSelected.clear();
     mailboxDashBoardController.currentSelectMode.value = SelectMode.INACTIVE;

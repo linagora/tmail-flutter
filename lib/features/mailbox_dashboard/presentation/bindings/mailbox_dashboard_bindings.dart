@@ -7,6 +7,7 @@ import 'package:core/utils/preview_eml_file_utils.dart';
 import 'package:core/utils/print_utils.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
+import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
@@ -103,7 +104,6 @@ import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_work
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/sending_email_cache_manager.dart';
-import 'package:tmail_ui_user/features/push_notification/data/local/fcm_cache_manager.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_bindings.dart';
 import 'package:tmail_ui_user/features/search/email/domain/usecases/refresh_changes_search_email_interactor.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_bindings.dart';
@@ -239,9 +239,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<RemoteExceptionThrower>()));
     Get.lazyPut(() => LocalThreadDataSourceImpl(
       Get.find<EmailCacheManager>(),
-      Get.find<FCMCacheManager>(),
-      Get.find<StateCacheManager>(),
-      Get.find<FileUtils>(),
+      Get.find<CachingManager>(),
       Get.find<CacheExceptionThrower>(),
     ));
     Get.lazyPut(() => StateDataSourceImpl(
