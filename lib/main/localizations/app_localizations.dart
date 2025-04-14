@@ -4242,13 +4242,6 @@ class AppLocalizations {
     );
   }
 
-  String get sessionExpired {
-    return Intl.message(
-      'Session expired',
-      name: 'sessionExpired',
-    );
-  }
-
   String get sMimeGoodSignatureMessage {
     return Intl.message(
       'The authenticity of this message had been verified with SMime signature.',
@@ -4436,14 +4429,6 @@ class AppLocalizations {
     );
   }
 
-  String get messageWarningDialogWhenExpiredOIDCTokenAndReconnection {
-    return Intl.message(
-      'Your session expired. We need to take you back to the login page in order to refresh it. You might want to save the email you are currently editing before we do so.',
-      name: 'messageWarningDialogWhenExpiredOIDCTokenAndReconnection',
-    );
-  }
-
-
   String get replyToList {
     return Intl.message(
       'Reply to list',
@@ -4483,13 +4468,6 @@ class AppLocalizations {
     return Intl.message(
       'Edit as new email',
       name: 'editAsNewEmail',
-    );
-  }
-
-  String get saveAndRefresh {
-    return Intl.message(
-      'Save & refresh',
-      name: 'saveAndRefresh',
     );
   }
 
