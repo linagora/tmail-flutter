@@ -1,9 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_address_extension.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 
 void main() {
@@ -252,6 +255,35 @@ void main() {
         expect(result.value2, containsAll(expectedResult.value2));
         expect(result.value3, containsAll(expectedResult.value3));
         expect(result.value4, containsAll(expectedResult.value4));
+      });
+
+      test(
+        'Email has Reply To'
+        'AND user is replying to own sent email'
+        'THEN user A clicks reply, generateRecipientsEmailAddressForComposer\n'
+        'SHOULD return all email address in To field in To tuple',
+      () {
+        final emailToReply = PresentationEmail(
+          from: {userAEmailAddress},
+          to: {userBEmailAddress, userAEmailAddress},
+          cc: {userCEmailAddress},
+          replyTo: {replyToEmailAddress},
+          mailboxContain: PresentationMailbox(
+            MailboxId(Id('value')),
+            role: PresentationMailbox.roleSent,
+          ),
+        );
+
+        final result = emailToReply.generateRecipientsEmailAddressForComposer(
+          emailActionType: EmailActionType.reply,
+          isSender: true,
+          listPost: listPost,
+        );
+
+        expect(result.value1, equals([userBEmailAddress, userAEmailAddress]));
+        expect(result.value2, isEmpty);
+        expect(result.value3, isEmpty);
+        expect(result.value4, isEmpty);
       });
 
       test(
