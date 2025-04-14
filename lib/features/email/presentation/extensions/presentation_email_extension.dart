@@ -6,6 +6,7 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
+import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 
 extension PresentationEmailExtension on PresentationEmail {
@@ -29,6 +30,7 @@ extension PresentationEmailExtension on PresentationEmail {
           newFromAddress: newFromAddress,
           newBccAddress: newBccAddress,
           newReplyToAddress: newReplyToAddress,
+          replyOwnSentEmail: mailboxContain?.isSent == true,
           userName: userName,
         );
 
@@ -57,9 +59,13 @@ extension PresentationEmailExtension on PresentationEmail {
     required List<EmailAddress> newFromAddress,
     required List<EmailAddress> newBccAddress,
     required List<EmailAddress> newReplyToAddress,
+    required replyOwnSentEmail,
     String? userName,
   }) {
     if (isSender) {
+      if (replyOwnSentEmail) {
+        return Tuple4(newToAddress, [], [], []);
+      }
       if (newBccAddress.isNotEmpty) {
         return Tuple4(newToAddress, [], [], newReplyToAddress);
       }
