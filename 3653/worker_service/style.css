@@ -1,0 +1,68 @@
+.smart-banner {
+  display: none;
+  position: fixed;
+  left: 14px;
+  right: 14px;
+  border-radius: 10px;
+  background: linear-gradient(0deg, #FFFBFE 0%, #FFFBFE 100%), linear-gradient(0deg, rgba(122.19, 184.06, 255, 0.09) 0%, rgba(122.19, 184.06, 255, 0.09) 100%);
+  box-shadow: 0px 0px 24px rgba(0, 0, 0, 0.16);
+}
+
+.banner-content {
+  padding-bottom: 18px;
+  display: block;
+  display: flex;
+  justify-content: left;
+  align-items: center;
+}
+
+.twake-mail-icon {
+  margin-left: 12px;
+  margin-right: 16px;
+}
+
+.button {
+  border: none;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+  cursor: pointer;
+  background-color: transparent;
+}
+
+.close-icon {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+}
+
+.open-button {
+  color: #007AFF;
+  font-size: 17px;
+  font-family: Inter;
+  font-weight: 500;
+  line-height: 24px;
+  word-wrap: break-word;
+  margin-right: 24px;
+  margin-left: 16px;
+}
+
+.banner-title {
+  font-family: Inter;
+  word-wrap: break-word;
+  color: black;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 20px;
+  margin-bottom: 10px;
+}
+
+.banner-description {
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 16px;
+  font-family: Inter;
+  word-wrap: break-word;
+  color: black;
+}
