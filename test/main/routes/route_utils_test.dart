@@ -224,5 +224,33 @@ void main() {
         equals(body)
       );
     });
+
+    test(
+      'should parse url with mailto uri '
+      'when the query parameter belongs to the mailto uri',
+    () {
+      // arrange
+      const to = 'to@example.com';
+      const cc1 = 'cc1@example.com', cc2 = 'cc2@example.com';
+      const bcc1 = 'bcc1@example.com', bcc2 = 'bcc2@example.com';
+      const subject = 'Hello';
+      const body = 'Bye';
+      const mailtoUri = 'https://example.com/mailto/'
+        '?uri=mailto:$to'
+        '?subject=$subject'
+        '&cc=$cc1,$cc2'
+        '&bcc=$bcc1,$bcc2'
+        '&body=$body';
+
+      // act
+      final result = RouteUtils.parseMapMailtoFromUri(mailtoUri);
+      
+      // assert
+      expect(result[RouteUtils.paramMailtoAddress], equals(to));
+      expect(result[RouteUtils.paramCc], containsAll([cc1, cc2]));
+      expect(result[RouteUtils.paramBcc], containsAll([bcc1, bcc2]));
+      expect(result[RouteUtils.paramSubject], equals(subject));
+      expect(result[RouteUtils.paramBody], equals(body));
+    });
   });
 }

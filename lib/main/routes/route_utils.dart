@@ -204,6 +204,11 @@ abstract class RouteUtils {
       mapMailto[paramSubject] = subject;
       mapMailto[paramBody] = body;
     } else if (parsedMailToUri?.path == "/$mailtoPrefix" || parsedMailToUri?.path == "/$mailtoPrefix/") {
+      final uriPrefixQueryParam = parsedMailToUri?.queryParameters[uriPrefix] ?? '';
+      final uriFromUriPrefixQueryParam = Uri.tryParse(uriPrefixQueryParam);
+      if (uriFromUriPrefixQueryParam?.queryParameters.isNotEmpty == true) {
+        return parseMapMailtoFromUri(mailtoUri?.split('?uri=').last);
+      }
       final to = {
         ...?parsedMailToUri?.queryParameters[uriPrefix]?.split('$mailtoPrefix:').last.split(ADDRESS_SEPARATOR),
         ...?parsedMailToUri?.queryParameters[paramTo]?.split(ADDRESS_SEPARATOR)

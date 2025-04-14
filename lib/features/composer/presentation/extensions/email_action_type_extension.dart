@@ -33,6 +33,8 @@ extension EmailActionTypeExtension on EmailActionType {
       case EmailActionType.editSendingEmail:
       case EmailActionType.reopenComposerBrowser:
       case EmailActionType.editAsNewEmail:
+      case EmailActionType.composeFromMailtoUri:
+      case EmailActionType.composeFromUnsubscribeMailtoLink:
         return subject;
       default:
         return '';
