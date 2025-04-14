@@ -593,7 +593,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = "";
       t4 = A.Theme_of(context).textTheme.bodySmall;
       t2.push(new A.Padding(B.EdgeInsets_0_8_0_0, A.Text$(t3, _null, _null, 1, B.TextOverflow_2, _null, _null, _null, _null, t4 == null ? _null : t4.copyWith$3$color$fontSize$fontWeight(B.Color_4278190080, 12, B.FontWeight_3_400), B.TextAlign_2, _null, _null, _null, _null), _null));
-      return new C.LinkBrowserWidget(t1.appUri, A.Material$(B.Duration_200000, true, _null, A.InkWell$(false, B.BorderRadius_ww89, true, A.Container$(_null, A.Column$(t2, B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), B.Clip_0, _null, _null, _null, _null, _null, _null, _null, B.EdgeInsets_0_8_0_8, _null, _null, 80), _null, true, _null, _null, _null, B.Color_2581915884, _null, _null, _null, _null, _null, _null, _null, new C.AppGridDashboardItem_build_closure(_this), _null, _null, _null, _null, _null, _null, _null), B.Clip_0, B.Color_0, 0, _null, _null, _null, _null, _null, B.MaterialType_0), _null);
+      return new C.LinkBrowserWidget(t1.appUri, A.Material$(B.Duration_200000, true, _null, A.InkWell$(false, B.BorderRadius_ww87, true, A.Container$(_null, A.Column$(t2, B.CrossAxisAlignment_2, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), B.Clip_0, _null, _null, _null, _null, _null, _null, _null, B.EdgeInsets_0_8_0_8, _null, _null, 80), _null, true, _null, _null, _null, B.Color_2581915884, _null, _null, _null, _null, _null, _null, _null, new C.AppGridDashboardItem_build_closure(_this), _null, _null, _null, _null, _null, _null, _null), B.Clip_0, B.Color_0, 0, _null, _null, _null, _null, _null, B.MaterialType_0), _null);
     }
   };
   C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin.prototype = {};
@@ -1045,5 +1045,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "9IPpcEbpAKz/jHy7bV0ynFbpP/E=");
+})($__dart_deferred_initializers__, "dncvZ0kmmsIQLsyMSPwnVTG1SPQ=");
 ;

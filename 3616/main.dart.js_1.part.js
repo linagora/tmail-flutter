@@ -551,7 +551,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleLoginPressed$1(this.context);
     },
-    $signature: 10
+    $signature: 9
   };
   B.LoginView__buildMobileForm_closure.prototype = {
     call$0() {
@@ -814,9 +814,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.List_email = A._setArrayType(makeConstList(["email"]), type$.JSArray_String);
     D.List_password = A._setArrayType(makeConstList(["password"]), type$.JSArray_String);
     D.BorderSide_Fkb = new A.BorderSide(C.Color_4294112245, 1, C.BorderStyle_1, -1);
-    D.OutlineInputBorder_AuK = new A.OutlineInputBorder(4, C.BorderRadius_ww811, D.BorderSide_Fkb);
+    D.OutlineInputBorder_AuK = new A.OutlineInputBorder(4, C.BorderRadius_ww89, D.BorderSide_Fkb);
     D.BorderSide_UKi1 = new A.BorderSide(C.Color_4278221567, 2, C.BorderStyle_1, -1);
-    D.OutlineInputBorder_ieL1 = new A.OutlineInputBorder(4, C.BorderRadius_ww811, D.BorderSide_UKi1);
+    D.OutlineInputBorder_ieL1 = new A.OutlineInputBorder(4, C.BorderRadius_ww89, D.BorderSide_UKi1);
     D.PrivacyLinkWidget_null = new B.PrivacyLinkWidget(null);
     D.Padding_HfL = new A.Padding(C.EdgeInsets_0_16_0_0, D.PrivacyLinkWidget_null, null);
     D.Color_1035779260 = new A.Color(1035779260);
@@ -843,5 +843,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "A4q/uZrYLhKBuYBrlxReysg3e6Y=");
+})($__dart_deferred_initializers__, "D0Xo48l5vJqlhISzTcKb1gfq1Tg=");
 ;
