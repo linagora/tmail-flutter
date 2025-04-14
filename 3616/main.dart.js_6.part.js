@@ -606,7 +606,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = $.$get$AppGridDashboardStyle_cardShadow(),
         t4 = this.listLinagoraApp,
         t5 = t4.$ti._eval$1("MappedListIterable<ListBase.E,AppGridDashboardItem>");
-      return A.GestureDetector$(_null, A.Container$(_null, A.Wrap$(B.WrapAlignment_0, A.List_List$of(new A.MappedListIterable(t4, new C.AppDashboardOverlay_build_closure(this), t5), true, t5._eval$1("ListIterable.E")), B.WrapCrossAlignment_0, B.WrapAlignment_0, 0, 0), B.Clip_0, _null, _null, new A.BoxDecoration(B.Color_4294967295, _null, _null, t2, t3, _null, _null, B.BoxShape_0), _null, _null, _null, _null, D.EdgeInsetsDirectional_10_14_10_14, _null, _null, t1), B.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.AppDashboardOverlay_build_closure0(), _null, _null, _null, _null, _null, _null, _null, false, B.Offset_7BT);
+      return A.GestureDetector$(_null, A.Container$(_null, A.Wrap$(B.WrapAlignment_0, A.List_List$of(new A.MappedListIterable(t4, new C.AppDashboardOverlay_build_closure(this), t5), true, t5._eval$1("ListIterable.E")), B.WrapCrossAlignment_0, B.Axis_0, B.WrapAlignment_0, 0, 0, _null, B.VerticalDirection_1), B.Clip_0, _null, _null, new A.BoxDecoration(B.Color_4294967295, _null, _null, t2, t3, _null, _null, B.BoxShape_0), _null, _null, _null, _null, D.EdgeInsetsDirectional_10_14_10_14, _null, _null, t1), B.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, new C.AppDashboardOverlay_build_closure0(), _null, _null, _null, _null, _null, _null, _null, false, B.Offset_7BT);
     },
     get$_widthAppGrid() {
       var t1 = this.listLinagoraApp;
@@ -836,7 +836,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1860
+    $signature: 1863
   };
   C._AppGridDashboardIconState_build_closure.prototype = {
     call$3(context, isExpanded, child) {
@@ -852,7 +852,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.imagePaths;
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 1861
+    $signature: 1864
   };
   C.AppGridDashboardItem_build_closure.prototype = {
     call$0() {
@@ -900,7 +900,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 387
+    $signature: 358
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -1045,5 +1045,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "dncvZ0kmmsIQLsyMSPwnVTG1SPQ=");
+})($__dart_deferred_initializers__, "OMWpT9D97TI8KIIRWeVDNpQt/BY=");
 ;
