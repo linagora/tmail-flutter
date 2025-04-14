@@ -4064,12 +4064,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sessionExpired": "Session expired",
-  "@sessionExpired": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "sMimeGoodSignatureMessage": "The authenticity of this message had been verified with SMime signature.",
   "@sMimeGoodSignatureMessage": {
     "type": "text",
@@ -4238,12 +4232,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "messageWarningDialogWhenExpiredOIDCTokenAndReconnection": "Your session expired. We need to take you back to the login page in order to refresh it. You might want to save the email you are currently editing before we do so.",
-  "@messageWarningDialogWhenExpiredOIDCTokenAndReconnection": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "replyToList": "Reply to list",
   "@replyToList": {
     "type": "text",
@@ -4276,12 +4264,6 @@
   },
   "editAsNewEmail": "Edit as new email",
   "@editAsNewEmail": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
-  "saveAndRefresh": "Save & refresh",
-  "@saveAndRefresh": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

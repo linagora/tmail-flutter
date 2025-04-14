@@ -6,7 +6,6 @@ import 'package:dartz/dartz.dart';
 import 'package:fcm/model/firebase_capability.dart';
 import 'package:fcm/model/firebase_registration_id.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:forward/forward/capability_forward.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -221,44 +220,11 @@ abstract class BaseController extends GetxController
 
   void _handleBadCredentialsException() {
     log('$runtimeType::_handleBadCredentialsException:');
-    if (!twakeAppManager.hasComposer) {
-      _performReconnection();
-      return;
-    }
-
-    if (currentContext == null) {
+    if (twakeAppManager.hasComposer) {
       _performSaveAndReconnection();
-      return;
+    } else {
+      _performReconnection();
     }
-
-    if (twakeAppManager.isSessionExpiresDialogOpened) return;
-
-    final appLocalizations = AppLocalizations.of(currentContext!);
-    showConfirmDialogAction(
-      currentContext!,
-      appLocalizations.messageWarningDialogWhenExpiredOIDCTokenAndReconnection,
-      appLocalizations.saveAndRefresh,
-      title: appLocalizations.sessionExpired,
-      cancelTitle: appLocalizations.no,
-      alignCenter: true,
-      outsideDismissible: false,
-      titleActionButtonMaxLines: 1,
-      icon: SvgPicture.asset(imagePaths.icTMailLogo, width: 64, height: 64),
-      onConfirmAction: () {
-        twakeAppManager.setSessionExpiresDialogDisplayState(false);
-        _performSaveAndReconnection();
-      },
-      onCancelAction: () {
-        twakeAppManager.setSessionExpiresDialogDisplayState(false);
-        _performReconnection();
-      },
-      onCloseButtonAction: () {
-        twakeAppManager.setSessionExpiresDialogDisplayState(false);
-        _performCloseReconnectionConfirmDialog();
-      }
-    ).whenComplete(() => twakeAppManager.setSessionExpiresDialogDisplayState(false));
-
-    twakeAppManager.setSessionExpiresDialogDisplayState(true);
   }
 
   void _performSaveAndReconnection() {
@@ -271,10 +237,6 @@ abstract class BaseController extends GetxController
 
   void _performReconnection() {
     clearDataAndGoToLoginPage();
-  }
-
-  void _performCloseReconnectionConfirmDialog() {
-    popBack();
   }
 
   void onDataFailureViewState(Failure failure) {
