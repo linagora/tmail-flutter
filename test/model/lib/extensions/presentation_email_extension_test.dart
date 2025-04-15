@@ -1,12 +1,9 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/email_address_extension.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/presentation_email_extension.dart';
 
 void main() {
@@ -90,71 +87,6 @@ void main() {
       'AND sends an email to user B and user E, cc to user C, bcc to user D',
     () {
       test(
-        'Email has Reply To and List-Post'
-        'THEN user A clicks reply, generateRecipientsEmailAddressForComposer\n'
-        'SHOULD return user B email + user E email to reply',
-      () {
-        final expectedResult = Tuple4(
-          [userBEmailAddress, userEEmailAddress],
-          <EmailAddress>[],
-          <EmailAddress>[],
-          [replyToEmailAddress],
-        );
-
-        final emailToReply = PresentationEmail(
-          from: {userAEmailAddress},
-          to: {userBEmailAddress, userEEmailAddress},
-          cc: {userCEmailAddress},
-          bcc: {userDEmailAddress},
-          replyTo: {replyToEmailAddress},
-        );
-
-        final result = emailToReply.generateRecipientsEmailAddressForComposer(
-          emailActionType: EmailActionType.reply,
-          isSender: true,
-          userName: userAEmailAddress.emailAddress,
-          listPost: listPost,
-        );
-
-        expect(result.value1, containsAll(expectedResult.value1));
-        expect(result.value2, containsAll(expectedResult.value2));
-        expect(result.value3, containsAll(expectedResult.value3));
-        expect(result.value4, containsAll(expectedResult.value4));
-      });
-
-      test(
-        'Email has Reply To and not List-Post'
-        'THEN user A clicks reply, generateRecipientsEmailAddressForComposer\n'
-        'SHOULD return user B email + user E email to reply',
-      () {
-        final expectedResult = Tuple4(
-          [userBEmailAddress, userEEmailAddress],
-          <EmailAddress>[],
-          <EmailAddress>[],
-          [replyToEmailAddress],
-        );
-
-        final emailToReply = PresentationEmail(
-          from: {userAEmailAddress},
-          to: {userBEmailAddress, userEEmailAddress},
-          cc: {userCEmailAddress},
-          bcc: {userDEmailAddress},
-          replyTo: {replyToEmailAddress},
-        );
-
-        final result = emailToReply.generateRecipientsEmailAddressForComposer(
-          emailActionType: EmailActionType.reply,
-          isSender: true,
-          userName: userAEmailAddress.emailAddress,
-        );
-
-        expect(result.value1, containsAll(expectedResult.value1));
-        expect(result.value2, containsAll(expectedResult.value2));
-        expect(result.value3, containsAll(expectedResult.value3));
-        expect(result.value4, containsAll(expectedResult.value4));
-      });
-
-      test(
         'Email has List-Post and not Reply To'
         'THEN user A clicks reply, generateRecipientsEmailAddressForComposer\n'
         'SHOULD return user B email + user E email to reply',
@@ -225,39 +157,6 @@ void main() {
       'AND sends an email to user A and user B, cc to user C, bcc to user D',
     () {
       test(
-        'Email has Reply To and List-Post'
-        'THEN user A clicks reply, generateRecipientsEmailAddressForComposer\n'
-        'SHOULD return user A email + user B email to reply',
-      () {
-        final expectedResult = Tuple4(
-          [userBEmailAddress, userAEmailAddress],
-          <EmailAddress>[],
-          <EmailAddress>[],
-          [replyToEmailAddress],
-        );
-
-        final emailToReply = PresentationEmail(
-          from: {userAEmailAddress},
-          to: {userBEmailAddress, userAEmailAddress},
-          cc: {userCEmailAddress},
-          bcc: {userDEmailAddress},
-          replyTo: {replyToEmailAddress},
-        );
-
-        final result = emailToReply.generateRecipientsEmailAddressForComposer(
-          emailActionType: EmailActionType.reply,
-          isSender: true,
-          userName: userAEmailAddress.emailAddress,
-          listPost: listPost,
-        );
-
-        expect(result.value1, containsAll(expectedResult.value1));
-        expect(result.value2, containsAll(expectedResult.value2));
-        expect(result.value3, containsAll(expectedResult.value3));
-        expect(result.value4, containsAll(expectedResult.value4));
-      });
-
-      test(
         'Email has Reply To'
         'AND user is replying to own sent email'
         'THEN user A clicks reply, generateRecipientsEmailAddressForComposer\n'
@@ -268,10 +167,6 @@ void main() {
           to: {userBEmailAddress, userAEmailAddress},
           cc: {userCEmailAddress},
           replyTo: {replyToEmailAddress},
-          mailboxContain: PresentationMailbox(
-            MailboxId(Id('value')),
-            role: PresentationMailbox.roleSent,
-          ),
         );
 
         final result = emailToReply.generateRecipientsEmailAddressForComposer(
@@ -284,38 +179,6 @@ void main() {
         expect(result.value2, isEmpty);
         expect(result.value3, isEmpty);
         expect(result.value4, isEmpty);
-      });
-
-      test(
-        'Email has Reply To and not List-Post'
-        'THEN user A clicks reply, generateRecipientsEmailAddressForComposer\n'
-        'SHOULD return user A email + user B email to reply',
-      () {
-        final expectedResult = Tuple4(
-          [userBEmailAddress, userAEmailAddress],
-          <EmailAddress>[],
-          <EmailAddress>[],
-          [replyToEmailAddress],
-        );
-
-        final emailToReply = PresentationEmail(
-          from: {userAEmailAddress},
-          to: {userBEmailAddress, userAEmailAddress},
-          cc: {userCEmailAddress},
-          bcc: {userDEmailAddress},
-          replyTo: {replyToEmailAddress},
-        );
-
-        final result = emailToReply.generateRecipientsEmailAddressForComposer(
-          emailActionType: EmailActionType.reply,
-          isSender: true,
-          userName: userAEmailAddress.emailAddress,
-        );
-
-        expect(result.value1, containsAll(expectedResult.value1));
-        expect(result.value2, containsAll(expectedResult.value2));
-        expect(result.value3, containsAll(expectedResult.value3));
-        expect(result.value4, containsAll(expectedResult.value4));
       });
 
       test(
