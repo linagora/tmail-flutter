@@ -1,3 +1,30 @@
+## [0.15.2] - 2025-04-15
+### Added
+- #3578 Blue bar: free and busy status
+- #3589 Add CalendarAttendance method
+- #3591 Add Calendar Counter event action
+
+### Fixed
+- Mobile E2E tests: forward email,
+- #3501 Inlined answer mus be shown on base level
+- #3601 Height Limit in webview in iOS
+- Try to wrap content for text/plain
+- #3487 Error handling for some cases: get email content, refreshing, get mailbox
+- #3623 Duplicate confirm buttons in creating identity
+- #3640 Increase composer size in case of singel composer
+- #3621 Fix search return wrong result with Doesn't have 
+- #3622 Display exceeded image 
+- #3507 Pull to refresh to resolve missing cache in mobile
+- #3647 Disable email zoom in mobile
+- Handling refreshToken in composers
+- #3651 Support mailto url from Openpaas
+- Reply to own sent email
+- #3656 Fix identities was not updated between Settings and Dashboard 
+- #3659 Cannot remove forward
+- #3627 Standalize scrollbar for composer 
+- Suppport preview image with mimeType application/octet-stream
+- #3665 Autocomplete position
+
 ## [0.15.1] - 2025-04-01
 ### Changed
 - Update User guide
