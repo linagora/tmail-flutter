@@ -191,6 +191,7 @@ abstract class BaseController extends GetxController
   }
 
   Future<void> _executeBeforeReconnectAndLogOut() async {
+    twakeAppManager.setExecutingBeforeReconnect(true);
     await executeBeforeReconnect();
     clearDataAndGoToLoginPage();
   }
