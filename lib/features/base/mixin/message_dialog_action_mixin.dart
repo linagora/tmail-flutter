@@ -206,9 +206,8 @@ mixin MessageDialogActionMixin {
             onCancelButtonAction: () {
               if (autoPerformPopBack) {
                 popBack();
-              } else {
-                onCancelAction?.call();
               }
+              onCancelAction?.call();
             },
             onCloseButtonAction: onCloseButtonAction ?? popBack,
           ),
