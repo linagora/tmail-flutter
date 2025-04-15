@@ -12,7 +12,6 @@ Accepted
 
 ## Decision
 
-- PresentationEmailExtension._handleReply is modified
 - When `isSender` is `true`, all "To" recipients will be kept
 
 ## Consequences
