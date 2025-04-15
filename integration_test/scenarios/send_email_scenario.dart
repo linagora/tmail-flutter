@@ -9,7 +9,9 @@ import '../robots/composer_robot.dart';
 import '../robots/thread_robot.dart';
 
 class SendEmailScenario extends BaseTestScenario {
-  const SendEmailScenario(super.$);
+  const SendEmailScenario(super.$, {this.customSubject});
+
+  final String? customSubject;
 
   @override
   Future<void> runTestLogic() async {
@@ -35,7 +37,7 @@ class SendEmailScenario extends BaseTestScenario {
       prefixEmailAddress: PrefixEmailAddress.to,
       email: additionalRecipient,
     );
-    await composerRobot.addSubject(subject);
+    await composerRobot.addSubject(customSubject ?? subject);
     await composerRobot.addContent(content);
     await composerRobot.sendEmail(imagePaths);
 
