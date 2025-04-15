@@ -1,12 +1,8 @@
-
-import 'package:collection/collection.dart';
 import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
-import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
-import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 
 extension PresentationEmailExtension on PresentationEmail {
@@ -30,7 +26,6 @@ extension PresentationEmailExtension on PresentationEmail {
           newFromAddress: newFromAddress,
           newBccAddress: newBccAddress,
           newReplyToAddress: newReplyToAddress,
-          replyOwnSentEmail: mailboxContain?.isSent == true,
           userName: userName,
         );
 
@@ -59,27 +54,9 @@ extension PresentationEmailExtension on PresentationEmail {
     required List<EmailAddress> newFromAddress,
     required List<EmailAddress> newBccAddress,
     required List<EmailAddress> newReplyToAddress,
-    required replyOwnSentEmail,
     String? userName,
   }) {
-    if (isSender) {
-      if (replyOwnSentEmail) {
-        return Tuple4(newToAddress, [], [], []);
-      }
-      if (newBccAddress.isNotEmpty) {
-        return Tuple4(newToAddress, [], [], newReplyToAddress);
-      }
-      if (newReplyToAddress.isNotEmpty) {
-        return Tuple4(newReplyToAddress, [], [], []);
-      }
-      if (userName != null) {
-        final userEmail = newToAddress.firstWhereOrNull((address) => address.emailAddress == userName);
-        if (userEmail != null) {
-          return Tuple4([userEmail], [], [], []);
-        }
-      }
-      return Tuple4(newToAddress, [], [], []);
-    }
+    if (isSender) return Tuple4(newToAddress, [], [], []);
 
     final listToAddress = (newReplyToAddress.isNotEmpty ? newReplyToAddress : newFromAddress).withoutMe(userName);
     return Tuple4(listToAddress, [], [], []);
