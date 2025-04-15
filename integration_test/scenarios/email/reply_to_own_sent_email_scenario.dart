@@ -14,10 +14,12 @@ class ReplyToOwnSentEmailScenario extends BaseTestScenario {
   
   @override
   Future<void> runTestLogic() async {
+    const subject = 'reply own sent email';
+
     final threadRobot = ThreadRobot($);
     final mailboxMenuRobot = MailboxMenuRobot($);
     final emailRobot = EmailRobot($);
-    final sendEmailScenario = SendEmailScenario($);
+    final sendEmailScenario = SendEmailScenario($, customSubject: subject);
     final appLocalizations = AppLocalizations();
 
     await sendEmailScenario.runTestLogic();
@@ -25,7 +27,7 @@ class ReplyToOwnSentEmailScenario extends BaseTestScenario {
     await mailboxMenuRobot.openFolderByName(
       appLocalizations.sentMailboxDisplayName,
     );
-    await threadRobot.openEmailWithSubject('Test subject');
+    await threadRobot.openEmailWithSubject(subject);
     await emailRobot.onTapReplyEmail();
     _expectToFieldContainListEmailAddressCorrectly();
   }
