@@ -106,6 +106,7 @@ import 'package:tmail_ui_user/features/upload/domain/state/local_image_picker_st
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_file_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/domain/usecases/local_image_picker_interactor.dart';
 import 'package:tmail_ui_user/features/upload/presentation/controller/upload_controller.dart';
+import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
@@ -880,11 +881,18 @@ class ComposerController extends BaseController
       _closeComposerAction(result: resultState);
     } else if (resultState is SendEmailFailure && resultState.exception is SendingEmailCanceledException) {
       _sendButtonState = ButtonState.enabled;
-    } else if ((resultState is SendEmailFailure || resultState is GenerateEmailFailure) && context.mounted) {
-      await _showConfirmDialogWhenSendMessageFailure(
-        context: context,
-        failure: resultState
-      );
+    } else if (resultState is SendEmailFailure || resultState is GenerateEmailFailure) {
+      if (resultState.exception is BadCredentialsException) {
+        _sendButtonState = ButtonState.enabled;
+        handleBadCredentialsException();
+      } else if (context.mounted) {
+        await _showConfirmDialogWhenSendMessageFailure(
+          context: context,
+          failure: resultState,
+        );
+      } else {
+        _sendButtonState = ButtonState.enabled;
+      }
     } else {
       _sendButtonState = ButtonState.enabled;
     }
@@ -1225,24 +1233,30 @@ class ComposerController extends BaseController
     } else if ((resultState is SaveEmailAsDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException) ||
         (resultState is UpdateEmailDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException)) {
       _saveToDraftButtonState = ButtonState.enabled;
-    } else if ((resultState is SaveEmailAsDraftsFailure ||
+    } else if (resultState is SaveEmailAsDraftsFailure ||
         resultState is UpdateEmailDraftsFailure ||
-        resultState is GenerateEmailFailure) &&
-        context.mounted
+        resultState is GenerateEmailFailure
     ) {
-      await _showConfirmDialogWhenSaveMessageToDraftsFailure(
-        context: context,
-        failure: resultState,
-        onConfirmAction: () {
-          _saveToDraftButtonState = ButtonState.enabled;
-          popBack();
-          _autoFocusFieldWhenLauncher();
-        },
-        onCancelAction: () {
-          _saveToDraftButtonState = ButtonState.enabled;
-          _closeComposerAction(closeOverlays: true);
-        }
-      );
+      if (resultState.exception is BadCredentialsException) {
+        _saveToDraftButtonState = ButtonState.enabled;
+        handleBadCredentialsException();
+      } else if (context.mounted) {
+        await _showConfirmDialogWhenSaveMessageToDraftsFailure(
+          context: context,
+          failure: resultState,
+          onConfirmAction: () {
+            _saveToDraftButtonState = ButtonState.enabled;
+            popBack();
+            _autoFocusFieldWhenLauncher();
+          },
+          onCancelAction: () {
+            _saveToDraftButtonState = ButtonState.enabled;
+            _closeComposerAction(closeOverlays: true);
+          },
+        );
+      } else {
+        _saveToDraftButtonState = ButtonState.enabled;
+      }
     } else {
       _saveToDraftButtonState = ButtonState.enabled;
     }
@@ -1933,15 +1947,21 @@ class ComposerController extends BaseController
     } else if ((resultState is SaveEmailAsDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException) ||
         (resultState is UpdateEmailDraftsFailure && resultState.exception is SavingEmailToDraftsCanceledException)) {
       _closeComposerButtonState = ButtonState.enabled;
-    } else if ((resultState is SaveEmailAsDraftsFailure ||
+    } else if (resultState is SaveEmailAsDraftsFailure ||
         resultState is UpdateEmailDraftsFailure ||
-        resultState is GenerateEmailFailure) &&
-        context.mounted
+        resultState is GenerateEmailFailure
     ) {
-      await _showConfirmDialogWhenSaveMessageToDraftsFailure(
-        context: context,
-        failure: resultState
-      );
+      if (resultState.exception is BadCredentialsException) {
+        _closeComposerButtonState = ButtonState.enabled;
+        handleBadCredentialsException();
+      } else if (context.mounted) {
+        await _showConfirmDialogWhenSaveMessageToDraftsFailure(
+          context: context,
+          failure: resultState,
+        );
+      } else {
+        _closeComposerButtonState = ButtonState.enabled;
+      }
     } else {
       _closeComposerButtonState = ButtonState.enabled;
     }
