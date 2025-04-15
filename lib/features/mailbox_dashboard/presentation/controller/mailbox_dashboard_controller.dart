@@ -330,6 +330,7 @@ class MailboxDashBoardController extends ReloadableController
   void onReady() {
     if (PlatformInfo.isWeb) {
       listSearchFilterScrollController = ScrollController();
+      twakeAppManager.setExecutingBeforeReconnect(false);
     }
     if (PlatformInfo.isIOS) {
       _registerPendingCurrentEmailIdInNotification();
@@ -497,7 +498,10 @@ class MailboxDashBoardController extends ReloadableController
 
   @override
   Future<void> onBeforeUnloadBrowserListener(html.Event event) async {
-    if (event is html.BeforeUnloadEvent && twakeAppManager.hasComposer) {
+    log('MailboxDashBoardController::onBeforeUnloadBrowserListener:event = ${event.runtimeType} | hasComposer = ${twakeAppManager.hasComposer} | isExecutingBeforeReconnect = ${twakeAppManager.isExecutingBeforeReconnect}');
+    if (event is html.BeforeUnloadEvent &&
+        twakeAppManager.hasComposer &&
+        !twakeAppManager.isExecutingBeforeReconnect) {
       event.preventDefault();
     }
   }
