@@ -23,10 +23,11 @@ class ThreadRobot extends CoreRobot {
   }
 
   Future<void> openEmailWithSubject(String subject) async {
-    await $(find.byType(EmailTileBuilder))
+    final email = $(EmailTileBuilder)
       .which<EmailTileBuilder>((view) => view.presentationEmail.subject == subject)
-      .first
-      .tap();
+      .first;
+    await $.waitUntilVisible(email);
+    await email.tap();
     await $.pump(const Duration(seconds: 2));
   }
 
