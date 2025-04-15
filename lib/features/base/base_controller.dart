@@ -175,7 +175,7 @@ abstract class BaseController extends GetxController
     if (exception is ConnectionError) {
       _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
-      _handleBadCredentialsException();
+      handleBadCredentialsException();
     }
   }
 
@@ -186,7 +186,7 @@ abstract class BaseController extends GetxController
     } else if (exception is ConnectionError) {
       _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
-      _handleBadCredentialsException();
+      handleBadCredentialsException();
     }
   }
 
@@ -219,8 +219,8 @@ abstract class BaseController extends GetxController
     }
   }
 
-  void _handleBadCredentialsException() {
-    log('$runtimeType::_handleBadCredentialsException:');
+  void handleBadCredentialsException() {
+    log('$runtimeType::handleBadCredentialsException:');
     if (twakeAppManager.hasComposer) {
       _performSaveAndReconnection();
     } else {
