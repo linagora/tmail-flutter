@@ -481,6 +481,8 @@ class MailboxDashBoardController extends ReloadableController
       _handleIdentityCache();
     } else if (failure is GetServerSettingFailure) {
       isSenderImportantFlagEnabled.value = true;
+    } else if (failure is GetAllIdentitiesFailure) {
+      _handleGetAllIdentitiesFailure();
     }
   }
 
@@ -3082,15 +3084,19 @@ class MailboxDashBoardController extends ReloadableController
         sessionCurrent!,
         accountId.value!
       ));
+    } else {
+      consumeState(Stream.value(Left(GetAllIdentitiesFailure(NotFoundAccountIdException()))));
     }
   }
 
-  void _handleGetAllIdentitiesSuccess(GetAllIdentitiesSuccess success) async {
-    final listIdentitiesMayDeleted = success.identities?.toListMayDeleted() ?? [];
-    if (listIdentitiesMayDeleted.isNotEmpty) {
-      _identities = listIdentitiesMayDeleted;
-    }
+  void _handleGetAllIdentitiesSuccess(GetAllIdentitiesSuccess success) {
     log('MailboxDashBoardController::_handleGetAllIdentitiesSuccess: IDENTITIES_SIZE = ${_identities?.length}');
+    final listIdentitiesMayDeleted = success.identities?.toListMayDeleted() ?? [];
+    _identities = listIdentitiesMayDeleted;
+  }
+
+  void _handleGetAllIdentitiesFailure() {
+    _identities = null;
   }
 
   List<Identity> get listIdentities => _identities ?? [];
