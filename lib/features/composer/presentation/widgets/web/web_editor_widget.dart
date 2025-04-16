@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:collection/collection.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:html_editor_enhanced/html_editor.dart';
@@ -118,6 +119,7 @@ class _WebEditorState extends State<WebEditorWidget> {
         darkMode: false,
         initialText: widget.content,
         customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: widget.direction),
+        customInternalCSS: HtmlTemplate.customInternalStyleCSS,
         spellCheck: true,
         disableDragAndDrop: true,
         webInitialScripts: UnmodifiableListView([
