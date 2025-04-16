@@ -58,4 +58,38 @@ void main() {
       expect(name.firstLetterToUpperCase, equals(''));
     });
   });
+
+  group('fileExtension', () {
+    test('should return empty string when no dot in path', () {
+      expect('filename'.fileExtension, equals(''));
+    });
+
+    test('should return empty string when dot is last character', () {
+      expect('filename.'.fileExtension, equals(''));
+    });
+
+    test('should return extension for simple filename', () {
+      expect('filename.txt'.fileExtension, equals('txt'));
+    });
+
+    test('should return extension for filename with multiple dots', () {
+      expect('file.name.with.dots.pdf'.fileExtension, equals('pdf'));
+    });
+
+    test('should return extension for path with directories', () {
+      expect('/path/to/file/image.png'.fileExtension, equals('png'));
+    });
+
+    test('should handle empty string', () {
+      expect(''.fileExtension, equals(''));
+    });
+
+    test('should handle whitespace after dot', () {
+      expect('filename. txt'.fileExtension, equals(' txt'));
+    });
+
+    test('should handle complex extensions', () {
+      expect('archive.tar.gz'.fileExtension, equals('gz'));
+    });
+  });
 }

@@ -40,4 +40,42 @@ extension StringExtension on String {
   }
 
   String get firstCharacterToUpperCase => isNotEmpty ? this[0].toUpperCase() : '';
+
+  String get fileExtension {
+    int dotIndex = lastIndexOf('.');
+    if (dotIndex == -1 || dotIndex == length - 1) {
+      return '';
+    }
+    return substring(dotIndex + 1);
+  }
+
+  String get imageMimeType {
+    switch (fileExtension.toLowerCase()) {
+      case 'jpg':
+      case 'jpeg':
+        return 'image/jpeg';
+      case 'png':
+        return 'image/png';
+      case 'gif':
+        return 'image/gif';
+      case 'webp':
+        return 'image/webp';
+      case 'svg':
+        return 'image/svg+xml';
+      case 'bmp':
+        return 'image/bmp';
+      case 'ico':
+        return 'image/x-icon';
+      case 'tif':
+      case 'tiff':
+        return 'image/tiff';
+      case 'heic':
+      case 'heif':
+        return 'image/heif';
+      case 'avif':
+        return 'image/avif';
+      default:
+        return 'application/octet-stream'; // Unknown type
+    }
+  }
 }

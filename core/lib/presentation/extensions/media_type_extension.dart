@@ -1,6 +1,7 @@
 import 'package:core/data/constants/constant.dart';
 import 'package:core/domain/preview/document_uti.dart';
 import 'package:core/domain/preview/supported_preview_file_types.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:http_parser/http_parser.dart';
 
@@ -38,7 +39,7 @@ extension MediaTypeExtension on MediaType {
       return imagePaths.icFilePptx;
     } else if (isZipFile()) {
       return imagePaths.icFileZip;
-    } else if (isImageFile()) {
+    } else if (isImageSupportedPreview(fileName: fileName)) {
       return imagePaths.icFilePng;
     } else {
       return imagePaths.icFileEPup;
@@ -56,4 +57,11 @@ extension MediaTypeExtension on MediaType {
       mimeType == Constant.textHtmlMimeType ||
       (mimeType == Constant.octetStreamMimeType &&
           fileName?.endsWith(Constant.htmlExtension) == true);
+
+  bool isImageSupportedPreview({required String? fileName}) =>
+      isImageFile() ||
+      (mimeType == Constant.octetStreamMimeType &&
+          fileName != null &&
+          SupportedPreviewFileTypes.imageMimeTypes
+              .contains(fileName.imageMimeType));
 }
