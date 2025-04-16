@@ -4,7 +4,13 @@ class SupportedPreviewFileTypes {
     'image/jpeg',
     'image/gif',
     'image/webp',
-    'image/png',];
+    'image/png',
+    'image/svg+xml',
+    'image/x-icon',
+    'image/tiff',
+    'image/heif',
+    'image/avif'
+  ];
 
   static const textMimeTypes = [
     'text/plain',
