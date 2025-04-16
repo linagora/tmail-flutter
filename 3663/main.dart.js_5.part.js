@@ -1133,10 +1133,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     EmailView__buildEmailMessage_closure2: function EmailView__buildEmailMessage_closure2(t0) {
       this.$this = t0;
     },
-    EmailView__buildEmailMessage_closure3: function EmailView__buildEmailMessage_closure3(t0, t1, t2) {
-      this.$this = t0;
-      this.calendarEvent = t1;
-      this.presentationEmail = t2;
+    EmailView__buildEmailMessage_closure3: function EmailView__buildEmailMessage_closure3(t0, t1, t2, t3) {
+      var _ = this;
+      _.$this = t0;
+      _.calendarEvent = t1;
+      _.presentationEmail = t2;
+      _.emailAddressSender = t3;
     },
     EmailView__buildEmailMessage__closure0: function EmailView__buildEmailMessage__closure0(t0, t1, t2) {
       this.$this = t0;
@@ -1631,7 +1633,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.onMailtoDelegateAction = t3;
       _.key = t4;
     },
-    CalendarEventInformationWidget: function CalendarEventInformationWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) {
+    CalendarEventInformationWidget: function CalendarEventInformationWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) {
       var _ = this;
       _.calendarEvent = t0;
       _.onOpenNewTabAction = t1;
@@ -1642,8 +1644,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.onMailtoAttendeesAction = t6;
       _.openEmailAddressDetailAction = t7;
       _.isFree = t8;
-      _._calendar_event_information_widget$_responsiveUtils = t9;
-      _.key = t10;
+      _.listEmailAddressSender = t9;
+      _._calendar_event_information_widget$_responsiveUtils = t10;
+      _.key = t11;
     },
     CalendarEventInformationWidget_build_closure: function CalendarEventInformationWidget_build_closure(t0) {
       this.$this = t0;
@@ -7649,7 +7652,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = type$.JSArray_Widget,
         t2 = A._setArrayType([new B.EmailSubjectWidget(presentationEmail, _null), new A.Obx(new B.EmailView__buildEmailMessage_closure(_this, presentationEmail, maxBodyHeight, context), _null), new A.Obx(new B.EmailView__buildEmailMessage_closure0(_this), _null), new A.Obx(new B.EmailView__buildEmailMessage_closure1(_this, context), _null), new A.Obx(new B.EmailView__buildEmailMessage_closure2(_this), _null)], t1);
       if (calendarEvent != null) {
-        t1 = A._setArrayType([new A.Obx(new B.EmailView__buildEmailMessage_closure3(_this, calendarEvent, presentationEmail), _null)], t1);
+        t1 = A._setArrayType([new A.Obx(new B.EmailView__buildEmailMessage_closure3(_this, calendarEvent, presentationEmail, emailAddressSender), _null)], t1);
         t3 = emailAddressSender == null;
         t4 = t3 ? A._setArrayType([], type$.JSArray_String) : emailAddressSender;
         t5 = $.$get$GetWidget__cache();
@@ -7874,19 +7877,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B.CalendarEventInformationWidget.prototype = {
     build$1(context) {
       var t2, t3, t4, t5, _this = this, _null = null,
-        _s33_ = " has invited you in to a meeting:",
-        _s36_ = "invitationMessageCalendarInformation",
         t1 = type$.MediaQuery;
       t1 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t1).data.size.get$shortestSide() < 600 && A.InheritedModel_inheritFrom(context, _null, t1).data.get$orientation(0) === C.Orientation_0;
       t2 = type$.JSArray_Widget;
       t3 = _this.calendarEvent;
       if (t1) {
         t1 = A._setArrayType([], t2);
-        if (B.CalendarEventExtension_get_organizerName(t3).length !== 0) {
-          t4 = A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_69t3, B.CalendarEventExtension_get_organizerName(t3));
-          A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-          t1.push(new A.Padding(C.EdgeInsets_0_0_0_8, A.Text$rich(A.TextSpan$(A._setArrayType([t4, A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, _null, A.Intl__message(_s33_, _null, _s36_, _null, _null))], type$.JSArray_InlineSpan), _null, _null, _null, _null, _null, _null, _null, C.TextStyle_69t7, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null));
-        }
+        if (B.CalendarEventExtension_get_organizerName(t3).length !== 0)
+          t1.push(new A.Padding(C.EdgeInsets_0_0_0_8, A.Text$rich(A.TextSpan$(A._setArrayType([A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_69t3, B.CalendarEventExtension_get_organizerName(t3)), A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, _null, B.CalendarEventExtension_getTitleEventAction(t3, context, _this.listEmailAddressSender))], type$.JSArray_InlineSpan), _null, _null, _null, _null, _null, _null, _null, C.TextStyle_69t7, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null));
         t4 = t3.title;
         if ((t4 == null ? _null : t4.length !== 0) === true) {
           t4.toString;
@@ -7912,11 +7910,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = A.Column$(A._setArrayType([new B.CalendarDateIconWidget(t3, 1 / 0, _null), A.Container$(_null, A.Column$(t1, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1), C.Clip_2, _null, _null, D.ShapeDecoration_wAN, _null, _null, _null, _null, C.EdgeInsets_16_16_16_16, _null, _null, _null)], t2), C.CrossAxisAlignment_2, C.MainAxisAlignment_0, C.MainAxisSize_1, C.VerticalDirection_1);
       } else {
         t1 = A._setArrayType([], t2);
-        if (B.CalendarEventExtension_get_organizerName(t3).length !== 0) {
-          t4 = A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_69t3, B.CalendarEventExtension_get_organizerName(t3));
-          A.Localizations_of(context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-          t1.push(new A.Padding(C.EdgeInsets_0_0_0_8, A.Text$rich(A.TextSpan$(A._setArrayType([t4, A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, _null, A.Intl__message(_s33_, _null, _s36_, _null, _null))], type$.JSArray_InlineSpan), _null, _null, _null, _null, _null, _null, _null, C.TextStyle_69t7, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null));
-        }
+        if (B.CalendarEventExtension_get_organizerName(t3).length !== 0)
+          t1.push(new A.Padding(C.EdgeInsets_0_0_0_8, A.Text$rich(A.TextSpan$(A._setArrayType([A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, C.TextStyle_69t3, B.CalendarEventExtension_get_organizerName(t3)), A.TextSpan$(_null, _null, _null, _null, _null, _null, _null, _null, _null, B.CalendarEventExtension_getTitleEventAction(t3, context, _this.listEmailAddressSender))], type$.JSArray_InlineSpan), _null, _null, _null, _null, _null, _null, _null, C.TextStyle_69t7, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null));
         t4 = t3.title;
         if ((t4 == null ? _null : t4.length !== 0) === true) {
           t4.toString;
@@ -13175,9 +13170,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.EmailView__buildEmailMessage_closure3.prototype = {
     call$0() {
-      var t4, t5, t6, t7, t8, t9, t10,
-        t1 = this.calendarEvent,
-        t2 = this.$this,
+      var t4, t5, t6, t7, t8, t9, t10, t11, _this = this,
+        t1 = _this.calendarEvent,
+        t2 = _this.$this,
         t3 = $.$get$GetWidget__cache();
       A.Expando__checkType(t2);
       t3 = t3._jsWeakMap;
@@ -13196,11 +13191,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t2);
       t3 = t4._as(t3.get(t2)).blobCalendarEvent.get$value(0);
       t3 = t3 == null ? null : t3.isFree;
-      $.$get$Get();
-      t4 = $.GetInstance__getInstance;
+      t4 = _this.emailAddressSender;
       if (t4 == null)
-        t4 = $.GetInstance__getInstance = C.C_GetInstance;
-      return new B.CalendarEventInformationWidget(t1, t6, t5, new B.EmailView__buildEmailMessage__closure0(t2, this.presentationEmail, t1), t7, t8, t9, t10, t3 !== false, t4.find$1$1$tag(0, null, type$.ResponsiveUtils), null);
+        t4 = A._setArrayType([], type$.JSArray_String);
+      $.$get$Get();
+      t11 = $.GetInstance__getInstance;
+      if (t11 == null)
+        t11 = $.GetInstance__getInstance = C.C_GetInstance;
+      return new B.CalendarEventInformationWidget(t1, t6, t5, new B.EmailView__buildEmailMessage__closure0(t2, _this.presentationEmail, t1), t7, t8, t9, t10, t3 !== false, t4, t11.find$1$1$tag(0, null, type$.ResponsiveUtils), null);
     },
     $signature: typesOffset + 11
   };
@@ -19021,5 +19019,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "oUzcIdpn1BRNBCvCYS+LF2gwhGM=");
+})($__dart_deferred_initializers__, "rLZe2pvJ0kj509a7560wofQdqRs=");
 ;
