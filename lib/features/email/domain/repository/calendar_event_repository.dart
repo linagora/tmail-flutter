@@ -28,4 +28,9 @@ abstract class CalendarEventRepository {
   Future<List<BlobCalendarEvent>> transformCalendarEventDescription(
     List<BlobCalendarEvent> blobCalendarEvents,
     TransformConfiguration transformConfiguration);
+
+  Future<CalendarEventAcceptResponse> acceptCounterEvent(
+    AccountId accountId,
+    Set<Id> blobIds,
+  );
 }

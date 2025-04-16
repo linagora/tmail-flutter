@@ -130,6 +130,14 @@ extension SessionExtension on Session {
     return (isAvailable: capability != null, calendarEventCapability: capability);
   }
 
+  bool validateAcceptCounterCalendarEventCapability(AccountId accountId) {
+    final capability = getCapabilityProperties<CalendarEventCapability>(
+      accountId,
+      CapabilityIdentifier.jamesCalendarEvent);
+
+    return capability?.counterSupport == true;
+  }
+
   String? getLanguageForCalendarEvent(
     Locale locale,
     AccountId accountId,

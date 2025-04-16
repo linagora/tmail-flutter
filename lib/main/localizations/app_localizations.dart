@@ -3989,6 +3989,13 @@ class AppLocalizations {
     );
   }
 
+  String get youAcceptedTheProposedTimeForThisMeeting {
+    return Intl.message(
+      'You accepted the proposed time for this meeting',
+      name: 'youAcceptedTheProposedTimeForThisMeeting',
+    );
+  }
+
   String get downloadMessageAsEML {
     return Intl.message(
       'Download message as EML',
