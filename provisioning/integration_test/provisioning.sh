@@ -2,7 +2,7 @@
 
 # Define users and folders
 users=("alice" "bob" "brian" "charlotte" "david" "emma")
-bobFolders=("Search Emails" "Forward Emails" "Disposition" "MailBase64")
+bobFolders=("Search Emails" "Forward Emails" "Disposition" "MailBase64" "Calendar")
 
 # Add users
 for user in "${users[@]}"; do
@@ -62,3 +62,8 @@ james-cli ImportEml \#private "bob@example.com" "Disposition" "/root/conf/integr
 # Import email into 'MailBase64' folder for user Bob
 echo "Importing 0.eml into 'MailBase64' folder for user bob"
 james-cli ImportEml \#private "bob@example.com" "MailBase64" "/root/conf/integration_test/eml/reply_email_with_image_base64/0.eml"
+
+# For test calendar event
+# Import email into 'Calendar' folder for user Bob
+echo "Importing calendar eml into 'Calendar' folder for user bob"
+james-cli ImportEml \#private "bob@example.com" "Calendar" "/root/conf/integration_test/eml/calendar/calendar_counter.eml"
