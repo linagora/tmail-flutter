@@ -58,6 +58,7 @@ import 'package:tmail_ui_user/features/email/domain/model/preview_email_eml_requ
 import 'package:tmail_ui_user/features/email/domain/model/send_receipt_to_sender_request.dart';
 import 'package:tmail_ui_user/features/email/domain/model/view_entire_message_request.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_accept_state.dart';
+import 'package:tmail_ui_user/features/email/domain/state/calendar_event_counter_accept_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_maybe_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reject_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/calendar_event_reply_state.dart';
@@ -80,6 +81,7 @@ import 'package:tmail_ui_user/features/email/domain/state/print_email_state.dart
 import 'package:tmail_ui_user/features/email/domain/state/send_receipt_to_sender_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/unsubscribe_email_state.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_accept_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/calendar_event_counter_accept_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/download_all_attachments_for_web_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/export_all_attachments_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_entire_message_as_document_interactor.dart';
@@ -184,6 +186,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   AcceptCalendarEventInteractor? _acceptCalendarEventInteractor;
   MaybeCalendarEventInteractor? _maybeCalendarEventInteractor;
   RejectCalendarEventInteractor? _rejectCalendarEventInteractor;
+  AcceptCounterCalendarEventInteractor? _acceptCounterCalendarEventInteractor;
 
   final emailContents = RxnString();
   final attachments = <Attachment>[].obs;
@@ -535,6 +538,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _acceptCalendarEventInteractor = getBinding<AcceptCalendarEventInteractor>();
     _maybeCalendarEventInteractor = getBinding<MaybeCalendarEventInteractor>();
     _rejectCalendarEventInteractor = getBinding<RejectCalendarEventInteractor>();
+    _acceptCounterCalendarEventInteractor = getBinding<AcceptCounterCalendarEventInteractor>();
   }
 
   void _injectCalendarEventBindings(Session? session, AccountId? accountId) {
@@ -2084,6 +2088,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       case EventActionType.yes:
         _acceptCalendarEventAction(emailId);
         break;
+      case EventActionType.acceptCounter:
+        _acceptCounterCalendarEventAction(emailId);
       case EventActionType.maybe:
         _maybeCalendarEventAction(emailId);
         break;
@@ -2094,6 +2100,25 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         break;
     }
   }
+
+  void _acceptCounterCalendarEventAction(EmailId emailId) {
+    if (canNotAcceptCounterCalendarEvent) {
+      consumeState(Stream.value(Left(CalendarEventCounterAcceptFailure())));
+    } else {
+      consumeState(_acceptCounterCalendarEventInteractor!.execute(
+        accountId!,
+        {_displayingEventBlobId!},
+        emailId,
+      ));
+    }
+  }
+
+  bool get canNotAcceptCounterCalendarEvent => _acceptCounterCalendarEventInteractor == null
+    || _displayingEventBlobId == null
+    || accountId == null
+    || session == null
+    || session!.validateCalendarEventCapability(accountId!).isAvailable == false
+    || !session!.validateAcceptCounterCalendarEventCapability(accountId!);
 
   void _acceptCalendarEventAction(EmailId emailId) {
     if (_acceptCalendarEventInteractor == null
@@ -2167,7 +2192,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     appToast.showToastSuccessMessage(
       currentOverlayContext!,
-      success.getEventActionType().getToastMessageSuccess(currentContext!));
+      success.getEventActionType().getToastMessageSuccess(currentContext!),
+    );
   }
 
   void _calendarEventFailure(Failure failure) {

@@ -3832,6 +3832,12 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "youAcceptedTheProposedTimeForThisMeeting": "You accepted the proposed time for this meeting",
+  "@youAcceptedTheProposedTimeForThisMeeting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "downloadMessageAsEML": "Download message as EML",
   "@downloadMessageAsEML": {
     "type": "text",

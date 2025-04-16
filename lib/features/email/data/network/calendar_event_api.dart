@@ -13,6 +13,7 @@ import 'package:jmap_dart_client/jmap/mail/calendar/parse/calendar_event_parse_m
 import 'package:jmap_dart_client/jmap/mail/calendar/parse/calendar_event_parse_response.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_accept_method.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_accept_response.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_counter_accept_method.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_maybe_method.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_maybe_response.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/reply/calendar_event_reject_method.dart';
@@ -190,6 +191,37 @@ class CalendarEventAPI {
       return calendarEventRejectResponse;
     } else {
       throw CannotReplyCalendarEventException(mapErrors: calendarEventRejectResponse.notRejected);
+    }
+  }
+
+  Future<CalendarEventAcceptResponse> acceptCounterEvent(
+    AccountId accountId,
+    Set<Id> blobIds,
+  ) async {
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+    final calendarEventCounterAcceptMethod = CalendarEventCounterAcceptMethod(
+      accountId,
+      blobIds: blobIds.toList());
+    final calendarEventAcceptInvocation = requestBuilder.invocation(
+      calendarEventCounterAcceptMethod,
+    );
+    final response = await (requestBuilder
+        ..usings(calendarEventCounterAcceptMethod.requiredCapabilities))
+      .build()
+      .execute();
+
+    final calendarEventAcceptResponse = response.parse<CalendarEventAcceptResponse>(
+      calendarEventAcceptInvocation.methodCallId,
+      CalendarEventAcceptResponse.deserialize);
+
+    if (calendarEventAcceptResponse == null) {
+      throw NotAcceptableCalendarEventException();
+    }
+
+    if (calendarEventAcceptResponse.accepted?.isNotEmpty == true) {
+      return calendarEventAcceptResponse;
+    } else {
+      throw CannotReplyCalendarEventException(mapErrors: calendarEventAcceptResponse.notAccepted);
     }
   }
 }

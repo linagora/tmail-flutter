@@ -85,4 +85,13 @@ class CalendarEventRepositoryImpl extends CalendarEventRepository {
         : calendarEvent.description,
     );
   }
+  
+  @override
+  Future<CalendarEventAcceptResponse> acceptCounterEvent(
+    AccountId accountId,
+    Set<Id> blobIds,
+  ) {
+    return _calendarEventDataSource[DataSourceType.network]!
+      .acceptCounterEvent(accountId, blobIds);
+  }
 }

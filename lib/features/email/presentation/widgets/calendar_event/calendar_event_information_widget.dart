@@ -16,7 +16,6 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_time_information_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/event_title_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_sender_builder.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 typedef OnOpenNewTabAction = void Function(String link);
@@ -33,6 +32,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
   final OnMailtoAttendeesAction? onMailtoAttendeesAction;
   final OnOpenEmailAddressDetailAction? openEmailAddressDetailAction;
   final bool isFree;
+  final List<String> listEmailAddressSender;
 
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
@@ -47,6 +47,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
     this.attendanceStatus,
     this.onMailtoAttendeesAction,
     this.openEmailAddressDetailAction,
+    this.listEmailAddressSender = const [],
   });
 
   @override
@@ -107,7 +108,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                                   fontWeight: FontWeight.w700
                                 ),
                               ),
-                              TextSpan(text: AppLocalizations.of(context).invitationMessageCalendarInformation)
+                              TextSpan(text: calendarEvent.getTitleEventAction(context, listEmailAddressSender))
                             ]
                           )
                         ),
@@ -142,6 +143,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                       CalendarEventActionButtonWidget(
                         margin: EdgeInsetsDirectional.zero,
                         onCalendarEventReplyActionClick: onCalendarEventReplyActionClick,
+                        eventMethod: calendarEvent.method,
                         calendarEventReplying: calendarEventReplying,
                         attendanceStatus: attendanceStatus,
                         onMailToAttendeesAction: () => onMailtoAttendeesAction?.call(
@@ -193,7 +195,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                                     fontWeight: FontWeight.w700
                                   ),
                                 ),
-                                TextSpan(text: AppLocalizations.of(context).invitationMessageCalendarInformation)
+                                TextSpan(text: calendarEvent.getTitleEventAction(context, listEmailAddressSender))
                               ]
                             )
                           ),
@@ -228,6 +230,7 @@ class CalendarEventInformationWidget extends StatelessWidget {
                         CalendarEventActionButtonWidget(
                           margin: EdgeInsetsDirectional.zero,
                           onCalendarEventReplyActionClick: onCalendarEventReplyActionClick,
+                          eventMethod: calendarEvent.method,
                           calendarEventReplying: calendarEventReplying,
                           attendanceStatus: attendanceStatus,
                           onMailToAttendeesAction: () => onMailtoAttendeesAction?.call(

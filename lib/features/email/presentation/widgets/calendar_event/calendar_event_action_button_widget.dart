@@ -3,6 +3,8 @@ import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/attendance/calendar_event_attendance.dart';
+import 'package:jmap_dart_client/jmap/mail/calendar/properties/event_method.dart';
+import 'package:tmail_ui_user/features/email/domain/extensions/list_event_actions_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/calendar_event_action_button_widget_styles.dart';
 
@@ -13,6 +15,7 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
   final EdgeInsetsGeometry? margin;
   final OnCalendarEventReplyActionClick onCalendarEventReplyActionClick;
   final bool calendarEventReplying;
+  final EventMethod? eventMethod;
   final AttendanceStatus? attendanceStatus;
   final VoidCallback? onMailToAttendeesAction;
 
@@ -22,6 +25,7 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
     super.key,
     required this.onCalendarEventReplyActionClick,
     required this.calendarEventReplying,
+    required this.eventMethod,
     this.margin,
     this.attendanceStatus,
     this.onMailToAttendeesAction,
@@ -39,6 +43,7 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
         spacing: CalendarEventActionButtonWidgetStyles.space,
         runSpacing: CalendarEventActionButtonWidgetStyles.space,
         children: EventActionType.values
+          .validActionsOfEventMethod(eventMethod)
           .map((action) => AbsorbPointer(
             absorbing: _getCallbackFunction(action) == null,
             child: TMailButtonWidget(
@@ -99,6 +104,7 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
 
         return CalendarEventActionButtonWidgetStyles.backgroundColor;
       case EventActionType.mailToAttendees:
+      case EventActionType.acceptCounter:
         return CalendarEventActionButtonWidgetStyles.backgroundColor;
     }
   }
@@ -124,6 +130,7 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
 
         return CalendarEventActionButtonWidgetStyles.textColor;
       case EventActionType.mailToAttendees:
+      case EventActionType.acceptCounter:
         return CalendarEventActionButtonWidgetStyles.textColor;
     }
   }
@@ -149,6 +156,7 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
 
         return CalendarEventActionButtonWidgetStyles.textColor;
       case EventActionType.mailToAttendees:
+      case EventActionType.acceptCounter:
         return CalendarEventActionButtonWidgetStyles.textColor;
     }
   }
@@ -159,6 +167,8 @@ class CalendarEventActionButtonWidget extends StatelessWidget {
         if (attendanceStatus == AttendanceStatus.accepted || calendarEventReplying) {
           return null;
         }
+        return () => onCalendarEventReplyActionClick(eventActionType);
+      case EventActionType.acceptCounter:
         return () => onCalendarEventReplyActionClick(eventActionType);
       case EventActionType.maybe:
         if (attendanceStatus == AttendanceStatus.tentativelyAccepted || calendarEventReplying) {

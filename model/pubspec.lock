@@ -645,10 +645,10 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "708658c13e013882fde91c5afba886bd67641f8f"
+      resolved-ref: "131bdbb2fb5ed268b8c8469d532f70b42ac4e15a"
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
-    version: "0.3.3"
+    version: "0.3.4"
   js:
     dependency: transitive
     description:

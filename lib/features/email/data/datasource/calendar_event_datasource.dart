@@ -23,4 +23,8 @@ abstract class CalendarEventDataSource {
     AccountId accountId,
     Set<Id> blobIds,
     String? language);
+
+  Future<CalendarEventAcceptResponse> acceptCounterEvent(
+    AccountId accountId,
+    Set<Id> blobIds);
 }

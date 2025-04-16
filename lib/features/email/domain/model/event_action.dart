@@ -5,6 +5,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum EventActionType {
   yes,
+  acceptCounter,
   maybe,
   no,
   mailToAttendees;
@@ -12,6 +13,7 @@ enum EventActionType {
   String getLabelButton(BuildContext context) {
     switch(this) {
       case EventActionType.yes:
+      case EventActionType.acceptCounter:
         return AppLocalizations.of(context).yes;
       case EventActionType.maybe:
         return AppLocalizations.of(context).maybe;
@@ -26,6 +28,8 @@ enum EventActionType {
     switch(this) {
       case EventActionType.yes:
         return AppLocalizations.of(context).youWillAttendThisMeeting;
+      case EventActionType.acceptCounter:
+        return AppLocalizations.of(context).youAcceptedTheProposedTimeForThisMeeting;
       case EventActionType.maybe:
         return AppLocalizations.of(context).youMayAttendThisMeeting;
       case EventActionType.no:

@@ -52,4 +52,14 @@ class CalendarEventDataSourceImpl extends CalendarEventDataSource {
       return await _calendarEventAPI.rejectEventInvitation(accountId, blobIds, language);
     }).catchError(_exceptionThrower.throwException);
   }
+  
+  @override
+  Future<CalendarEventAcceptResponse> acceptCounterEvent(
+    AccountId accountId,
+    Set<Id> blobIds,
+  ) {
+    return Future.sync(() async {
+      return await _calendarEventAPI.acceptCounterEvent(accountId, blobIds);
+    }).catchError(_exceptionThrower.throwException);
+  }
 }
