@@ -1235,11 +1235,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: "0ba81a166219f227aec70d562ab06daedf793608"
+      ref: custom-internal-css
+      resolved-ref: "7ba66dc9cee4e6c202be93ee6afa8a0f3a4c0415"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
-    version: "3.1.5"
+    version: "3.1.6"
   http:
     dependency: transitive
     description:

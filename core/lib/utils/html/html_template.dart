@@ -218,4 +218,35 @@ class HtmlTemplate {
   ''';
 
   static const String markDownAndASCIIArtStyleCSS = 'display: block; font-family: monospace; white-space: pre; margin: 1em 0px;';
+
+  static const String customInternalStyleCSS = '''
+    <style>
+      * {
+        overflow: auto;
+      }
+      
+      *::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+
+      *::-webkit-scrollbar-thumb {
+        background-color: #c1c1c1;
+        border-radius: 10px;
+        min-height: 70px;
+      }
+      
+      *::-webkit-scrollbar-track {
+        background: transparent;
+        border-radius: 10px;
+      }
+      
+      /* Browsers without `::-webkit-scrollbar-*` support */
+      @supports not selector(::-webkit-scrollbar) {
+          * {
+            scrollbar-color: #c1c1c1 transparent;
+          }
+      }
+    </style>
+  ''';
 }
