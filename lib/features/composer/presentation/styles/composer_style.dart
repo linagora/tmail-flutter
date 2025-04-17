@@ -17,6 +17,8 @@ class ComposerStyle {
   static const double composerExpandMoreButtonMaxHeight = 52;
   static const double padding = 16;
   static const double space = 8;
+  static const double desktopEditorHorizontalPadding = 25;
+  static const double mobileEditorHorizontalPadding = 16;
 
   static const Color borderColor = AppColor.colorLineComposer;
   static const Color backgroundEditorColor = Colors.white;
@@ -29,12 +31,10 @@ class ComposerStyle {
   static const EdgeInsetsGeometry desktopRecipientMargin = EdgeInsetsDirectional.only(start: 24);
   static const EdgeInsetsGeometry desktopSubjectMargin = EdgeInsetsDirectional.only(start: 24);
   static const EdgeInsetsGeometry desktopSubjectPadding = EdgeInsetsDirectional.only(end: 24);
-  static const EdgeInsetsGeometry desktopEditorPadding = EdgeInsetsDirectional.symmetric(horizontal: 20);
   static const EdgeInsetsGeometry tabletRecipientPadding = EdgeInsetsDirectional.only(end: 24);
   static const EdgeInsetsGeometry tabletRecipientMargin = EdgeInsetsDirectional.only(start: 24);
   static const EdgeInsetsGeometry tabletSubjectMargin = EdgeInsetsDirectional.only(start: 24);
   static const EdgeInsetsGeometry tabletSubjectPadding = EdgeInsetsDirectional.only(end: 24);
-  static const EdgeInsetsGeometry tabletEditorPadding = EdgeInsetsDirectional.symmetric(horizontal: 20);
   static const EdgeInsetsGeometry mobileRecipientPadding = EdgeInsetsDirectional.only(end: 16);
   static const EdgeInsetsGeometry mobileRecipientMargin = EdgeInsetsDirectional.only(start: 16);
   static const EdgeInsetsGeometry mobileSubjectMargin = EdgeInsetsDirectional.only(start: 16);

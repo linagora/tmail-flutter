@@ -41,6 +41,7 @@ class HtmlUtils {
   static String customCssStyleHtmlEditor({
     TextDirection direction = TextDirection.ltr,
     bool useDefaultFont = false,
+    double? horizontalPadding,
   }) {
     if (PlatformInfo.isWeb) {
       return '''
@@ -61,6 +62,24 @@ class HtmlUtils {
           .note-editable .tmail-signature {
             text-align: ${direction == TextDirection.rtl ? 'right' : 'left'};
           }
+          
+          ${horizontalPadding != null
+            ? '''
+                .note-codable {
+                  padding: 10px ${horizontalPadding}px 0px ${horizontalPadding > 3 ? horizontalPadding - 3 : horizontalPadding}px;
+                  margin-right: 3px;
+                }
+                
+                .note-editable {
+                  padding: 10px ${horizontalPadding}px 0px ${horizontalPadding > 3 ? horizontalPadding - 3 : horizontalPadding}px;
+                  margin-right: 3px;
+                }
+              '''
+            : '''
+              .note-editable {
+                padding: 10px 10px 0px 10px;
+              }
+            '''}
         </style>
       ''';
     } else if (PlatformInfo.isMobile) {

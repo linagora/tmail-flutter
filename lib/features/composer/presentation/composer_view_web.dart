@@ -213,38 +213,36 @@ class ComposerView extends GetWidget<ComposerController> {
                           Column(
                             children: [
                               Expanded(
-                                child: Padding(
-                                  padding: ComposerStyle.mobileEditorPadding,
-                                  child: Obx(() => WebEditorView(
-                                    key: controller.responsiveContainerKey,
-                                    editorController: controller.richTextWebController!.editorController,
-                                    arguments: controller.composerArguments.value,
-                                    contentViewState: controller.emailContentsViewState.value,
-                                    currentWebContent: controller.textEditorWeb,
-                                    onInitial: controller.handleInitHtmlEditorWeb,
-                                    onChangeContent: controller.onChangeTextEditorWeb,
-                                    onFocus: controller.handleOnFocusHtmlEditorWeb,
-                                    onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
-                                    onEditorSettings: controller.richTextWebController!.onEditorSettingsChange,
-                                    onEditorTextSizeChanged: controller.richTextWebController!.onEditorTextSizeChanged,
-                                    height: constraints.maxHeight,
-                                    onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
-                                    onDragOver: controller.handleOnDragOverHtmlEditorWeb,
-                                    onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
+                                child: Obx(() => WebEditorView(
+                                  key: controller.responsiveContainerKey,
+                                  editorController: controller.richTextWebController!.editorController,
+                                  arguments: controller.composerArguments.value,
+                                  contentViewState: controller.emailContentsViewState.value,
+                                  currentWebContent: controller.textEditorWeb,
+                                  onInitial: controller.handleInitHtmlEditorWeb,
+                                  onChangeContent: controller.onChangeTextEditorWeb,
+                                  onFocus: controller.handleOnFocusHtmlEditorWeb,
+                                  onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
+                                  onEditorSettings: controller.richTextWebController!.onEditorSettingsChange,
+                                  onEditorTextSizeChanged: controller.richTextWebController!.onEditorTextSizeChanged,
+                                  height: constraints.maxHeight,
+                                  horizontalPadding: ComposerStyle.mobileEditorHorizontalPadding,
+                                  onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
+                                  onDragOver: controller.handleOnDragOverHtmlEditorWeb,
+                                  onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
+                                    context: context,
+                                    maxWidth: constraintsEditor.maxWidth,
+                                    listFileUpload: listFileUpload
+                                  ),
+                                  onPasteImageFailureAction: (listFileUpload, base64, uploadError) =>
+                                    controller.handleOnPasteImageFailureAction(
                                       context: context,
-                                      maxWidth: constraintsEditor.maxWidth,
-                                      listFileUpload: listFileUpload
+                                      listFileUpload: listFileUpload,
+                                      base64: base64,
+                                      uploadError: uploadError
                                     ),
-                                    onPasteImageFailureAction: (listFileUpload, base64, uploadError) =>
-                                      controller.handleOnPasteImageFailureAction(
-                                        context: context,
-                                        listFileUpload: listFileUpload,
-                                        base64: base64,
-                                        uploadError: uploadError
-                                      ),
-                                    onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
-                                  )),
-                                ),
+                                  onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
+                                )),
                               ),
                               Obx(() {
                                 if (controller.uploadController.listUploadAttachments.isNotEmpty) {
@@ -497,40 +495,38 @@ class ComposerView extends GetWidget<ComposerController> {
                                 child: Column(
                                   children: [
                                     Expanded(
-                                      child: Padding(
-                                        padding: ComposerStyle.desktopEditorPadding,
-                                        child: Obx(() {
-                                          return WebEditorView(
-                                            key: controller.responsiveContainerKey,
-                                            editorController: controller.richTextWebController!.editorController,
-                                            arguments: controller.composerArguments.value,
-                                            contentViewState: controller.emailContentsViewState.value,
-                                            currentWebContent: controller.textEditorWeb,
-                                            onInitial: controller.handleInitHtmlEditorWeb,
-                                            onChangeContent: controller.onChangeTextEditorWeb,
-                                            onFocus: controller.handleOnFocusHtmlEditorWeb,
-                                            onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
-                                            onEditorSettings: controller.richTextWebController?.onEditorSettingsChange,
-                                            onEditorTextSizeChanged: controller.richTextWebController?.onEditorTextSizeChanged,
-                                            height: constraints.maxHeight,
-                                            onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
-                                            onDragOver: controller.handleOnDragOverHtmlEditorWeb,
-                                            onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
+                                      child: Obx(() {
+                                        return WebEditorView(
+                                          key: controller.responsiveContainerKey,
+                                          editorController: controller.richTextWebController!.editorController,
+                                          arguments: controller.composerArguments.value,
+                                          contentViewState: controller.emailContentsViewState.value,
+                                          currentWebContent: controller.textEditorWeb,
+                                          onInitial: controller.handleInitHtmlEditorWeb,
+                                          onChangeContent: controller.onChangeTextEditorWeb,
+                                          onFocus: controller.handleOnFocusHtmlEditorWeb,
+                                          onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
+                                          onEditorSettings: controller.richTextWebController?.onEditorSettingsChange,
+                                          onEditorTextSizeChanged: controller.richTextWebController?.onEditorTextSizeChanged,
+                                          height: constraints.maxHeight,
+                                          horizontalPadding: ComposerStyle.desktopEditorHorizontalPadding,
+                                          onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
+                                          onDragOver: controller.handleOnDragOverHtmlEditorWeb,
+                                          onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
+                                            context: context,
+                                            maxWidth: constraintsEditor.maxWidth,
+                                            listFileUpload: listFileUpload
+                                          ),
+                                          onPasteImageFailureAction: (listFileUpload, base64, uploadError) =>
+                                            controller.handleOnPasteImageFailureAction(
                                               context: context,
-                                              maxWidth: constraintsEditor.maxWidth,
-                                              listFileUpload: listFileUpload
+                                              listFileUpload: listFileUpload,
+                                              base64: base64,
+                                              uploadError: uploadError
                                             ),
-                                            onPasteImageFailureAction: (listFileUpload, base64, uploadError) =>
-                                              controller.handleOnPasteImageFailureAction(
-                                                context: context,
-                                                listFileUpload: listFileUpload,
-                                                base64: base64,
-                                                uploadError: uploadError
-                                              ),
-                                            onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
-                                          );
-                                        }),
-                                      ),
+                                          onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
+                                        );
+                                      }),
                                     ),
                                     Obx(() {
                                       if (controller.uploadController.listUploadAttachments.isNotEmpty) {
@@ -810,38 +806,36 @@ class ComposerView extends GetWidget<ComposerController> {
                                 child: Column(
                                   children: [
                                     Expanded(
-                                      child: Padding(
-                                        padding: ComposerStyle.tabletEditorPadding,
-                                        child: Obx(() => WebEditorView(
-                                          key: controller.responsiveContainerKey,
-                                          editorController: controller.richTextWebController!.editorController,
-                                          arguments: controller.composerArguments.value,
-                                          contentViewState: controller.emailContentsViewState.value,
-                                          currentWebContent: controller.textEditorWeb,
-                                          onInitial: controller.handleInitHtmlEditorWeb,
-                                          onChangeContent: controller.onChangeTextEditorWeb,
-                                          onFocus: controller.handleOnFocusHtmlEditorWeb,
-                                          onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
-                                          onEditorSettings: controller.richTextWebController!.onEditorSettingsChange,
-                                          onEditorTextSizeChanged: controller.richTextWebController!.onEditorTextSizeChanged,
-                                          height: constraints.maxHeight,
-                                          onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
-                                          onDragOver: controller.handleOnDragOverHtmlEditorWeb,
-                                          onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
+                                      child: Obx(() => WebEditorView(
+                                        key: controller.responsiveContainerKey,
+                                        editorController: controller.richTextWebController!.editorController,
+                                        arguments: controller.composerArguments.value,
+                                        contentViewState: controller.emailContentsViewState.value,
+                                        currentWebContent: controller.textEditorWeb,
+                                        onInitial: controller.handleInitHtmlEditorWeb,
+                                        onChangeContent: controller.onChangeTextEditorWeb,
+                                        onFocus: controller.handleOnFocusHtmlEditorWeb,
+                                        onMouseDown: controller.handleOnMouseDownHtmlEditorWeb,
+                                        onEditorSettings: controller.richTextWebController!.onEditorSettingsChange,
+                                        onEditorTextSizeChanged: controller.richTextWebController!.onEditorTextSizeChanged,
+                                        height: constraints.maxHeight,
+                                        horizontalPadding: ComposerStyle.desktopEditorHorizontalPadding,
+                                        onDragEnter: controller.handleOnDragEnterHtmlEditorWeb,
+                                        onDragOver: controller.handleOnDragOverHtmlEditorWeb,
+                                        onPasteImageSuccessAction: (listFileUpload) => controller.handleOnPasteImageSuccessAction(
+                                          context: context,
+                                          maxWidth: constraintsBody.maxWidth,
+                                          listFileUpload: listFileUpload
+                                        ),
+                                        onPasteImageFailureAction: (listFileUpload, base64, uploadError) =>
+                                          controller.handleOnPasteImageFailureAction(
                                             context: context,
-                                            maxWidth: constraintsBody.maxWidth,
-                                            listFileUpload: listFileUpload
+                                            listFileUpload: listFileUpload,
+                                            base64: base64,
+                                            uploadError: uploadError
                                           ),
-                                          onPasteImageFailureAction: (listFileUpload, base64, uploadError) =>
-                                            controller.handleOnPasteImageFailureAction(
-                                              context: context,
-                                              listFileUpload: listFileUpload,
-                                              base64: base64,
-                                              uploadError: uploadError
-                                            ),
-                                          onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
-                                        )),
-                                      ),
+                                        onInitialContentLoadComplete: controller.onInitialContentLoadCompleteWeb,
+                                      )),
                                     ),
                                     Obx(() {
                                       if (controller.uploadController.listUploadAttachments.isNotEmpty) {
