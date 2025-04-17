@@ -1782,7 +1782,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           ComposerArguments.forwardEmail(
             presentationEmail: presentationEmail,
             content: currentEmailLoaded.value?.htmlContent ?? '',
-            attachments: attachments,
+            attachments: List.from(attachments),
             inlineImages: currentEmailLoaded.value?.inlineImages ?? [],
             messageId: currentEmailLoaded.value?.emailCurrent?.messageId,
             references: currentEmailLoaded.value?.emailCurrent?.references,
@@ -2598,7 +2598,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     final viewEntireMessageRequest = ViewEntireMessageRequest(
       userName: userName ?? UserName(''),
       presentationEmail: presentationEmail,
-      attachments: attachments,
+      attachments: List.from(attachments),
       emailContent: emailContent,
       locale: Localizations.localeOf(context),
       appLocalizations: appLocalizations,
