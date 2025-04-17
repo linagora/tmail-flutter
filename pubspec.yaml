@@ -107,7 +107,10 @@ dependencies:
       ref: master
 
   ### Dependencies from pub.dev ###
-  super_tag_editor: 0.3.1
+  super_tag_editor:
+    git:
+      url: https://github.com/dab246/super_tag_editor.git
+      ref: bugfix/suggestion-list-shown-on-top
 
   cupertino_icons: 1.0.6
 
