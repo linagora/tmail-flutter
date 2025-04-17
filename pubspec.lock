@@ -588,10 +588,11 @@ packages:
   file_picker:
     dependency: "direct main"
     description:
-      name: file_picker
-      sha256: "2ca051989f69d1b2ca012b2cf3ccf78c70d40144f0861ff2c063493f7c8c3d45"
-      url: "https://pub.dev"
-    source: hosted
+      path: "."
+      ref: "fixbug/tmail-0.15.12-memory-leak"
+      resolved-ref: b9a5bf750554ca1b0cb98ae2b57167e5b0310582
+      url: "https://github.com/linagora/flutter_file_picker.git"
+    source: git
     version: "8.0.5"
   filesize:
     dependency: "direct main"
