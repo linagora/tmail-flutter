@@ -35,6 +35,7 @@ class WebEditorWidget extends StatefulWidget {
   final OnEditorSettingsChange? onEditorSettings;
   final OnEditorTextSizeChanged? onEditorTextSizeChanged;
   final double? height;
+  final double? horizontalPadding;
   final OnDragEnterListener? onDragEnter;
   final OnDragOverListener? onDragOver;
   final OnPasteImageSuccessAction? onPasteImageSuccessAction;
@@ -54,6 +55,7 @@ class WebEditorWidget extends StatefulWidget {
     this.onEditorSettings,
     this.onEditorTextSizeChanged,
     this.height,
+    this.horizontalPadding,
     this.onDragEnter,
     this.onDragOver,
     this.onPasteImageSuccessAction,
@@ -118,7 +120,10 @@ class _WebEditorState extends State<WebEditorWidget> {
         hint: '',
         darkMode: false,
         initialText: widget.content,
-        customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: widget.direction),
+        customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(
+          direction: widget.direction,
+          horizontalPadding: widget.horizontalPadding,
+        ),
         customInternalCSS: HtmlTemplate.customInternalStyleCSS,
         spellCheck: true,
         disableDragAndDrop: true,

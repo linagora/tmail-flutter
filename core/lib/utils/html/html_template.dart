@@ -221,29 +221,30 @@ class HtmlTemplate {
 
   static const String customInternalStyleCSS = '''
     <style>
-      * {
+      html, .note-editable, .note-codable {
         overflow: auto;
       }
       
-      *::-webkit-scrollbar {
-        width: 8px;
-        height: 8px;
+      html::-webkit-scrollbar, .note-editable::-webkit-scrollbar, .note-codable::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
       }
 
-      *::-webkit-scrollbar-thumb {
+      html::-webkit-scrollbar-thumb, .note-editable::-webkit-scrollbar-thumb, .note-codable::-webkit-scrollbar-thumb {
         background-color: #c1c1c1;
         border-radius: 10px;
         min-height: 70px;
       }
       
-      *::-webkit-scrollbar-track {
+     html::-webkit-scrollbar-track, .note-editable::-webkit-scrollbar-track, .note-codable::-webkit-scrollbar-track {
         background: transparent;
         border-radius: 10px;
       }
       
       /* Browsers without `::-webkit-scrollbar-*` support */
       @supports not selector(::-webkit-scrollbar) {
-          * {
+          html, .note-editable, .note-codable {
+            scrollbar-width: thin;
             scrollbar-color: #c1c1c1 transparent;
           }
       }
