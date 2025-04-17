@@ -3100,7 +3100,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       t4 = t2._as(t1.get(_this))._vacationMessageHtmlText;
       t5 = A.Directionality_maybeOf(context);
-      t4 = A.HtmlEditorOptions$(A.HtmlUtils_customCssStyleHtmlEditor(t5 == null ? B.TextDirection_1 : t5), false, false, "", t4, false, true, _null);
+      t4 = A.HtmlEditorOptions$(A.HtmlUtils_customCssStyleHtmlEditor(t5 == null ? B.TextDirection_1 : t5, _null), "", false, false, "", t4, false, true, _null);
       A.Expando__checkType(_this);
       t5 = t2._as(t1.get(_this))._richTextControllerForWeb;
       A.Expando__checkType(_this);
@@ -5873,5 +5873,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_10", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "qDq3OJJad+PCqn4lrskTDzG8N74=");
+})($__dart_deferred_initializers__, "eZ5qPsHKRkJZRo8exYUo35rzHoA=");
 ;
