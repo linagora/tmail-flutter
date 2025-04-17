@@ -297,6 +297,13 @@ dependency_overrides:
 
   json_annotation: 4.8.1
 
+  # TODO: Remove and upgrade file_picker after
+  # https://github.com/miguelpruivo/flutter_file_picker/pull/1771 is merged and published
+  file_picker:
+    git:
+      url: https://github.com/linagora/flutter_file_picker.git
+      ref: fixbug/tmail-0.15.12-memory-leak
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
