@@ -244,6 +244,7 @@ extension AppColor on Color {
   static const blue100 = Color(0xFFDFEEFF);
   static const blue400 = Color(0xFF80BDFF);
   static const m3Tertiary = Color(0xFF8C9CAF);
+  static const m3Tertiary70 = Color(0xFFE5ECF3);
   static const m3Neutral70 = Color(0xFFAEAAAE);
   static const grayBackgroundColor = Color(0xFFF3F6F9);
   static const m3SurfaceBackground = Color(0xFF1C1B1F);

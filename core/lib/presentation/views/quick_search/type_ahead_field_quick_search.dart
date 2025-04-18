@@ -318,6 +318,8 @@ class TypeAheadFieldQuickSearch<T, P, R> extends StatefulWidget {
   /// Min input length to start autocomplete
   final int? minInputLengthAutocomplete;
 
+  final Color backgroundColor;
+
   /// Creates a [TypeAheadFieldQuickSearch]
   const TypeAheadFieldQuickSearch({
     Key? key,
@@ -364,6 +366,7 @@ class TypeAheadFieldQuickSearch<T, P, R> extends StatefulWidget {
     this.contactItemBuilder,
     this.contactSuggestionsCallback,
     this.onContactSuggestionSelected,
+    this.backgroundColor = AppColor.colorBgDesktop,
   })  : assert(animationStart >= 0.0 && animationStart <= 1.0),
         assert(
             direction == AxisDirection.down || direction == AxisDirection.up),
@@ -658,9 +661,9 @@ class _TypeAheadFieldQuickSearchState<T, P, R>
                 ],
                 color: Colors.white,
               )
-            : const BoxDecoration(
-                borderRadius: BorderRadius.all(Radius.circular(12)),
-                color: AppColor.colorBgDesktop,
+            : BoxDecoration(
+                borderRadius: const BorderRadius.all(Radius.circular(12)),
+                color: widget.backgroundColor,
               ),
         height: widget.maxHeight,
         child: Row(

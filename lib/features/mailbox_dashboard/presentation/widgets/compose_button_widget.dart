@@ -11,11 +11,13 @@ class ComposeButtonWidget extends StatelessWidget {
 
   final ImagePaths imagePaths;
   final VoidCallback onTapAction;
+  final EdgeInsetsGeometry buttonPadding;
 
   const ComposeButtonWidget({
     super.key,
     required this.imagePaths,
     required this.onTapAction,
+    this.buttonPadding = const EdgeInsets.symmetric(vertical: 8),
   });
 
   @override
@@ -36,7 +38,7 @@ class ComposeButtonWidget extends StatelessWidget {
         borderRadius: 10,
         iconSize: 24,
         iconColor: Colors.white,
-        padding: const EdgeInsetsDirectional.symmetric(vertical: 8),
+        padding: buttonPadding,
         backgroundColor: AppColor.blue700,
         textStyle: ThemeUtils.textStyleBodyBody2(color: Colors.white),
         onTapActionCallback: onTapAction,

@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/quick_search/quick_search_action_define.dart';
 import 'package:core/presentation/views/quick_search/quick_search_suggestion_box_controller.dart';
 import 'package:core/presentation/views/quick_search/quick_search_suggestion_box_decoration.dart';
@@ -69,6 +70,7 @@ class QuickSearchInputForm<T, P, R> extends FormField<String> {
     ItemBuilder<P>? contactItemBuilder,
     SuggestionsCallback<P>? contactSuggestionsCallback,
     SuggestionSelectionCallback<P>? onContactSuggestionSelected,
+    Color backgroundColor = AppColor.colorBgDesktop,
   })  : assert(
             initialValue == null || textFieldConfiguration.controller == null),
         assert(minCharsForSuggestions >= 0),
@@ -138,6 +140,7 @@ class QuickSearchInputForm<T, P, R> extends FormField<String> {
               contactItemBuilder: contactItemBuilder,
               contactSuggestionsCallback: contactSuggestionsCallback,
               onContactSuggestionSelected: onContactSuggestionSelected,
+              backgroundColor: backgroundColor,
             );
           },
         );
