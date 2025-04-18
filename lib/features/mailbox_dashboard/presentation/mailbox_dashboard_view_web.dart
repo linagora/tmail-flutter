@@ -43,6 +43,7 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete
 import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_empty_trash_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_web_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/cozy_config.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
@@ -60,31 +61,48 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                 child: Container(
                   color: AppColor.colorBgDesktop,
                   child: Column(children: [
-                    Obx(() {
-                      final accountId = controller.accountId.value;
+                    FutureBuilder(
+                      future: CozyConfig().isInsideCozy,
+                      builder: (context, snapshot) {
+                        if (snapshot.data == true) {
+                          return const SizedBox.shrink();
+                        }
 
-                      return NavigationBarWidget(
-                        imagePaths: controller.imagePaths,
-                        accountId: accountId,
-                        avatarUserName: controller.getOwnEmailAddress().firstCharacterToUpperCase,
-                        contactSupportCapability: accountId != null
-                          ? controller.sessionCurrent?.getContactSupportCapability(accountId)
-                          : null,
-                        searchForm: SearchInputFormWidget(),
-                        appGridController: controller.appGridDashboardController,
-                        onTapApplicationLogoAction: controller.redirectToInboxAction,
-                        onTapAvatarAction: (position) =>
-                            controller.handleClickAvatarAction(context, position),
-                        onTapContactSupportAction: (contactSupport) =>
-                            controller.onGetHelpOrReportBug(contactSupport),
-                      );
-                    }),
+                        return Obx(() {
+                          final accountId = controller.accountId.value;
+                        
+                          return NavigationBarWidget(
+                            imagePaths: controller.imagePaths,
+                            accountId: accountId,
+                            avatarUserName: controller.getOwnEmailAddress().firstCharacterToUpperCase,
+                            contactSupportCapability: accountId != null
+                              ? controller.sessionCurrent?.getContactSupportCapability(accountId)
+                              : null,
+                            searchForm: SearchInputFormWidget(),
+                            appGridController: controller.appGridDashboardController,
+                            onTapApplicationLogoAction: controller.redirectToInboxAction,
+                            onTapAvatarAction: (position) =>
+                                controller.handleClickAvatarAction(context, position),
+                            onTapContactSupportAction: (contactSupport) =>
+                                controller.onGetHelpOrReportBug(contactSupport),
+                          );
+                        });
+                      }
+                    ),
                     Expanded(child: Row(children: [
                       Column(children: [
-                        ComposeButtonWidget(
-                          imagePaths: controller.imagePaths,
-                          onTapAction: () =>
-                            controller.openComposer(ComposerArguments()),
+                        FutureBuilder(
+                          future: CozyConfig().isInsideCozy,
+                          builder: (context, snapshot) {
+                            return ComposeButtonWidget(
+                              imagePaths: controller.imagePaths,
+                              onTapAction: () =>
+                                controller.openComposer(ComposerArguments()),
+                              buttonPadding: snapshot.data == true
+                                ? const EdgeInsetsDirectional.symmetric(vertical: 10)
+                                : const EdgeInsetsDirectional.symmetric(vertical: 8),
+                            );
+                          }
                         ),
                         Expanded(child: SizedBox(
                           width: ResponsiveUtils.defaultSizeMenu,
@@ -101,6 +119,39 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                       ]),
                       Expanded(child: Column(children: [
                         const SizedBox(height: 16),
+                        FutureBuilder(
+                          future: CozyConfig().isInsideCozy,
+                          builder: (context, snapshot) {
+                            if (snapshot.data != true) {
+                              return const SizedBox.shrink();
+                            }
+
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 16),
+                              child: Row(
+                                children: [
+                                  SizedBox(
+                                    width: MediaQuery.sizeOf(context).width / 2,
+                                    height: 44,
+                                    child: SearchInputFormWidget(
+                                      backgroundColor: AppColor.m3Tertiary70,
+                                      fontSize: 15,
+                                      contentPadding: const EdgeInsets.only(bottom: 4),
+                                    ),
+                                  ),
+                                  const Spacer(),
+                                  TMailButtonWidget.fromIcon(
+                                    icon: controller.imagePaths.icSetting,
+                                    iconColor: AppColor.steelGrayA540,
+                                    backgroundColor: Colors.transparent,
+                                    onTapActionCallback: controller.goToSettings,
+                                    padding: const EdgeInsets.only(right: 16),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }
+                        ),
                         Obx(() => RecoverDeletedMessageLoadingBannerWidget(
                           isLoading: controller.isRecoveringDeletedMessage.value,
                           horizontalLoadingWidget: horizontalLoadingWidget,

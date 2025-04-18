@@ -38,7 +38,16 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
 
-  SearchInputFormWidget({Key? key}) : super(key: key);
+  SearchInputFormWidget({
+    super.key,
+    this.backgroundColor = AppColor.colorBgDesktop,
+    this.fontSize = 16,
+    this.contentPadding = EdgeInsets.zero,
+  });
+
+  final Color backgroundColor;
+  final double fontSize;
+  final EdgeInsetsGeometry contentPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -130,6 +139,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
             contactItemBuilder: (context, emailAddress) => ContactQuickSearchItem(emailAddress: emailAddress),
             contactSuggestionsCallback: _dashBoardController.getContactSuggestion,
             onContactSuggestionSelected: _invokeSelectContactSuggestion,
+            backgroundColor: backgroundColor,
           )
         ),
       );
@@ -203,6 +213,9 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     return QuickSearchTextFieldConfiguration(
       controller: _searchController.searchInputController,
       focusNode: _searchController.searchFocus,
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+        fontSize: fontSize,
+      ),
       textInputAction: TextInputAction.done,
       cursorColor: AppColor.primaryColor,
       textDirection: DirectionUtils.getDirectionByLanguage(context),
@@ -211,10 +224,16 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         border: InputBorder.none,
         focusedBorder: InputBorder.none,
         enabledBorder: InputBorder.none,
-        contentPadding: EdgeInsets.zero,
+        contentPadding: contentPadding,
         hintText: AppLocalizations.of(context).search_emails,
-        hintStyle: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 16.0),
-        labelStyle: const TextStyle(color: Colors.black, fontSize: 16.0)
+        hintStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: AppColor.colorHintSearchBar,
+          fontSize: fontSize,
+        ),
+        labelStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
+          color: Colors.black,
+          fontSize: fontSize,
+        ),
       ),
       leftButton: Padding(
         padding: const EdgeInsetsDirectional.only(start: 8),
