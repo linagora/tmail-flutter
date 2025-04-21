@@ -45,10 +45,10 @@ void main() {
           userName: userAEmailAddress.emailAddress,
         );
 
-        expect(result.value1, containsAll(expectedResult.value1));
-        expect(result.value2, containsAll(expectedResult.value2));
-        expect(result.value3, containsAll(expectedResult.value3));
-        expect(result.value4, containsAll(expectedResult.value4));
+        expect(result.to, equals(expectedResult.value1));
+        expect(result.cc, equals(expectedResult.value2));
+        expect(result.bcc, equals(expectedResult.value3));
+        expect(result.replyTo, equals(expectedResult.value4));
       });
 
       test(
@@ -75,10 +75,10 @@ void main() {
           userName: userAEmailAddress.emailAddress,
         );
 
-        expect(result.value1, containsAll(expectedResult.value1));
-        expect(result.value2, containsAll(expectedResult.value2));
-        expect(result.value3, containsAll(expectedResult.value3));
-        expect(result.value4, containsAll(expectedResult.value4));
+        expect(result.to, equals(expectedResult.value1));
+        expect(result.cc, equals(expectedResult.value2));
+        expect(result.bcc, equals(expectedResult.value3));
+        expect(result.replyTo, equals(expectedResult.value4));
       });
     });
 
@@ -113,10 +113,10 @@ void main() {
           listPost: listPost,
         );
 
-        expect(result.value1, containsAll(expectedResult.value1));
-        expect(result.value2, containsAll(expectedResult.value2));
-        expect(result.value3, containsAll(expectedResult.value3));
-        expect(result.value4, containsAll(expectedResult.value4));
+        expect(result.to, equals(expectedResult.value1));
+        expect(result.cc, equals(expectedResult.value2));
+        expect(result.bcc, equals(expectedResult.value3));
+        expect(result.replyTo, equals(expectedResult.value4));
       });
 
       test(
@@ -145,10 +145,10 @@ void main() {
           userName: userAEmailAddress.emailAddress,
         );
 
-        expect(result.value1, containsAll(expectedResult.value1));
-        expect(result.value2, containsAll(expectedResult.value2));
-        expect(result.value3, containsAll(expectedResult.value3));
-        expect(result.value4, containsAll(expectedResult.value4));
+        expect(result.to, equals(expectedResult.value1));
+        expect(result.cc, equals(expectedResult.value2));
+        expect(result.bcc, equals(expectedResult.value3));
+        expect(result.replyTo, equals(expectedResult.value4));
       });
     });
 
@@ -175,10 +175,10 @@ void main() {
           listPost: listPost,
         );
 
-        expect(result.value1, equals([userBEmailAddress, userAEmailAddress]));
-        expect(result.value2, isEmpty);
-        expect(result.value3, isEmpty);
-        expect(result.value4, isEmpty);
+        expect(result.to, equals([userBEmailAddress, userAEmailAddress]));
+        expect(result.cc, isEmpty);
+        expect(result.bcc, isEmpty);
+        expect(result.replyTo, isEmpty);
       });
 
       test(
@@ -208,10 +208,10 @@ void main() {
           listPost: listPost,
         );
 
-        expect(result.value1, containsAll(expectedResult.value1));
-        expect(result.value2, containsAll(expectedResult.value2));
-        expect(result.value3, containsAll(expectedResult.value3));
-        expect(result.value4, containsAll(expectedResult.value4));
+        expect(result.to, equals(expectedResult.value1));
+        expect(result.cc, equals(expectedResult.value2));
+        expect(result.bcc, equals(expectedResult.value3));
+        expect(result.replyTo, equals(expectedResult.value4));
       });
 
       test(
@@ -240,10 +240,10 @@ void main() {
           userName: userAEmailAddress.emailAddress,
         );
 
-        expect(result.value1, containsAll(expectedResult.value1));
-        expect(result.value2, containsAll(expectedResult.value2));
-        expect(result.value3, containsAll(expectedResult.value3));
-        expect(result.value4, containsAll(expectedResult.value4));
+        expect(result.to, equals(expectedResult.value1));
+        expect(result.cc, equals(expectedResult.value2));
+        expect(result.bcc, equals(expectedResult.value3));
+        expect(result.replyTo, equals(expectedResult.value4));
       });
     });
 
@@ -252,6 +252,7 @@ void main() {
       'AND send an email to user A and user E, cc to user C, bcc to user D',
     () {
       test(
+        'Email without the List-Post header'
         'THEN user A click reply, generateRecipientsEmailAddressForComposer\n'
         'SHOULD return only replyToEmailAddress email to reply' ,
       () {
@@ -275,18 +276,51 @@ void main() {
           isSender: false,
         );
 
-        expect(result.value1, containsAll(expectedResult.value1));
-        expect(result.value2, containsAll(expectedResult.value2));
-        expect(result.value3, containsAll(expectedResult.value3));
-        expect(result.value4, containsAll(expectedResult.value4));
+        expect(result.to, equals(expectedResult.value1));
+        expect(result.cc, equals(expectedResult.value2));
+        expect(result.bcc, equals(expectedResult.value3));
+        expect(result.replyTo, equals(expectedResult.value4));
       });
 
       test(
+        'Email has the List-Post header'
+        'THEN user A click reply, generateRecipientsEmailAddressForComposer\n'
+        'SHOULD return only user B email to reply' ,
+      () {
+        final expectedResult = Tuple4(
+          [userBEmailAddress],
+          <EmailAddress>[],
+          <EmailAddress>[],
+          <EmailAddress>[],
+        );
+
+        final emailToReply = PresentationEmail(
+          from: {userBEmailAddress},
+          replyTo: {replyToEmailAddress},
+          to: {userAEmailAddress, userEEmailAddress},
+          cc: {userCEmailAddress},
+          bcc: {userDEmailAddress}
+        );
+
+        final result = emailToReply.generateRecipientsEmailAddressForComposer(
+          emailActionType: EmailActionType.reply,
+          isSender: false,
+          listPost: listPost,
+        );
+
+        expect(result.to, equals(expectedResult.value1));
+        expect(result.cc, equals(expectedResult.value2));
+        expect(result.bcc, equals(expectedResult.value3));
+        expect(result.replyTo, equals(expectedResult.value4));
+      });
+
+      test(
+        'Email without the List-Post header'
         'THEN user A clicks reply all, generateRecipientsEmailAddressForComposer\n'
         'SHOULD return replyToEmailAddress + user A email + user E email to reply, user C email address to cc, user D email address to bcc',
       () {
         final expectedResult = Tuple4(
-          [userAEmailAddress, userEEmailAddress, replyToEmailAddress],
+          [replyToEmailAddress, userAEmailAddress, userEEmailAddress],
           <EmailAddress>[userCEmailAddress],
           <EmailAddress>[userDEmailAddress],
           <EmailAddress>[],
@@ -305,10 +339,42 @@ void main() {
           isSender: false,
         );
 
-        expect(result.value1, containsAll(expectedResult.value1));
-        expect(result.value2, containsAll(expectedResult.value2));
-        expect(result.value3, containsAll(expectedResult.value3));
-        expect(result.value4, containsAll(expectedResult.value4));
+        expect(result.to, equals(expectedResult.value1));
+        expect(result.cc, equals(expectedResult.value2));
+        expect(result.bcc, equals(expectedResult.value3));
+        expect(result.replyTo, equals(expectedResult.value4));
+      });
+
+      test(
+        'Email has the List-Post header'
+        'THEN user A clicks reply all, generateRecipientsEmailAddressForComposer\n'
+        'SHOULD return replyToEmailAddress + user B email + user A email + user E email to reply, user C email address to cc, user D email address to bcc',
+      () {
+        final expectedResult = Tuple4(
+          [replyToEmailAddress, userBEmailAddress, userAEmailAddress, userEEmailAddress],
+          <EmailAddress>[userCEmailAddress],
+          <EmailAddress>[userDEmailAddress],
+          <EmailAddress>[],
+        );
+
+        final emailToReply = PresentationEmail(
+          from: {userBEmailAddress},
+          replyTo: {replyToEmailAddress},
+          to: {userAEmailAddress, userEEmailAddress},
+          cc: {userCEmailAddress},
+          bcc: {userDEmailAddress}
+        );
+
+        final result = emailToReply.generateRecipientsEmailAddressForComposer(
+          emailActionType: EmailActionType.replyAll,
+          isSender: false,
+          listPost: listPost,
+        );
+
+        expect(result.to, equals(expectedResult.value1));
+        expect(result.cc, equals(expectedResult.value2));
+        expect(result.bcc, equals(expectedResult.value3));
+        expect(result.replyTo, equals(expectedResult.value4));
       });
     });
 
@@ -339,10 +405,10 @@ void main() {
           isSender: false,
         );
 
-        expect(result.value1, containsAll(expectedResult.value1));
-        expect(result.value2, containsAll(expectedResult.value2));
-        expect(result.value3, containsAll(expectedResult.value3));
-        expect(result.value4, containsAll(expectedResult.value4));
+        expect(result.to, equals(expectedResult.value1));
+        expect(result.cc, equals(expectedResult.value2));
+        expect(result.bcc, equals(expectedResult.value3));
+        expect(result.replyTo, equals(expectedResult.value4));
       });
 
       test(
@@ -350,7 +416,7 @@ void main() {
         'SHOULD return user A email + user E email + user B email to reply, user C email to cc, user D email to bcc',
       () {
         final expectedResult = Tuple4(
-          [userAEmailAddress, userEEmailAddress, userBEmailAddress],
+          [userBEmailAddress, userAEmailAddress, userEEmailAddress],
           <EmailAddress>[userCEmailAddress],
           <EmailAddress>[userDEmailAddress],
           <EmailAddress>[],
@@ -368,10 +434,10 @@ void main() {
           isSender: false,
         );
 
-        expect(result.value1, containsAll(expectedResult.value1));
-        expect(result.value2, containsAll(expectedResult.value2));
-        expect(result.value3, containsAll(expectedResult.value3));
-        expect(result.value4, containsAll(expectedResult.value4));
+        expect(result.to, equals(expectedResult.value1));
+        expect(result.cc, equals(expectedResult.value2));
+        expect(result.bcc, equals(expectedResult.value3));
+        expect(result.replyTo, equals(expectedResult.value4));
       });
 
       test(
@@ -394,10 +460,10 @@ void main() {
           listPost: listPost,
         );
 
-        expect(result.value1, containsAll(expectedResult.value1));
-        expect(result.value2, containsAll(expectedResult.value2));
-        expect(result.value3, containsAll(expectedResult.value3));
-        expect(result.value4, containsAll(expectedResult.value4));
+        expect(result.to, equals(expectedResult.value1));
+        expect(result.cc, equals(expectedResult.value2));
+        expect(result.bcc, equals(expectedResult.value3));
+        expect(result.replyTo, equals(expectedResult.value4));
       });
     });
 
@@ -429,10 +495,10 @@ void main() {
           isSender: false,
         );
 
-        expect(result.value1, containsAll(expectedResult.value1));
-        expect(result.value2, containsAll(expectedResult.value2));
-        expect(result.value3, containsAll(expectedResult.value3));
-        expect(result.value4, containsAll(expectedResult.value4));
+        expect(result.to, equals(expectedResult.value1));
+        expect(result.cc, equals(expectedResult.value2));
+        expect(result.bcc, equals(expectedResult.value3));
+        expect(result.replyTo, equals(expectedResult.value4));
       });
     });
   });
