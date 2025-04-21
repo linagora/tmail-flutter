@@ -119,6 +119,7 @@ class _WebEditorState extends State<WebEditorWidget> {
         shouldEnsureVisible: true,
         hint: '',
         darkMode: false,
+        cacheHTMLAssetOffline: true,
         initialText: widget.content,
         customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(
           direction: widget.direction,

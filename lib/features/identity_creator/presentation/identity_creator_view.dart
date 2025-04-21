@@ -504,6 +504,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
         shouldEnsureVisible: true,
         hint: '',
         darkMode: false,
+        cacheHTMLAssetOffline: true,
         initialText: initContent.isEmpty ? null : initContent,
         disableDragAndDrop: true,
         spellCheck: true,
