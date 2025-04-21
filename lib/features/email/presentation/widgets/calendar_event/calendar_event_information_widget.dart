@@ -249,8 +249,8 @@ class CalendarEventInformationWidget extends StatelessWidget {
 
   Widget _buildEventTimeInformationWidget() {
     final dateTimeEvent = calendarEvent.getDateTimeEvent(
-      dateLocale: AppUtils.getCurrentDateLocale(),
-      timeZone: AppUtils.getTimeZone()
+      dateLocale: AppUtils().getCurrentDateLocale(),
+      timeZone: AppUtils().getTimeZone()
     );
     if (dateTimeEvent.isNotEmpty) {
       return Padding(

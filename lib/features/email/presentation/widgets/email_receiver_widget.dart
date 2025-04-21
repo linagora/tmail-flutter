@@ -242,7 +242,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
         padding: const EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8),
         backgroundColor: Colors.transparent,
         onTapActionCallback: () => widget.openEmailAddressDetailAction?.call(context, emailAddress),
-        onLongPressActionCallback: () => AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress),
+        onLongPressActionCallback: () => AppUtils().copyEmailAddressToClipboard(context, emailAddress.emailAddress),
       ))
       .toList();
   }

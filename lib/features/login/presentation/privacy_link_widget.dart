@@ -29,7 +29,7 @@ class PrivacyLinkWidget extends StatelessWidget {
             style: const TextStyle(
               color: AppColor.loginTextFieldFocusedBorder,
               fontSize: 14),
-            recognizer: TapGestureRecognizer()..onTap = () => AppUtils.launchLink(privacyUrlString)
+            recognizer: TapGestureRecognizer()..onTap = () => AppUtils().launchLink(privacyUrlString)
           )
         )
       ],

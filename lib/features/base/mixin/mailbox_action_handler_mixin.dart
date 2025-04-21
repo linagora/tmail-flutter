@@ -19,7 +19,7 @@ import 'package:tmail_ui_user/main/utils/app_utils.dart';
 mixin MailboxActionHandlerMixin {
 
   void openMailboxInNewTabAction(PresentationMailbox mailbox) {
-    AppUtils.launchLink(mailbox.mailboxRouteWeb.toString());
+    AppUtils().launchLink(mailbox.mailboxRouteWeb.toString());
   }
 
   void markAsReadMailboxAction(

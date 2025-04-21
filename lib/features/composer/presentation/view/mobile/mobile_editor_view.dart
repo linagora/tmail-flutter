@@ -41,7 +41,7 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
       case EmailActionType.composeFromFileShared:
         return MobileEditorWidget(
           content: HtmlExtension.editorStartTags,
-          direction: AppUtils.getCurrentDirection(context),
+          direction: AppUtils().getCurrentDirection(context),
           onCreatedEditorAction: onCreatedEditorAction,
           onLoadCompletedEditorAction: onLoadCompletedEditorAction,
           onEditorContentHeightChanged: onEditorContentHeightChanged,
@@ -59,7 +59,7 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
         return contentViewState!.fold(
           (failure) => MobileEditorWidget(
             content: HtmlExtension.editorStartTags,
-            direction: AppUtils.getCurrentDirection(context),
+            direction: AppUtils().getCurrentDirection(context),
             onCreatedEditorAction: onCreatedEditorAction,
             onLoadCompletedEditorAction: onLoadCompletedEditorAction,
             onEditorContentHeightChanged: onEditorContentHeightChanged,
@@ -79,7 +79,7 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
               }
               return MobileEditorWidget(
                 content: newContent,
-                direction: AppUtils.getCurrentDirection(context),
+                direction: AppUtils().getCurrentDirection(context),
                 onCreatedEditorAction: onCreatedEditorAction,
                 onLoadCompletedEditorAction: onLoadCompletedEditorAction,
                 onEditorContentHeightChanged: onEditorContentHeightChanged,
@@ -105,7 +105,7 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
             );
             return MobileEditorWidget(
               content: emailContentQuoted,
-              direction: AppUtils.getCurrentDirection(context),
+              direction: AppUtils().getCurrentDirection(context),
               onCreatedEditorAction: onCreatedEditorAction,
               onLoadCompletedEditorAction: onLoadCompletedEditorAction,
               onEditorContentHeightChanged: onEditorContentHeightChanged,
@@ -126,7 +126,7 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
               );
               return MobileEditorWidget(
                 content: emailContentQuoted,
-                direction: AppUtils.getCurrentDirection(context),
+                direction: AppUtils().getCurrentDirection(context),
                 onCreatedEditorAction: onCreatedEditorAction,
                 onLoadCompletedEditorAction: onLoadCompletedEditorAction,
                 onEditorContentHeightChanged: onEditorContentHeightChanged,
@@ -137,7 +137,7 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
       default:
         return MobileEditorWidget(
           content: HtmlExtension.editorStartTags,
-          direction: AppUtils.getCurrentDirection(context),
+          direction: AppUtils().getCurrentDirection(context),
           onCreatedEditorAction: onCreatedEditorAction,
           onLoadCompletedEditorAction: onLoadCompletedEditorAction,
           onEditorContentHeightChanged: onEditorContentHeightChanged,

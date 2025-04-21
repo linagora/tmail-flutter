@@ -138,8 +138,8 @@ class DestinationPickerSearchMailboxItemBuilder extends StatelessWidget {
     if (_isSelectActionNoValid) {
       return Padding(
         padding: EdgeInsets.only(
-          right: AppUtils.isDirectionRTL(context) ? 0 : 8,
-          left: AppUtils.isDirectionRTL(context) ? 8 : 0,
+          right: AppUtils().isDirectionRTL(context) ? 0 : 8,
+          left: AppUtils().isDirectionRTL(context) ? 8 : 0,
         ),
         child: SvgPicture.asset(
           _imagePaths.icSelectedSB,
