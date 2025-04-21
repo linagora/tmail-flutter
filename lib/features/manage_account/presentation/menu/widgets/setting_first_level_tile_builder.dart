@@ -48,8 +48,8 @@ class SettingFirstLevelTileBuilder extends StatelessWidget {
                     children: [
                       Padding(
                         padding: EdgeInsets.only(
-                          right: AppUtils.isDirectionRTL(context) ? SettingsUtils.getHorizontalPadding(context, _responsiveUtils) : 0,
-                          left: AppUtils.isDirectionRTL(context) ? 0 : SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
+                          right: AppUtils().isDirectionRTL(context) ? SettingsUtils.getHorizontalPadding(context, _responsiveUtils) : 0,
+                          left: AppUtils().isDirectionRTL(context) ? 0 : SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
                         ),
                         child: _buildSettingIcon(context)),
                       Expanded(child: Padding(
@@ -71,8 +71,8 @@ class SettingFirstLevelTileBuilder extends StatelessWidget {
                   subtitle != null
                     ? Padding(
                         padding: EdgeInsets.only(
-                          left: AppUtils.isDirectionRTL(context) ? 12 : _getSubtitleLeftPadding(context),
-                          right: AppUtils.isDirectionRTL(context) ? _getSubtitleLeftPadding(context) : 12,
+                          left: AppUtils().isDirectionRTL(context) ? 12 : _getSubtitleLeftPadding(context),
+                          right: AppUtils().isDirectionRTL(context) ? _getSubtitleLeftPadding(context) : 12,
                           top: 12
                         ),
                         child: Text(
@@ -86,8 +86,8 @@ class SettingFirstLevelTileBuilder extends StatelessWidget {
               )),
               IconButton(
                padding: EdgeInsets.only(
-                 right: AppUtils.isDirectionRTL(context) ? 0 : SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
-                 left: AppUtils.isDirectionRTL(context) ? SettingsUtils.getHorizontalPadding(context, _responsiveUtils) : 0,
+                 right: AppUtils().isDirectionRTL(context) ? 0 : SettingsUtils.getHorizontalPadding(context, _responsiveUtils),
+                 left: AppUtils().isDirectionRTL(context) ? SettingsUtils.getHorizontalPadding(context, _responsiveUtils) : 0,
                ),
                icon: SvgPicture.asset(
                  DirectionUtils.isDirectionRTLByLanguage(context) ? _imagePath.icBack : _imagePath.icCollapseFolder,

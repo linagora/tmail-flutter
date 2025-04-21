@@ -70,7 +70,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
         return WebEditorWidget(
           editorController: editorController,
           content: currentWebContent ?? HtmlExtension.editorStartTags,
-          direction: AppUtils.getCurrentDirection(context),
+          direction: AppUtils().getCurrentDirection(context),
           onInitial: onInitial,
           onChangeContent: onChangeContent,
           onFocus: onFocus,
@@ -100,7 +100,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
           (failure) => WebEditorWidget(
             editorController: editorController,
             content: currentWebContent ?? HtmlExtension.editorStartTags,
-            direction: AppUtils.getCurrentDirection(context),
+            direction: AppUtils().getCurrentDirection(context),
             onInitial: onInitial,
             onChangeContent: onChangeContent,
             onFocus: onFocus,
@@ -132,7 +132,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
               return WebEditorWidget(
                 editorController: editorController,
                 content: currentWebContent ?? newContent,
-                direction: AppUtils.getCurrentDirection(context),
+                direction: AppUtils().getCurrentDirection(context),
                 onInitial: onInitial,
                 onChangeContent: onChangeContent,
                 onFocus: onFocus,
@@ -170,7 +170,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
             return WebEditorWidget(
               editorController: editorController,
               content: currentWebContent ?? emailContentQuoted,
-              direction: AppUtils.getCurrentDirection(context),
+              direction: AppUtils().getCurrentDirection(context),
               onInitial: onInitial,
               onChangeContent: onChangeContent,
               onFocus: onFocus,
@@ -203,7 +203,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
               return WebEditorWidget(
                 editorController: editorController,
                 content: currentWebContent ?? emailContentQuoted,
-                direction: AppUtils.getCurrentDirection(context),
+                direction: AppUtils().getCurrentDirection(context),
                 onInitial: onInitial,
                 onChangeContent: onChangeContent,
                 onFocus: onFocus,
@@ -226,7 +226,7 @@ class WebEditorView extends StatelessWidget with EditorViewMixin {
         return WebEditorWidget(
           editorController: editorController,
           content: currentWebContent ?? HtmlExtension.editorStartTags,
-          direction: AppUtils.getCurrentDirection(context),
+          direction: AppUtils().getCurrentDirection(context),
           onInitial: onInitial,
           onChangeContent: onChangeContent,
           onFocus: onFocus,

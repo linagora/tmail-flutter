@@ -33,7 +33,9 @@ Future<void> runTmail() async {
      MainBindings().dependencies(),
      HiveCacheConfig.instance.setUp(),
      Executor().warmUp(log: BuildUtils.isDebugMode),
-     AppUtils.loadEnvFile()
+     AppUtils().loadEnvFile(),
+     if (PlatformInfo.isWeb)
+      AppUtils().preloadHtmlEditorAssetForComposer(),
   ]);
   await HiveCacheConfig.instance.initializeEncryptionKey();
   

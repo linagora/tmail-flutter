@@ -35,7 +35,7 @@ class EmailSenderBuilder extends StatelessWidget {
               label: emailAddress.displayName,
               onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
               onLongPress: () {
-                AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
+                AppUtils().copyEmailAddressToClipboard(context, emailAddress.emailAddress);
               },
               borderRadius: 8,
               padding: const EdgeInsets.all(3),
@@ -51,7 +51,7 @@ class EmailSenderBuilder extends StatelessWidget {
               label: '<${emailAddress.emailAddress}>',
               onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
               onLongPress: () {
-                AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
+                AppUtils().copyEmailAddressToClipboard(context, emailAddress.emailAddress);
               },
               borderRadius: 8,
               padding: const EdgeInsets.all(3),

@@ -352,7 +352,7 @@ class _AutocompleteContactTextFieldWithTagsState extends State<AutocompleteConta
 
   bool _validateEmailAddressIsValid(EmailAddress emailAddress) {
     return GetUtils.isEmail(emailAddress.emailAddress)
-      || AppUtils.isEmailLocalhost(emailAddress.emailAddress);
+      || AppUtils().isEmailLocalhost(emailAddress.emailAddress);
   }
 
   void _validateEmailAddressSameDomain({

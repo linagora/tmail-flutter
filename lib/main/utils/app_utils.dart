@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:html_editor_enhanced/utils/html_editor_constants.dart';
+import 'package:html_editor_enhanced/utils/html_editor_utils.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/language_code_constants.dart';
@@ -11,28 +13,31 @@ import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AppUtils {
+  static AppUtils? _instance;
 
-  static const String envFileName = 'env.file';
+  AppUtils._();
 
-  static Future<void> loadEnvFile() async {
-    await dotenv.load(fileName: envFileName);
+  factory AppUtils() => _instance ??= AppUtils._();
+
+  Future<void> loadEnvFile() async {
+    await dotenv.load(fileName: AppConfig.envFileName);
     final mapEnvData = Map<String, String>.from(dotenv.env);
    try {
-     await AppUtils.loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
+     await _loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
    } catch (e) {
      logError('AppUtils::loadEnvFile:loadFcmConfigFileToEnv: Exception = $e');
-     await dotenv.load(fileName: envFileName);
+     await dotenv.load(fileName: AppConfig.envFileName);
    }
   }
 
-  static Future<void> loadFcmConfigFileToEnv({Map<String, String>? currentMapEnvData})  {
+  Future<void> _loadFcmConfigFileToEnv({Map<String, String>? currentMapEnvData})  {
     return dotenv.load(
       fileName: AppConfig.appFCMConfigurationPath,
       mergeWith: currentMapEnvData ?? {}
     );
   }
 
-  static Future<bool> launchLink(String url, {bool isNewTab = true}) async {
+  Future<bool> launchLink(String url, {bool isNewTab = true}) async {
     return await launchUrl(
       Uri.parse(url),
       webOnlyWindowName: isNewTab ? '_blank' : '_self',
@@ -40,17 +45,17 @@ class AppUtils {
     );
   }
 
-  static bool isDirectionRTL(BuildContext context) {
+  bool isDirectionRTL(BuildContext context) {
     return intl.Bidi.isRtlLanguage(Localizations.localeOf(context).languageCode);
   }
 
-  static TextDirection getCurrentDirection(BuildContext context) => Directionality.maybeOf(context) ?? TextDirection.ltr;
+  TextDirection getCurrentDirection(BuildContext context) => Directionality.maybeOf(context) ?? TextDirection.ltr;
 
-  static bool isEmailLocalhost(String email) {
+  bool isEmailLocalhost(String email) {
     return  RegExp(r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@localhost$').hasMatch(email);
   }
 
-  static void copyEmailAddressToClipboard(BuildContext context, String emailAddress) {
+  void copyEmailAddressToClipboard(BuildContext context, String emailAddress) {
     Clipboard.setData(ClipboardData(text: emailAddress)).then((_){
       if (!context.mounted) return;
       ScaffoldMessenger.maybeOf(context)?.showSnackBar(
@@ -59,7 +64,7 @@ class AppUtils {
     });
   }
 
-  static date_format.DateLocale getCurrentDateLocale() {
+  date_format.DateLocale getCurrentDateLocale() {
     final currentLanguageCode = Get.locale?.languageCode;
     if (currentLanguageCode == LanguageCodeConstants.french) {
       return const date_format.FrenchDateLocale();
@@ -80,9 +85,20 @@ class AppUtils {
     }
   }
 
-  static String getTimeZone() {
+  String getTimeZone() {
     final timeZoneOffset = DateTime.now().timeZoneOffset.inHours;
     final timeZoneOffsetAsString = timeZoneOffset >= 0 ? '+$timeZoneOffset' : '$timeZoneOffset';
     return 'GMT$timeZoneOffsetAsString';
+  }
+
+  Future<void> preloadHtmlEditorAssetForComposer() async {
+    try {
+      await HtmlEditorUtils().loadAssetAsString(HtmlEditorConstants.summernoteHtmlAssetPath);
+      await HtmlEditorUtils().loadAssetAsString(HtmlEditorConstants.jqueryAssetPath);
+      await HtmlEditorUtils().loadAssetAsString(HtmlEditorConstants.summernoteCSSAssetPath);
+      await HtmlEditorUtils().loadAssetAsString(HtmlEditorConstants.summernoteJSAssetPath);
+    } catch (e) {
+      logError('AppUtils::preloadHtmlEditorAssetForComposer:Exception = $e');
+    }
   }
 }

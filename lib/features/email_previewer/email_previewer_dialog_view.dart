@@ -72,7 +72,7 @@ class EmailPreviewerDialogView extends StatelessWidget {
                 child: IosHtmlContentViewerWidget(
                   contentHtml: emlPreviewer.content,
                   useDefaultFont: true,
-                  direction: AppUtils.getCurrentDirection(context),
+                  direction: AppUtils().getCurrentDirection(context),
                   onMailtoDelegateAction: onMailtoDelegateAction,
                   onPreviewEMLDelegateAction: onPreviewEMLDelegateAction,
                   onDownloadAttachmentDelegateAction: onDownloadAttachmentDelegateAction,
@@ -90,7 +90,7 @@ class EmailPreviewerDialogView extends StatelessWidget {
             contentHtml: emlPreviewer.content,
             initialWidth: context.width,
             useDefaultFont: true,
-            direction: AppUtils.getCurrentDirection(context),
+            direction: AppUtils().getCurrentDirection(context),
             onMailtoDelegateAction: onMailtoDelegateAction,
             onPreviewEMLDelegateAction: onPreviewEMLDelegateAction,
             onDownloadAttachmentDelegateAction: onDownloadAttachmentDelegateAction,

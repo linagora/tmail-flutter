@@ -508,7 +508,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
         initialText: initContent.isEmpty ? null : initContent,
         disableDragAndDrop: true,
         spellCheck: true,
-        customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context)),
+        customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils().getCurrentDirection(context)),
       ),
       htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
         toolbarType: html_editor_browser.ToolbarType.hide,
@@ -561,7 +561,7 @@ class IdentityCreatorView extends GetWidget<IdentityCreatorController>
       maxHeight: PlatformInfo.isIOS ? ConstantsUI.composerHtmlContentMaxHeight : null,
       addDefaultSelectionMenuItems: false,
       initialContent: initialContent ?? '',
-      customStyleCss: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context)),
+      customStyleCss: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils().getCurrentDirection(context)),
       onCreated: (editorApi) => controller.initRichTextForMobile(context, editorApi),
     );
   }

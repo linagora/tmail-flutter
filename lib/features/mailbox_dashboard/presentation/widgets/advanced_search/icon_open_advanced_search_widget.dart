@@ -21,15 +21,15 @@ class IconOpenAdvancedSearchWidget extends StatelessWidget {
     return Obx(
       () => Padding(
         padding: EdgeInsets.only(
-          right: AppUtils.isDirectionRTL(context) ? 0 : 8,
-          left: AppUtils.isDirectionRTL(context) ? 8 : 0,
+          right: AppUtils().isDirectionRTL(context) ? 0 : 8,
+          left: AppUtils().isDirectionRTL(context) ? 8 : 0,
         ),
         child: buildIconWeb(
             splashRadius: 15,
             minSize: 40,
             iconPadding: EdgeInsets.only(
-              right: AppUtils.isDirectionRTL(context) ? 0 : 2,
-              left: AppUtils.isDirectionRTL(context) ? 2 : 0,
+              right: AppUtils().isDirectionRTL(context) ? 0 : 2,
+              left: AppUtils().isDirectionRTL(context) ? 2 : 0,
             ),
             icon: SvgPicture.asset(_imagePaths.icFilterAdvanced,
                 colorFilter: searchController.isAdvancedSearchViewOpen.isTrue || searchController.advancedSearchIsActivated.isTrue

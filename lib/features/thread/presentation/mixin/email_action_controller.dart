@@ -323,7 +323,7 @@ mixin EmailActionController {
   }
 
   void openEmailInNewTabAction(PresentationEmail email) {
-    AppUtils.launchLink(email.routeWebAsString);
+    AppUtils().launchLink(email.routeWebAsString);
   }
 
   void archiveMessage(BuildContext context, PresentationEmail email) {

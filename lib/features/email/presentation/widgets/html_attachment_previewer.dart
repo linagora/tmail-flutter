@@ -130,7 +130,7 @@ class _HtmlAttachmentPreviewerState extends State<HtmlAttachmentPreviewer> {
           ),
           htmlViewOptions: HtmlViewOptions(
             contentClassName: 'tmail-content',
-            direction: AppUtils.getCurrentDirection(context),
+            direction: AppUtils().getCurrentDirection(context),
             mailtoDelegate: (uri) {
               popBack();
               widget.mailToClicked(uri);
@@ -141,7 +141,7 @@ class _HtmlAttachmentPreviewerState extends State<HtmlAttachmentPreviewer> {
       : HtmlContentViewer(
           contentHtml: widget.htmlContent,
           initialWidth: width,
-          direction: AppUtils.getCurrentDirection(context),
+          direction: AppUtils().getCurrentDirection(context),
           onMailtoDelegateAction: (uri) async {
             widget.mailToClicked(uri);
           },
