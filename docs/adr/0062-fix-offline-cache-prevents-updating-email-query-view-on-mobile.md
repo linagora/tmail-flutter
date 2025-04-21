@@ -1,4 +1,4 @@
-# 58. Fix offline cache prevents updating email query view on mobile
+# 62. Fix offline cache prevents updating email query view on mobile
 
 Date: 2025-04-03
 
