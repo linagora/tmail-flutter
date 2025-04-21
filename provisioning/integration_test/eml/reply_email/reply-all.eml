@@ -1,16 +1,19 @@
-Return-Path: <david@example.com>
+Return-Path: <emma@example.com>
 MIME-Version: 1.0
 References: <Mime4j.4c.b3b452d18f0d0ef9.192d67aaafc@example.com>
-Subject: David send Bob
-From: david@example.com
-To: "bob@example.com" <bob@example.com>
-Reply-To: david@example.com
-Date: Fri, 1 Nov 2024 07:13:50 +0000
+Subject: Reply all email
+From: emma@example.com
+To: "bob" <bob@example.com>
+Cc: "alice" <alice@example.com>
+Bcc: "brian" <brian@example.com>
+Reply-To: emma-reply-to@example.com
+Date: Tue, 17 Dec 2024 16:31:00 +0000
 Message-ID: <Mime4j.4e.728b2b72b23cc182.192d67ae03c@example.com>
 User-Agent: Twake-Mail/0.13.2 Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15;
  rv:131.0) Gecko/20100101 Firefox/131.0
 Content-Type: multipart/alternative;
  boundary="-=Part.4f.450e1cfbcd355387.192d67ae03d.c367d8042fea24dd=-"
+List-Post: <mailto:emma-reply-to-list@example.com>
 
 ---=Part.4f.450e1cfbcd355387.192d67ae03d.c367d8042fea24dd=-
 Content-Type: text/plain; charset=UTF-8
@@ -18,7 +21,7 @@ Content-Transfer-Encoding: quoted-printable
 Accept-Language: fr-FR, en-US, vi-VN, ru-RU, ar-TN, it-IT
 Content-Language: en-US
 
-Hello Bob.
+Reply all email
 
 Invite you in to a meeting: Event OPEN TECH TALK: INNOVATION FOR THE TWAKE WORKPLACE
 
