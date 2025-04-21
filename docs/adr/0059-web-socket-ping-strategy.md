@@ -1,4 +1,4 @@
-# 56. Web Socket Ping Strategy
+# 59. Web Socket Ping Strategy
 
 Date: 2024-12-16
 
