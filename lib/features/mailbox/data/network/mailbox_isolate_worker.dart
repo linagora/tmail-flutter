@@ -90,61 +90,57 @@ class MailboxIsolateWorker {
     await HiveCacheConfig.instance.setUp();
 
     List<EmailId> emailIdsCompleted = List.empty(growable: true);
-    try {
-      bool mailboxHasEmails = true;
-      UTCDate? lastReceivedDate;
-      EmailId? lastEmailId;
+    bool mailboxHasEmails = true;
+    UTCDate? lastReceivedDate;
+    EmailId? lastEmailId;
 
-      while (mailboxHasEmails) {
-        final emailResponse = await args.threadAPI
-            .getAllEmail(
-              args.session,
-              args.accountId,
-              limit: UnsignedInt(30),
-              filter: EmailFilterCondition(
-                    inMailbox: args.mailboxId,
-                    notKeyword: KeyWordIdentifier.emailSeen.value,
-                    before: lastReceivedDate),
-              sort: <Comparator>{}..add(
-                EmailComparator(EmailComparatorProperty.receivedAt)
-                  ..setIsAscending(false)),
-              properties: Properties({
-                  EmailProperty.id,
-                  EmailProperty.keywords,
-                  EmailProperty.receivedAt,
-                }))
-            .then((response) {
-              var listEmails = response.emailList;
-              if (listEmails != null && listEmails.isNotEmpty && lastEmailId != null) {
-                listEmails = listEmails
-                  .where((email) => email.id != lastEmailId)
-                  .toList();
-              }
-              return EmailsResponse(emailList: listEmails, state: response.state);
-            });
-        final listEmailUnread = emailResponse.emailList;
-
-        log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): listEmailUnread: ${listEmailUnread?.length}');
-
-        if (listEmailUnread == null || listEmailUnread.isEmpty) {
-          mailboxHasEmails = false;
-        } else {
-          lastEmailId = listEmailUnread.last.id;
-          lastReceivedDate = listEmailUnread.last.receivedAt;
-
-          final result = await args.emailAPI.markAsRead(
+    while (mailboxHasEmails) {
+      final emailResponse = await args.threadAPI
+          .getAllEmail(
             args.session,
             args.accountId,
-            listEmailUnread.listEmailIds,
-            ReadActions.markAsRead);
+            limit: UnsignedInt(30),
+            filter: EmailFilterCondition(
+                  inMailbox: args.mailboxId,
+                  notKeyword: KeyWordIdentifier.emailSeen.value,
+                  before: lastReceivedDate),
+            sort: <Comparator>{}..add(
+              EmailComparator(EmailComparatorProperty.receivedAt)
+                ..setIsAscending(false)),
+            properties: Properties({
+                EmailProperty.id,
+                EmailProperty.keywords,
+                EmailProperty.receivedAt,
+              }))
+          .then((response) {
+            var listEmails = response.emailList;
+            if (listEmails != null && listEmails.isNotEmpty && lastEmailId != null) {
+              listEmails = listEmails
+                .where((email) => email.id != lastEmailId)
+                .toList();
+            }
+            return EmailsResponse(emailList: listEmails, state: response.state);
+          });
+      final listEmailUnread = emailResponse.emailList;
 
-          log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): MARK_READ: ${result.emailIdsSuccess.length}');
-          emailIdsCompleted.addAll(result.emailIdsSuccess);
-          sendPort.send(emailIdsCompleted);
-        }
+      log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): listEmailUnread: ${listEmailUnread?.length}');
+
+      if (listEmailUnread == null || listEmailUnread.isEmpty) {
+        mailboxHasEmails = false;
+      } else {
+        lastEmailId = listEmailUnread.last.id;
+        lastReceivedDate = listEmailUnread.last.receivedAt;
+
+        final result = await args.emailAPI.markAsRead(
+          args.session,
+          args.accountId,
+          listEmailUnread.listEmailIds,
+          ReadActions.markAsRead);
+
+        log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): MARK_READ: ${result.emailIdsSuccess.length}');
+        emailIdsCompleted.addAll(result.emailIdsSuccess);
+        sendPort.send(emailIdsCompleted);
       }
-    } catch (e) {
-      log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): ERROR: $e');
     }
     log('MailboxIsolateWorker::_handleMarkAsMailboxRead(): TOTAL_READ: ${emailIdsCompleted.length}');
     return emailIdsCompleted;
@@ -158,65 +154,61 @@ class MailboxIsolateWorker {
     StreamController<Either<Failure, Success>> onProgressController
   ) async {
     List<EmailId> emailIdsCompleted = List.empty(growable: true);
-    try {
-      bool mailboxHasEmails = true;
-      UTCDate? lastReceivedDate;
-      EmailId? lastEmailId;
+    bool mailboxHasEmails = true;
+    UTCDate? lastReceivedDate;
+    EmailId? lastEmailId;
 
-      while (mailboxHasEmails) {
-        final emailResponse = await _threadApi
-            .getAllEmail(
-              session,
-              accountId,
-              limit: UnsignedInt(30),
-              filter: EmailFilterCondition(
-                inMailbox: mailboxId,
-                notKeyword: KeyWordIdentifier.emailSeen.value,
-                before: lastReceivedDate),
-              sort: <Comparator>{}..add(
-                    EmailComparator(EmailComparatorProperty.receivedAt)
-                      ..setIsAscending(false)),
-              properties: Properties({
-                  EmailProperty.id,
-                  EmailProperty.keywords,
-                  EmailProperty.receivedAt,
-              })
-            ).then((response) {
-              var listEmails = response.emailList;
-              if (listEmails != null && listEmails.isNotEmpty && lastEmailId != null) {
-                listEmails = listEmails
-                  .where((email) => email.id != lastEmailId)
-                  .toList();
-            }
-              return EmailsResponse(emailList: listEmails, state: response.state);
-            });
-        final listEmailUnread = emailResponse.emailList;
-
-        log('MailboxIsolateWorker::_handleMarkAsMailboxReadActionOnWeb(): listEmailUnread: ${listEmailUnread?.length}');
-
-        if (listEmailUnread == null || listEmailUnread.isEmpty) {
-          mailboxHasEmails = false;
-        } else {
-          lastEmailId = listEmailUnread.last.id;
-          lastReceivedDate = listEmailUnread.last.receivedAt;
-
-          final result = await _emailApi.markAsRead(
+    while (mailboxHasEmails) {
+      final emailResponse = await _threadApi
+          .getAllEmail(
             session,
             accountId,
-            listEmailUnread.listEmailIds,
-            ReadActions.markAsRead,
-          );
-          log('MailboxIsolateWorker::_handleMarkAsMailboxReadActionOnWeb(): MARK_READ: ${result.emailIdsSuccess.length}');
-          emailIdsCompleted.addAll(result.emailIdsSuccess);
+            limit: UnsignedInt(30),
+            filter: EmailFilterCondition(
+              inMailbox: mailboxId,
+              notKeyword: KeyWordIdentifier.emailSeen.value,
+              before: lastReceivedDate),
+            sort: <Comparator>{}..add(
+                  EmailComparator(EmailComparatorProperty.receivedAt)
+                    ..setIsAscending(false)),
+            properties: Properties({
+                EmailProperty.id,
+                EmailProperty.keywords,
+                EmailProperty.receivedAt,
+            })
+          ).then((response) {
+            var listEmails = response.emailList;
+            if (listEmails != null && listEmails.isNotEmpty && lastEmailId != null) {
+              listEmails = listEmails
+                .where((email) => email.id != lastEmailId)
+                .toList();
+          }
+            return EmailsResponse(emailList: listEmails, state: response.state);
+          });
+      final listEmailUnread = emailResponse.emailList;
 
-          onProgressController.add(Right(UpdatingMarkAsMailboxReadState(
-              mailboxId: mailboxId,
-              totalUnread: totalEmailUnread,
-              countRead: emailIdsCompleted.length)));
-        }
+      log('MailboxIsolateWorker::_handleMarkAsMailboxReadActionOnWeb(): listEmailUnread: ${listEmailUnread?.length}');
+
+      if (listEmailUnread == null || listEmailUnread.isEmpty) {
+        mailboxHasEmails = false;
+      } else {
+        lastEmailId = listEmailUnread.last.id;
+        lastReceivedDate = listEmailUnread.last.receivedAt;
+
+        final result = await _emailApi.markAsRead(
+          session,
+          accountId,
+          listEmailUnread.listEmailIds,
+          ReadActions.markAsRead,
+        );
+        log('MailboxIsolateWorker::_handleMarkAsMailboxReadActionOnWeb(): MARK_READ: ${result.emailIdsSuccess.length}');
+        emailIdsCompleted.addAll(result.emailIdsSuccess);
+
+        onProgressController.add(Right(UpdatingMarkAsMailboxReadState(
+            mailboxId: mailboxId,
+            totalUnread: totalEmailUnread,
+            countRead: emailIdsCompleted.length)));
       }
-    } catch (e) {
-      log('MailboxIsolateWorker::_handleMarkAsMailboxReadActionOnWeb(): ERROR: $e');
     }
     log('MailboxIsolateWorker::_handleMarkAsMailboxReadActionOnWeb(): TOTAL_READ: ${emailIdsCompleted.length}');
     return emailIdsCompleted;
