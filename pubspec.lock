@@ -1236,8 +1236,8 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: main
-      resolved-ref: ff9af2b54e89ddc4e1047e271632aaf92e16b116
+      ref: cache-asset-offline
+      resolved-ref: "90048a6580d2f9092e279e3fa4917572e322c089"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "3.1.6"
