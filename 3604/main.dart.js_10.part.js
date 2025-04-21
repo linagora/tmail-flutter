@@ -4222,7 +4222,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(t1);
       return A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).handleClickAvatarAction$2(this.context, position);
     },
-    $signature: 180
+    $signature: 174
   };
   C.ManageAccountDashBoardView_build_closure0.prototype = {
     call$0() {
@@ -5872,5 +5872,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_10", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "tGBXtRo56Z9VLMkngdjM28JV7lc=");
+})($__dart_deferred_initializers__, "Akt8tTr/lqEwY0GL6NJukF0BMdA=");
 ;
