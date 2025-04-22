@@ -1133,14 +1133,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     ListAttendeeExtension_withoutOrganizer_closure: function ListAttendeeExtension_withoutOrganizer_closure(t0) {
       this.organizer = t0;
     },
-    AttachmentItemWidget: function AttachmentItemWidget(t0, t1, t2, t3, t4, t5) {
+    AttachmentItemWidget: function AttachmentItemWidget(t0, t1, t2, t3, t4, t5, t6) {
       var _ = this;
       _.attachment = t0;
       _.downloadAttachmentAction = t1;
       _.viewAttachmentAction = t2;
-      _._attachment_item_widget$_imagePaths = t3;
-      _._attachment_item_widget$_responsiveUtils = t4;
-      _.key = t5;
+      _.singleEmailControllerTag = t3;
+      _._attachment_item_widget$_imagePaths = t4;
+      _._attachment_item_widget$_responsiveUtils = t5;
+      _.key = t6;
     },
     AttachmentItemWidget_build_closure: function AttachmentItemWidget_build_closure(t0, t1) {
       this.$this = t0;
@@ -1325,14 +1326,15 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.onTap = t0;
       this.key = t1;
     },
-    DraggableAttachmentItemWidget: function DraggableAttachmentItemWidget(t0, t1, t2, t3, t4, t5) {
+    DraggableAttachmentItemWidget: function DraggableAttachmentItemWidget(t0, t1, t2, t3, t4, t5, t6) {
       var _ = this;
       _.attachment = t0;
       _.onDragStarted = t1;
       _.onDragEnd = t2;
       _.downloadAttachmentAction = t3;
       _.viewAttachmentAction = t4;
-      _.key = t5;
+      _.singleEmailControllerTag = t5;
+      _.key = t6;
     },
     EmailActionCupertinoActionSheetActionBuilder: function EmailActionCupertinoActionSheetActionBuilder(t0, t1, t2, t3, t4) {
       var _ = this;
@@ -1346,7 +1348,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     EmailActionCupertinoActionSheetActionBuilder_build_closure: function EmailActionCupertinoActionSheetActionBuilder_build_closure(t0) {
       this.$this = t0;
     },
-    EmailAttachmentsWidget: function EmailAttachmentsWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) {
+    EmailAttachmentsWidget: function EmailAttachmentsWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) {
       var _ = this;
       _.attachments = t0;
       _.onDragStarted = t1;
@@ -1358,7 +1360,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.onTapShowAllAttachmentFile = t7;
       _.showDownloadAllAttachmentsButton = t8;
       _.onTapDownloadAllButton = t9;
-      _.key = t10;
+      _.singleEmailControllerTag = t10;
+      _.key = t11;
     },
     EmailAttachmentsWidget_build_closure: function EmailAttachmentsWidget_build_closure(t0) {
       this.$this = t0;
@@ -6134,7 +6137,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = $.GetInstance__getInstance;
       if (t4 == null)
         t4 = $.GetInstance__getInstance = B.C_GetInstance;
-      return A.Draggable$(new C.AttachmentItemWidget(t1, _this.downloadAttachmentAction, _this.viewAttachmentAction, t2, t4.find$1$1$tag(0, _null, type$.ResponsiveUtils), _null), _null, t1, A.drag_target__childDragAnchorStrategy$closure(), new C.FeedbackDraggableAttachmentItemWidget(t1, t3, _null), _this.onDragEnd, _this.onDragStarted, _null, type$.Attachment);
+      return A.Draggable$(new C.AttachmentItemWidget(t1, _this.downloadAttachmentAction, _this.viewAttachmentAction, _this.singleEmailControllerTag, t2, t4.find$1$1$tag(0, _null, type$.ResponsiveUtils), _null), _null, t1, A.drag_target__childDragAnchorStrategy$closure(), new C.FeedbackDraggableAttachmentItemWidget(t1, t3, _null), _this.onDragEnd, _this.onDragStarted, _null, type$.Attachment);
     }
   };
   C.EmailActionCupertinoActionSheetActionBuilder.prototype = {
@@ -10853,7 +10856,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Expando__checkType(t1);
         t2 = t3._as(t2.get(t1));
         t2 = t2.isDownloadAllSupported$0() && J.get$length$asx(t2.attachments.get$value(0)) > 1;
-        return new C.EmailAttachmentsWidget(t5, t7.get$enableAttachmentDraggableApp(), new C.EmailView__buildEmailMessage__closure1(t1), new C.EmailView__buildEmailMessage__closure2(t1, t8), new C.EmailView__buildEmailMessage__closure3(t1, t8), t4, t6, new C.EmailView__buildEmailMessage__closure4(t1, t8), t2, new C.EmailView__buildEmailMessage__closure5(t1, t8), null);
+        return new C.EmailAttachmentsWidget(t5, t7.get$enableAttachmentDraggableApp(), new C.EmailView__buildEmailMessage__closure1(t1), new C.EmailView__buildEmailMessage__closure2(t1, t8), new C.EmailView__buildEmailMessage__closure3(t1, t8), t4, t6, new C.EmailView__buildEmailMessage__closure4(t1, t8), t2, new C.EmailView__buildEmailMessage__closure5(t1, t8), t1.get$tag(0), null);
       } else
         return B.SizedBox_0_0_null_null;
     },
@@ -11123,13 +11126,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.AttachmentItemWidget_build_closure.prototype = {
     call$0() {
-      var t1, attachmentsViewState, t2, t3, isLoading, t4, t5, t6, t7, _null = null;
+      var t1, t2, attachmentsViewState, t3, isLoading, t4, t5, t6, t7, _null = null;
       $.$get$Get();
-      t1 = $.GetInstance__getInstance;
-      if (t1 == null)
-        t1 = $.GetInstance__getInstance = B.C_GetInstance;
-      attachmentsViewState = t1.find$1$1$tag(0, _null, type$.SingleEmailController).attachmentsViewState;
       t1 = this.$this;
+      t2 = $.GetInstance__getInstance;
+      if (t2 == null)
+        t2 = $.GetInstance__getInstance = B.C_GetInstance;
+      attachmentsViewState = t2.find$1$1$tag(0, t1.singleEmailControllerTag, type$.SingleEmailController).attachmentsViewState;
       t2 = t1.attachment;
       t3 = t2.blobId;
       isLoading = t3 != null && !A.EmailUtils_checkingIfAttachmentActionIsEnabled(J.$index$asx(attachmentsViewState.get$value(0), attachmentsViewState.$ti._precomputed1._as(t3)));
@@ -11360,7 +11363,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   C.EmailAttachmentsWidget_build__closure.prototype = {
     call$1(attachment) {
       var t1 = this.$this;
-      return new C.DraggableAttachmentItemWidget(attachment, t1.onDragStarted, t1.onDragEnd, t1.downloadAttachmentAction, t1.viewAttachmentAction, null);
+      return new C.DraggableAttachmentItemWidget(attachment, t1.onDragStarted, t1.onDragEnd, t1.downloadAttachmentAction, t1.viewAttachmentAction, t1.singleEmailControllerTag, null);
     },
     $signature: 1817
   };
@@ -16786,5 +16789,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "KOfxhZAmw42f29oZNYxGJgJc4cY=");
+})($__dart_deferred_initializers__, "Ec1pJdEIbm+XY94ABD45A40Ewfs=");
 ;
