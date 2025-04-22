@@ -17,6 +17,7 @@ extension EmailExtension on Email {
       references: references,
       inlineImages: allAttachments.listAttachmentsDisplayedInContent,
       sMimeStatusHeader: sMimeStatusHeader,
+      identityHeader: identityHeader,
     );
   }
 }

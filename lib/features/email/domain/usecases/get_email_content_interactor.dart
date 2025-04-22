@@ -182,6 +182,7 @@ class GetEmailContentInteractor {
         emailCurrent: emailCache.copyWith(
           headers: detailedEmail.headers,
           sMimeStatusHeader: detailedEmail.sMimeStatusHeader,
+          identityHeader: detailedEmail.identityHeader,
         )
       ));
     } catch (e) {
