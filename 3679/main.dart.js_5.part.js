@@ -1433,21 +1433,21 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.presentationEmail = t0;
       this.key = t1;
     },
-    EmailViewAppBarWidget: function EmailViewAppBarWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11, t12) {
+    EmailViewAppBarWidget: function EmailViewAppBarWidget(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) {
       var _ = this;
       _._email_view_app_bar_widget$_imagePaths = t0;
       _._email_view_app_bar_widget$_responsiveUtils = t1;
-      _._singleEmailController = t2;
-      _.presentationEmail = t3;
-      _.optionsWidget = t4;
-      _.mailboxContain = t5;
-      _.isSearchActivated = t6;
-      _.onBackAction = t7;
-      _.onEmailActionClick = t8;
-      _.onMoreActionClick = t9;
-      _.supportBackAction = t10;
-      _.appBarDecoration = t11;
-      _.key = t12;
+      _.__EmailViewAppBarWidget__singleEmailController_FI = $;
+      _.presentationEmail = t2;
+      _.optionsWidget = t3;
+      _.mailboxContain = t4;
+      _.isSearchActivated = t5;
+      _.onBackAction = t6;
+      _.onEmailActionClick = t7;
+      _.onMoreActionClick = t8;
+      _.supportBackAction = t9;
+      _.appBarDecoration = t10;
+      _.key = t11;
     },
     EmailViewAppBarWidget_build_closure: function EmailViewAppBarWidget_build_closure(t0) {
       this.$this = t0;
@@ -10596,11 +10596,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t10 = $.GetInstance__getInstance;
       if (t10 == null)
         t10 = $.GetInstance__getInstance = B.C_GetInstance;
-      t10 = t10.find$1$1$tag(0, _null, type$.ResponsiveUtils);
-      t11 = $.GetInstance__getInstance;
-      if (t11 == null)
-        t11 = $.GetInstance__getInstance = B.C_GetInstance;
-      return new C.EmailViewAppBarWidget(t9, t10, t11.find$1$1$tag(0, _null, type$.SingleEmailController), t1, t3, t5, t6, new C.EmailView_build___closure0(t2, t7), new C.EmailView_build___closure1(t2, t7), new C.EmailView_build___closure2(t2, t7), t4 == null, t8, D.ValueKey_email_view_app_bar_widget);
+      return new C.EmailViewAppBarWidget(t9, t10.find$1$1$tag(0, _null, type$.ResponsiveUtils), t1, t3, t5, t6, new C.EmailView_build___closure0(t2, t7), new C.EmailView_build___closure1(t2, t7), new C.EmailView_build___closure2(t2, t7), t4 == null, t8, D.ValueKey_email_view_app_bar_widget);
     },
     $signature: typesOffset + 23
   };
@@ -11532,9 +11528,22 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.EmailViewAppBarWidget_build__closure1.prototype = {
     call$0() {
-      var _null = null,
+      var t2, t3, result, _null = null,
         t1 = this.$this,
-        t2 = t1._singleEmailController.currentEmailLoaded.get$value(0);
+        value = t1.__EmailViewAppBarWidget__singleEmailController_FI;
+      if (value === $) {
+        $.$get$Get();
+        t2 = t1.presentationEmail.id;
+        t2 = t2 == null ? _null : t2.id.value;
+        t3 = $.GetInstance__getInstance;
+        if (t3 == null)
+          t3 = $.GetInstance__getInstance = B.C_GetInstance;
+        result = t3.find$1$1$tag(0, t2, type$.SingleEmailController);
+        t1.__EmailViewAppBarWidget__singleEmailController_FI !== $ && A.throwUnnamedLateFieldADI();
+        t1.__EmailViewAppBarWidget__singleEmailController_FI = result;
+        value = result;
+      }
+      t2 = value.currentEmailLoaded.get$value(0);
       A.Localizations_of(this.context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       return A.AbsorbPointer$(t2 == null, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_printer.svg", B.Color_4283787389, 20, _null, _null, 1 / 0, _null, new C.EmailViewAppBarWidget_build___closure(t1), _null, A.Intl__message("Print all", _null, "printAll", _null, _null)));
     },
@@ -16789,5 +16798,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "Ec1pJdEIbm+XY94ABD45A40Ewfs=");
+})($__dart_deferred_initializers__, "GzSjp+YN19wFZAkIoHUtUeTiE/I=");
 ;
