@@ -144,6 +144,7 @@ extension EmailExtension on Email {
       bcc: updatedProperties.contain(EmailProperty.bcc) ? newEmail.bcc : bcc,
       replyTo: updatedProperties.contain(EmailProperty.replyTo) ? newEmail.replyTo : replyTo,
       mailboxIds: updatedProperties.contain(EmailProperty.mailboxIds) ? newEmail.mailboxIds : mailboxIds,
+      threadId: updatedProperties.contain(EmailProperty.threadId) ? newEmail.threadId : threadId,
       headerCalendarEvent: updatedProperties.contain(IndividualHeaderIdentifier.headerCalendarEvent.value) ? newEmail.headerCalendarEvent : headerCalendarEvent,
       xPriorityHeader: updatedProperties.contain(IndividualHeaderIdentifier.xPriorityHeader.value)
         ? newEmail.xPriorityHeader
