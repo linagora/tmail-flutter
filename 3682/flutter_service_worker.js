@@ -331,10 +331,10 @@ const RESOURCES = {"canvaskit/skwasm.js": "694fda5704053957c2594de355805228",
 "i18n/translater.js": "f53aedbd356b679a27a6b0e8e952fb81",
 "i18n/de.json": "51dbc51266ea792eac5f1c8abd8d7b9e",
 "i18n/en.json": "e0bf88bb60efa34f25f4aec02e17cfee",
-"version.json": "fb70bb46525a89ebb7a75f244eaec0ba",
+"version.json": "6f84a0f41c08edf0b258acda52ba34d4",
 "flutter.js": "f393d3c16b631f36852323de8e583132",
 "favicon.svg": "1734d2c8d930abd57ebba9c158506714",
-"main.dart.js": "2364c2b40b3f14aee3dba461776021b7",
+"main.dart.js": "2d97ee3943fcb95cbfcf613b1e1354c5",
 "main.dart.js_2.part.js": "d4a659597a8a908543772fbfb14cc55f",
 "main.dart.js_4.part.js": "16fc7c3fcc741be278d4945bbb833a74",
 "main.dart.js_3.part.js": "067da2217eb02cec7dd9457fb00f0b6d",
@@ -361,7 +361,7 @@ const RESOURCES = {"canvaskit/skwasm.js": "694fda5704053957c2594de355805228",
 "login-callback.html": "e17f83d4982ea3cce6e692b31c4b4beb",
 "logout-callback.html": "999326dc9a0f37c9a9a4280b4a35dc51",
 "main.dart.js_1.part.js": "3369ae3a5886f2a833345949d9a01e21",
-"flutter_bootstrap.js": "e7b416681518848434a8e95403cd132d"};
+"flutter_bootstrap.js": "5f734f436466bc891a6fc8ac396b33db"};
 // The application shell files that are downloaded before a service worker can
 // start.
 const CORE = ["main.dart.js",
