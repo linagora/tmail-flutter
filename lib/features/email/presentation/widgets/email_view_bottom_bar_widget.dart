@@ -21,6 +21,7 @@ class EmailViewBottomBarWidget extends StatelessWidget {
   final EmailLoaded emailLoaded;
   final String userName;
   final OnEmailActionCallback emailActionCallback;
+  final BoxDecoration? bottomBarDecoration;
 
   const EmailViewBottomBarWidget({
     Key? key,
@@ -30,6 +31,7 @@ class EmailViewBottomBarWidget extends StatelessWidget {
     required this.emailLoaded,
     required this.userName,
     required this.emailActionCallback,
+    this.bottomBarDecoration,
   }) : super(key: key);
 
   @override
@@ -40,7 +42,7 @@ class EmailViewBottomBarWidget extends StatelessWidget {
     );
 
     return Container(
-      decoration: const BoxDecoration(
+      decoration: bottomBarDecoration ?? const BoxDecoration(
         border: Border(
           top: BorderSide(
             color: EmailViewBottomBarWidgetStyles.topBorderColor,

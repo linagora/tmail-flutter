@@ -42,6 +42,7 @@ import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete_all_spam_emails_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_empty_trash_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_web_widget.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
@@ -139,6 +140,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                               return _buildThreadViewForWebDesktop(context);
                             case DashboardRoutes.emailDetailed:
                               return const EmailView();
+                            case DashboardRoutes.threadDetailed:
+                              return const ThreadDetailView();
                             default:
                               return const SizedBox.shrink();
                           }

@@ -163,6 +163,8 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_e
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/model/thread_detail_arguments.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_bindings.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
 import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
@@ -808,8 +810,12 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void openEmailDetailedView(PresentationEmail presentationEmail) {
-    setSelectedEmail(presentationEmail);
-    dispatchRoute(DashboardRoutes.emailDetailed);
+    // setSelectedEmail(presentationEmail);
+    // dispatchRoute(DashboardRoutes.emailDetailed);
+    ThreadDetailBindings(threadDetailArguments: ThreadDetailArguments(
+      threadId: presentationEmail.threadId!,
+    )).dependencies();
+    dispatchRoute(DashboardRoutes.threadDetailed);
     if (PlatformInfo.isWeb && presentationEmail.routeWeb != null) {
       RouteUtils.replaceBrowserHistory(
         title: 'Email-${presentationEmail.id?.id.value ?? ''}',
