@@ -64,6 +64,7 @@ class ThreadConstants {
     EmailProperty.attachments,
     EmailProperty.headers,
     IndividualHeaderIdentifier.sMimeStatusHeader.value,
+    IndividualHeaderIdentifier.identityHeader.value,
   });
 
   static final propertiesCalendarEvent = Properties({

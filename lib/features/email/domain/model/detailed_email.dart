@@ -17,6 +17,7 @@ class DetailedEmail with EquatableMixin {
   final MessageIdsHeaderValue? references;
   final List<Attachment>? inlineImages;
   final Map<IndividualHeaderIdentifier, String?>? sMimeStatusHeader;
+  final Map<IndividualHeaderIdentifier, String?>? identityHeader;
 
   DetailedEmail({
     required this.emailId,
@@ -30,6 +31,7 @@ class DetailedEmail with EquatableMixin {
     this.references,
     this.inlineImages,
     this.sMimeStatusHeader,
+    this.identityHeader,
   });
 
   @override
@@ -45,5 +47,6 @@ class DetailedEmail with EquatableMixin {
     references,
     inlineImages,
     sMimeStatusHeader,
+    identityHeader,
   ];
 }

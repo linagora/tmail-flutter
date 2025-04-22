@@ -86,6 +86,9 @@ extension SetupEmailContentExtension on ComposerController {
             setupEmailRequestReadReceiptFlagForEditDraft(
               uiState.emailCurrent.hasRequestReadReceipt,
             );
+            setupSelectedIdentityForEditDraft(
+              uiState.emailCurrent.identityIdFromHeader,
+            );
           }
 
           emailContentsViewState.value = Right(uiState);

@@ -21,6 +21,7 @@ extension DetailedEmailExtension on DetailedEmail {
       references: references?.ids.toList(),
       inlineImages: inlineImages?.toHiveCache(),
       sMimeStatusHeader: sMimeStatusHeader?.toMapString(),
+      identityHeader: identityHeader?.toMapString(),
     );
   }
 
@@ -40,7 +41,8 @@ extension DetailedEmailExtension on DetailedEmail {
       messageId: messageId,
       references: references,
       inlineImages: inlineImages,
-      sMimeStatusHeader: sMimeStatusHeader
+      sMimeStatusHeader: sMimeStatusHeader,
+      identityHeader: identityHeader,
     );
   }
 }
