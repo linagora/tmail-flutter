@@ -8,6 +8,7 @@ import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_status.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/load_more_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread_detail_load_more_circle.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -82,6 +83,8 @@ class _ThreadDetailViewState extends State<ThreadDetailView> {
                         Get.delete<SingleEmailController>(tag: tag);
                         Get.delete<EmailSupervisorController>(tag: tag);
                       }
+    
+                      Get.delete<ThreadDetailController>();
                     },
                     mailboxContain: controller
                       .mailboxDashBoardController
@@ -114,10 +117,9 @@ class _ThreadDetailViewState extends State<ThreadDetailView> {
 
               return ThreadDetailLoadMoreCircle(
                 count: controller.emailsNotLoadedCount,
-                onTap: () {
-                  
-                },
+                onTap: controller.loadMoreThreadDetailEmails,
                 imagePaths: controller.imagePaths,
+                isLoading: controller.loadingThreadDetail,
               );
             }
     

@@ -37,6 +37,11 @@ class ThreadDetailController extends BaseController {
   Session? get session => mailboxDashBoardController.sessionCurrent;
   int get emailsNotLoadedCount => emailIds.length -
     emailIdsPresentation.values.whereNotNull().length;
+  bool get loadingThreadDetail => viewState.value.fold(
+    (failure) => false,
+    (success) => success is GettingEmailIdsByThreadId
+      || success is GettingEmailsByIds,
+  );
 
   @override
   void onInit() {

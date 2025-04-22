@@ -9,11 +9,13 @@ class ThreadDetailLoadMoreCircle extends StatefulWidget {
     required this.count,
     required this.onTap,
     required this.imagePaths,
+    required this.isLoading,
   });
 
   final int count;
   final VoidCallback onTap;
   final ImagePaths imagePaths;
+  final bool isLoading;
 
   @override
   State<ThreadDetailLoadMoreCircle> createState() => _ThreadDetailLoadMoreCircleState();
@@ -21,6 +23,12 @@ class ThreadDetailLoadMoreCircle extends StatefulWidget {
 
 class _ThreadDetailLoadMoreCircleState extends State<ThreadDetailLoadMoreCircle> {
   final _isHover = ValueNotifier(false);
+
+  @override
+  void dispose() {
+    _isHover.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +64,16 @@ class _ThreadDetailLoadMoreCircleState extends State<ThreadDetailLoadMoreCircle>
               child: ValueListenableBuilder(
                 valueListenable: _isHover,
                 builder: (context, isHover, child) {
+                  if (widget.isLoading) {
+                    return const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: AppColor.tertiaryB8C1CC,
+                      ),
+                    );
+                  }
+
                   if (isHover) {
                     return child ?? const SizedBox.shrink();
                   }
