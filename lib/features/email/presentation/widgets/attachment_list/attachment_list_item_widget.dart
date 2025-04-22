@@ -19,6 +19,7 @@ class AttachmentListItemWidget extends StatelessWidget {
   final Attachment attachment;
   final OnDownloadAttachmentFileAction? downloadAttachmentAction;
   final OnViewAttachmentFileAction? viewAttachmentAction;
+  final String? singleEmailControllerTag;
 
   final _imagePaths = Get.find<ImagePaths>();
 
@@ -27,13 +28,14 @@ class AttachmentListItemWidget extends StatelessWidget {
     required this.attachment,
     this.downloadAttachmentAction,
     this.viewAttachmentAction,
+    this.singleEmailControllerTag,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Obx(
       () {
-        final controller = Get.find<SingleEmailController>();
+        final controller = Get.find<SingleEmailController>(tag: singleEmailControllerTag);
         final attachmentsViewState = controller.attachmentsViewState;
         bool isLoading = false;
         if (attachment.blobId != null) {

@@ -1930,8 +1930,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void openAttachmentList(BuildContext context, List<Attachment> attachments) {
+    final tag = initialEmail?.id?.id.value;
     if (responsiveUtils.isMobile(context)) {
-      (AttachmentListBottomSheetBuilder(context, attachments, imagePaths, _attachmentListScrollController)
+      (AttachmentListBottomSheetBuilder(context, attachments, imagePaths, _attachmentListScrollController, tag)
         ..onCloseButtonAction(() => popBack())
         ..onDownloadAttachmentFileAction((attachment) => handleDownloadAttachmentAction(context, attachment))
         ..onViewAttachmentFileAction((attachment) => handleViewAttachmentAction(context, attachment))
@@ -1955,6 +1956,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             onDownloadAllButtonAction: isDownloadAllSupported()
               ? () => downloadAllAttachmentsForWeb('TwakeMail-${DateTime.now()}')
               : null,
+            singleEmailControllerTag: tag,
           )
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,

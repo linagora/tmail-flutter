@@ -19,7 +19,9 @@ typedef OnMoreActionClick = void Function(PresentationEmail, RelativeRect?);
 class EmailViewAppBarWidget extends StatelessWidget {
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _singleEmailController = Get.find<SingleEmailController>();
+  late final _singleEmailController = Get.find<SingleEmailController>(
+    tag: presentationEmail.id?.id.value,
+  );
 
   final PresentationEmail presentationEmail;
   final List<Widget>? optionsWidget;
