@@ -483,7 +483,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
             cacheHTMLAssetOffline: true,
             initialText: controller.vacationMessageHtmlText,
             spellCheck: true,
-            customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils().getCurrentDirection(context))
+            customBodyCssStyle: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context))
           ),
           htmlToolbarOptions: const html_editor_browser.HtmlToolbarOptions(
               toolbarType: html_editor_browser.ToolbarType.hide,
@@ -509,7 +509,7 @@ class VacationView extends GetWidget<VacationController> with RichTextButtonMixi
           maxHeight: PlatformInfo.isIOS ? ConstantsUI.composerHtmlContentMaxHeight : null,
           addDefaultSelectionMenuItems: false,
           initialContent: controller.vacationMessageHtmlText ?? '',
-          customStyleCss: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils().getCurrentDirection(context)),
+          customStyleCss: HtmlUtils.customCssStyleHtmlEditor(direction: AppUtils.getCurrentDirection(context)),
           onCreated: (editorApi) => controller.initRichTextForMobile(context, editorApi)
       );
     }

@@ -19,7 +19,7 @@ class HyperLinkWidget extends StatelessWidget {
           fontSize: HyperLinkWidgetStyles.textSize,
           decoration: TextDecoration.underline
         ),
-        recognizer: TapGestureRecognizer()..onTap = () => AppUtils().launchLink(urlString)
+        recognizer: TapGestureRecognizer()..onTap = () => AppUtils.launchLink(urlString)
       )
     );
   }

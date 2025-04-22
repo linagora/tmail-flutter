@@ -44,10 +44,10 @@ class _AppGridDashboardIconState extends State<AppGridDashboardIcon> {
           ),
           child: PortalTarget(
             anchor: Aligned(
-              follower: AppUtils().isDirectionRTL(context)
+              follower: AppUtils.isDirectionRTL(context)
                 ? Alignment.topLeft
                 : Alignment.topRight,
-              target: AppUtils().isDirectionRTL(context)
+              target: AppUtils.isDirectionRTL(context)
                 ? Alignment.bottomLeft
                 : Alignment.bottomRight,
             ),

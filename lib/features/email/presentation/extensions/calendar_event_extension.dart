@@ -203,7 +203,7 @@ extension CalendarEventExtension on CalendarEvent {
       return date_format.formatDate(
         localStartDate!,
         [date_format.M],
-        locale: AppUtils().getCurrentDateLocale()
+        locale: AppUtils.getCurrentDateLocale()
       );
     } else {
       return '';
@@ -215,7 +215,7 @@ extension CalendarEventExtension on CalendarEvent {
       return date_format.formatDate(
         localStartDate!,
         [date_format.d],
-        locale: AppUtils().getCurrentDateLocale()
+        locale: AppUtils.getCurrentDateLocale()
       );
     } else {
       return '';
@@ -227,7 +227,7 @@ extension CalendarEventExtension on CalendarEvent {
       return date_format.formatDate(
         localStartDate!,
         [date_format.D],
-        locale: AppUtils().getCurrentDateLocale()
+        locale: AppUtils.getCurrentDateLocale()
       );
     } else {
       return '';

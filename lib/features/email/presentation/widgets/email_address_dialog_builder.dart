@@ -91,7 +91,7 @@ class EmailAddressDialogBuilder extends StatelessWidget {
               child: InkWell(
                 onTap: () {},
                 onLongPress: () {
-                  AppUtils().copyEmailAddressToClipboard(context, _emailAddress.emailAddress);
+                  AppUtils.copyEmailAddressToClipboard(context, _emailAddress.emailAddress);
                 },
                 borderRadius: const BorderRadius.all(Radius.circular(8)),
                 child: Padding(

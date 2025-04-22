@@ -114,7 +114,7 @@ class EmailAddressBottomSheetBuilder {
                     child: InkWell(
                       onTap: () {},
                       onLongPress: () {
-                        AppUtils().copyEmailAddressToClipboard(_context, _emailAddress.emailAddress);
+                        AppUtils.copyEmailAddressToClipboard(_context, _emailAddress.emailAddress);
                       },
                       borderRadius: const BorderRadius.all(Radius.circular(8)),
                       child: Padding(

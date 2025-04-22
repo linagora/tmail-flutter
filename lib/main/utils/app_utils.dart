@@ -11,31 +11,27 @@ import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AppUtils {
-  static AppUtils? _instance;
+  const AppUtils._();
 
-  AppUtils._();
-
-  factory AppUtils() => _instance ??= AppUtils._();
-
-  Future<void> loadEnvFile() async {
+  static Future<void> loadEnvFile() async {
     await dotenv.load(fileName: AppConfig.envFileName);
     final mapEnvData = Map<String, String>.from(dotenv.env);
    try {
-     await _loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
+     await loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
    } catch (e) {
      logError('AppUtils::loadEnvFile:loadFcmConfigFileToEnv: Exception = $e');
      await dotenv.load(fileName: AppConfig.envFileName);
    }
   }
 
-  Future<void> _loadFcmConfigFileToEnv({Map<String, String>? currentMapEnvData})  {
+  static Future<void> loadFcmConfigFileToEnv({Map<String, String>? currentMapEnvData})  {
     return dotenv.load(
       fileName: AppConfig.appFCMConfigurationPath,
       mergeWith: currentMapEnvData ?? {}
     );
   }
 
-  Future<bool> launchLink(String url, {bool isNewTab = true}) async {
+  static Future<bool> launchLink(String url, {bool isNewTab = true}) async {
     return await launchUrl(
       Uri.parse(url),
       webOnlyWindowName: isNewTab ? '_blank' : '_self',
@@ -43,17 +39,17 @@ class AppUtils {
     );
   }
 
-  bool isDirectionRTL(BuildContext context) {
+  static bool isDirectionRTL(BuildContext context) {
     return intl.Bidi.isRtlLanguage(Localizations.localeOf(context).languageCode);
   }
 
-  TextDirection getCurrentDirection(BuildContext context) => Directionality.maybeOf(context) ?? TextDirection.ltr;
+  static TextDirection getCurrentDirection(BuildContext context) => Directionality.maybeOf(context) ?? TextDirection.ltr;
 
-  bool isEmailLocalhost(String email) {
+  static bool isEmailLocalhost(String email) {
     return  RegExp(r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@localhost$').hasMatch(email);
   }
 
-  void copyEmailAddressToClipboard(BuildContext context, String emailAddress) {
+  static void copyEmailAddressToClipboard(BuildContext context, String emailAddress) {
     Clipboard.setData(ClipboardData(text: emailAddress)).then((_){
       if (!context.mounted) return;
       ScaffoldMessenger.maybeOf(context)?.showSnackBar(
@@ -62,7 +58,7 @@ class AppUtils {
     });
   }
 
-  date_format.DateLocale getCurrentDateLocale() {
+  static date_format.DateLocale getCurrentDateLocale() {
     final currentLanguageCode = Get.locale?.languageCode;
     if (currentLanguageCode == LanguageCodeConstants.french) {
       return const date_format.FrenchDateLocale();
@@ -83,7 +79,7 @@ class AppUtils {
     }
   }
 
-  String getTimeZone() {
+  static String getTimeZone() {
     final timeZoneOffset = DateTime.now().timeZoneOffset.inHours;
     final timeZoneOffsetAsString = timeZoneOffset >= 0 ? '+$timeZoneOffset' : '$timeZoneOffset';
     return 'GMT$timeZoneOffsetAsString';

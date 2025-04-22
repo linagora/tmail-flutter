@@ -590,8 +590,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
             children: [
               Padding(
                 padding: EdgeInsets.only(
-                  left: AppUtils().isDirectionRTL(context) ? 0 : 5,
-                  right: AppUtils().isDirectionRTL(context) ? 5 : 0,
+                  left: AppUtils.isDirectionRTL(context) ? 0 : 5,
+                  right: AppUtils.isDirectionRTL(context) ? 5 : 0,
                 ),
                 child: buildIconWeb(
                   icon: SvgPicture.asset(

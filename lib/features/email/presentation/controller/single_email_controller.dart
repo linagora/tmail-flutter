@@ -1540,7 +1540,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void copyEmailAddress(BuildContext context, EmailAddress emailAddress) {
     popBack();
-    AppUtils().copyEmailAddressToClipboard(context, emailAddress.emailAddress);
+    AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
   }
 
   void composeEmailFromEmailAddress(EmailAddress emailAddress) {
@@ -1906,7 +1906,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void openNewTabAction(String link) {
-    AppUtils().launchLink(link);
+    AppUtils.launchLink(link);
   }
 
   void openNewComposerAction(String mailTo) {
@@ -1991,7 +1991,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }) {
     log('SingleEmailController::_handleUnsubscribeMailByHttpsLink:httpLinks: $httpLinks');
     mailboxDashBoardController.unsubscribeMail(emailId);
-    AppUtils().launchLink(httpLinks.first);
+    AppUtils.launchLink(httpLinks.first);
   }
 
   void _handleUnsubscribeMailByMailtoLink({

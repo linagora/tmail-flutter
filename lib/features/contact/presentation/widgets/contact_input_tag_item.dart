@@ -88,7 +88,7 @@ class ContactInputTagItem extends StatelessWidget {
     }
   }
 
-  bool _isValidEmailAddress(String value) => value.isEmail || AppUtils().isEmailLocalhost(value);
+  bool _isValidEmailAddress(String value) => value.isEmail || AppUtils.isEmailLocalhost(value);
 
   Color _getTagBackgroundColor() {
     if (lastTagFocused && isLastContact) {

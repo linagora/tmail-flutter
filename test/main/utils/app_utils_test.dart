@@ -24,13 +24,13 @@ void main() {
 
     test('Valid localhost email addresses', () {
       for (final email in emailsValid) {
-        expect(AppUtils().isEmailLocalhost(email.emailAddress), equals(true));
+        expect(AppUtils.isEmailLocalhost(email.emailAddress), equals(true));
       }
     });
 
     test('Invalid localhost email addresses', () {
       for (final email in emailsInvalid) {
-        expect(AppUtils().isEmailLocalhost(email.emailAddress), equals(false));
+        expect(AppUtils.isEmailLocalhost(email.emailAddress), equals(false));
       }
     });
   });

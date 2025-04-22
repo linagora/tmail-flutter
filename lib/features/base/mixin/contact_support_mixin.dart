@@ -29,7 +29,7 @@ mixin ContactSupportMixin {
   void _handleMailAddress(String mailAddress, {String route = AppRoutes.dashboard}) {
     if (route == AppRoutes.settings && PlatformInfo.isWeb) {
       final mailtoLink = RouteUtils.generateMailtoLink(mailAddress);
-      AppUtils().launchLink(mailtoLink);
+      AppUtils.launchLink(mailtoLink);
     } else {
       final mailboxDashBoardController = getBinding<MailboxDashBoardController>();
       mailboxDashBoardController?.openComposer(
@@ -39,6 +39,6 @@ mixin ContactSupportMixin {
   }
 
   void _handleHttpLink(String httpLink) {
-    AppUtils().launchLink(httpLink);
+    AppUtils.launchLink(httpLink);
   }
 }

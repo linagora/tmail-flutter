@@ -55,7 +55,7 @@ class EventBodyContentWidget extends StatelessWidget {
                       heightContent: constraints.maxHeight,
                       contentHtml: content,
                       mailtoDelegate: onMailtoDelegateAction,
-                      direction: AppUtils().getCurrentDirection(context),
+                      direction: AppUtils.getCurrentDirection(context),
                     ),
                     if (isDraggableAppActive == true)
                       PointerInterceptor(
@@ -76,7 +76,7 @@ class EventBodyContentWidget extends StatelessWidget {
                 maxHtmlContentHeight: PlatformInfo.isIOS
                   ? ConstantsUI.htmlContentMaxHeight
                   : null,
-                direction: AppUtils().getCurrentDirection(context),
+                direction: AppUtils.getCurrentDirection(context),
                 onMailtoDelegateAction: onMailtoDelegateAction
               );
             }),

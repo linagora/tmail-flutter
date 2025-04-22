@@ -41,14 +41,14 @@ class SignatureBuilder extends StatelessWidget {
           widthContent: width,
           heightContent: height,
           allowResizeToDocumentSize: false,
-          direction: AppUtils().getCurrentDirection(context),
+          direction: AppUtils.getCurrentDirection(context),
         );
       } else {
         return LayoutBuilder(builder: (context, constraints) {
           return HtmlContentViewer(
             contentHtml: signatureSelected,
             initialWidth: constraints.maxWidth,
-            direction: AppUtils().getCurrentDirection(context),
+            direction: AppUtils.getCurrentDirection(context),
           );
         });
       }
