@@ -671,8 +671,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.PrivacyLinkWidget_build_closure.prototype = {
     call$0() {
-      var t1 = $.AppUtils__instance;
-      return (t1 == null ? $.AppUtils__instance = new A.AppUtils() : t1).launchLink$1("https://github.com/linagora/tmail-flutter/blob/master/privacy.md");
+      return A.AppUtils_launchLink("https://github.com/linagora/tmail-flutter/blob/master/privacy.md");
     },
     $signature: 0
   };
@@ -844,5 +843,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "YW/NMVQ3Ui55cnDVyO/tYeBR4/I=");
+})($__dart_deferred_initializers__, "CgnG+FkCo9Uc8zKs7+84NjWaEh0=");
 ;

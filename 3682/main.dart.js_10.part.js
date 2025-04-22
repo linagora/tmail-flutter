@@ -1846,8 +1846,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = A.RegExp_RegExp(string$.______x5c, true, false, false);
         t2 = t2._nativeRegExp.test(t1);
         if (!t2) {
-          if ($.AppUtils__instance == null)
-            $.AppUtils__instance = new A.AppUtils();
           t2 = A.RegExp_RegExp(string$.______x22, true, false, false);
           t1 = t2._nativeRegExp.test(t1);
         } else
@@ -1868,8 +1866,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = A.RegExp_RegExp(_s153_, true, false, false);
         t4 = t4._nativeRegExp.test(t3);
         if (!t4) {
-          if ($.AppUtils__instance == null)
-            $.AppUtils__instance = new A.AppUtils();
           t4 = A.RegExp_RegExp(_s70_, true, false, false);
           t3 = t4._nativeRegExp.test(t3);
         } else
@@ -1880,8 +1876,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = A.RegExp_RegExp(_s153_, true, false, false);
         t2 = t2._nativeRegExp.test(t1);
         if (!t2) {
-          if ($.AppUtils__instance == null)
-            $.AppUtils__instance = new A.AppUtils();
           t2 = A.RegExp_RegExp(_s70_, true, false, false);
           t1 = t2._nativeRegExp.test(t1);
         } else
@@ -2196,8 +2190,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = A.RegExp_RegExp(string$.______x5c, true, false, false);
         t1 = t1._nativeRegExp.test(inputText);
         if (!t1) {
-          if ($.AppUtils__instance == null)
-            $.AppUtils__instance = new A.AppUtils();
           t1 = A.RegExp_RegExp(string$.______x22, true, false, false);
           t1 = t1._nativeRegExp.test(inputText);
         } else
@@ -2236,8 +2228,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = A.RegExp_RegExp(string$.______x5c, true, false, false);
       t3 = t4._nativeRegExp.test(t3);
       if (!t3) {
-        if ($.AppUtils__instance == null)
-          $.AppUtils__instance = new A.AppUtils();
         if (t2)
           t1 = "";
         t2 = A.RegExp_RegExp(string$.______x22, true, false, false);
@@ -2274,8 +2264,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = A.RegExp_RegExp(string$.______x5c, true, false, false);
       t3 = t4._nativeRegExp.test(t3);
       if (!t3) {
-        if ($.AppUtils__instance == null)
-          $.AppUtils__instance = new A.AppUtils();
         if (t2)
           t1 = "";
         t2 = A.RegExp_RegExp(string$.______x22, true, false, false);
@@ -2794,34 +2782,22 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.SettingFirstLevelTileBuilder.prototype = {
     build$1(context) {
-      var t2, t3, t4, t5, t6, t7, _this = this, _null = null,
-        t1 = _this.clickAction;
-      if ($.AppUtils__instance == null)
-        $.AppUtils__instance = new A.AppUtils();
-      t2 = type$._LocalizationsScope;
-      t3 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? C.SettingsUtils_getHorizontalPadding(context, _this._setting_first_level_tile_builder$_responsiveUtils) : 0;
-      if ($.AppUtils__instance == null)
-        $.AppUtils__instance = new A.AppUtils();
-      t4 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 0 : C.SettingsUtils_getHorizontalPadding(context, _this._setting_first_level_tile_builder$_responsiveUtils);
-      t5 = type$.JSArray_Widget;
+      var t6, t7, _this = this, _null = null,
+        t1 = _this.clickAction,
+        t2 = type$._LocalizationsScope,
+        t3 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? C.SettingsUtils_getHorizontalPadding(context, _this._setting_first_level_tile_builder$_responsiveUtils) : 0,
+        t4 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 0 : C.SettingsUtils_getHorizontalPadding(context, _this._setting_first_level_tile_builder$_responsiveUtils),
+        t5 = type$.JSArray_Widget;
       t3 = A.Row$(A._setArrayType([new A.Padding(new A.EdgeInsets(t4, 0, t3, 0), A.SvgPicture$asset(_this.settingIcon, B.Alignment_0_0, _null, B.BoxFit_0, 24, _null, _null, 24), _null), A.Expanded$(new A.Padding(B.EdgeInsets_12_0_12_0, A.Text$(_this.title, _null, _null, 1, B.TextOverflow_2, _null, _null, true, _null, B.TextStyle_69t2, _null, _null, _null, _null, _null), _null), 1)], t5), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
       t4 = _this.subtitle;
       if (t4 != null) {
-        if ($.AppUtils__instance == null)
-          $.AppUtils__instance = new A.AppUtils();
         t6 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 12 : C.SettingsUtils_getHorizontalPadding(context, _this._setting_first_level_tile_builder$_responsiveUtils) + 12 + 24;
-        if ($.AppUtils__instance == null)
-          $.AppUtils__instance = new A.AppUtils();
         t7 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? C.SettingsUtils_getHorizontalPadding(context, _this._setting_first_level_tile_builder$_responsiveUtils) + 12 + 24 : 12;
         t4 = new A.Padding(new A.EdgeInsets(t6, 12, t7, 0), A.Text$(t4, _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_yql, _null, _null, _null, _null, _null), _null);
       } else
         t4 = B.SizedBox_0_0_null_null;
       t4 = A.Expanded$(A.Column$(A._setArrayType([t3, t4], t5), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), 9);
-      if ($.AppUtils__instance == null)
-        $.AppUtils__instance = new A.AppUtils();
       t3 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 0 : C.SettingsUtils_getHorizontalPadding(context, _this._setting_first_level_tile_builder$_responsiveUtils);
-      if ($.AppUtils__instance == null)
-        $.AppUtils__instance = new A.AppUtils();
       t6 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? C.SettingsUtils_getHorizontalPadding(context, _this._setting_first_level_tile_builder$_responsiveUtils) : 0;
       t2 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? "assets/images/ic_back.svg" : "assets/images/ic_collapse_folder.svg";
       return A.Material$(B.Duration_200000, true, _null, A.InkWell$(false, _null, true, new A.Padding(B.EdgeInsetsDirectional_0_24_0_24, A.Row$(A._setArrayType([t4, A.IconButton$(_null, _null, _null, _null, _null, A.SvgPicture$asset(t2, B.Alignment_0_0, A.ColorNullableExtension_asFilter(B.Color_4290298316), B.BoxFit_0, _null, _null, _null, _null), _null, t1, new A.EdgeInsets(t6, 0, t3, 0), _null, _null, _null, _null)], t5), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), _null), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t1, _null, _null, _null, _null, _null, _null, _null), B.Clip_0, B.Color_0, 0, _null, _null, _null, _null, _null, B.MaterialType_0);
@@ -3018,8 +2994,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var t2, _null = null,
         t1 = this.signatureSelected;
       if (t1.length !== 0) {
-        if ($.AppUtils__instance == null)
-          $.AppUtils__instance = new A.AppUtils();
         t2 = A.Directionality_maybeOf(context);
         return K.HtmlContentViewerOnWeb$(false, t1, _null, t2 == null ? B.TextDirection_1 : t2, height, _null, _null, false, width);
       } else
@@ -3125,8 +3099,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = t2._as(t1.get(_this))._richTextControllerForWeb;
       A.Expando__checkType(_this);
       t4 = t2._as(t1.get(_this))._vacationMessageHtmlText;
-      if ($.AppUtils__instance == null)
-        $.AppUtils__instance = new A.AppUtils();
       t5 = A.Directionality_maybeOf(context);
       t4 = A.HtmlEditorOptions$(true, A.HtmlUtils_customCssStyleHtmlEditor(t5 == null ? B.TextDirection_1 : t5, _null), "", false, false, "", t4, false, true, _null);
       A.Expando__checkType(_this);
@@ -5901,5 +5873,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_10", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "dCJRiyYzTwn7ga3vcdpvnS0w+bE=");
+})($__dart_deferred_initializers__, "xf0GtbEJXN4HPuWfT5tarezeVv0=");
 ;

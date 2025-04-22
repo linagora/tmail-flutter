@@ -413,6 +413,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     __TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver: function __TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver() {
     },
+    ArabicDateLocale: function ArabicDateLocale() {
+    },
+    EnglishDateLocale: function EnglishDateLocale() {
+    },
+    FrenchDateLocale: function FrenchDateLocale() {
+    },
+    GermanDateLocale: function GermanDateLocale() {
+    },
+    ItalianDateLocale: function ItalianDateLocale() {
+    },
+    RussianDateLocale: function RussianDateLocale() {
+    },
+    VietnameseDateLocale: function VietnameseDateLocale() {
+    },
     Drawer: function Drawer(t0, t1, t2, t3) {
       var _ = this;
       _.elevation = t0;
@@ -1369,35 +1383,29 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return t1 == null ? null : t1.value.toLocal$0();
     },
     CalendarEventExtension_get_monthStartDateAsString(_this) {
-      var t1, t2, t3;
+      var t1;
       if (B.CalendarEventExtension_get_localStartDate(_this) != null) {
         t1 = B.CalendarEventExtension_get_localStartDate(_this);
         t1.toString;
-        t2 = A._setArrayType(["M"], type$.JSArray_String);
-        t3 = $.AppUtils__instance;
-        return B.formatDate(t1, t2, (t3 == null ? $.AppUtils__instance = new A.AppUtils() : t3).getCurrentDateLocale$0());
+        return B.formatDate(t1, A._setArrayType(["M"], type$.JSArray_String), B.AppUtils_getCurrentDateLocale());
       } else
         return "";
     },
     CalendarEventExtension_get_dayStartDateAsString(_this) {
-      var t1, t2, t3;
+      var t1;
       if (B.CalendarEventExtension_get_localStartDate(_this) != null) {
         t1 = B.CalendarEventExtension_get_localStartDate(_this);
         t1.toString;
-        t2 = A._setArrayType(["d"], type$.JSArray_String);
-        t3 = $.AppUtils__instance;
-        return B.formatDate(t1, t2, (t3 == null ? $.AppUtils__instance = new A.AppUtils() : t3).getCurrentDateLocale$0());
+        return B.formatDate(t1, A._setArrayType(["d"], type$.JSArray_String), B.AppUtils_getCurrentDateLocale());
       } else
         return "";
     },
     CalendarEventExtension_get_weekDayStartDateAsString(_this) {
-      var t1, t2, t3;
+      var t1;
       if (B.CalendarEventExtension_get_localStartDate(_this) != null) {
         t1 = B.CalendarEventExtension_get_localStartDate(_this);
         t1.toString;
-        t2 = A._setArrayType(["D"], type$.JSArray_String);
-        t3 = $.AppUtils__instance;
-        return B.formatDate(t1, t2, (t3 == null ? $.AppUtils__instance = new A.AppUtils() : t3).getCurrentDateLocale$0());
+        return B.formatDate(t1, A._setArrayType(["D"], type$.JSArray_String), B.AppUtils_getCurrentDateLocale());
       } else
         return "";
     },
@@ -4527,6 +4535,28 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return D.EdgeInsetsDirectional_12_0_12_8;
       else
         return D.EdgeInsetsDirectional_24_0_24_8;
+    },
+    AppUtils_getCurrentDateLocale() {
+      var t1, currentLanguageCode;
+      $.$get$Get();
+      t1 = $.$get$LocalesIntl__intlHost().locale;
+      currentLanguageCode = t1 == null ? null : t1.get$languageCode(0);
+      if (currentLanguageCode === "fr")
+        return D.C_FrenchDateLocale;
+      else if (currentLanguageCode === "en")
+        return D.C_EnglishDateLocale;
+      else if (currentLanguageCode === "vi")
+        return D.C_VietnameseDateLocale;
+      else if (currentLanguageCode === "ru")
+        return D.C_RussianDateLocale;
+      else if (currentLanguageCode === "ar")
+        return D.C_ArabicDateLocale;
+      else if (currentLanguageCode === "it")
+        return D.C_ItalianDateLocale;
+      else if (currentLanguageCode === "de")
+        return D.C_GermanDateLocale;
+      else
+        return D.C_EnglishDateLocale;
     }
   },
   D, E, F, G, H;
@@ -5638,6 +5668,146 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     }
   };
   B.__TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver.prototype = {};
+  B.ArabicDateLocale.prototype = {
+    get$am() {
+      return "\u0635";
+    },
+    get$pm() {
+      return "\u0645";
+    },
+    get$monthsShort() {
+      return C.List_EAC;
+    },
+    get$monthsLong() {
+      return D.List_zVb;
+    },
+    get$daysShort() {
+      return C.List_SBl;
+    },
+    get$daysLong() {
+      return C.List_SBl;
+    }
+  };
+  B.EnglishDateLocale.prototype = {
+    get$am() {
+      return "AM";
+    },
+    get$pm() {
+      return "PM";
+    },
+    get$monthsShort() {
+      return C.List_TfR;
+    },
+    get$monthsLong() {
+      return C.List_U6e;
+    },
+    get$daysShort() {
+      return D.List_mBr;
+    },
+    get$daysLong() {
+      return C.List_HFE;
+    }
+  };
+  B.FrenchDateLocale.prototype = {
+    get$am() {
+      return "avant midi";
+    },
+    get$pm() {
+      return "apr\xe8s midi";
+    },
+    get$monthsShort() {
+      return D.List_V0o;
+    },
+    get$monthsLong() {
+      return D.List_he9;
+    },
+    get$daysShort() {
+      return D.List_wOX;
+    },
+    get$daysLong() {
+      return D.List_Ano;
+    }
+  };
+  B.GermanDateLocale.prototype = {
+    get$am() {
+      return "vormittags";
+    },
+    get$pm() {
+      return "nachmittags";
+    },
+    get$monthsShort() {
+      return D.List_GMA;
+    },
+    get$monthsLong() {
+      return C.List_7BT;
+    },
+    get$daysShort() {
+      return D.List_2bL;
+    },
+    get$daysLong() {
+      return D.List_FYo1;
+    }
+  };
+  B.ItalianDateLocale.prototype = {
+    get$am() {
+      return "AM";
+    },
+    get$pm() {
+      return "PM";
+    },
+    get$monthsShort() {
+      return D.List_ECL2;
+    },
+    get$monthsLong() {
+      return D.List_ewF;
+    },
+    get$daysShort() {
+      return D.List_OTw;
+    },
+    get$daysLong() {
+      return D.List_W3m;
+    }
+  };
+  B.RussianDateLocale.prototype = {
+    get$am() {
+      return "AM";
+    },
+    get$pm() {
+      return "PM";
+    },
+    get$monthsShort() {
+      return D.List_Hpw;
+    },
+    get$monthsLong() {
+      return C.List_Yqn;
+    },
+    get$daysShort() {
+      return D.List_qXT;
+    },
+    get$daysLong() {
+      return D.List_Dn4;
+    }
+  };
+  B.VietnameseDateLocale.prototype = {
+    get$am() {
+      return "SA";
+    },
+    get$pm() {
+      return "CH";
+    },
+    get$monthsShort() {
+      return D.List_kZA;
+    },
+    get$monthsLong() {
+      return D.List_FAi;
+    },
+    get$daysShort() {
+      return D.List_M2I1;
+    },
+    get$daysLong() {
+      return D.List_o0y1;
+    }
+  };
   B.Drawer.prototype = {
     build$1(context) {
       var t1, defaults, effectiveShape, t2, t3, t4, t5, t6, _null = null,
@@ -7782,13 +7952,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return A.Container$(_null, t1, C.Clip_2, _null, _null, D.ShapeDecoration_kyx, _null, _null, _null, D.EdgeInsetsDirectional_16_12_16_12, _null, _null, _null, _null);
     },
     _buildEventTimeInformationWidget$0() {
-      var timeZoneOffset, timeZoneOffsetAsString, dateTimeEvent,
-        t1 = $.AppUtils__instance;
-      t1 = (t1 == null ? $.AppUtils__instance = new A.AppUtils() : t1).getCurrentDateLocale$0();
-      if ($.AppUtils__instance == null)
-        $.AppUtils__instance = new A.AppUtils();
-      timeZoneOffset = C.JSInt_methods._tdivFast$1(new A.DateTime(Date.now(), 0, false).get$timeZoneOffset()._duration, 3600000000);
-      timeZoneOffsetAsString = "" + timeZoneOffset;
+      var dateTimeEvent,
+        t1 = B.AppUtils_getCurrentDateLocale(),
+        timeZoneOffset = C.JSInt_methods._tdivFast$1(new A.DateTime(Date.now(), 0, false).get$timeZoneOffset()._duration, 3600000000),
+        timeZoneOffsetAsString = "" + timeZoneOffset;
       if (timeZoneOffset >= 0)
         timeZoneOffsetAsString = "+" + timeZoneOffsetAsString;
       dateTimeEvent = B.CalendarEventExtension_getDateTimeEvent(this.calendarEvent, t1, "GMT" + timeZoneOffsetAsString);
@@ -12457,10 +12624,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.HyperLinkWidget_build_closure.prototype = {
     call$0() {
-      var t1 = $.AppUtils__instance;
-      if (t1 == null)
-        t1 = $.AppUtils__instance = new A.AppUtils();
-      return t1.launchLink$1(this.$this.urlString);
+      return A.AppUtils_launchLink(this.$this.urlString);
     },
     $signature: 0
   };
@@ -13126,8 +13290,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = t4._jsWeakMap;
       t5 = A._instanceType(t3)._eval$1("GetWidget.S");
       t6 = t5._as(t4.get(t3)).get$openMailToLink();
-      if ($.AppUtils__instance == null)
-        $.AppUtils__instance = new A.AppUtils();
       t7 = A.Directionality_maybeOf(_this.context);
       if (t7 == null)
         t7 = C.TextDirection_1;
@@ -13378,13 +13540,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.EventBodyContentWidget_build_closure.prototype = {
     call$2(context, constraints) {
-      var t4, _null = null,
+      var _null = null,
         t1 = constraints.maxWidth,
         t2 = constraints.maxHeight,
-        t3 = this.$this;
-      if ($.AppUtils__instance == null)
-        $.AppUtils__instance = new A.AppUtils();
-      t4 = A.Directionality_maybeOf(context);
+        t3 = this.$this,
+        t4 = A.Directionality_maybeOf(context);
       if (t4 == null)
         t4 = C.TextDirection_1;
       t4 = A._setArrayType([H.HtmlContentViewerOnWeb$(true, t3.content, _null, t4, t2, t3.onMailtoDelegateAction, _null, false, t1)], type$.JSArray_Widget);
@@ -13525,14 +13685,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B._EmailReceiverWidgetState__buildRecipientsTag__closure.prototype = {
     call$0() {
-      var t2, t3,
-        t1 = $.AppUtils__instance;
-      if (t1 == null)
-        t1 = $.AppUtils__instance = new A.AppUtils();
-      t2 = this.$this._framework$_element;
-      t2.toString;
-      t3 = this.emailAddress.email;
-      return t1.copyEmailAddressToClipboard$2(t2, t3 == null ? "" : t3);
+      var t2,
+        t1 = this.$this._framework$_element;
+      t1.toString;
+      t2 = this.emailAddress.email;
+      return A.AppUtils_copyEmailAddressToClipboard(t1, t2 == null ? "" : t2);
     },
     $signature: 0
   };
@@ -13546,14 +13703,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.EmailSenderBuilder_build_closure.prototype = {
     call$0() {
-      var t2,
-        t1 = $.AppUtils__instance;
+      var t1 = this.$this.emailAddress.email;
       if (t1 == null)
-        t1 = $.AppUtils__instance = new A.AppUtils();
-      t2 = this.$this.emailAddress.email;
-      if (t2 == null)
-        t2 = "";
-      t1.copyEmailAddressToClipboard$2(this.context, t2);
+        t1 = "";
+      A.AppUtils_copyEmailAddressToClipboard(this.context, t1);
     },
     $signature: 9
   };
@@ -13567,14 +13720,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.EmailSenderBuilder_build_closure1.prototype = {
     call$0() {
-      var t2,
-        t1 = $.AppUtils__instance;
+      var t1 = this.$this.emailAddress.email;
       if (t1 == null)
-        t1 = $.AppUtils__instance = new A.AppUtils();
-      t2 = this.$this.emailAddress.email;
-      if (t2 == null)
-        t2 = "";
-      t1.copyEmailAddressToClipboard$2(this.context, t2);
+        t1 = "";
+      A.AppUtils_copyEmailAddressToClipboard(this.context, t1);
     },
     $signature: 9
   };
@@ -15350,20 +15499,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.IconOpenAdvancedSearchWidget_build_closure.prototype = {
     call$0() {
-      var t1, t2, t3, t4, t5, t6, t7, _null = null;
-      if ($.AppUtils__instance == null)
-        $.AppUtils__instance = new A.AppUtils();
-      t1 = this.context;
-      t2 = type$._LocalizationsScope;
-      t3 = A.Bidi_isRtlLanguage(t1.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 0 : 8;
-      if ($.AppUtils__instance == null)
-        $.AppUtils__instance = new A.AppUtils();
-      t4 = A.Bidi_isRtlLanguage(t1.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 8 : 0;
-      if ($.AppUtils__instance == null)
-        $.AppUtils__instance = new A.AppUtils();
-      t5 = A.Bidi_isRtlLanguage(t1.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 0 : 2;
-      if ($.AppUtils__instance == null)
-        $.AppUtils__instance = new A.AppUtils();
+      var t6, t7, _null = null,
+        t1 = this.context,
+        t2 = type$._LocalizationsScope,
+        t3 = A.Bidi_isRtlLanguage(t1.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 0 : 8,
+        t4 = A.Bidi_isRtlLanguage(t1.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 8 : 0,
+        t5 = A.Bidi_isRtlLanguage(t1.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 0 : 2;
       t2 = A.Bidi_isRtlLanguage(t1.dependOnInheritedWidgetOfExactType$1$0(t2).localizationsState._localizations$_locale.get$languageCode(0)) ? 2 : 0;
       t6 = this.$this;
       t7 = t6.searchController;
@@ -17687,10 +17828,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
-      t1 = $.AppUtils__instance;
-      if (t1 == null)
-        t1 = $.AppUtils__instance = new A.AppUtils();
-      t1.launchLink$1(J.toString$0$(email.routeWeb));
+      A.AppUtils_launchLink(J.toString$0$(email.routeWeb));
     },
     $signature: 128
   };
@@ -17743,10 +17881,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1));
-      t1 = $.AppUtils__instance;
-      if (t1 == null)
-        t1 = $.AppUtils__instance = new A.AppUtils();
-      t1.launchLink$1(J.toString$0$(this.email.routeWeb));
+      A.AppUtils_launchLink(J.toString$0$(this.email.routeWeb));
     },
     $signature: 9
   };
@@ -18385,7 +18520,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _mixin = hunkHelpers.mixin,
       _inheritMany = hunkHelpers.inheritMany,
       _inherit = hunkHelpers.inherit;
-    _inheritMany(A.Object, [B.ByteConverter, B.QuickSearchSuggestionsBox, B.QuickSearchSuggestionsBoxDecoration, B.QuickSearchTextFieldConfiguration, B.FocusedMenuItem, B.IndicatorStateMixin, B.RefreshProcessor, B.LoadingProcessor, B.RefreshController, B.FilterEmailPopupMenuMixin, B.BaseEmailItemTile]);
+    _inheritMany(A.Object, [B.ByteConverter, B.QuickSearchSuggestionsBox, B.QuickSearchSuggestionsBoxDecoration, B.QuickSearchTextFieldConfiguration, B.ArabicDateLocale, B.EnglishDateLocale, B.FrenchDateLocale, B.GermanDateLocale, B.ItalianDateLocale, B.RussianDateLocale, B.VietnameseDateLocale, B.FocusedMenuItem, B.IndicatorStateMixin, B.RefreshProcessor, B.LoadingProcessor, B.RefreshController, B.FilterEmailPopupMenuMixin, B.BaseEmailItemTile]);
     _inheritMany(A._Enum, [B.SizeUnit, B.IconPosition, B.RefreshStatus, B.LoadStatus, B.RefreshStyle, B.LoadStyle]);
     _inheritMany(A.StatefulWidget, [B.ScrollingFloatingButtonAnimated, B.PullToRefreshWidget, B.QuickSearchSuggestionList, B.TypeAheadFieldQuickSearch, B.RefreshIndicator0, B.LoadIndicator, B.SmartRefresher, B.ExpandComposerButton, B.EventAttendeeDetailWidget, B.EmailReceiverWidget, B.AppGridView, B.TextFieldAutocompleteEmailAddressWeb, B.QuotaReloadButton, B.MailboxSearchedItemBuilder, B.EmailTileBuilder, B.ScrollToTopButtonWidget]);
     _inheritMany(A.State0, [B.__ScrollingFloatingButtonAnimatedState_State_SingleTickerProviderStateMixin, B._PullToRefreshWidgetState, B._QuickSearchSuggestionListState_State_SingleTickerProviderStateMixin, B.__TypeAheadFieldQuickSearchState_State_WidgetsBindingObserver, B._RefreshIndicatorState_State_IndicatorStateMixin, B._LoadIndicatorState_State_IndicatorStateMixin, B.SmartRefresherState, B._ExpandComposerButtonState, B._EventAttendeeDetailWidgetState, B._EmailReceiverWidgetState, B._AppGridViewState, B._TextFieldAutocompleteEmailAddressWebState, B.__QuotaReloadButtonState_State_SingleTickerProviderStateMixin, B._MailboxSearchedItemBuilderState, B.__EmailTileBuilderState_State_BaseEmailItemTile, B._ScrollToTopButtonWidgetState]);
@@ -18613,6 +18748,33 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Radius_100_100 = new A.Radius(100, 100);
     D.BorderRadius_ww827 = new A.BorderRadius(D.Radius_100_100, D.Radius_100_100, D.Radius_100_100, D.Radius_100_100);
     D.BoxDecoration_wsa = new A.BoxDecoration(D.Color_4293124605, null, null, D.BorderRadius_ww827, null, null, null, C.BoxShape_0);
+    D.List_zVb = A._setArrayType(makeConstList(["\u064a\u0646\u0627\u064a\u0631", "\u0641\u0628\u0631\u0627\u064a\u0631", "\u0645\u0627\u0631\u0633", "\u0623\u0628\u0631\u064a\u0644", "\u0645\u0627\u064a\u0648", "\u064a\u0648\u0646\u064a\u0648", "\u064a\u0648\u0644\u064a\u0648", "\u0623\u063a\u0633\u0637\u0633", "\u0633\u0628\u062a\u0645\u0628\u0631", "\u0623\u0643\u062a\u0648\u0628\u0631", "\u0646\u0648\u0641\u0645\u0628\u0631", "\u062f\u064a\u0633\u0645\u0628\u0631", "s"]), type$.JSArray_String);
+    D.C_ArabicDateLocale = new B.ArabicDateLocale();
+    D.List_mBr = A._setArrayType(makeConstList(["Mon", "Tue", "Wed", "Thur", "Fri", "Sat", "Sun"]), type$.JSArray_String);
+    D.C_EnglishDateLocale = new B.EnglishDateLocale();
+    D.List_V0o = A._setArrayType(makeConstList(["Janv.", "F\xe9vr", "Mars", "Avr.", "Mai", "Juin", "Juill.", "Ao\xfbt", "Sep.", "Oct.", "Nov.", "D\xe9c."]), type$.JSArray_String);
+    D.List_he9 = A._setArrayType(makeConstList(["Janvier", "F\xe9vrier", "Mars", "Avril", "Mai", "Juin", "Juillet", "Ao\xfbt", "Septembre", "Octobre", "Novembre", "D\xe9cembre"]), type$.JSArray_String);
+    D.List_wOX = A._setArrayType(makeConstList(["Lu", "Ma", "Me", "Je", "Ve", "Sa", "Di"]), type$.JSArray_String);
+    D.List_Ano = A._setArrayType(makeConstList(["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]), type$.JSArray_String);
+    D.C_FrenchDateLocale = new B.FrenchDateLocale();
+    D.List_GMA = A._setArrayType(makeConstList(["Jan.", "Feb.", "M\xe4rz", "Apr.", "Mai", "Jun.", "Jul.", "Aug.", "Sep.", "Okt.", "Nov.", "Dez."]), type$.JSArray_String);
+    D.List_2bL = A._setArrayType(makeConstList(["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]), type$.JSArray_String);
+    D.List_FYo1 = A._setArrayType(makeConstList(["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"]), type$.JSArray_String);
+    D.C_GermanDateLocale = new B.GermanDateLocale();
+    D.List_ECL2 = A._setArrayType(makeConstList(["Gen", "Feb", "Mar", "Apr", "Mag", "Giu", "Lug", "Ago", "Set", "Ott", "Nov", "Dic"]), type$.JSArray_String);
+    D.List_ewF = A._setArrayType(makeConstList(["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno", "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"]), type$.JSArray_String);
+    D.List_OTw = A._setArrayType(makeConstList(["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"]), type$.JSArray_String);
+    D.List_W3m = A._setArrayType(makeConstList(["Luned\xec", "Marted\xec", "Mercoled\xec", "Gioved\xec", "Venerd\xec", "Sabato", "Domenica"]), type$.JSArray_String);
+    D.C_ItalianDateLocale = new B.ItalianDateLocale();
+    D.List_Hpw = A._setArrayType(makeConstList(["\u042f\u043d\u0432.", "\u0424\u0435\u0432\u0440.", "\u041c\u0430\u0440\u0442", "\u0410\u043f\u0440.", "\u041c\u0430\u0439", "\u0418\u044e\u043d\u044c", "\u0418\u044e\u043b\u044c", "\u0410\u0432\u0433.", "\u0421\u0435\u043d\u0442.", "\u041e\u043a\u0442.", "\u041d\u043e\u044f\u0431.", "\u0414\u0435\u043a."]), type$.JSArray_String);
+    D.List_qXT = A._setArrayType(makeConstList(["\u041f\u043d", "\u0412\u0442", "\u0421\u0440", "\u0427\u0442", "\u041f\u0442", "\u0421\u0431", "\u0412\u0441"]), type$.JSArray_String);
+    D.List_Dn4 = A._setArrayType(makeConstList(["\u041f\u043e\u043d\u0435\u0434\u0435\u043b\u044c\u043d\u0438\u043a", "\u0412\u0442\u043e\u0440\u043d\u0438\u043a", "\u0421\u0440\u0435\u0434\u0430", "\u0427\u0435\u0442\u0432\u0435\u0440\u0433", "\u041f\u044f\u0442\u043d\u0438\u0446\u0430", "\u0421\u0443\u0431\u0431\u043e\u0442\u0430", "\u0412\u043e\u0441\u043a\u0440\u0435\u0441\u0435\u043d\u044c\u0435"]), type$.JSArray_String);
+    D.C_RussianDateLocale = new B.RussianDateLocale();
+    D.List_kZA = A._setArrayType(makeConstList(["Th1", "Th2", "Th3", "Th4", "Th5", "Th6", "Th7", "Th8", "Th9", "Th10", "Th11", "Th12"]), type$.JSArray_String);
+    D.List_FAi = A._setArrayType(makeConstList(["Th\xe1ng m\u1ed9t", "Th\xe1ng hai", "Th\xe1ng ba", "Th\xe1ng t\u01b0", "Th\xe1ng n\u0103m", "Th\xe1ng s\xe1u", "Th\xe1ng b\u1ea3y", "Th\xe1ng t\xe1m", "Th\xe1ng ch\xedn", "Th\xe1ng m\u01b0\u1eddi", "Th\xe1ng m\u01b0\u1eddi m\u1ed9t", "Th\xe1ng m\u01b0\u1eddi hai"]), type$.JSArray_String);
+    D.List_M2I1 = A._setArrayType(makeConstList(["T2", "T3", "T4", "T5", "T6", "T7", "CN"]), type$.JSArray_String);
+    D.List_o0y1 = A._setArrayType(makeConstList(["Th\u1ee9 hai", "Th\u1ee9 ba", "Th\u1ee9 t\u01b0", "Th\u1ee9 n\u0103m", "Th\u1ee9 s\xe1u", "Th\u1ee9 b\u1ea3y", "Ch\u1ee7 nh\u1eadt"]), type$.JSArray_String);
+    D.C_VietnameseDateLocale = new B.VietnameseDateLocale();
     D.CircleLoadingWidget_3_null_null = new E.CircleLoadingWidget0(3, null, null);
     D.Color_4281611320 = new A.Color(4281611320);
     D.Color_4284640634 = new A.Color(4284640634);
@@ -18871,5 +19033,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "DWJil+bLi53hzKRA6BOKz/1mOus=");
+})($__dart_deferred_initializers__, "kpmI8N7/XN1eSulgPOzcRYMs54s=");
 ;

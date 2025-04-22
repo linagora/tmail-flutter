@@ -840,16 +840,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C._AppGridDashboardIconState_build_closure.prototype = {
     call$3(context, isExpanded, child) {
-      var t4, t5, t6, _null = null,
+      var t6, _null = null,
         t1 = this.$this,
         t2 = t1.get$_toggleAppGridDashboard(),
-        t3 = A.GestureDetector$(B.HitTestBehavior_1, _null, B.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t2, _null, _null, _null, _null, _null, _null, _null, false, B.Offset_7BT);
-      if ($.AppUtils__instance == null)
-        $.AppUtils__instance = new A.AppUtils();
-      t4 = type$._LocalizationsScope;
-      t5 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t4).localizationsState._localizations$_locale.get$languageCode(0)) ? B.Alignment_m1_m1 : B.Alignment_1_m1;
-      if ($.AppUtils__instance == null)
-        $.AppUtils__instance = new A.AppUtils();
+        t3 = A.GestureDetector$(B.HitTestBehavior_1, _null, B.DragStartBehavior_1, false, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t2, _null, _null, _null, _null, _null, _null, _null, false, B.Offset_7BT),
+        t4 = type$._LocalizationsScope,
+        t5 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t4).localizationsState._localizations$_locale.get$languageCode(0)) ? B.Alignment_m1_m1 : B.Alignment_1_m1;
       t5 = C.Aligned$(t5, B.Offset_0_0, A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t4).localizationsState._localizations$_locale.get$languageCode(0)) ? B.Alignment_m1_1 : B.Alignment_1_1);
       t1 = t1._widget;
       t6 = t1.linagoraApps;
@@ -1049,5 +1045,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "4ztCAEFqJ4MTWlD4YmALtP9JMTA=");
+})($__dart_deferred_initializers__, "LpxXKZP39KJwtPr2DB/Xxwebcqg=");
 ;

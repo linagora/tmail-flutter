@@ -59,8 +59,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = type$.MediaQuery,
         t2 = A.InheritedModel_inheritFrom(context, _null, t1).data;
       t1 = A.InheritedModel_inheritFrom(context, _null, t1).data;
-      if ($.AppUtils__instance == null)
-        $.AppUtils__instance = new A.AppUtils();
       t3 = A.Directionality_maybeOf(context);
       if (t3 == null)
         t3 = C.TextDirection_1;
@@ -135,5 +133,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_12", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "imklfSQu9swt4/lz9bjPbg2GLi4=");
+})($__dart_deferred_initializers__, "8djg+dXIdVAIwLc+p8SgIv5lNoI=");
 ;
