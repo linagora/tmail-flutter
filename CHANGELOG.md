@@ -1,3 +1,10 @@
+## [0.15.3] - 2025-04-22
+### Fixed
+- #3670 Forwarding email make attachment bar disappear
+- #3661 Fix memory leak for file picker
+- #3674 Refactor reply email base on thunderbird logic
+- Handle session in case of using isolate for Mark as Read, Empty Trash, Empty Spam
+
 ## [0.15.2] - 2025-04-15
 ### Added
 - #3578 Blue bar: free and busy status
