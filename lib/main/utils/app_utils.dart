@@ -4,8 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
-import 'package:html_editor_enhanced/utils/html_editor_constants.dart';
-import 'package:html_editor_enhanced/utils/html_editor_utils.dart';
 import 'package:intl/intl.dart' as intl;
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/language_code_constants.dart';
@@ -89,16 +87,5 @@ class AppUtils {
     final timeZoneOffset = DateTime.now().timeZoneOffset.inHours;
     final timeZoneOffsetAsString = timeZoneOffset >= 0 ? '+$timeZoneOffset' : '$timeZoneOffset';
     return 'GMT$timeZoneOffsetAsString';
-  }
-
-  Future<void> preloadHtmlEditorAssetForComposer() async {
-    try {
-      await HtmlEditorUtils().loadAssetAsString(HtmlEditorConstants.summernoteHtmlAssetPath);
-      await HtmlEditorUtils().loadAssetAsString(HtmlEditorConstants.jqueryAssetPath);
-      await HtmlEditorUtils().loadAssetAsString(HtmlEditorConstants.summernoteCSSAssetPath);
-      await HtmlEditorUtils().loadAssetAsString(HtmlEditorConstants.summernoteJSAssetPath);
-    } catch (e) {
-      logError('AppUtils::preloadHtmlEditorAssetForComposer:Exception = $e');
-    }
   }
 }
