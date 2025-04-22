@@ -115,6 +115,7 @@ extension EmailExtension on Email {
       bcc: bcc,
       replyTo: replyTo,
       mailboxIds: mailboxIds,
+      threadId: threadId,
       selectMode: selectMode,
       emailHeader: headers?.toList(),
       headerCalendarEvent: headerCalendarEvent,
