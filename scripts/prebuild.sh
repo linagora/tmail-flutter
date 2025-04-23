@@ -18,6 +18,7 @@ done
 # For Cozy
 cd cozy
 flutter pub get
+cd ../
 
 # For the parent module
 flutter pub get
