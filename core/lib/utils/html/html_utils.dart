@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:html_unescape/html_unescape.dart';
+
 import 'js_interop_stub.dart' if (dart.library.html) 'dart:js_interop';
 import 'dart:typed_data';
 
@@ -13,6 +15,7 @@ import 'package:universal_html/html.dart' as html;
 
 class HtmlUtils {
   static final random = Random();
+  static final htmlUnescape = HtmlUnescape();
 
   static const lineHeight100Percent = (
     script: '''
@@ -529,5 +532,21 @@ class HtmlUtils {
     } catch (e) {
       logError('AppUtils::setWindowBrowserTitle:Exception = $e');
     }
+  }
+
+  static String unescapeHtml(String input) {
+    try {
+      return htmlUnescape.convert(input);
+    } catch (e) {
+      logError('HtmlUtils::unescapeHtml:Exception = $e');
+      return input;
+    }
+  }
+
+  static String removeWhitespace(String input) {
+    return input
+        .replaceAll('\r', '')
+        .replaceAll('\n', '')
+        .replaceAll('\t', '');
   }
 }
