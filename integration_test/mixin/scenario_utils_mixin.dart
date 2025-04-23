@@ -6,6 +6,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/identities/identity.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -18,13 +19,19 @@ import 'package:tmail_ui_user/features/composer/domain/usecases/upload_attachmen
 import 'package:tmail_ui_user/features/composer/presentation/composer_bindings.dart';
 import 'package:tmail_ui_user/features/composer/presentation/model/create_email_request.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_identity_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_default_identity_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_identity_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/profiles/identities/identity_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/upload/domain/state/attachment_upload_state.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:uuid/uuid.dart';
 
 import '../models/provisioning_email.dart';
+import '../models/provisioning_identity.dart';
 
 mixin ScenarioUtilsMixin {
   Future<void> provisionEmail(
@@ -207,5 +214,37 @@ mixin ScenarioUtilsMixin {
     final Set<String> emails = emailList.map((e) => e.email).whereType<String>().toSet();
 
     return emails.length == allowedEmails.length && emails.containsAll(allowedEmails);
+  }
+
+  Future<void> provisionIdentities(List<ProvisioningIdentity> provisioningIdentities) async {
+    IdentityInteractorsBindings().dependencies();
+
+    final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+    final createNewIdentityInteractor = Get.find<CreateNewIdentityInteractor>();
+    final createNewDefaultIdentityInteractor = Get.find<CreateNewDefaultIdentityInteractor>();
+    const uuid = Uuid();
+
+    final session = mailboxDashBoardController.sessionCurrent;
+    final accountId = mailboxDashBoardController.accountId.value;
+    final listIdentityRequest = provisioningIdentities
+      .map((provisioningIdentity) => CreateNewIdentityRequest(
+        Id(uuid.v1()),
+        provisioningIdentity.identity,
+        isDefaultIdentity: provisioningIdentity.isDefault,
+      ));
+
+    for (var identityRequest in listIdentityRequest) {
+      if (identityRequest.isDefaultIdentity) {
+        await createNewDefaultIdentityInteractor
+          .execute(session!, accountId!, identityRequest)
+          .last;
+      } else {
+        await createNewIdentityInteractor
+          .execute(session!, accountId!, identityRequest)
+          .last;
+      }
+    }
+
+    IdentityInteractorsBindings().dispose();
   }
 }

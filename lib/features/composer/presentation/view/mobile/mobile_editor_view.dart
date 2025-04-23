@@ -31,117 +31,122 @@ class MobileEditorView extends StatelessWidget with EditorViewMixin {
 
   @override
   Widget build(BuildContext context) {
-    if (arguments == null) {
+    if (arguments == null || contentViewState == null) {
       return const SizedBox.shrink();
     }
 
-    switch (arguments!.emailActionType) {
-      case EmailActionType.compose:
-      case EmailActionType.composeFromEmailAddress:
-      case EmailActionType.composeFromFileShared:
-        return MobileEditorWidget(
-          content: HtmlExtension.editorStartTags,
-          direction: AppUtils.getCurrentDirection(context),
-          onCreatedEditorAction: onCreatedEditorAction,
-          onLoadCompletedEditorAction: onLoadCompletedEditorAction,
-          onEditorContentHeightChanged: onEditorContentHeightChanged,
-        );
-      case EmailActionType.editDraft:
-      case EmailActionType.editSendingEmail:
-      case EmailActionType.composeFromContentShared:
-      case EmailActionType.reopenComposerBrowser:
-      case EmailActionType.composeFromMailtoUri:
-      case EmailActionType.composeFromUnsubscribeMailtoLink:
-      case EmailActionType.editAsNewEmail:
-        if (contentViewState == null) {
-          return const SizedBox.shrink();
-        }
-        return contentViewState!.fold(
-          (failure) => MobileEditorWidget(
-            content: HtmlExtension.editorStartTags,
-            direction: AppUtils.getCurrentDirection(context),
-            onCreatedEditorAction: onCreatedEditorAction,
-            onLoadCompletedEditorAction: onLoadCompletedEditorAction,
-            onEditorContentHeightChanged: onEditorContentHeightChanged,
-          ),
-          (success) {
-            if (success is GetEmailContentLoading) {
-              return const CupertinoLoadingWidget(padding: EdgeInsets.all(16.0));
-            } else {
-              var newContent = HtmlExtension.editorStartTags;
-              if (success is GetEmailContentSuccess) {
-                newContent = success.htmlEmailContent;
-              } else if (success is GetEmailContentFromCacheSuccess) {
-                newContent = success.htmlEmailContent;
-              }
-              if (newContent.isEmpty) {
-                newContent = HtmlExtension.editorStartTags;
-              }
-              return MobileEditorWidget(
-                content: newContent,
-                direction: AppUtils.getCurrentDirection(context),
-                onCreatedEditorAction: onCreatedEditorAction,
-                onLoadCompletedEditorAction: onLoadCompletedEditorAction,
-                onEditorContentHeightChanged: onEditorContentHeightChanged,
-              );
-            }
+    final direction = AppUtils.getCurrentDirection(context);
+    final locale = Localizations.localeOf(context);
+    final appLocalizations = AppLocalizations.of(context);
+    final actionType = arguments!.emailActionType;
+
+    if (_isEditOrComposeAction(actionType)) {
+      return contentViewState!.fold(
+        (_) => buildEditor(direction: direction),
+        (success) {
+          if (success is GetEmailContentLoading) {
+            return const CupertinoLoadingWidget(padding: EdgeInsets.all(16.0));
           }
-        );
-      case EmailActionType.reply:
-      case EmailActionType.replyToList:
-      case EmailActionType.replyAll:
-      case EmailActionType.forward:
-        if (contentViewState == null) {
-          return const SizedBox.shrink();
-        }
-        return contentViewState!.fold(
-          (failure) {
-            final emailContentQuoted = getEmailContentQuotedAsHtml(
-              locale: Localizations.localeOf(context),
-              appLocalizations: AppLocalizations.of(context),
-              emailContent: '',
-              emailActionType: arguments!.emailActionType,
-              presentationEmail: arguments!.presentationEmail!
-            );
-            return MobileEditorWidget(
-              content: emailContentQuoted,
-              direction: AppUtils.getCurrentDirection(context),
-              onCreatedEditorAction: onCreatedEditorAction,
-              onLoadCompletedEditorAction: onLoadCompletedEditorAction,
-              onEditorContentHeightChanged: onEditorContentHeightChanged,
-            );
-          },
-          (success) {
-            if (success is GetEmailContentLoading) {
-              return const CupertinoLoadingWidget(padding: EdgeInsets.all(16.0));
-            } else {
-              final emailContentQuoted = getEmailContentQuotedAsHtml(
-                locale: Localizations.localeOf(context),
-                appLocalizations: AppLocalizations.of(context),
-                emailContent: success is GetEmailContentSuccess
-                  ? success.htmlEmailContent
-                  : '',
-                emailActionType: arguments!.emailActionType,
-                presentationEmail: arguments!.presentationEmail!
-              );
-              return MobileEditorWidget(
-                content: emailContentQuoted,
-                direction: AppUtils.getCurrentDirection(context),
-                onCreatedEditorAction: onCreatedEditorAction,
-                onLoadCompletedEditorAction: onLoadCompletedEditorAction,
-                onEditorContentHeightChanged: onEditorContentHeightChanged,
-              );
-            }
+
+          String newContent = '';
+          if (success is GetEmailContentSuccess) {
+            newContent = success.htmlEmailContent;
+          } else if (success is GetEmailContentFromCacheSuccess) {
+            newContent = success.htmlEmailContent;
           }
-        );
-      default:
-        return MobileEditorWidget(
-          content: HtmlExtension.editorStartTags,
-          direction: AppUtils.getCurrentDirection(context),
-          onCreatedEditorAction: onCreatedEditorAction,
-          onLoadCompletedEditorAction: onLoadCompletedEditorAction,
-          onEditorContentHeightChanged: onEditorContentHeightChanged,
-        );
+
+          return buildEditor(
+            direction: direction,
+            content: newContent,
+          );
+        },
+      );
     }
+
+    if (_isReplyOrForwardAction(actionType)) {
+      return contentViewState!.fold(
+        (_) => buildEditor(
+          direction: direction,
+          content: _buildQuotedContent(
+            appLocalizations: appLocalizations,
+            locale: locale,
+          ),
+        ),
+        (success) {
+          if (success is GetEmailContentLoading) {
+            return const CupertinoLoadingWidget(padding: EdgeInsets.all(16.0));
+          }
+
+          return buildEditor(
+            direction: direction,
+            content: _buildQuotedContent(
+              appLocalizations: appLocalizations,
+              locale: locale,
+              emailContent: success is GetEmailContentSuccess
+                ? success.htmlEmailContent
+                : '',
+            ),
+          );
+        },
+      );
+    }
+
+    return contentViewState!.fold(
+      (_) => buildEditor(direction: direction),
+      (success) {
+        if (success is GetEmailContentLoading) {
+          return const CupertinoLoadingWidget(padding: EdgeInsets.all(16.0));
+        }
+        return buildEditor(direction: direction);
+      },
+    );
+  }
+
+  bool _isEditOrComposeAction(EmailActionType type) {
+    return {
+      EmailActionType.editDraft,
+      EmailActionType.editSendingEmail,
+      EmailActionType.composeFromContentShared,
+      EmailActionType.reopenComposerBrowser,
+      EmailActionType.composeFromMailtoUri,
+      EmailActionType.composeFromUnsubscribeMailtoLink,
+      EmailActionType.editAsNewEmail,
+    }.contains(type);
+  }
+
+  bool _isReplyOrForwardAction(EmailActionType type) {
+    return {
+      EmailActionType.reply,
+      EmailActionType.replyToList,
+      EmailActionType.replyAll,
+      EmailActionType.forward,
+    }.contains(type);
+  }
+
+  String _buildQuotedContent({
+    required AppLocalizations appLocalizations,
+    required Locale locale,
+    String emailContent = '',
+  }) {
+    return getEmailContentQuotedAsHtml(
+      locale: locale,
+      appLocalizations: appLocalizations,
+      emailContent: emailContent,
+      emailActionType: arguments!.emailActionType,
+      presentationEmail: arguments!.presentationEmail!,
+    );
+  }
+
+  Widget buildEditor({
+    required TextDirection direction,
+    String content = '',
+  }) {
+    return MobileEditorWidget(
+      content: content.isEmpty ? HtmlExtension.editorStartTags : content,
+      direction: direction,
+      onCreatedEditorAction: onCreatedEditorAction,
+      onLoadCompletedEditorAction: onLoadCompletedEditorAction,
+      onEditorContentHeightChanged: onEditorContentHeightChanged,
+    );
   }
 }
