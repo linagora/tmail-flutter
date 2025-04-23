@@ -1241,6 +1241,14 @@ packages:
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "3.1.6"
+  html_unescape:
+    dependency: transitive
+    description:
+      name: html_unescape
+      sha256: "15362d7a18f19d7b742ef8dcb811f5fd2a2df98db9f80ea393c075189e0b61e3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.0"
   http:
     dependency: transitive
     description:

@@ -4,6 +4,7 @@ import 'package:core/data/constants/constant.dart';
 import 'package:core/domain/extensions/datetime_extension.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/html/html_utils.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
@@ -185,10 +186,11 @@ extension PresentationEmailExtension on PresentationEmail {
     );
   }
 
-  String? _sanitizeSearchSnippet(String? searchSnippet) => searchSnippet
-    ?.replaceAll('\r', '')
-    .replaceAll('\n', '')
-    .replaceAll('\t', '');
+  String? _sanitizeSearchSnippet(String? searchSnippet) {
+    if (searchSnippet == null) return null;
+    return HtmlUtils.unescapeHtml(HtmlUtils.removeWhitespace(searchSnippet));
+  }
+
   String? get sanitizedSearchSnippetSubject => _sanitizeSearchSnippet(searchSnippetSubject);
   String? get sanitizedSearchSnippetPreview => _sanitizeSearchSnippet(searchSnippetPreview);
 }
