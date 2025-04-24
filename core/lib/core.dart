@@ -100,6 +100,9 @@ export 'presentation/views/loading/cupertino_loading_widget.dart';
 export 'presentation/views/image/image_loader_mixin.dart';
 export 'presentation/views/pull_to_refresh/pull_to_refresh_widget.dart';
 export 'presentation/views/button/multi_click_widget.dart';
+export 'presentation/views/semantics/checkbox_semantics.dart';
+export 'presentation/views/semantics/text_field_semantics.dart';
+export 'presentation/views/semantics/icon_semantics.dart';
 
 // Resources
 export 'presentation/resources/assets_paths.dart';
