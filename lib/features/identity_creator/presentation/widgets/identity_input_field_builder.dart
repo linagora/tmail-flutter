@@ -52,6 +52,7 @@ class IdentityInputFieldBuilder extends StatelessWidget {
         focusNode: focusNode,
         textStyle: const TextStyle(color: Colors.black, fontSize: 16),
         keyboardType: inputType ?? TextInputType.text,
+        semanticLabel: 'Identity input field',
         decoration: (IdentityInputDecorationBuilder()
           ..setContentPadding(EdgeInsets.symmetric(
               vertical: PlatformInfo.isWeb ? 16 : 12,

@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/views/semantics/text_field_semantics.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 
@@ -25,6 +26,7 @@ class TextFieldBuilder extends StatefulWidget {
   final TextDirection textDirection;
   final bool readOnly;
   final MouseCursor? mouseCursor;
+  final String? semanticLabel;
 
   const TextFieldBuilder({
     super.key,
@@ -45,6 +47,7 @@ class TextFieldBuilder extends StatefulWidget {
     this.fromValue,
     this.keyboardAppearance,
     this.mouseCursor,
+    this.semanticLabel,
     this.onTap,
     this.onTapOutside,
     this.onTextChange,
@@ -76,7 +79,7 @@ class _TextFieldBuilderState extends State<TextFieldBuilder> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    final textField = TextField(
       key: widget.key,
       controller: _controller,
       cursorColor: widget.cursorColor,
@@ -99,6 +102,16 @@ class _TextFieldBuilderState extends State<TextFieldBuilder> {
       onTap: widget.onTap,
       onTapOutside: widget.onTapOutside,
     );
+
+    if (widget.semanticLabel != null) {
+      return TextFieldSemantics(
+        label: widget.semanticLabel!,
+        value: _controller?.text ?? '',
+        child: textField,
+      );
+    } else {
+      return textField;
+    }
   }
 
   void _onTextChanged(String value) {
