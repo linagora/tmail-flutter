@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/views/semantics/checkbox_semantics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -23,10 +24,14 @@ class SetDefaultIdentityCheckboxBuilder extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        Material(
-          child: InkWell(
-            onTap: onCheckboxChanged,
-            child: Container(
+        CheckboxSemantics(
+          label: 'Set default identity checkbox',
+          value: isCheck,
+          child: Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              onTap: onCheckboxChanged,
+              child: Container(
                 width: 20,
                 height: 20,
                 decoration: BoxDecoration(
@@ -39,7 +44,9 @@ class SetDefaultIdentityCheckboxBuilder extends StatelessWidget {
                   colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
                   width: 18,
                   height: 18,
-                )),
+                ),
+              ),
+            ),
           ),
         ),
         const SizedBox(width: 8),
