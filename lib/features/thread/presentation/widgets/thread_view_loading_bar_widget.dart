@@ -26,7 +26,10 @@ class ThreadViewLoadingBarWidget extends StatelessWidget {
             success is CleanAndGetAllEmailLoading) {
           return const Padding(
             padding: EdgeInsetsDirectional.only(top: 16),
-            child: CupertinoLoadingWidget());
+            child: CupertinoLoadingWidget(
+              semanticLabel: 'Mail list loading icon',
+            ),
+          );
         } else {
           return const SizedBox.shrink();
         }
