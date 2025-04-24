@@ -159,7 +159,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                         bool supportedPageView = controller.emailSupervisorController.supportedPageView.isTrue && PlatformInfo.isMobile;
                         final currentListEmail = controller.emailSupervisorController.currentListEmail;
 
-                        if (supportedPageView) {
+                        if (supportedPageView && !isInsideThreadDetailView) {
                           return PageView.builder(
                             physics: controller.emailSupervisorController.scrollPhysicsPageView.value,
                             itemCount: currentListEmail.length,
@@ -284,6 +284,9 @@ class EmailView extends GetWidget<SingleEmailController> {
                           color: AppColor.colorDividerEmailView,
                         )))
                         : null,
+                      padding: isInsideThreadDetailView
+                        ? EdgeInsets.zero
+                        : null,
                     );
                   }),
                 ]);
@@ -298,20 +301,20 @@ class EmailView extends GetWidget<SingleEmailController> {
   }
 
   EdgeInsetsGeometry? _getMarginEmailView(BuildContext context) {
+    if (PlatformInfo.isMobile) return null;
+
+    if (!controller.responsiveUtils.isDesktop(context)) {
+      return const EdgeInsets.symmetric(vertical: 16);
+    } 
+    
     if (isInsideThreadDetailView) {
       return const EdgeInsetsDirectional.only(end: 16);
-    } if (PlatformInfo.isWeb) {
-      if (controller.responsiveUtils.isDesktop(context)) {
-        return const EdgeInsetsDirectional.only(
-          end: 16,
-          bottom: 16
-        );
-      } else {
-        return const EdgeInsets.symmetric(vertical: 16);
-      }
-    } else {
-      return null;
     }
+    
+    return const EdgeInsetsDirectional.only(
+      end: 16,
+      bottom: 16
+    );
   }
 
   PresentationMailbox? _getMailboxContain(PresentationEmail currentEmail) {
@@ -354,6 +357,7 @@ class EmailView extends GetWidget<SingleEmailController> {
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
       children: [
         EmailSubjectWidget(presentationEmail: presentationEmail),
         Obx(() => InformationSenderAndReceiverBuilder(
@@ -487,6 +491,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                           ),
                           child: LayoutBuilder(builder: (context, constraints) {
                             return HtmlContentViewer(
+                              key: ValueKey(tag),
                               contentHtml: allEmailContents,
                               initialWidth: constraints.maxWidth,
                               direction: AppUtils.getCurrentDirection(context),
@@ -497,6 +502,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                               onScrollHorizontalEnd: controller.toggleScrollPhysicsPagerView,
                               onLoadWidthHtmlViewer: controller.emailSupervisorController.updateScrollPhysicPageView,
                               onHtmlContentClippedAction: controller.onHtmlContentClippedAction,
+                              keepAlive: isInsideThreadDetailView,
                             );
                           }),
                         ),
@@ -526,6 +532,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                   ),
                   child: LayoutBuilder(builder: (context, constraints) {
                     return HtmlContentViewer(
+                      key: ValueKey(tag),
                       contentHtml: allEmailContents,
                       initialWidth: constraints.maxWidth,
                       direction: AppUtils.getCurrentDirection(context),
@@ -534,6 +541,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                       onMailtoDelegateAction: controller.openMailToLink,
                       onScrollHorizontalEnd: controller.toggleScrollPhysicsPagerView,
                       onLoadWidthHtmlViewer: controller.emailSupervisorController.updateScrollPhysicPageView,
+                      keepAlive: isInsideThreadDetailView,
                     );
                   })
                 );

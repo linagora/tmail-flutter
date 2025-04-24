@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -34,7 +35,9 @@ class _ThreadDetailLoadMoreCircleState extends State<ThreadDetailLoadMoreCircle>
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      margin: const EdgeInsetsDirectional.only(end: 16),
+      margin: PlatformInfo.isWeb
+        ? const EdgeInsetsDirectional.only(end: 16)
+        : null,
       child: Stack(
         alignment: Alignment.centerLeft,
         children: [

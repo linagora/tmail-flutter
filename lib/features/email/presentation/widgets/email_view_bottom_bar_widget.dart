@@ -22,6 +22,7 @@ class EmailViewBottomBarWidget extends StatelessWidget {
   final String userName;
   final OnEmailActionCallback emailActionCallback;
   final BoxDecoration? bottomBarDecoration;
+  final EdgeInsetsGeometry? padding;
 
   const EmailViewBottomBarWidget({
     Key? key,
@@ -32,6 +33,7 @@ class EmailViewBottomBarWidget extends StatelessWidget {
     required this.userName,
     required this.emailActionCallback,
     this.bottomBarDecoration,
+    this.padding,
   }) : super(key: key);
 
   @override
@@ -55,7 +57,7 @@ class EmailViewBottomBarWidget extends StatelessWidget {
         ),
         color: EmailViewBottomBarWidgetStyles.backgroundColor
       ),
-      padding: EmailViewBottomBarWidgetStyles.padding,
+      padding: padding ?? EmailViewBottomBarWidgetStyles.padding,
       child: IntrinsicHeight(
         child: Row(
           children: [

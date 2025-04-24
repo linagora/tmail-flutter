@@ -27,7 +27,7 @@ class EmailViewAppBarWidgetStyles {
     } else if (responsiveUtils.isPortraitTablet(context) || responsiveUtils.isLandscapeTablet(context)) {
       return const EdgeInsetsDirectional.only(top: 40, start: 16, end: 16, bottom: 4);
     } else {
-      return const EdgeInsetsDirectional.only(top: 60, start: 16, end: 16, bottom: 4);
+      return const EdgeInsetsDirectional.only(start: 16, end: 16, bottom: 4);
     }
   }
   static const EdgeInsetsGeometry padding = EdgeInsetsDirectional.symmetric(horizontal: 16);

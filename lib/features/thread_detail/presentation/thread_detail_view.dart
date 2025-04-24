@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_loading_view.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_details_email_views.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 
@@ -30,55 +31,63 @@ class _ThreadDetailViewState extends State<ThreadDetailView> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        LayoutBuilder(builder: (context, constraints) {
-          return Container(
-            height: PlatformInfo.isIOS
-              ? EmailViewAppBarWidgetStyles.heightIOS(context, controller.responsiveUtils)
-              : EmailViewAppBarWidgetStyles.height,
-            padding: PlatformInfo.isIOS
-              ? EmailViewAppBarWidgetStyles.paddingIOS(context, controller.responsiveUtils)
-              : EmailViewAppBarWidgetStyles.padding,
-            margin: PlatformInfo.isMobile
+    return SafeArea(
+      child: Column(
+        children: [
+          LayoutBuilder(builder: (context, constraints) {
+            return Container(
+              height: PlatformInfo.isIOS
+                ? EmailViewAppBarWidgetStyles.heightIOS(context, controller.responsiveUtils)
+                : EmailViewAppBarWidgetStyles.height,
+              padding: PlatformInfo.isIOS
+                ? EmailViewAppBarWidgetStyles.paddingIOS(context, controller.responsiveUtils)
+                : EmailViewAppBarWidgetStyles.padding,
+              margin: PlatformInfo.isMobile
                 ? EdgeInsets.zero
                 : controller.responsiveUtils.isDesktop(context)
                   ? const EdgeInsetsDirectional.only(end: 16)
                   : const EdgeInsets.symmetric(vertical: 16),
-            decoration: const BoxDecoration(
-              border: Border(
-                bottom: BorderSide(
-                  color: EmailViewAppBarWidgetStyles.bottomBorderColor,
-                  width: EmailViewAppBarWidgetStyles.bottomBorderWidth,
-                )
+              decoration: const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(
+                    color: EmailViewAppBarWidgetStyles.bottomBorderColor,
+                    width: EmailViewAppBarWidgetStyles.bottomBorderWidth,
+                  )
+                ),
+                borderRadius: BorderRadius.vertical(
+                  top: Radius.circular(EmailViewAppBarWidgetStyles.radius),
+                ),
+                color: EmailViewAppBarWidgetStyles.backgroundColor,
               ),
-              borderRadius: BorderRadius.vertical(
-                top: Radius.circular(EmailViewAppBarWidgetStyles.radius),
+              child: Obx(() {
+                return Row(children: [
+                  if (_supportDisplayMailboxNameTitle(context))
+                    EmailViewBackButton(
+                      imagePaths: controller.imagePaths,
+                      onBackAction: controller.closeThreadDetailAction,
+                      mailboxContain: controller
+                        .mailboxDashBoardController
+                        .selectedMailbox
+                        .value,
+                      isSearchActivated: isSearchActivated,
+                      maxWidth: constraints.maxWidth,
+                    ),
+                ]);
+              })
+            );
+          }),
+          Obx(() => controller.getThreadDetailLoadingView()),
+          Expanded(child: Obx(() {
+            return SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: controller.getThreadDetailEmailViews()
               ),
-              color: EmailViewAppBarWidgetStyles.backgroundColor,
-            ),
-            child: Obx(() {
-              return Row(children: [
-                if (_supportDisplayMailboxNameTitle(context))
-                  EmailViewBackButton(
-                    imagePaths: controller.imagePaths,
-                    onBackAction: controller.closeThreadDetailAction,
-                    mailboxContain: controller
-                      .mailboxDashBoardController
-                      .selectedMailbox
-                      .value,
-                    isSearchActivated: isSearchActivated,
-                    maxWidth: constraints.maxWidth,
-                  ),
-              ]);
-            })
-          );
-        }),
-        Expanded(child: Obx(() {
-          return ListView(children: controller.getThreadDetailEmailViews());
-        })),
-        const SizedBox(height: 16),
-      ],
+            );
+          })),
+          const SizedBox(height: 16),
+        ],
+      ),
     );
   }
 
