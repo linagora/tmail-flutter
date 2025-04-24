@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
+import 'package:cozy/cozy_config_manager/cozy_config_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:get/get.dart';
@@ -38,19 +39,26 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
           child: ResponsiveWidget(
               responsiveUtils: controller.responsiveUtils,
               desktop: Column(children: [
-                Obx(() => NavigationBarWidget(
-                  imagePaths: controller.imagePaths,
-                  accountId: controller.accountId.value,
-                  ownEmailAddress: controller.getOwnEmailAddress(),
-                  onTapApplicationLogoAction: () =>
-                      controller.backToMailboxDashBoard(context: context),
+                FutureBuilder(
+                future: CozyConfigManager().isInsideCozy,
+                builder: (context, snapshot) {
+                  if (snapshot.data == true) return const SizedBox.shrink();
+
+                  return Obx(() => NavigationBarWidget(
+                      imagePaths: controller.imagePaths,
+                      accountId: controller.accountId.value,
+                      ownEmailAddress: controller.getOwnEmailAddress(),
+                      onTapApplicationLogoAction: () =>
+                          controller.backToMailboxDashBoard(context: context),
                   settingActionTypes: const [ProfileSettingActionType.signOut],
-                  onProfileSettingActionTypeClick: (actionType) =>
-                    controller.handleProfileSettingActionTypeClick(
+                      onProfileSettingActionTypeClick: (actionType) =>
+                        controller.handleProfileSettingActionTypeClick(
                       context: context,
                       actionType: actionType,
                     ),
-                )),
+                    ));
+                }
+              ),
                 Expanded(child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
