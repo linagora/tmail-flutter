@@ -18,6 +18,8 @@ import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/widget/optional_expanded.dart';
+import 'package:tmail_ui_user/features/base/widget/optional_scroll.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
@@ -41,35 +43,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widg
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
-
-class _OptionalExpanded extends StatelessWidget {
-  const _OptionalExpanded({required this.expandedEnabled, required this.child});
-
-  final bool expandedEnabled;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return expandedEnabled ? Expanded(child: child) : child;
-  }
-}
-
-class _OptionalScroll extends StatelessWidget {
-  const _OptionalScroll({required this.scrollEnabled, required this.child});
-
-  final bool scrollEnabled;
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) {
-    return scrollEnabled
-      ? SingleChildScrollView(
-          physics : const ClampingScrollPhysics(),
-          child: child,
-        )
-      : child;
-  }
-}
 
 class EmailView extends GetWidget<SingleEmailController> {
 
@@ -152,7 +125,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                       return const SizedBox.shrink();
                     }
                   }),
-                  _OptionalExpanded(
+                  OptionalExpanded(
                     expandedEnabled: !isInsideThreadDetailView,
                     child: LayoutBuilder(builder: (context, constraints) {
                       return Obx(() {
@@ -169,7 +142,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                             itemBuilder: (context, index) {
                               final currentEmail = currentListEmail[index];
                               if (PlatformInfo.isMobile) {
-                                return _OptionalScroll(
+                                return OptionalScroll(
                                   scrollEnabled: !isInsideThreadDetailView,
                                   child: Container(
                                     width: double.infinity,
@@ -189,7 +162,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                                   if (currentEmail.hasCalendarEvent && calendarEvent != null) {
                                     return Padding(
                                       padding: const EdgeInsetsDirectional.symmetric(horizontal: 4),
-                                      child: _OptionalScroll(
+                                      child: OptionalScroll(
                                         scrollEnabled: !isInsideThreadDetailView,
                                         child: Container(
                                           width: double.infinity,
@@ -217,7 +190,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                           );
                         } else {
                           if (PlatformInfo.isMobile) {
-                            return _OptionalScroll(
+                            return OptionalScroll(
                               scrollEnabled: !isInsideThreadDetailView,
                               child: Container(
                                 width: double.infinity,
@@ -237,7 +210,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                               if (currentEmail.hasCalendarEvent && calendarEvent != null) {
                                 return Padding(
                                   padding: const EdgeInsetsDirectional.symmetric(horizontal: 4),
-                                  child: _OptionalScroll(
+                                  child: OptionalScroll(
                                     scrollEnabled: !isInsideThreadDetailView,
                                     child: Container(
                                       width: double.infinity,
@@ -438,7 +411,7 @@ class EmailView extends GetWidget<SingleEmailController> {
               final allEmailContents = controller.emailContents.value ?? '';
 
               if (PlatformInfo.isWeb) {
-                return _OptionalExpanded(
+                return OptionalExpanded(
                   expandedEnabled: !isInsideThreadDetailView,
                   child: Padding(
                     padding: EmailViewStyles.emailContentPadding,
