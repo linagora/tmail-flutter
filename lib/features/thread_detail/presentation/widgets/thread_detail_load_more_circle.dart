@@ -72,7 +72,7 @@ class _ThreadDetailLoadMoreCircleState extends State<ThreadDetailLoadMoreCircle>
                       width: 24,
                       height: 24,
                       child: CircularProgressIndicator(
-                        color: AppColor.tertiaryB8C1CC,
+                        color: AppColor.lightIconTertiary,
                       ),
                     );
                   }

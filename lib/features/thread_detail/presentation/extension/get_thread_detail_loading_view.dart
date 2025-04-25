@@ -14,7 +14,7 @@ extension GetThreadDetailLoadingView on ThreadDetailController {
               height: 24,
               margin: const EdgeInsets.symmetric(vertical: 16),
               child: const CircularProgressIndicator(
-                color: AppColor.tertiaryB8C1CC,
+                color: AppColor.lightIconTertiary,
               ),
             ),
           )
