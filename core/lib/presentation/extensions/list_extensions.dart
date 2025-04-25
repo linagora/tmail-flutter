@@ -20,4 +20,19 @@ extension ListExtensions<T> on List<T> {
   int countOccurrences(T value) {
     return where((element) => element == value).length;
   }
+
+  List<List<T>> chunks(int chunkSize) {
+    if (chunkSize <= 0) {
+      throw ArgumentError('Chunk size must be greater than 0');
+    }
+    
+    final result = <List<T>>[];
+    
+    for (var i = 0; i < length; i += chunkSize) {
+      final end = (i + chunkSize < length) ? i + chunkSize : length;
+      result.add(sublist(i, end));
+    }
+    
+    return result;
+  }
 }

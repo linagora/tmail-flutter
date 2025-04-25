@@ -1,1 +1,1 @@
-enum EmailInThreadStatus { collapsed, expanded }
+enum EmailInThreadStatus { collapsed, expanded, hidden }

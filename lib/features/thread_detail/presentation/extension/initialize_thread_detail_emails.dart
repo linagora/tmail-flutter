@@ -8,7 +8,7 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
       emailIds.map((id) => MapEntry(id, null))
     );
     emailIdsStatus.value = Map.fromEntries(
-      emailIds.map((id) => MapEntry(id, EmailInThreadStatus.collapsed))
+      emailIds.map((id) => MapEntry(id, EmailInThreadStatus.hidden))
     );
     final emailIdToLoadContent = emailIds.last;
     final emailIdsToLoadMetaData = ThreadDetailPresentationUtils.getEmailIdsToLoad(

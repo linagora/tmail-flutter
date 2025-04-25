@@ -1,9 +1,10 @@
-import 'package:collection/collection.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_status.dart';
@@ -35,8 +36,14 @@ class ThreadDetailController extends BaseController {
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
   Session? get session => mailboxDashBoardController.sessionCurrent;
-  int get emailsNotLoadedCount => emailIds.length -
-    emailIdsPresentation.values.whereNotNull().length;
+  MailboxId? get sentMailboxId => mailboxDashBoardController.getMailboxIdByRole(
+    PresentationMailbox.roleSent,
+  );
+  String? get ownEmailAddress => session?.username.value;
+  int get emailsNotLoadedCount => emailIdsStatus
+    .values
+    .where((status) => status == EmailInThreadStatus.hidden)
+    .length;
   bool get loadingThreadDetail => viewState.value.fold(
     (failure) => false,
     (success) => success is GettingEmailIdsByThreadId
@@ -46,10 +53,13 @@ class ThreadDetailController extends BaseController {
   @override
   void onInit() {
     super.onInit();
-    if (accountId != null) {
+    if (session != null && accountId != null && sentMailboxId != null && ownEmailAddress != null) {
       consumeState(_getEmailIdsByThreadIdInteractor.execute(
         arguments.threadId,
+        session!,
         accountId!,
+        sentMailboxId!,
+        ownEmailAddress!,
       ));
     }
   }
