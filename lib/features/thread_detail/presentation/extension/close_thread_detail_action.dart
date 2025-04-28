@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/instance_manager.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
@@ -5,7 +6,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension CloseThreadDetailAction on ThreadDetailController {
-  void closeThreadDetailAction() {
+  void closeThreadDetailAction(BuildContext? context) {
     for (var emailId in emailIdsStatus.keys) {
       final tag = emailId.id.value;
       final controller = getBinding<SingleEmailController>(
@@ -13,7 +14,7 @@ extension CloseThreadDetailAction on ThreadDetailController {
       );
       if (controller == null) continue;
 
-      controller.closeEmailView();
+      controller.closeEmailView(context: context);
       for (var worker in controller.obxListeners) {
         worker.dispose();
       }
