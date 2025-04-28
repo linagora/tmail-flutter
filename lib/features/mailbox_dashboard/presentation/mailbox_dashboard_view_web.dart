@@ -42,8 +42,10 @@ import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete_all_spam_emails_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_empty_trash_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_web_widget.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
@@ -141,7 +143,13 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             case DashboardRoutes.emailDetailed:
                               return const EmailView();
                             case DashboardRoutes.threadDetailed:
-                              return const ThreadDetailView();
+                              return ThreadDetailView(
+                                key: ValueKey(
+                                  getBinding<ThreadDetailController>()
+                                    ?.arguments
+                                    .threadId
+                                ),
+                              );
                             default:
                               return const SizedBox.shrink();
                           }
@@ -171,6 +179,25 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             ],
                           ),
                       );
+                case DashboardRoutes.threadDetailed:
+                  return _buildScaffoldHaveDrawer(
+                    body: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: ResponsiveUtils.defaultSizeLeftMenuMobile,
+                          child: ThreadView()),
+                        const VerticalDivider(width: 1),
+                        Expanded(child: ThreadDetailView(
+                          key: ValueKey(
+                            getBinding<ThreadDetailController>()
+                              ?.arguments
+                              .threadId
+                          ),
+                        )),
+                      ],
+                    ),
+                  );
                 default:
                   return _buildScaffoldHaveDrawer(
                     body: Row(
@@ -190,6 +217,14 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               switch(controller.dashboardRoute.value) {
                 case DashboardRoutes.thread:
                   return _buildScaffoldHaveDrawer(body: ThreadView());
+                case DashboardRoutes.threadDetailed:
+                  return ThreadDetailView(
+                    key: ValueKey(
+                      getBinding<ThreadDetailController>()
+                        ?.arguments
+                        .threadId
+                    ),
+                  );
                 case DashboardRoutes.emailDetailed:
                   return const EmailView();
                 case DashboardRoutes.searchEmail:

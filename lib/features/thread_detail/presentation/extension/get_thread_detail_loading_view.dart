@@ -8,16 +8,26 @@ extension GetThreadDetailLoadingView on ThreadDetailController {
     return viewState.value.fold(
       (failure) => const SizedBox.shrink(),
       (success) => success is GettingEmailIdsByThreadId
-        ? Center(
+        ? Expanded(
             child: Container(
-              width: 24,
-              height: 24,
-              margin: const EdgeInsets.symmetric(vertical: 16),
-              child: const CircularProgressIndicator(
-                color: AppColor.lightIconTertiary,
+              alignment: Alignment.center,
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(20),
+                ),
+              ),
+              padding: const EdgeInsets.only(top: 16),
+              margin: const EdgeInsets.only(right: 16),
+              child: const SizedBox(
+                width: 24,
+                height: 24,
+                child: CircularProgressIndicator(
+                  color: AppColor.lightIconTertiary,
+                ),
               ),
             ),
-          )
+        )
         : const SizedBox.shrink(),
     );
   }
