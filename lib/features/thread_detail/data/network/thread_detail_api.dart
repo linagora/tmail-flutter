@@ -1,14 +1,21 @@
+import 'package:core/presentation/extensions/list_extensions.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:get/get_utils/get_utils.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
 import 'package:jmap_dart_client/jmap/thread/get/get_thread_method.dart';
 import 'package:jmap_dart_client/jmap/thread/get/get_thread_response.dart';
+import 'package:model/extensions/session_extension.dart';
+import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 class ThreadDetailApi {
@@ -50,28 +57,44 @@ class ThreadDetailApi {
       _httpClient,
       ProcessingInvocation(),
     );
-
-    final getEmailMethod = GetEmailMethod(accountId)
-      ..addIds(emailIds.map((emailId) => emailId.id).toSet());
-
-    if (properties != null) {
-      getEmailMethod.addProperties(properties);
+    UnsignedInt? getLimit;
+    try {
+      getLimit = session.getCapabilityProperties<CoreCapability>(
+        accountId,
+        CapabilityIdentifier.jmapCore
+      )?.maxObjectsInGet;
+    } catch (e) {
+      logError('ThreadDetailApi::getEmailsByIds():getLimit:Exception: $e');
     }
+    getLimit ??= ThreadConstants.defaultLimit;
 
-    final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
+    final emails = await Future.wait(
+      emailIds.chunks(getLimit.value.toInt()).map((chunkEmailIds) async {
+        final getEmailMethod = GetEmailMethod(accountId)
+          ..addIds(chunkEmailIds.map((emailId) => emailId.id).toSet());
 
-    final capabilities = getEmailMethod.requiredCapabilities
-      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+        if (properties != null) {
+          getEmailMethod.addProperties(properties);
+        }
 
-    final result = await (jmapRequestBuilder
-        ..usings(capabilities))
-      .build()
-      .execute();
+        final getEmailInvocation = jmapRequestBuilder.invocation(getEmailMethod);
 
-    final resultList = result.parse<GetEmailResponse>(
-      getEmailInvocation.methodCallId,
-      GetEmailResponse.deserialize);
+        final capabilities = getEmailMethod.requiredCapabilities
+          .toCapabilitiesSupportTeamMailboxes(session, accountId);
 
-    return resultList!.list;
+        final result = await (jmapRequestBuilder
+            ..usings(capabilities))
+          .build()
+          .execute();
+
+        final resultList = result.parse<GetEmailResponse>(
+          getEmailInvocation.methodCallId,
+          GetEmailResponse.deserialize);
+
+        return resultList!.list;
+      })
+    );
+
+    return emails.reduce((prev, curr) => prev + curr);
   }
 }

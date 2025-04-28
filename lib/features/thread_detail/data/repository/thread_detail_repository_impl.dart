@@ -1,12 +1,15 @@
-import 'package:collection/collection.dart';
 import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:core/presentation/extensions/list_extensions.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_comparator.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email_comparator_property.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_property.dart';
+import 'package:model/extensions/list_email_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/data/data_source/thread_detail_data_source.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/repository/thread_detail_repository.dart';
 
@@ -67,42 +70,36 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
             }),
           );
         return emails
-          .where((email) => email.id != null && (
-            !emailInSentMailbox(email, sentMailboxId)
-            || !emailFromMe(email, ownEmailAddress)
-            || !emailToMe(email, ownEmailAddress)
+          .where((email) => checkEmailValidForThreadDetail(
+            email,
+            sentMailboxId,
+            ownEmailAddress,
           ))
-          .sorted((a, b) => a.receivedAt == null || b.receivedAt == null
-            ? 0
-            : a.receivedAt!.value.compareTo(b.receivedAt!.value)
-          )
+          .toList()
+          .sortWithResult(EmailComparator(
+            EmailComparatorProperty.receivedAt
+          )..setIsAscending(true))
           .map((e) => e.id!)
           .toList();
       } catch (e) {
         retry--;
+
+        if (retry <= 0) rethrow;
       }
     }
     return [];
   }
 
-  bool emailInSentMailbox(Email email, MailboxId sentMailboxId) {
-    return email.mailboxIds?[sentMailboxId] == true;
-  }
-
-  bool emailFromMe(Email email, String ownEmailAddress) {
-    return email.from?.any(
-      (emailAdress) => emailAdress.email == ownEmailAddress
-    ) == true;
-  }
-
-  bool emailToMe(Email email, String ownEmailAddress) {
-    final to = email.to ?? {};
-    final cc = email.cc ?? {};
-    final bcc = email.bcc ?? {};
-
-    return {...to, ...cc, ...bcc}.any(
-      (emailAdress) => emailAdress.email == ownEmailAddress
-    ) == true;
+  bool checkEmailValidForThreadDetail(
+    Email email,
+    MailboxId sentMailboxId,
+    String ownEmailAddress,
+  ) {
+    return email.id != null && (
+      !email.inSentMailbox(sentMailboxId)
+      || !email.fromMe(ownEmailAddress)
+      || !email.toMe(ownEmailAddress)
+    );
   }
 
   @override
