@@ -4634,7 +4634,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "releaseTo": "Relâcher vers",
+  "releaseTo": "Relâcher pour",
   "@releaseTo": {
     "type": "text",
     "placeholders_order": [],
