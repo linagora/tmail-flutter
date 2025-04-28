@@ -31,11 +31,11 @@ class AppUtils {
     );
   }
 
-  static Future<bool> launchLink(String url, {bool isNewTab = true}) async {
-    return await launchUrl(
+  static void launchLink(String url, {bool isNewTab = true}) {
+    launchUrl(
       Uri.parse(url),
       webOnlyWindowName: isNewTab ? '_blank' : '_self',
-      mode: LaunchMode.externalApplication
+      mode: LaunchMode.platformDefault
     );
   }
 
