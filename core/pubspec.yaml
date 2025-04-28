@@ -55,7 +55,7 @@ dependencies:
 
   device_info_plus: 9.0.1
 
-  flutter_inappwebview: 6.0.0
+  flutter_inappwebview: 6.1.0
 
   url_launcher: 6.3.1
 
@@ -116,7 +116,7 @@ dev_dependencies:
 
   plugin_platform_interface: 2.1.8
 
-  build_runner: 2.4.9
+  build_runner: 2.4.10
 
   mockito: 5.4.4
 # For information on the generic Dart part of this file, see the

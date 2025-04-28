@@ -243,7 +243,7 @@ dependencies:
 
   app_settings: 5.1.1
 
-  web_socket_channel: 2.4.4
+  web_socket_channel: 3.0.3
 
   flutter_web_auth_2: 3.1.1
 
@@ -266,7 +266,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  build_runner: 2.4.9
+  build_runner: 2.4.10
 
   mockito: 5.4.4
 
@@ -302,7 +302,7 @@ dependency_overrides:
   file_picker:
     git:
       url: https://github.com/linagora/flutter_file_picker.git
-      ref: fixbug/tmail-0.15.12-memory-leak
+      ref: v0.8.5-twake-mail
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
