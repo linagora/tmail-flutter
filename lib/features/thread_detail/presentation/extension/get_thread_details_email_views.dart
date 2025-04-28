@@ -39,7 +39,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
 
       return EmailView(
         key: ValueKey(presentationEmail.id?.id.value),
-        presentationEmail: presentationEmail,
+        emailId: presentationEmail.id,
         threadDetailLastEmail: emailId == emailIds.last,
       );
     }).toList();

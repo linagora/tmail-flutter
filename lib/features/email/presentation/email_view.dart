@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
@@ -48,15 +49,15 @@ class EmailView extends GetWidget<SingleEmailController> {
 
   const EmailView({
     super.key,
-    this.presentationEmail,
+    this.emailId,
     this.threadDetailLastEmail = false,
   });
 
-  final PresentationEmail? presentationEmail;
+  final EmailId? emailId;
   final bool threadDetailLastEmail;
   
   @override
-  String? get tag => presentationEmail?.id?.id.value;
+  String? get tag => emailId?.id.value;
 
   bool get isInsideThreadDetailView => tag != null;
 
@@ -254,8 +255,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                       emailActionCallback: controller.pressEmailAction,
                       bottomBarDecoration: isInsideThreadDetailView
                         ? const BoxDecoration(border: Border(top: BorderSide(
-                          color: AppColor.colorDividerEmailView,
-                        )))
+                            color: AppColor.colorDividerEmailView,
+                          )))
                         : null,
                       padding: isInsideThreadDetailView
                         ? EdgeInsets.zero

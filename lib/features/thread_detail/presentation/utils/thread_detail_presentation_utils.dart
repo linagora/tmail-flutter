@@ -8,7 +8,6 @@ class ThreadDetailPresentationUtils {
 
   static const _initialLoadSize = 2;
   static const _defaultLoadSize = 2;
-  // static const _defaultLoadSize = 20;
 
   static List<EmailId> getEmailIdsToLoad(
     Map<EmailId, PresentationEmail?> emailIdsPresentation,
