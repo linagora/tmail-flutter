@@ -23,16 +23,18 @@ extension ListExtensions<T> on List<T> {
 
   List<List<T>> chunks(int chunkSize) {
     if (chunkSize <= 0) {
-      throw ArgumentError('Chunk size must be greater than 0');
+      throw ArgumentError('Chunk size must be greater than 0', 'chunkSize');
     }
-    
+    if (isEmpty) {
+      return [];
+    }
     final result = <List<T>>[];
-    
-    for (var i = 0; i < length; i += chunkSize) {
-      final end = (i + chunkSize < length) ? i + chunkSize : length;
-      result.add(sublist(i, end));
+    final totalChunks = (length / chunkSize).ceil();
+    for (var i = 0; i < totalChunks; i++) {
+      final start = i * chunkSize;
+      final end = (start + chunkSize).clamp(0, length);
+      result.add(sublist(start, end));
     }
-    
     return result;
   }
 }
