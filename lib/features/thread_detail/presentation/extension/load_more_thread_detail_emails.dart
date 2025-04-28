@@ -1,3 +1,4 @@
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/utils/thread_detail_presentation_utils.dart';
 
@@ -14,6 +15,10 @@ extension LoadMoreThreadDetailEmails on ThreadDetailController {
       session!,
       accountId!,
       emailIdsToLoadMetaData,
+      properties: EmailUtils.getPropertiesForEmailGetMethod(
+        session!,
+        accountId!,
+      ),
     ));
   }
 }

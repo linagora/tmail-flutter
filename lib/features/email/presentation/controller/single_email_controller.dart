@@ -253,6 +253,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   @override
   void onInit() {
     _threadDetailController = getBinding<ThreadDetailController>();
+    _injectCalendarEventBindings(session, accountId);
     _registerObxStreamListener();
     _listenDownloadAttachmentProgressState();
     super.onInit();
@@ -367,21 +368,24 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _registerObxStreamListener() {
-    obxListeners.add(ever(mailboxDashBoardController.accountId, (accountId) {
-      if (accountId is AccountId) {
-        _injectAndGetInteractorBindings(
-          session,
-          accountId
-        );
-      }
-    }));
-
     if (initialEmail == null) {
+      obxListeners.add(ever(mailboxDashBoardController.accountId, (accountId) {
+        if (accountId is AccountId) {
+          _injectAndGetInteractorBindings(
+            session,
+            accountId
+          );
+        }
+      }));
+
       obxListeners.add(ever<PresentationEmail?>(
         mailboxDashBoardController.selectedEmail,
         _handleOpenEmailDetailedView
       ));
     } else {
+      if (accountId != null) {
+        _injectAndGetInteractorBindings(session, accountId!);
+      }
       _handleOpenEmailDetailedView(initialEmail);
     }
 

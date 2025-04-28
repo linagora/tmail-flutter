@@ -1,3 +1,4 @@
+import 'dart:math';
 
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
@@ -44,15 +45,14 @@ class EventBodyContentWidget extends StatelessWidget {
       child: Stack(
         children: [
           if (PlatformInfo.isWeb)
-            Container(
-              constraints: const BoxConstraints(maxHeight: EventDescriptionDetailWidgetStyles.maxHeight),
+            Padding(
               padding: const EdgeInsetsDirectional.only(end: EventDescriptionDetailWidgetStyles.webContentPadding),
               child: LayoutBuilder(builder: (context, constraints) {
                 return Stack(
                   children: [
                     HtmlContentViewerOnWeb(
                       widthContent: constraints.maxWidth,
-                      heightContent: constraints.maxHeight,
+                      heightContent: min(constraints.maxHeight, 200),
                       contentHtml: content,
                       mailtoDelegate: onMailtoDelegateAction,
                       direction: AppUtils.getCurrentDirection(context),
