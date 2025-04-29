@@ -135,6 +135,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
@@ -1705,7 +1706,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _updateCurrentEmailId(null);
     _resetToOriginalValue(isEmailClosing: true);
     _replaceBrowserHistory();
-    if (mailboxDashBoardController.searchController.isSearchEmailRunning) {
+    if (mailboxDashBoardController.searchController.isSearchEmailRunning
+      || getBinding<SearchEmailController>()?.searchIsRunning.value == true
+    ) {
       if (context != null && responsiveUtils.isWebDesktop(context)) {
         mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
       } else {

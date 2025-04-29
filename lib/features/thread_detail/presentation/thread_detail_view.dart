@@ -1,13 +1,16 @@
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_email_ids_by_thread_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_loading_view.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_details_email_views.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ThreadDetailView extends GetWidget<ThreadDetailController> {
   const ThreadDetailView({super.key});
@@ -52,10 +55,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                       EmailViewBackButton(
                         imagePaths: controller.imagePaths,
                         onBackAction: () => controller.closeThreadDetailAction(context),
-                        mailboxContain: controller
-                          .mailboxDashBoardController
-                          .selectedMailbox
-                          .value,
+                        mailboxContain: _getMailboxContain(),
                         isSearchActivated: isSearchActivated,
                         maxWidth: constraints.maxWidth,
                       ),
@@ -103,6 +103,14 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
       return const EdgeInsetsDirectional.only(end: 16);
     }
     return EdgeInsets.zero;
+  }
+
+  PresentationMailbox? _getMailboxContain() {
+    if (getBinding<SearchEmailController>()?.searchIsRunning.value == true) {
+      return null;
+    }
+
+    return controller.mailboxDashBoardController.selectedMailbox.value;
   }
 
   bool _supportDisplayMailboxNameTitle(BuildContext context) {
