@@ -18,7 +18,6 @@ extension GetThreadDetailLoadingView on ThreadDetailController {
                 ),
               ),
               padding: const EdgeInsets.only(top: 16),
-              margin: const EdgeInsetsDirectional.only(end: 16),
               child: const SizedBox(
                 width: 24,
                 height: 24,

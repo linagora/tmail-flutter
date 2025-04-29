@@ -74,7 +74,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
 
                 return Expanded(
                   child: Padding(
-                    padding: const EdgeInsetsDirectional.only(end: 16),
+                    padding: _padding(context),
                     child: ClipRRect(
                       borderRadius: const BorderRadius.vertical(
                         bottom: Radius.circular(20),
@@ -91,10 +91,18 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
               },
             );
           }),
-          const SizedBox(height: 16),
+          if (controller.responsiveUtils.isDesktop(context))
+            const SizedBox(height: 16),
         ],
       ),
     );
+  }
+
+  EdgeInsetsGeometry _padding(BuildContext context) {
+    if (controller.responsiveUtils.isDesktop(context)) {
+      return const EdgeInsetsDirectional.only(end: 16);
+    }
+    return EdgeInsets.zero;
   }
 
   bool _supportDisplayMailboxNameTitle(BuildContext context) {
