@@ -1,13 +1,9 @@
 import 'package:core/presentation/extensions/list_extensions.dart';
-import 'package:core/utils/app_logger.dart';
 import 'package:get/get_utils/get_utils.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
-import 'package:jmap_dart_client/jmap/core/capability/core_capability.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_method.dart';
@@ -57,16 +53,8 @@ class ThreadDetailApi {
       _httpClient,
       ProcessingInvocation(),
     );
-    UnsignedInt? getLimit;
-    try {
-      getLimit = session.getCapabilityProperties<CoreCapability>(
-        accountId,
-        CapabilityIdentifier.jmapCore
-      )?.maxObjectsInGet;
-    } catch (e) {
-      logError('ThreadDetailApi::getEmailsByIds():getLimit:Exception: $e');
-    }
-    getLimit ??= ThreadConstants.defaultLimit;
+    final getLimit = session.getMaxObjectsInGet(accountId)
+      ?? ThreadConstants.defaultLimit;
 
     final emails = await Future.wait(
       emailIds.chunks(getLimit.value.toInt()).map((chunkEmailIds) async {
