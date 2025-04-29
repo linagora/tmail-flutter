@@ -50,11 +50,9 @@ class EmailView extends GetWidget<SingleEmailController> {
   const EmailView({
     super.key,
     this.emailId,
-    this.threadDetailLastEmail = false,
   });
 
   final EmailId? emailId;
-  final bool threadDetailLastEmail;
   
   @override
   String? get tag => emailId?.id.value;
@@ -78,12 +76,7 @@ class EmailView extends GetWidget<SingleEmailController> {
               ? const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                   color: Colors.white)
-              : BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: threadDetailLastEmail
-                    ? const BorderRadius.vertical(bottom: Radius.circular(20))
-                    : null,
-                ),
+              : const BoxDecoration(color: Colors.white),
             margin: _getMarginEmailView(context),
             child: Obx(() {
               final currentEmail = controller.currentEmail;
@@ -283,7 +276,7 @@ class EmailView extends GetWidget<SingleEmailController> {
     } 
     
     if (isInsideThreadDetailView) {
-      return const EdgeInsetsDirectional.only(end: 16);
+      return EdgeInsets.zero;
     }
     
     return const EdgeInsetsDirectional.only(

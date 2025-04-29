@@ -73,10 +73,18 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                 }
 
                 return Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: controller.getThreadDetailEmailViews()
+                  child: Padding(
+                    padding: const EdgeInsetsDirectional.only(end: 16),
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.vertical(
+                        bottom: Radius.circular(20),
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: controller.getThreadDetailEmailViews()
+                        ),
+                      ),
                     ),
                   ),
                 );
