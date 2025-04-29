@@ -8,7 +8,11 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension CloseThreadDetailAction on ThreadDetailController {
   void closeThreadDetailAction(BuildContext? context) {
-    mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
+    if (mailboxDashBoardController.searchController.isSearchEmailRunning) {
+      mailboxDashBoardController.dispatchRoute(DashboardRoutes.searchEmail);
+    } else {
+      mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
+    }
     for (var emailId in emailIdsStatus.keys) {
       final tag = emailId.id.value;
       final controller = getBinding<SingleEmailController>(
