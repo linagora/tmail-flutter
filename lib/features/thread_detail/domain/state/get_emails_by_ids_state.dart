@@ -14,5 +14,5 @@ class GetEmailsByIdsSuccess extends UIState {
 }
 
 class GetEmailsByIdsFailure extends FeatureFailure {
-  GetEmailsByIdsFailure({super.exception});
+  GetEmailsByIdsFailure({super.exception, super.onRetry});
 }

@@ -1,5 +1,8 @@
+import 'package:dartz/dartz.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
+import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_status.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/utils/thread_detail_presentation_utils.dart';
 
@@ -17,7 +20,9 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
     );
 
     if (accountId == null || session == null) {
-      // TODO: Handle error
+      consumeState(Stream.value(Left(GetEmailsByIdsFailure(
+        exception: NotFoundSessionException(),
+      ))));
       return;
     }
     consumeState(getEmailsByIdsInteractor.execute(

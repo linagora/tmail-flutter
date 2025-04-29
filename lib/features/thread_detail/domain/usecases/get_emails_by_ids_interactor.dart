@@ -34,7 +34,10 @@ class GetEmailsByIdsInteractor {
       ));
     } catch (e) {
       logError('GetEmailsByIdsInteractor::execute(): Exception: $e');
-      yield Left(GetEmailsByIdsFailure(exception: e));
+      yield Left(GetEmailsByIdsFailure(
+        exception: e,
+        onRetry: execute(session, accountId, emailIds, properties: properties),
+      ));
     }
   }
 }

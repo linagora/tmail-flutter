@@ -33,7 +33,16 @@ class GetEmailIdsByThreadIdInteractor {
       yield Right(GetEmailIdsByThreadIdSuccess(result));
     } catch (e) {
       logError('GetEmailIdsByThreadIdInteractor::execute(): Exception: $e');
-      yield Left(GetEmailIdsByThreadIdFailure(exception: e));
+      yield Left(GetEmailIdsByThreadIdFailure(
+        exception: e,
+        onRetry: execute(
+          threadId,
+          session,
+          accountId,
+          sentMailboxId,
+          ownEmailAddress,
+        ),
+      ));
     }
   }
 }

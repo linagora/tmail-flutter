@@ -14,5 +14,5 @@ class GetEmailIdsByThreadIdSuccess extends UIState {
 }
 
 class GetEmailIdsByThreadIdFailure extends FeatureFailure {
-  GetEmailIdsByThreadIdFailure({super.exception});
+  GetEmailIdsByThreadIdFailure({super.exception, super.onRetry});
 }

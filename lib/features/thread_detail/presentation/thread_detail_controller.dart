@@ -79,7 +79,11 @@ class ThreadDetailController extends BaseController {
   @override
   void handleFailureViewState(failure) {
     if (failure is GetEmailIdsByThreadIdFailure) {
-      // TODO: handle failure
+      showRetryToast(failure);
+      return;
+    }
+    if (failure is GetEmailsByIdsFailure) {
+      showRetryToast(failure);
       return;
     }
     super.handleFailureViewState(failure);
