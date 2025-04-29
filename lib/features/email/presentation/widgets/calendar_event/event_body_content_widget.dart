@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/event_description_detail_widget_styles.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
@@ -52,7 +53,10 @@ class EventBodyContentWidget extends StatelessWidget {
                   children: [
                     HtmlContentViewerOnWeb(
                       widthContent: constraints.maxWidth,
-                      heightContent: min(constraints.maxHeight, 200),
+                      heightContent: min(
+                        constraints.maxHeight,
+                        EmailViewStyles.initialHtmlViewHeight,
+                      ),
                       contentHtml: content,
                       mailtoDelegate: onMailtoDelegateAction,
                       direction: AppUtils.getCurrentDirection(context),

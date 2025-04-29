@@ -103,8 +103,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                     supportBackAction: !isInsideThreadDetailView,
                     appBarDecoration: isInsideThreadDetailView
                       ? const BoxDecoration(border: Border(bottom: BorderSide(
-                        color: AppColor.colorDividerEmailView,
-                      )))
+                          color: AppColor.colorDividerEmailView,
+                        )))
                       : null,
                   )),
                   Obx(() {
@@ -423,7 +423,10 @@ class EmailView extends GetWidget<SingleEmailController> {
                             HtmlContentViewerOnWeb(
                               key: ValueKey(tag),
                               widthContent: constraints.maxWidth,
-                              heightContent: min(constraints.maxHeight, 200),
+                              heightContent: min(
+                                constraints.maxHeight,
+                                EmailViewStyles.initialHtmlViewHeight,
+                              ),
                               contentHtml: allEmailContents,
                               mailtoDelegate: controller.openMailToLink,
                               direction: AppUtils.getCurrentDirection(context),

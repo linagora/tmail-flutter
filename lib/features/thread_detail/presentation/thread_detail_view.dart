@@ -31,11 +31,9 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                 padding: PlatformInfo.isIOS
                   ? EmailViewAppBarWidgetStyles.paddingIOS(context, controller.responsiveUtils)
                   : EmailViewAppBarWidgetStyles.padding,
-                margin: PlatformInfo.isMobile
-                  ? EdgeInsets.zero
-                  : controller.responsiveUtils.isDesktop(context)
-                    ? const EdgeInsetsDirectional.only(end: 16)
-                    : EdgeInsets.zero,
+                margin: !PlatformInfo.isMobile && controller.responsiveUtils.isDesktop(context)
+                  ? const EdgeInsetsDirectional.only(end: 16)
+                  : EdgeInsets.zero,
                 decoration: const BoxDecoration(
                   border: Border(
                     bottom: BorderSide(
