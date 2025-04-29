@@ -106,6 +106,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                           color: AppColor.colorDividerEmailView,
                         )))
                       : null,
+                    emailLoaded: controller.currentEmailLoaded.value,
                   )),
                   Obx(() {
                     final vacation = controller.mailboxDashBoardController.vacationResponse.value;

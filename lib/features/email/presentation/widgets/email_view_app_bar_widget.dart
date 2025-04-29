@@ -8,7 +8,7 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -19,9 +19,6 @@ typedef OnMoreActionClick = void Function(PresentationEmail, RelativeRect?);
 class EmailViewAppBarWidget extends StatelessWidget {
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
-  late final _singleEmailController = Get.find<SingleEmailController>(
-    tag: presentationEmail.id?.id.value,
-  );
 
   final PresentationEmail presentationEmail;
   final List<Widget>? optionsWidget;
@@ -32,6 +29,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
   final OnMoreActionClick? onMoreActionClick;
   final bool supportBackAction;
   final BoxDecoration? appBarDecoration;
+  final EmailLoaded? emailLoaded;
 
   EmailViewAppBarWidget({
     Key? key,
@@ -44,6 +42,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
     this.optionsWidget,
     this.supportBackAction = true,
     this.appBarDecoration,
+    required this.emailLoaded,
   }) : super(key: key);
 
   @override
@@ -108,8 +107,8 @@ class EmailViewAppBarWidget extends StatelessWidget {
                   )
                 ),
                 if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit)
-                  Obx(() => AbsorbPointer(
-                    absorbing: _singleEmailController.currentEmailLoaded.value == null,
+                  AbsorbPointer(
+                    absorbing: emailLoaded == null,
                     child: TMailButtonWidget.fromIcon(
                       icon: _imagePaths.icPrinter,
                       iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
@@ -121,7 +120,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
                         EmailActionType.printAll,
                       ),
                     ),
-                  )),
+                  ),
                 TMailButtonWidget.fromIcon(
                   icon: _imagePaths.icDeleteComposer,
                   iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
