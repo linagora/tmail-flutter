@@ -856,6 +856,8 @@ class MailboxDashBoardController extends ReloadableController
     log('MailboxDashBoardController::handleAdvancedSearchEmail:');
     if (_searchInsideEmailDetailedViewIsActive()) {
       _closeEmailDetailedView();
+    } else if (_searchInsideThreadDetailViewIsActive()) {
+      _closeThreadDetailView(currentContext);
     }
     _unSelectedMailbox();
     searchController.clearFilterSuggestion();
