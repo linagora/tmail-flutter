@@ -4386,5 +4386,65 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "viewEntireMessage": "Féach ar an teachtaireacht iomlán",
+  "@viewEntireMessage": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youAcceptedTheProposedTimeForThisMeeting": "Ghlac tú leis an am a moladh don chruinniú seo",
+  "@youAcceptedTheProposedTimeForThisMeeting": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pullHarderFor": "Tarraing níos deacra ar son",
+  "@pullHarderFor": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youHaveAnotherEventAtThatSameTime": "Tá imeacht eile agat ag an am céanna",
+  "@youHaveAnotherEventAtThatSameTime": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageClipped": "[Teachtaireacht gearrtha]",
+  "@messageClipped": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "retry": "Déan iarracht eile",
+  "@retry": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "refresh": "Athnuachan",
+  "@refresh": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deepRefresh": "Athnuachan domhain",
+  "@deepRefresh": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "pullDownToRefresh": "Tarraing síos chun athnuachan",
+  "@pullDownToRefresh": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "releaseTo": "Scaoileadh chuig",
+  "@releaseTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
