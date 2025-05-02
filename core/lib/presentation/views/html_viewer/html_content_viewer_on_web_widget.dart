@@ -32,6 +32,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final bool allowResizeToDocumentSize;
 
   final bool keepWidthWhileLoading;
+  final bool enableQuoteToggle;
 
   const HtmlContentViewerOnWeb({
     Key? key,
@@ -45,6 +46,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     this.onClickHyperLinkAction,
     this.keepWidthWhileLoading = false,
     this.contentPadding,
+    this.enableQuoteToggle = false,
   }) : super(key: key);
 
   @override
@@ -269,12 +271,37 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       </script>
     ''';
 
+    final scriptToggleQuote = widget.enableQuoteToggle ? '''
+      <script type="text/javascript">
+        const blockquote = document.getElementsByTagName("blockquote")[0];
+        const cite = document.getElementsByTagName("cite")[0];
+        window.addEventListener('load', () => {
+          if (!blockquote.style.display || blockquote.style.display === "block") {
+            blockquote.style.display = "none";
+          }
+          if (!cite.style.display || cite.style.display === "block") {
+            cite.style.display = "none";
+          }
+        })
+        document.getElementById('quote-toggle').addEventListener('click', () => {
+          blockquote.style.display = blockquote.style.display === "none" ? "block" : "none";
+          cite.style.display = cite.style.display === "none" ? "block" : "none";
+          e.stopPropagation();
+        });
+      </script>
+    ''' : '';
+
     final htmlTemplate = HtmlUtils.generateHtmlDocument(
-      content: content,
+      content: widget.enableQuoteToggle
+        ? HtmlUtils.addQuoteToggle(content)
+        : content,
       minHeight: minHeight,
       minWidth: _minWidth,
       styleCSS: HtmlTemplate.tooltipLinkCss,
-      javaScripts: webViewActionScripts + scriptsDisableZoom + HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
+      javaScripts: webViewActionScripts
+        + scriptsDisableZoom
+        + HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage
+        + scriptToggleQuote,
       direction: widget.direction,
       contentPadding: widget.contentPadding,
       useDefaultFont: widget.useDefaultFont,

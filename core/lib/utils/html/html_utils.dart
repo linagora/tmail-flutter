@@ -511,4 +511,26 @@ class HtmlUtils {
       logError('AppUtils::setWindowBrowserTitle:Exception = $e');
     }
   }
+
+  static String addQuoteToggle(String htmlContent) {
+    try {
+      final document = html.DocumentFragment.html(htmlContent);
+
+      final lastChild = document.children.last;
+      final secondToLastChild = lastChild.previousElementSibling!;
+
+      if (lastChild.localName != 'blockquote' || secondToLastChild.localName != 'cite') {
+        return htmlContent;
+      }
+
+      return htmlContent.replaceFirst(
+        '<cite',
+        '<button id="quote-toggle" style="padding: 0; background: none; border: none;">...</button><cite',
+      );
+
+    } catch (e) {
+      logError('AppUtils::addQuoteToggle:Exception = $e');
+      return htmlContent;
+    }
+  }
 }

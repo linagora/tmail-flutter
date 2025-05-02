@@ -446,6 +446,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                               direction: AppUtils.getCurrentDirection(context),
                               contentPadding: 0,
                               useDefaultFont: true,
+                              enableQuoteToggle: isInsideThreadDetailView
+                                && !isLastEmailInThreadDetail,
                             ),
                             if (controller.mailboxDashBoardController.isAttachmentDraggableAppActive)
                               PointerInterceptor(
