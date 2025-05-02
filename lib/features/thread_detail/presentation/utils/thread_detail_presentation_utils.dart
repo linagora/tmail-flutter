@@ -20,14 +20,14 @@ class ThreadDetailPresentationUtils {
     if (validEmailIdsToLoad.length == emailIdsPresentation.length) {
       // No email loaded yet
       return validEmailIdsToLoad.sublist(
-        0,
-        min(validEmailIdsToLoad.length, _initialLoadSize),
+        validEmailIdsToLoad.length - min(validEmailIdsToLoad.length, _initialLoadSize),
+        validEmailIdsToLoad.length,
       );
     }
 
     return validEmailIdsToLoad.sublist(
-      validEmailIdsToLoad.length - min(validEmailIdsToLoad.length, _defaultLoadSize),
-      validEmailIdsToLoad.length,
+      0,
+      min(validEmailIdsToLoad.length, _defaultLoadSize),
     );
   }
 }

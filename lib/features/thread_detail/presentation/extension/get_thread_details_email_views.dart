@@ -37,9 +37,18 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
         return const SizedBox.shrink();
       }
 
+      final isFirstEmailInThreadDetail = emailIds.indexOf(emailId) == 0;
+      final isLastEmailInThreadDetail = emailIds.indexOf(emailId) ==
+        emailIds.length - 1;
+
       return EmailView(
         key: ValueKey(presentationEmail.id?.id.value),
         emailId: presentationEmail.id,
+        isFirstEmailInThreadDetail: isFirstEmailInThreadDetail,
+        isLastEmailInThreadDetail: isLastEmailInThreadDetail,
+        threadSubject: isFirstEmailInThreadDetail
+          ? emailIdsPresentation.values.last?.subject
+          : null,
       );
     }).toList();
   }

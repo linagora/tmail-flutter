@@ -78,7 +78,7 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
           .toList()
           .sortWithResult(EmailComparator(
             EmailComparatorProperty.receivedAt
-          )..setIsAscending(true))
+          )..setIsAscending(false))
           .map((e) => e.id!)
           .toList();
       } catch (e) {

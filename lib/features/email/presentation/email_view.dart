@@ -50,9 +50,15 @@ class EmailView extends GetWidget<SingleEmailController> {
   const EmailView({
     super.key,
     this.emailId,
+    this.isFirstEmailInThreadDetail = false,
+    this.isLastEmailInThreadDetail = false,
+    this.threadSubject,
   });
 
   final EmailId? emailId;
+  final bool isFirstEmailInThreadDetail;
+  final bool isLastEmailInThreadDetail;
+  final String? threadSubject;
   
   @override
   String? get tag => emailId?.id.value;
@@ -93,8 +99,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                     optionsWidget: PlatformInfo.isWeb && controller.emailSupervisorController.supportedPageView.isTrue
                       ? _buildNavigatorPageViewWidgets(context)
                       : null,
-                    supportBackAction: !isInsideThreadDetailView,
-                    appBarDecoration: isInsideThreadDetailView
+                    supportBackAction: isFirstEmailInThreadDetail,
+                    appBarDecoration: !isFirstEmailInThreadDetail
                       ? const BoxDecoration(border: Border(bottom: BorderSide(
                           color: AppColor.colorDividerEmailView,
                         )))
@@ -237,7 +243,11 @@ class EmailView extends GetWidget<SingleEmailController> {
                   Obx(() {
                     final emailLoaded = controller.currentEmailLoaded.value;
 
-                    if (emailLoaded == null) return const SizedBox.shrink();
+                    if (emailLoaded == null
+                      || hideBottomBarInThreadDetailWeb(context)
+                    ) {
+                      return const SizedBox.shrink();
+                    }
 
                     return EmailViewBottomBarWidget(
                       key: const Key('email_view_button_bar'),
@@ -267,6 +277,11 @@ class EmailView extends GetWidget<SingleEmailController> {
       ),
     );
   }
+
+  bool hideBottomBarInThreadDetailWeb(BuildContext context) =>
+    controller.responsiveUtils.isDesktop(context)
+      && isInsideThreadDetailView
+      && !isLastEmailInThreadDetail;
 
   EdgeInsetsGeometry? _getMarginEmailView(BuildContext context) {
     if (PlatformInfo.isMobile) return null;
@@ -327,7 +342,12 @@ class EmailView extends GetWidget<SingleEmailController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        EmailSubjectWidget(presentationEmail: presentationEmail),
+        if (!isInsideThreadDetailView || isFirstEmailInThreadDetail)
+          EmailSubjectWidget(
+            presentationEmail: presentationEmail.copyWith(
+              subject: threadSubject,
+            ),
+          ),
         Obx(() => InformationSenderAndReceiverBuilder(
           emailSelected: presentationEmail,
           imagePaths: controller.imagePaths,
