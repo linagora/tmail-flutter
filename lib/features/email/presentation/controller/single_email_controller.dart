@@ -1529,6 +1529,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       case EmailActionType.editAsNewEmail:
         _editAsNewEmail(presentationEmail);
         break;
+      case EmailActionType.reply:
+        _replyEmail(presentationEmail);
+        break;
       default:
         break;
     }
@@ -1760,17 +1763,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mailboxDashBoardController.openComposer(ComposerArguments());
         break;
       case EmailActionType.reply:
-        mailboxDashBoardController.openComposer(
-          ComposerArguments.replyEmail(
-            presentationEmail: presentationEmail,
-            content: currentEmailLoaded.value?.htmlContent ?? '',
-            inlineImages: currentEmailLoaded.value?.inlineImages ?? [],
-            mailboxRole: presentationEmail.mailboxContain?.role,
-            messageId: currentEmailLoaded.value?.emailCurrent?.messageId,
-            references: currentEmailLoaded.value?.emailCurrent?.references,
-            listPost: currentEmailLoaded.value?.emailCurrent?.listPost,
-          )
-        );
+        _replyEmail(presentationEmail);
         break;
       case EmailActionType.replyToList:
         log('SingleEmailController::pressEmailAction:replyToList');
@@ -2235,6 +2228,20 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     mailboxDashBoardController.openComposer(
       ComposerArguments.editAsNewEmail(presentationEmail),
+    );
+  }
+
+  void _replyEmail(PresentationEmail presentationEmail) {
+    mailboxDashBoardController.openComposer(
+      ComposerArguments.replyEmail(
+        presentationEmail: presentationEmail,
+        content: currentEmailLoaded.value?.htmlContent ?? '',
+        inlineImages: currentEmailLoaded.value?.inlineImages ?? [],
+        mailboxRole: presentationEmail.mailboxContain?.role,
+        messageId: currentEmailLoaded.value?.emailCurrent?.messageId,
+        references: currentEmailLoaded.value?.emailCurrent?.references,
+        listPost: currentEmailLoaded.value?.emailCurrent?.listPost,
+      )
     );
   }
 

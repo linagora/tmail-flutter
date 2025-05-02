@@ -561,6 +561,8 @@ class EmailView extends GetWidget<SingleEmailController> {
       if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit)
         EmailActionType.downloadMessageAsEML,
       EmailActionType.editAsNewEmail,
+      if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit)
+        EmailActionType.printAll,
     ];
 
     if (position == null) {

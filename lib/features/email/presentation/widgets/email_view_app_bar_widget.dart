@@ -82,6 +82,14 @@ class EmailViewAppBarWidget extends StatelessWidget {
             children: [
                 if (optionsWidget != null) ... optionsWidget!,
                 TMailButtonWidget.fromIcon(
+                  icon: _imagePaths.icReply,
+                  iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
+                  iconColor: EmailViewAppBarWidgetStyles.iconColor,
+                  tooltipMessage: AppLocalizations.of(context).reply,
+                  backgroundColor: Colors.transparent,
+                  onTapActionCallback: () => onEmailActionClick?.call(presentationEmail, EmailActionType.reply),
+                ),
+                TMailButtonWidget.fromIcon(
                   icon: _imagePaths.icMoveEmail,
                   iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
                   iconColor: EmailViewAppBarWidgetStyles.iconColor,
@@ -106,21 +114,6 @@ class EmailViewAppBarWidget extends StatelessWidget {
                     presentationEmail.hasStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred
                   )
                 ),
-                if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit)
-                  AbsorbPointer(
-                    absorbing: emailLoaded == null,
-                    child: TMailButtonWidget.fromIcon(
-                      icon: _imagePaths.icPrinter,
-                      iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
-                      iconColor: EmailViewAppBarWidgetStyles.iconColor,
-                      backgroundColor: Colors.transparent,
-                      tooltipMessage: AppLocalizations.of(context).printAll,
-                      onTapActionCallback: () => onEmailActionClick?.call(
-                        presentationEmail,
-                        EmailActionType.printAll,
-                      ),
-                    ),
-                  ),
                 TMailButtonWidget.fromIcon(
                   icon: _imagePaths.icDeleteComposer,
                   iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
