@@ -46,7 +46,7 @@ class HtmlContentViewer extends StatefulWidget {
     this.initialWidth,
     this.direction,
     this.minHtmlContentHeight = ConstantsUI.htmlContentMinHeight,
-    this.offsetHtmlContentHeight = ConstantsUI.htmlContentMinHeight,
+    this.offsetHtmlContentHeight = ConstantsUI.htmlContentOffsetHeight,
     this.keepWidthWhileLoading = false,
     this.contentPadding,
     this.useDefaultFont = false,
