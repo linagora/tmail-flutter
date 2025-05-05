@@ -172,6 +172,11 @@ class HtmlUtils {
             scrollbar-width: none;  /* Firefox */
           }
         ''' : ''}
+        
+        pre {
+          white-space: pre-wrap;
+        }
+        
         ${styleCSS ?? ''}
       </style>
       </head>
