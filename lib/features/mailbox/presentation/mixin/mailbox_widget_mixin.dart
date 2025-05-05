@@ -340,30 +340,40 @@ mixin MailboxWidgetMixin {
     BaseMailboxController baseMailboxController,
     {
       required Function(MailboxCategories categories) toggleMailboxCategories,
-      EdgeInsetsGeometry? padding
+      EdgeInsetsGeometry? padding,
+      bool isArrangeLTR = true,
     }
   ) {
-    return Padding(
-      padding: padding ?? EdgeInsets.zero,
-      child: Row(children: [
-        Obx(() {
-          final expandMode = categories.getExpandMode(baseMailboxController.mailboxCategoriesExpandMode.value);
-          return TMailButtonWidget.fromIcon(
-            icon: expandMode == ExpandMode.EXPAND
-              ? imagePaths.icArrowBottom
-              : DirectionUtils.isDirectionRTLByLanguage(context)
-                  ? imagePaths.icArrowLeft
-                  : imagePaths.icArrowRight,
-            iconColor: Colors.black,
-            iconSize: 20,
-            backgroundColor: Colors.transparent,
-            padding: const EdgeInsets.all(5),
-            tooltipMessage: expandMode == ExpandMode.EXPAND
-              ? AppLocalizations.of(context).collapse
-              : AppLocalizations.of(context).expand,
-            onTapActionCallback: () => toggleMailboxCategories(categories)
-          );
-        }),
+    final item = Row(children: [
+      if (!isArrangeLTR)
+        Flexible(
+          child: Text(
+            categories.getTitle(context),
+            maxLines: 1,
+            overflow: CommonTextStyle.defaultTextOverFlow,
+            softWrap: CommonTextStyle.defaultSoftWrap,
+            style: ThemeUtils.textStyleBodyBody3(color: Colors.black),
+          ),
+        ),
+      Obx(() {
+        final expandMode = categories.getExpandMode(baseMailboxController.mailboxCategoriesExpandMode.value);
+        return TMailButtonWidget.fromIcon(
+          icon: expandMode == ExpandMode.EXPAND
+            ? imagePaths.icArrowBottom
+            : DirectionUtils.isDirectionRTLByLanguage(context)
+                ? imagePaths.icArrowLeft
+                : imagePaths.icArrowRight,
+          iconColor: Colors.black,
+          iconSize: 20,
+          backgroundColor: Colors.transparent,
+          padding: const EdgeInsets.all(5),
+          tooltipMessage: expandMode == ExpandMode.EXPAND
+            ? AppLocalizations.of(context).collapse
+            : AppLocalizations.of(context).expand,
+          onTapActionCallback: () => toggleMailboxCategories(categories)
+        );
+      }),
+      if (isArrangeLTR)
         Expanded(child: Text(
           categories.getTitle(context),
           maxLines: 1,
@@ -371,7 +381,12 @@ mixin MailboxWidgetMixin {
           softWrap: CommonTextStyle.defaultSoftWrap,
           style: ThemeUtils.textStyleBodyBody3(color: Colors.black)
         )),
-      ])
-    );
+    ]);
+
+    if (padding != null) {
+      return Padding(padding: padding, child: item);
+    } else {
+      return item;
+    }
   }
 }
