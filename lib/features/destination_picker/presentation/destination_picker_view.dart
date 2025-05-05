@@ -348,7 +348,8 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
             categories,
             controller,
             toggleMailboxCategories: controller.toggleMailboxCategories,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8)
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            isArrangeLTR: false,
           ),
           AnimatedContainer(
             duration: const Duration(milliseconds: 400),

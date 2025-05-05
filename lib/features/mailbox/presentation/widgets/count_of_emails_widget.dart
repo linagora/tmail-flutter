@@ -1,7 +1,6 @@
 
 import 'package:core/presentation/utils/style_utils.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/styles/count_of_emails_styles.dart';
+import 'package:flutter/material.dart';
 
 class CountOfEmailsWidget extends StatelessWidget {
 
@@ -16,10 +15,8 @@ class CountOfEmailsWidget extends StatelessWidget {
       maxLines: 1,
       overflow: CommonTextStyle.defaultTextOverFlow,
       softWrap: CommonTextStyle.defaultSoftWrap,
-      style: const TextStyle(
-        fontSize: CountOfEmailsStyles.textSize,
-        color: CountOfEmailsStyles.textColor,
-        fontWeight: CountOfEmailsStyles.textFontWeight
+      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+        color: Colors.black,
       ),
     );
   }

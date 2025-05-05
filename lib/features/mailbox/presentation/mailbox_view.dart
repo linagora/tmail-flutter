@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -331,38 +330,6 @@ class MailboxView extends BaseMailboxView {
     );
   }
 
-  Widget _buildHeaderMailboxCategory(BuildContext context, MailboxCategories categories) {
-    return Padding(
-        padding: EdgeInsetsDirectional.only(
-          start: 12,
-          end: controller.responsiveUtils.isLandscapeMobile(context) ? 8 : 28),
-        child: Row(children: [
-          TMailButtonWidget.fromIcon(
-            icon: categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
-              ? controller.imagePaths.icArrowBottom
-              : DirectionUtils.isDirectionRTLByLanguage(context)
-                  ? controller.imagePaths.icArrowLeft
-                  : controller.imagePaths.icArrowRight,
-            tooltipMessage: AppLocalizations.of(context).collapse,
-            backgroundColor: Colors.transparent,
-            padding: const EdgeInsets.all(5),
-            iconColor: Colors.black,
-            iconSize: 20,
-            onTapActionCallback: () => controller.toggleMailboxCategories(categories)
-          ),
-          Expanded(
-            child: Text(
-              categories.getTitle(context),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: ThemeUtils.textStyleBodyBody3(
-                color: Colors.black,
-              )
-            )
-          ),
-        ]));
-  }
-
   Widget _buildBodyMailboxCategory(BuildContext context, MailboxCategories categories, MailboxNode mailboxNode) {
     final lastNode = mailboxNode.childrenItems?.last;
 
@@ -382,7 +349,18 @@ class MailboxView extends BaseMailboxView {
       return _buildBodyMailboxCategory(context, categories, mailboxNode);
     }
     return Column(children: [
-      _buildHeaderMailboxCategory(context, categories),
+      buildHeaderMailboxCategory(
+        context,
+        controller.responsiveUtils,
+        controller.imagePaths,
+        categories,
+        controller,
+        toggleMailboxCategories: controller.toggleMailboxCategories,
+        padding: EdgeInsetsDirectional.only(
+          start: 16,
+          end: controller.responsiveUtils.isLandscapeMobile(context) ? 8 : 28),
+        isArrangeLTR: false,
+      ),
       AnimatedContainer(
         duration: const Duration(milliseconds: 400),
         child: categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND

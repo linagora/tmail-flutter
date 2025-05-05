@@ -323,7 +323,8 @@ class MailboxView extends BaseMailboxView {
             toggleMailboxCategories: controller.toggleMailboxCategories,
             padding: controller.responsiveUtils.isDesktop(context)
               ? null
-              : const EdgeInsetsDirectional.only(start: 16)
+              : const EdgeInsetsDirectional.only(start: 16),
+            isArrangeLTR: false,
           ),
           AnimatedContainer(
             duration: const Duration(milliseconds: 400),
