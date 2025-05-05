@@ -631,7 +631,9 @@ class ComposerController extends BaseController
     await setupListIdentities(arguments);
     await setupEmailContent(arguments);
 
-    if (screenDisplayMode.value.isNotContentVisible()) {
+    if (screenDisplayMode.value.isNotContentVisible() &&
+        currentContext != null &&
+        responsiveUtils.isWebDesktop(currentContext!)) {
       await setupSelectedIdentityWithoutApplySignature();
     }
   }
