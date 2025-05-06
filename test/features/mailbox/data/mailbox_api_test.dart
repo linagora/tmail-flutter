@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
+import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:mockito/annotations.dart';
@@ -385,6 +386,90 @@ void main() {
 
         expect(
           () => mailboxAPI.setRoleDefaultMailbox(session, accountId, listMailbox),
+          throwsA(isA<Exception>()),
+        );
+      });
+    });
+
+    group('clearMailbox method test', () {
+      final trashMailboxId = MailboxId(Id('trash-id'));
+      final notFoundMailboxId = MailboxId(Id('notFoundMailboxId'));
+
+      test('Should return totalDeletedMessagesCount when clear mailbox success', () async {
+        final mapResponseData = {
+          "methodResponses": [
+            [
+              "Mailbox/clear",
+              {
+                "accountId": accountId.asString,
+                "totalDeletedMessagesCount": 10,
+              },
+              "c0"
+            ]
+          ],
+          "sessionState": "0"
+        };
+
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => mapResponseData);
+
+        final result = await mailboxAPI.clearMailbox(
+          session,
+          accountId,
+          trashMailboxId,
+        );
+
+        verify(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        ));
+
+        expect(result.value, 10);
+      });
+
+      test('Should return notCleared when clear mailbox fail with mailbox id not found', () async {
+        final mapResponseData = {
+          "methodResponses": [
+            [
+              "Mailbox/clear",
+              {
+                "accountId": accountId.asString,
+                "notCleared": {
+                 "type": "notFound",
+                 "description": "${notFoundMailboxId.id.value} can not be found"
+                }
+              },
+              "c0"
+            ]
+          ],
+          "sessionState": "0"
+        };
+
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenAnswer((_) async => mapResponseData);
+
+        expect(
+          () => mailboxAPI.clearMailbox(session, accountId, notFoundMailboxId),
+          throwsA(isA<SetError>()),
+        );
+      });
+
+      test('Should throw exception when http client throw exception', () async {
+        when(httpClient.post(
+          '',
+          data: anyNamed('data'),
+          cancelToken: anyNamed('cancelToken'),
+        )).thenThrow(Exception());
+
+        expect(
+          () => mailboxAPI.clearMailbox(session, accountId, trashMailboxId),
           throwsA(isA<Exception>()),
         );
       });

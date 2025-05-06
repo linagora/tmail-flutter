@@ -300,4 +300,9 @@ class MailboxRepositoryImpl extends MailboxRepository {
   Future<GetMailboxByRoleResponse> getMailboxByRole(Session session, AccountId accountId, Role role, {UnsignedInt? limit}) {
     return mapDataSource[DataSourceType.network]!.getMailboxByRole(session, accountId, role);
   }
+
+  @override
+  Future<UnsignedInt> clearMailbox(Session session, AccountId accountId, MailboxId mailboxId) {
+    return mapDataSource[DataSourceType.network]!.clearMailbox(session, accountId, mailboxId);
+  }
 }

@@ -9,6 +9,7 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
+import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -59,4 +60,6 @@ abstract class MailboxDataSource {
   Future<GetMailboxByRoleResponse> getMailboxByRole(Session session, AccountId accountId, Role role);
 
   Future<void> clearAllMailboxCache(AccountId accountId, UserName userName);
+
+  Future<UnsignedInt> clearMailbox(Session session, AccountId accountId, MailboxId mailboxId);
 }
