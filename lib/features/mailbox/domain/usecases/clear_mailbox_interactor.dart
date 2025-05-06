@@ -24,7 +24,7 @@ class ClearMailboxInteractor {
         accountId,
         mailboxId,
       );
-      yield Right<Failure, Success>(ClearMailboxSuccess(totalDeletedMessages));
+      yield Right<Failure, Success>(ClearMailboxSuccess(mailboxId, totalDeletedMessages));
     } catch (e) {
       yield Left<Failure, Success>(ClearMailboxFailure(e));
     }

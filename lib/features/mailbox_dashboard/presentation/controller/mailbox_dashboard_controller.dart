@@ -81,8 +81,10 @@ import 'package:tmail_ui_user/features/login/domain/exceptions/logout_exception.
 import 'package:tmail_ui_user/features/login/presentation/model/login_navigate_arguments.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/mailbox_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/create_new_mailbox_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/refresh_all_mailboxes_state.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/clear_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
@@ -101,6 +103,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/search_controller.dart' as search;
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/spam_report_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_clear_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preferences_setting_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
@@ -166,6 +169,7 @@ import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_t
 import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
 import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
+import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
@@ -218,6 +222,7 @@ class MailboxDashBoardController extends ReloadableController
   final RemoveComposerCacheByIdOnWebInteractor _removeComposerCacheByIdOnWebInteractor;
   final RemoveAllComposerCacheOnWebInteractor _removeAllComposerCacheOnWebInteractor;
   final GetAllIdentitiesInteractor _getAllIdentitiesInteractor;
+  final ClearMailboxInteractor clearMailboxInteractor;
 
   GetAllVacationInteractor? _getAllVacationInteractor;
   UpdateVacationInteractor? _updateVacationInteractor;
@@ -310,6 +315,7 @@ class MailboxDashBoardController extends ReloadableController
     this._removeAllComposerCacheOnWebInteractor,
     this._removeComposerCacheByIdOnWebInteractor,
     this._getAllIdentitiesInteractor,
+    this.clearMailboxInteractor,
   );
 
   @override
@@ -448,6 +454,8 @@ class MailboxDashBoardController extends ReloadableController
       );
     } else if (success is GetServerSettingSuccess) {
       isSenderImportantFlagEnabled.value = success.settingOption.isDisplaySenderPriority;
+    } else if (success is ClearMailboxSuccess) {
+      clearMailboxSuccess(success);
     }
   }
 
@@ -1608,15 +1616,26 @@ class MailboxDashBoardController extends ReloadableController
     onCancelSelectionEmail?.call();
 
     final trashMailboxId = trashFolderId ?? mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash];
-    final trashMailbox = mapMailboxById[trashMailboxId];
-    final totalEmailsInTrash = totalEmails == 0 ? trashMailbox?.countTotalEmails : totalEmails;
-    if (sessionCurrent != null && accountId.value != null && trashMailboxId != null) {
+    final accountId = this.accountId.value;
+    if (sessionCurrent == null ||
+        accountId == null ||
+        trashMailboxId == null) {
+      return;
+    }
+
+    if (CapabilityIdentifier.jmapMailboxClear.isSupported(sessionCurrent!, accountId)) {
+      clearMailbox(sessionCurrent!, accountId, trashMailboxId);
+    } else {
+      final totalEmailsInTrash = totalEmails == 0
+          ? mapMailboxById[trashMailboxId]?.countTotalEmails ?? 0
+          : totalEmails;
+
       consumeState(_emptyTrashFolderInteractor.execute(
         sessionCurrent!,
-        accountId.value!,
+        accountId,
         trashMailboxId,
-        totalEmailsInTrash ?? 0,
-        _progressStateController
+        totalEmailsInTrash,
+        _progressStateController,
       ));
     }
   }

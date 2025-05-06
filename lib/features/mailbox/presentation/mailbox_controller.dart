@@ -46,6 +46,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/mailbox_right_reques
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_mailbox_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_request.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_default_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/create_new_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/delete_multiple_mailbox_state.dart';
@@ -396,6 +397,11 @@ class MailboxController extends BaseMailboxController
           originalMailboxIdsWithEmailIds: reactionState.originalMailboxIdsWithMoveSucceededEmailIds,
           destinationMailboxId: reactionState.destinationMailboxId,
           emailIdsWithReadStatus: reactionState.moveSucceededEmailIdsWithReadStatus,
+        );
+      } else if (reactionState is ClearMailboxSuccess) {
+        _handleDeleteEmailsFromMailbox(
+          affectedMailboxId: reactionState.mailboxId,
+          totalEmailsChanged: -reactionState.totalDeletedMessages.value.toInt(),
         );
       }
     });
