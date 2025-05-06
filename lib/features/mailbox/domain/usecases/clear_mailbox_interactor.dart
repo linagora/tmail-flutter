@@ -16,6 +16,7 @@ class ClearMailboxInteractor {
     Session session,
     AccountId accountId,
     MailboxId mailboxId,
+    Role mailboxRole,
   ) async* {
     try {
       yield Right<Failure, Success>(ClearingMailbox());
@@ -24,9 +25,13 @@ class ClearMailboxInteractor {
         accountId,
         mailboxId,
       );
-      yield Right<Failure, Success>(ClearMailboxSuccess(mailboxId, totalDeletedMessages));
+      yield Right<Failure, Success>(ClearMailboxSuccess(
+        mailboxId,
+        mailboxRole,
+        totalDeletedMessages,
+      ));
     } catch (e) {
-      yield Left<Failure, Success>(ClearMailboxFailure(e));
+      yield Left<Failure, Success>(ClearMailboxFailure(mailboxRole, exception: e));
     }
   }
 }
