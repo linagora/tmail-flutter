@@ -1,0 +1,1 @@
+class EmptyThreadDetailException implements Exception {}
