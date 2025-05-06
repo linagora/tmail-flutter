@@ -55,6 +55,7 @@ import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_api.dart';
 import 'package:tmail_ui_user/features/mailbox/data/network/mailbox_isolate_worker.dart';
 import 'package:tmail_ui_user/features/mailbox/data/repository/mailbox_repository_impl.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/repository/mailbox_repository.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/clear_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/datasource/app_grid_datasource.dart';
@@ -200,6 +201,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<RemoveAllComposerCacheOnWebInteractor>(),
       Get.find<RemoveComposerCacheByIdOnWebInteractor>(),
       Get.find<GetAllIdentitiesInteractor>(),
+      Get.find<ClearMailboxInteractor>(),
     ));
     Get.put(AdvancedFilterController());
   }
@@ -352,6 +354,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<EmailRepository>(),
       Get.find<MailboxRepository>()
     ));
+    Get.lazyPut(() => ClearMailboxInteractor(Get.find<MailboxRepository>()));
 
     IdentityInteractorsBindings().dependencies();
     Get.lazyPut(() => GetAllIdentitiesInteractor(

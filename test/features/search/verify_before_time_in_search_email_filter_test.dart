@@ -38,6 +38,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/delete_authority_oi
 import 'package:tmail_ui_user/features/login/domain/usecases/delete_credential_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/clear_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/mark_as_mailbox_read_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_all_recent_search_latest_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/usecases/get_composer_cache_on_web_interactor.dart';
@@ -159,6 +160,7 @@ const fallbackGenerators = {
   MockSpec<GetAllIdentitiesInteractor>(),
   MockSpec<ComposerManager>(fallbackGenerators: fallbackGenerators),
   MockSpec<CleanAndGetEmailsInMailboxInteractor>(),
+  MockSpec<ClearMailboxInteractor>(),
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -217,6 +219,7 @@ void main() {
   late MockRemoveAllComposerCacheOnWebInteractor removeAllComposerCacheOnWebInteractor;
   late MockRemoveComposerCacheByIdOnWebInteractor removeComposerCacheByIdOnWebInteractor;
   late MockGetAllIdentitiesInteractor getAllIdentitiesInteractor;
+  late MockClearMailboxInteractor clearMailboxInteractor;
 
   // Declaration base controller
   late MockCachingManager mockCachingManager;
@@ -311,6 +314,7 @@ void main() {
     removeAllComposerCacheOnWebInteractor = MockRemoveAllComposerCacheOnWebInteractor();
     removeComposerCacheByIdOnWebInteractor = MockRemoveComposerCacheByIdOnWebInteractor();
     getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
+    clearMailboxInteractor = MockClearMailboxInteractor();
 
     searchController = SearchController(
       mockQuickSearchEmailInteractor,
@@ -357,6 +361,7 @@ void main() {
       removeAllComposerCacheOnWebInteractor,
       removeComposerCacheByIdOnWebInteractor,
       getAllIdentitiesInteractor,
+      clearMailboxInteractor,
     );
 
     when(emailReceiveManager.pendingSharedFileInfo).thenAnswer((_) => BehaviorSubject.seeded([]));

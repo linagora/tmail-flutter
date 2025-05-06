@@ -39,6 +39,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_a
 import 'package:tmail_ui_user/features/login/domain/usecases/update_account_cache_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/empty_folder_name_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/invalid_mail_format_exception.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/usecases/clear_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_default_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/create_new_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/delete_multiple_mailbox_interactor.dart';
@@ -184,6 +185,7 @@ const fallbackGenerators = {
   MockSpec<GetIdentityCacheOnWebInteractor>(),
   MockSpec<ComposerManager>(fallbackGenerators: fallbackGenerators),
   MockSpec<CleanAndGetEmailsInMailboxInteractor>(),
+  MockSpec<ClearMailboxInteractor>(),
 ])
 void main() {
   // mock mailbox dashboard controller direct dependencies
@@ -271,6 +273,7 @@ void main() {
   final removeAllComposerCacheOnWebInteractor = MockRemoveAllComposerCacheOnWebInteractor();
   final removeComposerCacheByIdOnWebInteractor = MockRemoveComposerCacheByIdOnWebInteractor();
   final getAllIdentitiesInteractor = MockGetAllIdentitiesInteractor();
+  final clearMailboxInteractor = MockClearMailboxInteractor();
   final composerManager = MockComposerManager();
   late MailboxController mailboxController;
 
@@ -322,6 +325,7 @@ void main() {
     Get.put<GetAuthenticatedAccountInteractor>(getAuthenticatedAccountInteractor);
     Get.put<UpdateAccountCacheInteractor>(updateAccountCacheInteractor);
     Get.put<GetAllIdentitiesInteractor>(getAllIdentitiesInteractor);
+    Get.put<ClearMailboxInteractor>(clearMailboxInteractor);
     Get.put<RemoveAllComposerCacheOnWebInteractor>(removeAllComposerCacheOnWebInteractor);
     Get.put<RemoveComposerCacheByIdOnWebInteractor>(removeComposerCacheByIdOnWebInteractor);
     Get.put<ComposerManager>(composerManager);
@@ -361,6 +365,7 @@ void main() {
       removeAllComposerCacheOnWebInteractor,
       removeComposerCacheByIdOnWebInteractor,
       getAllIdentitiesInteractor,
+      clearMailboxInteractor,
     );
   });
 
