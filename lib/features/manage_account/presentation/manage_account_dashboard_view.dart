@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
+import 'package:cozy/cozy_config/cozy_config.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
@@ -35,15 +36,22 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
         child: ResponsiveWidget(
             responsiveUtils: controller.responsiveUtils,
             desktop: Column(children: [
-              Obx(() => NavigationBarWidget(
-                imagePaths: controller.imagePaths,
-                accountId: controller.accountId.value,
-                avatarUserName: controller.getOwnEmailAddress().firstCharacterToUpperCase,
-                onTapApplicationLogoAction: () =>
-                    controller.backToMailboxDashBoard(context: context),
-                onTapAvatarAction: (position) =>
-                    controller.handleClickAvatarAction(context, position),
-              )),
+              FutureBuilder(
+                future: CozyConfig().isInsideCozy,
+                builder: (context, snapshot) {
+                  if (snapshot.data == true) return const SizedBox.shrink();
+
+                  return Obx(() => NavigationBarWidget(
+                    imagePaths: controller.imagePaths,
+                    accountId: controller.accountId.value,
+                    avatarUserName: controller.getOwnEmailAddress().firstCharacterToUpperCase,
+                    onTapApplicationLogoAction: () =>
+                        controller.backToMailboxDashBoard(context: context),
+                    onTapAvatarAction: (position) =>
+                        controller.handleClickAvatarAction(context, position),
+                  ));
+                }
+              ),
               Expanded(child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
