@@ -8,14 +8,16 @@ class ClearingMailbox extends LoadingState {}
 class ClearMailboxSuccess extends UIState {
   final UnsignedInt totalDeletedMessages;
   final MailboxId mailboxId;
+  final Role mailboxRole;
 
-  ClearMailboxSuccess(this.mailboxId, this.totalDeletedMessages);
+  ClearMailboxSuccess(this.mailboxId, this.mailboxRole, this.totalDeletedMessages);
 
   @override
-  List<Object> get props => [mailboxId, totalDeletedMessages];
+  List<Object> get props => [mailboxId, mailboxRole, totalDeletedMessages];
 }
 
 class ClearMailboxFailure extends FeatureFailure {
+  final Role mailboxRole;
 
-  ClearMailboxFailure(dynamic exception) : super(exception: exception);
+  ClearMailboxFailure(this.mailboxRole, {dynamic exception}) : super(exception: exception);
 }

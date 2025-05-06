@@ -492,6 +492,8 @@ class MailboxDashBoardController extends ReloadableController
       isSenderImportantFlagEnabled.value = true;
     } else if (failure is GetAllIdentitiesFailure) {
       _handleGetAllIdentitiesFailure();
+    } else if (failure is ClearMailboxFailure) {
+      clearMailboxFailure(failure);
     }
   }
 
@@ -1617,14 +1619,24 @@ class MailboxDashBoardController extends ReloadableController
 
     final trashMailboxId = trashFolderId ?? mapDefaultMailboxIdByRole[PresentationMailbox.roleTrash];
     final accountId = this.accountId.value;
-    if (sessionCurrent == null ||
-        accountId == null ||
-        trashMailboxId == null) {
+
+    if (accountId == null || sessionCurrent == null) {
+      consumeState(Stream.value(Left(EmptyTrashFolderFailure(NotFoundSessionException()))));
+      return;
+    }
+
+    if (trashMailboxId == null) {
+      consumeState(Stream.value(Left(EmptyTrashFolderFailure(NotFoundMailboxException()))));
       return;
     }
 
     if (CapabilityIdentifier.jmapMailboxClear.isSupported(sessionCurrent!, accountId)) {
-      clearMailbox(sessionCurrent!, accountId, trashMailboxId);
+      clearMailbox(
+        sessionCurrent!,
+        accountId,
+        trashMailboxId,
+        PresentationMailbox.roleTrash,
+      );
     } else {
       final totalEmailsInTrash = totalEmails == 0
           ? mapMailboxById[trashMailboxId]?.countTotalEmails ?? 0
@@ -1647,11 +1659,8 @@ class MailboxDashBoardController extends ReloadableController
       emailIds: success.emailIds,
       affectedMailboxId: success.mailboxId,
     );
-    if (currentOverlayContext != null && currentContext != null) {
-      appToast.showToastSuccessMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toast_message_empty_trash_folder_success);
-    }
+
+    toastManager.showMessageSuccess(success);
   }
 
   void _deleteMultipleEmailsPermanently(List<PresentationEmail> listEmails, {Function? onCancelSelectionEmail}) {
@@ -2563,8 +2572,9 @@ class MailboxDashBoardController extends ReloadableController
     onCancelSelectionEmail?.call();
 
     spamFolderId ??= spamMailboxId;
+    final accountId = this.accountId.value;
 
-    if (accountId.value == null || sessionCurrent == null) {
+    if (accountId == null || sessionCurrent == null) {
       consumeState(Stream.value(Left(EmptySpamFolderFailure(NotFoundSessionException()))));
       return;
     }
@@ -2574,13 +2584,22 @@ class MailboxDashBoardController extends ReloadableController
       return;
     }
 
-    consumeState(_emptySpamFolderInteractor.execute(
-      sessionCurrent!,
-      accountId.value!,
-      spamFolderId,
-      totalEmails,
-      _progressStateController
-    ));
+    if (CapabilityIdentifier.jmapMailboxClear.isSupported(sessionCurrent!, accountId)) {
+      clearMailbox(
+        sessionCurrent!,
+        accountId,
+        spamFolderId,
+        PresentationMailbox.roleSpam,
+      );
+    } else {
+      consumeState(_emptySpamFolderInteractor.execute(
+        sessionCurrent!,
+        accountId,
+        spamFolderId,
+        totalEmails,
+        _progressStateController,
+      ));
+    }
   }
 
   void _emptySpamFolderSuccess(EmptySpamFolderSuccess success) {
@@ -2590,11 +2609,8 @@ class MailboxDashBoardController extends ReloadableController
       emailIds: success.emailIds,
       affectedMailboxId: success.mailboxId,
     );
-    if (currentOverlayContext != null && currentContext != null) {
-      appToast.showToastSuccessMessage(
-        currentOverlayContext!,
-        AppLocalizations.of(currentContext!).toast_message_empty_trash_folder_success);
-    }
+
+    toastManager.showMessageSuccess(success);
   }
 
   bool isEmptySpamBannerEnabledOnWeb(
