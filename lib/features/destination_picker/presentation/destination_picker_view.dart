@@ -27,6 +27,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/create_mailbox_name_input_decoration_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/search_app_bar_widget.dart';
@@ -341,16 +342,20 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
     } else {
       return Column(
         children: [
-          buildHeaderMailboxCategory(
-            context,
-            controller.responsiveUtils,
-            controller.imagePaths,
-            categories,
-            controller,
-            toggleMailboxCategories: controller.toggleMailboxCategories,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          Obx(() => MailboxCategoryWidget(
+            categories: categories,
+            expandMode: categories.getExpandMode(
+              controller.mailboxCategoriesExpandMode.value,
+            ),
+            onToggleMailboxCategories: (categories, itemKey) =>
+                controller.toggleMailboxCategories(
+                  categories,
+                  controller.destinationListScrollController,
+                  itemKey,
+                ),
             isArrangeLTR: false,
-          ),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          )),
           AnimatedContainer(
             duration: const Duration(milliseconds: 400),
             child: categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
@@ -415,7 +420,12 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
               mailboxIdAlreadySelected: mailboxIdSelected,
               mailboxDisplayed: MailboxDisplayed.destinationPicker,
               onOpenMailboxFolderClick: (node) => _pickMailboxNode(context, node),
-              onExpandFolderActionClick: (mailboxNode) => controller.toggleMailboxFolder(mailboxNode, controller.destinationListScrollController),
+              onExpandFolderActionClick: (mailboxNode, itemKey) =>
+                  controller.toggleMailboxFolder(
+                      mailboxNode,
+                      controller.destinationListScrollController,
+                      itemKey,
+                  ),
             ),
             children: _buildListChildTileWidget(
               context,

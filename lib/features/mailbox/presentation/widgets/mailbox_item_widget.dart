@@ -62,11 +62,13 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
   final _imagePaths = Get.find<ImagePaths>();
 
   bool _isItemHovered = false;
+  final GlobalKey _key = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     if (_responsiveUtils.isWebDesktop(context) && widget.mailboxDisplayed == MailboxDisplayed.mailbox) {
       return DragTarget<List<PresentationEmail>>(
+        key: _key,
         builder: (context, candidateEmails, rejectedEmails) {
           return InkWell(
             onTap: () => widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
@@ -95,6 +97,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                   const SizedBox(width: MailboxItemWidgetStyles.space),
                   Expanded(
                     child: LabelMailboxItemWidget(
+                      itemKey: _key,
                       responsiveUtils: _responsiveUtils,
                       mailboxNode: widget.mailboxNode,
                       imagePaths: _imagePaths,
@@ -116,6 +119,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
       if (widget.mailboxDisplayed == MailboxDisplayed.mailbox) {
         if (PlatformInfo.isWeb) {
           return InkWell(
+            key: _key,
             onTap: () => widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
             onHover: (value) => setState(() => _isItemHovered = value),
             child: Container(
@@ -138,6 +142,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                   const SizedBox(width: MailboxItemWidgetStyles.space),
                   Expanded(
                     child: LabelMailboxItemWidget(
+                      itemKey: _key,
                       responsiveUtils: _responsiveUtils,
                       mailboxNode: widget.mailboxNode,
                       imagePaths: _imagePaths,
@@ -154,6 +159,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
           );
         } else {
           return Material(
+            key: _key,
             color: Colors.transparent,
             child: InkWell(
               onLongPress: () => widget.onLongPressMailboxNodeAction?.call(widget.mailboxNode),
@@ -181,6 +187,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                     const SizedBox(width: MailboxItemWidgetStyles.padding),
                     Expanded(
                       child: LabelMailboxItemWidget(
+                        itemKey: _key,
                         responsiveUtils: _responsiveUtils,
                         mailboxNode: widget.mailboxNode,
                         imagePaths: _imagePaths,
@@ -206,6 +213,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
         }
       } else {
         return AbsorbPointer(
+          key: _key,
           absorbing: !widget.mailboxNode.isActivated,
           child: Opacity(
             opacity: widget.mailboxNode.isActivated ? 1.0 : 0.3,
@@ -236,6 +244,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                       const SizedBox(width: MailboxItemWidgetStyles.padding),
                       Expanded(
                         child: LabelMailboxItemWidget(
+                          itemKey: _key,
                           responsiveUtils: _responsiveUtils,
                           mailboxNode: widget.mailboxNode,
                           imagePaths: _imagePaths,

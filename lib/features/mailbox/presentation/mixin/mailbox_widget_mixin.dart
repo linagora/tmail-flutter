@@ -1,24 +1,19 @@
 
 import 'package:core/core.dart';
-import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:model/mailbox/mailbox_constants.dart';
 import 'package:model/model.dart';
-import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
-import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 mixin MailboxWidgetMixin {
 
@@ -330,63 +325,5 @@ mixin MailboxWidgetMixin {
         ),
       )
     );
-  }
-
-  Widget buildHeaderMailboxCategory(
-    BuildContext context,
-    ResponsiveUtils responsiveUtils,
-    ImagePaths imagePaths,
-    MailboxCategories categories,
-    BaseMailboxController baseMailboxController,
-    {
-      required Function(MailboxCategories categories) toggleMailboxCategories,
-      EdgeInsetsGeometry? padding,
-      bool isArrangeLTR = true,
-    }
-  ) {
-    final item = Row(children: [
-      if (!isArrangeLTR)
-        Flexible(
-          child: Text(
-            categories.getTitle(context),
-            maxLines: 1,
-            overflow: CommonTextStyle.defaultTextOverFlow,
-            softWrap: CommonTextStyle.defaultSoftWrap,
-            style: ThemeUtils.textStyleBodyBody3(color: Colors.black),
-          ),
-        ),
-      Obx(() {
-        final expandMode = categories.getExpandMode(baseMailboxController.mailboxCategoriesExpandMode.value);
-        return TMailButtonWidget.fromIcon(
-          icon: expandMode == ExpandMode.EXPAND
-            ? imagePaths.icArrowBottom
-            : DirectionUtils.isDirectionRTLByLanguage(context)
-                ? imagePaths.icArrowLeft
-                : imagePaths.icArrowRight,
-          iconColor: Colors.black,
-          iconSize: 20,
-          backgroundColor: Colors.transparent,
-          padding: const EdgeInsets.all(5),
-          tooltipMessage: expandMode == ExpandMode.EXPAND
-            ? AppLocalizations.of(context).collapse
-            : AppLocalizations.of(context).expand,
-          onTapActionCallback: () => toggleMailboxCategories(categories)
-        );
-      }),
-      if (isArrangeLTR)
-        Expanded(child: Text(
-          categories.getTitle(context),
-          maxLines: 1,
-          overflow: CommonTextStyle.defaultTextOverFlow,
-          softWrap: CommonTextStyle.defaultSoftWrap,
-          style: ThemeUtils.textStyleBodyBody3(color: Colors.black)
-        )),
-    ]);
-
-    if (padding != null) {
-      return Padding(padding: padding, child: item);
-    } else {
-      return item;
-    }
   }
 }
