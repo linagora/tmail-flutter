@@ -1245,7 +1245,7 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "3279b9d164723ca349ca3d030abc27efbadd0d34"
+      resolved-ref: "26c35a5e53ab8ebe24f8ec3a3e4a63240f37b210"
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
     version: "3.1.7"
