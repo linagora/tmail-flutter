@@ -152,9 +152,13 @@ class ThreadView extends GetWidget<ThreadController>
                         final presentationMailbox = controller.mailboxDashBoardController.selectedMailbox.value;
                         if (controller.mailboxDashBoardController.isEmptyTrashBannerEnabledOnMobile(context, presentationMailbox)) {
                           return BannerEmptyTrashWidget(
+                            key: const Key('empty_trash_banner'),
+                            responsiveUtils: controller.responsiveUtils,
+                            imagePaths: controller.imagePaths,
                             onTapAction: () => controller.deleteSelectionEmailsPermanently(
                               context,
-                              DeleteActionType.all)
+                              DeleteActionType.all,
+                            ),
                           );
                         } else {
                           return const SizedBox.shrink();

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 import '../base/core_robot.dart';
 
@@ -33,4 +34,10 @@ class ThreadRobot extends CoreRobot {
   Future<void> openMailbox() async {
     await $(#mobile_mailbox_menu_button).tap();
   }
+
+  Future<void> tapEmptyTrashBanner() => $(#empty_trash_banner).tap();
+
+  Future<void> tapDeleteAllButtonOnEmptyTrashConfirmDialog(
+    AppLocalizations appLocalizations,
+  ) => $(appLocalizations.delete_all).tap();
 }
