@@ -72,7 +72,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multipl
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
@@ -1195,40 +1194,6 @@ class MailboxController extends BaseMailboxController
         newMoveRequest,
       ));
     }
-  }
-
-  void toggleMailboxCategories(MailboxCategories categories) async {
-    switch(categories) {
-      case MailboxCategories.exchange:
-        final newExpandMode = mailboxCategoriesExpandMode.value.defaultMailbox == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
-        mailboxCategoriesExpandMode.value.defaultMailbox = newExpandMode;
-        mailboxCategoriesExpandMode.refresh();
-        break;
-      case MailboxCategories.personalFolders:
-        final newExpandMode = mailboxCategoriesExpandMode.value.personalFolders == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
-        mailboxCategoriesExpandMode.value.personalFolders = newExpandMode;
-        mailboxCategoriesExpandMode.refresh();
-        if (personalMailboxTree.value.root.hasChildren()) {
-          _triggerToggleMailboxCategories();
-        }
-        break;
-      case MailboxCategories.teamMailboxes:
-        final newExpandMode = mailboxCategoriesExpandMode.value.teamMailboxes == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
-        mailboxCategoriesExpandMode.value.teamMailboxes = newExpandMode;
-        mailboxCategoriesExpandMode.refresh();
-        if (personalMailboxTree.value.root.hasChildren() && mailboxCategoriesExpandMode.value.teamMailboxes == ExpandMode.COLLAPSE) {
-          _triggerToggleMailboxCategories();
-        }
-        break;
-    }
-  }
-
-  void _triggerToggleMailboxCategories() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    mailboxListScrollController.animateTo(
-      mailboxListScrollController.offset + 100,
-      duration: const Duration(milliseconds: 200),
-      curve: Curves.easeInToLinear);
   }
 
   void _handleNavigationRouteParameters(Map<String, dynamic>? parameters) {

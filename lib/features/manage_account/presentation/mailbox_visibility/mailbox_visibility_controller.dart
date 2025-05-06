@@ -9,7 +9,6 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
-import 'package:model/mailbox/expand_mode.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
@@ -25,7 +24,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_i
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/usecases/verify_name_interactor.dart';
@@ -132,26 +130,6 @@ class MailboxVisibilityController extends BaseMailboxController {
       } else if (subscribeRequest is SubscribeMailboxRequest) {
         consumeState(_subscribeMailboxInteractor!.execute(session, accountId, subscribeRequest));
       }
-    }
-  }
-
-  void toggleMailboxCategories(MailboxCategories categories) {
-    switch(categories) {
-      case MailboxCategories.exchange:
-        final newExpandMode = mailboxCategoriesExpandMode.value.defaultMailbox == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
-        mailboxCategoriesExpandMode.value.defaultMailbox = newExpandMode;
-        mailboxCategoriesExpandMode.refresh();
-        break;
-      case MailboxCategories.personalFolders:
-        final newExpandMode = mailboxCategoriesExpandMode.value.personalFolders == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
-        mailboxCategoriesExpandMode.value.personalFolders = newExpandMode;
-        mailboxCategoriesExpandMode.refresh();
-        break;
-      case MailboxCategories.teamMailboxes:
-        final newExpandMode = mailboxCategoriesExpandMode.value.teamMailboxes == ExpandMode.EXPAND ? ExpandMode.COLLAPSE : ExpandMode.EXPAND;
-        mailboxCategoriesExpandMode.value.teamMailboxes = newExpandMode;
-        mailboxCategoriesExpandMode.refresh();
-        break;
     }
   }
 

@@ -13,6 +13,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/trailing_mai
 
 class LabelMailboxItemWidget extends StatelessWidget {
 
+  final GlobalKey itemKey;
   final ResponsiveUtils responsiveUtils;
   final ImagePaths imagePaths;
   final MailboxNode mailboxNode;
@@ -25,6 +26,7 @@ class LabelMailboxItemWidget extends StatelessWidget {
 
   const LabelMailboxItemWidget({
     super.key,
+    required this.itemKey,
     required this.mailboxNode,
     required this.responsiveUtils,
     required this.imagePaths,
@@ -60,6 +62,7 @@ class LabelMailboxItemWidget extends StatelessWidget {
           ),
         if (mailboxNode.hasChildren())
           MailboxExpandButton(
+            itemKey: itemKey,
             mailboxNode: mailboxNode,
             imagePaths: imagePaths,
             onExpandFolderActionClick: onClickExpandMailboxNodeAction,
