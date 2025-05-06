@@ -3,7 +3,7 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 
-const RESOURCES = {"main.dart.js_12.part.js": "a884cd138cf58d48628de0356a984a8a",
+const RESOURCES = {"main.dart.js_12.part.js": "354f32ee68fe89cb8172a7225208cdec",
 "worker_service/style.css": "3ec186c93eb7bdab17e882de738e3123",
 "worker_service/worker_service.js": "c741398f2ab58bd36f7c510a8429fc41",
 "worker_service/img/tmail-3x.png": "7b5f8e671c4f39ae5d1a67b46fe494d7",
@@ -14,8 +14,8 @@ const RESOURCES = {"main.dart.js_12.part.js": "a884cd138cf58d48628de0356a984a8a"
 "worker_service/img/tmail-1x.png": "823f38fc9060c91a404462a7b6517a10",
 "worker_service/img/tmail-2x.png": "55f91555db37edb9ed0608f7ee3f37ee",
 "worker_service/img/ic-close-3x.png": "7415143fe67dc6b2a680300c5aa16296",
-"main.dart.js_10.part.js": "d59cb7ad6bf9cf184f7fc25317b9ae16",
-"main.dart.js_5.part.js": "c0ee2c8297d2d207bbf0e807498d92c8",
+"main.dart.js_10.part.js": "b0c35b31491d7c2f0684ac68c7b88042",
+"main.dart.js_5.part.js": "186b6a6f536a8f53cdd5c132af39206d",
 "i18n/en.json": "e0bf88bb60efa34f25f4aec02e17cfee",
 "i18n/vi.json": "05652be4397bcaa1ccbf0d0fd5fa9caf",
 "i18n/translater.js": "f53aedbd356b679a27a6b0e8e952fb81",
@@ -266,7 +266,7 @@ const RESOURCES = {"main.dart.js_12.part.js": "a884cd138cf58d48628de0356a984a8a"
 "assets/fonts/MaterialIcons-Regular.otf": "83f698c9de56e9e38b912e4c44037e21",
 "assets/AssetManifest.bin.json": "3d5eacd14467894aa89c4ecb2a381d11",
 "assets/shaders/ink_sparkle.frag": "ecc85a2e95f5e9f53123dcaf8cb9b6ce",
-"assets/NOTICES": "f533de775cbeffa49277527aa9f76811",
+"assets/NOTICES": "a6dd75f8cfaf84a2a6cad7e3ee6012bb",
 "assets/configurations/app_dashboard.json": "4fd734881af71fbcd0d0c586e4679ca0",
 "assets/configurations/env.fcm": "97d6804936ef04db13fcc840787c67cd",
 "assets/configurations/icons/ic_teleskop_app.svg": "8083ff213dbd4dd386f89133c789e00e",
@@ -288,7 +288,7 @@ const RESOURCES = {"main.dart.js_12.part.js": "a884cd138cf58d48628de0356a984a8a"
 "assets/packages/html_editor_enhanced/assets/summernote-lite.min.css": "86fc1fec3e3ff051fdcd19f41604c391",
 "assets/packages/flutter_inappwebview/assets/t_rex_runner/t-rex.css": "5a8d0222407e388155d7d1395a75d5b9",
 "assets/packages/flutter_inappwebview/assets/t_rex_runner/t-rex.html": "16911fcc170c8af1c5457940bd0bf055",
-"assets/packages/flutter_inappwebview_web/assets/web/web_support.js": "ffd063c5ddbbe185f778e7e41fdceb31",
+"assets/packages/flutter_inappwebview_web/assets/web/web_support.js": "509ae636cfdd93e49b5a6eaf0f06d79f",
 "assets/packages/flex_color_picker/assets/opacity.png": "49c4f3bcb1b25364bb4c255edcaaf5b2",
 "assets/packages/rich_text_composer/assets/images/ic_dismiss.svg": "6f3a3a7c96d87c1bb476396b2e4ac57b",
 "assets/packages/rich_text_composer/assets/images/ic_arrow_right.svg": "f368d1d36bdcc88880c9886ac7f83616",
@@ -315,7 +315,7 @@ const RESOURCES = {"main.dart.js_12.part.js": "a884cd138cf58d48628de0356a984a8a"
 "assets/packages/flutter_date_range_picker/assets/images/ic_close.svg": "a1f2e6b8d675af3d2cf602f7c87636cc",
 "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "fa31975d5ca09f6bd89327a7468b3274",
 "manifest.json": "c2c66c9dd73fa42a8a2c5e95615de7d1",
-"main.dart.js_1.part.js": "80c0fbc595c79f9342354862fd2d0c42",
+"main.dart.js_1.part.js": "bb17a1a07b1bac1968dd297a16a39df3",
 "splash/style.css": "cc60b7a16945acc8c8f2492dfa54d668",
 "splash/splash.js": "123c400b58bea74c1305ca3ac966748d",
 "splash/img/dark-4x.png": "f74fe973429e7418939fe5b6fba4dca9",
@@ -349,9 +349,9 @@ const RESOURCES = {"main.dart.js_12.part.js": "a884cd138cf58d48628de0356a984a8a"
 "canvaskit/skwasm.worker.js": "89990e8c92bcb123999aa81f7e203b1c",
 "index.html": "f102cbceb80f553f312e28aaad3e1fa8",
 "/": "f102cbceb80f553f312e28aaad3e1fa8",
-"main.dart.js_8.part.js": "90103758e1963038d992a2da39a382d6",
-"main.dart.js_2.part.js": "d4a659597a8a908543772fbfb14cc55f",
-"flutter_bootstrap.js": "beb9402a4eef0bcb4475a73c2fc28d17",
+"main.dart.js_8.part.js": "8429f6684da9f69ab7d5983cf5610037",
+"main.dart.js_2.part.js": "931ae372415a4deab072eb6b60516d7c",
+"flutter_bootstrap.js": "7b030fc17318af7cbd1a8b90f92eec59",
 "logout-callback.html": "999326dc9a0f37c9a9a4280b4a35dc51",
 "icons/Icon-192.png": "009a8eae32218365ab20cce81aa896c3",
 "icons/Icon-maskable-192.png": "009a8eae32218365ab20cce81aa896c3",
@@ -360,8 +360,8 @@ const RESOURCES = {"main.dart.js_12.part.js": "a884cd138cf58d48628de0356a984a8a"
 "main.dart.js_11.part.js": "105ecc5f9ab5cd875af4c617ff22aaf7",
 "main.dart.js_4.part.js": "16fc7c3fcc741be278d4945bbb833a74",
 "login-callback.html": "e17f83d4982ea3cce6e692b31c4b4beb",
-"main.dart.js_6.part.js": "31849d86df1aa206f447fbf848e788ac",
-"main.dart.js": "6903b1d39ce4559d9c7d1745124693b4"};
+"main.dart.js_6.part.js": "a9491af8c91a90b1070030425f2f66be",
+"main.dart.js": "01b823b1b9dc1bfcab3fa84ede99613d"};
 // The application shell files that are downloaded before a service worker can
 // start.
 const CORE = ["main.dart.js",
