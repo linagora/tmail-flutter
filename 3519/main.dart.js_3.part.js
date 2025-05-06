@@ -7,15 +7,15 @@
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var A, B;
   A = holdersList[11];
-  B = holdersList[15];
+  B = holdersList[16];
   var typesOffset = hunkHelpers.updateTypes([]);
   (function constants() {
-    B.ApplicationVersionWidget_null_null_null_null = new A.ApplicationVersionWidget(null, null, null, null);
+    B.ApplicationVersionWidget_null_null_null = new A.ApplicationVersionWidget(null, null, null);
   })();
 };
 ;
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "XGFmlcpX1J9WYoj6uJnyWy0hVz8=");
+})($__dart_deferred_initializers__, "qIIJHGnOG8A9+s8PRkbw7czs1zc=");
 ;
