@@ -14,5 +14,5 @@ class GetThreadByIdSuccess extends UIState {
 }
 
 class GetThreadByIdFailure extends FeatureFailure {
-  GetThreadByIdFailure({super.exception});
+  GetThreadByIdFailure({super.exception, super.onRetry});
 }
