@@ -18,7 +18,7 @@ dependencies:
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: main
+      ref: feature/thread
 
   ### Dependencies from pub.dev ###
   equatable: 2.0.5
@@ -35,7 +35,7 @@ dev_dependencies:
 
   flutter_lints: 2.0.1
 
-  build_runner: 2.4.9
+  build_runner: 2.4.10
 
   json_serializable: 6.6.1
 
