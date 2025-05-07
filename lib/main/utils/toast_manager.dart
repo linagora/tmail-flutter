@@ -7,6 +7,8 @@ import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:jmap_dart_client/jmap/core/error/method/exception/error_method_response_exception.dart';
+import 'package:jmap_dart_client/jmap/core/error/set_error.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
@@ -22,6 +24,7 @@ import 'package:tmail_ui_user/features/starting_page/domain/state/sign_up_twake_
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
+import 'package:tmail_ui_user/main/error/error_method_response_exception_extension.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -65,23 +68,44 @@ class ToastManager {
     }
   }
 
-  void showMessageFailure(Failure failure) {
+  void showMessageFailure(FeatureFailure failure) {
     if (currentContext == null || currentOverlayContext == null) {
       logError('ToastManager::showMessageFailure: Context is null');
       return;
     }
 
     String? message;
+    final exception = failure.exception;
 
     if (failure is GetSessionFailure) {
       message = getMessageByException(currentContext!, failure.exception)
         ?? AppLocalizations.of(currentContext!).unknownError;
     } else if (failure is EmptySpamFolderFailure ||
         (failure is ClearMailboxFailure && failure.mailboxRole == PresentationMailbox.roleSpam)) {
-      message = AppLocalizations.of(currentContext!).emptySpamFolderFailed;
+      if (exception is SetError) {
+        message = exception.description?.trim().isNotEmpty == true
+            ? exception.description
+            : AppLocalizations.of(currentContext!).emptySpamFolderFailed;
+      } else if (exception is ErrorMethodResponseException) {
+        message = exception.errorMessage.isNotEmpty
+            ? exception.errorMessage
+            : AppLocalizations.of(currentContext!).emptySpamFolderFailed;
+      } else {
+        message = AppLocalizations.of(currentContext!).emptySpamFolderFailed;
+      }
     } else if (failure is EmptyTrashFolderFailure ||
         (failure is ClearMailboxFailure && failure.mailboxRole == PresentationMailbox.roleTrash)) {
-      message = AppLocalizations.of(currentContext!).emptyTrashFolderFailed;
+      if (exception is SetError) {
+        message = exception.description?.trim().isNotEmpty == true
+            ? exception.description
+            : AppLocalizations.of(currentContext!).emptyTrashFolderFailed;
+      } else if (exception is ErrorMethodResponseException) {
+        message = exception.errorMessage.isNotEmpty
+            ? exception.errorMessage
+            : AppLocalizations.of(currentContext!).emptyTrashFolderFailed;
+      } else {
+        message = AppLocalizations.of(currentContext!).emptyTrashFolderFailed;
+      }
     } else if (failure is MoveMultipleEmailToMailboxFailure
         && failure.emailActionType == EmailActionType.moveToSpam
         && failure.moveAction == MoveAction.moving) {
