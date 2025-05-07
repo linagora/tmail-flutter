@@ -3588,9 +3588,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.onTapAction = t0;
       this.key = t1;
     },
-    BannerEmptyTrashWidget: function BannerEmptyTrashWidget(t0, t1) {
-      this.onTapAction = t0;
-      this.key = t1;
+    BannerEmptyTrashWidget: function BannerEmptyTrashWidget(t0, t1, t2, t3) {
+      var _ = this;
+      _.onTapAction = t0;
+      _.responsiveUtils = t1;
+      _.imagePaths = t2;
+      _.key = t3;
     },
     BottomBarThreadSelectionWidget: function BottomBarThreadSelectionWidget(t0, t1, t2, t3, t4, t5) {
       var _ = this;
@@ -11468,18 +11471,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.BannerEmptyTrashWidget.prototype = {
     build$1(context) {
-      var t1, t2, t3, t4, _null = null;
-      $.$get$Get();
-      t1 = $.GetInstance__getInstance;
-      if (t1 == null)
-        t1 = $.GetInstance__getInstance = C.C_GetInstance;
-      t1.find$1$1$tag(0, _null, type$.ImagePaths);
-      t1 = $.GetInstance__getInstance;
-      if (t1 == null)
-        t1 = $.GetInstance__getInstance = C.C_GetInstance;
-      t1 = B.BannerEmptyTrashStyles_getBannerMargin(context, t1.find$1$1$tag(0, _null, type$.ResponsiveUtils));
-      t2 = A.SvgPicture$asset("assets/images/ic_delete_rule_mobile.svg", C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, _null, 20);
-      t3 = type$.AppLocalizations;
+      var t4, _null = null,
+        t1 = B.BannerEmptyTrashStyles_getBannerMargin(context, this.responsiveUtils),
+        t2 = A.SvgPicture$asset("assets/images/ic_delete_rule_mobile.svg", C.Alignment_0_0, _null, C.BoxFit_0, 20, _null, _null, 20),
+        t3 = type$.AppLocalizations;
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
       t4 = A.Text$(A.Intl__message("Empty trash now", _null, "empty_trash_now", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, D.TextStyle_8eb1, _null, _null, _null, _null, _null);
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, t3).toString;
@@ -14614,7 +14609,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = t5;
       if (t4) {
         A.Expando__checkType(t1);
-        return new B.BannerEmptyTrashWidget(t3._as(t2.get(t1)).get$emptyTrashAction(), null);
+        t4 = t3._as(t2.get(t1)).responsiveUtils;
+        A.Expando__checkType(t1);
+        t5 = t3._as(t2.get(t1)).imagePaths;
+        A.Expando__checkType(t1);
+        return new B.BannerEmptyTrashWidget(t3._as(t2.get(t1)).get$emptyTrashAction(), t4, t5, null);
       } else
         return C.SizedBox_0_0_null_null;
     },
@@ -17477,7 +17476,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ThreadView_build_closure2.prototype = {
     call$0() {
-      var t3, presentationMailbox, t4,
+      var t3, presentationMailbox, t4, t5, t6,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -17485,26 +17484,29 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       presentationMailbox = t3._as(t2.get(t1)).EmailActionController_mailboxDashBoardController.selectedMailbox.get$value(0);
       A.Expando__checkType(t1);
-      t2 = t3._as(t2.get(t1)).EmailActionController_mailboxDashBoardController;
-      t3 = this.context;
-      t4 = false;
+      t4 = t3._as(t2.get(t1)).EmailActionController_mailboxDashBoardController;
+      t5 = this.context;
+      t6 = false;
       if (presentationMailbox != null)
         if (J.$eq$(presentationMailbox.role, $.$get$PresentationMailbox_roleTrash()))
           if (A.PresentationMailboxExtension_get_countTotalEmails(presentationMailbox) > 0)
-            if (t2.searchController.searchState.get$value(0).searchStatus !== C.SearchStatus_0) {
-              t2 = A.InheritedModel_inheritFrom(t3, C._MediaQueryAspect_0, type$.MediaQuery).data;
-              t2 = !(t2.size._dx >= 1200);
+            if (t4.searchController.searchState.get$value(0).searchStatus !== C.SearchStatus_0) {
+              t4 = A.InheritedModel_inheritFrom(t5, C._MediaQueryAspect_0, type$.MediaQuery).data;
+              t4 = !(t4.size._dx >= 1200);
             } else
-              t2 = t4;
+              t4 = t6;
           else
-            t2 = t4;
+            t4 = t6;
         else
-          t2 = t4;
+          t4 = t6;
       else
-        t2 = t4;
-      if (t2)
-        return new B.BannerEmptyTrashWidget(new B.ThreadView_build__closure0(t1, t3), null);
-      else
+        t4 = t6;
+      if (t4) {
+        A.Expando__checkType(t1);
+        t4 = t3._as(t2.get(t1)).EmailActionController_responsiveUtils;
+        A.Expando__checkType(t1);
+        return new B.BannerEmptyTrashWidget(new B.ThreadView_build__closure0(t1, t5), t4, t3._as(t2.get(t1)).EmailActionController_imagePaths, D.ValueKey_empty_trash_banner);
+      } else
         return C.SizedBox_0_0_null_null;
     },
     $signature: 3
@@ -19138,6 +19140,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.ValueKey_empty_email_message = new A.ValueKey("empty_email_message", type$.ValueKey_String);
     D.ValueKey_empty_search_email_view = new A.ValueKey("empty_search_email_view", type$.ValueKey_String);
     D.ValueKey_empty_thread_view = new A.ValueKey("empty_thread_view", type$.ValueKey_String);
+    D.ValueKey_empty_trash_banner = new A.ValueKey("empty_trash_banner", type$.ValueKey_String);
     D.ValueKey_filter_message_button = new A.ValueKey("filter_message_button", type$.ValueKey_String);
     D.ValueKey_forward_email_button = new A.ValueKey("forward_email_button", type$.ValueKey_String);
     D.ValueKey_important_flag_icon = new A.ValueKey("important_flag_icon", type$.ValueKey_String);
@@ -19187,5 +19190,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "dxVV7R2S2FaYY6Wd+pwku3iMK78=");
+})($__dart_deferred_initializers__, "XqRK4z82RZE1A1ARKYFnP5aLGJg=");
 ;
