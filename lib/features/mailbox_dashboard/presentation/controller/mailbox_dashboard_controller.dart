@@ -105,6 +105,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/delete_emails_in_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_clear_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preferences_setting_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_save_email_as_draft_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
@@ -384,6 +385,8 @@ class MailboxDashBoardController extends ReloadableController
       _handleSendEmailSuccess(success);
     } else if (success is SaveEmailAsDraftsSuccess) {
       _saveEmailAsDraftsSuccess(success);
+    } else if (success is UpdateEmailDraftsSuccess) {
+      handleUpdateEmailAsDraftsSuccess();
     } else if (success is MoveToMailboxSuccess) {
       _moveToMailboxSuccess(success);
     } else if (success is DeleteEmailPermanentlySuccess) {
