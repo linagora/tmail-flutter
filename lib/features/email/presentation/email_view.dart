@@ -14,6 +14,7 @@ import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
@@ -25,7 +26,9 @@ import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_banner_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_information_widget.dart';
@@ -107,7 +110,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                           )))
                         : null,
                       emailLoaded: controller.currentEmailLoaded.value,
-                      replacePrintActionWithReplyAction: isInsideThreadDetailView,
+                      isInsideThreadDetailView: isInsideThreadDetailView,
                     )),
                   Obx(() {
                     final vacation = controller.mailboxDashBoardController.vacationResponse.value;
@@ -338,9 +341,12 @@ class EmailView extends GetWidget<SingleEmailController> {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (!isInsideThreadDetailView || isFirstEmailInThreadDetail)
-          EmailSubjectWidget(
-            presentationEmail: presentationEmail.copyWith(
-              subject: threadSubject,
+          Padding(
+            padding: const EdgeInsets.only(bottom: 16),
+            child: EmailSubjectWidget(
+              presentationEmail: presentationEmail.copyWith(
+                subject: threadSubject,
+              ),
             ),
           ),
         Obx(() => InformationSenderAndReceiverBuilder(
@@ -561,13 +567,39 @@ class EmailView extends GetWidget<SingleEmailController> {
     return usernameEvent.isNotEmpty && titleEvent.isNotEmpty;
   }
 
+  bool canDeletePermanently(PresentationEmail email) {
+    return email.mailboxContain?.isTrash
+      ?? email.mailboxContain?.isSpam
+      ?? false;
+  }
+
   void _handleMoreEmailAction({
     required BuildContext context,
     required PresentationEmail presentationEmail,
-    RelativeRect? position
+    RelativeRect? position,
+    EmailLoaded? emailLoaded,
   }) {
     final mailboxContain = controller.getMailboxContain(presentationEmail);
     final moreActions = [
+      if (isInsideThreadDetailView) ...[
+        EmailActionType.forward,
+        if (presentationEmail.getCountMailAddressWithoutMe(controller.session?.username.value ?? '') > 1)
+          EmailActionType.replyAll,
+        if (EmailUtils.isReplyToListEnabled(emailLoaded?.emailCurrent?.listPost ?? ''))
+          EmailActionType.replyToList,
+        if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit)
+          EmailActionType.printAll,
+        if (controller.responsiveUtils.isMobile(context))
+          EmailActionType.moveToMailbox,
+        if (!controller.responsiveUtils.isDesktop(context)) ...[
+          presentationEmail.hasStarred
+            ? EmailActionType.unMarkAsStarred
+            : EmailActionType.markAsStarred,
+          canDeletePermanently(presentationEmail)
+            ? EmailActionType.deletePermanently
+            : EmailActionType.moveToTrash,
+        ],
+      ],
       EmailActionType.markAsUnread,
       if (mailboxContain?.isChildOfTeamMailboxes == false)
         if (mailboxContain?.isSpam == true)
@@ -583,8 +615,6 @@ class EmailView extends GetWidget<SingleEmailController> {
       if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit)
         EmailActionType.downloadMessageAsEML,
       EmailActionType.editAsNewEmail,
-      if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit && isInsideThreadDetailView)
-        EmailActionType.printAll,
     ];
 
     if (position == null) {
