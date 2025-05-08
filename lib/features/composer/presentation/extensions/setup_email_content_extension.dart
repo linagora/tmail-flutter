@@ -1,5 +1,4 @@
 
-import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
@@ -86,6 +85,9 @@ extension SetupEmailContentExtension on ComposerController {
             setupEmailRequestReadReceiptFlagForEditDraft(
               uiState.emailCurrent.hasRequestReadReceipt,
             );
+            setupSelectedIdentityForEditDraft(
+              uiState.emailCurrent.identityIdFromHeader,
+            );
           }
 
           emailContentsViewState.value = Right(uiState);
@@ -93,7 +95,7 @@ extension SetupEmailContentExtension on ComposerController {
           emailContentsViewState.value = Left(uiState);
           consumeState(Stream.value(Left(uiState)));
         } else {
-          emailContentsViewState.value = Right(UIState.idle);
+          emailContentsViewState.value = Right(LoadEmailContentCompleted());
         }
         break;
       case EmailActionType.editSendingEmail:
@@ -158,7 +160,7 @@ extension SetupEmailContentExtension on ComposerController {
             emailContentsViewState.value = Left(GetEmailContentFailure(uiState.exception));
             consumeState(Stream.value(Left(GetEmailContentFailure(uiState.exception))));
           } else {
-            emailContentsViewState.value = Right(UIState.idle);
+            emailContentsViewState.value = Right(LoadEmailContentCompleted());
           }
         }
         break;
@@ -204,7 +206,7 @@ extension SetupEmailContentExtension on ComposerController {
             emailContentsViewState.value = Left(GetEmailContentFailure(uiState.exception));
             consumeState(Stream.value(Left(GetEmailContentFailure(uiState.exception))));
           } else {
-            emailContentsViewState.value = Right(UIState.idle);
+            emailContentsViewState.value = Right(LoadEmailContentCompleted());
           }
         }
         break;
@@ -216,7 +218,7 @@ extension SetupEmailContentExtension on ComposerController {
         emailContentsViewState.value = Right(successState);
         break;
       default:
-        emailContentsViewState.value = Right(UIState.idle);
+        emailContentsViewState.value = Right(LoadEmailContentCompleted());
         break;
     }
   }

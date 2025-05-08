@@ -1,5 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:model/email/prefix_email_address.dart';
 import 'package:rich_text_composer/rich_text_composer.dart';
@@ -7,6 +8,7 @@ import 'package:tmail_ui_user/features/composer/presentation/composer_controller
 import 'package:tmail_ui_user/features/composer/presentation/composer_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/mobile/mobile_editor_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/app_bar_composer_widget.dart';
+import 'package:tmail_ui_user/features/composer/presentation/widgets/mobile/from_composer_mobile_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_composer_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/recipient_suggestion_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/widgets/subject_composer_widget.dart';
@@ -96,5 +98,17 @@ class ComposerRobot extends CoreRobot {
 
   Future<void> tapReadReceiptPopupItemOnMenu() async {
     await $(#read_receipt_popup_item).tap();
+  }
+
+  Future<void> tapSaveAsDraftPopupItemOnMenu() async {
+    await $(#save_as_draft_popup_item).tap();
+  }
+
+  Future<void> tapRecipientExpandButton() async {
+    await $(#prefix_to_recipient_expand_button).tap();
+  }
+
+  Future<void> tapFromFieldPopupMenu() async {
+    await $(FromComposerMobileWidget).$(InkWell).tap();
   }
 }

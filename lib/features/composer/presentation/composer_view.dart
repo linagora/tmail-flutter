@@ -114,7 +114,7 @@ class ComposerView extends GetWidget<ComposerController> {
                         children: [
                           Obx(() {
                             if (controller.fromRecipientState.value == PrefixRecipientState.enabled) {
-                              return  FromComposerMobileWidget(
+                              return FromComposerMobileWidget(
                                 selectedIdentity: controller.identitySelected.value,
                                 imagePaths: controller.imagePaths,
                                 responsiveUtils: controller.responsiveUtils,
@@ -551,6 +551,7 @@ class ComposerView extends GetWidget<ComposerController> {
       PopupMenuItem(
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
+          key: const Key('save_as_draft_popup_item'),
           iconAction: controller.imagePaths.icSaveToDraft,
           nameAction: AppLocalizations.of(context).saveAsDraft,
           colorIcon: ComposerStyle.popupItemIconColor,

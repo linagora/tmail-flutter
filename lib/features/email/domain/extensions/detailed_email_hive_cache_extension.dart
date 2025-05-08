@@ -29,6 +29,12 @@ extension DetailedEmailHiveCacheExtension on DetailedEmailHiveCache {
       sMimeStatusHeader: sMimeStatusHeader != null
         ? Map.fromIterables(sMimeStatusHeader!.keys.map((value) => IndividualHeaderIdentifier(value)), sMimeStatusHeader!.values)
         : null,
+      identityHeader: identityHeader != null
+          ? Map.fromIterables(
+              identityHeader!.keys.map((value) => IndividualHeaderIdentifier(value)),
+              identityHeader!.values,
+            )
+          : null,
     );
  }
 }
