@@ -116,7 +116,9 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                           final presentationMailbox = controller.selectedMailbox.value;
                           if (controller.isEmptyTrashBannerEnabledOnWeb(context, presentationMailbox)) {
                             return BannerEmptyTrashWidget(
-                              onTapAction: controller.emptyTrashAction
+                              responsiveUtils: controller.responsiveUtils,
+                              imagePaths: controller.imagePaths,
+                              onTapAction: controller.emptyTrashAction,
                             );
                           } else {
                             return const SizedBox.shrink();

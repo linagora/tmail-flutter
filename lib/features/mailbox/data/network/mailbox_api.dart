@@ -20,6 +20,8 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/jmap_request.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/changes/changes_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/changes/changes_mailbox_response.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/clear/clear_mailbox_method.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/clear/clear_mailbox_response.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_method.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/get/get_mailbox_response.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
@@ -605,6 +607,34 @@ class MailboxAPI with HandleSetErrorMixin {
       return GetMailboxByRoleResponse(mailbox: mailboxResponse!.list.first);
     } else {
       throw NotFoundMailboxException();
+    }
+  }
+
+  Future<UnsignedInt> clearMailbox(
+    Session session,
+    AccountId accountId,
+    MailboxId mailboxId,
+  ) async {
+    final clearMailboxMethod = ClearMailboxMethod(accountId, mailboxId);
+    final requestBuilder = JmapRequestBuilder(httpClient, ProcessingInvocation());
+    final invocation = requestBuilder.invocation(clearMailboxMethod);
+
+    final response = await (requestBuilder
+        ..usings(clearMailboxMethod.requiredCapabilities))
+      .build()
+      .execute();
+
+    final clearMailboxResponse = response.parse<ClearMailboxResponse>(
+      invocation.methodCallId,
+      ClearMailboxResponse.deserialize,
+    );
+
+    if (clearMailboxResponse?.totalDeletedMessagesCount != null) {
+      return clearMailboxResponse!.totalDeletedMessagesCount!;
+    } else if (clearMailboxResponse?.notCleared != null) {
+      throw clearMailboxResponse!.notCleared!;
+    } else {
+      throw NotFoundClearMailboxResponseException();
     }
   }
 }

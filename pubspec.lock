@@ -1245,10 +1245,10 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: "26c35a5e53ab8ebe24f8ec3a3e4a63240f37b210"
+      resolved-ref: d23d675f8e3f7d8909abb9707aa2700437673d01
       url: "https://github.com/linagora/html-editor-enhanced.git"
     source: git
-    version: "3.1.7"
+    version: "3.1.8"
   html_unescape:
     dependency: transitive
     description:
@@ -1342,10 +1342,10 @@ packages:
     description:
       path: "."
       ref: main
-      resolved-ref: ad588c18cec7630bd8a85a312b7811037af93d12
+      resolved-ref: d24ee7f6fe8a4917ffb658b0d295268b9ccced38
       url: "https://github.com/linagora/jmap-dart-client.git"
     source: git
-    version: "0.3.5"
+    version: "0.3.6"
   js:
     dependency: transitive
     description:

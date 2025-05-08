@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/filter_email_popup_menu_mixin.dart';
@@ -151,9 +152,13 @@ class ThreadView extends GetWidget<ThreadController>
                         final presentationMailbox = controller.mailboxDashBoardController.selectedMailbox.value;
                         if (controller.mailboxDashBoardController.isEmptyTrashBannerEnabledOnMobile(context, presentationMailbox)) {
                           return BannerEmptyTrashWidget(
+                            key: const Key('empty_trash_banner'),
+                            responsiveUtils: controller.responsiveUtils,
+                            imagePaths: controller.imagePaths,
                             onTapAction: () => controller.deleteSelectionEmailsPermanently(
                               context,
-                              DeleteActionType.all)
+                              DeleteActionType.all,
+                            ),
                           );
                         } else {
                           return const SizedBox.shrink();
@@ -969,7 +974,8 @@ class _MailboxActionProgressBanner extends StatelessWidget with AppLoaderMixin {
       (success) {
         if (success is MarkAsMailboxReadLoading ||
             success is EmptySpamFolderLoading ||
-            success is EmptyTrashFolderLoading) {
+            success is EmptyTrashFolderLoading ||
+            success is ClearingMailbox) {
           return Padding(
             padding: EdgeInsets.only(
               top: responsiveUtils.isDesktop(context) ? 16 : 0,

@@ -54,4 +54,6 @@ abstract class MailboxRepository {
   Future<(List<Mailbox> mailboxes, Map<Id, SetError> mapErrors)> setRoleDefaultMailbox(Session session, AccountId accountId, List<Mailbox> listMailbox);
 
   Future<GetMailboxByRoleResponse> getMailboxByRole(Session session, AccountId accountId, Role role, {UnsignedInt? limit});
+
+  Future<UnsignedInt> clearMailbox(Session session, AccountId accountId, MailboxId mailboxId);
 }
