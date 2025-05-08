@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/views/html_viewer/utils/event_constants.dart';
+import 'package:core/utils/html/html_template.dart';
 
 class HtmlInteraction {
   const HtmlInteraction._();
@@ -178,6 +179,18 @@ class HtmlInteraction {
                   element.dispatchEvent(clickEvent);
                 }
                 
+                event.stopPropagation();
+              } else if (data.eventType === '${EventConstants.mouseOver}') {
+                document.querySelectorAll('a.${HtmlTemplate.nameClassToolTip} span.tooltiptext').forEach(element => {
+                  element.style.visibility = 'hidden';
+                });
+                
+                if (element.tagName.toLowerCase() === 'a' && element.classList.contains('${HtmlTemplate.nameClassToolTip}')) {
+                  const tooltipElement = element.querySelector('span.tooltiptext');
+                  if (tooltipElement) {
+                    tooltipElement.style.visibility = 'visible';
+                  }
+                }
                 event.stopPropagation();
               }
             }
