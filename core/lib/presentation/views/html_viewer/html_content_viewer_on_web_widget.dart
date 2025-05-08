@@ -4,11 +4,14 @@ import 'dart:math' as math;
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/shims/dart_ui.dart' as ui;
+import 'package:core/presentation/views/html_viewer/controller/html_content_viewer_controller.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:universal_html/html.dart' as html;
 
 typedef OnClickHyperLinkAction = Function(Uri?);
@@ -22,6 +25,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final TextDirection? direction;
   final double? contentPadding;
   final bool useDefaultFont;
+  final HtmlContentViewerController? viewerController;
 
   /// Handler for mailto: links
   final OnMailtoClicked? mailtoDelegate;
@@ -45,6 +49,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     this.onClickHyperLinkAction,
     this.keepWidthWhileLoading = false,
     this.contentPadding,
+    this.viewerController,
   }) : super(key: key);
 
   @override
@@ -269,15 +274,29 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       </script>
     ''';
 
+    StringBuffer scriptBuffer = StringBuffer()
+      ..write(webViewActionScripts)
+      ..write(scriptsDisableZoom)
+      ..write(HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage);
+
+    if (widget.viewerController != null) {
+      scriptBuffer.write(
+        HtmlInteraction.scriptHandleMouseAndKeyboardEventListeners(
+          viewId: _createdViewId,
+        ),
+      );
+    }
+
     final htmlTemplate = HtmlUtils.generateHtmlDocument(
       content: content,
       minHeight: minHeight,
       minWidth: _minWidth,
       styleCSS: HtmlTemplate.tooltipLinkCss,
-      javaScripts: webViewActionScripts + scriptsDisableZoom + HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
+      javaScripts: scriptBuffer.toString(),
       direction: widget.direction,
       contentPadding: widget.contentPadding,
       useDefaultFont: widget.useDefaultFont,
+      disableFocusOutline: widget.viewerController != null,
     );
 
     return htmlTemplate;
@@ -286,16 +305,28 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   void _setUpWeb() {
     _htmlData = _generateHtmlDocument(widget.contentHtml);
 
-    final iframe = html.IFrameElement()
-      ..width = _actualWidth.toString()
-      ..height = _actualHeight.toString()
-      ..srcdoc = _htmlData ?? ''
-      ..style.border = 'none'
-      ..style.overflow = 'hidden'
-      ..style.width = '100%'
-      ..style.height = '100%';
+    if (widget.viewerController != null) {
+      widget.viewerController?.initializeIframe(
+        id: _createdViewId,
+        content: _htmlData!,
+        width: _actualWidth,
+        height: _actualHeight,
+      );
+    } else {
+      final iframe = html.IFrameElement()
+        ..width = _actualWidth.toString()
+        ..height = _actualHeight.toString()
+        ..srcdoc = _htmlData ?? ''
+        ..style.border = 'none'
+        ..style.overflow = 'hidden'
+        ..style.width = '100%'
+        ..style.height = '100%';
 
-    ui.platformViewRegistry.registerViewFactory(_createdViewId, (int viewId) => iframe);
+      ui.platformViewRegistry.registerViewFactory(
+        _createdViewId,
+        (int viewId) => iframe,
+      );
+    }
 
     if (mounted) {
       setState(() {
@@ -317,13 +348,43 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
               future: _webInit,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return SizedBox(
-                    height: _actualHeight,
-                    width: _actualWidth,
-                    child: HtmlElementView(
-                      viewType: _createdViewId,
-                    ),
-                  );
+                  if (widget.viewerController != null &&
+                      widget.viewerController!.iframeHandler != null) {
+                    return Stack(
+                      children: [
+                        SizedBox(
+                          height: _actualHeight,
+                          width: _actualWidth,
+                          child: HtmlElementView(
+                            key: widget.viewerController!.htmlElementKey,
+                            viewType: widget.viewerController!.iframeHandler!.viewId,
+                          ),
+                        ),
+                        PointerInterceptor(
+                          child: Listener(
+                            behavior: HitTestBehavior.translucent,
+                            onPointerDown: widget.viewerController!.handlePointerEvent,
+                            onPointerMove: widget.viewerController!.handlePointerEvent,
+                            onPointerUp: widget.viewerController!.handlePointerEvent,
+                            onPointerHover: widget.viewerController!.handlePointerEvent,
+                            child: Container(
+                              height: _actualHeight,
+                              width: _actualWidth,
+                              color: Colors.transparent,
+                            ),
+                          ),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return SizedBox(
+                      height: _actualHeight,
+                      width: _actualWidth,
+                      child: HtmlElementView(
+                        viewType: _createdViewId,
+                      ),
+                    );
+                  }
                 } else {
                   return const SizedBox.shrink();
                 }

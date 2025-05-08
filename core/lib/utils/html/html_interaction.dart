@@ -1,5 +1,9 @@
 
+import 'package:core/presentation/views/html_viewer/utils/event_constants.dart';
+
 class HtmlInteraction {
+  const HtmlInteraction._();
+
   static const String scrollRightEndAction = 'ScrollRightEndAction';
   static const String scrollLeftEndAction = 'ScrollLeftEndAction';
   static const String scrollEventJSChannelName = 'ScrollEventListener';
@@ -97,6 +101,98 @@ class HtmlInteraction {
       document.body.onload = function() {
         window.print();
       };
+    </script>
+  ''';
+
+  static String scriptHandleMouseAndKeyboardEventListeners({required String viewId}) => '''
+    <script type="text/javascript">
+      function initializeEventListeners() {
+        document.querySelectorAll('*').forEach(element => {
+          element.setAttribute('tabindex', '-1');
+        });
+      }
+
+      window.addEventListener('message', function (event) {
+        try {
+          if (typeof event.data !== 'string') return;
+    
+          const data = JSON.parse(event.data);
+
+          if (data.viewId !== "$viewId") return;
+          
+          if (data.command === '${EventConstants.mouseEvent}') {
+            const element = document.elementFromPoint(data.clientX, data.clientY);
+
+            if (element) {
+              const eventDataInit = {
+                bubbles: data.shouldBubble,
+                cancelable: data.isCancelable,
+                view: window,
+                detail: 1,
+                screenX: data.screenX,
+                screenY: data.screenY,
+                clientX: data.clientX,
+                clientY: data.clientY,
+                button: data.clickedMouseButtonType,
+                buttons: data.pressedMouseButtonsMaskType,
+                relatedTarget: null,
+              };
+              const mouseEvent = new MouseEvent(data.eventType, eventDataInit);
+              element.dispatchEvent(mouseEvent);
+              
+              if (data.eventType === '${EventConstants.mouseDown}') {
+                if (window.getSelection && document.caretRangeFromPoint) {
+                  const range = document.caretRangeFromPoint(data.clientX, data.clientY);
+                  if (range) {
+                    const selection = window.getSelection();
+                    selection.removeAllRanges();
+                    selection.addRange(range);
+                  }
+                }
+                
+                event.stopPropagation();
+              } else if (data.eventType === '${EventConstants.mouseMove}' && data.isPointerDown) {
+                const selection = window.getSelection();
+                if (selection.rangeCount > 0) {
+                  const newRange = document.caretRangeFromPoint(data.clientX, data.clientY);
+                  if (newRange) {
+                    try {
+                      selection.extend(newRange.startContainer, newRange.startOffset);
+                      const range = selection.getRangeAt(0);
+                      range.startContainer.parentElement?.scrollIntoView({ block: 'nearest' });
+                    } catch (e) {
+                      console.error('Selection error:', e);
+                    }
+                  }
+                }
+                
+                event.stopPropagation();
+              } else if (data.eventType === '${EventConstants.mouseUp}') {
+                element.focus();
+                
+                const selection = window.getSelection();
+                if (selection && selection.toString().length > 0) {
+                  document.designMode = 'off';
+                } else {
+                  const clickEvent = new MouseEvent('click', eventDataInit);
+                  element.dispatchEvent(clickEvent);
+                }
+                
+                event.stopPropagation();
+              }
+            }
+          }
+        } catch (e) {
+          console.error('Message handling error:', e);
+        }
+      });
+      
+      // Initialize when page loads
+      if (document.readyState === 'loading') {
+          document.addEventListener('DOMContentLoaded', initializeEventListeners);
+      } else {
+          initializeEventListeners();
+      }
     </script>
   ''';
 }
