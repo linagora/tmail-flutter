@@ -11,17 +11,16 @@ import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AppUtils {
-
-  static const String envFileName = 'env.file';
+  const AppUtils._();
 
   static Future<void> loadEnvFile() async {
-    await dotenv.load(fileName: envFileName);
+    await dotenv.load(fileName: AppConfig.envFileName);
     final mapEnvData = Map<String, String>.from(dotenv.env);
    try {
-     await AppUtils.loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
+     await loadFcmConfigFileToEnv(currentMapEnvData: mapEnvData);
    } catch (e) {
      logError('AppUtils::loadEnvFile:loadFcmConfigFileToEnv: Exception = $e');
-     await dotenv.load(fileName: envFileName);
+     await dotenv.load(fileName: AppConfig.envFileName);
    }
   }
 

@@ -16,6 +16,7 @@ import 'package:tmail_ui_user/main/pages/app_pages.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
+import 'package:tmail_ui_user/main/utils/asset_preloader.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:worker_manager/worker_manager.dart';
 
@@ -33,7 +34,9 @@ Future<void> runTmail() async {
      MainBindings().dependencies(),
      HiveCacheConfig.instance.setUp(),
      Executor().warmUp(log: BuildUtils.isDebugMode),
-     AppUtils.loadEnvFile()
+     AppUtils.loadEnvFile(),
+     if (PlatformInfo.isWeb)
+       AssetPreloader.preloadHtmlEditorAssets(),
   ]);
   await HiveCacheConfig.instance.initializeEncryptionKey();
   

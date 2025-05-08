@@ -7,10 +7,13 @@ import 'package:tmail_ui_user/features/login/data/network/config/oidc_constant.d
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class AppConfig {
+  const AppConfig._();
+
   static const int defaultMinInputLengthAutocomplete = 3;
   static const int warningAttachmentFileSizeInMegabytes = 10;
   static const int defaultLimitAutocomplete = 8;
 
+  static const String envFileName = 'env.file';
   static const String appDashboardConfigurationPath = "configurations/app_dashboard.json";
   static const String appFCMConfigurationPath = "configurations/env.fcm";
   static const String iOSKeychainSharingGroupId = 'KUT463DS29.com.linagora.ios.teammail.shared';
