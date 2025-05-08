@@ -656,17 +656,44 @@ class EmailAPI with HandleSetErrorMixin {
     return (emailIdsSuccess: updatedEmailIds, mapErrors: mapErrors);
   }
 
-  Future<Email> saveEmailAsDrafts(
+  Future<Email> _emailSetCreateMethod(
     Session session,
     AccountId accountId,
     Email email,
-    {CancelToken? cancelToken}
+    {
+      CreateNewMailboxRequest? createNewMailboxRequest,
+      CancelToken? cancelToken
+    }
   ) async {
+    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
+
+    MailboxId? mailboxId;
+    if (createNewMailboxRequest != null) {
+      final generateCreateId = Id(_uuid.v1());
+      final setMailboxMethod = SetMailboxMethod(accountId)
+        ..addCreate(
+            generateCreateId,
+            Mailbox(
+              name: createNewMailboxRequest.newName,
+              parentId: createNewMailboxRequest.parentId,
+              isSubscribed: IsSubscribed(createNewMailboxRequest.isSubscribed)
+            )
+        );
+
+      requestBuilder.invocation(setMailboxMethod);
+
+      mailboxId = MailboxId(ReferenceId(
+          ReferencePrefix.defaultPrefix,
+          generateCreateId));
+    } else {
+      mailboxId = email.mailboxIds?.keys.first;
+    }
+    if (mailboxId != null) {
+      email.mailboxIds?.addAll({mailboxId: true});
+    }
     final idCreateMethod = Id(_uuid.v1());
     final setEmailMethod = SetEmailMethod(accountId)
       ..addCreate(idCreateMethod, email);
-
-    final requestBuilder = JmapRequestBuilder(_httpClient, ProcessingInvocation());
 
     final setEmailInvocation = requestBuilder.invocation(setEmailMethod);
 
@@ -693,7 +720,7 @@ class EmailAPI with HandleSetErrorMixin {
     }
   }
 
-  Future<bool> removeEmailDrafts(
+  Future<bool> _emailSetDestroyMethod(
     Session session,
     AccountId accountId,
     EmailId emailId,
@@ -728,6 +755,20 @@ class EmailAPI with HandleSetErrorMixin {
     }
   }
 
+  Future<Email> saveEmailAsDrafts(
+    Session session,
+    AccountId accountId,
+    Email email,
+    {CancelToken? cancelToken}
+  ) => _emailSetCreateMethod(session, accountId, email, cancelToken: cancelToken);
+
+  Future<bool> removeEmailDrafts(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    {CancelToken? cancelToken}
+  ) => _emailSetDestroyMethod(session, accountId, emailId, cancelToken: cancelToken);
+
   Future<Email> updateEmailDrafts(
     Session session,
     AccountId accountId,
@@ -751,6 +792,51 @@ class EmailAPI with HandleSetErrorMixin {
       );
     } catch (e) {
       logError('EmailAPI::updateEmailDrafts: Exception = $e');
+    }
+
+    return emailCreated;
+  }
+
+  Future<Email> saveEmailAsTemplate(
+    Session session,
+    AccountId accountId,
+    Email email,
+    {
+      CreateNewMailboxRequest? createNewMailboxRequest,
+      CancelToken? cancelToken
+    }
+  ) => _emailSetCreateMethod(session, accountId, email, createNewMailboxRequest: createNewMailboxRequest, cancelToken: cancelToken);
+
+  Future<bool> removeEmailTemplate(
+    Session session,
+    AccountId accountId,
+    EmailId emailId,
+    {CancelToken? cancelToken}
+  ) => _emailSetDestroyMethod(session, accountId, emailId, cancelToken: cancelToken);
+
+  Future<Email> updateEmailTemplate(
+    Session session,
+    AccountId accountId,
+    Email newEmail,
+    EmailId oldEmailId,
+    {CancelToken? cancelToken}
+  ) async {
+    final emailCreated = await saveEmailAsTemplate(
+      session,
+      accountId,
+      newEmail,
+      cancelToken: cancelToken
+    );
+
+    try {
+      await removeEmailTemplate(
+        session,
+        accountId,
+        oldEmailId,
+        cancelToken: cancelToken
+      );
+    } catch (e) {
+      logError('EmailAPI::updateEmailTemplate: Exception = $e');
     }
 
     return emailCreated;

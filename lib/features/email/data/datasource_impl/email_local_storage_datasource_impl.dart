@@ -355,4 +355,26 @@ class EmailLocalStorageDataSourceImpl extends EmailDataSource {
       return htmlDocument;
     }).catchError(_exceptionThrower.throwException);
   }
+  
+  @override
+  Future<Email> saveEmailAsTemplate(
+    Session session,
+    AccountId accountId,
+    Email email, {
+    CreateNewMailboxRequest? createNewMailboxRequest,
+    CancelToken? cancelToken,
+  }) {
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<Email> updateEmailTemplate(
+    Session session,
+    AccountId accountId,
+    Email newEmail,
+    EmailId oldEmailId, {
+    CancelToken? cancelToken,
+  }) {
+    throw UnimplementedError();
+  }
 }

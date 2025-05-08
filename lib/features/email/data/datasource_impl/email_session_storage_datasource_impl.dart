@@ -271,4 +271,26 @@ class EmailSessionStorageDatasourceImpl extends EmailDataSource {
   Future<String> generateEntireMessageAsDocument(ViewEntireMessageRequest entireMessageRequest) {
     throw UnimplementedError();
   }
+  
+  @override
+  Future<Email> saveEmailAsTemplate(
+    Session session,
+    AccountId accountId,
+    Email email, {
+    CreateNewMailboxRequest? createNewMailboxRequest,
+    CancelToken? cancelToken,
+  }) {
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<Email> updateEmailTemplate(
+    Session session,
+    AccountId accountId,
+    Email newEmail,
+    EmailId oldEmailId, {
+    CancelToken? cancelToken,
+  }) {
+    throw UnimplementedError();
+  }
 }
