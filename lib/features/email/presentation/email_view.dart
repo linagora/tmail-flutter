@@ -56,12 +56,14 @@ class EmailView extends GetWidget<SingleEmailController> {
     this.isFirstEmailInThreadDetail = false,
     this.isLastEmailInThreadDetail = false,
     this.threadSubject,
+    this.onToggleThreadDetailCollapseExpand,
   });
 
   final EmailId? emailId;
   final bool isFirstEmailInThreadDetail;
   final bool isLastEmailInThreadDetail;
   final String? threadSubject;
+  final VoidCallback? onToggleThreadDetailCollapseExpand;
   
   @override
   String? get tag => emailId?.id.value;
@@ -85,7 +87,13 @@ class EmailView extends GetWidget<SingleEmailController> {
               ? const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                   color: Colors.white)
-              : const BoxDecoration(color: Colors.white),
+              : const BoxDecoration(
+                  color: Colors.white,
+                  border: Border(top: BorderSide(
+                    color: AppColor.colorDividerEmailView,
+                    width: 0.5,
+                  )),
+                ),
             margin: _getMarginEmailView(context),
             child: Obx(() {
               final currentEmail = controller.currentEmail;
@@ -341,14 +349,12 @@ class EmailView extends GetWidget<SingleEmailController> {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (!isInsideThreadDetailView || isFirstEmailInThreadDetail)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 16),
-            child: EmailSubjectWidget(
-              presentationEmail: presentationEmail.copyWith(
-                subject: threadSubject,
-              ),
+          EmailSubjectWidget(
+            presentationEmail: presentationEmail.copyWith(
+              subject: threadSubject,
             ),
           ),
+        const SizedBox(height: 16),
         Obx(() => InformationSenderAndReceiverBuilder(
           emailSelected: presentationEmail,
           imagePaths: controller.imagePaths,
@@ -365,6 +371,7 @@ class EmailView extends GetWidget<SingleEmailController> {
             presentationEmail: email,
             position: position,
           ),
+          onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
         )),
         Obx(() => MailUnsubscribedBanner(
           presentationEmail: controller.currentEmail,
