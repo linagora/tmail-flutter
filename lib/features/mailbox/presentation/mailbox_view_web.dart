@@ -182,7 +182,7 @@ class MailboxView extends BaseMailboxView {
               Expanded(
                 child: Padding(
                   padding: EdgeInsetsDirectional.only(
-                    start: controller.responsiveUtils.isWebDesktop(context) ? 0 : 12,
+                    start: controller.responsiveUtils.isWebDesktop(context) ? 0 : 16,
                   ),
                   child: Text(
                     AppLocalizations.of(context).folders,
