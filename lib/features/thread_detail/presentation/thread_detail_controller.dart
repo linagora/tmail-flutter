@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -33,6 +34,7 @@ class ThreadDetailController extends BaseController {
   final emailIdsStatus = <EmailId, EmailInThreadStatus>{}.obs;
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+  final scrollController = ScrollController();
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
   Session? get session => mailboxDashBoardController.sessionCurrent;
@@ -87,5 +89,11 @@ class ThreadDetailController extends BaseController {
       return;
     }
     super.handleFailureViewState(failure);
+  }
+
+  @override
+  void onClose() {
+    scrollController.dispose();
+    super.onClose();
   }
 }

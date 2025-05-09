@@ -64,6 +64,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
         threadSubject: isFirstEmailInThreadDetail
           ? emailIdsPresentation.values.last?.subject
           : null,
+        scrollController: scrollController,
       );
     }).toList();
   }

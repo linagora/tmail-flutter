@@ -32,6 +32,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final bool allowResizeToDocumentSize;
 
   final bool keepWidthWhileLoading;
+  final ScrollController? scrollController;
 
   const HtmlContentViewerOnWeb({
     Key? key,
@@ -45,6 +46,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     this.onClickHyperLinkAction,
     this.keepWidthWhileLoading = false,
     this.contentPadding,
+    this.scrollController,
   }) : super(key: key);
 
   @override
@@ -65,10 +67,11 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   String? _htmlData;
   bool _isLoading = true;
   double minHeight = 100;
-  late final StreamSubscription<html.MessageEvent> sizeListener;
+  late final StreamSubscription<html.MessageEvent> _onMessageSubscription;
   bool _iframeLoaded = false;
   static const String iframeOnLoadMessage = 'iframeHasBeenLoaded';
   static const String onClickHyperLinkName = 'onClickHyperLink';
+  static const String onScrollChangedEvent = 'onScrollChanged';
 
   @override
   void initState() {
@@ -78,10 +81,14 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
     _createdViewId = _getRandString(10);
     _setUpWeb();
 
-    sizeListener = html.window.onMessage.listen((event) {
+    _onMessageSubscription = html.window.onMessage.listen((event) {
       var data = json.decode(event.data);
-
+      log('_HtmlContentViewerOnWebState::initState:onMessage:data = $data');
       if (data['view'] != _createdViewId) return;
+
+      if (widget.scrollController != null) {
+        _handleIframeOnScrollChangedListener(data, widget.scrollController!);
+      }
 
       if (data['message'] == iframeOnLoadMessage) {
         _iframeLoaded = true;
@@ -135,6 +142,24 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
         }
       }
     });
+  }
+
+  void _handleIframeOnScrollChangedListener(
+    dynamic data,
+    ScrollController controller,
+  ) {
+    if (data['type'] != null && data['type'].contains('toDart: $onScrollChangedEvent')) {
+      final deltaY = data['deltaY'] ?? 0.0;
+      final newOffset = controller.offset + deltaY;
+      log('_HtmlContentViewerOnWebState::_handleIframeOnScrollChangedListener:deltaY = $deltaY | newOffset = $newOffset');
+      if (newOffset < controller.position.minScrollExtent) {
+        controller.jumpTo(controller.position.minScrollExtent);
+      } else if (newOffset > controller.position.maxScrollExtent) {
+        controller.jumpTo(controller.position.maxScrollExtent);
+      } else {
+        controller.jumpTo(newOffset);
+      }
+    }
   }
 
   @override
@@ -246,6 +271,17 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
           
           resizeObserver.observe(document.body);
         }
+        
+        ${widget.scrollController != null ? '''
+          window.addEventListener('wheel', function (event) {
+            const deltaY = event.deltaY;
+            window.parent.postMessage(JSON.stringify({
+              "view": "$_createdViewId",
+              "type": "toDart: $onScrollChangedEvent",
+              "deltaY": deltaY
+            }), "*");
+          });
+        ''' : ''}
       </script>
     ''';
 
@@ -358,7 +394,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   @override
   void dispose() {
     _htmlData = null;
-    sizeListener.cancel();
+    _onMessageSubscription.cancel();
     super.dispose();
   }
 }
