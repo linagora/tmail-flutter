@@ -4,11 +4,15 @@ import 'dart:math' as math;
 
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/shims/dart_ui.dart' as ui;
+import 'package:core/presentation/views/html_viewer/controller/html_content_viewer_controller.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/html/html_interaction.dart';
 import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:universal_html/html.dart' as html;
 
 typedef OnClickHyperLinkAction = Function(Uri?);
@@ -32,6 +36,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final bool allowResizeToDocumentSize;
 
   final bool keepWidthWhileLoading;
+  final bool isInsideThreadDetailView;
 
   const HtmlContentViewerOnWeb({
     Key? key,
@@ -45,6 +50,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     this.onClickHyperLinkAction,
     this.keepWidthWhileLoading = false,
     this.contentPadding,
+    this.isInsideThreadDetailView = false,
   }) : super(key: key);
 
   @override
@@ -70,12 +76,20 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   static const String iframeOnLoadMessage = 'iframeHasBeenLoaded';
   static const String onClickHyperLinkName = 'onClickHyperLink';
 
+  HtmlContentViewerController? _viewerController;
+  ValueNotifier<SystemMouseCursor>? _contentCursorNotifier;
+
   @override
   void initState() {
     super.initState();
     _actualHeight = widget.heightContent;
     _actualWidth = widget.widthContent;
     _createdViewId = _getRandString(10);
+
+    if (widget.isInsideThreadDetailView) {
+      _viewerController = HtmlContentViewerController();
+      _contentCursorNotifier = ValueNotifier<SystemMouseCursor>(SystemMouseCursors.basic);
+    }
     _setUpWeb();
 
     sizeListener = html.window.onMessage.listen((event) {
@@ -132,6 +146,19 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
         final link = data['url'] as String?;
         if (link != null && mounted) {
           widget.onClickHyperLinkAction?.call(Uri.parse(link));
+        }
+      }
+
+      if (data['type'] != null && data['type'].contains('toDart: changeCursor')) {
+        final cursor = data['value'] as String?;
+        if (cursor != null && mounted) {
+          if (cursor == 'pointer') {
+            _contentCursorNotifier?.value = SystemMouseCursors.click;
+          } else if (cursor == 'text') {
+            _contentCursorNotifier?.value = SystemMouseCursors.text;
+          } else {
+            _contentCursorNotifier?.value = SystemMouseCursors.basic;
+          }
         }
       }
     });
@@ -269,15 +296,27 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       </script>
     ''';
 
+    StringBuffer scriptBuffer = StringBuffer()
+      ..write(webViewActionScripts)
+      ..write(scriptsDisableZoom)
+      ..write(HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage);
+
+    if (widget.isInsideThreadDetailView) {
+      scriptBuffer.write(
+        HtmlInteraction.scriptHandleEventListeners(viewId: _createdViewId),
+      );
+    }
+
     final htmlTemplate = HtmlUtils.generateHtmlDocument(
       content: content,
       minHeight: minHeight,
       minWidth: _minWidth,
       styleCSS: HtmlTemplate.tooltipLinkCss,
-      javaScripts: webViewActionScripts + scriptsDisableZoom + HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage,
+      javaScripts: scriptBuffer.toString(),
       direction: widget.direction,
       contentPadding: widget.contentPadding,
       useDefaultFont: widget.useDefaultFont,
+      disableFocusOutline: widget.isInsideThreadDetailView,
     );
 
     return htmlTemplate;
@@ -286,16 +325,28 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   void _setUpWeb() {
     _htmlData = _generateHtmlDocument(widget.contentHtml);
 
-    final iframe = html.IFrameElement()
-      ..width = _actualWidth.toString()
-      ..height = _actualHeight.toString()
-      ..srcdoc = _htmlData ?? ''
-      ..style.border = 'none'
-      ..style.overflow = 'hidden'
-      ..style.width = '100%'
-      ..style.height = '100%';
+    if (widget.isInsideThreadDetailView && _viewerController != null) {
+      _viewerController!.initializeIframe(
+        id: _createdViewId,
+        content: _htmlData!,
+        width: _actualWidth,
+        height: _actualHeight,
+      );
+    } else {
+      final iframe = html.IFrameElement()
+        ..width = _actualWidth.toString()
+        ..height = _actualHeight.toString()
+        ..srcdoc = _htmlData ?? ''
+        ..style.border = 'none'
+        ..style.overflow = 'hidden'
+        ..style.width = '100%'
+        ..style.height = '100%';
 
-    ui.platformViewRegistry.registerViewFactory(_createdViewId, (int viewId) => iframe);
+      ui.platformViewRegistry.registerViewFactory(
+        _createdViewId,
+        (int viewId) => iframe,
+      );
+    }
 
     if (mounted) {
       setState(() {
@@ -317,13 +368,60 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
               future: _webInit,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  return SizedBox(
-                    height: _actualHeight,
-                    width: _actualWidth,
-                    child: HtmlElementView(
-                      viewType: _createdViewId,
-                    ),
-                  );
+                  if (_viewerController != null &&
+                      _viewerController!.iframeHandler != null) {
+                    final eventOverlayView = PointerInterceptor(
+                      child: Listener(
+                        behavior: HitTestBehavior.translucent,
+                        onPointerDown: _viewerController!.handlePointerEvent,
+                        onPointerMove: _viewerController!.handlePointerEvent,
+                        onPointerUp: _viewerController!.handlePointerEvent,
+                        onPointerHover: _viewerController!.handlePointerEvent,
+                        child: Container(
+                          height: _actualHeight,
+                          width: _actualWidth,
+                          color: Colors.transparent,
+                        ),
+                      ),
+                    );
+
+                    return Stack(
+                      children: [
+                        SizedBox(
+                          height: _actualHeight,
+                          width: _actualWidth,
+                          child: HtmlElementView(
+                            key: _viewerController!.htmlElementKey,
+                            viewType: _viewerController!.iframeHandler!.viewId,
+                          ),
+                        ),
+                        if (_contentCursorNotifier != null)
+                          ValueListenableBuilder(
+                            valueListenable: _contentCursorNotifier!,
+                            builder: (context, value, child) {
+                              return MouseRegion(
+                                cursor: value,
+                                child: child,
+                              );
+                            },
+                            child: eventOverlayView,
+                          )
+                        else
+                          MouseRegion(
+                            cursor: SystemMouseCursors.text,
+                            child: eventOverlayView,
+                          ),
+                      ],
+                    );
+                  } else {
+                    return SizedBox(
+                      height: _actualHeight,
+                      width: _actualWidth,
+                      child: HtmlElementView(
+                        viewType: _createdViewId,
+                      ),
+                    );
+                  }
                 } else {
                   return const SizedBox.shrink();
                 }
@@ -359,6 +457,10 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   void dispose() {
     _htmlData = null;
     sizeListener.cancel();
+    _contentCursorNotifier?.dispose();
+    _contentCursorNotifier = null;
+    _viewerController?.dispose();
+    _viewerController = null;
     super.dispose();
   }
 }

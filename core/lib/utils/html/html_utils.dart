@@ -115,6 +115,7 @@ class HtmlUtils {
     bool useDefaultFont = false,
     TextDirection? direction,
     double? contentPadding,
+    bool disableFocusOutline = false,
   }) {
     return '''
       <!DOCTYPE html>
@@ -150,6 +151,13 @@ class HtmlUtils {
             scrollbar-width: none;  /* Firefox */
           }
         ''' : ''}
+        
+        ${disableFocusOutline ? '''
+          *:focus {
+            outline: none;
+          }
+        ''' : ''}
+        
         ${styleCSS ?? ''}
       </style>
       </head>

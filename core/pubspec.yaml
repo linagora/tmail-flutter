@@ -102,6 +102,8 @@ dependencies:
 
   win32: 5.5.1
 
+  json_annotation: 4.8.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -115,6 +117,8 @@ dev_dependencies:
   build_runner: 2.4.10
 
   mockito: 5.4.4
+
+  json_serializable: 6.6.1
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

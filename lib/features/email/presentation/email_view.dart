@@ -59,7 +59,7 @@ class EmailView extends GetWidget<SingleEmailController> {
   final bool isFirstEmailInThreadDetail;
   final bool isLastEmailInThreadDetail;
   final String? threadSubject;
-  
+
   @override
   String? get tag => emailId?.id.value;
 
@@ -448,6 +448,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                               direction: AppUtils.getCurrentDirection(context),
                               contentPadding: 0,
                               useDefaultFont: true,
+                              isInsideThreadDetailView: isInsideThreadDetailView,
                             ),
                             if (controller.mailboxDashBoardController.isAttachmentDraggableAppActive)
                               PointerInterceptor(
