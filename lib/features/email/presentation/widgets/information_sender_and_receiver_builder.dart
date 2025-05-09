@@ -31,6 +31,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
   final bool isInsideThreadDetailView;
   final EmailLoaded? emailLoaded;
   final OnMoreActionClick? onMoreActionClick;
+  final bool showRecipients;
 
   const InformationSenderAndReceiverBuilder({
     Key? key,
@@ -45,14 +46,15 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
     this.isInsideThreadDetailView = false,
     this.emailLoaded,
     this.onMoreActionClick,
+    this.showRecipients = true,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsetsDirectional.only(start: 16, end: 16, top: 16),
+      padding: const EdgeInsetsDirectional.symmetric(horizontal: 16),
       child: Row(
-        crossAxisAlignment: emailSelected.countRecipients > 0
+        crossAxisAlignment: emailSelected.countRecipients > 0 && (showRecipients || responsiveUtils.isMobile(context))
           ? CrossAxisAlignment.start
           : CrossAxisAlignment.center,
         children: [
@@ -65,63 +67,79 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    if (emailSelected.from?.isNotEmpty == true)
-                      EmailSenderBuilder(
-                        emailAddress: emailSelected.from!.first,
-                        openEmailAddressDetailAction: openEmailAddressDetailAction,
+                    Expanded(
+                      child: Row(
+                        children: [
+                          if (emailSelected.from?.isNotEmpty == true)
+                            Flexible(
+                              child: EmailSenderBuilder(
+                                emailAddress: emailSelected.from!.first,
+                                openEmailAddressDetailAction: openEmailAddressDetailAction,
+                              ),
+                            ),
+                          if (sMimeStatus != null && sMimeStatus != SMimeSignatureStatus.notSigned)
+                            Tooltip(
+                              key: const Key('smime_signature_status_icon'),
+                              message: sMimeStatus!.getTooltipMessage(context),
+                              child: MouseRegion(
+                                cursor: SystemMouseCursors.click,
+                                child: SvgPicture.asset(
+                                  sMimeStatus!.getIcon(imagePaths),
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
+                            ),
+                          if (!emailSelected.isSubscribed && emailUnsubscribe != null && !responsiveUtils.isPortraitMobile(context))
+                            TMailButtonWidget.fromText(
+                              text: AppLocalizations.of(context).unsubscribe,
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.normal,
+                                fontSize: 14,
+                                color: AppColor.colorTextBody,
+                                decoration: TextDecoration.underline,
+                              ),
+                              padding: const EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8),
+                              backgroundColor: Colors.transparent,
+                              onTapActionCallback: () => onEmailActionClick?.call(emailSelected, EmailActionType.unsubscribe),
+                            ),
+                          if (isInsideThreadDetailView && !responsiveUtils.isMobile(context))
+                            ReceivedTimeBuilder(
+                              emailSelected: emailSelected,
+                              padding: const EdgeInsetsDirectional.only(start: 16, top: 2),
+                            ),
+                        ],
                       ),
-                    if (sMimeStatus != null && sMimeStatus != SMimeSignatureStatus.notSigned)
-                      Tooltip(
-                        key: const Key('smime_signature_status_icon'),
-                        message: sMimeStatus!.getTooltipMessage(context),
-                        child: MouseRegion(
-                          cursor: SystemMouseCursors.click,
-                          child: SvgPicture.asset(
-                            sMimeStatus!.getIcon(imagePaths),
-                            fit: BoxFit.fill,
-                          ),
-                        ),
-                      ),
-                    if (!emailSelected.isSubscribed && emailUnsubscribe != null && !responsiveUtils.isPortraitMobile(context))
-                      TMailButtonWidget.fromText(
-                        text: AppLocalizations.of(context).unsubscribe,
-                        textStyle: const TextStyle(
-                          fontWeight: FontWeight.normal,
-                          fontSize: 14,
-                          color: AppColor.colorTextBody,
-                          decoration: TextDecoration.underline,
-                        ),
-                        padding: const EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8),
-                        backgroundColor: Colors.transparent,
-                        onTapActionCallback: () => onEmailActionClick?.call(emailSelected, EmailActionType.unsubscribe),
-                      ),
-                    if (!isInsideThreadDetailView) const Spacer(),
-                    ReceivedTimeBuilder(
-                      emailSelected: emailSelected,
-                      padding: const EdgeInsetsDirectional.only(start: 16, top: 5),
                     ),
+                    if (!isInsideThreadDetailView && !responsiveUtils.isMobile(context))
+                      ReceivedTimeBuilder(
+                        emailSelected: emailSelected,
+                        padding: const EdgeInsetsDirectional.only(start: 16, top: 2),
+                      ),
                     if (isInsideThreadDetailView)
-                      Expanded(
-                        child: EmailViewAppBarWidget(
-                          key: const Key('email_view_app_bar_widget'),
-                          presentationEmail: emailSelected,
-                          isSearchActivated: false,
-                          onBackAction: () {},
-                          onEmailActionClick: onEmailActionClick,
-                          onMoreActionClick: onMoreActionClick,
-                          supportBackAction: false,
-                          appBarDecoration: const BoxDecoration(),
-                          emailLoaded: emailLoaded,
-                          replacePrintActionWithReplyAction: isInsideThreadDetailView,
-                          height: IconUtils.defaultIconSize,
-                          iconPadding: EdgeInsets.zero,
-                          iconMargin: const EdgeInsetsDirectional.only(start: 16),
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
-                        ),
+                      EmailViewAppBarWidget(
+                        key: const Key('email_view_app_bar_widget'),
+                        presentationEmail: emailSelected,
+                        isSearchActivated: false,
+                        onBackAction: () {},
+                        onEmailActionClick: onEmailActionClick,
+                        onMoreActionClick: onMoreActionClick,
+                        supportBackAction: false,
+                        appBarDecoration: const BoxDecoration(),
+                        emailLoaded: emailLoaded,
+                        isInsideThreadDetailView: isInsideThreadDetailView,
+                        height: IconUtils.defaultIconSize,
+                        iconPadding: EdgeInsets.zero,
+                        iconMargin: const EdgeInsetsDirectional.only(start: 16),
+                        padding: const EdgeInsets.symmetric(horizontal: 8),
                       ),
                   ],
                 ),
-                if (emailSelected.countRecipients > 0)
+                if (responsiveUtils.isMobile(context))
+                  ReceivedTimeBuilder(
+                    emailSelected: emailSelected,
+                    padding: const EdgeInsetsDirectional.only(top: 5),
+                  ),
+                if (emailSelected.countRecipients > 0 && showRecipients)
                   EmailReceiverWidget(
                     emailSelected: emailSelected,
                     maxWidth: constraints.maxWidth,
