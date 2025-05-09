@@ -1,4 +1,4 @@
-import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/views/loading/cupertino_loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
@@ -22,9 +22,7 @@ extension GetThreadDetailLoadingView on ThreadDetailController {
               child: const SizedBox(
                 width: 24,
                 height: 24,
-                child: CircularProgressIndicator(
-                  color: AppColor.lightIconTertiary,
-                ),
+                child: CupertinoLoadingWidget(),
               ),
             ),
         )

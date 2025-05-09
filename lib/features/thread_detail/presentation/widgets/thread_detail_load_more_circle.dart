@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/views/loading/cupertino_loading_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -70,9 +71,7 @@ class _ThreadDetailLoadMoreCircleState extends State<ThreadDetailLoadMoreCircle>
                     return const SizedBox(
                       width: 24,
                       height: 24,
-                      child: CircularProgressIndicator(
-                        color: AppColor.lightIconTertiary,
-                      ),
+                      child: CupertinoLoadingWidget(),
                     );
                   }
 
