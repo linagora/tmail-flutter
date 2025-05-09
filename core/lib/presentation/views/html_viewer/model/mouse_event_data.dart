@@ -28,6 +28,8 @@ class MouseEventData extends EventData {
     super.isCancelable,
   });
 
+  factory MouseEventData.fromJson(Map<String, dynamic> json) => _$MouseEventDataFromJson(json);
+
   Map<String, dynamic> toJson() => _$MouseEventDataToJson(this);
 
   @override
