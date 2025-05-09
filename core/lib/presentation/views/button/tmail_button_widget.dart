@@ -14,6 +14,7 @@ class TMailButtonWidget extends StatelessWidget {
 
   final double borderRadius;
   final double? width;
+  final double? height;
   final double maxWidth;
   final double maxHeight;
   final double minWidth;
@@ -50,6 +51,7 @@ class TMailButtonWidget extends StatelessWidget {
     this.onLongPressActionCallback,
     this.borderRadius = 20,
     this.width,
+    this.height,
     this.maxWidth = double.infinity,
     this.maxHeight = double.infinity,
     this.minWidth = 0,
@@ -86,6 +88,7 @@ class TMailButtonWidget extends StatelessWidget {
     OnLongPressActionCallback? onLongPressActionCallback,
     double borderRadius = 20,
     double? width,
+    double? height,
     double maxWidth = double.infinity,
     double maxHeight = double.infinity,
     double minWidth = 0,
@@ -110,6 +113,7 @@ class TMailButtonWidget extends StatelessWidget {
       onLongPressActionCallback: onLongPressActionCallback,
       borderRadius: borderRadius,
       width: width,
+      height: height,
       maxWidth : maxWidth,
       maxHeight: maxHeight,
       minWidth: minWidth,
@@ -137,6 +141,7 @@ class TMailButtonWidget extends StatelessWidget {
     OnLongPressActionCallback? onLongPressActionCallback,
     double borderRadius = 20,
     double? width,
+    double? height,
     double maxWidth = double.infinity,
     double maxHeight = double.infinity,
     double minWidth = 0,
@@ -161,6 +166,7 @@ class TMailButtonWidget extends StatelessWidget {
       onLongPressActionCallback: onLongPressActionCallback,
       borderRadius: borderRadius,
       width: width,
+      height: height,
       maxWidth : maxWidth,
       maxHeight: maxHeight,
       minWidth: minWidth,
@@ -354,6 +360,7 @@ class TMailButtonWidget extends StatelessWidget {
       onLongPressActionCallback: onLongPressActionCallback,
       borderRadius: borderRadius,
       width: width,
+      height: height,
       maxWidth: maxWidth,
       maxHeight: maxHeight,
       minWidth: minWidth,
