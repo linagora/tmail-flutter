@@ -202,15 +202,14 @@ class ThemeUtils {
     color: color,
   );
 
-  static TextStyle textStyleM3BodyMedium2({
+  static TextStyle textStyleInter700({
     Color? color,
-    FontWeight? fontWeight,
   }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
-    fontWeight: fontWeight ?? FontWeight.w600,
-    letterSpacing: 0.25,
-    fontSize: 14,
-    height: 20 / 14,
+    fontWeight: FontWeight.w700,
+    letterSpacing: 0.0,
+    fontSize: 15,
+    height: 20 / 15,
     color: color,
   );
 
