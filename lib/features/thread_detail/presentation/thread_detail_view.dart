@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
@@ -6,6 +7,7 @@ import 'package:get/get.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
+import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_bottom_bar_widget.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
@@ -93,27 +95,55 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                 return Expanded(
                   child: Padding(
                     padding: _padding(context),
-                    child: ClipRRect(
-                      borderRadius: const BorderRadius.vertical(
-                        bottom: Radius.circular(20),
-                      ),
-                      child: Stack(
-                        children: [
-                          const Positioned.fill(
-                            child: ColoredBox(color: Colors.white),
+                    child: Stack(
+                      children: [
+                        const Positioned.fill(
+                          child: ColoredBox(color: Colors.white),
+                        ),
+                        SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: controller.getThreadDetailEmailViews()
                           ),
-                          SingleChildScrollView(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: controller.getThreadDetailEmailViews()
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ),
                 );
               },
+            );
+          }),
+          Obx(() {
+            final lastEmailController = getBinding<SingleEmailController>(
+              tag: controller.emailIds.lastOrNull?.id.value
+            );
+            if (lastEmailController == null) {
+              return const SizedBox.shrink();
+            }
+            final lastEmailLoaded = lastEmailController.currentEmailLoaded.value;
+            final lastEmail = controller.emailIdsPresentation.values.lastOrNull;
+            if (lastEmailLoaded == null || lastEmail == null) {
+              return const SizedBox.shrink();
+            }
+
+            return EmailViewBottomBarWidget(
+              key: const Key('email_view_button_bar'),
+              imagePaths: lastEmailController.imagePaths,
+              responsiveUtils: lastEmailController.responsiveUtils,
+              emailLoaded: lastEmailLoaded,
+              presentationEmail: lastEmail,
+              userName: lastEmailController.getOwnEmailAddress(),
+              emailActionCallback: lastEmailController.pressEmailAction,
+              bottomBarDecoration: const BoxDecoration(
+                color: Colors.white,
+                border: Border(
+                  top: BorderSide(color: AppColor.colorDividerEmailView),
+                ),
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.circular(20),
+                ),
+              ),
+              padding: EdgeInsets.zero,
             );
           }),
           if (controller.responsiveUtils.isDesktop(context))
