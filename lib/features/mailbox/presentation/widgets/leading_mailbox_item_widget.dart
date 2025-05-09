@@ -3,7 +3,6 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:model/mailbox/select_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/styles/leading_mailbox_item_widget_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_icon_widget.dart';
 
@@ -24,14 +23,11 @@ class LeadingMailboxItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Transform(
-      transform: LeadingMailboxItemWidgetStyles.mailboxIconTransform(context),
-      child: MailboxIconWidget(
-        imagePaths: imagePaths,
-        mailboxNode: mailboxNode,
-        selectionMode: selectionMode,
-        onSelectMailboxFolderClick: onSelectMailboxFolderClick
-      )
+    return MailboxIconWidget(
+      imagePaths: imagePaths,
+      mailboxNode: mailboxNode,
+      selectionMode: selectionMode,
+      onSelectMailboxFolderClick: onSelectMailboxFolderClick
     );
   }
 }
