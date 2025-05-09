@@ -4,6 +4,7 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
@@ -39,7 +40,7 @@ class ThreadDetailController extends BaseController {
   MailboxId? get sentMailboxId => mailboxDashBoardController.getMailboxIdByRole(
     PresentationMailbox.roleSent,
   );
-  String? get ownEmailAddress => session?.username.value;
+  String? get ownEmailAddress => session?.getOwnEmailAddress();
   int get emailsNotLoadedCount => emailIdsStatus
     .values
     .where((status) => status == EmailInThreadStatus.hidden)
