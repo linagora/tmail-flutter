@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:core/presentation/constants/constants_ui.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
-import 'package:core/presentation/views/html_viewer/controller/html_content_viewer_controller.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_on_web_widget.dart';
 import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.dart';
 import 'package:core/utils/direction_utils.dart';
@@ -54,14 +53,12 @@ class EmailView extends GetWidget<SingleEmailController> {
     this.isFirstEmailInThreadDetail = false,
     this.isLastEmailInThreadDetail = false,
     this.threadSubject,
-    this.viewerController,
   });
 
   final EmailId? emailId;
   final bool isFirstEmailInThreadDetail;
   final bool isLastEmailInThreadDetail;
   final String? threadSubject;
-  final HtmlContentViewerController? viewerController;
 
   @override
   String? get tag => emailId?.id.value;
@@ -451,7 +448,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                               direction: AppUtils.getCurrentDirection(context),
                               contentPadding: 0,
                               useDefaultFont: true,
-                              viewerController: viewerController,
+                              isInsideThreadDetailView: isInsideThreadDetailView,
                             ),
                             if (controller.mailboxDashBoardController.isAttachmentDraggableAppActive)
                               PointerInterceptor(

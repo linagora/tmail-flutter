@@ -26,7 +26,6 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final TextDirection? direction;
   final double? contentPadding;
   final bool useDefaultFont;
-  final HtmlContentViewerController? viewerController;
 
   /// Handler for mailto: links
   final OnMailtoClicked? mailtoDelegate;
@@ -37,6 +36,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
   final bool allowResizeToDocumentSize;
 
   final bool keepWidthWhileLoading;
+  final bool isInsideThreadDetailView;
 
   const HtmlContentViewerOnWeb({
     Key? key,
@@ -50,7 +50,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     this.onClickHyperLinkAction,
     this.keepWidthWhileLoading = false,
     this.contentPadding,
-    this.viewerController,
+    this.isInsideThreadDetailView = false,
   }) : super(key: key);
 
   @override
@@ -76,6 +76,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   static const String iframeOnLoadMessage = 'iframeHasBeenLoaded';
   static const String onClickHyperLinkName = 'onClickHyperLink';
 
+  HtmlContentViewerController? _viewerController;
   ValueNotifier<SystemMouseCursor>? _contentCursorNotifier;
 
   @override
@@ -84,7 +85,9 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
     _actualHeight = widget.heightContent;
     _actualWidth = widget.widthContent;
     _createdViewId = _getRandString(10);
-    if (widget.viewerController != null) {
+
+    if (widget.isInsideThreadDetailView) {
+      _viewerController = HtmlContentViewerController();
       _contentCursorNotifier = ValueNotifier<SystemMouseCursor>(SystemMouseCursors.basic);
     }
     _setUpWeb();
@@ -298,7 +301,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       ..write(scriptsDisableZoom)
       ..write(HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage);
 
-    if (widget.viewerController != null) {
+    if (widget.isInsideThreadDetailView) {
       scriptBuffer.write(
         HtmlInteraction.scriptHandleEventListeners(viewId: _createdViewId),
       );
@@ -313,7 +316,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
       direction: widget.direction,
       contentPadding: widget.contentPadding,
       useDefaultFont: widget.useDefaultFont,
-      disableFocusOutline: widget.viewerController != null,
+      disableFocusOutline: widget.isInsideThreadDetailView,
     );
 
     return htmlTemplate;
@@ -322,8 +325,8 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   void _setUpWeb() {
     _htmlData = _generateHtmlDocument(widget.contentHtml);
 
-    if (widget.viewerController != null) {
-      widget.viewerController?.initializeIframe(
+    if (widget.isInsideThreadDetailView && _viewerController != null) {
+      _viewerController!.initializeIframe(
         id: _createdViewId,
         content: _htmlData!,
         width: _actualWidth,
@@ -365,15 +368,15 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
               future: _webInit,
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
-                  if (widget.viewerController != null &&
-                      widget.viewerController!.iframeHandler != null) {
+                  if (_viewerController != null &&
+                      _viewerController!.iframeHandler != null) {
                     final eventOverlayView = PointerInterceptor(
                       child: Listener(
                         behavior: HitTestBehavior.translucent,
-                        onPointerDown: widget.viewerController!.handlePointerEvent,
-                        onPointerMove: widget.viewerController!.handlePointerEvent,
-                        onPointerUp: widget.viewerController!.handlePointerEvent,
-                        onPointerHover: widget.viewerController!.handlePointerEvent,
+                        onPointerDown: _viewerController!.handlePointerEvent,
+                        onPointerMove: _viewerController!.handlePointerEvent,
+                        onPointerUp: _viewerController!.handlePointerEvent,
+                        onPointerHover: _viewerController!.handlePointerEvent,
                         child: Container(
                           height: _actualHeight,
                           width: _actualWidth,
@@ -388,8 +391,8 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
                           height: _actualHeight,
                           width: _actualWidth,
                           child: HtmlElementView(
-                            key: widget.viewerController!.htmlElementKey,
-                            viewType: widget.viewerController!.iframeHandler!.viewId,
+                            key: _viewerController!.htmlElementKey,
+                            viewType: _viewerController!.iframeHandler!.viewId,
                           ),
                         ),
                         if (_contentCursorNotifier != null)
@@ -456,6 +459,8 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
     sizeListener.cancel();
     _contentCursorNotifier?.dispose();
     _contentCursorNotifier = null;
+    _viewerController?.dispose();
+    _viewerController = null;
     super.dispose();
   }
 }
