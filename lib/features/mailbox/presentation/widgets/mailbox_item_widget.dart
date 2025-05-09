@@ -94,7 +94,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                     selectionMode: widget.selectionMode,
                     onSelectMailboxFolderClick: widget.onSelectMailboxFolderClick,
                   ),
-                  const SizedBox(width: MailboxItemWidgetStyles.space),
+                  const SizedBox(width: MailboxItemWidgetStyles.labelIconSpace),
                   Expanded(
                     child: LabelMailboxItemWidget(
                       itemKey: _key,
@@ -139,7 +139,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                     selectionMode: widget.selectionMode,
                     onSelectMailboxFolderClick: widget.onSelectMailboxFolderClick,
                   ),
-                  const SizedBox(width: MailboxItemWidgetStyles.space),
+                  const SizedBox(width: MailboxItemWidgetStyles.labelIconSpace),
                   Expanded(
                     child: LabelMailboxItemWidget(
                       itemKey: _key,
@@ -184,7 +184,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                       selectionMode: widget.selectionMode,
                       onSelectMailboxFolderClick: widget.onSelectMailboxFolderClick,
                     ),
-                    const SizedBox(width: MailboxItemWidgetStyles.padding),
+                    const SizedBox(width: MailboxItemWidgetStyles.labelIconSpace),
                     Expanded(
                       child: LabelMailboxItemWidget(
                         itemKey: _key,
@@ -241,7 +241,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                         selectionMode: widget.selectionMode,
                         onSelectMailboxFolderClick: widget.onSelectMailboxFolderClick,
                       ),
-                      const SizedBox(width: MailboxItemWidgetStyles.padding),
+                      const SizedBox(width: MailboxItemWidgetStyles.labelIconSpace),
                       Expanded(
                         child: LabelMailboxItemWidget(
                           itemKey: _key,
