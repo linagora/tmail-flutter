@@ -31,9 +31,11 @@ import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_multiple_m
 import 'package:tmail_ui_user/features/mailbox/domain/model/subscribe_request.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/get_all_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailbox_interactor.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/expand_mode_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/list_mailbox_node_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree.dart';
@@ -122,58 +124,79 @@ abstract class BaseMailboxController extends BaseController {
     allMailboxes = syncedMailbox;
   }
 
-  void toggleMailboxFolder(MailboxNode selectedMailboxNode, ScrollController scrollController) {
-    final newExpandMode = selectedMailboxNode.expandMode == ExpandMode.COLLAPSE
-        ? ExpandMode.EXPAND
-        : ExpandMode.COLLAPSE;
+  void toggleMailboxFolder(
+    MailboxNode selectedMailboxNode,
+    ScrollController scrollController,
+    GlobalKey itemKey,
+  ) {
+    final newExpandMode = selectedMailboxNode.expandMode.toggle();
 
     if (defaultMailboxTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
       log('toggleMailboxFolder() refresh defaultMailboxTree');
       defaultMailboxTree.refresh();
+      triggerScrollWhenExpandFolder(
+        selectedMailboxNode.expandMode,
+        itemKey,
+        scrollController,
+      );
     }
 
     if (personalMailboxTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
       log('toggleMailboxFolder() refresh folderMailboxTree');
       personalMailboxTree.refresh();
-      final childrenItems = personalMailboxTree.value.root.childrenItems ?? [];
-      _triggerScrollWhenExpandMailboxFolder(
-        childrenItems,
-        selectedMailboxNode,
-        scrollController);
+      triggerScrollWhenExpandFolder(
+        selectedMailboxNode.expandMode,
+        itemKey,
+        scrollController,
+      );
     }
 
     if (teamMailboxesTree.value.updateExpandedNode(selectedMailboxNode, newExpandMode) != null) {
       log('toggleMailboxFolder() refresh teamMailboxesTree');
       teamMailboxesTree.refresh();
-      final childrenItems = teamMailboxesTree.value.root.childrenItems ?? [];
-      _triggerScrollWhenExpandMailboxFolder(
-          childrenItems,
-          selectedMailboxNode,
-          scrollController);
+      triggerScrollWhenExpandFolder(
+        selectedMailboxNode.expandMode,
+        itemKey,
+        scrollController,
+      );
     }
   }
 
-  void _triggerScrollWhenExpandMailboxFolder(
-      List<MailboxNode> childrenItems,
-      MailboxNode selectedMailboxNode,
-      ScrollController scrollController) async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    final lastItem = childrenItems.last;
+  void triggerScrollWhenExpandFolder(
+    ExpandMode expandMode,
+    GlobalKey itemKey,
+    ScrollController scrollController,
+  ) {
+    if (expandMode == ExpandMode.COLLAPSE) return;
 
-    if (selectedMailboxNode.expandMode == ExpandMode.COLLAPSE) {
-      return;
-    }
+    final context = itemKey.currentContext;
+    if (context == null) return;
 
-    if (lastItem.mailboxNameAsString.contains(selectedMailboxNode.mailboxNameAsString)) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _scrollToSelfIfNeeded(context, scrollController);
+    });
+  }
+
+  void _scrollToSelfIfNeeded(
+    BuildContext context,
+    ScrollController scrollController,
+  ) {
+    final renderBox = context.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+
+    final position = renderBox.localToGlobal(Offset.zero);
+    final screenHeight = MediaQuery.of(context).size.height;
+    const offsetY = 200;
+    final bottomY = position.dy + renderBox.size.height + offsetY;
+    log('BaseMailboxController::_scrollToSelfIfNeeded:position = $position |screenHeight = $screenHeight | bottomY = $bottomY');
+    if (bottomY > screenHeight) {
+      final scrollOffset = scrollController.offset + bottomY - screenHeight + 40;
+      log('BaseMailboxController::_scrollToSelfIfNeeded:scrollOffset = $scrollOffset:');
       scrollController.animateTo(
-          scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInToLinear);
-    } else {
-      scrollController.animateTo(
-          scrollController.offset + 100,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeInToLinear);
+        scrollOffset,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
     }
   }
 
@@ -610,5 +633,59 @@ abstract class BaseMailboxController extends BaseController {
       mailboxId: mailboxId,
       totalEmailsCountChanged: totalEmails,
     ).execute();
+  }
+
+  void toggleMailboxCategories(
+    MailboxCategories category,
+    ScrollController scrollController,
+    GlobalKey itemKey,
+  ) {
+    switch (category) {
+      case MailboxCategories.exchange:
+        _toggleAndScroll(
+          currentExpandMode: mailboxCategoriesExpandMode.value.defaultMailbox,
+          updateExpandMode: (mode) => mailboxCategoriesExpandMode.value.defaultMailbox = mode,
+          hasChildren: defaultMailboxTree.value.root.hasChildren(),
+          itemKey: itemKey,
+          scrollController: scrollController,
+        );
+        break;
+
+      case MailboxCategories.personalFolders:
+        _toggleAndScroll(
+          currentExpandMode: mailboxCategoriesExpandMode.value.personalFolders,
+          updateExpandMode: (mode) => mailboxCategoriesExpandMode.value.personalFolders = mode,
+          hasChildren: personalMailboxTree.value.root.hasChildren(),
+          itemKey: itemKey,
+          scrollController: scrollController,
+        );
+        break;
+
+      case MailboxCategories.teamMailboxes:
+        _toggleAndScroll(
+          currentExpandMode: mailboxCategoriesExpandMode.value.teamMailboxes,
+          updateExpandMode: (mode) => mailboxCategoriesExpandMode.value.teamMailboxes = mode,
+          hasChildren: teamMailboxesTree.value.root.hasChildren(),
+          itemKey: itemKey,
+          scrollController: scrollController,
+        );
+        break;
+    }
+  }
+
+  void _toggleAndScroll({
+    required ExpandMode currentExpandMode,
+    required void Function(ExpandMode) updateExpandMode,
+    required bool hasChildren,
+    required GlobalKey itemKey,
+    required ScrollController scrollController,
+  }) {
+    final newExpandMode = currentExpandMode.toggle();
+    updateExpandMode(newExpandMode);
+    mailboxCategoriesExpandMode.refresh();
+
+    if (hasChildren) {
+      triggerScrollWhenExpandFolder(newExpandMode, itemKey, scrollController);
+    }
   }
 }

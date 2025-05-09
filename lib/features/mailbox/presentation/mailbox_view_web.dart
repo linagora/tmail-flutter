@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.da
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/app_grid_view.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
@@ -181,11 +182,11 @@ class MailboxView extends BaseMailboxView {
               Expanded(
                 child: Padding(
                   padding: EdgeInsetsDirectional.only(
-                    start: controller.responsiveUtils.isWebDesktop(context) ? 0 : 12,
+                    start: controller.responsiveUtils.isWebDesktop(context) ? 0 : 16,
                   ),
                   child: Text(
                     AppLocalizations.of(context).folders,
-                    style: ThemeUtils.textStyleM3BodyMedium2(color: Colors.black),
+                    style: ThemeUtils.textStyleInter700(color: Colors.black),
                   ),
                 ),
               ),
@@ -314,17 +315,22 @@ class MailboxView extends BaseMailboxView {
     } else {
       return Column(
         children: [
-          buildHeaderMailboxCategory(
-            context,
-            controller.responsiveUtils,
-            controller.imagePaths,
-            categories,
-            controller,
-            toggleMailboxCategories: controller.toggleMailboxCategories,
+          Obx(() => MailboxCategoryWidget(
+            categories: categories,
+            expandMode: categories.getExpandMode(
+              controller.mailboxCategoriesExpandMode.value,
+            ),
+            onToggleMailboxCategories: (categories, itemKey) =>
+                controller.toggleMailboxCategories(
+                  categories,
+                  controller.mailboxListScrollController,
+                  itemKey,
+                ),
+            isArrangeLTR: false,
             padding: controller.responsiveUtils.isDesktop(context)
               ? null
-              : const EdgeInsetsDirectional.only(start: 16)
-          ),
+              : const EdgeInsetsDirectional.only(start: 16),
+          )),
           AnimatedContainer(
             duration: const Duration(milliseconds: 400),
             child: categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
@@ -353,7 +359,12 @@ class MailboxView extends BaseMailboxView {
             mailboxNode: mailboxNode,
             mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value,
             onOpenMailboxFolderClick: (mailboxNode) => controller.openMailbox(context, mailboxNode.item),
-            onExpandFolderActionClick: (mailboxNode) => controller.toggleMailboxFolder(mailboxNode, controller.mailboxListScrollController),
+            onExpandFolderActionClick: (mailboxNode, itemKey) =>
+                controller.toggleMailboxFolder(
+                    mailboxNode,
+                    controller.mailboxListScrollController,
+                    itemKey,
+                ),
             onSelectMailboxFolderClick: controller.selectMailboxNode,
             onDragItemAccepted: _handleDragItemAccepted,
             onMenuActionClick: (position, mailboxNode) {

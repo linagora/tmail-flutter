@@ -1,5 +1,4 @@
 import 'package:core/core.dart';
-import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -10,6 +9,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_catego
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/app_grid_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/bottom_bar_selection_mailbox_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sending_queue_mailbox_widget.dart';
@@ -280,7 +280,7 @@ class MailboxView extends BaseMailboxView {
               Expanded(
                 child: Text(
                   AppLocalizations.of(context).folders,
-                  style: ThemeUtils.textStyleM3BodyMedium2(color: Colors.black),
+                  style: ThemeUtils.textStyleInter700(color: Colors.black),
                 ),
               ),
               Row(children: [
@@ -331,38 +331,6 @@ class MailboxView extends BaseMailboxView {
     );
   }
 
-  Widget _buildHeaderMailboxCategory(BuildContext context, MailboxCategories categories) {
-    return Padding(
-        padding: EdgeInsetsDirectional.only(
-          start: 12,
-          end: controller.responsiveUtils.isLandscapeMobile(context) ? 8 : 28),
-        child: Row(children: [
-          TMailButtonWidget.fromIcon(
-            icon: categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
-              ? controller.imagePaths.icArrowBottom
-              : DirectionUtils.isDirectionRTLByLanguage(context)
-                  ? controller.imagePaths.icArrowLeft
-                  : controller.imagePaths.icArrowRight,
-            tooltipMessage: AppLocalizations.of(context).collapse,
-            backgroundColor: Colors.transparent,
-            padding: const EdgeInsets.all(5),
-            iconColor: Colors.black,
-            iconSize: 20,
-            onTapActionCallback: () => controller.toggleMailboxCategories(categories)
-          ),
-          Expanded(
-            child: Text(
-              categories.getTitle(context),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: ThemeUtils.textStyleBodyBody3(
-                color: Colors.black,
-              )
-            )
-          ),
-        ]));
-  }
-
   Widget _buildBodyMailboxCategory(BuildContext context, MailboxCategories categories, MailboxNode mailboxNode) {
     final lastNode = mailboxNode.childrenItems?.last;
 
@@ -382,7 +350,23 @@ class MailboxView extends BaseMailboxView {
       return _buildBodyMailboxCategory(context, categories, mailboxNode);
     }
     return Column(children: [
-      _buildHeaderMailboxCategory(context, categories),
+      Obx(() => MailboxCategoryWidget(
+        categories: categories,
+        expandMode: categories.getExpandMode(
+          controller.mailboxCategoriesExpandMode.value,
+        ),
+        onToggleMailboxCategories: (categories, itemKey) =>
+            controller.toggleMailboxCategories(
+              categories,
+              controller.mailboxListScrollController,
+              itemKey,
+            ),
+        isArrangeLTR: false,
+        padding: EdgeInsetsDirectional.only(
+          start: 16,
+          end: controller.responsiveUtils.isLandscapeMobile(context) ? 8 : 28,
+        ),
+      )),
       AnimatedContainer(
         duration: const Duration(milliseconds: 400),
         child: categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
@@ -406,7 +390,12 @@ class MailboxView extends BaseMailboxView {
                 mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value,
                 onLongPressMailboxNodeAction: (mailboxNode) => openMailboxMenuActionOnMobile(context, controller.imagePaths, mailboxNode.item, controller),
                 onOpenMailboxFolderClick: (mailboxNode) => controller.openMailbox(context, mailboxNode.item),
-                onExpandFolderActionClick: (mailboxNode) => controller.toggleMailboxFolder(mailboxNode, controller.mailboxListScrollController),
+                onExpandFolderActionClick: (mailboxNode, itemKey) =>
+                    controller.toggleMailboxFolder(
+                        mailboxNode,
+                        controller.mailboxListScrollController,
+                        itemKey,
+                    ),
                 onSelectMailboxFolderClick: (mailboxNode) => controller.selectMailboxNode(mailboxNode),
               )),
               children: _buildListChildTileWidget(context, mailboxNode)

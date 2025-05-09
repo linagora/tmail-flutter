@@ -10,7 +10,7 @@ typedef OnSelectMailboxAction = void Function(PresentationMailbox);
 typedef OnDragEmailToMailboxAccepted = void Function(List<PresentationEmail>, PresentationMailbox);
 typedef OnLongPressMailboxAction = void Function(PresentationMailbox);
 
-typedef OnClickExpandMailboxNodeAction = void Function(MailboxNode);
+typedef OnClickExpandMailboxNodeAction = void Function(MailboxNode, GlobalKey itemKey);
 typedef OnClickOpenMailboxNodeAction = void Function(MailboxNode);
 typedef OnSelectMailboxNodeAction = void Function(MailboxNode);
 typedef OnClickOpenMenuMailboxNodeAction = void Function(RelativeRect, MailboxNode);

@@ -25,7 +25,6 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/refresh_all_mailb
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/search_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_tree_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/domain/model/verification/duplicate_name_validator.dart';
@@ -156,34 +155,6 @@ class DestinationPickerController extends BaseMailboxController {
   void _refreshMailboxChanges(jmap.State currentMailboxState) {
     if (accountId != null && _session != null) {
       refreshMailboxChanges(_session!, accountId!, currentMailboxState);
-    }
-  }
-
-  void toggleMailboxCategories(MailboxCategories categories) {
-    switch(categories) {
-      case MailboxCategories.exchange:
-        final newExpandMode = mailboxCategoriesExpandMode.value.defaultMailbox == ExpandMode.EXPAND
-          ? ExpandMode.COLLAPSE
-          : ExpandMode.EXPAND;
-        mailboxCategoriesExpandMode.value.defaultMailbox = newExpandMode;
-        mailboxCategoriesExpandMode.refresh();
-        break;
-      case MailboxCategories.personalFolders:
-        final newExpandMode = mailboxCategoriesExpandMode.value.personalFolders == ExpandMode.EXPAND
-          ? ExpandMode.COLLAPSE
-          : ExpandMode.EXPAND;
-        mailboxCategoriesExpandMode.value.personalFolders = newExpandMode;
-        mailboxCategoriesExpandMode.refresh();
-        break;
-      case MailboxCategories.teamMailboxes:
-        final newExpandMode = mailboxCategoriesExpandMode.value.teamMailboxes == ExpandMode.EXPAND
-          ? ExpandMode.COLLAPSE
-          : ExpandMode.EXPAND;
-        mailboxCategoriesExpandMode.value.teamMailboxes = newExpandMode;
-        mailboxCategoriesExpandMode.refresh();
-        break;
-      default:
-        return;
     }
   }
 
