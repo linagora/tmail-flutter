@@ -204,12 +204,13 @@ class ThemeUtils {
 
   static TextStyle textStyleInter700({
     Color? color,
+    double? fontSize,
   }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
     fontWeight: FontWeight.w700,
     letterSpacing: 0.0,
-    fontSize: 15,
-    height: 20 / 15,
+    fontSize: fontSize ?? 15,
+    height: 20 / (fontSize ?? 15),
     color: color,
   );
 
