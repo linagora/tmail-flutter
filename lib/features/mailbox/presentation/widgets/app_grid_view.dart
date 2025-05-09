@@ -34,7 +34,7 @@ class _AppGridViewState extends State<AppGridView> {
     return Column(children: [
       Padding(
         padding: const EdgeInsetsDirectional.only(
-          start: 24,
+          start: 26,
           end: 4,
           top: 4,
           bottom: 4,
