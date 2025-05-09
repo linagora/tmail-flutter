@@ -5,4 +5,5 @@ class MailboxItemWidgetStyles {
   static const double padding = 8;
   static const double itemPadding = 10;
   static const double borderRadius = 8;
+  static const double height = 36;
 }

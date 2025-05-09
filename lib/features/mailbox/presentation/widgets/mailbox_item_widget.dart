@@ -80,8 +80,8 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
               ),
               padding: const EdgeInsetsDirectional.symmetric(
                 horizontal: MailboxItemWidgetStyles.itemPadding,
-                vertical: MailboxItemWidgetStyles.space,
               ),
+              height: MailboxItemWidgetStyles.height,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: widget.mailboxNode.item.isTeamMailboxes
@@ -129,8 +129,8 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
               ),
               padding: const EdgeInsetsDirectional.symmetric(
                 horizontal: MailboxItemWidgetStyles.itemPadding,
-                vertical: MailboxItemWidgetStyles.space,
               ),
+              height: MailboxItemWidgetStyles.height,
               child: Row(
                 children: [
                   LeadingMailboxItemWidget(
@@ -174,8 +174,8 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                 ),
                 padding: const EdgeInsetsDirectional.symmetric(
                   horizontal: MailboxItemWidgetStyles.itemPadding,
-                  vertical: MailboxItemWidgetStyles.space,
                 ),
+                height: MailboxItemWidgetStyles.height,
                 child: Row(
                   children: [
                     LeadingMailboxItemWidget(
@@ -228,8 +228,8 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                 child: Container(
                   padding: const EdgeInsetsDirectional.symmetric(
                     horizontal: MailboxItemWidgetStyles.itemPadding,
-                    vertical: MailboxItemWidgetStyles.space,
                   ),
+                  height: MailboxItemWidgetStyles.height,
                   color: widget.mailboxNode.isSelected
                       ? AppColor.colorItemSelected
                       : Colors.transparent,
