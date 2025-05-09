@@ -23,6 +23,7 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
     this.emailLoaded,
     this.onEmailActionClick,
     this.onMoreActionClick,
+    this.onToggleThreadDetailCollapseExpand,
   });
 
   final PresentationEmail presentationEmail;
@@ -34,11 +35,11 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
   final EmailLoaded? emailLoaded;
   final OnEmailActionClick? onEmailActionClick;
   final OnMoreActionClick? onMoreActionClick;
+  final VoidCallback? onToggleThreadDetailCollapseExpand;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+    return DecoratedBox(
       decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(
@@ -53,10 +54,8 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           if (showSubject)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 16),
-              child: EmailSubjectWidget(presentationEmail: presentationEmail),
-            ),
+            EmailSubjectWidget(presentationEmail: presentationEmail),
+          const SizedBox(height: 16),
           InformationSenderAndReceiverBuilder(
             emailSelected: presentationEmail,
             responsiveUtils: responsiveUtils,
@@ -67,6 +66,7 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
             onMoreActionClick: onMoreActionClick,
             openEmailAddressDetailAction: openEmailAddressDetailAction,
             showRecipients: false,
+            onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
           ),
           Padding(
             padding: const EdgeInsets.all(16),

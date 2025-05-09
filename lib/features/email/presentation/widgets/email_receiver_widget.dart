@@ -56,7 +56,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
         return Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
+            Flexible(
               child: Container(
                 constraints: BoxConstraints(maxHeight: _maxHeight),
                 child: ListView(
@@ -149,7 +149,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
         return Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
+              Flexible(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
