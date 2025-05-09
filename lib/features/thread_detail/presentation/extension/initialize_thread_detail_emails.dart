@@ -14,7 +14,7 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
     emailIdsStatus.value = Map.fromEntries(
       emailIds.map((id) => MapEntry(id, EmailInThreadStatus.hidden))
     );
-    final emailIdToLoadContent = emailIds.first;
+    final emailIdToLoadContent = emailIds.last;
     final emailIdsToLoadMetaData = ThreadDetailPresentationUtils.getEmailIdsToLoad(
       Map.from(emailIdsPresentation)..remove(emailIdToLoadContent),
     );
@@ -28,7 +28,7 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
     consumeState(getEmailsByIdsInteractor.execute(
       session!,
       accountId!,
-      [emailIdToLoadContent, ...emailIdsToLoadMetaData],
+      [...emailIdsToLoadMetaData, emailIdToLoadContent],
       properties: EmailUtils.getPropertiesForEmailGetMethod(
         session!,
         accountId!,

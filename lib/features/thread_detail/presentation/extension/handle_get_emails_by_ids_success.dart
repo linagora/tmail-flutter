@@ -29,7 +29,7 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
     for (var presentationEmail in success.presentationEmails) {
       if (presentationEmail.id == null) continue;
       emailIdsPresentation[presentationEmail.id!] = presentationEmail;
-      if (presentationEmail.id == emailIds.first) {
+      if (presentationEmail.id == emailIds.last) {
         EmailBindings(initialEmail: presentationEmail).dependencies();
         emailIdsStatus[presentationEmail.id!] = EmailInThreadStatus.expanded;
       } else {

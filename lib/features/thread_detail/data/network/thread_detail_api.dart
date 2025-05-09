@@ -40,7 +40,7 @@ class ThreadDetailApi {
 
     return getThreadResponse!.list.firstWhereOrNull(
       (thread) => thread.id == threadId,
-    )!.emailIds!;
+    )!.emailIds;
   }
 
   Future<List<Email>> getEmailsByIds(
