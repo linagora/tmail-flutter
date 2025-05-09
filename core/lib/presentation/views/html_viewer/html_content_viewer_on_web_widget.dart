@@ -11,6 +11,7 @@ import 'package:core/utils/html/html_template.dart';
 import 'package:core/utils/html/html_utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:universal_html/html.dart' as html;
 
@@ -75,12 +76,17 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   static const String iframeOnLoadMessage = 'iframeHasBeenLoaded';
   static const String onClickHyperLinkName = 'onClickHyperLink';
 
+  ValueNotifier<SystemMouseCursor>? _contentCursorNotifier;
+
   @override
   void initState() {
     super.initState();
     _actualHeight = widget.heightContent;
     _actualWidth = widget.widthContent;
     _createdViewId = _getRandString(10);
+    if (widget.viewerController != null) {
+      _contentCursorNotifier = ValueNotifier<SystemMouseCursor>(SystemMouseCursors.basic);
+    }
     _setUpWeb();
 
     sizeListener = html.window.onMessage.listen((event) {
@@ -137,6 +143,19 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
         final link = data['url'] as String?;
         if (link != null && mounted) {
           widget.onClickHyperLinkAction?.call(Uri.parse(link));
+        }
+      }
+
+      if (data['type'] != null && data['type'].contains('toDart: changeCursor')) {
+        final cursor = data['value'] as String?;
+        if (cursor != null && mounted) {
+          if (cursor == 'pointer') {
+            _contentCursorNotifier?.value = SystemMouseCursors.click;
+          } else if (cursor == 'text') {
+            _contentCursorNotifier?.value = SystemMouseCursors.text;
+          } else {
+            _contentCursorNotifier?.value = SystemMouseCursors.basic;
+          }
         }
       }
     });
@@ -281,9 +300,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
 
     if (widget.viewerController != null) {
       scriptBuffer.write(
-        HtmlInteraction.scriptHandleMouseAndKeyboardEventListeners(
-          viewId: _createdViewId,
-        ),
+        HtmlInteraction.scriptHandleEventListeners(viewId: _createdViewId),
       );
     }
 
@@ -350,6 +367,21 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
                 if (snapshot.hasData) {
                   if (widget.viewerController != null &&
                       widget.viewerController!.iframeHandler != null) {
+                    final eventOverlayView = PointerInterceptor(
+                      child: Listener(
+                        behavior: HitTestBehavior.translucent,
+                        onPointerDown: widget.viewerController!.handlePointerEvent,
+                        onPointerMove: widget.viewerController!.handlePointerEvent,
+                        onPointerUp: widget.viewerController!.handlePointerEvent,
+                        onPointerHover: widget.viewerController!.handlePointerEvent,
+                        child: Container(
+                          height: _actualHeight,
+                          width: _actualWidth,
+                          color: Colors.transparent,
+                        ),
+                      ),
+                    );
+
                     return Stack(
                       children: [
                         SizedBox(
@@ -360,20 +392,22 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
                             viewType: widget.viewerController!.iframeHandler!.viewId,
                           ),
                         ),
-                        PointerInterceptor(
-                          child: Listener(
-                            behavior: HitTestBehavior.translucent,
-                            onPointerDown: widget.viewerController!.handlePointerEvent,
-                            onPointerMove: widget.viewerController!.handlePointerEvent,
-                            onPointerUp: widget.viewerController!.handlePointerEvent,
-                            onPointerHover: widget.viewerController!.handlePointerEvent,
-                            child: Container(
-                              height: _actualHeight,
-                              width: _actualWidth,
-                              color: Colors.transparent,
-                            ),
+                        if (_contentCursorNotifier != null)
+                          ValueListenableBuilder(
+                            valueListenable: _contentCursorNotifier!,
+                            builder: (context, value, child) {
+                              return MouseRegion(
+                                cursor: value,
+                                child: child,
+                              );
+                            },
+                            child: eventOverlayView,
+                          )
+                        else
+                          MouseRegion(
+                            cursor: SystemMouseCursors.text,
+                            child: eventOverlayView,
                           ),
-                        ),
                       ],
                     );
                   } else {
@@ -420,6 +454,8 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   void dispose() {
     _htmlData = null;
     sizeListener.cancel();
+    _contentCursorNotifier?.dispose();
+    _contentCursorNotifier = null;
     super.dispose();
   }
 }

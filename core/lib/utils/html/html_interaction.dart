@@ -105,7 +105,7 @@ class HtmlInteraction {
     </script>
   ''';
 
-  static String scriptHandleMouseAndKeyboardEventListeners({required String viewId}) => '''
+  static String scriptHandleEventListeners({required String viewId}) => '''
     <script type="text/javascript">
       function initializeEventListeners() {
         document.querySelectorAll('*').forEach(element => {
@@ -181,6 +181,26 @@ class HtmlInteraction {
                 
                 event.stopPropagation();
               } else if (data.eventType === '${EventConstants.mouseOver}') {
+                if (element.tagName.toLowerCase() === 'a') {
+                  window.parent.postMessage(JSON.stringify({
+                    "view": "$viewId",
+                     "type": "toDart: changeCursor",
+                    "value": "pointer"
+                  }), "*");
+                } else if (element.textContent.trim() !== '') {
+                  window.parent.postMessage(JSON.stringify({
+                    "view": "$viewId",
+                     "type": "toDart: changeCursor",
+                    "value": "text"
+                  }), "*");
+                } else {
+                  window.parent.postMessage(JSON.stringify({
+                    "view": "$viewId",
+                     "type": "toDart: changeCursor",
+                    "value": "default"
+                  }), "*");
+                }
+      
                 document.querySelectorAll('a.${HtmlTemplate.nameClassToolTip} span.tooltiptext').forEach(element => {
                   element.style.visibility = 'hidden';
                 });
