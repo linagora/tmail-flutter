@@ -186,7 +186,7 @@ class MailboxView extends BaseMailboxView {
                   ),
                   child: Text(
                     AppLocalizations.of(context).folders,
-                    style: ThemeUtils.textStyleM3BodyMedium2(color: Colors.black),
+                    style: ThemeUtils.textStyleInter700(color: Colors.black),
                   ),
                 ),
               ),
