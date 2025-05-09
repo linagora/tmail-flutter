@@ -14,56 +14,52 @@ class EmailSenderBuilder extends StatelessWidget {
 
   final EmailAddress emailAddress;
   final OnOpenEmailAddressDetailAction? openEmailAddressDetailAction;
+  final bool showSenderEmail;
 
   const EmailSenderBuilder({
-    Key? key,
+    super.key,
     required this.emailAddress,
     this.openEmailAddressDetailAction,
-}) : super(key: key);
+    this.showSenderEmail = true,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const NeverScrollableScrollPhysics(),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (emailAddress.displayName.isNotEmpty)
-            MaterialTextButton(
-              label: emailAddress.displayName,
-              onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
-              onLongPress: () {
-                AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
-              },
-              borderRadius: 8,
-              padding: const EdgeInsets.all(3),
-              customStyle: ThemeUtils.textStyleHeadingHeadingSmall(
-                color: Colors.black,
-              ),
-              overflow: CommonTextStyle.defaultTextOverFlow,
-              softWrap: CommonTextStyle.defaultSoftWrap
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (emailAddress.displayName.isNotEmpty)
+          MaterialTextButton(
+            label: emailAddress.displayName,
+            onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
+            onLongPress: () {
+              AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
+            },
+            borderRadius: 8,
+            padding: EdgeInsets.zero,
+            customStyle: ThemeUtils.textStyleHeadingHeadingSmall(
+              color: Colors.black,
             ),
-          Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: MaterialTextButton(
-              label: '<${emailAddress.emailAddress}>',
-              onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
-              onLongPress: () {
-                AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
-              },
-              borderRadius: 8,
-              padding: const EdgeInsets.all(3),
-              customStyle: ThemeUtils.textStyleBodyBody1(
-                color: AppColor.steelGray400,
-              ),
-              overflow: CommonTextStyle.defaultTextOverFlow,
-              softWrap: CommonTextStyle.defaultSoftWrap
+            overflow: CommonTextStyle.defaultTextOverFlow,
+            softWrap: CommonTextStyle.defaultSoftWrap
+          ),
+        if (showSenderEmail)
+          MaterialTextButton(
+            label: '<${emailAddress.emailAddress}>',
+            onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
+            onLongPress: () {
+              AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
+            },
+            borderRadius: 8,
+            padding: EdgeInsets.zero,
+            customStyle: ThemeUtils.textStyleBodyBody1(
+              color: AppColor.steelGray400,
             ),
+            overflow: CommonTextStyle.defaultTextOverFlow,
+            softWrap: CommonTextStyle.defaultSoftWrap
           )
-        ]
-      )
+      ]
     );
   }
 }

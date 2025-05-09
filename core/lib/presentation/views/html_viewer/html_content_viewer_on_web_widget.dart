@@ -193,6 +193,11 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
             }
           }
         }
+
+        const resizeObserver = new ResizeObserver((entries) => {
+          var height = document.body.scrollHeight;
+          window.parent.postMessage(JSON.stringify({"view": "$_createdViewId", "type": "toDart: htmlHeight", "height": height}), "*");
+        });
         
         ${widget.mailtoDelegate != null
             ? '''
@@ -238,6 +243,8 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
                   }
                 '''
               : ''}
+          
+          resizeObserver.observe(document.body);
         }
       </script>
     ''';
@@ -300,7 +307,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraint) {
-      minHeight = math.max(constraint.maxHeight, minHeight);
+      minHeight = math.min(constraint.maxHeight, minHeight);
       final child = Stack(
         children: [
           if (_htmlData?.isNotEmpty == false)
@@ -314,7 +321,6 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
                     height: _actualHeight,
                     width: _actualWidth,
                     child: HtmlElementView(
-                      key: ValueKey(_htmlData),
                       viewType: _createdViewId,
                     ),
                   );

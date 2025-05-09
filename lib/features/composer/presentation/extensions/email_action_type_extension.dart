@@ -148,6 +148,8 @@ extension EmailActionTypeExtension on EmailActionType {
         return imagePaths.icDownloadAttachment;
       case EmailActionType.editAsNewEmail:
         return imagePaths.icEdit;
+      case EmailActionType.printAll:
+        return imagePaths.icPrinter;
       default:
         return '';
     }
@@ -171,6 +173,8 @@ extension EmailActionTypeExtension on EmailActionType {
         return AppLocalizations.of(context).downloadMessageAsEML;
       case EmailActionType.editAsNewEmail:
         return AppLocalizations.of(context).editAsNewEmail;
+      case EmailActionType.printAll:
+        return AppLocalizations.of(context).printAll;
       default:
         return '';
     }
