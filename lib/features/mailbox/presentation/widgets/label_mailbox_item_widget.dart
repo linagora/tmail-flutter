@@ -1,5 +1,6 @@
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
@@ -42,11 +43,9 @@ class LabelMailboxItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final displayNameWidget = TextOverflowBuilder(
       mailboxNode.item.getDisplayName(context),
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        fontSize: LabelMailboxItemWidgetStyles.labelFolderTextSize,
-        color: LabelMailboxItemWidgetStyles.labelFolderTextColor,
-        fontWeight: _mailboxNameTextFontWeight,
-      ),
+      style: isSelected
+        ? ThemeUtils.textStyleInter700(color: Colors.black, fontSize: 14)
+        : ThemeUtils.textStyleBodyBody3(color: Colors.black),
     );
 
     final nameWithExpandIcon = Row(
@@ -132,14 +131,6 @@ class LabelMailboxItemWidget extends StatelessWidget {
       );
     } else {
       return childWidget;
-    }
-  }
-
-  FontWeight get _mailboxNameTextFontWeight {
-    if (isSelected || mailboxNode.item.isTeamMailboxes) {
-      return LabelMailboxItemWidgetStyles.labelFolderSelectedFontWeight;
-    } else {
-      return LabelMailboxItemWidgetStyles.labelFolderTextFontWeight;
     }
   }
 }
