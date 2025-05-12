@@ -34,4 +34,8 @@ extension ListEmailExtension on List<Email> {
       }
     });
   }
+
+  List<Email> sortWithResult(Comparator comparator) {
+    return List.from(this..sortBy(comparator));
+  }
 }
