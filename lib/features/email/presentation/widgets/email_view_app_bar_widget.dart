@@ -81,12 +81,15 @@ class EmailViewAppBarWidget extends StatelessWidget {
         child: Row(children: [
           if (_supportDisplayMailboxNameTitle(context) && supportBackAction)
             Expanded(
-              child: EmailViewBackButton(
-                imagePaths: _imagePaths,
-                onBackAction: onBackAction,
-                mailboxContain: mailboxContain,
-                isSearchActivated: isSearchActivated,
-                maxWidth: constraints.maxWidth,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: EmailViewBackButton(
+                  imagePaths: _imagePaths,
+                  onBackAction: onBackAction,
+                  mailboxContain: mailboxContain,
+                  isSearchActivated: isSearchActivated,
+                  maxWidth: constraints.maxWidth,
+                ),
               ),
             ),
           Row(

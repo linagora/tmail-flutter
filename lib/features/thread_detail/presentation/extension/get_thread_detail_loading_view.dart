@@ -4,7 +4,9 @@ import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 
 extension GetThreadDetailLoadingView on ThreadDetailController {
-  Widget getThreadDetailLoadingView() {
+  Widget getThreadDetailLoadingView({
+    required bool isResponsiveDesktop,
+  }) {
     return viewState.value.fold(
       (failure) => const SizedBox.shrink(),
       (success) => success is GettingThreadById
@@ -17,7 +19,9 @@ extension GetThreadDetailLoadingView on ThreadDetailController {
                   bottom: Radius.circular(20),
                 ),
               ),
-              margin: const EdgeInsetsDirectional.only(end: 16),
+              margin: isResponsiveDesktop
+                ? const EdgeInsetsDirectional.only(end: 16)
+                : null,
               padding: const EdgeInsets.only(top: 16),
               child: const SizedBox(
                 width: 24,

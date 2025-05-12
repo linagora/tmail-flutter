@@ -83,7 +83,9 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                 const SizedBox(width: 16),
               ],
             )),
-          Obx(() => controller.getThreadDetailLoadingView()),
+          Obx(() => controller.getThreadDetailLoadingView(
+            isResponsiveDesktop: controller.responsiveUtils.isDesktop(context),
+          )),
           Obx(() {
             return controller.viewState.value.fold(
               (failure) => const SizedBox.shrink(),
@@ -127,24 +129,29 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
               return const SizedBox.shrink();
             }
 
-            return EmailViewBottomBarWidget(
-              key: const Key('email_view_button_bar'),
-              imagePaths: lastEmailController.imagePaths,
-              responsiveUtils: lastEmailController.responsiveUtils,
-              emailLoaded: lastEmailLoaded,
-              presentationEmail: lastEmail,
-              userName: lastEmailController.getOwnEmailAddress(),
-              emailActionCallback: lastEmailController.pressEmailAction,
-              bottomBarDecoration: const BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                  top: BorderSide(color: AppColor.colorDividerEmailView),
+            return Padding(
+              padding: controller.responsiveUtils.isDesktop(context)
+                ? const EdgeInsetsDirectional.only(end: 16)
+                : EdgeInsets.zero,
+              child: EmailViewBottomBarWidget(
+                key: const Key('email_view_button_bar'),
+                imagePaths: lastEmailController.imagePaths,
+                responsiveUtils: lastEmailController.responsiveUtils,
+                emailLoaded: lastEmailLoaded,
+                presentationEmail: lastEmail,
+                userName: lastEmailController.getOwnEmailAddress(),
+                emailActionCallback: lastEmailController.pressEmailAction,
+                bottomBarDecoration: const BoxDecoration(
+                  color: Colors.white,
+                  border: Border(
+                    top: BorderSide(color: AppColor.colorDividerEmailView),
+                  ),
+                  borderRadius: BorderRadius.vertical(
+                    bottom: Radius.circular(20),
+                  ),
                 ),
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.circular(20),
-                ),
+                padding: EdgeInsets.zero,
               ),
-              padding: EdgeInsets.zero,
             );
           }),
           if (controller.responsiveUtils.isDesktop(context))
