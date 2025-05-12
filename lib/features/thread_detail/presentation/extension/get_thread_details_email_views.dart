@@ -68,7 +68,16 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
               EmailBindings(initialEmail: presentationEmail).dependencies();
             }
             scrollReverse.value = false;
-            emailIdsStatus[emailId] = EmailInThreadStatus.expanded;
+            for (var key in emailIds) {
+              if (key == emailId) {
+                emailIdsStatus[emailId] = EmailInThreadStatus.expanded;
+                continue;
+              }
+
+              if (emailIdsStatus[key] == EmailInThreadStatus.expanded) {
+                emailIdsStatus[key] = EmailInThreadStatus.collapsed;
+              }
+            }
           },
         );
       }
