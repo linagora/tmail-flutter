@@ -135,8 +135,10 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
@@ -185,6 +187,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   MaybeCalendarEventInteractor? _maybeCalendarEventInteractor;
   RejectCalendarEventInteractor? _rejectCalendarEventInteractor;
   AcceptCounterCalendarEventInteractor? _acceptCounterCalendarEventInteractor;
+  ThreadDetailController? _threadDetailController;
 
   final emailContents = RxnString();
   final attachments = <Attachment>[].obs;
@@ -201,12 +204,20 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   EmailId? _currentEmailId;
   Identity? _identitySelected;
   ButtonState? _printEmailButtonState;
+  PresentationEmail? initialEmail;
+  final obxListeners = <Worker>[];
 
   final StreamController<Either<Failure, Success>> _downloadProgressStateController =
       StreamController<Either<Failure, Success>>.broadcast();
   Stream<Either<Failure, Success>> get downloadProgressState => _downloadProgressStateController.stream;
 
-  PresentationEmail? get currentEmail => mailboxDashBoardController.selectedEmail.value;
+  PresentationEmail? get currentEmail {
+    if (initialEmail?.id != null) {
+      return _threadDetailController?.emailIdsPresentation[initialEmail!.id!];
+    }
+
+    return mailboxDashBoardController.selectedEmail.value;
+  }
 
   bool get calendarEventProcessing => viewState.value.fold(
     (failure) => false,
@@ -239,10 +250,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._getHtmlContentFromAttachmentInteractor,
     this._downloadAllAttachmentsForWebInteractor,
     this._exportAllAttachmentsInteractor,
+    {this.initialEmail}
   );
 
   @override
   void onInit() {
+    _threadDetailController = getBinding<ThreadDetailController>();
+    _injectCalendarEventBindings(session, accountId);
     _registerObxStreamListener();
     _listenDownloadAttachmentProgressState();
     super.onInit();
@@ -250,6 +264,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   @override
   void onClose() {
+    _threadDetailController = null;
     _downloadProgressStateController.close();
     _attachmentListScrollController.dispose();
     super.onClose();
@@ -357,21 +372,28 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _registerObxStreamListener() {
-    ever(mailboxDashBoardController.accountId, (accountId) {
-      if (accountId is AccountId) {
-        _injectAndGetInteractorBindings(
-          session,
-          accountId
-        );
+    if (initialEmail == null) {
+      obxListeners.add(ever(mailboxDashBoardController.accountId, (accountId) {
+        if (accountId is AccountId) {
+          _injectAndGetInteractorBindings(
+            session,
+            accountId
+          );
+        }
+      }));
+
+      obxListeners.add(ever<PresentationEmail?>(
+        mailboxDashBoardController.selectedEmail,
+        _handleOpenEmailDetailedView
+      ));
+    } else {
+      if (accountId != null) {
+        _injectAndGetInteractorBindings(session, accountId!);
       }
-    });
+      _handleOpenEmailDetailedView(initialEmail);
+    }
 
-    ever<PresentationEmail?>(
-      mailboxDashBoardController.selectedEmail,
-      _handleOpenEmailDetailedView
-    );
-
-    ever(mailboxDashBoardController.emailUIAction, (action) {
+    obxListeners.add(ever(mailboxDashBoardController.emailUIAction, (action) {
       if (action is CloseEmailDetailedViewToRedirectToTheInboxAction) {
         if (emailSupervisorController.supportedPageView.isTrue) {
           emailSupervisorController.popEmailQueue(_currentEmailId);
@@ -393,15 +415,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         isEmailContentHidden.value = false;
         mailboxDashBoardController.clearEmailUIAction();
       }
-    });
+    }));
 
-    ever(mailboxDashBoardController.viewState, (viewState) {
+    obxListeners.add(ever(mailboxDashBoardController.viewState, (viewState) {
       viewState.map((success) {
         if (success is UnsubscribeEmailSuccess) {
           emailUnsubscribe.value = null;
         }
       });
-    });
+    }));
   }
 
   bool isListEmailContainSelectedEmail(PresentationEmail selectedEmail) {
@@ -1454,7 +1476,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     final newEmail = currentEmail?.updateKeywords({
       KeyWordIdentifier.emailFlagged: success.markStarAction == MarkStarAction.markStar,
     });
-    mailboxDashBoardController.setSelectedEmail(newEmail);
+    if (initialEmail?.id == null) {
+      mailboxDashBoardController.setSelectedEmail(newEmail);
+    } else {
+      _threadDetailController?.emailIdsPresentation[initialEmail!.id!] = newEmail;
+    }
 
     final emailId = newEmail?.id;
     if (emailId == null) return;
@@ -1507,6 +1533,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         break;
       case EmailActionType.editAsNewEmail:
         _editAsNewEmail(presentationEmail);
+        break;
+      case EmailActionType.reply:
+        _replyEmail(presentationEmail);
         break;
       default:
         break;
@@ -1709,7 +1738,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     _updateCurrentEmailId(null);
     _resetToOriginalValue(isEmailClosing: true);
     _replaceBrowserHistory();
-    if (mailboxDashBoardController.searchController.isSearchEmailRunning) {
+    if (mailboxDashBoardController.searchController.isSearchEmailRunning
+      || getBinding<SearchEmailController>()?.searchIsRunning.value == true
+    ) {
       if (context != null && responsiveUtils.isWebDesktop(context)) {
         mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
       } else {
@@ -1761,17 +1792,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mailboxDashBoardController.openComposer(ComposerArguments());
         break;
       case EmailActionType.reply:
-        mailboxDashBoardController.openComposer(
-          ComposerArguments.replyEmail(
-            presentationEmail: presentationEmail,
-            content: currentEmailLoaded.value?.htmlContent ?? '',
-            inlineImages: currentEmailLoaded.value?.inlineImages ?? [],
-            mailboxRole: presentationEmail.mailboxContain?.role,
-            messageId: currentEmailLoaded.value?.emailCurrent?.messageId,
-            references: currentEmailLoaded.value?.emailCurrent?.references,
-            listPost: currentEmailLoaded.value?.emailCurrent?.listPost,
-          )
-        );
+        _replyEmail(presentationEmail);
         break;
       case EmailActionType.replyToList:
         log('SingleEmailController::pressEmailAction:replyToList');
@@ -1938,8 +1959,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void openAttachmentList(BuildContext context, List<Attachment> attachments) {
+    final tag = initialEmail?.id?.id.value;
     if (responsiveUtils.isMobile(context)) {
-      (AttachmentListBottomSheetBuilder(context, attachments, imagePaths, _attachmentListScrollController)
+      (AttachmentListBottomSheetBuilder(context, attachments, imagePaths, _attachmentListScrollController, tag)
         ..onCloseButtonAction(() => popBack())
         ..onDownloadAttachmentFileAction((attachment) => handleDownloadAttachmentAction(context, attachment))
         ..onViewAttachmentFileAction((attachment) => handleViewAttachmentAction(context, attachment))
@@ -1963,6 +1985,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
             onDownloadAllButtonAction: isDownloadAllSupported()
               ? () => downloadAllAttachmentsForWeb('TwakeMail-${DateTime.now()}')
               : null,
+            singleEmailControllerTag: tag,
           )
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
@@ -2237,6 +2260,20 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     mailboxDashBoardController.openComposer(
       ComposerArguments.editAsNewEmail(presentationEmail),
+    );
+  }
+
+  void _replyEmail(PresentationEmail presentationEmail) {
+    mailboxDashBoardController.openComposer(
+      ComposerArguments.replyEmail(
+        presentationEmail: presentationEmail,
+        content: currentEmailLoaded.value?.htmlContent ?? '',
+        inlineImages: currentEmailLoaded.value?.inlineImages ?? [],
+        mailboxRole: presentationEmail.mailboxContain?.role,
+        messageId: currentEmailLoaded.value?.emailCurrent?.messageId,
+        references: currentEmailLoaded.value?.emailCurrent?.references,
+        listPost: currentEmailLoaded.value?.emailCurrent?.listPost,
+      )
     );
   }
 

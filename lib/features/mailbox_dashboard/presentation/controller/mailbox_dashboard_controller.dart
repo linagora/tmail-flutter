@@ -167,6 +167,8 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_e
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
 import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
@@ -261,6 +263,7 @@ class MailboxDashBoardController extends ReloadableController
   final isContextMenuOpened = RxBool(false);
   final isPopupMenuOpened = RxBool(false);
   final ownEmailAddress = RxString('');
+  final currentThreadId = Rxn<ThreadId>();
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
@@ -830,9 +833,14 @@ class MailboxDashBoardController extends ReloadableController
     selectedEmail.value = null;
   }
 
-  void openEmailDetailedView(PresentationEmail presentationEmail) {
+  void openEmailDetailedView(PresentationEmail presentationEmail, {bool singleEmail = false}) {
     setSelectedEmail(presentationEmail);
-    dispatchRoute(DashboardRoutes.emailDetailed);
+    if (singleEmail) {
+      dispatchRoute(DashboardRoutes.emailDetailed);
+    } else {
+      currentThreadId.value = presentationEmail.threadId;
+      dispatchRoute(DashboardRoutes.threadDetailed);
+    }
     if (PlatformInfo.isWeb && presentationEmail.routeWeb != null) {
       RouteUtils.replaceBrowserHistory(
         title: 'Email-${presentationEmail.id?.id.value ?? ''}',
@@ -867,6 +875,8 @@ class MailboxDashBoardController extends ReloadableController
     log('MailboxDashBoardController::handleAdvancedSearchEmail:');
     if (_searchInsideEmailDetailedViewIsActive()) {
       _closeEmailDetailedView();
+    } else if (_searchInsideThreadDetailViewIsActive()) {
+      _closeThreadDetailView(currentContext);
     }
     _unSelectedMailbox();
     searchController.clearFilterSuggestion();
@@ -892,6 +902,8 @@ class MailboxDashBoardController extends ReloadableController
     clearFilterMessageOption();
     if (_searchInsideEmailDetailedViewIsActive()) {
       _closeEmailDetailedView();
+    } else if (_searchInsideThreadDetailViewIsActive()) {
+      _closeThreadDetailView(currentContext);
     }
     _unSelectedMailbox();
     searchController.clearFilterSuggestion();
@@ -918,6 +930,17 @@ class MailboxDashBoardController extends ReloadableController
       && currentContext != null
       && responsiveUtils.isDesktop(currentContext!)
       && dashboardRoute.value == DashboardRoutes.emailDetailed;
+  }
+
+  bool _searchInsideThreadDetailViewIsActive() {
+    return PlatformInfo.isWeb
+      && currentContext != null
+      && responsiveUtils.isDesktop(currentContext!)
+      && dashboardRoute.value == DashboardRoutes.threadDetailed;
+  }
+
+  void _closeThreadDetailView(BuildContext? context) {
+    getBinding<ThreadDetailController>()?.closeThreadDetailAction(context);
   }
 
   void clearSearchEmail() {
