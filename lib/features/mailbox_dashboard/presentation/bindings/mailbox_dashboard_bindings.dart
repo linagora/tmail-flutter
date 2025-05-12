@@ -137,6 +137,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_emai
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_bindings.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_bindings.dart';
 import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
@@ -153,6 +154,7 @@ class MailboxDashBoardBindings extends BaseBindings {
     EmailBindings().dependencies();
     SearchEmailBindings().dependencies();
     QuotasBindings().dependencies();
+    ThreadDetailBindings().dependencies();
   }
 
   @override
