@@ -239,7 +239,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         }
       }
     },
-    $signature: 141
+    $signature: 138
   };
   A._HtmlContentViewerOnWebState_initState__closure.prototype = {
     call$0() {
@@ -289,7 +289,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._widget.toString;
       return new B.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
     },
-    $signature: 1865
+    $signature: 1866
   };
   A._HtmlContentViewerOnWebState_build__closure.prototype = {
     call$2(context, snapshot) {
@@ -306,7 +306,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1866
+    $signature: 1867
   };
   (function inheritance() {
     var _inherit = hunkHelpers.inherit,
@@ -334,5 +334,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_8", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "fnXPnXeL9nfEFVM8jTWFjwV4kCI=");
+})($__dart_deferred_initializers__, "mvy7VCECRxD4FmAuydbR1rzmsM0=");
 ;
