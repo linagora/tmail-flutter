@@ -83,17 +83,7 @@ class EmailView extends GetWidget<SingleEmailController> {
           bottom: !PlatformInfo.isIOS,
           child: Container(
             clipBehavior: Clip.antiAlias,
-            decoration: controller.responsiveUtils.isWebDesktop(context) && !isInsideThreadDetailView
-              ? const BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
-                  color: Colors.white)
-              : const BoxDecoration(
-                  color: Colors.white,
-                  border: Border(top: BorderSide(
-                    color: AppColor.colorDividerEmailView,
-                    width: 0.5,
-                  )),
-                ),
+            decoration: _getDecorationEmailView(context),
             margin: _getMarginEmailView(context),
             child: Obx(() {
               final currentEmail = controller.currentEmail;
@@ -289,15 +279,36 @@ class EmailView extends GetWidget<SingleEmailController> {
     );
   }
 
+  BoxDecoration _getDecorationEmailView(BuildContext context) {
+    if (controller.responsiveUtils.isWebDesktop(context) && !isInsideThreadDetailView) {
+      return const BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(20)),
+        color: Colors.white,
+      );
+    }
+
+    if (controller.currentEmail == null) {
+      return const BoxDecoration(color: Colors.white);
+    }
+
+    return const BoxDecoration(
+      color: Colors.white,
+      border: Border(top: BorderSide(
+        color: AppColor.colorDividerEmailView,
+        width: 0.5,
+      )),
+    );
+  }
+
   EdgeInsetsGeometry? _getMarginEmailView(BuildContext context) {
     if (PlatformInfo.isMobile) return null;
 
-    if (!controller.responsiveUtils.isDesktop(context)) {
-      return const EdgeInsets.symmetric(vertical: 16);
-    } 
-    
     if (isInsideThreadDetailView) {
       return EdgeInsets.zero;
+    }
+
+    if (!controller.responsiveUtils.isDesktop(context)) {
+      return const EdgeInsets.symmetric(vertical: 16);
     }
     
     return const EdgeInsetsDirectional.only(
