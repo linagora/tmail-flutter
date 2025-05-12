@@ -43,11 +43,11 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
               imagePaths: controller.imagePaths,
               isSearchRunning: isSearchRunning,
               closeThreadDetailAction: controller.closeThreadDetailAction,
-              firstEmailOfThread: controller.emailIdsPresentation.values.firstOrNull,
+              lastEmailOfThread: controller.emailIdsPresentation.values.lastOrNull,
               ownUserName: controller.session?.username.value ?? '',
               mailboxContain: _getMailboxContain(),
               emailLoaded: getBinding<SingleEmailController>(
-                tag: controller.emailIds.firstOrNull?.id.value
+                tag: controller.emailIds.lastOrNull?.id.value
               )?.currentEmailLoaded.value,
               onEmailActionClick: (email, action) {
                 // TODO: Next PR
@@ -101,6 +101,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                           child: ColoredBox(color: Colors.white),
                         ),
                         SingleChildScrollView(
+                          reverse: true,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: controller.getThreadDetailEmailViews()
