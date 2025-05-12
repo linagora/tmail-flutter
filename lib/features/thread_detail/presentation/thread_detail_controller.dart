@@ -32,6 +32,7 @@ class ThreadDetailController extends BaseController {
   final emailIds = <EmailId>[].obs;
   final emailIdsPresentation = <EmailId, PresentationEmail?>{}.obs;
   final emailIdsStatus = <EmailId, EmailInThreadStatus>{}.obs;
+  final scrollReverse = true.obs;
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
 

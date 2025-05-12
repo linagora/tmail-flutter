@@ -14,6 +14,8 @@ extension LoadMoreThreadDetailEmails on ThreadDetailController {
       return;
     }
 
+    scrollReverse.value = true;
+
     final emailIdsToLoadMetaData = ThreadDetailPresentationUtils
       .getEmailIdsToLoad(emailIdsPresentation);
     consumeState(getEmailsByIdsInteractor.execute(
