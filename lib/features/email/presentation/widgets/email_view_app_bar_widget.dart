@@ -78,7 +78,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
           ),
           color: EmailViewAppBarWidgetStyles.backgroundColor,
         ),
-        child: Row(children: [
+        child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
           if (_supportDisplayMailboxNameTitle(context) && supportBackAction)
             Expanded(
               child: Align(

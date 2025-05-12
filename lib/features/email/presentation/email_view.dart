@@ -313,7 +313,7 @@ class EmailView extends GetWidget<SingleEmailController> {
     }
 
     if (!controller.responsiveUtils.isDesktop(context)) {
-      return const EdgeInsets.symmetric(vertical: 16);
+      return EdgeInsets.zero;
     }
     
     return const EdgeInsetsDirectional.only(
