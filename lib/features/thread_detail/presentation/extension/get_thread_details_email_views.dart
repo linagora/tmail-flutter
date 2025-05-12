@@ -47,8 +47,12 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
 
       if (emailIdsStatus[emailId] == EmailInThreadStatus.collapsed) {
         return ThreadDetailCollapsedEmail(
-          presentationEmail: presentationEmail,
-          showSubject: false,
+          presentationEmail: presentationEmail.copyWith(
+            subject: isFirstEmailInThreadDetail
+              ? emailIdsPresentation.values.last?.subject
+              : null
+          ),
+          showSubject: isFirstEmailInThreadDetail,
           imagePaths: imagePaths,
           responsiveUtils: responsiveUtils,
           mailboxContain: presentationEmail.mailboxContain,
