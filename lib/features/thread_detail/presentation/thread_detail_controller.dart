@@ -65,12 +65,10 @@ class ThreadDetailController extends BaseController {
     }
   }
 
-  @override
-  void dispose() {
+  void reset() {
     emailIds.clear();
     emailIdsPresentation.clear();
     emailIdsStatus.clear();
-    super.dispose();
   }
 
   @override
