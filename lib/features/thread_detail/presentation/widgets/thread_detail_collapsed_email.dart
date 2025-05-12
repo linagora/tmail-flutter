@@ -49,34 +49,36 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
           ),
         ),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (showSubject)
-            EmailSubjectWidget(presentationEmail: presentationEmail),
-          const SizedBox(height: 16),
-          InformationSenderAndReceiverBuilder(
-            emailSelected: presentationEmail,
-            responsiveUtils: responsiveUtils,
-            imagePaths: imagePaths,
-            emailLoaded: emailLoaded,
-            isInsideThreadDetailView: true,
-            onEmailActionClick: onEmailActionClick,
-            onMoreActionClick: onMoreActionClick,
-            openEmailAddressDetailAction: openEmailAddressDetailAction,
-            showRecipients: false,
-            onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: TextOverflowBuilder(
-              presentationEmail.getPartialContent(),
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyMedium,
+      child: InkWell(
+        onTap: onToggleThreadDetailCollapseExpand,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (showSubject)
+              EmailSubjectWidget(presentationEmail: presentationEmail),
+            const SizedBox(height: 16),
+            InformationSenderAndReceiverBuilder(
+              emailSelected: presentationEmail,
+              responsiveUtils: responsiveUtils,
+              imagePaths: imagePaths,
+              emailLoaded: emailLoaded,
+              isInsideThreadDetailView: true,
+              onEmailActionClick: onEmailActionClick,
+              onMoreActionClick: onMoreActionClick,
+              openEmailAddressDetailAction: openEmailAddressDetailAction,
+              showRecipients: false,
             ),
-          ),
-        ],
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: TextOverflowBuilder(
+                presentationEmail.getPartialContent(),
+                overflow: TextOverflow.ellipsis,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
