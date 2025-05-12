@@ -15,13 +15,14 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
     }
     
     if (emailIds.length == 1 && success.presentationEmails.length == 1) {
-      closeThreadDetailAction(null);
-      final mailboxDashBoardController = getBinding<MailboxDashBoardController>();
-      mailboxDashBoardController?.dispatchRoute(DashboardRoutes.thread);
-      mailboxDashBoardController?.openEmailDetailedView(
-        success.presentationEmails.first,
-        singleEmail: true,
-      );
+      closeThreadDetailAction(currentContext);
+      getBinding<MailboxDashBoardController>()
+        ?.dispatchRoute(DashboardRoutes.thread);
+      getBinding<MailboxDashBoardController>()
+        ?.openEmailDetailedView(
+          success.presentationEmails.first,
+          singleEmail: true,
+        );
       return;
     }
     
