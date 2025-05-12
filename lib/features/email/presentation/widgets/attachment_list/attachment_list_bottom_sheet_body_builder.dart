@@ -21,6 +21,7 @@ class AttachmentListBottomSheetBodyBuilder extends StatelessWidget {
   final OnViewAttachmentFileAction? onViewAttachmentFileAction;
   final OnCancelButtonAction? onCancelButtonAction;
   final OnCloseButtonAction? onCloseButtonAction;
+  final String? singleEmailControllerTag;
 
   const AttachmentListBottomSheetBodyBuilder({
     super.key,
@@ -33,6 +34,7 @@ class AttachmentListBottomSheetBodyBuilder extends StatelessWidget {
     this.onViewAttachmentFileAction,
     this.onCancelButtonAction,
     this.onCloseButtonAction,
+    this.singleEmailControllerTag,
   });
 
   @override
@@ -105,6 +107,7 @@ class AttachmentListBottomSheetBodyBuilder extends StatelessWidget {
                                   attachment: attachments[index],
                                   downloadAttachmentAction: onDownloadAttachmentFileAction,
                                   viewAttachmentAction: onViewAttachmentFileAction,
+                                  singleEmailControllerTag: singleEmailControllerTag,
                                 );
                               },
                               separatorBuilder: (context, index) {

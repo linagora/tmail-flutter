@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
@@ -62,10 +63,15 @@ import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class EmailBindings extends BaseBindings {
+  final PresentationEmail? initialEmail;
+
+  EmailBindings({this.initialEmail});
+
+  String? get tag => initialEmail?.id?.id.value;
 
   @override
   void bindingsController() {
-    Get.put(EmailSupervisorController());
+    Get.put(EmailSupervisorController(), tag: tag);
     Get.put(SingleEmailController(
       Get.find<GetEmailContentInteractor>(),
       Get.find<MarkAsEmailReadInteractor>(),
@@ -83,7 +89,8 @@ class EmailBindings extends BaseBindings {
       Get.find<GetHtmlContentFromAttachmentInteractor>(),
       Get.find<DownloadAllAttachmentsForWebInteractor>(),
       Get.find<ExportAllAttachmentsInteractor>(),
-    ));
+      initialEmail: initialEmail,
+    ), tag: tag);
   }
 
   @override
