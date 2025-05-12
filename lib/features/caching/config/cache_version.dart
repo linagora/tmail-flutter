@@ -1,4 +1,4 @@
 
 class CacheVersion {
-  static const int hiveDBVersion = 17;
+  static const int hiveDBVersion = 18;
 }
