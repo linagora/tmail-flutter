@@ -1,5 +1,6 @@
 import 'package:core/core.dart';
 import 'package:get/get.dart';
+import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
@@ -32,7 +33,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/preview_email_from_
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_html_content_from_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
-import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
@@ -62,10 +62,14 @@ import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class EmailBindings extends BaseBindings {
+  final EmailId? currentEmailId;
+
+  EmailBindings({this.currentEmailId});
+
+  String? get tag => currentEmailId?.id.value;
 
   @override
   void bindingsController() {
-    Get.put(EmailSupervisorController());
     Get.put(SingleEmailController(
       Get.find<GetEmailContentInteractor>(),
       Get.find<MarkAsEmailReadInteractor>(),
@@ -83,7 +87,8 @@ class EmailBindings extends BaseBindings {
       Get.find<GetHtmlContentFromAttachmentInteractor>(),
       Get.find<DownloadAllAttachmentsForWebInteractor>(),
       Get.find<ExportAllAttachmentsInteractor>(),
-    ));
+      currentEmailId: currentEmailId,
+    ), tag: tag);
   }
 
   @override

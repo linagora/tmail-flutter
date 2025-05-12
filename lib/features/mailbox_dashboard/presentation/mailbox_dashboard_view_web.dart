@@ -52,6 +52,7 @@ import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option
 import 'package:tmail_ui_user/features/thread/presentation/model/popup_menu_item_filter_message_action.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/spam_banner/spam_report_banner_web_styles.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
@@ -269,6 +270,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                               return _buildThreadViewForWebDesktop(context);
                             case DashboardRoutes.emailDetailed:
                               return const EmailView();
+                            case DashboardRoutes.threadDetailed:
+                              return const ThreadDetailView();
                             default:
                               return const SizedBox.shrink();
                           }
@@ -298,6 +301,19 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                             ],
                           ),
                       );
+                case DashboardRoutes.threadDetailed:
+                  return _buildScaffoldHaveDrawer(
+                    body: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: ResponsiveUtils.defaultSizeLeftMenuMobile,
+                          child: ThreadView()),
+                        const VerticalDivider(width: 1),
+                        const Expanded(child: ThreadDetailView()),
+                      ],
+                    ),
+                  );
                 default:
                   return _buildScaffoldHaveDrawer(
                     body: Row(
@@ -317,6 +333,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
               switch(controller.dashboardRoute.value) {
                 case DashboardRoutes.thread:
                   return _buildScaffoldHaveDrawer(body: ThreadView());
+                case DashboardRoutes.threadDetailed:
+                  return const ThreadDetailView();
                 case DashboardRoutes.emailDetailed:
                   return const EmailView();
                 case DashboardRoutes.searchEmail:

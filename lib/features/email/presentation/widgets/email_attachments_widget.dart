@@ -27,6 +27,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
   final OnTapActionCallback? onTapShowAllAttachmentFile;
   final bool showDownloadAllAttachmentsButton;
   final OnTapActionCallback? onTapDownloadAllButton;
+  final String? singleEmailControllerTag;
 
   const EmailAttachmentsWidget({
     super.key,
@@ -40,6 +41,7 @@ class EmailAttachmentsWidget extends StatelessWidget {
     this.onTapShowAllAttachmentFile,
     this.showDownloadAllAttachmentsButton = false,
     this.onTapDownloadAllButton,
+    this.singleEmailControllerTag,
   });
 
   Widget _buildMoreAttachmentButton(
@@ -108,17 +110,19 @@ class EmailAttachmentsWidget extends StatelessWidget {
                     children: attachmentDisplayed.map((attachment) {
                       if (PlatformInfo.isWeb) {
                         return DraggableAttachmentItemWidget(
-                            attachment: attachment,
-                            onDragStarted: onDragStarted,
-                            onDragEnd: onDragEnd,
-                            downloadAttachmentAction: downloadAttachmentAction,
-                            viewAttachmentAction: viewAttachmentAction,
+                          attachment: attachment,
+                          onDragStarted: onDragStarted,
+                          onDragEnd: onDragEnd,
+                          downloadAttachmentAction: downloadAttachmentAction,
+                          viewAttachmentAction: viewAttachmentAction,
+                          singleEmailControllerTag: singleEmailControllerTag,
                         );
                       } else {
                         return AttachmentItemWidget(
-                            attachment: attachment,
-                            downloadAttachmentAction: downloadAttachmentAction,
-                            viewAttachmentAction: viewAttachmentAction,
+                          attachment: attachment,
+                          downloadAttachmentAction: downloadAttachmentAction,
+                          viewAttachmentAction: viewAttachmentAction,
+                          singleEmailControllerTag: singleEmailControllerTag,
                         );
                       }
                     }).toList(),

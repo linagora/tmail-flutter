@@ -5,6 +5,14 @@ extension HandleGetEmailIdsByThreadIdSuccess on ThreadDetailController {
   void handleGetEmailIdsByThreadIdSuccess(
     GetThreadByIdSuccess success,
   ) {
-    emailIds.value = success.emailIds;
+    if (success.emailIds.isNotEmpty) {
+      emailIdsPresentation.value = Map.fromEntries(success.emailIds.map(
+        (emailId) => MapEntry(emailId, null),
+      ));
+    } else if (mailboxDashBoardController.selectedEmail.value?.id != null) {
+      emailIdsPresentation.value = {
+        mailboxDashBoardController.selectedEmail.value!.id!: null,
+      };
+    }
   }
 }

@@ -24,6 +24,7 @@ extension EmailExtension on Email {
       bcc: bcc?.map((emailAddress) => emailAddress.toEmailAddressHiveCache()).toList(),
       replyTo: replyTo?.map((emailAddress) => emailAddress.toEmailAddressHiveCache()).toList(),
       mailboxIds: mailboxIds?.toMapString(),
+      threadId: threadId?.id.value,
       headerCalendarEvent: headerCalendarEvent?.toMapString(),
       blobId: blobId?.value,
       xPriorityHeader: xPriorityHeader?.toMapString(),
