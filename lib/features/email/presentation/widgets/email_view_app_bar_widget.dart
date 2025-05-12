@@ -8,7 +8,7 @@ import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -19,7 +19,6 @@ typedef OnMoreActionClick = void Function(PresentationEmail, RelativeRect?);
 class EmailViewAppBarWidget extends StatelessWidget {
   final _imagePaths = Get.find<ImagePaths>();
   final _responsiveUtils = Get.find<ResponsiveUtils>();
-  final _singleEmailController = Get.find<SingleEmailController>();
 
   final PresentationEmail presentationEmail;
   final List<Widget>? optionsWidget;
@@ -28,6 +27,14 @@ class EmailViewAppBarWidget extends StatelessWidget {
   final VoidCallback onBackAction;
   final OnEmailActionClick? onEmailActionClick;
   final OnMoreActionClick? onMoreActionClick;
+  final bool supportBackAction;
+  final BoxDecoration? appBarDecoration;
+  final EmailLoaded? emailLoaded;
+  final bool isInsideThreadDetailView;
+  final double? height;
+  final EdgeInsetsGeometry? iconPadding;
+  final EdgeInsetsGeometry? iconMargin;
+  final EdgeInsetsGeometry? padding;
 
   EmailViewAppBarWidget({
     Key? key,
@@ -38,19 +45,27 @@ class EmailViewAppBarWidget extends StatelessWidget {
     this.onEmailActionClick,
     this.onMoreActionClick,
     this.optionsWidget,
+    this.supportBackAction = true,
+    this.appBarDecoration,
+    required this.emailLoaded,
+    this.isInsideThreadDetailView = false,
+    this.height,
+    this.iconPadding,
+    this.iconMargin,
+    this.padding,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final child = LayoutBuilder(builder: (context, constraints) {
       return Container(
-        height: PlatformInfo.isIOS
+        height: height ?? (PlatformInfo.isIOS
           ? EmailViewAppBarWidgetStyles.heightIOS(context, _responsiveUtils)
-          : EmailViewAppBarWidgetStyles.height,
-        padding: PlatformInfo.isIOS
+          : EmailViewAppBarWidgetStyles.height),
+        padding: padding ?? (PlatformInfo.isIOS
           ? EmailViewAppBarWidgetStyles.paddingIOS(context, _responsiveUtils)
-          : EmailViewAppBarWidgetStyles.padding,
-        decoration: const BoxDecoration(
+          : EmailViewAppBarWidgetStyles.padding),
+        decoration: appBarDecoration ?? const BoxDecoration(
           border: Border(
             bottom: BorderSide(
               color: EmailViewAppBarWidgetStyles.bottomBorderColor,
@@ -63,89 +78,30 @@ class EmailViewAppBarWidget extends StatelessWidget {
           ),
           color: EmailViewAppBarWidgetStyles.backgroundColor,
         ),
-        child: Row(children: [
-          if (_supportDisplayMailboxNameTitle(context))
-            EmailViewBackButton(
-              imagePaths: _imagePaths,
-              onBackAction: onBackAction,
-              mailboxContain: mailboxContain,
-              isSearchActivated: isSearchActivated,
-              maxWidth: constraints.maxWidth,
+        child: Row(mainAxisAlignment: MainAxisAlignment.end, children: [
+          if (_supportDisplayMailboxNameTitle(context) && supportBackAction)
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: EmailViewBackButton(
+                  imagePaths: _imagePaths,
+                  onBackAction: onBackAction,
+                  mailboxContain: mailboxContain,
+                  isSearchActivated: isSearchActivated,
+                  maxWidth: constraints.maxWidth,
+                ),
+              ),
             ),
-          const Spacer(),
           Row(
             children: [
-                if (optionsWidget != null) ... optionsWidget!,
-                TMailButtonWidget.fromIcon(
-                  icon: _imagePaths.icMoveEmail,
-                  iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
-                  iconColor: EmailViewAppBarWidgetStyles.iconColor,
-                  tooltipMessage: AppLocalizations.of(context).move_message,
-                  backgroundColor: Colors.transparent,
-                  onTapActionCallback: () => onEmailActionClick?.call(presentationEmail, EmailActionType.moveToMailbox)
-                ),
-                TMailButtonWidget.fromIcon(
-                  icon: presentationEmail.hasStarred
-                    ? _imagePaths.icStar
-                    : _imagePaths.icUnStar,
-                  iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
-                  iconColor: presentationEmail.hasStarred
-                    ? null
-                    : EmailViewAppBarWidgetStyles.iconColor,
-                  backgroundColor: Colors.transparent,
-                  tooltipMessage: presentationEmail.hasStarred
-                    ? AppLocalizations.of(context).not_starred
-                    : AppLocalizations.of(context).mark_as_starred,
-                  onTapActionCallback: () => onEmailActionClick?.call(
-                    presentationEmail,
-                    presentationEmail.hasStarred ? EmailActionType.unMarkAsStarred : EmailActionType.markAsStarred
-                  )
-                ),
-                if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit)
-                  Obx(() => AbsorbPointer(
-                    absorbing: _singleEmailController.currentEmailLoaded.value == null,
-                    child: TMailButtonWidget.fromIcon(
-                      icon: _imagePaths.icPrinter,
-                      iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
-                      iconColor: EmailViewAppBarWidgetStyles.iconColor,
-                      backgroundColor: Colors.transparent,
-                      tooltipMessage: AppLocalizations.of(context).printAll,
-                      onTapActionCallback: () => onEmailActionClick?.call(
-                        presentationEmail,
-                        EmailActionType.printAll,
-                      ),
-                    ),
-                  )),
-                TMailButtonWidget.fromIcon(
-                  icon: _imagePaths.icDeleteComposer,
-                  iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
-                  iconColor: EmailViewAppBarWidgetStyles.iconColor,
-                  backgroundColor: Colors.transparent,
-                  tooltipMessage: canDeletePermanently
-                    ? AppLocalizations.of(context).delete_permanently
-                    : AppLocalizations.of(context).move_to_trash,
-                  onTapActionCallback: () {
-                    if (canDeletePermanently) {
-                      onEmailActionClick?.call(presentationEmail, EmailActionType.deletePermanently);
-                    } else {
-                      onEmailActionClick?.call(presentationEmail, EmailActionType.moveToTrash);
-                    }
-                  }
-                ),
-                TMailButtonWidget.fromIcon(
-                  icon: _imagePaths.icMoreVertical,
-                  iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
-                  iconColor: EmailViewAppBarWidgetStyles.iconColor,
-                  backgroundColor: Colors.transparent,
-                  tooltipMessage: AppLocalizations.of(context).more,
-                  onTapActionCallback: _responsiveUtils.isScreenWithShortestSide(context)
-                    ? () => onMoreActionClick?.call(presentationEmail, null)
-                    : null,
-                  onTapActionAtPositionCallback: !_responsiveUtils.isScreenWithShortestSide(context)
-                    ? (position) => onMoreActionClick?.call(presentationEmail, position)
-                    : null
-                ),
-              ]
+              if (optionsWidget != null) ... optionsWidget!,
+              ..._buildActionButtons(
+                appLocalizations: AppLocalizations.of(context),
+                isScreenWithShortestSide: _responsiveUtils.isScreenWithShortestSide(context),
+                isResponsiveMobile: _responsiveUtils.isMobile(context),
+                isResponsiveDesktop: _responsiveUtils.isDesktop(context),
+              ),
+            ]
           ),
         ])
       );
@@ -177,5 +133,138 @@ class EmailViewAppBarWidget extends StatelessWidget {
 
   bool get canDeletePermanently {
     return mailboxContain?.isTrash == true || mailboxContain?.isSpam == true;
+  }
+
+  Widget getReplyButton(AppLocalizations appLocalizations) => TMailButtonWidget.fromIcon(
+    icon: _imagePaths.icReply,
+    iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
+    iconColor: EmailViewAppBarWidgetStyles.iconColor,
+    tooltipMessage: appLocalizations.reply,
+    backgroundColor: Colors.transparent,
+    onTapActionCallback: () => onEmailActionClick?.call(
+      presentationEmail,
+      EmailActionType.reply,
+    ),
+    padding: iconPadding,
+    margin: iconMargin,
+  );
+
+  Widget getPrintButton(AppLocalizations appLocalizations) => AbsorbPointer(
+    absorbing: emailLoaded == null,
+    child: TMailButtonWidget.fromIcon(
+      icon: _imagePaths.icPrinter,
+      iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
+      iconColor: EmailViewAppBarWidgetStyles.iconColor,
+      backgroundColor: Colors.transparent,
+      tooltipMessage: appLocalizations.printAll,
+      onTapActionCallback: () => onEmailActionClick?.call(
+        presentationEmail,
+        EmailActionType.printAll,
+      ),
+      padding: iconPadding,
+      margin: iconMargin,
+    ),
+  );
+
+  Widget getMoveEmailButton(AppLocalizations appLocalizations) => TMailButtonWidget.fromIcon(
+    icon: _imagePaths.icMoveEmail,
+    iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
+    iconColor: EmailViewAppBarWidgetStyles.iconColor,
+    tooltipMessage: appLocalizations.move_message,
+    backgroundColor: Colors.transparent,
+    onTapActionCallback: () => onEmailActionClick?.call(
+      presentationEmail,
+      EmailActionType.moveToMailbox,
+    ),
+    padding: iconPadding,
+    margin: iconMargin,
+  );
+
+  Widget getMarkStarButton(AppLocalizations applocalizations) => TMailButtonWidget.fromIcon(
+    icon: presentationEmail.hasStarred
+      ? _imagePaths.icStar
+      : _imagePaths.icUnStar,
+    iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
+    iconColor: presentationEmail.hasStarred
+      ? null
+      : EmailViewAppBarWidgetStyles.iconColor,
+    backgroundColor: Colors.transparent,
+    tooltipMessage: presentationEmail.hasStarred
+      ? applocalizations.not_starred
+      : applocalizations.mark_as_starred,
+    onTapActionCallback: () => onEmailActionClick?.call(
+      presentationEmail,
+      presentationEmail.hasStarred
+        ? EmailActionType.unMarkAsStarred
+        : EmailActionType.markAsStarred
+    ),
+    padding: iconPadding,
+    margin: iconMargin,
+  );
+
+  Widget getDeleteButton(AppLocalizations applocalizations) => TMailButtonWidget.fromIcon(
+    icon: _imagePaths.icDeleteComposer,
+    iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
+    iconColor: EmailViewAppBarWidgetStyles.iconColor,
+    backgroundColor: Colors.transparent,
+    tooltipMessage: canDeletePermanently
+      ? applocalizations.delete_permanently
+      : applocalizations.move_to_trash,
+    onTapActionCallback: () {
+      if (canDeletePermanently) {
+        onEmailActionClick?.call(presentationEmail, EmailActionType.deletePermanently);
+      } else {
+        onEmailActionClick?.call(presentationEmail, EmailActionType.moveToTrash);
+      }
+    },
+    padding: iconPadding,
+    margin: iconMargin,
+  );
+
+  Widget getMoreButton(
+    AppLocalizations applocalizations,
+    bool isScreenWithShortestSide,
+  ) => TMailButtonWidget.fromIcon(
+    icon: _imagePaths.icMoreVertical,
+    iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
+    iconColor: EmailViewAppBarWidgetStyles.iconColor,
+    backgroundColor: Colors.transparent,
+    tooltipMessage: applocalizations.more,
+    onTapActionCallback: isScreenWithShortestSide
+      ? () => onMoreActionClick?.call(presentationEmail, null)
+      : null,
+    onTapActionAtPositionCallback: !isScreenWithShortestSide
+      ? (position) => onMoreActionClick?.call(presentationEmail, position)
+      : null,
+    padding: iconPadding,
+    margin: iconMargin,
+  );
+
+  List<Widget> _buildActionButtons({
+    required AppLocalizations appLocalizations,
+    required bool isScreenWithShortestSide,
+    required bool isResponsiveMobile,
+    required bool isResponsiveDesktop,
+  }) {
+    if (!isInsideThreadDetailView) {
+      return [
+        getPrintButton(appLocalizations),
+        getMoveEmailButton(appLocalizations),
+        getMarkStarButton(appLocalizations),
+        getDeleteButton(appLocalizations),
+        getMoreButton(appLocalizations, isScreenWithShortestSide),
+      ];
+    }
+
+    return [
+      getReplyButton(appLocalizations),
+      if (!isResponsiveMobile)
+        getMoveEmailButton(appLocalizations),
+      if (isResponsiveDesktop) ...[
+        getMarkStarButton(appLocalizations),
+        getDeleteButton(appLocalizations),
+      ],
+      getMoreButton(appLocalizations, isScreenWithShortestSide),
+    ];
   }
 }

@@ -148,6 +148,23 @@ extension EmailActionTypeExtension on EmailActionType {
         return imagePaths.icDownloadAttachment;
       case EmailActionType.editAsNewEmail:
         return imagePaths.icEdit;
+      case EmailActionType.printAll:
+        return imagePaths.icPrinter;
+      case EmailActionType.forward:
+        return imagePaths.icForward;
+      case EmailActionType.replyAll:
+        return imagePaths.icReplyAll;
+      case EmailActionType.replyToList:
+        return imagePaths.icReply;
+      case EmailActionType.moveToMailbox:
+        return imagePaths.icMoveEmail;
+      case EmailActionType.markAsStarred:
+        return imagePaths.icStar;
+      case EmailActionType.unMarkAsStarred:
+        return imagePaths.icUnStar;
+      case EmailActionType.moveToTrash:
+      case EmailActionType.deletePermanently:
+        return imagePaths.icDeleteComposer;
       default:
         return '';
     }
@@ -171,6 +188,24 @@ extension EmailActionTypeExtension on EmailActionType {
         return AppLocalizations.of(context).downloadMessageAsEML;
       case EmailActionType.editAsNewEmail:
         return AppLocalizations.of(context).editAsNewEmail;
+      case EmailActionType.printAll:
+        return AppLocalizations.of(context).printAll;
+      case EmailActionType.forward:
+        return AppLocalizations.of(context).forward;
+      case EmailActionType.replyAll:
+        return AppLocalizations.of(context).reply_all;
+      case EmailActionType.replyToList:
+        return AppLocalizations.of(context).replyToList;
+      case EmailActionType.moveToMailbox:
+        return AppLocalizations.of(context).move_message;
+      case EmailActionType.markAsStarred:
+        return AppLocalizations.of(context).mark_as_starred;
+      case EmailActionType.unMarkAsStarred:
+        return AppLocalizations.of(context).not_starred;
+      case EmailActionType.moveToTrash:
+        return AppLocalizations.of(context).move_to_trash;
+      case EmailActionType.deletePermanently:
+        return AppLocalizations.of(context).delete_permanently;
       default:
         return '';
     }
