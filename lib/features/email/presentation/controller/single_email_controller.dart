@@ -262,6 +262,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   @override
   void onClose() {
+    _threadDetailController = null;
     _downloadProgressStateController.close();
     _attachmentListScrollController.dispose();
     super.onClose();

@@ -66,6 +66,14 @@ class ThreadDetailController extends BaseController {
   }
 
   @override
+  void dispose() {
+    emailIds.clear();
+    emailIdsPresentation.clear();
+    emailIdsStatus.clear();
+    super.dispose();
+  }
+
+  @override
   void handleSuccessViewState(success) {
     if (success is GetThreadByIdSuccess) {
       handleGetEmailIdsByThreadIdSuccess(success);

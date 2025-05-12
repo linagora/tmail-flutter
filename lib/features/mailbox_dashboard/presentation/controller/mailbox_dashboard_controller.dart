@@ -812,14 +812,16 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   void openEmailDetailedView(PresentationEmail presentationEmail, {bool singleEmail = false}) {
+    setSelectedEmail(presentationEmail);
     if (singleEmail) {
-      setSelectedEmail(presentationEmail);
       dispatchRoute(DashboardRoutes.emailDetailed);
     } else {
-      getBinding<ThreadDetailController>()?.closeThreadDetailAction(currentContext);
+      final threadDetailController = getBinding<ThreadDetailController>();
+      threadDetailController?.closeThreadDetailAction(currentContext);
       ThreadDetailBindings(threadDetailArguments: ThreadDetailArguments(
         threadId: presentationEmail.threadId!,
       )).dependencies();
+      threadDetailController?.onInit();
       dispatchRoute(DashboardRoutes.threadDetailed);
     }
     if (PlatformInfo.isWeb && presentationEmail.routeWeb != null) {
