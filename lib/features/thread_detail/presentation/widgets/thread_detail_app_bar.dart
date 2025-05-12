@@ -10,7 +10,6 @@ import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
-import 'package:tmail_ui_user/features/email/presentation/styles/email_view_bottom_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_app_bar_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
@@ -47,7 +46,6 @@ class ThreadDetailAppBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (responsiveUtils.isTablet(context)) return const SizedBox.shrink();
     final isReplyToListEnabled = EmailUtils.isReplyToListEnabled(
       emailLoaded?.emailCurrent?.listPost ?? '',
     );
@@ -113,22 +111,12 @@ class ThreadDetailAppBar extends StatelessWidget {
                     ),
                   ),
                 if (isReplyToListEnabled)
-                  TMailButtonWidget(
-                    key: const Key('reply_to_list_email_button'),
-                    text: AppLocalizations.of(context).replyToList,
+                  TMailButtonWidget.fromIcon(
                     icon: imagePaths.icReply,
-                    borderRadius: EmailViewBottomBarWidgetStyles.buttonRadius,
-                    iconSize: EmailViewBottomBarWidgetStyles.buttonIconSize,
-                    iconColor: EmailViewBottomBarWidgetStyles.iconColor,
-                    textAlign: TextAlign.center,
-                    flexibleText: true,
-                    padding: EmailViewBottomBarWidgetStyles.buttonPadding,
-                    backgroundColor: EmailViewBottomBarWidgetStyles.buttonBackgroundColor,
-                    textStyle: EmailViewBottomBarWidgetStyles.getButtonTextStyle(
-                      context,
-                      responsiveUtils,
-                    ),
-                    verticalDirection: responsiveUtils.isPortraitMobile(context),
+                    iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
+                    iconColor: EmailViewAppBarWidgetStyles.iconColor,
+                    tooltipMessage: AppLocalizations.of(context).replyToList,
+                    backgroundColor: Colors.transparent,
                     onTapActionCallback: () => onEmailActionClick?.call(
                       lastEmailOfThread!,
                       EmailActionType.replyToList,

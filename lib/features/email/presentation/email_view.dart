@@ -97,7 +97,12 @@ class EmailView extends GetWidget<SingleEmailController> {
                       isSearchActivated: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
                       onBackAction: () => controller.closeEmailView(context: context),
                       onEmailActionClick: (email, action) => controller.handleEmailAction(context, email, action),
-                      onMoreActionClick: (presentationEmail, position) => _handleMoreEmailAction(context: context, presentationEmail: presentationEmail, position: position),
+                      onMoreActionClick: (presentationEmail, position) => _handleMoreEmailAction(
+                        context: context,
+                        presentationEmail: presentationEmail,
+                        position: position,
+                        emailLoaded: controller.currentEmailLoaded.value,
+                      ),
                       optionsWidget: PlatformInfo.isWeb && controller.emailSupervisorController.supportedPageView.isTrue && !isInsideThreadDetailView
                         ? _buildNavigatorPageViewWidgets(context)
                         : null,
@@ -381,6 +386,7 @@ class EmailView extends GetWidget<SingleEmailController> {
             context: context,
             presentationEmail: email,
             position: position,
+            emailLoaded: controller.currentEmailLoaded.value,
           ),
           onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
         )),
