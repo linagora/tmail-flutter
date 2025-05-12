@@ -22,6 +22,7 @@ class ThreadConstants {
     EmailProperty.hasAttachment,
     EmailProperty.replyTo,
     EmailProperty.mailboxIds,
+    EmailProperty.threadId,
     IndividualHeaderIdentifier.xPriorityHeader.value,
     IndividualHeaderIdentifier.importanceHeader.value,
     IndividualHeaderIdentifier.priorityHeader.value,
