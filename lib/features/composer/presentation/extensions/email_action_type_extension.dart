@@ -153,6 +153,23 @@ extension EmailActionTypeExtension on EmailActionType {
         return imagePaths.icEdit;
       case EmailActionType.openInNewTab:
         return imagePaths.icOpenInNewTab;
+      case EmailActionType.printAll:
+        return imagePaths.icPrinter;
+      case EmailActionType.forward:
+        return imagePaths.icForward;
+      case EmailActionType.replyAll:
+        return imagePaths.icReplyAll;
+      case EmailActionType.replyToList:
+        return imagePaths.icReply;
+      case EmailActionType.moveToMailbox:
+        return imagePaths.icMoveEmail;
+      case EmailActionType.markAsStarred:
+        return imagePaths.icStar;
+      case EmailActionType.unMarkAsStarred:
+        return imagePaths.icUnStar;
+      case EmailActionType.moveToTrash:
+      case EmailActionType.deletePermanently:
+        return imagePaths.icDeleteComposer;
       default:
         return '';
     }
@@ -178,6 +195,24 @@ extension EmailActionTypeExtension on EmailActionType {
         return appLocalizations.editAsNewEmail;
       case EmailActionType.openInNewTab:
         return appLocalizations.openInNewTab;
+      case EmailActionType.printAll:
+        return appLocalizations.printAll;
+      case EmailActionType.forward:
+        return appLocalizations.forward;
+      case EmailActionType.replyAll:
+        return appLocalizations.reply_all;
+      case EmailActionType.replyToList:
+        return appLocalizations.replyToList;
+      case EmailActionType.moveToMailbox:
+        return appLocalizations.move_message;
+      case EmailActionType.markAsStarred:
+        return appLocalizations.mark_as_starred;
+      case EmailActionType.unMarkAsStarred:
+        return appLocalizations.not_starred;
+      case EmailActionType.moveToTrash:
+        return appLocalizations.move_to_trash;
+      case EmailActionType.deletePermanently:
+        return appLocalizations.delete_permanently;
       default:
         return '';
     }

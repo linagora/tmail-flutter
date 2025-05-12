@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dash
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/sending_queue/presentation/sending_queue_view.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_view.dart';
 
 class MailboxDashBoardView extends BaseMailboxDashBoardView {
 
@@ -54,6 +55,13 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                   tabletLarge: bodyView,
                   landscapeTablet: bodyView,
                   mobile: const EmailView());
+            case DashboardRoutes.threadDetailed:
+              return ResponsiveWidget(
+                responsiveUtils: controller.responsiveUtils,
+                desktop: bodyView,
+                tabletLarge: bodyView,
+                landscapeTablet: bodyView,
+                mobile: const ThreadDetailView());
             case DashboardRoutes.searchEmail:
               return SafeArea(child: SearchEmailView());
             case DashboardRoutes.sendingQueue:
