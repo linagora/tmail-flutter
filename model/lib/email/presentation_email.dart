@@ -38,6 +38,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
   final Set<EmailAddress>? bcc;
   final Set<EmailAddress>? replyTo;
   final Map<MailboxId, bool>? mailboxIds;
+  final ThreadId? threadId;
   final SelectMode selectMode;
   final Uri? routeWeb;
   final PresentationMailbox? mailboxContain;
@@ -65,6 +66,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     this.bcc,
     this.replyTo,
     this.mailboxIds,
+    this.threadId,
     this.selectMode = SelectMode.INACTIVE,
     this.routeWeb,
     this.mailboxContain,
@@ -183,6 +185,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     bcc,
     replyTo,
     mailboxIds,
+    threadId,
     selectMode,
     routeWeb,
     mailboxContain,
@@ -213,6 +216,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     Set<EmailAddress>? bcc,
     Set<EmailAddress>? replyTo,
     Map<MailboxId, bool>? mailboxIds,
+    ThreadId? threadId,
     SelectMode? selectMode,
     Uri? routeWeb,
     PresentationMailbox? mailboxContain,
@@ -240,6 +244,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
       bcc: bcc ?? this.bcc,
       replyTo: replyTo ?? this.replyTo,
       mailboxIds: mailboxIds ?? this.mailboxIds,
+      threadId: threadId ?? this.threadId,
       selectMode: selectMode ?? this.selectMode,
       routeWeb: routeWeb ?? this.routeWeb,
       mailboxContain: mailboxContain ?? this.mailboxContain,
