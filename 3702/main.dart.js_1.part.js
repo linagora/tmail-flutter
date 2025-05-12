@@ -343,7 +343,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Expando__checkType(_this);
       t1 = A._instanceType(_this)._eval$1("GetWidget.S")._as(t1._jsWeakMap.get(_this)).responsiveUtils;
       t2 = _this._buildMobileForm$1(context);
-      return A.Scaffold$(_null, C.Color_4294967295, A.Center$(A.SingleChildScrollView$(A.ResponsiveWidget$(_this._buildWebForm$1(context), _null, _null, t2, t1, _null, _null), _null, _null, _null, _null, _null, C.Axis_1), _null, _null), _null, _null, true, _null, _null, _null);
+      return A.Scaffold$(_null, C.Color_4294967295, A.Center$(A.SingleChildScrollView$(A.ResponsiveWidget$(_this._buildWebForm$1(context), _null, _null, t2, t1, _null, _null), _null, _null, _null, _null, _null, false, C.Axis_1), _null, _null), _null, _null, true, _null, _null, _null);
     },
     _buildMobileForm$1(context) {
       var t2, t3, _this = this, _null = null,
@@ -843,5 +843,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_1", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "HVFY/CdQrPvqHv1eTM0XWRtZeVs=");
+})($__dart_deferred_initializers__, "G5mkYUGZLp+X3bZQ5VgPNKScB/o=");
 ;
