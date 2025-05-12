@@ -14,12 +14,14 @@ class EmailSenderBuilder extends StatelessWidget {
 
   final EmailAddress emailAddress;
   final OnOpenEmailAddressDetailAction? openEmailAddressDetailAction;
+  final bool showSenderEmail;
 
   const EmailSenderBuilder({
-    Key? key,
+    super.key,
     required this.emailAddress,
     this.openEmailAddressDetailAction,
-}) : super(key: key);
+    this.showSenderEmail = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,7 @@ class EmailSenderBuilder extends StatelessWidget {
       scrollDirection: Axis.horizontal,
       physics: const NeverScrollableScrollPhysics(),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           if (emailAddress.displayName.isNotEmpty)
@@ -38,32 +40,30 @@ class EmailSenderBuilder extends StatelessWidget {
                 AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
               },
               borderRadius: 8,
-              padding: const EdgeInsets.all(3),
+              padding: EdgeInsets.zero,
               customStyle: ThemeUtils.textStyleHeadingHeadingSmall(
                 color: Colors.black,
               ),
               overflow: CommonTextStyle.defaultTextOverFlow,
               softWrap: CommonTextStyle.defaultSoftWrap
             ),
-          Padding(
-            padding: const EdgeInsets.only(top: 2),
-            child: MaterialTextButton(
+          if (showSenderEmail)
+            MaterialTextButton(
               label: '<${emailAddress.emailAddress}>',
               onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
               onLongPress: () {
                 AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
               },
               borderRadius: 8,
-              padding: const EdgeInsets.all(3),
+              padding: EdgeInsets.zero,
               customStyle: ThemeUtils.textStyleBodyBody1(
                 color: AppColor.steelGray400,
               ),
               overflow: CommonTextStyle.defaultTextOverFlow,
               softWrap: CommonTextStyle.defaultSoftWrap
-            ),
-          )
+            )
         ]
-      )
+      ),
     );
   }
 }

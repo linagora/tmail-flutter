@@ -22,6 +22,7 @@ class AttachmentListDialogBuilder extends StatelessWidget {
   final OnViewAttachmentFileAction? onViewAttachmentFileAction;
   final OnCancelButtonAction? onCancelButtonAction;
   final OnCloseButtonAction? onCloseButtonAction;
+  final String? singleEmailControllerTag;
 
   const AttachmentListDialogBuilder({
     Key? key,
@@ -37,6 +38,7 @@ class AttachmentListDialogBuilder extends StatelessWidget {
     this.onViewAttachmentFileAction,
     this.onCancelButtonAction,
     this.onCloseButtonAction,
+    this.singleEmailControllerTag,
   }) : super(key: key);
   
   @override
@@ -61,6 +63,7 @@ class AttachmentListDialogBuilder extends StatelessWidget {
         onViewAttachmentFileAction: onViewAttachmentFileAction,
         onCancelButtonAction: onCancelButtonAction,
         onCloseButtonAction: onCloseButtonAction,
+        singleEmailControllerTag: singleEmailControllerTag,
       ),
     );
   }

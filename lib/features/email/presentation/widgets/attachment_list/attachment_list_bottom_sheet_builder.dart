@@ -15,6 +15,7 @@ class AttachmentListBottomSheetBuilder {
   final List<Attachment> _attachments;
   final ImagePaths _imagePaths;
   final ScrollController _scrollController;
+  final String? _singleEmailControllerTag;
 
   late double _statusBarHeight;
 
@@ -29,6 +30,7 @@ class AttachmentListBottomSheetBuilder {
     this._attachments,
     this._imagePaths,
     this._scrollController,
+    this._singleEmailControllerTag,
   ) {
     _statusBarHeight = Get.statusBarHeight / MediaQuery.of(_context).devicePixelRatio;
   }
@@ -70,6 +72,7 @@ class AttachmentListBottomSheetBuilder {
         onViewAttachmentFileAction: _onViewAttachmentFileAction,
         onCancelButtonAction: _onCancelButtonAction,
         onCloseButtonAction: _onCloseButtonAction,
+        singleEmailControllerTag: _singleEmailControllerTag,
       ),
     );
   }

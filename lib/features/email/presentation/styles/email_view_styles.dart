@@ -7,6 +7,7 @@ class EmailViewStyles {
   static const double mobileContentHorizontalMargin = 16;
   static const double mobileContentVerticalMargin = 12;
   static double pageViewIconSize = IconUtils.defaultIconSize;
+  static const double initialHtmlViewHeight = 200;
 
   static const Color iconColor = AppColor.steelGrayA540;
 

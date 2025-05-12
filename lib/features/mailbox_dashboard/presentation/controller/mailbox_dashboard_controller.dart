@@ -861,9 +861,13 @@ class MailboxDashBoardController extends ReloadableController
     selectedEmail.value = null;
   }
 
-  void openEmailDetailedView(PresentationEmail presentationEmail) {
+  void openEmailDetailedView(PresentationEmail presentationEmail, {bool singleEmail = false}) {
     setSelectedEmail(presentationEmail);
-    dispatchRoute(DashboardRoutes.emailDetailed);
+    if (singleEmail) {
+      dispatchRoute(DashboardRoutes.emailDetailed);
+    } else {
+      dispatchRoute(DashboardRoutes.threadDetailed);
+    }
     if (PlatformInfo.isWeb && presentationEmail.routeWeb != null) {
       RouteUtils.replaceBrowserHistory(
         title: 'Email-${presentationEmail.id?.id.value ?? ''}',
@@ -898,6 +902,8 @@ class MailboxDashBoardController extends ReloadableController
     log('MailboxDashBoardController::handleAdvancedSearchEmail:');
     if (_searchInsideEmailDetailedViewIsActive()) {
       _closeEmailDetailedView();
+    } else if (_searchInsideThreadDetailViewIsActive()) {
+      _closeEmailDetailedView();
     }
     _unSelectedMailbox();
     searchController.clearFilterSuggestion();
@@ -922,6 +928,8 @@ class MailboxDashBoardController extends ReloadableController
     log('MailboxDashBoardController::searchEmailByQueryString():QueryString = $queryString | isMailAddress = $isMailAddress');
     clearFilterMessageOption();
     if (_searchInsideEmailDetailedViewIsActive()) {
+      _closeEmailDetailedView();
+    } else if (_searchInsideThreadDetailViewIsActive()) {
       _closeEmailDetailedView();
     }
     _unSelectedMailbox();
@@ -949,6 +957,13 @@ class MailboxDashBoardController extends ReloadableController
       && currentContext != null
       && responsiveUtils.isDesktop(currentContext!)
       && dashboardRoute.value == DashboardRoutes.emailDetailed;
+  }
+
+  bool _searchInsideThreadDetailViewIsActive() {
+    return PlatformInfo.isWeb
+      && currentContext != null
+      && responsiveUtils.isDesktop(currentContext!)
+      && dashboardRoute.value == DashboardRoutes.threadDetailed;
   }
 
   void clearSearchEmail() {
@@ -2813,6 +2828,8 @@ class MailboxDashBoardController extends ReloadableController
     clearFilterMessageOption();
     searchController.clearFilterSuggestion();
     if (_searchInsideEmailDetailedViewIsActive()) {
+      _closeEmailDetailedView();
+    } else if (_searchInsideThreadDetailViewIsActive()) {
       _closeEmailDetailedView();
     }
     _unSelectedMailbox();
