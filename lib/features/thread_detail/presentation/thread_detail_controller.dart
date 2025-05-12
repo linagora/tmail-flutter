@@ -16,15 +16,12 @@ import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_email_ids_by_thread_id_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_emails_by_ids_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
-import 'package:tmail_ui_user/features/thread_detail/presentation/model/thread_detail_arguments.dart';
 
 class ThreadDetailController extends BaseController {
-  final ThreadDetailArguments arguments;
   final GetThreadByIdInteractor _getEmailIdsByThreadIdInteractor;
   final GetEmailsByIdsInteractor getEmailsByIdsInteractor;
 
   ThreadDetailController(
-    this.arguments,
     this._getEmailIdsByThreadIdInteractor,
     this.getEmailsByIdsInteractor,
   );
@@ -55,15 +52,22 @@ class ThreadDetailController extends BaseController {
   @override
   void onInit() {
     super.onInit();
-    if (session != null && accountId != null && sentMailboxId != null && ownEmailAddress != null) {
-      consumeState(_getEmailIdsByThreadIdInteractor.execute(
-        arguments.threadId,
-        session!,
-        accountId!,
-        sentMailboxId!,
-        ownEmailAddress!,
-      ));
-    }
+    ever(mailboxDashBoardController.currentThreadId, (threadId) {
+      reset();
+      if (session != null &&
+          accountId != null &&
+          sentMailboxId != null &&
+          ownEmailAddress != null &&
+          threadId != null) {
+        consumeState(_getEmailIdsByThreadIdInteractor.execute(
+          threadId,
+          session!,
+          accountId!,
+          sentMailboxId!,
+          ownEmailAddress!,
+        ));
+      }
+    });
   }
 
   void reset() {

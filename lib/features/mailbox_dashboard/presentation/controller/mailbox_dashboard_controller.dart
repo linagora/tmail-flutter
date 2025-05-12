@@ -164,8 +164,6 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multi
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
-import 'package:tmail_ui_user/features/thread_detail/presentation/model/thread_detail_arguments.dart';
-import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_bindings.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
@@ -256,6 +254,7 @@ class MailboxDashBoardController extends ReloadableController
   final isRecoveringDeletedMessage = RxBool(false);
   final localFileDraggableAppState = Rxn<DraggableAppState>();
   final isSenderImportantFlagEnabled = RxBool(true);
+  final currentThreadId = Rxn<ThreadId>();
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
@@ -816,12 +815,7 @@ class MailboxDashBoardController extends ReloadableController
     if (singleEmail) {
       dispatchRoute(DashboardRoutes.emailDetailed);
     } else {
-      final threadDetailController = getBinding<ThreadDetailController>();
-      threadDetailController?.closeThreadDetailAction(currentContext);
-      ThreadDetailBindings(threadDetailArguments: ThreadDetailArguments(
-        threadId: presentationEmail.threadId!,
-      )).dependencies();
-      threadDetailController?.onInit();
+      currentThreadId.value = presentationEmail.threadId;
       dispatchRoute(DashboardRoutes.threadDetailed);
     }
     if (PlatformInfo.isWeb && presentationEmail.routeWeb != null) {

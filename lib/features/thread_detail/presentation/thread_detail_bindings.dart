@@ -8,15 +8,10 @@ import 'package:tmail_ui_user/features/thread_detail/data/repository/thread_deta
 import 'package:tmail_ui_user/features/thread_detail/domain/repository/thread_detail_repository.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_by_ids_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
-import 'package:tmail_ui_user/features/thread_detail/presentation/model/thread_detail_arguments.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
 
 class ThreadDetailBindings extends BaseBindings {
-  final ThreadDetailArguments threadDetailArguments;
-
-  ThreadDetailBindings({required this.threadDetailArguments});
-
   @override
   void dependencies() {
     Get.lazyPut(() => ThreadDetailApi(Get.find<HttpClient>()));
@@ -27,7 +22,6 @@ class ThreadDetailBindings extends BaseBindings {
   @override
   void bindingsController() {
     Get.lazyPut(() => ThreadDetailController(
-      threadDetailArguments,
       Get.find<GetThreadByIdInteractor>(),
       Get.find<GetEmailsByIdsInteractor>(),
     ));
