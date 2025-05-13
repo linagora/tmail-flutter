@@ -12,7 +12,7 @@ extension CloseThreadDetailAction on ThreadDetailController {
     } else {
       mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
     }
-    for (var emailId in emailIdsStatus.keys) {
+    for (var emailId in emailIdsPresentation.keys) {
       final tag = emailId.id.value;
       final controller = getBinding<SingleEmailController>(
         tag: tag,
