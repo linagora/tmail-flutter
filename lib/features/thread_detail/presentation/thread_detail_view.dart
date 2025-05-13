@@ -8,7 +8,6 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_bottom_bar_widget.dart';
-import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_thread_detail_loading_view.dart';
@@ -21,16 +20,7 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class ThreadDetailView extends GetWidget<ThreadDetailController> {
   const ThreadDetailView({super.key});
   
-  bool get isSearchRunning {
-    final isWebSearchRunning = controller
-      .mailboxDashBoardController
-      .searchController
-      .isSearchEmailRunning;
-    final isMobileSearchRunning = getBinding<SearchEmailController>()
-      ?.searchIsRunning
-      .value == true;
-    return isWebSearchRunning || isMobileSearchRunning;
-  }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +31,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             Obx(() => ThreadDetailAppBar(
               responsiveUtils: controller.responsiveUtils,
               imagePaths: controller.imagePaths,
-              isSearchRunning: isSearchRunning,
+              isSearchRunning: controller.isSearchRunning,
               closeThreadDetailAction: controller.closeThreadDetailAction,
               lastEmailOfThread: controller.emailIdsPresentation.values.lastOrNull,
               ownUserName: controller.session?.username.value ?? '',
@@ -169,7 +159,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
   }
 
   PresentationMailbox? _getMailboxContain() {
-    if (isSearchRunning) {
+    if (controller.isSearchRunning) {
       return null;
     }
 
