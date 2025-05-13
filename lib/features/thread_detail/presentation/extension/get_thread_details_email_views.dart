@@ -15,8 +15,8 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
     int? firstEmailNotLoadedIndex;
     if (emailsNotLoadedCount > 0) {
       firstEmailNotLoadedIndex = emailIds.indexOf(
-        emailIdsStatus.entries.firstWhereOrNull(
-          (entry) => entry.value == EmailInThreadStatus.hidden
+        emailIdsPresentation.entries.firstWhereOrNull(
+          (entry) => entry.value == null
         )?.key
       );
     }
@@ -37,7 +37,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
         );
       }
 
-      if (emailIdsStatus[emailId] == EmailInThreadStatus.hidden) {
+      if (presentationEmail.emailInThreadStatus == null) {
         return const SizedBox.shrink();
       }
 
@@ -45,7 +45,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
       final isLastEmailInThreadDetail = emailIds.indexOf(emailId) ==
         emailIds.length - 1;
 
-      if (emailIdsStatus[emailId] == EmailInThreadStatus.collapsed) {
+      if (presentationEmail.emailInThreadStatus == EmailInThreadStatus.collapsed) {
         return ThreadDetailCollapsedEmail(
           presentationEmail: presentationEmail.copyWith(
             subject: isFirstEmailInThreadDetail
