@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/presentation_email.dart';
 
@@ -8,6 +9,11 @@ class ThreadDetailPresentationUtils {
 
   static const _initialLoadSize = 2;
   static const _defaultLoadSize = 20;
+
+  @visibleForTesting
+  static get initialLoadSize => _initialLoadSize;
+  @visibleForTesting
+  static get defaultLoadSize => _defaultLoadSize;
 
   static List<EmailId> getEmailIdsToLoad(
     Map<EmailId, PresentationEmail?> emailIdsPresentation,
