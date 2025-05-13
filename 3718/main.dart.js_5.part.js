@@ -10249,7 +10249,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.push(B.SizedBox_null_16_null_null);
       t2 = _this.presentationEmail;
       t1.push(C.InformationSenderAndReceiverBuilder$(_this.emailLoaded, t2, _null, _this.imagePaths, true, _null, _null, _null, _null, _this.openEmailAddressDetailAction, _this.responsiveUtils, _null, false));
-      t1.push(new A.Padding(B.EdgeInsets_16_16_16_16, A.TextOverflowBuilder$(t2.getPartialContent$0(), B.TextOverflow_2, A.Theme_of(context).textTheme.bodyMedium), _null));
+      t1.push(new A.Padding(B.EdgeInsets_16_16_16_16, A.TextOverflowBuilder$(B.JSString_methods.substring$2(t2.getPartialContent$0(), 0, 65), B.TextOverflow_2, A.Theme_of(context).textTheme.bodyMedium), _null));
       return A.DecoratedBox$(A.InkWell$(false, _null, true, A.Column$(t1, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_0, B.VerticalDirection_1), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onToggleThreadDetailCollapseExpand, _null, _null, _null, _null, _null, _null, _null), D.BoxDecoration_cAf, B.DecorationPosition_0);
     }
   };
@@ -17449,5 +17449,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "zFvZcKNjmdEX+3DlqEwOJGh3vfo=");
+})($__dart_deferred_initializers__, "gZ//d8zbZMK3Vv+F7eq8knlk+x4=");
 ;
