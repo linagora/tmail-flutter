@@ -2,6 +2,7 @@ import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
+import 'package:tmail_ui_user/features/thread_detail/data/data_source/thread_detail_data_source.dart';
 import 'package:tmail_ui_user/features/thread_detail/data/data_source/thread_detail_remote_data_source_impl.dart';
 import 'package:tmail_ui_user/features/thread_detail/data/network/thread_detail_api.dart';
 import 'package:tmail_ui_user/features/thread_detail/data/repository/thread_detail_repository_impl.dart';
@@ -36,12 +37,14 @@ class ThreadDetailBindings extends BaseBindings {
   }
 
   @override
-  void bindingsDataSource() {}
+  void bindingsDataSource() {
+    Get.lazyPut<ThreadDetailDataSource>(() => Get.find<ThreadDetailRemoteDataSourceImpl>());
+  }
 
   @override
   void bindingsRepositoryImpl() {
     Get.lazyPut(() => ThreadDetailRepositoryImpl({
-      DataSourceType.network: Get.find<ThreadDetailRemoteDataSourceImpl>(),
+      DataSourceType.network: Get.find<ThreadDetailDataSource>(),
     }));
   }
 
