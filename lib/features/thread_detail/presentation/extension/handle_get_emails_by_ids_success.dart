@@ -1,7 +1,7 @@
 import 'package:tmail_ui_user/features/email/presentation/bindings/email_bindings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
-import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_status.dart';
+import 'package:model/email/email_in_thread_status.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
@@ -28,13 +28,14 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
     
     for (var presentationEmail in success.presentationEmails) {
       if (presentationEmail.id == null) continue;
-      emailIdsPresentation[presentationEmail.id!] = presentationEmail;
       if (presentationEmail.id == emailIds.last) {
         EmailBindings(initialEmail: presentationEmail).dependencies();
-        emailIdsStatus[presentationEmail.id!] = EmailInThreadStatus.expanded;
-      } else {
-        emailIdsStatus[presentationEmail.id!] = EmailInThreadStatus.collapsed;
       }
+      emailIdsPresentation[presentationEmail.id!] = presentationEmail.copyWith(
+        emailInThreadStatus: presentationEmail.id == emailIds.last
+          ? EmailInThreadStatus.expanded
+          : EmailInThreadStatus.collapsed,
+      );
     }
   }
 }

@@ -9,7 +9,6 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
-import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_status.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
@@ -31,7 +30,6 @@ class ThreadDetailController extends BaseController {
 
   final emailIds = <EmailId>[].obs;
   final emailIdsPresentation = <EmailId, PresentationEmail?>{}.obs;
-  final emailIdsStatus = <EmailId, EmailInThreadStatus>{}.obs;
   final scrollReverse = true.obs;
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
@@ -43,9 +41,9 @@ class ThreadDetailController extends BaseController {
     PresentationMailbox.roleSent,
   );
   String? get ownEmailAddress => session?.getOwnEmailAddress();
-  int get emailsNotLoadedCount => emailIdsStatus
+  int get emailsNotLoadedCount => emailIdsPresentation
     .values
-    .where((status) => status == EmailInThreadStatus.hidden)
+    .where((email) => email == null)
     .length;
   bool get loadingThreadDetail => viewState.value.fold(
     (failure) => false,
@@ -89,7 +87,6 @@ class ThreadDetailController extends BaseController {
   void reset() {
     emailIds.clear();
     emailIdsPresentation.clear();
-    emailIdsStatus.clear();
   }
 
   @override
