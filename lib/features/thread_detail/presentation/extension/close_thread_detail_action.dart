@@ -26,7 +26,6 @@ extension CloseThreadDetailAction on ThreadDetailController {
         worker.dispose();
       }
       Get.delete<SingleEmailController>(tag: tag);
-      Get.delete<EmailSupervisorController>(tag: tag);
     }
 
     reset();

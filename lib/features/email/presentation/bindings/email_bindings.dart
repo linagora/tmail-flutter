@@ -71,7 +71,9 @@ class EmailBindings extends BaseBindings {
 
   @override
   void bindingsController() {
-    Get.put(EmailSupervisorController(), tag: tag);
+    if (initialEmail == null) {
+      Get.put(EmailSupervisorController(), tag: tag);
+    }
     Get.put(SingleEmailController(
       Get.find<GetEmailContentInteractor>(),
       Get.find<MarkAsEmailReadInteractor>(),
