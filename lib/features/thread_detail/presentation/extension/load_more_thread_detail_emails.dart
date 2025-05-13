@@ -18,6 +18,9 @@ extension LoadMoreThreadDetailEmails on ThreadDetailController {
 
     final emailIdsToLoadMetaData = ThreadDetailPresentationUtils
       .getEmailIdsToLoad(emailIdsPresentation);
+    if (emailIdsToLoadMetaData.isEmpty) {
+      return;
+    }
     consumeState(getEmailsByIdsInteractor.execute(
       session!,
       accountId!,
