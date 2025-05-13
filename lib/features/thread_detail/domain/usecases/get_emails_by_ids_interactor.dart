@@ -6,6 +6,7 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:model/email/email_property.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/repository/thread_detail_repository.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
@@ -22,6 +23,14 @@ class GetEmailsByIdsInteractor {
     Properties? properties,
   }) async* {
     try {
+      assert(
+        emailIds.length > 1 &&
+        properties?.value.contains(EmailProperty.htmlBody) != true &&
+        properties?.value.contains(EmailProperty.bodyValues) != true &&
+        properties?.value.contains(EmailProperty.attachments) != true,
+        'Only one email can be fetched with heavy properties',
+      );
+
       yield Right(GettingEmailsByIds());
       final result = await _threadDetailRepository.getEmailsByIds(
         session,
