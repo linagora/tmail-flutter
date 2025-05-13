@@ -135,7 +135,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
     return mailboxContain?.isTrash == true || mailboxContain?.isSpam == true;
   }
 
-  Widget getReplyButton(AppLocalizations appLocalizations) => TMailButtonWidget.fromIcon(
+  Widget _getReplyButton(AppLocalizations appLocalizations) => TMailButtonWidget.fromIcon(
     icon: _imagePaths.icReply,
     iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
     iconColor: EmailViewAppBarWidgetStyles.iconColor,
@@ -149,7 +149,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
     margin: iconMargin,
   );
 
-  Widget getPrintButton(AppLocalizations appLocalizations) => AbsorbPointer(
+  Widget _getPrintButton(AppLocalizations appLocalizations) => AbsorbPointer(
     absorbing: emailLoaded == null,
     child: TMailButtonWidget.fromIcon(
       icon: _imagePaths.icPrinter,
@@ -166,7 +166,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
     ),
   );
 
-  Widget getMoveEmailButton(AppLocalizations appLocalizations) => TMailButtonWidget.fromIcon(
+  Widget _getMoveEmailButton(AppLocalizations appLocalizations) => TMailButtonWidget.fromIcon(
     icon: _imagePaths.icMoveEmail,
     iconSize: EmailViewAppBarWidgetStyles.buttonIconSize,
     iconColor: EmailViewAppBarWidgetStyles.iconColor,
@@ -180,7 +180,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
     margin: iconMargin,
   );
 
-  Widget getMarkStarButton(AppLocalizations applocalizations) => TMailButtonWidget.fromIcon(
+  Widget _getMarkStarButton(AppLocalizations applocalizations) => TMailButtonWidget.fromIcon(
     icon: presentationEmail.hasStarred
       ? _imagePaths.icStar
       : _imagePaths.icUnStar,
@@ -202,7 +202,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
     margin: iconMargin,
   );
 
-  Widget getDeleteButton(AppLocalizations applocalizations) => TMailButtonWidget.fromIcon(
+  Widget _getDeleteButton(AppLocalizations applocalizations) => TMailButtonWidget.fromIcon(
     icon: _imagePaths.icDeleteComposer,
     iconSize: EmailViewAppBarWidgetStyles.deleteButtonIconSize,
     iconColor: EmailViewAppBarWidgetStyles.iconColor,
@@ -221,7 +221,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
     margin: iconMargin,
   );
 
-  Widget getMoreButton(
+  Widget _getMoreButton(
     AppLocalizations applocalizations,
     bool isScreenWithShortestSide,
   ) => TMailButtonWidget.fromIcon(
@@ -248,23 +248,23 @@ class EmailViewAppBarWidget extends StatelessWidget {
   }) {
     if (!isInsideThreadDetailView) {
       return [
-        getPrintButton(appLocalizations),
-        getMoveEmailButton(appLocalizations),
-        getMarkStarButton(appLocalizations),
-        getDeleteButton(appLocalizations),
-        getMoreButton(appLocalizations, isScreenWithShortestSide),
+        _getPrintButton(appLocalizations),
+        _getMoveEmailButton(appLocalizations),
+        _getMarkStarButton(appLocalizations),
+        _getDeleteButton(appLocalizations),
+        _getMoreButton(appLocalizations, isScreenWithShortestSide),
       ];
     }
 
     return [
-      getReplyButton(appLocalizations),
+      _getReplyButton(appLocalizations),
       if (!isResponsiveMobile)
-        getMoveEmailButton(appLocalizations),
+        _getMoveEmailButton(appLocalizations),
       if (isResponsiveDesktop) ...[
-        getMarkStarButton(appLocalizations),
-        getDeleteButton(appLocalizations),
+        _getMarkStarButton(appLocalizations),
+        _getDeleteButton(appLocalizations),
       ],
-      getMoreButton(appLocalizations, isScreenWithShortestSide),
+      _getMoreButton(appLocalizations, isScreenWithShortestSide),
     ];
   }
 }
