@@ -321,6 +321,7 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
                     height: _actualHeight,
                     width: _actualWidth,
                     child: HtmlElementView(
+                      key: ValueKey('$_htmlData-${widget.key}'),
                       viewType: _createdViewId,
                     ),
                   );
