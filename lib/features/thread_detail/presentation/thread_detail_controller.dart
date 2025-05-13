@@ -8,14 +8,17 @@ import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/model/email_in_thread_status.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_by_ids_interactor.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_email_ids_by_thread_id_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_emails_by_ids_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ThreadDetailController extends BaseController {
   final GetThreadByIdInteractor _getEmailIdsByThreadIdInteractor;
@@ -32,6 +35,7 @@ class ThreadDetailController extends BaseController {
   final scrollReverse = true.obs;
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
+  final searchEmailController = Get.find<SearchEmailController>();
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
   Session? get session => mailboxDashBoardController.sessionCurrent;
@@ -48,17 +52,29 @@ class ThreadDetailController extends BaseController {
     (success) => success is GettingThreadById
       || success is GettingEmailsByIds,
   );
+  bool get isSearchRunning {
+    final isWebSearchRunning = mailboxDashBoardController
+      .searchController
+      .isSearchEmailRunning;
+    final isMobileSearchRunning = searchEmailController
+      .searchIsRunning
+      .value == true;
+    return isWebSearchRunning || isMobileSearchRunning;
+  }
 
   @override
   void onInit() {
     super.onInit();
     ever(mailboxDashBoardController.currentThreadId, (threadId) {
       reset();
+      if (threadId == null) {
+        closeThreadDetailAction(currentContext);
+        return;
+      }
       if (session != null &&
           accountId != null &&
           sentMailboxId != null &&
-          ownEmailAddress != null &&
-          threadId != null) {
+          ownEmailAddress != null) {
         consumeState(_getEmailIdsByThreadIdInteractor.execute(
           threadId,
           session!,
