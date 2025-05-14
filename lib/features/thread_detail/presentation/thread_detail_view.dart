@@ -86,13 +86,15 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                     padding: _padding(context),
                     child: Stack(
                       children: [
-                        const Positioned.fill(
+                        Positioned.fill(
                           child: DecoratedBox(
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.vertical(
-                                bottom: Radius.circular(20),
-                              )
+                              borderRadius: controller.loadingThreadDetail
+                                ? const BorderRadius.vertical(
+                                    bottom: Radius.circular(20),
+                                  )
+                                : null,
                             ),
                           ),
                         ),
