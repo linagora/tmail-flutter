@@ -14569,7 +14569,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      return A.OpenAndCloseComposerExtension_openComposer(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)), A.ComposerArguments$(_null, _null, _null, _null, _null, C.ScreenDisplayMode_2, C.EmailActionType_4, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null));
+      return A.OpenAndCloseComposerExtension_openComposer(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)), A.ComposerArguments$(_null, _null, _null, _null, _null, C.ScreenDisplayMode_2, C.EmailActionType_4, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null));
     },
     $signature: 0
   };
@@ -17009,7 +17009,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = this.$this;
       t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      A.OpenAndCloseComposerExtension_openComposer(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController, A.ComposerArguments$(_null, _null, _null, _null, _null, C.ScreenDisplayMode_2, C.EmailActionType_16, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, email, _null, _null, _null, _null, _null, _null, _null, _null));
+      A.OpenAndCloseComposerExtension_openComposer(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController, A.ComposerArguments$(_null, _null, _null, _null, _null, C.ScreenDisplayMode_2, C.EmailActionType_16, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, email, _null, _null, _null, _null, _null, _null, _null, _null, _null));
     },
     $signature: 140
   };
@@ -17679,7 +17679,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      return A.OpenAndCloseComposerExtension_openComposer(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController, A.ComposerArguments$(_null, _null, _null, _null, _null, C.ScreenDisplayMode_2, C.EmailActionType_4, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null));
+      return A.OpenAndCloseComposerExtension_openComposer(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController, A.ComposerArguments$(_null, _null, _null, _null, _null, C.ScreenDisplayMode_2, C.EmailActionType_4, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null));
     },
     $signature: 0
   };
@@ -17864,7 +17864,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t4.push(t1._markAsEmailSpamOrUnSpamContextMenuItemAction$3(t2, email, mailboxContain));
         if ((t5 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleArchive())) === false)
           t4.push(t1._archiveMessageContextMenuItemAction$2(t2, email));
-        if ((t5 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleDrafts())) === false)
+        if ((t5 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleDrafts())) === false) {
+          t6 = (t5 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleTemplates())) === false;
+          t5 = t6;
+        } else
+          t5 = false;
+        if (t5)
           t4.push(t1._editAsNewEmailContextMenuItemAction$2(t2, email));
         t3.openContextMenuAction$2(t2, t4);
       } else {
@@ -17887,6 +17892,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         if ((t5 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleArchive())) === false)
           t4.push(t1._buildArchiveMessagePopupMenuItem$2(t2, email));
         if ((t5 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleDrafts())) === false) {
+          t6 = (t5 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleTemplates())) === false;
+          t5 = t6;
+        } else
+          t5 = false;
+        if (t5) {
           t5 = A.Localizations_of(t2, C.Type_AppLocalizations_CTL, type$.AppLocalizations);
           t5.toString;
           t4.push(t1._buildEditAsNewEmailPopupMenuItem$2(t5, email));
@@ -18020,7 +18030,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = this.$this;
       t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      A.OpenAndCloseComposerExtension_openComposer(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController, A.ComposerArguments$(_null, _null, _null, _null, _null, C.ScreenDisplayMode_2, C.EmailActionType_16, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, email, _null, _null, _null, _null, _null, _null, _null, _null));
+      A.OpenAndCloseComposerExtension_openComposer(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController, A.ComposerArguments$(_null, _null, _null, _null, _null, C.ScreenDisplayMode_2, C.EmailActionType_16, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, email, _null, _null, _null, _null, _null, _null, _null, _null, _null));
     },
     $signature: 140
   };
@@ -18074,7 +18084,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = this.$this;
       t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
-      A.OpenAndCloseComposerExtension_openComposer(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController, A.ComposerArguments$(_null, _null, _null, _null, _null, C.ScreenDisplayMode_2, C.EmailActionType_16, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, this.email, _null, _null, _null, _null, _null, _null, _null, _null));
+      A.OpenAndCloseComposerExtension_openComposer(A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).EmailActionController_mailboxDashBoardController, A.ComposerArguments$(_null, _null, _null, _null, _null, C.ScreenDisplayMode_2, C.EmailActionType_16, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, this.email, _null, _null, _null, _null, _null, _null, _null, _null, _null));
     },
     $signature: 9
   };
@@ -19217,5 +19227,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "a8+HR3GNcv28tbpVG/2XVsYn85s=");
+})($__dart_deferred_initializers__, "pVwhTuZmFwwGGjrQ7hVKCGG72jA=");
 ;
