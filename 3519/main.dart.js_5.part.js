@@ -13064,10 +13064,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t5.push(C.EmailActionType_26);
       if ((t6 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleArchive())) === false)
         t5.push(C.EmailActionType_28);
-      t6 = $.$get$_context().$index(0, "flutterCanvasKit");
-      if (t6 != null)
+      t7 = $.$get$_context().$index(0, "flutterCanvasKit");
+      if (t7 != null)
         t5.push(C.EmailActionType_30);
-      t5.push(C.EmailActionType_16);
+      if ((t6 ? _null : J.$eq$(mailboxContain.role, $.$get$PresentationMailbox_roleTemplates())) === false)
+        t5.push(C.EmailActionType_16);
       if (position == null) {
         A.Expando__checkType(t1);
         t4._as(t3.get(t1)).openContextMenuAction$2(t2, t1._emailActionMoreActionTile$3(t2, presentationEmail, t5));
@@ -19216,5 +19217,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "6ctMCwQ2zuLt/1yR+0CJZjA9rxQ=");
+})($__dart_deferred_initializers__, "a8+HR3GNcv28tbpVG/2XVsYn85s=");
 ;
