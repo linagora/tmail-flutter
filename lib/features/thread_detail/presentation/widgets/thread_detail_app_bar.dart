@@ -75,16 +75,21 @@ class ThreadDetailAppBar extends StatelessWidget {
             color: EmailViewAppBarWidgetStyles.backgroundColor,
           ),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
               if (_supportDisplayMailboxNameTitle(context))
-                EmailViewBackButton(
-                  imagePaths: imagePaths,
-                  onBackAction: () => closeThreadDetailAction(context),
-                  mailboxContain: mailboxContain,
-                  isSearchActivated: isSearchRunning,
-                  maxWidth: constraints.maxWidth,
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: EmailViewBackButton(
+                      imagePaths: imagePaths,
+                      onBackAction: () => closeThreadDetailAction(context),
+                      mailboxContain: mailboxContain,
+                      isSearchActivated: isSearchRunning,
+                      maxWidth: constraints.maxWidth,
+                    ),
+                  ),
                 ),
-              const Spacer(),
               ...optionWidgets,
               if (lastEmailOfThread != null) ...[
                 TMailButtonWidget.fromIcon(
