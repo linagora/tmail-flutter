@@ -93,7 +93,12 @@ class ThreadRepositoryImpl extends ThreadRepository {
     }
 
     if (networkEmailResponse != null) {
-      await _updateEmailCache(accountId, session.username, newCreated: networkEmailResponse.emailList);
+      await _updateEmailCache(
+        accountId,
+        session.username,
+        newCreated: networkEmailResponse.emailList,
+        newDestroyed: networkEmailResponse.notFoundEmailIds,
+      );
     }
 
     if (localEmailResponse.hasState()) {
@@ -156,7 +161,12 @@ class ThreadRepositoryImpl extends ThreadRepository {
         filter: filter ?? EmailFilterCondition(inMailbox: mailboxId),
         properties: propertiesCreated,
       );
-      await _updateEmailCache(accountId, session.username, newCreated: networkEmailResponse.emailList);
+      await _updateEmailCache(
+        accountId,
+        session.username,
+        newCreated: networkEmailResponse.emailList,
+        newDestroyed: networkEmailResponse.notFoundEmailIds,
+      );
 
       return networkEmailResponse;
   }
@@ -268,7 +278,12 @@ class ThreadRepositoryImpl extends ThreadRepository {
   @override
   Stream<EmailsResponse> loadMoreEmails(GetEmailRequest emailRequest) async* {
     final response = await _getAllEmailsWithoutLastEmailId(emailRequest);
-    await _updateEmailCache(emailRequest.accountId, emailRequest.session.username, newCreated: response.emailList);
+    await _updateEmailCache(
+      emailRequest.accountId,
+      emailRequest.session.username,
+      newCreated: response.emailList,
+      newDestroyed: response.notFoundEmailIds,
+    );
     yield response;
   }
 
@@ -287,7 +302,11 @@ class ThreadRepositoryImpl extends ThreadRepository {
           if (emailRequest.lastEmailId != null && listEmails?.isNotEmpty == true) {
             listEmails?.removeWhere((email) => email.id == emailRequest.lastEmailId);
           }
-          return EmailsResponse(emailList: listEmails, state: response.state);
+          return EmailsResponse(
+            emailList: listEmails,
+            state: response.state,
+            notFoundEmailIds: response.notFoundEmailIds,
+          );
         });
 
     return emailResponse;
