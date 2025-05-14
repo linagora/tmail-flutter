@@ -86,17 +86,8 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                     padding: _padding(context),
                     child: Stack(
                       children: [
-                        Positioned.fill(
-                          child: DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: controller.loadingThreadDetail
-                                ? const BorderRadius.vertical(
-                                    bottom: Radius.circular(20),
-                                  )
-                                : null,
-                            ),
-                          ),
+                        const Positioned.fill(
+                          child: ColoredBox(color: Colors.white),
                         ),
                         SingleChildScrollView(
                           reverse: controller.scrollReverse.value,
@@ -117,12 +108,12 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
               tag: controller.emailIds.lastOrNull?.id.value
             );
             if (lastEmailController == null) {
-              return const SizedBox.shrink();
+              return _roundBottomPlaceHolder();
             }
             final lastEmailLoaded = lastEmailController.currentEmailLoaded.value;
             final lastEmail = controller.emailIdsPresentation.values.lastOrNull;
             if (lastEmailLoaded == null || lastEmail == null) {
-              return const SizedBox.shrink();
+              return _roundBottomPlaceHolder();
             }
 
             return Padding(
@@ -170,5 +161,17 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
     }
 
     return controller.mailboxDashBoardController.selectedMailbox.value;
+  }
+
+  Widget _roundBottomPlaceHolder() {
+    return Container(
+      height: 40,
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(
+          bottom: Radius.circular(20),
+        ),
+      )
+    );
   }
 }
