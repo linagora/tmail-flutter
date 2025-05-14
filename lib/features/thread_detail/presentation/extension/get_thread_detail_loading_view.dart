@@ -11,12 +11,7 @@ extension GetThreadDetailLoadingView on ThreadDetailController {
     return Expanded(
       child: Container(
         alignment: Alignment.center,
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.vertical(
-            bottom: Radius.circular(20),
-          ),
-        ),
+        color: Colors.white,
         margin: isResponsiveDesktop
           ? const EdgeInsetsDirectional.only(end: 16)
           : null,
