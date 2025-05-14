@@ -5,10 +5,12 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 
 class EmailsResponse with EquatableMixin {
   final List<Email>? emailList;
+  final List<EmailId>? notFoundEmailIds;
   final State? state;
 
   const EmailsResponse({
     this.emailList,
+    this.notFoundEmailIds,
     this.state
   });
 
@@ -16,6 +18,8 @@ class EmailsResponse with EquatableMixin {
 
   bool hasState() => state != null;
 
+  bool get existNotFoundEmails => notFoundEmailIds?.isNotEmpty == true;
+
   @override
-  List<Object?> get props => [emailList, state];
+  List<Object?> get props => [emailList, notFoundEmailIds, state];
 }

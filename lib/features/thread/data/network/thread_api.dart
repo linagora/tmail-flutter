@@ -96,8 +96,14 @@ class ThreadAPI {
       queryEmailResponse: responseOfQueryEmailMethod,
     );
 
+    final notFoundEmailIds = responseOfGetEmailMethod
+      ?.notFound
+      ?.toEmailIds()
+      .toList();
+    log('ThreadAPI::getAllEmail:notFoundEmailIds = $notFoundEmailIds');
     return EmailsResponse(
       emailList: emailList,
+      notFoundEmailIds: notFoundEmailIds,
       state: responseOfGetEmailMethod?.state,
     );
   }
@@ -274,10 +280,10 @@ class ThreadAPI {
       changesEmailInvocation.methodCallId,
       ChangesEmailResponse.deserialize);
 
-    List<EmailId>? destroyedEmailIds = resultChanges
+    List<EmailId> destroyedEmailIds = resultChanges
       ?.destroyed
       .toEmailIds()
-      .toList();
+      .toList() ?? [];
     State? newStateChanges = resultChanges?.newState;
     bool hasMoreChanges = resultChanges?.hasMoreChanges ?? false;
     List<Email>? updatedEmail;
@@ -291,6 +297,9 @@ class ThreadAPI {
       );
       updatedEmail = emailResponseUpdated?.list;
       newStateEmail = emailResponseUpdated?.state;
+      final notFoundIdsUpdated = emailResponseUpdated?.notFound?.toEmailIds().toList() ?? [];
+      log('ThreadAPI::getChanges:notFoundIdsUpdated = $notFoundIdsUpdated');
+      destroyedEmailIds.addAll(notFoundIdsUpdated);
     }
 
     if (getEmailCreatedInvocation != null) {
@@ -300,8 +309,13 @@ class ThreadAPI {
       );
       createdEmail = emailResponseCreated?.list;
       newStateEmail = emailResponseCreated?.state;
+      final notFoundIdsCreated = emailResponseCreated?.notFound?.toEmailIds().toList() ?? [];
+      log('ThreadAPI::getChanges:notFoundIdsCreated = $notFoundIdsCreated');
+      destroyedEmailIds.addAll(notFoundIdsCreated);
     }
-
+    log('ThreadAPI::getChanges:newStateChanges = $newStateChanges | newStateEmail = $newStateEmail | hasMoreChanges = $hasMoreChanges');
+    log('ThreadAPI::getChanges:updatedEmailSize = ${updatedEmail?.length} | createdEmailSize = ${createdEmail?.length}');
+    log('ThreadAPI::getChanges:destroyedEmailIds = $destroyedEmailIds');
     return EmailChangeResponse(
       updated: updatedEmail,
       created: createdEmail,
