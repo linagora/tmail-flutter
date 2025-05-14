@@ -85,47 +85,11 @@ class MailboxView extends BaseMailboxView {
                             return const SizedBox.shrink();
                           }
 
-                          return Column(
+                          return const Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Divider(color: AppColor.colorDividerHorizontal),
-                              if (controller.contactSupportCapability?.isAvailable != true)
-                                const QuotasView()
-                              else
-                                Row(
-                                  children: [
-                                    const Expanded(child: QuotasView()),
-                                    Expanded(
-                                      child: TMailButtonWidget(
-                                        text: AppLocalizations.of(context).getHelpOrReportABug,
-                                        icon: controller.imagePaths.icHelp,
-                                        verticalDirection: true,
-                                        backgroundColor: Colors.transparent,
-                                        maxLines: 2,
-                                        flexibleText: true,
-                                        mainAxisSize: MainAxisSize.min,
-                                        margin: const EdgeInsetsDirectional.only(
-                                          end: 12,
-                                          start: 4,
-                                          top: 6,
-                                          bottom: 6,
-                                        ),
-                                        borderRadius: 10,
-                                        textOverflow: TextOverflow.ellipsis,
-                                        textAlign: TextAlign.center,
-                                        textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w500,
-                                          color: AppColor.primaryColor,
-                                        ),
-                                        onTapActionCallback: () =>
-                                          controller.onGetHelpOrReportBug(
-                                            controller.contactSupportCapability!,
-                                          ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                              Divider(color: AppColor.colorDividerHorizontal),
+                              QuotasView(isDisplayedContactSupport: true)
                             ],
                           );
                         }),

@@ -30,7 +30,6 @@ import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_sta
 import 'package:tmail_ui_user/features/email/domain/state/move_to_mailbox_state.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
-import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/constants/mailbox_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/empty_folder_name_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/exceptions/invalid_mail_format_exception.dart';
@@ -1656,15 +1655,6 @@ class MailboxController extends BaseMailboxController
     }
   }
 
-  ContactSupportCapability? get contactSupportCapability {
-    final accountId = mailboxDashBoardController.accountId.value;
-    final session = mailboxDashBoardController.sessionCurrent;
-
-    if (accountId == null || session == null) return null;
-
-    return session.getContactSupportCapability(accountId);
-  }
-  
   void openConfirmationDialogSubaddressingAction(
       BuildContext context,
       ResponsiveUtils responsiveUtils,

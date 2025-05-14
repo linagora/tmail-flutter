@@ -109,7 +109,7 @@ class NavigationBarWidget extends StatelessWidget {
         else
           ...[
             const Spacer(),
-            if (contactSupportCapability != null)
+            if (contactSupportCapability?.isAvailable == true)
               TMailButtonWidget.fromIcon(
                 icon: imagePaths.icHelp,
                 iconColor: AppColor.messageDialogColor,
