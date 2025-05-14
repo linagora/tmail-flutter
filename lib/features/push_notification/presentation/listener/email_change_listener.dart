@@ -43,7 +43,6 @@ import 'package:tmail_ui_user/features/push_notification/domain/usecases/store_e
 import 'package:tmail_ui_user/features/push_notification/presentation/action/push_notification_state_change_action.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/listener/change_listener.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/notification/local_notification_manager.dart';
-import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class EmailChangeListener extends ChangeListener {
@@ -162,8 +161,10 @@ class EmailChangeListener extends ChangeListener {
         _accountId!,
         _userName!,
         state,
-        propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
-        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+        propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(
+          _session!,
+          _accountId!,
+        ),
       ));
     }
   }
@@ -304,7 +305,6 @@ class EmailChangeListener extends ChangeListener {
         session,
         accountId,
         newState,
-        propertiesCreated: Properties({EmailProperty.id, EmailProperty.keywords}),
         propertiesUpdated: Properties({EmailProperty.keywords}),
       ));
     }

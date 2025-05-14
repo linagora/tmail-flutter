@@ -20,6 +20,7 @@ import 'package:jmap_dart_client/jmap/mail/email/get/get_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_response.dart';
+import 'package:model/extensions/list_id_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/extensions/list_email_extension.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet_get_method.dart';
@@ -226,32 +227,46 @@ class ThreadAPI {
 
     final changesEmailInvocation = jmapRequestBuilder.invocation(changesEmailMethod);
 
-    final getMailboxUpdated = GetEmailMethod(accountId)
-      ..addReferenceIds(processingInvocation.createResultReference(
-          changesEmailInvocation.methodCallId,
-          ReferencePath.updatedPath));
+    GetEmailMethod? getEmailUpdated;
+    GetEmailMethod? getEmailCreated;
+    RequestInvocation? getEmailUpdatedInvocation;
+    RequestInvocation? getEmailCreatedInvocation;
 
     if (propertiesUpdated != null) {
-      getMailboxUpdated.addProperties(propertiesUpdated);
-    }
+      getEmailUpdated = GetEmailMethod(accountId)
+        ..addReferenceIds(
+            processingInvocation.createResultReference(
+              changesEmailInvocation.methodCallId,
+              ReferencePath.updatedPath,
+            ),
+          )
+        ..addProperties(propertiesUpdated);
 
-    final getEmailCreated = GetEmailMethod(accountId)
-      ..addReferenceIds(processingInvocation.createResultReference(
-          changesEmailInvocation.methodCallId,
-          ReferencePath.createdPath));
+      getEmailUpdatedInvocation = jmapRequestBuilder.invocation(getEmailUpdated);
+    }
 
     if (propertiesCreated != null) {
-      getEmailCreated.addProperties(propertiesCreated);
+      getEmailCreated = GetEmailMethod(accountId)
+        ..addReferenceIds(
+            processingInvocation.createResultReference(
+              changesEmailInvocation.methodCallId,
+              ReferencePath.createdPath,
+            ),
+          )
+        ..addProperties(propertiesCreated);
+
+      getEmailCreatedInvocation = jmapRequestBuilder.invocation(getEmailCreated);
     }
 
-    final getEmailUpdatedInvocation = jmapRequestBuilder.invocation(getMailboxUpdated);
-    final getEmailCreatedInvocation = jmapRequestBuilder.invocation(getEmailCreated);
+    final requiredCapabilitiesMethod = getEmailCreated?.requiredCapabilities
+      ?? getEmailUpdated?.requiredCapabilities
+      ?? changesEmailMethod.requiredCapabilities;
 
-    final capabilities = getEmailCreated.requiredCapabilities
-      .toCapabilitiesSupportTeamMailboxes(session, accountId);
+    final usedCapabilities = requiredCapabilitiesMethod
+        .toCapabilitiesSupportTeamMailboxes(session, accountId);
 
     final result = await (jmapRequestBuilder
-        ..usings(capabilities))
+        ..usings(usedCapabilities))
       .build()
       .execute();
 
@@ -259,24 +274,43 @@ class ThreadAPI {
       changesEmailInvocation.methodCallId,
       ChangesEmailResponse.deserialize);
 
-    final resultUpdated = result.parse<GetEmailResponse>(
-      getEmailUpdatedInvocation.methodCallId,
-      GetEmailResponse.deserialize);
+    List<EmailId>? destroyedEmailIds = resultChanges
+      ?.destroyed
+      .toEmailIds()
+      .toList();
+    State? newStateChanges = resultChanges?.newState;
+    bool hasMoreChanges = resultChanges?.hasMoreChanges ?? false;
+    List<Email>? updatedEmail;
+    List<Email>? createdEmail;
+    State? newStateEmail;
 
-    final resultCreated = result.parse<GetEmailResponse>(
-      getEmailCreatedInvocation.methodCallId,
-      GetEmailResponse.deserialize);
+    if (getEmailUpdatedInvocation != null) {
+      final emailResponseUpdated = result.parse<GetEmailResponse>(
+        getEmailUpdatedInvocation.methodCallId,
+        GetEmailResponse.deserialize,
+      );
+      updatedEmail = emailResponseUpdated?.list;
+      newStateEmail = emailResponseUpdated?.state;
+    }
 
-    final listMailboxIdDestroyed = resultChanges?.destroyed.map((id) => EmailId(id)).toList() ?? <EmailId>[];
+    if (getEmailCreatedInvocation != null) {
+      final emailResponseCreated = result.parse<GetEmailResponse>(
+        getEmailCreatedInvocation.methodCallId,
+        GetEmailResponse.deserialize,
+      );
+      createdEmail = emailResponseCreated?.list;
+      newStateEmail = emailResponseCreated?.state;
+    }
 
     return EmailChangeResponse(
-      updated: resultUpdated?.list,
-      created: resultCreated?.list,
-      destroyed: listMailboxIdDestroyed,
-      newStateEmail: resultUpdated?.state,
-      newStateChanges: resultChanges?.newState,
-      hasMoreChanges: resultChanges?.hasMoreChanges ?? false,
-      updatedProperties: propertiesUpdated);
+      updated: updatedEmail,
+      created: createdEmail,
+      destroyed: destroyedEmailIds,
+      newStateEmail: newStateEmail,
+      newStateChanges: newStateChanges,
+      hasMoreChanges: hasMoreChanges,
+      updatedProperties: propertiesUpdated,
+    );
   }
 
   Future<Email> getEmailById(Session session, AccountId accountId, EmailId emailId, {Properties? properties}) async {
