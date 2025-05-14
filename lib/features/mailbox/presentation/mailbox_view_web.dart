@@ -60,56 +60,13 @@ class MailboxView extends BaseMailboxView {
               ),
             )),
             const Divider(color: AppColor.colorDividerHorizontal),
-            if (controller.responsiveUtils.isWebDesktop(context) ||
-                controller.contactSupportCapability?.isAvailable != true)
-              const QuotasView(
-                padding: EdgeInsetsDirectional.only(
-                  start: QuotasViewStyles.padding,
-                  top: QuotasViewStyles.padding,
-                ),
-              )
-            else
-              Row(
-                children: [
-                  const Expanded(
-                    child: QuotasView(
-                      padding: EdgeInsetsDirectional.only(
-                        start: QuotasViewStyles.padding,
-                        top: QuotasViewStyles.padding,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: TMailButtonWidget(
-                      text: AppLocalizations.of(context).getHelpOrReportABug,
-                      icon: controller.imagePaths.icHelp,
-                      verticalDirection: true,
-                      backgroundColor: Colors.transparent,
-                      maxLines: 2,
-                      flexibleText: true,
-                      mainAxisSize: MainAxisSize.min,
-                      margin: const EdgeInsetsDirectional.only(
-                        end: 12,
-                        start: 4,
-                        top: 6,
-                        bottom: 6,
-                      ),
-                      borderRadius: 10,
-                      textOverflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      textStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w500,
-                        color: AppColor.primaryColor,
-                      ),
-                      onTapActionCallback: () =>
-                        controller.onGetHelpOrReportBug(
-                          controller.contactSupportCapability!,
-                        ),
-                    ),
-                  ),
-                ],
+            QuotasView(
+              padding: const EdgeInsetsDirectional.only(
+                start: QuotasViewStyles.padding,
+                top: QuotasViewStyles.padding,
               ),
+              isDisplayedContactSupport: true,
+            ),
             Container(
               width: double.infinity,
               alignment: controller.responsiveUtils.isDesktop(context)
