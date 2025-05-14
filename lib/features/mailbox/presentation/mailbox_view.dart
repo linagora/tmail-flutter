@@ -133,6 +133,7 @@ class MailboxView extends BaseMailboxView {
                           if (!controller.isSelectionEnabled() && controller.responsiveUtils.isPortraitMobile(context)) {
                             return Container(
                               width: double.infinity,
+                              color: Colors.white,
                               padding: const EdgeInsets.all(16),
                               child: SafeArea(
                                 top: false,

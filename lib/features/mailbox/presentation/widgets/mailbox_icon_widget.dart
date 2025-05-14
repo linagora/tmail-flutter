@@ -16,38 +16,47 @@ class MailboxIconWidget extends StatelessWidget {
   final MailboxNode mailboxNode;
   final SelectMode selectionMode;
   final OnSelectMailboxNodeAction? onSelectMailboxFolderClick;
+  final EdgeInsetsGeometry? padding;
 
   const MailboxIconWidget({
     super.key,
     required this.mailboxNode,
     required this.imagePaths,
     this.selectionMode = SelectMode.INACTIVE,
+    this.padding,
     this.onSelectMailboxFolderClick,
   });
 
   @override
   Widget build(BuildContext context) {
+    Widget? item;
+
     if (_isSelectionActivatedOnMobile) {
-      return InkWell(
+      item = InkWell(
         onTap: () => onSelectMailboxFolderClick?.call(mailboxNode),
         child: SvgPicture.asset(
           _getSelectionIcon(imagePaths),
           width: MailboxIconWidgetStyles.iconSize,
           height: MailboxIconWidgetStyles.iconSize,
-          fit: BoxFit.fill
+          fit: BoxFit.fill,
         )
       );
+    } else if (mailboxNode.item.isPersonal || mailboxNode.item.hasParentId()) {
+      item = SvgPicture.asset(
+        mailboxNode.item.getMailboxIcon(imagePaths),
+        width: MailboxIconWidgetStyles.iconSize,
+        height: MailboxIconWidgetStyles.iconSize,
+        fit: BoxFit.fill,
+      );
+    }
+
+    if (padding != null) {
+      return Padding(
+        padding: padding!,
+        child: item ?? const SizedBox.shrink(),
+      );
     } else {
-      if (mailboxNode.item.isPersonal || mailboxNode.item.hasParentId()) {
-        return SvgPicture.asset(
-          mailboxNode.item.getMailboxIcon(imagePaths),
-          width: MailboxIconWidgetStyles.iconSize,
-          height: MailboxIconWidgetStyles.iconSize,
-          fit: BoxFit.fill
-        );
-      } else {
-        return const SizedBox();
-      }
+      return item ?? const SizedBox.shrink();
     }
   }
 

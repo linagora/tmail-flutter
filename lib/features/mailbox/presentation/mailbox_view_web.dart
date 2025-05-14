@@ -116,6 +116,9 @@ class MailboxView extends BaseMailboxView {
                 ? AlignmentDirectional.centerStart
                 : AlignmentDirectional.center,
               padding: const EdgeInsets.all(16),
+              color: controller.responsiveUtils.isWebDesktop(context)
+                  ? AppColor.colorBgDesktop
+                  : Colors.white,
               child: ApplicationVersionWidget(
                 padding: EdgeInsets.zero,
                 title: '${AppLocalizations.of(context).version.toLowerCase()} ',
