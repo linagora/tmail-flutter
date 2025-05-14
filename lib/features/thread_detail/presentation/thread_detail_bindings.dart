@@ -22,7 +22,7 @@ class ThreadDetailBindings extends BaseBindings {
 
   @override
   void bindingsController() {
-    Get.lazyPut(() => ThreadDetailController(
+    Get.put(ThreadDetailController(
       Get.find<GetThreadByIdInteractor>(),
       Get.find<GetEmailsByIdsInteractor>(),
     ));
