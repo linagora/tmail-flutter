@@ -389,6 +389,7 @@ class EmailView extends GetWidget<SingleEmailController> {
             emailLoaded: controller.currentEmailLoaded.value,
           ),
           onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
+          onTapAvatarActionClick: onToggleThreadDetailCollapseExpand,
         )),
         Obx(() => MailUnsubscribedBanner(
           presentationEmail: controller.currentEmail,
