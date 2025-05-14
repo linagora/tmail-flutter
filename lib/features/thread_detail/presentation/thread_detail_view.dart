@@ -20,59 +20,56 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 class ThreadDetailView extends GetWidget<ThreadDetailController> {
   const ThreadDetailView({super.key});
   
-  
-
   @override
   Widget build(BuildContext context) {
     return SafeArea(
       child: Column(
         children: [
-          if (!controller.responsiveUtils.isTabletLarge(context))
-            Obx(() => ThreadDetailAppBar(
-              responsiveUtils: controller.responsiveUtils,
-              imagePaths: controller.imagePaths,
-              isSearchRunning: controller.isSearchRunning,
-              closeThreadDetailAction: controller.closeThreadDetailAction,
-              lastEmailOfThread: controller.emailIdsPresentation.values.lastOrNull,
-              ownUserName: controller.session?.username.value ?? '',
-              mailboxContain: _getMailboxContain(),
-              emailLoaded: getBinding<SingleEmailController>(
-                tag: controller.emailIds.lastOrNull?.id.value
-              )?.currentEmailLoaded.value,
-              onEmailActionClick: (email, action) {
-                // TODO: Next PR
-              },
-              onMoreActionClick: (p0, p1) {
-                // TODO: Next PR
-              },
-              optionWidgets: PlatformInfo.isMobile ? [] : [
-                TMailButtonWidget.fromIcon(
-                  icon: DirectionUtils.isDirectionRTLByLanguage(context)
-                    ? controller.imagePaths.icOlder
-                    : controller.imagePaths.icNewer,
-                  iconColor: EmailViewStyles.iconColor,
-                  iconSize: EmailViewStyles.pageViewIconSize,
-                  backgroundColor: Colors.transparent,
-                  tooltipMessage: AppLocalizations.of(context).newer,
-                  onTapActionCallback: () {
-                    // TODO: Next PR
-                  },
-                ),
-                TMailButtonWidget.fromIcon(
-                  icon: DirectionUtils.isDirectionRTLByLanguage(context)
-                    ? controller.imagePaths.icNewer
-                    : controller.imagePaths.icOlder,
-                  iconColor: EmailViewStyles.iconColor,
-                  iconSize: EmailViewStyles.pageViewIconSize,
-                  backgroundColor: Colors.transparent,
-                  tooltipMessage: AppLocalizations.of(context).older,
-                  onTapActionCallback: () {
-                    // TODO: Next PR
-                  }
-                ),
-                const SizedBox(width: 16),
-              ],
-            )),
+          Obx(() => ThreadDetailAppBar(
+            responsiveUtils: controller.responsiveUtils,
+            imagePaths: controller.imagePaths,
+            isSearchRunning: controller.isSearchRunning,
+            closeThreadDetailAction: controller.closeThreadDetailAction,
+            lastEmailOfThread: controller.emailIdsPresentation.values.lastOrNull,
+            ownUserName: controller.session?.username.value ?? '',
+            mailboxContain: _getMailboxContain(),
+            emailLoaded: getBinding<SingleEmailController>(
+              tag: controller.emailIds.lastOrNull?.id.value
+            )?.currentEmailLoaded.value,
+            onEmailActionClick: (email, action) {
+              // TODO: Next PR
+            },
+            onMoreActionClick: (p0, p1) {
+              // TODO: Next PR
+            },
+            optionWidgets: PlatformInfo.isMobile ? [] : [
+              TMailButtonWidget.fromIcon(
+                icon: DirectionUtils.isDirectionRTLByLanguage(context)
+                  ? controller.imagePaths.icOlder
+                  : controller.imagePaths.icNewer,
+                iconColor: EmailViewStyles.iconColor,
+                iconSize: EmailViewStyles.pageViewIconSize,
+                backgroundColor: Colors.transparent,
+                tooltipMessage: AppLocalizations.of(context).newer,
+                onTapActionCallback: () {
+                  // TODO: Next PR
+                },
+              ),
+              TMailButtonWidget.fromIcon(
+                icon: DirectionUtils.isDirectionRTLByLanguage(context)
+                  ? controller.imagePaths.icNewer
+                  : controller.imagePaths.icOlder,
+                iconColor: EmailViewStyles.iconColor,
+                iconSize: EmailViewStyles.pageViewIconSize,
+                backgroundColor: Colors.transparent,
+                tooltipMessage: AppLocalizations.of(context).older,
+                onTapActionCallback: () {
+                  // TODO: Next PR
+                }
+              ),
+              const SizedBox(width: 16),
+            ],
+          )),
           Obx(() => controller.getThreadDetailLoadingView(
             isResponsiveDesktop: controller.responsiveUtils.isDesktop(context),
           )),
@@ -90,7 +87,14 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                     child: Stack(
                       children: [
                         const Positioned.fill(
-                          child: ColoredBox(color: Colors.white),
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.vertical(
+                                bottom: Radius.circular(20),
+                              )
+                            ),
+                          ),
                         ),
                         SingleChildScrollView(
                           reverse: controller.scrollReverse.value,

@@ -72,10 +72,12 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.all(16),
-              child: TextOverflowBuilder(
-                presentationEmail.getPartialContent().substring(0, 65),
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodyMedium,
+              child: SelectionArea(
+                child: TextOverflowBuilder(
+                  presentationEmail.getPartialContent().substring(0, 65),
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
               ),
             ),
           ],
