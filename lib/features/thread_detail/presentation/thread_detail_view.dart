@@ -1,9 +1,11 @@
+import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
@@ -104,15 +106,28 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             );
           }),
           Obx(() {
-            final lastEmailController = getBinding<SingleEmailController>(
-              tag: controller.emailIds.lastOrNull?.id.value
-            );
-            if (lastEmailController == null) {
+            final expandedEmailMap = controller
+              .emailIdsPresentation
+              .entries
+              .firstWhereOrNull(
+                (entry) => entry.value?.emailInThreadStatus == EmailInThreadStatus.expanded
+              );
+
+            if (expandedEmailMap == null) {
               return _roundBottomPlaceHolder();
             }
-            final lastEmailLoaded = lastEmailController.currentEmailLoaded.value;
-            final lastEmail = controller.emailIdsPresentation.values.lastOrNull;
-            if (lastEmailLoaded == null || lastEmail == null) {
+            
+            final expandedEmailId = expandedEmailMap.key;
+            final expandedEmailController = getBinding<SingleEmailController>(
+              tag: expandedEmailId.id.value
+            );
+            if (expandedEmailController == null) {
+              return _roundBottomPlaceHolder();
+            }
+
+            final expandedPresentationEmail = expandedEmailMap.value;
+            final lastEmailLoaded = expandedEmailController.currentEmailLoaded.value;
+            if (lastEmailLoaded == null || expandedPresentationEmail == null) {
               return _roundBottomPlaceHolder();
             }
 
@@ -122,12 +137,12 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                 : EdgeInsets.zero,
               child: EmailViewBottomBarWidget(
                 key: const Key('email_view_button_bar'),
-                imagePaths: lastEmailController.imagePaths,
-                responsiveUtils: lastEmailController.responsiveUtils,
+                imagePaths: expandedEmailController.imagePaths,
+                responsiveUtils: expandedEmailController.responsiveUtils,
                 emailLoaded: lastEmailLoaded,
-                presentationEmail: lastEmail,
-                userName: lastEmailController.getOwnEmailAddress(),
-                emailActionCallback: lastEmailController.pressEmailAction,
+                presentationEmail: expandedPresentationEmail,
+                userName: expandedEmailController.getOwnEmailAddress(),
+                emailActionCallback: expandedEmailController.pressEmailAction,
                 bottomBarDecoration: const BoxDecoration(
                   color: Colors.white,
                   border: Border(
