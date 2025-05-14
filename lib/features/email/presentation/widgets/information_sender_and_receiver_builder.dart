@@ -3,6 +3,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/icon_utils.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/email/email_action_type.dart';
@@ -33,6 +34,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
   final OnMoreActionClick? onMoreActionClick;
   final bool showRecipients;
   final VoidCallback? onToggleThreadDetailCollapseExpand;
+  final OnTapAvatarActionClick? onTapAvatarActionClick;
 
   const InformationSenderAndReceiverBuilder({
     Key? key,
@@ -49,6 +51,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
     this.onMoreActionClick,
     this.showRecipients = true,
     this.onToggleThreadDetailCollapseExpand,
+    this.onTapAvatarActionClick,
   }) : super(key: key);
 
   @override
@@ -60,7 +63,10 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
           ? CrossAxisAlignment.start
           : CrossAxisAlignment.center,
         children: [
-          EmailAvatarBuilder(emailSelected: emailSelected),
+          EmailAvatarBuilder(
+            emailSelected: emailSelected,
+            onTapAvatarActionClick: onTapAvatarActionClick,
+          ),
           const SizedBox(width: 16),
           Expanded(child: LayoutBuilder(builder: (context, constraints) {
             return InkWell(
