@@ -64,7 +64,6 @@ class ThreadDetailController extends BaseController {
   void onInit() {
     super.onInit();
     ever(mailboxDashBoardController.currentThreadId, (threadId) {
-      reset();
       if (threadId == null) {
         closeThreadDetailAction(currentContext);
         return;

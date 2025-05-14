@@ -27,5 +27,6 @@ extension CloseThreadDetailAction on ThreadDetailController {
     }
 
     reset();
+    mailboxDashBoardController.currentThreadId.value = null;
   }
 }
