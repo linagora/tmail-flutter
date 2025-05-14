@@ -16,7 +16,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.d
 import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_widget_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_method_action_define.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/label_mailbox_item_widget.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/leading_mailbox_item_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_icon_widget.dart';
 
 class MailboxItemWidget extends StatefulWidget {
 
@@ -81,20 +81,26 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
               padding: const EdgeInsetsDirectional.symmetric(
                 horizontal: MailboxItemWidgetStyles.itemPadding,
               ),
-              height: MailboxItemWidgetStyles.height,
+              height: widget.mailboxNode.item.isTeamMailboxes
+                  ? MailboxItemWidgetStyles.teamMailboxHeight
+                  : MailboxItemWidgetStyles.height,
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: widget.mailboxNode.item.isTeamMailboxes
                   ? CrossAxisAlignment.start
                   : CrossAxisAlignment.center,
                 children: [
-                  LeadingMailboxItemWidget(
+                  MailboxIconWidget(
                     imagePaths: _imagePaths,
                     mailboxNode: widget.mailboxNode,
                     selectionMode: widget.selectionMode,
+                    padding: EdgeInsetsDirectional.only(
+                      end: widget.mailboxNode.item.isTeamMailboxes
+                          ? MailboxItemWidgetStyles.teamMailboxLabelSpace
+                          : MailboxItemWidgetStyles.labelIconSpace,
+                    ),
                     onSelectMailboxFolderClick: widget.onSelectMailboxFolderClick,
                   ),
-                  const SizedBox(width: MailboxItemWidgetStyles.labelIconSpace),
                   Expanded(
                     child: LabelMailboxItemWidget(
                       itemKey: _key,
@@ -130,16 +136,22 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
               padding: const EdgeInsetsDirectional.symmetric(
                 horizontal: MailboxItemWidgetStyles.itemPadding,
               ),
-              height: MailboxItemWidgetStyles.height,
+              height: widget.mailboxNode.item.isTeamMailboxes
+                  ? MailboxItemWidgetStyles.teamMailboxHeight
+                  : MailboxItemWidgetStyles.height,
               child: Row(
                 children: [
-                  LeadingMailboxItemWidget(
+                  MailboxIconWidget(
                     imagePaths: _imagePaths,
                     mailboxNode: widget.mailboxNode,
                     selectionMode: widget.selectionMode,
+                    padding: EdgeInsetsDirectional.only(
+                      end: widget.mailboxNode.item.isTeamMailboxes
+                          ? MailboxItemWidgetStyles.teamMailboxLabelSpace
+                          : MailboxItemWidgetStyles.labelIconSpace,
+                    ),
                     onSelectMailboxFolderClick: widget.onSelectMailboxFolderClick,
                   ),
-                  const SizedBox(width: MailboxItemWidgetStyles.labelIconSpace),
                   Expanded(
                     child: LabelMailboxItemWidget(
                       itemKey: _key,
@@ -175,16 +187,22 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                 padding: const EdgeInsetsDirectional.symmetric(
                   horizontal: MailboxItemWidgetStyles.itemPadding,
                 ),
-                height: MailboxItemWidgetStyles.height,
+                height: widget.mailboxNode.item.isTeamMailboxes
+                    ? MailboxItemWidgetStyles.teamMailboxHeight
+                    : MailboxItemWidgetStyles.height,
                 child: Row(
                   children: [
-                    LeadingMailboxItemWidget(
+                    MailboxIconWidget(
                       imagePaths: _imagePaths,
                       mailboxNode: widget.mailboxNode,
                       selectionMode: widget.selectionMode,
+                      padding: EdgeInsetsDirectional.only(
+                        end: widget.mailboxNode.item.isTeamMailboxes
+                            ? MailboxItemWidgetStyles.teamMailboxLabelSpace
+                            : MailboxItemWidgetStyles.labelIconSpace,
+                      ),
                       onSelectMailboxFolderClick: widget.onSelectMailboxFolderClick,
                     ),
-                    const SizedBox(width: MailboxItemWidgetStyles.labelIconSpace),
                     Expanded(
                       child: LabelMailboxItemWidget(
                         itemKey: _key,
@@ -229,19 +247,25 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                   padding: const EdgeInsetsDirectional.symmetric(
                     horizontal: MailboxItemWidgetStyles.itemPadding,
                   ),
-                  height: MailboxItemWidgetStyles.height,
+                  height: widget.mailboxNode.item.isTeamMailboxes
+                      ? MailboxItemWidgetStyles.teamMailboxHeight
+                      : MailboxItemWidgetStyles.height,
                   color: widget.mailboxNode.isSelected
                       ? AppColor.colorItemSelected
                       : Colors.transparent,
                   child: Row(
                     children: [
-                      LeadingMailboxItemWidget(
+                      MailboxIconWidget(
                         imagePaths: _imagePaths,
                         mailboxNode: widget.mailboxNode,
                         selectionMode: widget.selectionMode,
+                        padding: EdgeInsetsDirectional.only(
+                          end: widget.mailboxNode.item.isTeamMailboxes
+                              ? MailboxItemWidgetStyles.teamMailboxLabelSpace
+                              : MailboxItemWidgetStyles.labelIconSpace,
+                        ),
                         onSelectMailboxFolderClick: widget.onSelectMailboxFolderClick,
                       ),
-                      const SizedBox(width: MailboxItemWidgetStyles.labelIconSpace),
                       Expanded(
                         child: LabelMailboxItemWidget(
                           itemKey: _key,
