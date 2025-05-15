@@ -149,6 +149,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
   Widget _roundBottomPlaceHolder() {
     return Container(
       height: 40,
+      margin: const EdgeInsetsDirectional.only(end: 16),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(
