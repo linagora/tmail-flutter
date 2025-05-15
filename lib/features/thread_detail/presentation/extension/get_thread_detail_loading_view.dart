@@ -1,12 +1,17 @@
 import 'package:core/presentation/views/loading/cupertino_loading_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 
 extension GetThreadDetailLoadingView on ThreadDetailController {
   Widget getThreadDetailLoadingView({
     required bool isResponsiveDesktop,
   }) {
-    if (!loadingThreadDetail) return const SizedBox.shrink();
+    final isLoading = viewState.value.fold(
+      (failure) => false,
+      (success) => success is GettingThreadById
+    );
+    if (!isLoading) return const SizedBox.shrink();
 
     return Expanded(
       child: Container(
