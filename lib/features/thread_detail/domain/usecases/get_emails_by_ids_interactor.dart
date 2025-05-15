@@ -24,7 +24,7 @@ class GetEmailsByIdsInteractor {
   }) async* {
     try {
       assert(
-        emailIds.length > 1 || (
+        emailIds.length <= 1 || (
         properties?.value.contains(EmailProperty.htmlBody) != true &&
         properties?.value.contains(EmailProperty.bodyValues) != true &&
         properties?.value.contains(EmailProperty.attachments) != true),
