@@ -3,7 +3,7 @@ const MANIFEST = 'flutter-app-manifest';
 const TEMP = 'flutter-temp-cache';
 const CACHE_NAME = 'flutter-app-cache';
 
-const RESOURCES = {"main.dart.js_12.part.js": "28c1622e2b9a91bc1add0ae515338ea0",
+const RESOURCES = {"main.dart.js_12.part.js": "9450eda74629b2e1da5b04da6d81e0d6",
 "worker_service/style.css": "3ec186c93eb7bdab17e882de738e3123",
 "worker_service/worker_service.js": "c741398f2ab58bd36f7c510a8429fc41",
 "worker_service/img/tmail-3x.png": "7b5f8e671c4f39ae5d1a67b46fe494d7",
@@ -14,8 +14,8 @@ const RESOURCES = {"main.dart.js_12.part.js": "28c1622e2b9a91bc1add0ae515338ea0"
 "worker_service/img/tmail-1x.png": "823f38fc9060c91a404462a7b6517a10",
 "worker_service/img/tmail-2x.png": "55f91555db37edb9ed0608f7ee3f37ee",
 "worker_service/img/ic-close-3x.png": "7415143fe67dc6b2a680300c5aa16296",
-"main.dart.js_10.part.js": "f439ad5cbdb443ec51e247f9bba2c21c",
-"main.dart.js_5.part.js": "766b8d4b648d8dc2bbd5a0e05285f318",
+"main.dart.js_10.part.js": "0c7f3053f0835d2c6e02b8161076ce72",
+"main.dart.js_5.part.js": "8df71baec6ed028e54569e6e2d828024",
 "i18n/en.json": "e0bf88bb60efa34f25f4aec02e17cfee",
 "i18n/vi.json": "05652be4397bcaa1ccbf0d0fd5fa9caf",
 "i18n/translater.js": "f53aedbd356b679a27a6b0e8e952fb81",
@@ -315,7 +315,7 @@ const RESOURCES = {"main.dart.js_12.part.js": "28c1622e2b9a91bc1add0ae515338ea0"
 "assets/packages/flutter_date_range_picker/assets/images/ic_close.svg": "a1f2e6b8d675af3d2cf602f7c87636cc",
 "assets/packages/cupertino_icons/assets/CupertinoIcons.ttf": "fa31975d5ca09f6bd89327a7468b3274",
 "manifest.json": "c2c66c9dd73fa42a8a2c5e95615de7d1",
-"main.dart.js_1.part.js": "b06c81c837f943bd0da0208162b9f79c",
+"main.dart.js_1.part.js": "0f5d33da70648f12bb98be8df04e90fd",
 "splash/style.css": "cc60b7a16945acc8c8f2492dfa54d668",
 "splash/splash.js": "123c400b58bea74c1305ca3ac966748d",
 "splash/img/dark-4x.png": "f74fe973429e7418939fe5b6fba4dca9",
@@ -349,9 +349,9 @@ const RESOURCES = {"main.dart.js_12.part.js": "28c1622e2b9a91bc1add0ae515338ea0"
 "canvaskit/skwasm.worker.js": "89990e8c92bcb123999aa81f7e203b1c",
 "index.html": "981a59122ffff2cc63780039b2def875",
 "/": "981a59122ffff2cc63780039b2def875",
-"main.dart.js_8.part.js": "e7d6cd8b36f7761428f5a22047591ed0",
-"main.dart.js_2.part.js": "cc1309715b96bb3ca030f73cc0e63bca",
-"flutter_bootstrap.js": "54e22e744ac485e61f2d9f5a18b21e18",
+"main.dart.js_8.part.js": "3fe9ac1bdb0f394e12e30e156797f2a0",
+"main.dart.js_2.part.js": "0d047a2ff982efe3389cc9e5c5b0795c",
+"flutter_bootstrap.js": "af4eaa3d134b9a4e8ee3088f2be697b3",
 "logout-callback.html": "999326dc9a0f37c9a9a4280b4a35dc51",
 "icons/Icon-192.png": "009a8eae32218365ab20cce81aa896c3",
 "icons/Icon-maskable-192.png": "009a8eae32218365ab20cce81aa896c3",
@@ -360,8 +360,8 @@ const RESOURCES = {"main.dart.js_12.part.js": "28c1622e2b9a91bc1add0ae515338ea0"
 "main.dart.js_11.part.js": "105ecc5f9ab5cd875af4c617ff22aaf7",
 "main.dart.js_4.part.js": "16fc7c3fcc741be278d4945bbb833a74",
 "login-callback.html": "e17f83d4982ea3cce6e692b31c4b4beb",
-"main.dart.js_6.part.js": "59ed0ec06fe33d8a71ea38bcd6e3e9e8",
-"main.dart.js": "d6e0f0aae04bae324aaca8acea2e2fc2"};
+"main.dart.js_6.part.js": "71221166e936ceca3ca54354fbca6041",
+"main.dart.js": "5f7a5ece5e642069a501dacc0e67c401"};
 // The application shell files that are downloaded before a service worker can
 // start.
 const CORE = ["main.dart.js",
