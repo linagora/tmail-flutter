@@ -54,6 +54,7 @@ export 'utils/mail/domain.dart';
 export 'utils/mail/mail_address.dart';
 export 'utils/application_manager.dart';
 export 'utils/preview_eml_file_utils.dart';
+export 'utils/logger/log_tracking.dart';
 
 // Views
 export 'presentation/views/text/slogan_builder.dart';
