@@ -13,11 +13,9 @@ import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_by_ids_interactor.dart';
-import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_email_ids_by_thread_id_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_emails_by_ids_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ThreadDetailController extends BaseController {
   final GetThreadByIdInteractor _getEmailIdsByThreadIdInteractor;
@@ -65,7 +63,6 @@ class ThreadDetailController extends BaseController {
     super.onInit();
     ever(mailboxDashBoardController.currentThreadId, (threadId) {
       if (threadId == null) {
-        closeThreadDetailAction(currentContext);
         return;
       }
       if (session != null &&
@@ -86,6 +83,7 @@ class ThreadDetailController extends BaseController {
   void reset() {
     emailIds.clear();
     emailIdsPresentation.clear();
+    mailboxDashBoardController.currentThreadId.value = null;
   }
 
   @override
