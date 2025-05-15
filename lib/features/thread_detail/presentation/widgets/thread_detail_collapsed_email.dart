@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
@@ -37,6 +39,8 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
   final OnMoreActionClick? onMoreActionClick;
   final VoidCallback? onToggleThreadDetailCollapseExpand;
 
+  String get preview => presentationEmail.getPartialContent();
+
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
@@ -74,7 +78,7 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: SelectionArea(
                 child: TextOverflowBuilder(
-                  presentationEmail.getPartialContent().substring(0, 65),
+                  preview.substring(0, min(65, preview.length)),
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
