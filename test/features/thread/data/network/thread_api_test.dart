@@ -6,14 +6,19 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/error/method/error_method_response.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_filter_condition.dart';
 import 'package:jmap_dart_client/jmap/mail/email/get/get_email_response.dart';
+import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/email/query/query_email_response.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet.dart';
+import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/extensions/account_id_extensions.dart';
 import 'package:model/extensions/email_id_extensions.dart';
+import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/data/network/thread_api.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_email.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_emails_response.dart';
@@ -49,12 +54,17 @@ class MockQueryEmailResponse extends QueryEmailResponse {
 void main() {
   final baseOption  = BaseOptions(method: 'POST');
   final dio = Dio(baseOption)..options.baseUrl = 'http://domain.com/jmap';
+  final dioAdapterHeaders = <String, dynamic>{
+    'accept': 'application/json;jmapVersion=rfc-8621',
+  };
   final dioAdapter = DioAdapter(dio: dio);
   final httpClient = HttpClient(dio);
   final threadApi = ThreadAPI(httpClient);
 
   final sessionState = State('some-session-state');
   final state = State('some-state');
+  final sinceState = State('since-state');
+  final newState = State('new-state');
   final filter = EmailFilterCondition(text: 'some-text');
   final queryState = State('some-query-state');
 
@@ -420,6 +430,348 @@ void main() {
         expect(
           result?.map((e) => e.id!.asString).toList(),
           ['id3', 'id1', 'id2', 'id4'],
+        );
+      });
+    });
+
+    group('getChanges:', () {
+      int emailSize = 10;
+
+      final createdEmailIds = List.generate(
+        emailSize,
+        (index) => EmailId(Id('created_$index')),
+      );
+
+      final updatedEmailIds = List.generate(
+        emailSize,
+        (index) => EmailId(Id('updated_$index')),
+      );
+
+      final destroyedEmailIds = List.generate(
+        emailSize,
+        (index) => EmailId(Id('destroyed_$index')),
+      );
+
+      final createdEmails = List.generate(
+        emailSize,
+        (index) => Email(
+          id: EmailId(Id('created_$index')),
+          subject: 'Subject $index',
+          preview: 'Preview $index',
+        ),
+      );
+
+      final updatedEmails = List.generate(
+        emailSize,
+        (index) => Email(
+          id: EmailId(Id('updated_$index')),
+          keywords: {
+            KeyWordIdentifier.emailSeen: true,
+          },
+          mailboxIds: {
+            MailboxId(Id('inbox-id')): true,
+          },
+        ),
+      );
+
+      final defaultCreatedProperties = Properties({
+        'subject',
+        'preview',
+      });
+
+      final defaultUpdatedProperties = Properties({
+        'mailboxIds',
+        'keywords',
+      });
+
+      Map<String, dynamic> generateRequest({
+        Properties? propertiesCreated,
+        Properties? propertiesUpdated,
+      }) =>
+          {
+            "using": [
+              "urn:ietf:params:jmap:core",
+              "urn:ietf:params:jmap:mail",
+              "urn:apache:james:params:jmap:mail:shares"
+            ],
+            "methodCalls": [
+              [
+                "Email/changes",
+                {
+                  "accountId": AccountFixtures.aliceAccountId.asString,
+                  "sinceState": sinceState.value,
+                },
+                "c0"
+              ],
+              if (propertiesUpdated != null)
+                [
+                  "Email/get",
+                  {
+                    "accountId": AccountFixtures.aliceAccountId.asString,
+                    "#ids": {
+                      "resultOf": "c0",
+                      "name": "Email/changes",
+                      "path": "/updated/*"
+                    },
+                    "properties": propertiesUpdated.value.toList()
+                  },
+                  "c1"
+                ],
+              if (propertiesCreated != null)
+                [
+                  "Email/get",
+                  {
+                    "accountId": AccountFixtures.aliceAccountId.asString,
+                    "#ids": {
+                      "resultOf": "c0",
+                      "name": "Email/changes",
+                      "path": "/created/*"
+                    },
+                    "properties": propertiesCreated.value.toList()
+                  },
+                  if (propertiesUpdated != null) "c2" else "c1"
+                ]
+            ],
+          };
+
+      Map<String, dynamic> generateResponse({
+        Properties? propertiesCreated,
+        Properties? propertiesUpdated,
+        bool existNotFoundCreatedEmails = false,
+        bool existNotFoundUpdatedEmails = false,
+      }) =>
+          {
+            "sessionState": sessionState.value,
+            "methodResponses": [
+              [
+                "Email/changes",
+                {
+                  "accountId": AccountFixtures.aliceAccountId.asString,
+                  "oldState": sinceState.value,
+                  "newState": newState.value,
+                  "hasMoreChanges": false,
+                  "created": createdEmailIds
+                      .map((emailId) => emailId.id.value)
+                      .toList(),
+                  "updated": updatedEmailIds
+                      .map((emailId) => emailId.id.value)
+                      .toList(),
+                  "destroyed": destroyedEmailIds
+                      .map((emailId) => emailId.id.value)
+                      .toList(),
+                },
+                "c0"
+              ],
+              if (propertiesUpdated != null)
+                [
+                  "Email/get",
+                  {
+                    "accountId": AccountFixtures.aliceAccountId.asString,
+                    "state": newState.value,
+                    "list": existNotFoundUpdatedEmails
+                        ? updatedEmails.map((email) => email.toJson()).toList().sublist(0, 5)
+                        : updatedEmails.map((email) => email.toJson()).toList(),
+                    "notFound": existNotFoundUpdatedEmails
+                      ? updatedEmailIds.map((emailId) => emailId.id.value).toList().sublist(5, 10)
+                      : [],
+                  },
+                  "c1"
+                ],
+              if (propertiesCreated != null)
+                [
+                  "Email/get",
+                  {
+                    "accountId": AccountFixtures.aliceAccountId.asString,
+                    "state": newState.value,
+                    "list": existNotFoundUpdatedEmails
+                        ? createdEmails.map((email) => email.toJson()).toList().sublist(0, 5)
+                        : createdEmails.map((email) => email.toJson()).toList(),
+                    "notFound": existNotFoundUpdatedEmails
+                        ? createdEmailIds.map((emailId) => emailId.id.value).toList().sublist(5, 10)
+                        : [],
+                  },
+                  if (propertiesUpdated != null) "c2" else "c1"
+                ]
+            ]
+          };
+
+      test(
+          'should return created, updated, destroyed emails '
+          'when has both created and updated properties '
+          'and response Email/get has list', () async {
+        // arrange
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(
+            200,
+            generateResponse(
+              propertiesCreated: defaultCreatedProperties,
+              propertiesUpdated: defaultUpdatedProperties,
+            ),
+          ),
+          data: generateRequest(
+            propertiesCreated: defaultCreatedProperties,
+            propertiesUpdated: defaultUpdatedProperties,
+          ),
+          headers: dioAdapterHeaders..addAll({'content-length': 1245}),
+        );
+
+        // act
+        final result = await threadApi.getChanges(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+          sinceState,
+          propertiesCreated: defaultCreatedProperties,
+          propertiesUpdated: defaultUpdatedProperties,
+        );
+
+        // assert
+        expect(
+          result,
+          equals(
+            EmailChangeResponse(
+              updated: updatedEmails,
+              created: createdEmails,
+              destroyed: destroyedEmailIds,
+              newStateChanges: newState,
+              newStateEmail: newState,
+              hasMoreChanges: false,
+              updatedProperties: defaultUpdatedProperties,
+            ),
+          ),
+        );
+      });
+
+      test(
+          'should return created, updated, destroyed emails '
+          'when has both created and updated properties '
+          'and response Email/get has list and not found emails', () async {
+        // arrange
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(
+            200,
+            generateResponse(
+              propertiesCreated: defaultCreatedProperties,
+              propertiesUpdated: defaultUpdatedProperties,
+              existNotFoundCreatedEmails: true,
+              existNotFoundUpdatedEmails: true,
+            ),
+          ),
+          data: generateRequest(
+            propertiesCreated: defaultCreatedProperties,
+            propertiesUpdated: defaultUpdatedProperties,
+          ),
+          headers: dioAdapterHeaders..addAll({'content-length': 1245}),
+        );
+
+        // act
+        final result = await threadApi.getChanges(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+          sinceState,
+          propertiesCreated: defaultCreatedProperties,
+          propertiesUpdated: defaultUpdatedProperties,
+        );
+
+        // assert
+        final newDestroyedEmailIds = destroyedEmailIds
+            + updatedEmailIds.sublist(5, 10)
+            + createdEmailIds.sublist(5, 10);
+
+        final newUpdatedEmails = updatedEmails.sublist(0, 5);
+        final newCreatedEmails = createdEmails.sublist(0, 5);
+
+        expect(
+          result,
+          equals(
+            EmailChangeResponse(
+              updated: newUpdatedEmails,
+              created: newCreatedEmails,
+              destroyed: newDestroyedEmailIds,
+              newStateChanges: newState,
+              newStateEmail: newState,
+              hasMoreChanges: false,
+              updatedProperties: defaultUpdatedProperties,
+            ),
+          ),
+        );
+      });
+
+      test(
+          'should return created, destroyed emails '
+          'when only has created properties '
+          'and response Email/get has list', () async {
+        // arrange
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(
+            200,
+            generateResponse(
+              propertiesCreated: defaultCreatedProperties,
+            ),
+          ),
+          data: generateRequest(
+            propertiesCreated: defaultCreatedProperties,
+          ),
+          headers: dioAdapterHeaders..addAll({'content-length': 798}),
+        );
+
+        // act
+        final result = await threadApi.getChanges(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+          sinceState,
+          propertiesCreated: defaultCreatedProperties,
+        );
+
+        // assert
+        expect(
+          result,
+          equals(
+            EmailChangeResponse(
+              created: createdEmails,
+              destroyed: destroyedEmailIds,
+              newStateChanges: newState,
+              newStateEmail: newState,
+              hasMoreChanges: false,
+            ),
+          ),
+        );
+      });
+
+      test(
+          'should only return destroyed emails '
+          'when both created, updated properties are absent '
+          'and response Email/changes has destroyed list', () async {
+        // arrange
+        dioAdapter.onPost(
+          '',
+          (server) => server.reply(
+            200,
+            generateResponse(),
+          ),
+          data: generateRequest(),
+          headers: dioAdapterHeaders..addAll({'content-length': 355}),
+        );
+
+        // act
+        final result = await threadApi.getChanges(
+          SessionFixtures.aliceSession,
+          AccountFixtures.aliceAccountId,
+          sinceState,
+        );
+
+        // assert
+        expect(
+          result,
+          equals(
+            EmailChangeResponse(
+              destroyed: destroyedEmailIds,
+              newStateChanges: newState,
+              hasMoreChanges: false,
+            ),
+          ),
         );
       });
     });
