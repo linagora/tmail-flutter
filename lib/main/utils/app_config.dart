@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -12,6 +13,9 @@ class AppConfig {
   static const int defaultMinInputLengthAutocomplete = 3;
   static const int warningAttachmentFileSizeInMegabytes = 10;
   static const int defaultLimitAutocomplete = 8;
+
+  // For testing
+  static bool isApiLoggingEnabled = PlatformInfo.isAndroid;
 
   static const String envFileName = 'env.file';
   static const String appDashboardConfigurationPath = "configurations/app_dashboard.json";

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/logger/log_tracking.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
@@ -25,10 +26,12 @@ import 'package:tmail_ui_user/features/thread/data/extensions/list_email_extensi
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet_get_method.dart';
 import 'package:jmap_dart_client/jmap/mail/email/search_snippet/search_snippet_get_response.dart';
+import 'package:tmail_ui_user/features/thread/data/extensions/list_email_id_extension.dart';
 import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/email_response.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_emails_response.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 class ThreadAPI {
 
@@ -101,6 +104,11 @@ class ThreadAPI {
       ?.toEmailIds()
       .toList();
     log('ThreadAPI::getAllEmail:notFoundEmailIds = $notFoundEmailIds');
+    if (notFoundEmailIds?.isNotEmpty == true && AppConfig.isApiLoggingEnabled) {
+      await LogTracking().addLog(
+        message: 'ThreadAPI::getAllEmail:notFoundEmailIds = ${notFoundEmailIds!.asListString.toString()}',
+      );
+    }
     return EmailsResponse(
       emailList: emailList,
       notFoundEmailIds: notFoundEmailIds,
@@ -299,7 +307,15 @@ class ThreadAPI {
       newStateEmail = emailResponseUpdated?.state;
       final notFoundIdsUpdated = emailResponseUpdated?.notFound?.toEmailIds().toList() ?? [];
       log('ThreadAPI::getChanges:notFoundIdsUpdated = $notFoundIdsUpdated');
-      destroyedEmailIds.addAll(notFoundIdsUpdated);
+      if (notFoundIdsUpdated.isNotEmpty) {
+        destroyedEmailIds.addAll(notFoundIdsUpdated);
+
+        if (AppConfig.isApiLoggingEnabled) {
+          await LogTracking().addLog(
+            message: 'ThreadAPI::getChanges:notFoundIdsUpdated = ${notFoundIdsUpdated.asListString.toString()}',
+          );
+        }
+      }
     }
 
     if (getEmailCreatedInvocation != null) {
@@ -311,7 +327,15 @@ class ThreadAPI {
       newStateEmail = emailResponseCreated?.state;
       final notFoundIdsCreated = emailResponseCreated?.notFound?.toEmailIds().toList() ?? [];
       log('ThreadAPI::getChanges:notFoundIdsCreated = $notFoundIdsCreated');
-      destroyedEmailIds.addAll(notFoundIdsCreated);
+      if (notFoundIdsCreated.isNotEmpty) {
+        destroyedEmailIds.addAll(notFoundIdsCreated);
+
+        if (AppConfig.isApiLoggingEnabled) {
+          await LogTracking().addLog(
+            message: 'ThreadAPI::getChanges:notFoundIdsCreated = ${notFoundIdsCreated.asListString.toString()}',
+          );
+        }
+      }
     }
     log('ThreadAPI::getChanges:newStateChanges = $newStateChanges | newStateEmail = $newStateEmail | hasMoreChanges = $hasMoreChanges');
     log('ThreadAPI::getChanges:updatedEmailSize = ${updatedEmail?.length} | createdEmailSize = ${createdEmail?.length}');
