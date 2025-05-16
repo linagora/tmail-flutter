@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:core/domain/exceptions/file_exception.dart';
 import 'package:core/domain/exceptions/web_session_exception.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -19,12 +20,14 @@ import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart'
 import 'package:tmail_ui_user/features/login/data/network/oidc_error.dart';
 import 'package:tmail_ui_user/features/login/domain/exceptions/authentication_exception.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/export_trace_log_state.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_twake_workplace_state.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_up_twake_workplace_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/move_multiple_email_to_mailbox_state.dart';
 import 'package:tmail_ui_user/main/error/error_method_response_exception_extension.dart';
+import 'package:tmail_ui_user/main/exceptions/permission_exception.dart';
 import 'package:tmail_ui_user/main/exceptions/remote_exception.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -132,6 +135,14 @@ class ToastManager {
       } else {
         message = AppLocalizations.of(currentContext!).previewEmailFromEMLFileFailed;
       }
+    } else if (failure is ExportTraceLogFailure) {
+      if (failure.exception is NotGrantedPermissionStorageException) {
+        message = AppLocalizations.of(currentContext!).youNeedToGrantFilesPermissionToExportFile;
+      } else if (failure.exception is NotFoundFileInFolderException) {
+        message = AppLocalizations.of(currentContext!).noLogsHaveBeenRecordedYet;
+      } else {
+        message = AppLocalizations.of(currentContext!).exportTraceLogFailed;
+      }
     }
 
     if (message?.isNotEmpty == true) {
@@ -151,6 +162,8 @@ class ToastManager {
         success is EmptySpamFolderSuccess ||
         success is EmptyTrashFolderSuccess) {
       message = AppLocalizations.of(currentContext!).toast_message_empty_trash_folder_success;
+    } else if (success is ExportTraceLogSuccess) {
+      message = AppLocalizations.of(currentContext!).exportTraceLogSuccess(success.savePath);
     }
 
     if (message?.isNotEmpty == true) {

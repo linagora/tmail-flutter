@@ -3,7 +3,10 @@ import 'dart:collection';
 import 'dart:io';
 
 import 'package:core/domain/exceptions/download_file_exception.dart';
+import 'package:core/domain/exceptions/file_exception.dart';
+import 'package:core/utils/logger/trace_log.dart';
 import 'package:core/utils/platform_info.dart';
+import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -146,5 +149,79 @@ class LogTracking {
     final file = File(internalStorageDirPath);
 
     return await file.writeAsString(content, mode: fileMode);
+  }
+
+  Future<TraceLog> getTraceLog() async {
+    final folderPath = await _getInternalStorageDirPath(folderPath: logFolder);
+    final directory = Directory(folderPath);
+    if (directory.existsSync()) {
+      final directoryInfo = await getDirInfo(directory);
+      return TraceLog(
+        path: folderPath,
+        size: directoryInfo.$1,
+        listFilePaths: directoryInfo.$2,
+      );
+    } else {
+      throw Exception('Trace folder not exist');
+    }
+  }
+
+  Future<(int, List<String>)> getDirInfo(Directory dir) async {
+    var files = await dir.list(recursive: true).toList();
+    var dirSize = files.fold(0, (int sum, file) => sum + file.statSync().size);
+    var listPath = files.map((file) => file.path).toList();
+    return (dirSize, listPath);
+  }
+
+  static Future<String> getExternalDocumentPath({String? folderPath}) async {
+    Directory directory = Directory('');
+    if (Platform.isAndroid) {
+      if (folderPath?.isNotEmpty == true) {
+        directory = Directory('/storage/emulated/0/Download/$folderPath');
+      } else {
+        directory = Directory('/storage/emulated/0/Download');
+      }
+    } else {
+      directory = await getApplicationDocumentsDirectory();
+      if (folderPath?.isNotEmpty == true) {
+        directory = Directory('${directory.absolute.path}/$folderPath');
+      }
+    }
+
+    final exPath = directory.path;
+    await Directory(exPath).create(recursive: true);
+    return exPath;
+  }
+
+  static Future<String> copyInternalFilesToDownloadExternal(List<String> listFilePaths) async {
+    final externalPath = await getExternalDocumentPath();
+
+    List<String> externalListPaths = [];
+    for (var filePath in listFilePaths) {
+      final file = File(filePath);
+      final fileName = filePath.substring(filePath.lastIndexOf('/') + 1);
+      final externalFile = File('$externalPath/$fileName');
+      await externalFile.writeAsBytes(file.readAsBytesSync());
+      externalListPaths.add(externalFile.path);
+    }
+
+    if (externalListPaths.isNotEmpty) {
+      return externalPath;
+    } else {
+      throw NotFoundFileInFolderException();
+    }
+  }
+
+  Future<String> exportTraceLog(TraceLog traceLog) async {
+    if (PlatformInfo.isIOS) {
+      final savePath = getExternalDocumentPath(folderPath: logFolder);
+      return savePath;
+    } else {
+      final savePath = await compute(
+        copyInternalFilesToDownloadExternal,
+        traceLog.listFilePaths,
+      );
+      return savePath;
+    }
   }
 }

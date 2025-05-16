@@ -1,11 +1,13 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/button/multi_click_widget.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/export_trace_log_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_view.dart';
@@ -21,6 +23,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/profiles/prof
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 typedef CloseSettingsViewAction = void Function();
 
@@ -84,7 +87,7 @@ class SettingsView extends GetWidget<SettingsController> {
   }
 
   Widget _buildUniversalSettingAppBar(BuildContext context) {
-    return Stack(
+    final appBarWidget = Stack(
       alignment: Alignment.center,
       children: [
         Positioned(left: 0,child: _buildCloseSettingButton(context)),
@@ -98,10 +101,23 @@ class SettingsView extends GetWidget<SettingsController> {
             style: const TextStyle(
               fontSize: 20,
               color: AppColor.colorNameEmail,
-              fontWeight: FontWeight.w700))
-        )
-      ]
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+      ],
     );
+
+    if (AppConfig.isApiLoggingEnabled) {
+      return MultiClickWidget(
+        onMultiTap: () => controller
+          .manageAccountDashboardController
+          .showExportTraceLogConfirmDialog(context),
+        child: appBarWidget,
+      );
+    } else {
+      return appBarWidget;
+    }
   }
 
   Widget _buildSettingLevel1AppBar(BuildContext context) {

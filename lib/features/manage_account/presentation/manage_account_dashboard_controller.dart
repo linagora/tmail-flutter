@@ -16,12 +16,14 @@ import 'package:server_settings/server_settings/capability_server_settings.dart'
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/export_trace_log_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/action/dashboard_setting_action.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/bindings/email_rules_bindings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/export_trace_log_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/bindings/forward_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_bindings.dart';
@@ -60,6 +62,9 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
   void onInit() {
     BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.settings);
     super.onInit();
+    if (AppConfig.isApiLoggingEnabled) {
+      injectTraceLogDependencies();
+    }
   }
 
   @override
@@ -77,8 +82,19 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
       }
     } else if (success is UpdateVacationSuccess) {
       _handleUpdateVacationSuccess(success);
+    } else if (success is ExportTraceLogSuccess) {
+      handleExportTraceLogSuccess(success);
     } else {
       super.handleSuccessViewState(success);
+    }
+  }
+
+  @override
+  void handleFailureViewState(Failure failure) {
+    if (failure is ExportTraceLogFailure) {
+      handleExportTraceLogFailure(failure);
+    } else {
+      super.handleFailureViewState(failure);
     }
   }
 
@@ -400,6 +416,9 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
   @override
   void onClose() {
     BackButtonInterceptor.removeByName(AppRoutes.settings);
+    if (AppConfig.isApiLoggingEnabled) {
+      disposeTraceLogDependencies();
+    }
     super.onClose();
   }
 }
