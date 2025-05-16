@@ -352,7 +352,7 @@ const RESOURCES = {"main.dart.js_12.part.js": "10a944edc00b9f7fa9df22e4a71ae745"
 "/": "ebd9c291fba2ec7ce99cf60b2eaaeeb2",
 "main.dart.js_8.part.js": "87da786bf1d9fa9ba54444ccf811d049",
 "main.dart.js_2.part.js": "c960ae744c2357cd14c849539b5602fb",
-"flutter_bootstrap.js": "8bd26f20f61de1a7e41ecb7755e1aef4",
+"flutter_bootstrap.js": "bf26e084ecb37698579a1cf736bc24ed",
 "logout-callback.html": "999326dc9a0f37c9a9a4280b4a35dc51",
 "icons/Icon-192.png": "009a8eae32218365ab20cce81aa896c3",
 "icons/Icon-maskable-192.png": "009a8eae32218365ab20cce81aa896c3",
