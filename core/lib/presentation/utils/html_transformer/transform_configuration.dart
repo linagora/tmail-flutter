@@ -46,6 +46,7 @@ class TransformConfiguration {
       const RemoveTooltipLinkTransformer(),
     const SignatureTransformer(),
     const RemoveCollapsedSignatureButtonTransformer(),
+    const ImageTransformer(),
   ]);
 
   factory TransformConfiguration.forDraftsEmail() => TransformConfiguration.create(
