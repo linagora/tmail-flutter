@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-04-14T04:16:15.237055",
+  "@@last_modified": "2025-05-16T20:14:59.453269",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4469,5 +4469,45 @@
     "placeholders": {
       "description": {}
     }
+  },
+  "exportTraceLog": "Export trace log",
+  "@exportTraceLog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageExportTraceLogDialog": "The mobile API error message log has been tracked. Do you want to export it?",
+  "@messageExportTraceLogDialog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youNeedToGrantFilesPermissionToExportFile": "You need to grant files permission to export files",
+  "@youNeedToGrantFilesPermissionToExportFile": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exportTraceLogSuccess": "Export successful tracking logs at \"{path}\"",
+  "@exportTraceLogSuccess": {
+    "type": "text",
+    "placeholders_order": [
+      "path"
+    ],
+    "placeholders": {
+      "path": {}
+    }
+  },
+  "noLogsHaveBeenRecordedYet": "No logs have been recorded yet.",
+  "@noLogsHaveBeenRecordedYet": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exportTraceLogFailed": "Export trace log failed",
+  "@exportTraceLogFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }

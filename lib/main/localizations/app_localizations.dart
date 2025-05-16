@@ -4702,4 +4702,47 @@ class AppLocalizations {
       args: [description],
     );
   }
+
+  String get exportTraceLog {
+    return Intl.message(
+      'Export trace log',
+      name: 'exportTraceLog',
+    );
+  }
+
+  String get messageExportTraceLogDialog {
+    return Intl.message(
+      'The mobile API error message log has been tracked. Do you want to export it?',
+      name: 'messageExportTraceLogDialog',
+    );
+  }
+
+  String get youNeedToGrantFilesPermissionToExportFile {
+    return Intl.message(
+      'You need to grant files permission to export files',
+      name: 'youNeedToGrantFilesPermissionToExportFile',
+    );
+  }
+
+  String exportTraceLogSuccess(String path) {
+    return Intl.message(
+      'Export successful tracking logs at "$path"',
+      name: 'exportTraceLogSuccess',
+      args: [path],
+    );
+  }
+
+  String get noLogsHaveBeenRecordedYet {
+    return Intl.message(
+      'No logs have been recorded yet.',
+      name: 'noLogsHaveBeenRecordedYet',
+    );
+  }
+
+  String get exportTraceLogFailed {
+    return Intl.message(
+      'Export trace log failed',
+      name: 'exportTraceLogFailed',
+    );
+  }
 }
