@@ -11,8 +11,6 @@ extension ToggleThreadDetailCollapeExpand on ThreadDetailController {
     final expansionStatus = presentationEmail.emailInThreadStatus;
     if (emailId == null || expansionStatus == null) return;
 
-    scrollReverse.value = false;
-
     if (expansionStatus == EmailInThreadStatus.expanded) {
       emailIdsPresentation[emailId] = presentationEmail.copyWith(
         emailInThreadStatus: EmailInThreadStatus.collapsed,
