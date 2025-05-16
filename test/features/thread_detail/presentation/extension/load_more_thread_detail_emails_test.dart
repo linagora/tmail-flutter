@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -37,6 +38,7 @@ void main() {
     when(controller.session).thenReturn(SessionFixtures.aliceSession);
     when(controller.accountId).thenReturn(AccountFixtures.aliceAccountId);
     when(controller.getEmailsByIdsInteractor).thenReturn(getEmailsByIdsInteractor);
+    when(controller.additionalProperties).thenReturn(Properties.empty());
 
     // Act
     controller.loadMoreThreadDetailEmails();
