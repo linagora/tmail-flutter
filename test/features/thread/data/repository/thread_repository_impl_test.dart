@@ -753,6 +753,56 @@ void main() {
     });
 
     test(
+        'when local has mail in cache and getLatestChanges is true '
+        'and email change throw exception '
+        'should not update mail in cache', () async {
+      // Arrange
+      final localEmails = List.generate(
+        ThreadConstants.defaultLimit.value.toInt(),
+        (index) => Email(id: EmailId(Id('local_$index'))),
+      );
+      when(threadDataSource.getAllEmailCache(
+        any,
+        any,
+        filterOption: anyNamed('filterOption'),
+        inMailboxId: anyNamed('inMailboxId'),
+        limit: anyNamed('limit'),
+        sort: anyNamed('sort'),
+      )).thenAnswer((_) => Future.value(localEmails));
+
+      when(stateDataSource.getState(any, any, any))
+          .thenAnswer((_) => Future.value(State('local_state')));
+
+      when(threadDataSource.getChanges(
+        any,
+        any,
+        any,
+        propertiesCreated: anyNamed('propertiesCreated'),
+        propertiesUpdated: anyNamed('propertiesUpdated'),
+      )).thenThrow(Exception('Too many items in get method'));
+
+      // Assert
+      expectLater(
+        () => threadRepository
+            .getAllEmail(
+              SessionFixtures.aliceSession,
+              AccountFixtures.aliceAccountId,
+              getLatestChanges: true,
+            )
+            .toList(),
+        throwsA(isA<Exception>().having((e) => e.toString(), 'description', contains('Too many items in get method'))),
+      );
+      verifyNever(threadDataSource.update(
+        any,
+        any,
+        created: anyNamed('created'),
+        destroyed: anyNamed('destroyed'),
+        updated: anyNamed('updated'),
+      ));
+      verifyNever(stateDataSource.saveState(any, any, any));
+    });
+
+    test(
         'when getChanges has more changes should fetch all changes '
         'and first email change has destroyed mail '
         'should delete destroyed mail in cache', () async {
