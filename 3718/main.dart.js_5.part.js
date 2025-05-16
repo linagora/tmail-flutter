@@ -4314,7 +4314,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         expansionStatus = presentationEmail.emailInThreadStatus;
       if (emailId == null || expansionStatus == null)
         return;
-      _this.scrollReverse.set$value(0, false);
       if (expansionStatus === B.EmailInThreadStatus_1) {
         t1 = _this.emailIdsPresentation;
         t2 = presentationEmail.copyWith$1$emailInThreadStatus(B.EmailInThreadStatus_0);
@@ -16775,26 +16774,35 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.ThreadDetailView_build_closure2.prototype = {
     call$0() {
-      var t3, t4, expandedEmailMap, expandedEmailController, expandedPresentationEmail, lastEmailLoaded, _null = null,
-        t1 = this.$this,
+      var t3, t4, expandedEmailMap, expandedEmailController, expandedPresentationEmail, lastEmailLoaded, _this = this, _null = null,
+        t1 = _this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t2 = t2._jsWeakMap;
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       t4 = t3._as(t2.get(t1)).emailIdsPresentation;
       expandedEmailMap = A.IterableExtension_firstWhereOrNull(t4.get$entries(t4), new C.ThreadDetailView_build__closure());
-      if (expandedEmailMap == null)
-        return A.Container$(_null, _null, B.Clip_0, _null, _null, D.BoxDecoration_yXb5, _null, 40, _null, B.EdgeInsetsDirectional_0_0_16_0, _null, _null, _null, _null);
+      if (expandedEmailMap == null) {
+        A.Expando__checkType(t1);
+        t3._as(t2.get(t1)).toString;
+        return A.Container$(_null, _null, B.Clip_0, _null, _null, D.BoxDecoration_yXb5, _null, 40, _null, A.InheritedModel_inheritFrom(_this.context, B._MediaQueryAspect_0, type$.MediaQuery).data.size._dx >= 1200 ? B.EdgeInsetsDirectional_0_0_16_0 : B.EdgeInsets_0_0_0_0, _null, _null, _null, _null);
+      }
       expandedEmailController = A.getBinding(expandedEmailMap.key.id.value, type$.SingleEmailController);
-      if (expandedEmailController == null)
-        return A.Container$(_null, _null, B.Clip_0, _null, _null, D.BoxDecoration_yXb5, _null, 40, _null, B.EdgeInsetsDirectional_0_0_16_0, _null, _null, _null, _null);
+      if (expandedEmailController == null) {
+        A.Expando__checkType(t1);
+        t3._as(t2.get(t1)).toString;
+        return A.Container$(_null, _null, B.Clip_0, _null, _null, D.BoxDecoration_yXb5, _null, 40, _null, A.InheritedModel_inheritFrom(_this.context, B._MediaQueryAspect_0, type$.MediaQuery).data.size._dx >= 1200 ? B.EdgeInsetsDirectional_0_0_16_0 : B.EdgeInsets_0_0_0_0, _null, _null, _null, _null);
+      }
       expandedPresentationEmail = expandedEmailMap.value;
       lastEmailLoaded = expandedEmailController.currentEmailLoaded.get$value(0);
-      if (lastEmailLoaded == null || expandedPresentationEmail == null)
-        return A.Container$(_null, _null, B.Clip_0, _null, _null, D.BoxDecoration_yXb5, _null, 40, _null, B.EdgeInsetsDirectional_0_0_16_0, _null, _null, _null, _null);
+      if (lastEmailLoaded == null || expandedPresentationEmail == null) {
+        A.Expando__checkType(t1);
+        t3._as(t2.get(t1)).toString;
+        return A.Container$(_null, _null, B.Clip_0, _null, _null, D.BoxDecoration_yXb5, _null, 40, _null, A.InheritedModel_inheritFrom(_this.context, B._MediaQueryAspect_0, type$.MediaQuery).data.size._dx >= 1200 ? B.EdgeInsetsDirectional_0_0_16_0 : B.EdgeInsets_0_0_0_0, _null, _null, _null, _null);
+      }
       A.Expando__checkType(t1);
       t3._as(t2.get(t1)).toString;
-      t1 = A.InheritedModel_inheritFrom(this.context, B._MediaQueryAspect_0, type$.MediaQuery).data.size._dx >= 1200 ? B.EdgeInsetsDirectional_0_0_16_0 : B.EdgeInsets_0_0_0_0;
+      t1 = A.InheritedModel_inheritFrom(_this.context, B._MediaQueryAspect_0, type$.MediaQuery).data.size._dx >= 1200 ? B.EdgeInsetsDirectional_0_0_16_0 : B.EdgeInsets_0_0_0_0;
       return new A.Padding(t1, new C.EmailViewBottomBarWidget(expandedEmailController.imagePaths, expandedEmailController.responsiveUtils, expandedPresentationEmail, lastEmailLoaded, expandedEmailController.getOwnEmailAddress$0(), expandedEmailController.get$pressEmailAction(), D.BoxDecoration_W7b, B.EdgeInsets_0_0_0_0, D.ValueKey_email_view_button_bar), _null);
     },
     $signature: 3
@@ -17453,5 +17461,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "t4bBF6lzC6n2jahww84csI2eGA0=");
+})($__dart_deferred_initializers__, "hqq4TM3U0rrZhh9xS5zZ/diZPDU=");
 ;
