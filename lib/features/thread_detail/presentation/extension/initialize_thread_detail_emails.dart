@@ -25,7 +25,7 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
       properties: EmailUtils.getPropertiesForEmailGetMethod(
         session!,
         accountId!,
-      ),
+      ).union(additionalProperties),
     ));
   }
 }
