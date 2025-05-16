@@ -9,10 +9,12 @@ import 'package:model/extensions/presentation_email_extension.dart';
 class EmailAvatarBuilder extends StatelessWidget {
 
   final PresentationEmail emailSelected;
+  final OnTapAvatarActionClick? onTapAvatarActionClick;
 
   const EmailAvatarBuilder({
     Key? key,
-    required this.emailSelected
+    required this.emailSelected,
+    this.onTapAvatarActionClick,
   }) : super(key: key);
 
   @override
@@ -22,6 +24,7 @@ class EmailAvatarBuilder extends StatelessWidget {
       ..size(50)
       ..addTextStyle(ThemeUtils.textStyleHeadingH4(color: Colors.white))
       ..backgroundColor(AppColor.colorAvatar)
+      ..addOnTapActionClick(onTapAvatarActionClick ?? () {})
       ..avatarColor(emailSelected.avatarColors))
     .build();
   }

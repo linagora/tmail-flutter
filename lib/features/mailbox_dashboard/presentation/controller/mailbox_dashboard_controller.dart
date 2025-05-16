@@ -252,6 +252,7 @@ class MailboxDashBoardController extends ReloadableController
   final isRecoveringDeletedMessage = RxBool(false);
   final localFileDraggableAppState = Rxn<DraggableAppState>();
   final isSenderImportantFlagEnabled = RxBool(true);
+  final currentThreadId = Rxn<ThreadId>();
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
@@ -807,9 +808,14 @@ class MailboxDashBoardController extends ReloadableController
     selectedEmail.value = null;
   }
 
-  void openEmailDetailedView(PresentationEmail presentationEmail) {
+  void openEmailDetailedView(PresentationEmail presentationEmail, {bool singleEmail = false}) {
     setSelectedEmail(presentationEmail);
-    dispatchRoute(DashboardRoutes.emailDetailed);
+    if (singleEmail) {
+      dispatchRoute(DashboardRoutes.emailDetailed);
+    } else {
+      currentThreadId.value = presentationEmail.threadId;
+      dispatchRoute(DashboardRoutes.threadDetailed);
+    }
     if (PlatformInfo.isWeb && presentationEmail.routeWeb != null) {
       RouteUtils.replaceBrowserHistory(
         title: 'Email-${presentationEmail.id?.id.value ?? ''}',
@@ -844,6 +850,8 @@ class MailboxDashBoardController extends ReloadableController
     log('MailboxDashBoardController::handleAdvancedSearchEmail:');
     if (_searchInsideEmailDetailedViewIsActive()) {
       _closeEmailDetailedView();
+    } else if (_searchInsideThreadDetailViewIsActive()) {
+      _closeThreadDetailView();
     }
     _unSelectedMailbox();
     searchController.clearFilterSuggestion();
@@ -869,6 +877,8 @@ class MailboxDashBoardController extends ReloadableController
     clearFilterMessageOption();
     if (_searchInsideEmailDetailedViewIsActive()) {
       _closeEmailDetailedView();
+    } else if (_searchInsideThreadDetailViewIsActive()) {
+      _closeThreadDetailView();
     }
     _unSelectedMailbox();
     searchController.clearFilterSuggestion();
@@ -895,6 +905,18 @@ class MailboxDashBoardController extends ReloadableController
       && currentContext != null
       && responsiveUtils.isDesktop(currentContext!)
       && dashboardRoute.value == DashboardRoutes.emailDetailed;
+  }
+
+  bool _searchInsideThreadDetailViewIsActive() {
+    return PlatformInfo.isWeb
+      && currentContext != null
+      && responsiveUtils.isDesktop(currentContext!)
+      && dashboardRoute.value == DashboardRoutes.threadDetailed;
+  }
+
+  void _closeThreadDetailView() {
+    currentThreadId.value = null;
+    dispatchRoute(DashboardRoutes.thread);
   }
 
   void clearSearchEmail() {

@@ -13,6 +13,7 @@ import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.da
 import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/email_content.dart';
+import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/email/mail_priority_header.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
@@ -38,6 +39,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
   final Set<EmailAddress>? bcc;
   final Set<EmailAddress>? replyTo;
   final Map<MailboxId, bool>? mailboxIds;
+  final ThreadId? threadId;
   final SelectMode selectMode;
   final Uri? routeWeb;
   final PresentationMailbox? mailboxContain;
@@ -48,6 +50,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
   final Map<IndividualHeaderIdentifier, String?>? xPriorityHeader;
   final Map<IndividualHeaderIdentifier, String?>? importanceHeader;
   final Map<IndividualHeaderIdentifier, String?>? priorityHeader;
+  final EmailInThreadStatus? emailInThreadStatus;
 
   PresentationEmail({
     this.id,
@@ -65,6 +68,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     this.bcc,
     this.replyTo,
     this.mailboxIds,
+    this.threadId,
     this.selectMode = SelectMode.INACTIVE,
     this.routeWeb,
     this.mailboxContain,
@@ -75,6 +79,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     this.xPriorityHeader,
     this.importanceHeader,
     this.priorityHeader,
+    this.emailInThreadStatus,
   });
 
   String getSenderName() {
@@ -183,6 +188,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     bcc,
     replyTo,
     mailboxIds,
+    threadId,
     selectMode,
     routeWeb,
     mailboxContain,
@@ -195,6 +201,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     xPriorityHeader,
     importanceHeader,
     priorityHeader,
+    emailInThreadStatus,
   ];
 
   PresentationEmail copyWith({
@@ -213,6 +220,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     Set<EmailAddress>? bcc,
     Set<EmailAddress>? replyTo,
     Map<MailboxId, bool>? mailboxIds,
+    ThreadId? threadId,
     SelectMode? selectMode,
     Uri? routeWeb,
     PresentationMailbox? mailboxContain,
@@ -223,6 +231,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     Map<IndividualHeaderIdentifier, String?>? xPriorityHeader,
     Map<IndividualHeaderIdentifier, String?>? importanceHeader,
     Map<IndividualHeaderIdentifier, String?>? priorityHeader,
+    EmailInThreadStatus? emailInThreadStatus,
   }) {
     return PresentationEmail(
       id: id ?? this.id,
@@ -240,6 +249,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
       bcc: bcc ?? this.bcc,
       replyTo: replyTo ?? this.replyTo,
       mailboxIds: mailboxIds ?? this.mailboxIds,
+      threadId: threadId ?? this.threadId,
       selectMode: selectMode ?? this.selectMode,
       routeWeb: routeWeb ?? this.routeWeb,
       mailboxContain: mailboxContain ?? this.mailboxContain,
@@ -250,6 +260,7 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
       xPriorityHeader: xPriorityHeader ?? this.xPriorityHeader,
       importanceHeader: importanceHeader ?? this.importanceHeader,
       priorityHeader: priorityHeader ?? this.priorityHeader,
+      emailInThreadStatus: emailInThreadStatus ?? this.emailInThreadStatus,
     );
   }
 }

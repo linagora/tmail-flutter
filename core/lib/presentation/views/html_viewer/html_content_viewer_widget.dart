@@ -32,6 +32,7 @@ class HtmlContentViewer extends StatefulWidget {
   final double? maxHtmlContentHeight;
   final double minHtmlContentHeight;
   final double offsetHtmlContentHeight;
+  final bool keepAlive;
 
   final OnLoadWidthHtmlViewerAction? onLoadWidthHtmlViewer;
   final OnMailtoDelegateAction? onMailtoDelegateAction;
@@ -46,7 +47,8 @@ class HtmlContentViewer extends StatefulWidget {
     this.initialWidth,
     this.direction,
     this.minHtmlContentHeight = ConstantsUI.htmlContentMinHeight,
-    this.offsetHtmlContentHeight = ConstantsUI.htmlContentMinHeight,
+    this.offsetHtmlContentHeight = ConstantsUI.htmlContentOffsetHeight,
+    this.keepAlive = false,
     this.keepWidthWhileLoading = false,
     this.contentPadding,
     this.useDefaultFont = false,
@@ -63,7 +65,7 @@ class HtmlContentViewer extends StatefulWidget {
   State<StatefulWidget> createState() => _HtmlContentViewState();
 }
 
-class _HtmlContentViewState extends State<HtmlContentViewer> {
+class _HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAliveClientMixin {
 
   late InAppWebViewController _webViewController;
   late double _actualHeight;
@@ -123,6 +125,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final child = Stack(children: [
       if (_htmlData == null)
         const SizedBox.shrink()
@@ -345,4 +348,7 @@ class _HtmlContentViewState extends State<HtmlContentViewer> {
     _htmlData = null;
     super.dispose();
   }
+  
+  @override
+  bool get wantKeepAlive => widget.keepAlive;
 }
