@@ -149,10 +149,10 @@ class MailboxDashBoardBindings extends BaseBindings {
     SendingQueueBindings().dependencies();
     MailboxBindings().dependencies();
     ThreadBindings().dependencies();
-    SearchEmailBindings().dependencies();
-    ThreadDetailBindings().dependencies();
     EmailBindings().dependencies();
+    SearchEmailBindings().dependencies();
     QuotasBindings().dependencies();
+    ThreadDetailBindings().dependencies();
   }
 
   @override
