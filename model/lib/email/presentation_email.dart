@@ -17,6 +17,7 @@ import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/email/mail_priority_header.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
+import 'package:model/extensions/list_email_header_extension.dart';
 import 'package:model/extensions/media_type_nullable_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
@@ -50,6 +51,8 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
   final Map<IndividualHeaderIdentifier, String?>? xPriorityHeader;
   final Map<IndividualHeaderIdentifier, String?>? importanceHeader;
   final Map<IndividualHeaderIdentifier, String?>? priorityHeader;
+  final Map<IndividualHeaderIdentifier, String?>? listPostHeader;
+  final Map<IndividualHeaderIdentifier, String?>? listUnsubscribeHeader;
   final EmailInThreadStatus? emailInThreadStatus;
 
   PresentationEmail({
@@ -79,6 +82,8 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     this.xPriorityHeader,
     this.importanceHeader,
     this.priorityHeader,
+    this.listPostHeader,
+    this.listUnsubscribeHeader,
     this.emailInThreadStatus,
   });
 
@@ -141,6 +146,12 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
 
   bool get hasCalendarEvent => headerCalendarEvent?[IndividualHeaderIdentifier.headerCalendarEvent]?.isNotEmpty == true;
 
+  String? get listPost => emailHeader?.toSet().listPost?.trim()
+    ?? listPostHeader?[IndividualHeaderIdentifier.listPostHeader]?.trim();
+
+  String? get listUnsubscribe => emailHeader?.toSet().listUnsubscribe?.trim()
+    ?? listUnsubscribeHeader?[IndividualHeaderIdentifier.listUnsubscribeHeader]?.trim();
+
   bool get isMarkAsImportant {
     final xPriority = xPriorityHeader?[IndividualHeaderIdentifier.xPriorityHeader]
       ?.trim()
@@ -201,6 +212,8 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     xPriorityHeader,
     importanceHeader,
     priorityHeader,
+    listPostHeader,
+    listUnsubscribeHeader,
     emailInThreadStatus,
   ];
 
@@ -231,6 +244,8 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
     Map<IndividualHeaderIdentifier, String?>? xPriorityHeader,
     Map<IndividualHeaderIdentifier, String?>? importanceHeader,
     Map<IndividualHeaderIdentifier, String?>? priorityHeader,
+    Map<IndividualHeaderIdentifier, String?>? listPostHeader,
+    Map<IndividualHeaderIdentifier, String?>? listUnsubscribeHeader,
     EmailInThreadStatus? emailInThreadStatus,
   }) {
     return PresentationEmail(
@@ -260,6 +275,8 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
       xPriorityHeader: xPriorityHeader ?? this.xPriorityHeader,
       importanceHeader: importanceHeader ?? this.importanceHeader,
       priorityHeader: priorityHeader ?? this.priorityHeader,
+      listPostHeader: listPostHeader ?? this.listPostHeader,
+      listUnsubscribeHeader: listUnsubscribeHeader ?? this.listUnsubscribeHeader,
       emailInThreadStatus: emailInThreadStatus ?? this.emailInThreadStatus,
     );
   }

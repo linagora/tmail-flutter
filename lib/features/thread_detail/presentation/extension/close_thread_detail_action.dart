@@ -10,10 +10,11 @@ extension CloseThreadDetailAction on ThreadDetailController {
     } else {
       mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
     }
-    for (var emailId in emailIdsPresentation.keys) {
-      mailboxDashBoardController.dispatchEmailUIAction(
-        CloseEmailInThreadDetailAction(emailId),
-      );
+    final cleanUpEmailIds = List.from(emailIdsPresentation.keys);
+    for (var emailId in cleanUpEmailIds) {
+      mailboxDashBoardController
+        ..dispatchEmailUIAction(CloseEmailInThreadDetailAction(emailId))
+        ..dispatchEmailUIAction(EmailUIAction());
     }
 
     reset();

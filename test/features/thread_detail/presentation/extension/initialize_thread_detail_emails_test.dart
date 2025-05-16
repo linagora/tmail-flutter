@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/id.dart';
+import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
@@ -40,6 +41,7 @@ void main() {
         Map.fromEntries(emailIds.map((emailId) => MapEntry(emailId, null))).obs,
       );
       when(threadDetailController.getEmailsByIdsInteractor).thenReturn(getEmailsByIdsInteractor);
+      when(threadDetailController.additionalProperties).thenReturn(Properties.empty());
       when(getEmailsByIdsInteractor.execute(
         any,
         any,
