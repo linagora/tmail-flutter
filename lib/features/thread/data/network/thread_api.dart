@@ -106,7 +106,7 @@ class ThreadAPI {
     log('ThreadAPI::getAllEmail:notFoundEmailIds = $notFoundEmailIds');
     if (notFoundEmailIds?.isNotEmpty == true && AppConfig.isApiLoggingEnabled) {
       await LogTracking().addLog(
-        message: 'ThreadAPI::getAllEmail:notFoundEmailIds = ${notFoundEmailIds!.asListString.toString()}',
+        message: 'ThreadAPI::getAllEmail:notFoundEmailIds = ${notFoundEmailIds!.asListString.toString()} | NewState = ${responseOfGetEmailMethod?.state.value}',
       );
     }
     return EmailsResponse(
@@ -312,7 +312,7 @@ class ThreadAPI {
 
         if (AppConfig.isApiLoggingEnabled) {
           await LogTracking().addLog(
-            message: 'ThreadAPI::getChanges:notFoundIdsUpdated = ${notFoundIdsUpdated.asListString.toString()}',
+            message: 'ThreadAPI::getChanges:notFoundIdsUpdated = ${notFoundIdsUpdated.asListString.toString()} | SinceState = ${sinceState.value}',
           );
         }
       }
@@ -332,7 +332,7 @@ class ThreadAPI {
 
         if (AppConfig.isApiLoggingEnabled) {
           await LogTracking().addLog(
-            message: 'ThreadAPI::getChanges:notFoundIdsCreated = ${notFoundIdsCreated.asListString.toString()}',
+            message: 'ThreadAPI::getChanges:notFoundIdsCreated = ${notFoundIdsCreated.asListString.toString()} | SinceState = ${sinceState.value}',
           );
         }
       }
