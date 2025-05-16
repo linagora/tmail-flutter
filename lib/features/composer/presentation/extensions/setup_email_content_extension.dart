@@ -28,7 +28,7 @@ extension SetupEmailContentExtension on ComposerController {
     switch(currentEmailActionType) {
       case EmailActionType.editAsNewEmail:
       case EmailActionType.editDraft:
-        _getEmailContent(
+        await _getEmailContent(
           arguments,
           transformConfiguration: TransformConfiguration.forEditDraftsEmail(),
           additionalProperties: Properties({
@@ -66,7 +66,7 @@ extension SetupEmailContentExtension on ComposerController {
       case EmailActionType.replyAll:
       case EmailActionType.forward:
         if (arguments.emailContents?.trim().isNotEmpty != true) {
-          _getEmailContent(
+          await _getEmailContent(
             arguments,
             transformConfiguration: TransformConfiguration.forReplyForwardEmail(),
           );
