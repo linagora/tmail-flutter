@@ -887,7 +887,7 @@ class MailboxDashBoardController extends ReloadableController
     if (_searchInsideEmailDetailedViewIsActive()) {
       _closeEmailDetailedView();
     } else if (_searchInsideThreadDetailViewIsActive()) {
-      _closeThreadDetailView(currentContext);
+      _closeThreadDetailView();
     }
     _unSelectedMailbox();
     searchController.clearFilterSuggestion();
@@ -914,7 +914,7 @@ class MailboxDashBoardController extends ReloadableController
     if (_searchInsideEmailDetailedViewIsActive()) {
       _closeEmailDetailedView();
     } else if (_searchInsideThreadDetailViewIsActive()) {
-      _closeThreadDetailView(currentContext);
+      _closeThreadDetailView();
     }
     _unSelectedMailbox();
     searchController.clearFilterSuggestion();
@@ -950,8 +950,9 @@ class MailboxDashBoardController extends ReloadableController
       && dashboardRoute.value == DashboardRoutes.threadDetailed;
   }
 
-  void _closeThreadDetailView(BuildContext? context) {
+  void _closeThreadDetailView() {
     currentThreadId.value = null;
+    dispatchRoute(DashboardRoutes.thread);
   }
 
   void clearSearchEmail() {
