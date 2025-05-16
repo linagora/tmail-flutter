@@ -11,22 +11,15 @@ import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
-import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/list_email_address_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
-import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_expanded.dart';
 import 'package:tmail_ui_user/features/base/widget/optional_scroll.dart';
-import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/popup_menu_item_email_action.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
-import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_banner_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_information_widget.dart';
@@ -39,12 +32,10 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_loa
 import 'package:tmail_ui_user/features/email/presentation/widgets/information_sender_and_receiver_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/mail_unsubscribed_banner.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/view_entire_message_with_message_clipped_widget.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_open_context_menu_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/verify_display_overlay_view_on_iframe_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
 class EmailView extends GetWidget<SingleEmailController> {
@@ -97,11 +88,20 @@ class EmailView extends GetWidget<SingleEmailController> {
                       isSearchActivated: controller.mailboxDashBoardController.searchController.isSearchEmailRunning,
                       onBackAction: () => controller.closeEmailView(context: context),
                       onEmailActionClick: (email, action) => controller.handleEmailAction(context, email, action),
-                      onMoreActionClick: (presentationEmail, position) => _handleMoreEmailAction(
-                        context: context,
+                      onMoreActionClick: (presentationEmail, position) => controller.emailActionReactor.handleMoreEmailAction(
+                        mailboxContain: controller.getMailboxContain(presentationEmail),
                         presentationEmail: presentationEmail,
                         position: position,
                         emailLoaded: controller.currentEmailLoaded.value,
+                        responsiveUtils: controller.responsiveUtils,
+                        imagePaths: controller.imagePaths,
+                        username: controller.session?.username,
+                        handleEmailAction: (email, action) => controller.handleEmailAction(context, email, action),
+                        additionalActions: [
+                          EmailActionType.forward,
+                          EmailActionType.replyAll,
+                          EmailActionType.replyToList,
+                        ],
                       ),
                       supportBackAction: !isInsideThreadDetailView,
                       appBarDecoration: isInsideThreadDetailView
@@ -278,15 +278,24 @@ class EmailView extends GetWidget<SingleEmailController> {
           sMimeStatus: controller.currentEmailLoaded.value?.sMimeStatus,
           emailUnsubscribe: controller.emailUnsubscribe.value,
           maxBodyHeight: maxBodyHeight,
-          openEmailAddressDetailAction: controller.openEmailAddressDialog,
+          openEmailAddressDetailAction: (_, emailAddress) => controller.openEmailAddressDialog(emailAddress),
           onEmailActionClick: (presentationEmail, actionType) => controller.handleEmailAction(context, presentationEmail, actionType),
           isInsideThreadDetailView: isInsideThreadDetailView,
           emailLoaded: controller.currentEmailLoaded.value,
-          onMoreActionClick: (email, position) => _handleMoreEmailAction(
-            context: context,
-            presentationEmail: email,
+          onMoreActionClick: (presentationEmail, position) => controller.emailActionReactor.handleMoreEmailAction(
+            mailboxContain: controller.getMailboxContain(presentationEmail),
+            presentationEmail: presentationEmail,
             position: position,
             emailLoaded: controller.currentEmailLoaded.value,
+            responsiveUtils: controller.responsiveUtils,
+            imagePaths: controller.imagePaths,
+            username: controller.session?.username,
+            handleEmailAction: (email, action) => controller.handleEmailAction(context, email, action),
+            additionalActions: [
+              EmailActionType.forward,
+              EmailActionType.replyAll,
+              EmailActionType.replyToList,
+            ],
           ),
           onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
           onTapAvatarActionClick: onToggleThreadDetailCollapseExpand,
@@ -333,7 +342,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 calendarEventReplying: controller.calendarEventProcessing,
                 attendanceStatus: controller.attendanceStatus.value,
                 onMailtoAttendeesAction: controller.handleMailToAttendees,
-                openEmailAddressDetailAction: controller.openEmailAddressDialog,
+                openEmailAddressDetailAction: (_, emailAddress) => controller.openEmailAddressDialog(emailAddress),
                 isFree: controller.isCalendarEventFree,
                 listEmailAddressSender: emailAddressSender ?? [],
               )),
@@ -485,114 +494,5 @@ class EmailView extends GetWidget<SingleEmailController> {
     final titleEvent = event.getTitleEventAction(context, emailAddressSender);
 
     return usernameEvent.isNotEmpty && titleEvent.isNotEmpty;
-  }
-
-  bool canDeletePermanently(PresentationEmail email) {
-    return email.mailboxContain?.isTrash
-      ?? email.mailboxContain?.isSpam
-      ?? false;
-  }
-
-  void _handleMoreEmailAction({
-    required BuildContext context,
-    required PresentationEmail presentationEmail,
-    RelativeRect? position,
-    EmailLoaded? emailLoaded,
-  }) {
-    final mailboxContain = controller.getMailboxContain(presentationEmail);
-    final isChildOfTeamMailboxes = mailboxContain?.isChildOfTeamMailboxes ?? false;
-    final isSpam = mailboxContain?.isSpam ?? false;
-    final isArchive = mailboxContain?.isArchive ?? false;
-    final isTemplates = mailboxContain?.isTemplates ?? false;
-    final isUnsubscribeEnabled = !presentationEmail.isSubscribed &&
-        controller.emailUnsubscribe.value != null;
-    final isCreateRuleEnabled = presentationEmail.from?.isNotEmpty == true;
-    final isDownloadMessageAsEMLEnabled =
-        PlatformInfo.isWeb && PlatformInfo.isCanvasKit;
-
-    final emailActions = [
-      if (isInsideThreadDetailView) ...[
-        EmailActionType.forward,
-        if (presentationEmail.getCountMailAddressWithoutMe(controller.session?.username.value ?? '') > 1)
-          EmailActionType.replyAll,
-        if (EmailUtils.isReplyToListEnabled(emailLoaded?.emailCurrent?.listPost ?? ''))
-          EmailActionType.replyToList,
-        if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit)
-          EmailActionType.printAll,
-        if (controller.responsiveUtils.isMobile(context))
-          EmailActionType.moveToMailbox,
-        if (!controller.responsiveUtils.isDesktop(context)) ...[
-          presentationEmail.hasStarred
-            ? EmailActionType.unMarkAsStarred
-            : EmailActionType.markAsStarred,
-          canDeletePermanently(presentationEmail)
-            ? EmailActionType.deletePermanently
-            : EmailActionType.moveToTrash,
-        ],
-      ],
-      EmailActionType.markAsUnread,
-      if (!isChildOfTeamMailboxes)
-        isSpam ? EmailActionType.unSpam : EmailActionType.moveToSpam,
-      if (isCreateRuleEnabled)
-        EmailActionType.createRule,
-      if (isUnsubscribeEnabled)
-        EmailActionType.unsubscribe,
-      if (!isArchive)
-        EmailActionType.archiveMessage,
-      if (isDownloadMessageAsEMLEnabled)
-        EmailActionType.downloadMessageAsEML,
-      if (!isTemplates)
-        EmailActionType.editAsNewEmail,
-    ];
-
-    if (position == null) {
-      final contextMenuActions = emailActions
-          .map((action) => ContextItemEmailAction(
-            action,
-            AppLocalizations.of(context),
-            controller.imagePaths,
-          ))
-          .toList();
-
-      controller.mailboxDashBoardController.openBottomSheetContextMenu(
-        context: context,
-        itemActions: contextMenuActions,
-        onContextMenuActionClick: (menuAction) {
-          popBack();
-          controller.handleEmailAction(
-            context,
-            presentationEmail,
-            menuAction.action,
-          );
-        },
-      );
-    } else {
-      final popupMenuItems = emailActions.map((actionType) {
-        return PopupMenuItem(
-          padding: EdgeInsets.zero,
-          child: PopupMenuItemActionWidget(
-            menuAction: PopupMenuItemEmailAction(
-              actionType,
-              AppLocalizations.of(context),
-              controller.imagePaths,
-            ),
-            menuActionClick: (menuAction) {
-              popBack();
-              controller.handleEmailAction(
-                context,
-                presentationEmail,
-                menuAction.action,
-              );
-            },
-          ),
-        );
-      }).toList();
-
-      controller.mailboxDashBoardController.openPopupMenu(
-        context,
-        position,
-        popupMenuItems,
-      );
-    }
   }
 }
