@@ -37,5 +37,7 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
           : EmailInThreadStatus.collapsed,
       );
     }
+
+    scrollReverse.value = false;
   }
 }
