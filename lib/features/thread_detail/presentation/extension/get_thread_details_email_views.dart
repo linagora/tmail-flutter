@@ -1,12 +1,18 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:model/email/email_action_type.dart';
+import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:model/email/email_in_thread_status.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/get_mailbox_contain_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/load_more_thread_detail_emails.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_email_action_click.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_open_email_address_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/toggle_thread_detail_collape_expand.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread_detail_collapsed_email.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread_detail_load_more_circle.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension GetThreadDetailEmailViews on ThreadDetailController {
   List<Widget> getThreadDetailEmailViews() {
@@ -58,10 +64,37 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
           showSubject: isFirstEmailInThreadDetail,
           imagePaths: imagePaths,
           responsiveUtils: responsiveUtils,
-          mailboxContain: presentationEmail.mailboxContain,
+          mailboxContain: presentationEmail.findMailboxContain(
+            mailboxDashBoardController.mapMailboxById,
+          ),
           emailLoaded: null,
-          openEmailAddressDetailAction: (context, emailAddress) {
-            // TODO: Next PR
+          onEmailActionClick: threadDetailOnEmailActionClick,
+          onMoreActionClick: (presentationEmail, position) => emailActionReactor.handleMoreEmailAction(
+            mailboxContain: mailboxDashBoardController.getMailboxContain(presentationEmail),
+            presentationEmail: presentationEmail,
+            position: position,
+            responsiveUtils: responsiveUtils,
+            imagePaths: imagePaths,
+            username: session?.username,
+            handleEmailAction: threadDetailOnEmailActionClick,
+            additionalActions: [
+              EmailActionType.forward,
+              EmailActionType.replyAll,
+              EmailActionType.replyToList,
+              EmailActionType.printAll,
+              if (currentContext != null &&
+                  responsiveUtils.isMobile(currentContext!))
+                EmailActionType.moveToMailbox,
+              if (!responsiveUtils.isDesktop(currentContext!)) ...[
+                EmailActionType.markAsStarred,
+                EmailActionType.unMarkAsStarred,
+                EmailActionType.moveToTrash,
+                EmailActionType.deletePermanently,
+              ],
+            ],
+          ),
+          openEmailAddressDetailAction: (_, emailAddress) {
+            openEmailAddressDetailAction(emailAddress);
           },
           onToggleThreadDetailCollapseExpand: () {
             toggleThreadDetailCollapeExpand(presentationEmail);

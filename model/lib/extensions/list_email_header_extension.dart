@@ -14,9 +14,9 @@ extension ListEmailHeaderExtension on Set<EmailHeader>? {
     }
   }
 
-  String get listUnsubscribe {
+  String? get listUnsubscribe {
     final listUnsubscribe = this?.firstWhereOrNull((header) => header.name == EmailProperty.headerUnsubscribeKey);
-    return listUnsubscribe?.value ?? '';
+    return listUnsubscribe?.value;
   }
 
   String get sMimeStatus {
@@ -25,8 +25,8 @@ extension ListEmailHeaderExtension on Set<EmailHeader>? {
     return sMimeStatus?.value.trim() ?? '';
   }
 
-  String get listPost {
+  String? get listPost {
     final listPost = this?.firstWhereOrNull((header) => header.name == EmailProperty.headerListPostKey);
-    return listPost?.value ?? '';
+    return listPost?.value;
   }
 }

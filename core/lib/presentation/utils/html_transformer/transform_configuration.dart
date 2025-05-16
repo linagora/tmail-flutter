@@ -48,6 +48,11 @@ class TransformConfiguration {
     const RemoveCollapsedSignatureButtonTransformer(),
   ]);
 
+  factory TransformConfiguration.forReplyForwardEmptyEmail() => TransformConfiguration.fromDomTransformers([
+    ...TransformConfiguration.forReplyForwardEmail().domTransformers,
+    const ImageTransformer(),
+  ]);
+
   factory TransformConfiguration.forDraftsEmail() => TransformConfiguration.create(
     customDomTransformers: [const ImageTransformer()]
   );
