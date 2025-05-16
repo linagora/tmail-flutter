@@ -44,12 +44,10 @@ import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/state/button_state.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
-import 'package:tmail_ui_user/features/destination_picker/presentation/model/destination_picker_arguments.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/calendar_event_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/exceptions/email_exceptions.dart';
 import 'package:tmail_ui_user/features/email/domain/extensions/list_attachments_extension.dart';
 import 'package:tmail_ui_user/features/email/domain/model/detailed_email.dart';
-import 'package:tmail_ui_user/features/email/domain/model/email_print.dart';
 import 'package:tmail_ui_user/features/email/domain/model/event_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/mark_read_action.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
@@ -112,39 +110,34 @@ import 'package:tmail_ui_user/features/email/presentation/model/composer_argumen
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/eml_previewer.dart';
+import 'package:tmail_ui_user/features/email/presentation/utils/email_action_reactor/email_action_reactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_bottom_sheet_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/attachment_list/attachment_list_dialog_builder.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_bottom_sheet_builder.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/email_address_dialog_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/html_attachment_previewer.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/pdf_viewer/pdf_viewer.dart';
 import 'package:tmail_ui_user/features/email_previewer/email_previewer_dialog_view.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/get_mailbox_contain_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/model/create_new_email_rule_filter_request.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_rule_filter_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_identities_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
-import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/focus_thread_detail_expanded_email.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 import 'package:tmail_ui_user/main/routes/app_routes.dart';
-import 'package:tmail_ui_user/main/routes/dialog_router.dart';
 import 'package:tmail_ui_user/main/routes/navigation_router.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
@@ -205,6 +198,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   Identity? _identitySelected;
   ButtonState? _printEmailButtonState;
   final obxListeners = <Worker>[];
+  late final EmailActionReactor emailActionReactor;
 
   final StreamController<Either<Failure, Success>> _downloadProgressStateController =
       StreamController<Either<Failure, Success>>.broadcast();
@@ -252,6 +246,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   @override
   void onInit() {
+    emailActionReactor = EmailActionReactor(
+      _markAsEmailReadInteractor,
+      _markAsStarEmailInteractor,
+      _createNewEmailRuleFilterInteractor,
+      _printEmailInteractor,
+      _getEmailContentInteractor,
+      _downloadAttachmentForWebInteractor,
+    );
     _threadDetailController = getBinding<ThreadDetailController>();
     _injectCalendarEventBindings(session, accountId);
     _registerObxStreamListener();
@@ -767,13 +769,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   PresentationMailbox? getMailboxContain(PresentationEmail email) {
-    if (mailboxDashBoardController.selectedMailbox.value == null) {
-      return email.findMailboxContain(mailboxDashBoardController.mapMailboxById);
-    } else {
-      return mailboxDashBoardController.searchController.isSearchEmailRunning
-        ? email.findMailboxContain(mailboxDashBoardController.mapMailboxById)
-        : mailboxDashBoardController.selectedMailbox.value;
-    }
+    return mailboxDashBoardController.getMailboxContain(email);
   }
 
   void markAsEmailRead(
@@ -1201,78 +1197,23 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void moveToMailbox(BuildContext context, PresentationEmail email) async {
-    final currentMailbox = getMailboxContain(email);
-
-    if (currentMailbox != null && accountId != null) {
-      final arguments = DestinationPickerArguments(
+    if (session != null && accountId != null) {
+      final moveActionRequest = await emailActionReactor.moveToMailbox(
+        session!,
         accountId!,
-        MailboxActions.moveEmail,
-        session,
-        mailboxIdSelected: currentMailbox.mailboxId
+        email,
+        mapMailbox: mailboxDashBoardController.mapMailboxById,
+        selectedMailbox: mailboxDashBoardController.selectedMailbox.value,
+        isSearchEmailRunning: mailboxDashBoardController.searchController.isSearchEmailRunning,
       );
-
-      final destinationMailbox = PlatformInfo.isWeb
-        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.destinationPicker, arguments: arguments)
-        : await push(AppRoutes.destinationPicker, arguments: arguments);
-
-      if (destinationMailbox != null &&
-          destinationMailbox is PresentationMailbox &&
-          session != null &&
-          context.mounted
-      ) {
-        _dispatchMoveToAction(
-          context,
-          accountId!,
-          session!,
-          email,
-          currentMailbox,
-          destinationMailbox);
-      }
-    }
-  }
-
-  void _dispatchMoveToAction(
-      BuildContext context,
-      AccountId accountId,
-      Session session,
-      PresentationEmail emailSelected,
-      PresentationMailbox currentMailbox,
-      PresentationMailbox destinationMailbox
-  ) {
-    if (destinationMailbox.isTrash) {
-      _moveToTrashAction(
-        context,
-        session,
-        accountId,
-        MoveToMailboxRequest(
-          {currentMailbox.id: [emailSelected.id!]},
-          destinationMailbox.id,
-          MoveAction.moving,
-          EmailActionType.moveToTrash),
-        {emailSelected.id!: emailSelected.hasRead});
-    } else if (destinationMailbox.isSpam) {
-      _moveToSpamAction(
-        context,
-        session,
-        accountId,
-        MoveToMailboxRequest(
-          {currentMailbox.id: [emailSelected.id!]},
-          destinationMailbox.id,
-          MoveAction.moving,
-          EmailActionType.moveToSpam),
-        {emailSelected.id!: emailSelected.hasRead});
-    } else {
-      _moveToMailbox(
-        context,
-        session,
-        accountId,
-        MoveToMailboxRequest(
-          {currentMailbox.id: [emailSelected.id!]},
-          destinationMailbox.id,
-          MoveAction.moving,
-          EmailActionType.moveToMailbox,
-          destinationPath: destinationMailbox.mailboxPath),
-        {emailSelected.id!: emailSelected.hasRead});
+      if (!context.mounted || moveActionRequest == null) return;
+      closeEmailView(context: context);
+      mailboxDashBoardController.moveToMailbox(
+        session!,
+        accountId!,
+        moveActionRequest.moveRequest,
+        moveActionRequest.emailIdsWithReadStatus,
+      );
     }
   }
 
@@ -1333,92 +1274,63 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void moveToTrash(BuildContext context, PresentationEmail email) {
-    final trashMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleTrash);
-    final currentMailbox = getMailboxContain(email);
-
-    if (session != null && accountId != null && currentMailbox != null && trashMailboxId != null) {
-      _moveToTrashAction(
-        context,
+    if (session != null && accountId != null) {
+      final moveActionRequest = emailActionReactor.moveToTrash(
+        email,
+        mapMailbox: mailboxDashBoardController.mapMailboxById,
+        selectedMailbox: mailboxDashBoardController.selectedMailbox.value,
+        isSearchEmailRunning: mailboxDashBoardController.searchController.isSearchEmailRunning,
+        mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
+      );
+      if (!context.mounted || moveActionRequest == null) return;
+      closeEmailView(context: context);
+      mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
-        MoveToMailboxRequest(
-          {currentMailbox.id: [email.id!]},
-          trashMailboxId,
-          MoveAction.moving,
-          EmailActionType.moveToTrash),
-        {email.id!: email.hasRead},
+        moveActionRequest.moveRequest,
+        moveActionRequest.emailIdsWithReadStatus,
       );
     }
   }
 
-  void _moveToTrashAction(
-    BuildContext context,
-    Session session,
-    AccountId accountId,
-    MoveToMailboxRequest moveRequest,
-    Map<EmailId, bool> emailIdsWithReadStatus,
-  ) {
-    closeEmailView(context: context);
-    mailboxDashBoardController.moveToMailbox(
-      session,
-      accountId,
-      moveRequest,
-      emailIdsWithReadStatus,
-    );
-  }
-
   void moveToSpam(BuildContext context, PresentationEmail email) {
-    final spamMailboxId = mailboxDashBoardController.spamMailboxId;
-    final currentMailbox = getMailboxContain(email);
-
-    if (session != null && accountId != null && currentMailbox != null && spamMailboxId != null) {
-      _moveToSpamAction(
-        context,
+    if (session != null && accountId != null) {
+      final moveActionRequest = emailActionReactor.moveToSpam(
+        email,
+        mapMailbox: mailboxDashBoardController.mapMailboxById,
+        selectedMailbox: mailboxDashBoardController.selectedMailbox.value,
+        isSearchEmailRunning: mailboxDashBoardController.searchController.isSearchEmailRunning,
+        mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
+      );
+      if (!context.mounted || moveActionRequest == null) return;
+      closeEmailView(context: context);
+      mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
-        MoveToMailboxRequest(
-          {currentMailbox.id: [email.id!]},
-          spamMailboxId,
-          MoveAction.moving,
-          EmailActionType.moveToSpam),
-        {email.id!: email.hasRead},
+        moveActionRequest.moveRequest,
+        moveActionRequest.emailIdsWithReadStatus,
       );
     }
   }
 
   void unSpam(BuildContext context, PresentationEmail email) {
-    final spamMailboxId = mailboxDashBoardController.spamMailboxId;
-    final inboxMailboxId = mailboxDashBoardController.getMailboxIdByRole(PresentationMailbox.roleInbox);
-
-    if (session != null && accountId != null && spamMailboxId != null && inboxMailboxId != null) {
-      _moveToSpamAction(
-        context,
+    if (session != null && accountId != null) {
+      final moveActionRequest = emailActionReactor.unSpam(
+        email,
+        mapMailbox: mailboxDashBoardController.mapMailboxById,
+        selectedMailbox: mailboxDashBoardController.selectedMailbox.value,
+        isSearchEmailRunning: mailboxDashBoardController.searchController.isSearchEmailRunning,
+        mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
+      );
+      if (!context.mounted || moveActionRequest == null) return;
+      closeEmailView(context: context);
+      mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
-        MoveToMailboxRequest(
-          {spamMailboxId: [email.id!]},
-          inboxMailboxId,
-          MoveAction.moving,
-          EmailActionType.unSpam),
-        {email.id!: email.hasRead},
+        moveActionRequest.moveRequest,
+        moveActionRequest.emailIdsWithReadStatus,
       );
     }
-  }
-
-  void _moveToSpamAction(
-    BuildContext context,
-    Session session,
-    AccountId accountId,
-    MoveToMailboxRequest moveRequest,
-    Map<EmailId, bool> emailIdsWithReadStatus,
-  ) {
-    closeEmailView(context: context);
-    mailboxDashBoardController.moveToMailbox(
-      session,
-      accountId,
-      moveRequest,
-      emailIdsWithReadStatus,
-    );
   }
 
   void markAsStarEmail(
@@ -1452,13 +1364,33 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void handleEmailAction(BuildContext context, PresentationEmail presentationEmail, EmailActionType actionType) {
     switch(actionType) {
       case EmailActionType.markAsUnread:
-        markAsEmailRead(presentationEmail, ReadActions.markAsUnread, MarkReadAction.tap);
+        if (session != null && accountId != null) {
+          consumeState(emailActionReactor.markAsEmailUnread(
+            session!,
+            accountId!,
+            presentationEmail,
+          ));
+        }
         break;
       case EmailActionType.markAsStarred:
-        markAsStarEmail(presentationEmail, MarkStarAction.markStar);
+        if (session != null && accountId != null) {
+          consumeState(emailActionReactor.markAsStarEmail(
+            session!,
+            accountId!,
+            presentationEmail,
+            markStarAction: MarkStarAction.markStar,
+          ));
+        }
         break;
       case EmailActionType.unMarkAsStarred:
-        markAsStarEmail(presentationEmail, MarkStarAction.unMarkStar);
+        if (session != null && accountId != null) {
+          consumeState(emailActionReactor.markAsStarEmail(
+            session!,
+            accountId!,
+            presentationEmail,
+            markStarAction: MarkStarAction.unMarkStar,
+          ));
+        }
         break;
       case EmailActionType.moveToMailbox:
         moveToMailbox(context, presentationEmail);
@@ -1496,43 +1428,31 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       case EmailActionType.reply:
         _replyEmail(presentationEmail);
         break;
+      case EmailActionType.replyAll:
+      case EmailActionType.replyToList:
+      case EmailActionType.forward:
+        pressEmailAction(actionType, presentationEmail);
+        break;
       default:
         break;
     }
   }
 
-  void openEmailAddressDialog(BuildContext context, EmailAddress emailAddress) {
-    if (responsiveUtils.isScreenWithShortestSide(context)) {
-      (EmailAddressBottomSheetBuilder(context, imagePaths, emailAddress)
-        ..addOnCloseContextMenuAction(() => popBack())
-        ..addOnCopyEmailAddressAction((emailAddress) => copyEmailAddress(context, emailAddress))
-        ..addOnComposeEmailAction((emailAddress) => composeEmailFromEmailAddress(emailAddress))
-        ..addOnQuickCreatingRuleEmailBottomSheetAction((emailAddress) => quickCreatingRule(context, emailAddress))
-      ).show();
-    } else {
-      Get.dialog(
-        PointerInterceptor(
-          child: EmailAddressDialogBuilder(
-            emailAddress,
-            onCloseDialogAction: () => popBack(),
-            onCopyEmailAddressAction: (emailAddress) => copyEmailAddress(context, emailAddress),
-            onComposeEmailAction: (emailAddress) => composeEmailFromEmailAddress(emailAddress),
-            onQuickCreatingRuleEmailDialogAction: (emailAddress) => quickCreatingRule(context, emailAddress)
-          )
-        ),
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-      );
-    }
-  }
+  void openEmailAddressDialog(EmailAddress emailAddress) {
+    if (session == null || accountId == null) return;
 
-  void copyEmailAddress(BuildContext context, EmailAddress emailAddress) {
-    popBack();
-    AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
-  }
-
-  void composeEmailFromEmailAddress(EmailAddress emailAddress) {
-    popBack();
-    mailboxDashBoardController.openComposer(ComposerArguments.fromEmailAddress(emailAddress));
+    emailActionReactor.openEmailAddressDialog(
+      session!,
+      accountId!,
+      emailAddress: emailAddress,
+      responsiveUtils: responsiveUtils,
+      imagePaths: imagePaths,
+      onComposeEmailFromEmailAddressRequest: (emailAddress) {
+        mailboxDashBoardController.openComposer(
+          ComposerArguments.fromEmailAddress(emailAddress),
+        );
+      },
+    );
   }
 
   Future<void> openMailToLink(Uri? uri) async {
@@ -1554,34 +1474,16 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void deleteEmailPermanently(BuildContext context, PresentationEmail email) {
-    if (responsiveUtils.isMobile(context)) {
-      (ConfirmationDialogActionSheetBuilder(context)
-          ..messageText(DeleteActionType.single.getContentDialog(context))
-          ..onCancelAction(AppLocalizations.of(context).cancel, () => popBack())
-          ..onConfirmAction(DeleteActionType.single.getConfirmActionName(context), () => _deleteEmailPermanentlyAction(context, email)))
-        .show();
-    } else {
-      Get.dialog(
-        PointerInterceptor(child: ConfirmationDialogBuilder(
-          key: const Key('confirm_dialog_delete_email_permanently'),
-          imagePath: imagePaths,
-          title: DeleteActionType.single.getTitleDialog(context),
-          textContent: DeleteActionType.single.getContentDialog(context),
-          cancelText: DeleteActionType.single.getConfirmActionName(context),
-          confirmText: AppLocalizations.of(context).cancel,
-          onCancelButtonAction: () => _deleteEmailPermanentlyAction(context, email),
-          onConfirmButtonAction: popBack,
-          onCloseButtonAction: popBack,
-        )),
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
-      );
-    }
-  }
-
-  void _deleteEmailPermanentlyAction(BuildContext context, PresentationEmail email) {
-    popBack();
-    closeEmailView(context: context);
-    mailboxDashBoardController.deleteEmailPermanently(email);
+    emailActionReactor.deleteEmailPermanently(
+      email,
+      onDeleteEmailRequest: (email) {
+        popBack();
+        closeEmailView(context: context);
+        mailboxDashBoardController.deleteEmailPermanently(email);
+      },
+      responsiveUtils: responsiveUtils,
+      imagePaths: imagePaths,
+    );
   }
 
   void _handleSendReceiptToSenderAction(BuildContext context) {
@@ -1770,32 +1672,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     popBack();
 
     if (accountId != null && session != null) {
-      final arguments = RulesFilterCreatorArguments(
-        accountId!,
+      consumeState(emailActionReactor.quickCreateRule(
         session!,
-        emailAddress: emailAddress);
-
-      final newRuleFilterRequest = PlatformInfo.isWeb
-        ? await DialogRouter.pushGeneralDialog(routeName: AppRoutes.rulesFilterCreator, arguments: arguments)
-        : await push(AppRoutes.rulesFilterCreator, arguments: arguments);
-
-      if (newRuleFilterRequest is CreateNewEmailRuleFilterRequest) {
-        _createNewRuleFilterAction(accountId!, newRuleFilterRequest);
-      }
-    }
-  }
-
-  void _createNewRuleFilterAction(
-      AccountId accountId,
-      CreateNewEmailRuleFilterRequest ruleFilterRequest
-  ) async {
-    try {
-      _createNewEmailRuleFilterInteractor = Get.find<CreateNewEmailRuleFilterInteractor>();
-    } catch (e) {
-      logError('SingleEmailController::onInit(): ${e.toString()}');
-    }
-    if (_createNewEmailRuleFilterInteractor != null) {
-      consumeState(_createNewEmailRuleFilterInteractor!.execute(accountId, ruleFilterRequest));
+        accountId!,
+        emailAddress: emailAddress,
+      ));
     }
   }
 
@@ -1906,71 +1787,30 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _unsubscribeEmail(BuildContext context, PresentationEmail presentationEmail) {
-    showConfirmDialogAction(
-      context,
-      '',
-      AppLocalizations.of(context).unsubscribe,
-      onConfirmAction: () {
-        if (emailUnsubscribe.value?.httpLinks.isNotEmpty == true) {
-          _handleUnsubscribeMailByHttpsLink(
-            context: context,
-            emailId: presentationEmail.id!,
-            httpLinks: emailUnsubscribe.value!.httpLinks
-          );
-        } else if (emailUnsubscribe.value?.mailtoLinks.isNotEmpty == true) {
-          _handleUnsubscribeMailByMailtoLink(
-            context: context,
-            emailId: presentationEmail.id!,
-            mailtoLinks: emailUnsubscribe.value!.mailtoLinks
-          );
-        }
+    emailActionReactor.unsubscribeEmail(
+      presentationEmail,
+      emailUnsubscribe: emailUnsubscribe.value,
+      onUnsubscribeByHttpsLink: mailboxDashBoardController.unsubscribeMail,
+      onUnsubscribeByMailtoLink: (emailId, navigationRouter) {
+        mailboxDashBoardController.openComposer(
+          ComposerArguments.fromUnsubscribeMailtoLink(
+            listEmailAddress: navigationRouter.listEmailAddress,
+            subject: navigationRouter.subject,
+            body: navigationRouter.body,
+            previousEmailId: emailId,
+          )
+        );
       },
-      showAsBottomSheet: true,
-      title: AppLocalizations.of(context).unsubscribeMail,
-      messageStyle: ThemeUtils.textStyleBodyBody2(color: AppColor.steelGray400),
-      listTextSpan: [
-        TextSpan(text: AppLocalizations.of(context).unsubscribeMailDialogMessage),
-        TextSpan(
-          text: ' ${presentationEmail.getSenderName()}',
-          style: ThemeUtils.textStyleBodyBody2(
-            color: AppColor.steelGray400,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const TextSpan(text: ' ?'),
-      ]
-    );
-  }
-
-  void _handleUnsubscribeMailByHttpsLink({
-    required BuildContext context,
-    required EmailId emailId,
-    required List<String> httpLinks
-  }) {
-    log('SingleEmailController::_handleUnsubscribeMailByHttpsLink:httpLinks: $httpLinks');
-    mailboxDashBoardController.unsubscribeMail(emailId);
-    AppUtils.launchLink(httpLinks.first);
-  }
-
-  void _handleUnsubscribeMailByMailtoLink({
-    required BuildContext context,
-    required EmailId emailId,
-    required List<String> mailtoLinks
-  }) {
-    log('SingleEmailController::_handleUnsubscribeMailByMailtoLink:mailtoLinks: $mailtoLinks');
-    final navigationRouter = RouteUtils.generateNavigationRouterFromMailtoLink(mailtoLinks.first);
-    mailboxDashBoardController.openComposer(
-      ComposerArguments.fromUnsubscribeMailtoLink(
-        listEmailAddress: navigationRouter.listEmailAddress,
-        subject: navigationRouter.subject,
-        body: navigationRouter.body,
-        previousEmailId: emailId,
-      )
     );
   }
 
   void archiveMessage(BuildContext context, PresentationEmail email) {
-    mailboxDashBoardController.archiveMessage(context, email);
+    emailActionReactor.archiveMessage(
+      email,
+      onArchiveEmailRequest: (presentationEmail) {
+        mailboxDashBoardController.archiveMessage(context, presentationEmail);
+      },
+    );
   }
 
   void _printEmail(BuildContext context, PresentationEmail email) {
@@ -1981,40 +1821,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
     _printEmailButtonState = ButtonState.disabled;
 
-    final locale = Localizations.localeOf(context);
-    final appLocalizations = AppLocalizations.of(context);
-
-    consumeState(
-      _printEmailInteractor.execute(
-        EmailPrint(
-          appName: appLocalizations.app_name,
-          userName: mailboxDashBoardController.getOwnEmailAddress(),
-          attachments: currentEmailLoaded.value!.attachments,
-          emailContent: currentEmailLoaded.value!.htmlContent,
-          fromPrefix: appLocalizations.from_email_address_prefix,
-          toPrefix: appLocalizations.to_email_address_prefix,
-          ccPrefix: appLocalizations.cc_email_address_prefix,
-          bccPrefix: appLocalizations.bcc_email_address_prefix,
-          replyToPrefix: appLocalizations.replyToEmailAddressPrefix,
-          titleAttachment: appLocalizations.attachments.toLowerCase(),
-          toAddress: email.to?.listEmailAddressToString(isFullEmailAddress: true),
-          ccAddress: email.cc?.listEmailAddressToString(isFullEmailAddress: true),
-          bccAddress: email.bcc?.listEmailAddressToString(isFullEmailAddress: true),
-          replyToAddress: email.replyTo?.listEmailAddressToString(isFullEmailAddress: true),
-          sender: email.from?.isNotEmpty == true
-            ? email.from!.first
-            : null,
-          receiveTime: email.getReceivedAt(
-            locale.toLanguageTag(),
-            pattern: email.receivedAt
-              ?.value
-              .toLocal()
-              .toPatternForPrinting(locale.toLanguageTag()),
-          ),
-          subject: email.subject,
-        )
-      )
-    );
+    consumeState(emailActionReactor.printEmail(
+      email,
+      ownEmailAddress: mailboxDashBoardController.getOwnEmailAddress(),
+      emailLoaded: currentEmailLoaded.value!,
+    ));
   }
 
   void _showMessageWhenStartingEmailPrinting() {
@@ -2177,34 +1988,46 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _downloadMessageAsEML(PresentationEmail presentationEmail) {
-    final emlAttachment = presentationEmail.createEMLAttachment();
-    if (emlAttachment.blobId == null) {
-      consumeState(Stream.value(Left(DownloadAttachmentForWebFailure(exception: NotFoundEmailBlobIdException()))));
-      return;
-    }
+    if (accountId == null || session == null) return;
 
-    downloadAttachmentForWeb(emlAttachment);
+    consumeState(emailActionReactor.downloadMessageAsEML(
+      session!,
+      accountId!,
+      presentationEmail,
+      downloadProgressStateController: _downloadProgressStateController,
+    ));
   }
 
   void _editAsNewEmail(PresentationEmail presentationEmail) {
     if (accountId == null || session == null) return;
 
-    mailboxDashBoardController.openComposer(
-      ComposerArguments.editAsNewEmail(presentationEmail),
+    emailActionReactor.editAsNewEmail(
+      presentationEmail,
+      onEditAsEmailRequest: (presentationEmail) {
+        mailboxDashBoardController.openComposer(
+          ComposerArguments.editAsNewEmail(presentationEmail),
+        );
+      },
     );
   }
 
   void _replyEmail(PresentationEmail presentationEmail) {
-    mailboxDashBoardController.openComposer(
-      ComposerArguments.replyEmail(
-        presentationEmail: presentationEmail,
-        content: currentEmailLoaded.value?.htmlContent ?? '',
-        inlineImages: currentEmailLoaded.value?.inlineImages ?? [],
-        mailboxRole: presentationEmail.mailboxContain?.role,
-        messageId: currentEmailLoaded.value?.emailCurrent?.messageId,
-        references: currentEmailLoaded.value?.emailCurrent?.references,
-        listPost: currentEmailLoaded.value?.emailCurrent?.listPost,
-      )
+    emailActionReactor.replyEmail(
+      presentationEmail,
+      emailLoaded: currentEmailLoaded.value,
+      onReplyEmailRequest: (presentationEmail, emailLoaded) {
+        mailboxDashBoardController.openComposer(
+          ComposerArguments.replyEmail(
+            presentationEmail: presentationEmail,
+            content: emailLoaded?.htmlContent,
+            inlineImages: emailLoaded?.inlineImages,
+            mailboxRole: presentationEmail.mailboxContain?.role,
+            messageId: emailLoaded?.emailCurrent?.messageId,
+            references: emailLoaded?.emailCurrent?.references,
+            listPost: emailLoaded?.emailCurrent?.listPost,
+          )
+        );
+      },
     );
   }
 
