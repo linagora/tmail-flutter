@@ -6,6 +6,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
+import 'package:core/presentation/utils/app_toast.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
@@ -16,6 +17,7 @@ import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
@@ -331,7 +333,6 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
       },
       showAsBottomSheet: true,
       title: AppLocalizations.of(currentContext!).unsubscribeMail,
-      messageStyle: ThemeUtils.textStyleBodyBody2(color: AppColor.steelGray400),
       listTextSpan: [
         TextSpan(text: AppLocalizations.of(currentContext!).unsubscribeMailDialogMessage),
         TextSpan(
@@ -614,7 +615,7 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
           fit: BoxFit.fill,
           colorFilter: AppColor.colorTextButton.asFilter()
         ),
-        action.getTitle(context),
+        action.getTitle(AppLocalizations.of(context)),
         presentationEmail,
         iconLeftPadding: responsiveUtils.isScreenWithShortestSide(context)
           ? const EdgeInsetsDirectional.only(start: 12, end: 16)
@@ -646,7 +647,7 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
           iconAction: action.getIcon(imagePaths),
-          nameAction: action.getTitle(context),
+          nameAction: action.getTitle(AppLocalizations.of(context)),
           colorIcon: AppColor.colorTextButton,
           padding: const EdgeInsetsDirectional.only(start: 12),
           styleName: const TextStyle(
@@ -669,50 +670,67 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
     required EmailAddress emailAddress,
     required ResponsiveUtils responsiveUtils,
     required ImagePaths imagePaths,
+    required AppToast appToast,
     required void Function(EmailAddress emailAddress) onComposeEmailFromEmailAddressRequest,
   }) {
     if (currentContext?.mounted != true) return;
 
     if (responsiveUtils.isScreenWithShortestSide(currentContext!)) {
-      (EmailAddressBottomSheetBuilder(currentContext!, imagePaths, emailAddress)
-        ..addOnCloseContextMenuAction(() => popBack())
-        ..addOnCopyEmailAddressAction((emailAddress) => _copyEmailAddress(
-          currentContext!,
-          emailAddress,
-        ))
-        ..addOnComposeEmailAction((emailAddress) => onComposeEmailFromEmailAddressRequest(emailAddress))
-        ..addOnQuickCreatingRuleEmailBottomSheetAction((emailAddress) => quickCreateRule(
-          session,
-          accountId,
-          emailAddress: emailAddress
-        ))
-      ).show();
+      Get.bottomSheet(
+        PointerInterceptor(
+          child: EmailAddressBottomSheetBuilder(
+            imagePaths: imagePaths,
+            emailAddress: emailAddress,
+            onCloseDialogAction: popBack,
+            onCopyEmailAddressAction: (emailAddress) =>
+                _copyEmailAddress(currentContext!, emailAddress, appToast),
+            onComposeEmailAction: (emailAddress) =>
+                onComposeEmailFromEmailAddressRequest(emailAddress),
+            onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
+                quickCreateRule(session, accountId, emailAddress: emailAddress),
+          ),
+        ),
+        useRootNavigator: true,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadiusDirectional.only(
+            topStart: Radius.circular(16.0),
+            topEnd: Radius.circular(16.0),
+          ),
+        ),
+        isScrollControlled: true,
+        enableDrag: false,
+        backgroundColor: Colors.transparent,
+      );
     } else {
       Get.dialog(
         PointerInterceptor(
           child: EmailAddressDialogBuilder(
-            emailAddress,
-            onCloseDialogAction: () => popBack(),
-            onCopyEmailAddressAction: (emailAddress) => _copyEmailAddress(
-              currentContext!,
-              emailAddress,
-            ),
-            onComposeEmailAction: (emailAddress) => onComposeEmailFromEmailAddressRequest(emailAddress),
-            onQuickCreatingRuleEmailDialogAction: (emailAddress) => quickCreateRule(
-              session,
-              accountId,
-              emailAddress: emailAddress,
-            )
-          )
+            imagePaths: imagePaths,
+            emailAddress: emailAddress,
+            onCloseDialogAction: popBack,
+            onCopyEmailAddressAction: (emailAddress) =>
+                _copyEmailAddress(currentContext!, emailAddress, appToast),
+            onComposeEmailAction: (emailAddress) =>
+                onComposeEmailFromEmailAddressRequest(emailAddress),
+            onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
+                quickCreateRule(session, accountId, emailAddress: emailAddress),
+          ),
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
       );
     }
   }
 
-  void _copyEmailAddress(BuildContext context, EmailAddress emailAddress) {
-    popBack();
-    AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
+  void _copyEmailAddress(
+    BuildContext context,
+    EmailAddress emailAddress,
+    AppToast appToast,
+  ) {
+    Clipboard.setData(ClipboardData(text: emailAddress.emailAddress));
+    appToast.showToastSuccessMessage(
+      context,
+      AppLocalizations.of(context).email_address_copied_to_clipboard,
+    );
   }
 
   Future<({
