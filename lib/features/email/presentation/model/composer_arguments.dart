@@ -138,8 +138,8 @@ class ComposerArguments extends RouterArguments {
 
   factory ComposerArguments.replyEmail({
     required PresentationEmail presentationEmail,
-    required String content,
-    required List<Attachment> inlineImages,
+    required String? content,
+    required List<Attachment>? inlineImages,
     Role? mailboxRole,
     MessageIdsHeaderValue? messageId,
     MessageIdsHeaderValue? references,
@@ -157,8 +157,8 @@ class ComposerArguments extends RouterArguments {
 
   factory ComposerArguments.replyToListEmail({
     required PresentationEmail presentationEmail,
-    required String content,
-    required List<Attachment> inlineImages,
+    required String? content,
+    required List<Attachment>? inlineImages,
     Role? mailboxRole,
     MessageIdsHeaderValue? messageId,
     MessageIdsHeaderValue? references,
@@ -176,8 +176,8 @@ class ComposerArguments extends RouterArguments {
 
   factory ComposerArguments.replyAllEmail({
     required PresentationEmail presentationEmail,
-    required String content,
-    required List<Attachment> inlineImages,
+    required String? content,
+    required List<Attachment>? inlineImages,
     Role? mailboxRole,
     MessageIdsHeaderValue? messageId,
     MessageIdsHeaderValue? references,
@@ -195,9 +195,9 @@ class ComposerArguments extends RouterArguments {
 
   factory ComposerArguments.forwardEmail({
     required PresentationEmail presentationEmail,
-    required String content,
-    required List<Attachment> attachments,
-    required List<Attachment> inlineImages,
+    required String? content,
+    required List<Attachment>? attachments,
+    required List<Attachment>? inlineImages,
     MessageIdsHeaderValue? messageId,
     MessageIdsHeaderValue? references,
   }) => ComposerArguments(

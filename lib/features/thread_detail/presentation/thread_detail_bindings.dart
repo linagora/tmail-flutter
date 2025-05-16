@@ -2,6 +2,17 @@ import 'package:core/data/model/source_type/data_source_type.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/download_attachment_for_web_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/get_email_content_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_email_read_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/mark_as_star_email_interactor.dart';
+import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/data/datasource/rule_filter_datasource.dart';
+import 'package:tmail_ui_user/features/manage_account/data/datasource_impl/rule_filter_datasource_impl.dart';
+import 'package:tmail_ui_user/features/manage_account/data/network/rule_filter_api.dart';
+import 'package:tmail_ui_user/features/manage_account/data/repository/rule_filter_repository_impl.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/repository/rule_filter_repository.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/data/data_source/thread_detail_data_source.dart';
 import 'package:tmail_ui_user/features/thread_detail/data/data_source/thread_detail_remote_data_source_impl.dart';
 import 'package:tmail_ui_user/features/thread_detail/data/network/thread_detail_api.dart';
@@ -25,6 +36,12 @@ class ThreadDetailBindings extends BaseBindings {
     Get.put(ThreadDetailController(
       Get.find<GetThreadByIdInteractor>(),
       Get.find<GetEmailsByIdsInteractor>(),
+      Get.find<MarkAsEmailReadInteractor>(),
+      Get.find<MarkAsStarEmailInteractor>(),
+      Get.find<CreateNewEmailRuleFilterInteractor>(),
+      Get.find<PrintEmailInteractor>(),
+      Get.find<GetEmailContentInteractor>(),
+      Get.find<DownloadAttachmentForWebInteractor>(),
     ));
   }
 
@@ -34,11 +51,16 @@ class ThreadDetailBindings extends BaseBindings {
       Get.find<ThreadDetailApi>(),
       Get.find<RemoteExceptionThrower>(),
     ));
+    Get.lazyPut(() => RuleFilterDataSourceImpl(
+      Get.find<RuleFilterAPI>(),
+      Get.find<RemoteExceptionThrower>()),
+    );
   }
 
   @override
   void bindingsDataSource() {
     Get.lazyPut<ThreadDetailDataSource>(() => Get.find<ThreadDetailRemoteDataSourceImpl>());
+    Get.lazyPut<RuleFilterDataSource>(() => Get.find<RuleFilterDataSourceImpl>());
   }
 
   @override
@@ -46,16 +68,21 @@ class ThreadDetailBindings extends BaseBindings {
     Get.lazyPut(() => ThreadDetailRepositoryImpl({
       DataSourceType.network: Get.find<ThreadDetailDataSource>(),
     }));
+    Get.lazyPut(() => RuleFilterRepositoryImpl(Get.find<RuleFilterDataSource>()));
   }
 
   @override
   void bindingsRepository() {
     Get.lazyPut<ThreadDetailRepository>(() => Get.find<ThreadDetailRepositoryImpl>());
+    Get.lazyPut<RuleFilterRepository>(() => Get.find<RuleFilterRepositoryImpl>());
   }
 
   @override
   void bindingsInteractor() {
     Get.lazyPut(() => GetThreadByIdInteractor(Get.find<ThreadDetailRepository>()));
     Get.lazyPut(() => GetEmailsByIdsInteractor(Get.find<ThreadDetailRepository>()));
+    Get.lazyPut(() => CreateNewEmailRuleFilterInteractor(
+      Get.find<RuleFilterRepository>()),
+    );
   }
 }
