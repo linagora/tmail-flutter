@@ -82,7 +82,9 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
               );
 
             if (expandedEmailMap == null) {
-              return _roundBottomPlaceHolder();
+              return _roundBottomPlaceHolder(
+                isDesktop: controller.responsiveUtils.isDesktop(context),
+              );
             }
             
             final expandedEmailId = expandedEmailMap.key;
@@ -90,13 +92,17 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
               tag: expandedEmailId.id.value
             );
             if (expandedEmailController == null) {
-              return _roundBottomPlaceHolder();
+              return _roundBottomPlaceHolder(
+                isDesktop: controller.responsiveUtils.isDesktop(context),
+              );
             }
 
             final expandedPresentationEmail = expandedEmailMap.value;
             final lastEmailLoaded = expandedEmailController.currentEmailLoaded.value;
             if (lastEmailLoaded == null || expandedPresentationEmail == null) {
-              return _roundBottomPlaceHolder();
+              return _roundBottomPlaceHolder(
+                isDesktop: controller.responsiveUtils.isDesktop(context),
+              );
             }
 
             return Padding(
@@ -146,10 +152,12 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
     return controller.mailboxDashBoardController.selectedMailbox.value;
   }
 
-  Widget _roundBottomPlaceHolder() {
+  Widget _roundBottomPlaceHolder({required bool isDesktop}) {
     return Container(
       height: 40,
-      margin: const EdgeInsetsDirectional.only(end: 16),
+      margin: isDesktop
+        ? const EdgeInsetsDirectional.only(end: 16)
+        : EdgeInsets.zero,
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(
