@@ -331,7 +331,6 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
       },
       showAsBottomSheet: true,
       title: AppLocalizations.of(currentContext!).unsubscribeMail,
-      messageStyle: ThemeUtils.textStyleBodyBody2(color: AppColor.steelGray400),
       listTextSpan: [
         TextSpan(text: AppLocalizations.of(currentContext!).unsubscribeMailDialogMessage),
         TextSpan(
@@ -614,7 +613,7 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
           fit: BoxFit.fill,
           colorFilter: AppColor.colorTextButton.asFilter()
         ),
-        action.getTitle(context),
+        action.getTitle(AppLocalizations.of(context)),
         presentationEmail,
         iconLeftPadding: responsiveUtils.isScreenWithShortestSide(context)
           ? const EdgeInsetsDirectional.only(start: 12, end: 16)
@@ -646,7 +645,7 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
           iconAction: action.getIcon(imagePaths),
-          nameAction: action.getTitle(context),
+          nameAction: action.getTitle(AppLocalizations.of(context)),
           colorIcon: AppColor.colorTextButton,
           padding: const EdgeInsetsDirectional.only(start: 12),
           styleName: const TextStyle(
