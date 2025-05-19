@@ -4669,5 +4669,29 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "saveAsTemplate": "Sauvegarder comme modèle",
+  "@saveAsTemplate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "savingTemplate": "Enregistrement du modèle",
+  "@savingTemplate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "savingMessageToTemplateFolder": "Enregistrement du message dans le dossier des modèles",
+  "@savingMessageToTemplateFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveMessageToTemplateSuccess": "Le message a bien été sauvegardé dans le dossier des modèles",
+  "@saveMessageToTemplateSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
