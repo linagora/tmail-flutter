@@ -65,7 +65,7 @@ class MailboxView extends BaseMailboxView {
                 start: QuotasViewStyles.padding,
                 top: QuotasViewStyles.padding,
               ),
-              isDisplayedContactSupport: true,
+              isDisplayedContactSupport: !controller.responsiveUtils.isWebDesktop(context),
             ),
             Container(
               width: double.infinity,
