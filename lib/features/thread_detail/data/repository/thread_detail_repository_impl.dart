@@ -98,7 +98,6 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
     return email.id != null && (
       !email.inSentMailbox(sentMailboxId)
       || !email.fromMe(ownEmailAddress)
-      || !email.toMe(ownEmailAddress)
     );
   }
 
