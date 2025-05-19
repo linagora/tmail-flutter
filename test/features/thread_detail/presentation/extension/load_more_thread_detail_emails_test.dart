@@ -76,4 +76,32 @@ void main() {
       properties: anyNamed('properties'),
     ));
   });
+
+  test('Call getEmailsByIdsInteractor.execute when there are less than 20 emails', () async {
+    // Arrange
+    const limit = 15;
+    when(controller.emailIdsPresentation).thenReturn({
+      for (int i = 0; i < limit; i++)
+        EmailId(Id('$i')): null,
+      EmailId(Id('$limit')): PresentationEmail(),
+    }.obs);
+    when(controller.session).thenReturn(SessionFixtures.aliceSession);
+    when(controller.accountId).thenReturn(AccountFixtures.aliceAccountId);
+    when(controller.scrollReverse).thenReturn(true.obs);
+    when(controller.getEmailsByIdsInteractor).thenReturn(getEmailsByIdsInteractor);
+
+    // Act
+    controller.loadMoreThreadDetailEmails();
+
+    // Assert
+    verify(getEmailsByIdsInteractor.execute(
+      SessionFixtures.aliceSession,
+      AccountFixtures.aliceAccountId,
+      List.generate(limit, (i) => EmailId(Id('$i'))),
+      properties: EmailUtils.getPropertiesForEmailGetMethod(
+        SessionFixtures.aliceSession,
+        AccountFixtures.aliceAccountId,
+      ),
+    )).called(1);
+  });
 }
