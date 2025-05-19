@@ -1,3 +1,23 @@
+## [0.15.4] - 2025-05-19
+### Fixed
+- #3691 support html escape in search result
+- #3703 Some mail still have scroll left in mobile to see content
+- #3696 Upgreade ios build with xcode 18
+- Missing signature in mobile
+- #3684 Signature in wrong place if move inline image
+- #3671 Composer are blocked without network
+- #3704 Rearrange mailbox view
+- #3683 Fix draft save toast only show one time
+- #3685 `From` is displayed incorrectly in Draft on mobile
+- #3719 Handling `notFound` in Email/get
+- #3719 Handling requestTooLarge error 
+- #3678 Support semantic for Set as default identity
+- Translation
+
+### Added
+- #3707 Add Mailbox/clear to clear mailbox
+- #3515 Save as template
+
 ## [0.15.3] - 2025-04-22
 ### Fixed
 - #3670 Forwarding email make attachment bar disappear
