@@ -32,14 +32,4 @@ extension EmailExtension on Email {
       (emailAdress) => emailAdress.email == ownEmailAddress
     ) == true;
   }
-
-  bool toMe(String ownEmailAddress) {
-    final to = this.to ?? {};
-    final cc = this.cc ?? {};
-    final bcc = this.bcc ?? {};
-
-    return {...to, ...cc, ...bcc}.any(
-      (emailAdress) => emailAdress.email == ownEmailAddress
-    ) == true;
-  }
 }
