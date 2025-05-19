@@ -179,6 +179,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final GetHtmlContentFromAttachmentInteractor _getHtmlContentFromAttachmentInteractor;
   final DownloadAllAttachmentsForWebInteractor _downloadAllAttachmentsForWebInteractor;
   final ExportAllAttachmentsInteractor _exportAllAttachmentsInteractor;
+  final EmailId? currentEmailId;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
@@ -199,10 +200,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final isEmailContentClipped = RxBool(false);
   final attendanceStatus = Rxn<AttendanceStatus>();
 
-  EmailId? _currentEmailId;
   Identity? _identitySelected;
   ButtonState? _printEmailButtonState;
-  PresentationEmail? initialEmail;
   final obxListeners = <Worker>[];
 
   final StreamController<Either<Failure, Success>> _downloadProgressStateController =
@@ -210,11 +209,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   Stream<Either<Failure, Success>> get downloadProgressState => _downloadProgressStateController.stream;
 
   PresentationEmail? get currentEmail {
-    if (initialEmail?.id != null) {
-      return _threadDetailController?.emailIdsPresentation[initialEmail!.id!];
-    }
-
-    return mailboxDashBoardController.selectedEmail.value;
+    return _threadDetailController?.emailIdsPresentation[currentEmailId];
   }
 
   bool get calendarEventProcessing => viewState.value.fold(
@@ -247,9 +242,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._previewEmailFromEmlFileInteractor,
     this._getHtmlContentFromAttachmentInteractor,
     this._downloadAllAttachmentsForWebInteractor,
-    this._exportAllAttachmentsInteractor,
-    {this.initialEmail}
-  );
+    this._exportAllAttachmentsInteractor, {
+    this.currentEmailId,
+  });
 
   @override
   void onInit() {
@@ -370,35 +365,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _registerObxStreamListener() {
-    if (initialEmail == null) {
-      obxListeners.add(ever(mailboxDashBoardController.accountId, (accountId) {
-        if (accountId is AccountId) {
-          _injectAndGetInteractorBindings(
-            session,
-            accountId
-          );
-        }
-      }));
-
-      obxListeners.add(ever<PresentationEmail?>(
-        mailboxDashBoardController.selectedEmail,
-        _handleOpenEmailDetailedView
-      ));
-    } else {
-      if (accountId != null) {
-        _injectAndGetInteractorBindings(session, accountId!);
-      }
-      _handleOpenEmailDetailedView(initialEmail);
+    if (accountId != null) {
+      _injectAndGetInteractorBindings(session, accountId!);
     }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _handleOpenEmailDetailedView();
+    });
 
     obxListeners.add(ever(mailboxDashBoardController.emailUIAction, (action) {
       if (action is CloseEmailDetailedViewToRedirectToTheInboxAction) {
-        if (emailSupervisorController.supportedPageView.isTrue) {
-          emailSupervisorController.popEmailQueue(_currentEmailId);
-          emailSupervisorController.setCurrentEmailIndex(-1);
-          emailSupervisorController.disposePageViewController();
-        }
-        _updateCurrentEmailId(null);
         _resetToOriginalValue(isEmailClosing: true);
         mailboxDashBoardController.clearSelectedEmail();
         mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
@@ -429,25 +404,24 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       && emailSupervisorController.currentListEmail.listEmailIds.contains(selectedEmail.id);
   }
 
-  void _handleOpenEmailDetailedView(PresentationEmail? selectedEmail) {
-    if (selectedEmail == null || _currentEmailId == selectedEmail.id) {
+  void _handleOpenEmailDetailedView() {
+    if (currentEmail == null) {
       log('SingleEmailController::_handleOpenEmailDetailedView(): email unselected');
       return;
     }
     emailLoadedViewState.value = Right<Failure, Success>(GetEmailContentLoading());
 
     emailSupervisorController.updateNewCurrentListEmail();
-    _updateCurrentEmailId(selectedEmail.id);
     _resetToOriginalValue();
 
-    if (isListEmailContainSelectedEmail(selectedEmail)) {
-      _createMultipleEmailViewAsPageView(selectedEmail.id!);
+    if (isListEmailContainSelectedEmail(currentEmail!)) {
+      _createMultipleEmailViewAsPageView(currentEmail!.id!);
     } else {
-      _createSingleEmailView(selectedEmail.id!);
+      _createSingleEmailView(currentEmail!.id!);
     }
 
-    if (!selectedEmail.hasRead) {
-      markAsEmailRead(selectedEmail, ReadActions.markAsRead, MarkReadAction.tap);
+    if (!currentEmail!.hasRead) {
+      markAsEmailRead(currentEmail!, ReadActions.markAsRead, MarkReadAction.tap);
     }
 
     if (mailboxDashBoardController.listIdentities.isEmpty) {
@@ -455,10 +429,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else {
       _initializeSelectedIdentity(mailboxDashBoardController.listIdentities);
     }
-  }
-
-  void _updateCurrentEmailId(EmailId? emailId) {
-    _currentEmailId = emailId;
   }
 
   void _createMultipleEmailViewAsPageView(EmailId emailId) {
@@ -764,14 +734,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         emailUnsubscribe.value = null;
       }
     }
-    if (initialEmail?.id == _threadDetailController?.emailIds.last) {
+    if (currentEmail?.id == _threadDetailController?.emailIds.last &&
+        (_threadDetailController?.emailIds.length ?? 0) > 1 == true) {
       _jumpScrollViewToTopOfEmail();
     }
   }
 
   void _jumpScrollViewToTopOfEmail() {
     Future.delayed(const Duration(milliseconds: 200), () {
-      final context = GlobalObjectKey(initialEmail?.id?.id.value ?? '').currentContext;
+      final context = GlobalObjectKey(currentEmailId!.id.value).currentContext;
       if (context != null && context.mounted) {
         Scrollable.ensureVisible(context);
       }
@@ -839,9 +810,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _handleMarkAsEmailReadCompleted(ReadActions readActions) {
-    if (_currentEmailId != null) {
+    if (currentEmail?.id != null) {
       mailboxDashBoardController.updateEmailFlagByEmailIds(
-        [_currentEmailId!],
+        [currentEmail!.id!],
         readAction: readActions,
       );
     }
@@ -982,7 +953,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
 
     final downloadAllSupported = session!.isDownloadAllSupported(accountId);
-    if (!downloadAllSupported || _currentEmailId == null) {
+    if (!downloadAllSupported) {
       consumeState(Stream.value(Left(ExportAllAttachmentsFailure())));
       return;
     }
@@ -990,7 +961,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     final baseDownloadAllUrl = session!.getDownloadAllCapability(accountId)!.endpoint!;
     consumeState(_exportAllAttachmentsInteractor.execute(
       accountId!,
-      _currentEmailId!,
+      currentEmail!.id!,
       baseDownloadAllUrl,
       outputFileName,
       cancelToken: cancelToken,
@@ -1101,7 +1072,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
 
     final downloadAllSupported = session.isDownloadAllSupported(accountId);
-    final emailId = _currentEmailId;
+    final emailId = currentEmail?.id;
 
     if (!downloadAllSupported || emailId == null) {
       consumeState(Stream.value(Left(DownloadAllAttachmentsForWebFailure(
@@ -1484,14 +1455,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     final newEmail = currentEmail?.updateKeywords({
       KeyWordIdentifier.emailFlagged: success.markStarAction == MarkStarAction.markStar,
     });
-    if (initialEmail?.id == null) {
-      mailboxDashBoardController.setSelectedEmail(newEmail);
-    } else {
-      _threadDetailController?.emailIdsPresentation[initialEmail!.id!] = newEmail;
-    }
 
     final emailId = newEmail?.id;
     if (emailId == null) return;
+    _threadDetailController?.emailIdsPresentation[emailId] = newEmail;
     mailboxDashBoardController.updateEmailFlagByEmailIds(
       [emailId],
       markStarAction: success.markStarAction,
@@ -1652,7 +1619,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       return;
     }
 
-    if (currentEmail == null || _currentEmailId == null) {
+    if (currentEmail == null) {
       appToast.showToastErrorMessage(
         currentOverlayContext!,
         AppLocalizations.of(context).toastMessageCannotFoundEmailIdWhenSendReceipt);
@@ -1713,13 +1680,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void closeEmailView({BuildContext? context}) {
-    if (emailSupervisorController.supportedPageView.isTrue) {
-      emailSupervisorController.popEmailQueue(_currentEmailId);
-      emailSupervisorController.setCurrentEmailIndex(-1);
-      emailSupervisorController.disposePageViewController();
-    }
     mailboxDashBoardController.clearSelectedEmail();
-    _updateCurrentEmailId(null);
     _resetToOriginalValue(isEmailClosing: true);
     _replaceBrowserHistory();
     if (mailboxDashBoardController.searchController.isSearchEmailRunning
@@ -1943,7 +1904,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void openAttachmentList(BuildContext context, List<Attachment> attachments) {
-    final tag = initialEmail?.id?.id.value;
+    final tag = currentEmailId?.id.value;
     if (responsiveUtils.isMobile(context)) {
       (AttachmentListBottomSheetBuilder(context, attachments, imagePaths, _attachmentListScrollController, tag)
         ..onCloseButtonAction(() => popBack())
