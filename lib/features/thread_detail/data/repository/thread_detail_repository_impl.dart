@@ -41,10 +41,16 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
         ))
     );
 
-    return filteredEmailIds.reduce((prev, curr) => prev + curr);
+    return filteredEmailIds
+      .reduce((prev, curr) => prev + curr)
+      .sortWithResult(EmailComparator(
+        EmailComparatorProperty.receivedAt
+      )..setIsAscending(true))
+      .map((e) => e.id!)
+      .toList();
   }
 
-  Future<List<EmailId>> _filterBadEmails(
+  Future<List<Email>> _filterBadEmails(
     Session session,
     AccountId accountId,
     List<EmailId> emailIds,
@@ -75,11 +81,6 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
             sentMailboxId,
             ownEmailAddress,
           ))
-          .toList()
-          .sortWithResult(EmailComparator(
-            EmailComparatorProperty.receivedAt
-          )..setIsAscending(true))
-          .map((e) => e.id!)
           .toList();
       } catch (e) {
         retry--;
