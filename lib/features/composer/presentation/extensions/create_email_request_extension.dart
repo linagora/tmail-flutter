@@ -26,16 +26,20 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
   Set<EmailAddress> createSenders() {
     if (identity?.email?.isNotEmpty == true) {
       return { identity!.toEmailAddress() };
+    } else if (session.getOwnEmailAddressOrEmpty().isNotEmpty) {
+      return { EmailAddress(null, session.getOwnEmailAddressOrEmpty()) };
     } else {
-      return { EmailAddress(null, session.getOwnEmailAddress()) };
+      return {};
     }
   }
 
   String createMdnEmailAddress() {
     if (emailActionType == EmailActionType.editDraft && fromSender?.isNotEmpty == true) {
       return fromSender!.first.emailAddress;
+    } else if (session.getOwnEmailAddressOrEmpty().isNotEmpty) {
+      return session.getOwnEmailAddressOrEmpty();
     } else {
-      return session.getOwnEmailAddress();
+      return '';
     }
   }
 
@@ -48,7 +52,9 @@ extension CreateEmailRequestExtension on CreateEmailRequest {
 
     return identity?.replyTo?.isNotEmpty == true
       ? identity!.replyTo!
-      : {EmailAddress(null, session.getOwnEmailAddress())};
+      : session.getOwnEmailAddressOrEmpty().isNotEmpty
+        ? {EmailAddress(null, session.getOwnEmailAddressOrEmpty())}
+        : null;
   }
 
 

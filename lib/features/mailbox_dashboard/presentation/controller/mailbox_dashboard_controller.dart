@@ -3149,7 +3149,7 @@ class MailboxDashBoardController extends ReloadableController
       position,
       popupMenuUserSettingActionTile(
         context,
-        sessionCurrent?.getOwnEmailAddress(),
+        sessionCurrent?.getOwnEmailAddressOrEmpty(),
         onLogoutAction: () {
           popBack();
           logout(
@@ -3217,14 +3217,7 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
-  String getOwnEmailAddress() {
-    try {
-      return sessionCurrent?.getOwnEmailAddress() ?? '';
-    } catch (e) {
-      logError('ManageAccountDashBoardController::getOwnEmailAddress:Exception: $e');
-      return '';
-    }
-  }
+  String getOwnEmailAddress() => sessionCurrent?.getOwnEmailAddressOrEmpty() ?? '';
 
   @override
   void onClose() {

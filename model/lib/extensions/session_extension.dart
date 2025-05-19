@@ -2,6 +2,7 @@
 import 'dart:ui';
 
 import 'package:core/presentation/extensions/uri_extension.dart';
+import 'package:core/utils/app_logger.dart';
 import 'package:get/get_utils/src/extensions/string_extensions.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/capability/calendar_event_capability.dart';
@@ -68,6 +69,15 @@ extension SessionExtension on Session {
       return capability;
     } else {
       return null;
+    }
+  }
+
+  String getOwnEmailAddressOrEmpty() {
+    try {
+      return getOwnEmailAddress();
+    } catch (e) {
+      logError('SessionExtension::getOwnEmailAddressOrEmpty:Exception: $e');
+      return '';
     }
   }
 

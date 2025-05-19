@@ -587,7 +587,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       final searchEmailFilter = controller.searchController.searchEmailFilter.value;
       final sortOrderType = controller.searchController.sortOrderFiltered;
       final listAddressOfFrom = controller.searchController.listAddressOfFromFiltered;
-      final currentUserEmail = controller.sessionCurrent?.getOwnEmailAddress();
+      final currentUserEmail = controller.sessionCurrent?.getOwnEmailAddressOrEmpty();
       final startDate = controller.searchController.startDateFiltered;
       final endDate = controller.searchController.endDateFiltered;
       final receiveTimeType = controller.searchController.receiveTimeFiltered;

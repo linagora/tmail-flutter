@@ -64,7 +64,7 @@ extension SessionExtensions on Session {
 
   String get internalDomain {
     try {
-      return getOwnEmailAddress().split('@').last;
+      return getOwnEmailAddressOrEmpty().split('@').last;
     } catch (e) {
       logError('SessionExtensions::internalDomain: Exception: $e');
       return '';
