@@ -243,7 +243,7 @@ class ComposerController extends BaseController
   int? get savedEmailDraftHash => _savedEmailDraftHash;
 
   GetEmailContentInteractor get getEmailContentInteractor => _getEmailContentInteractor;
-  
+
   GetServerSettingInteractor get getServerSettingInteractor => _getServerSettingInteractor;
 
   GetAllIdentitiesInteractor get getAllIdentitiesInteractor => _getAllIdentitiesInteractor;
@@ -622,7 +622,7 @@ class ComposerController extends BaseController
       mailboxDashBoardController.accountId.value,
     );
   }
-  
+
   Future<void> setupComposer() async {
     _isEmailBodyLoaded = false;
     final arguments = PlatformInfo.isWeb ? composerArgs : Get.arguments;
@@ -687,7 +687,7 @@ class ComposerController extends BaseController
     required EmailActionType actionType,
     String? listPost,
   }) {
-    final senderEmailAddress = mailboxDashBoardController.sessionCurrent?.getOwnEmailAddress();
+    final senderEmailAddress = mailboxDashBoardController.sessionCurrent?.getOwnEmailAddressOrEmpty();
     final isSender = presentationEmail.from
       .asList()
       .any((element) => element.emailAddress.isNotEmpty && element.emailAddress == senderEmailAddress);
@@ -1285,7 +1285,7 @@ class ComposerController extends BaseController
       log('ComposerController::handleClickSaveAsTemplateButton: SESSION or ACCOUNT_ID or ARGUMENTS is NULL');
       return;
     }
-    
+
     MailboxId? templateMailboxId = mailboxDashBoardController
       .getMailboxIdByRole(PresentationMailbox.roleTemplates);
     templateMailboxId ??= mailboxDashBoardController.mapMailboxById
