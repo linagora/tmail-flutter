@@ -7,16 +7,15 @@
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var A, B;
   A = holdersList[0];
-  B = holdersList[13];
+  B = holdersList[14];
   var typesOffset = hunkHelpers.updateTypes([]);
   (function constants() {
-    B.CupertinoLoadingWidget_null_null_null = new A.CupertinoLoadingWidget(null, null, null);
-    B.Color_4293128703 = new A.Color(4293128703);
+    B.CupertinoLoadingWidget_null_null_null_null = new A.CupertinoLoadingWidget(null, null, null, null);
   })();
 };
 ;
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_7", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "LljioJHbiZSsqdx1P3IMPLKsyV4=");
+})($__dart_deferred_initializers__, "DV2iCL1wDaMSf7lgPAtT5mjF1zY=");
 ;
