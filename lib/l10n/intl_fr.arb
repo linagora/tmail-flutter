@@ -4693,5 +4693,73 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "noLogsHaveBeenRecordedYet": "Aucun journal n'a encore été enregistré.",
+  "@noLogsHaveBeenRecordedYet": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveMessageToTemplateCancelled": "L'enregistrement du message dans le dossier de modèles a été annulé",
+  "@saveMessageToTemplateCancelled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "updateMessageToTemplateSuccess": "Mise à jour réussie du message dans le dossier de modèles",
+  "@updateMessageToTemplateSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exportTraceLog": "Exporter le journal de suivi",
+  "@exportTraceLog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveMessageToTemplateFailed": "Échec de l'enregistrement du message dans le dossier de modèles",
+  "@saveMessageToTemplateFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageExportTraceLogDialog": "Le journal des messages d'erreur de l'API mobile a été enregistré. Voulez-vous l'exporter ?",
+  "@messageExportTraceLogDialog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exportTraceLogFailed": "Échec de l'export du journal de suivi",
+  "@exportTraceLogFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youNeedToGrantFilesPermissionToExportFile": "Vous devez accorder l'autorisation d'exporter des fichiers",
+  "@youNeedToGrantFilesPermissionToExportFile": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exportTraceLogSuccess": "Export des journaux de suivi réussis vers \"{path}\"",
+  "@exportTraceLogSuccess": {
+    "type": "text",
+    "placeholders_order": [
+      "path"
+    ],
+    "placeholders": {
+      "path": {}
+    }
+  },
+  "invalidArguments": "Arguments invalides : \"{description}\"",
+  "@invalidArguments": {
+    "type": "text",
+    "placeholders_order": [
+      "description"
+    ],
+    "placeholders": {
+      "description": {}
+    }
   }
 }
