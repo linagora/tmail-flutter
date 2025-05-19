@@ -239,14 +239,14 @@ void main() {
         when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
         when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
         when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
-        singleEmailController.onInit();
         Get.put<AcceptCalendarEventInteractor>(acceptCalendarEventInteractor);
-          mailboxDashboardController.accountId.refresh();
-          singleEmailController.handleSuccessViewState(
-            ParseCalendarEventSuccess([
-              BlobCalendarEvent(
-                blobId: blobId,
-                calendarEventList: [calendarEvent])]));
+        singleEmailController.onInit();
+        mailboxDashboardController.accountId.refresh();
+        singleEmailController.handleSuccessViewState(
+          ParseCalendarEventSuccess([
+            BlobCalendarEvent(
+              blobId: blobId,
+              calendarEventList: [calendarEvent])]));
 
         // act
         singleEmailController.onCalendarEventReplyAction(EventActionType.yes, emailId);
@@ -267,8 +267,8 @@ void main() {
         when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
         when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
         when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
-        singleEmailController.onInit();
         Get.put<MaybeCalendarEventInteractor>(maybeCalendarEventInteractor);
+        singleEmailController.onInit();
         mailboxDashboardController.accountId.refresh();
         singleEmailController.handleSuccessViewState(
           ParseCalendarEventSuccess([
@@ -295,8 +295,8 @@ void main() {
         when(mailboxDashboardController.emailUIAction).thenReturn(Rxn(null));
         when(mailboxDashboardController.viewState).thenReturn(Rx(Right(UIState.idle)));
         when(mailboxDashboardController.sessionCurrent).thenReturn(testSession);
-        singleEmailController.onInit();
         Get.put<RejectCalendarEventInteractor>(rejectCalendarEventInteractor);
+        singleEmailController.onInit();
         mailboxDashboardController.accountId.refresh();
         singleEmailController.handleSuccessViewState(
           ParseCalendarEventSuccess([
