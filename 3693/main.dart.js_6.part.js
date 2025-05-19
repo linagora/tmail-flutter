@@ -239,6 +239,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     ApplicationVersionWidget$(padding, title) {
       return new E.ApplicationVersionWidget(padding, title, null);
     },
+    SessionExtensions_getContactSupportCapability(_this, accountId) {
+      var contactSupportCapability, e, exception;
+      try {
+        contactSupportCapability = A.SessionExtension_getCapabilityProperties(_this, accountId, $.$get$SessionExtensions_linagoraContactSupportCapability(), type$.ContactSupportCapability);
+        A.log("SessionExtensions::getContactSupportCapability:contactSupportCapability = " + A.S(contactSupportCapability), B.Level_3);
+        return contactSupportCapability;
+      } catch (exception) {
+        e = A.unwrapException(exception);
+        A.log("SessionExtensions::getContactSupportCapability():[Exception] " + A.S(e), B.Level_1);
+        return null;
+      }
+    },
     VacationResponseExtension_get_vacationResponderIsReady(_this) {
       var t1, t2, startDate;
       if (_this.isEnabled === true) {
@@ -627,7 +639,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(A.Expanded$(new A.LayoutBuilder(new C.NavigationBarWidget_build_closure(_this), _null), 1));
       else {
         t1 = A._setArrayType([B.Spacer_null], t1);
-        if (_this.contactSupportCapability != null) {
+        t3 = _this.contactSupportCapability;
+        if ((t3 == null ? _null : t3.get$isAvailable()) === true) {
           A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
           t1.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build_closure0(_this), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null)));
         }
@@ -836,7 +849,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1865
+    $signature: 1889
   };
   C._AppGridDashboardIconState_build_closure.prototype = {
     call$3(context, isExpanded, child) {
@@ -852,7 +865,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1.imagePaths;
       return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 1866
+    $signature: 1890
   };
   C.AppGridDashboardItem_build_closure.prototype = {
     call$0() {
@@ -900,7 +913,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 358
+    $signature: 394
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -992,6 +1005,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     return {
       AppLocalizations: findType("AppLocalizations"),
       BoxConstraints: findType("BoxConstraints"),
+      ContactSupportCapability: findType("ContactSupportCapability"),
       ContainerLayer: findType("ContainerLayer0"),
       JSArray_BoxShadow: findType("JSArray<BoxShadow>"),
       JSArray_Object: findType("JSArray<Object>"),
@@ -1045,5 +1059,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "LpxXKZP39KJwtPr2DB/Xxwebcqg=");
+})($__dart_deferred_initializers__, "PZnuGjIy/9zsz7qaKTTDqXb5XGw=");
 ;

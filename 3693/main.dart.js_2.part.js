@@ -6,10 +6,31 @@
 })(self, "$__dart_deferred_initializers__", "eventLog");
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
   var J, B, C,
-  A = {ImageLoaderMixin: function ImageLoaderMixin() {
-    }, ImageLoaderMixin_buildImage_closure: function ImageLoaderMixin_buildImage_closure() {
-    }, ImageLoaderMixin_buildImage_closure0: function ImageLoaderMixin_buildImage_closure0() {
-    }, ImageLoaderMixin_buildImage_closure1: function ImageLoaderMixin_buildImage_closure1(t0) {
+  A = {
+    HttpRequest_request(url, requestHeaders) {
+      var t3,
+        t1 = new B._Future($.Zone__current, type$._Future_HttpRequest),
+        completer = new B._AsyncCompleter(t1, type$._AsyncCompleter_HttpRequest),
+        t2 = new XMLHttpRequest();
+      t2.toString;
+      C.HttpRequest_methods.open$3$async(t2, "GET", url, true);
+      t3 = type$.ProgressEvent;
+      B._EventStreamSubscription$(t2, "load", new A.HttpRequest_request_closure(t2, completer), false, t3);
+      B._EventStreamSubscription$(t2, "error", completer.get$completeError(), false, t3);
+      t2.send();
+      return t1;
+    },
+    HttpRequest_request_closure: function HttpRequest_request_closure(t0, t1) {
+      this.xhr = t0;
+      this.completer = t1;
+    },
+    ImageLoaderMixin: function ImageLoaderMixin() {
+    },
+    ImageLoaderMixin_buildImage_closure: function ImageLoaderMixin_buildImage_closure() {
+    },
+    ImageLoaderMixin_buildImage_closure0: function ImageLoaderMixin_buildImage_closure0() {
+    },
+    ImageLoaderMixin_buildImage_closure1: function ImageLoaderMixin_buildImage_closure1(t0) {
       this.imageSize = t0;
     },
     _httpClient() {
@@ -90,7 +111,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
             case 0:
               // Function start
               $async$goto = 3;
-              return B._asyncAwait(B.HttpRequest_request(url, null, null, null, headers, null, null, null), $async$httpGet);
+              return B._asyncAwait(A.HttpRequest_request(url, headers), $async$httpGet);
             case 3:
               // returning from await.
               t1 = $async$result.responseText;
@@ -288,11 +309,28 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     }
   };
   var typesOffset = hunkHelpers.updateTypes([]);
+  A.HttpRequest_request_closure.prototype = {
+    call$1(e) {
+      var accepted, unknownRedirect, t3,
+        t1 = this.xhr,
+        t2 = t1.status;
+      t2.toString;
+      accepted = t2 >= 200 && t2 < 300;
+      unknownRedirect = t2 > 307 && t2 < 400;
+      t2 = accepted || t2 === 0 || t2 === 304 || unknownRedirect;
+      t3 = this.completer;
+      if (t2)
+        t3.complete$1(0, t1);
+      else
+        t3.completeError$1(e);
+    },
+    $signature: 397
+  };
   A.ImageLoaderMixin_buildImage_closure.prototype = {
     call$1(_) {
       return C.CupertinoActivityIndicator_null_true_1_null;
     },
-    $signature: 1850
+    $signature: 1810
   };
   A.ImageLoaderMixin_buildImage_closure0.prototype = {
     call$3(_, child, loadingProgress) {
@@ -302,7 +340,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     "call*": "call$3",
     $requiredArgCount: 3,
-    $signature: 1851
+    $signature: 1811
   };
   A.ImageLoaderMixin_buildImage_closure1.prototype = {
     call$3(context, error, stackTrace) {
@@ -311,7 +349,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = this.imageSize;
       return B.Container$(C.Alignment_0_0, D.Icon_MYE, C.Clip_0, _null, _null, _null, _null, t1, _null, _null, _null, _null, _null, t1);
     },
-    $signature: 1852
+    $signature: 1812
   };
   A.NetworkImage__loadAsync_closure.prototype = {
     call$1(e) {
@@ -328,19 +366,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         throw B.wrapException(A.NetworkImageLoadException$($status, this.resolved));
       }
     },
-    $signature: 182
+    $signature: 184
   };
   A.NetworkImage__loadAsync_closure0.prototype = {
     call$1(e) {
       return this.completer.completeError$1(e);
     },
-    $signature: 90
+    $signature: 86
   };
   A.NetworkImage__loadAsync_closure1.prototype = {
     call$2(bytes, total) {
       this.chunkEvents.add$1(0, new A.ImageChunkEvent(bytes, total));
     },
-    $signature: 248
+    $signature: 236
   };
   A._ApplicationVersionWidgetState_build_closure.prototype = {
     call$2(context, snapshot) {
@@ -363,14 +401,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1853
+    $signature: 1813
   };
   (function inheritance() {
     var _mixin = hunkHelpers.mixin,
       _inheritMany = hunkHelpers.inheritMany,
       _inherit = hunkHelpers.inherit;
+    _inheritMany(B.Closure, [A.HttpRequest_request_closure, A.ImageLoaderMixin_buildImage_closure, A.ImageLoaderMixin_buildImage_closure0, A.ImageLoaderMixin_buildImage_closure1, A.NetworkImage__loadAsync_closure, A.NetworkImage__loadAsync_closure0]);
     _inheritMany(B.Object, [A.ImageLoaderMixin, A.NetworkImageLoadException, A._ImageChunkEvent_Object_Diagnosticable]);
-    _inheritMany(B.Closure, [A.ImageLoaderMixin_buildImage_closure, A.ImageLoaderMixin_buildImage_closure0, A.ImageLoaderMixin_buildImage_closure1, A.NetworkImage__loadAsync_closure, A.NetworkImage__loadAsync_closure0]);
     _inherit(A.NetworkImage, B.ImageProvider);
     _inheritMany(B.Closure2Args, [A.NetworkImage__loadAsync_closure1, A._ApplicationVersionWidgetState_build_closure]);
     _inherit(A.ImageChunkEvent, A._ImageChunkEvent_Object_Diagnosticable);
@@ -389,10 +427,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       ImageChunkEvent: findType("ImageChunkEvent"),
       ImagePaths: findType("ImagePaths"),
       NativeByteBuffer: findType("NativeByteBuffer"),
+      ProgressEvent: findType("ProgressEvent"),
       String: findType("String"),
       SynchronousFuture_NetworkImage: findType("SynchronousFuture<NetworkImage>"),
       Uint8List: findType("Uint8List"),
+      _AsyncCompleter_HttpRequest: findType("_AsyncCompleter<HttpRequest>"),
       _AsyncCompleter_JSObject: findType("_AsyncCompleter<JSObject>"),
+      _Future_HttpRequest: findType("_Future<HttpRequest>"),
       _Future_JSObject: findType("_Future<JSObject>")
     };
   })();
@@ -407,5 +448,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_2", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "Ds96HliWnC93aHdsB6InngLKk7g=");
+})($__dart_deferred_initializers__, "g0zjFTpEPRBlNEf4dhj998+sy2M=");
 ;
