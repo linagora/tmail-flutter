@@ -14,7 +14,7 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
     for (var presentationEmail in success.presentationEmails) {
       if (presentationEmail.id == null) continue;
       if (presentationEmail.id == emailIds.last) {
-        EmailBindings(initialEmail: presentationEmail).dependencies();
+        EmailBindings(currentEmailId: presentationEmail.id).dependencies();
       }
       emailIdsPresentation[presentationEmail.id!] = presentationEmail.copyWith(
         emailInThreadStatus: presentationEmail.id == emailIds.last

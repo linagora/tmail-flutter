@@ -22,7 +22,7 @@ extension ToggleThreadDetailCollapeExpand on ThreadDetailController {
       tag: emailId.id.value,
     ) != null;
     if (!isInitialized) {
-      EmailBindings(initialEmail: presentationEmail).dependencies();
+      EmailBindings(currentEmailId: presentationEmail.id).dependencies();
     }
     for (var key in emailIds) {
       if (emailIdsPresentation[key] == null) continue;
