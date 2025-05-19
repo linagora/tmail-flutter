@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_bottom_bar_widget.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
@@ -19,7 +20,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
   
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
+    final multipleEmailsView = SafeArea(
       child: Column(
         children: [
           Obx(() => ThreadDetailAppBar(
@@ -135,6 +136,17 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
         ],
       ),
     );
+
+    return Obx(() {
+      if (controller.emailIds.length == 1 &&
+          controller.emailIdsPresentation.values.firstOrNull != null) {
+        return EmailView(
+          emailId: controller.emailIdsPresentation.values.firstOrNull?.id,
+        );
+      }
+
+      return multipleEmailsView;
+    });
   }
 
   EdgeInsetsGeometry _padding(BuildContext context) {

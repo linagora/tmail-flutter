@@ -53,23 +53,21 @@ class EmailView extends GetWidget<SingleEmailController> {
 
   const EmailView({
     super.key,
+    this.isInsideThreadDetailView = false,
     this.emailId,
     this.isFirstEmailInThreadDetail = false,
-    this.isLastEmailInThreadDetail = false,
     this.threadSubject,
     this.onToggleThreadDetailCollapseExpand,
   });
 
+  final bool isInsideThreadDetailView;
   final EmailId? emailId;
   final bool isFirstEmailInThreadDetail;
-  final bool isLastEmailInThreadDetail;
   final String? threadSubject;
   final VoidCallback? onToggleThreadDetailCollapseExpand;
   
   @override
   String? get tag => emailId?.id.value;
-
-  bool get isInsideThreadDetailView => tag != null;
 
   @override
   Widget build(BuildContext context) {
@@ -264,14 +262,6 @@ class EmailView extends GetWidget<SingleEmailController> {
                       presentationEmail: currentEmail,
                       userName: controller.getOwnEmailAddress(),
                       emailActionCallback: controller.pressEmailAction,
-                      bottomBarDecoration: isInsideThreadDetailView
-                        ? const BoxDecoration(border: Border(top: BorderSide(
-                            color: AppColor.colorDividerEmailView,
-                          )))
-                        : null,
-                      padding: isInsideThreadDetailView
-                        ? EdgeInsets.zero
-                        : null,
                     );
                   }),
                 ]);
