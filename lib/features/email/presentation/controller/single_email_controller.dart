@@ -764,6 +764,18 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         emailUnsubscribe.value = null;
       }
     }
+    if (initialEmail?.id == _threadDetailController?.emailIds.last) {
+      _jumpScrollViewToTopOfEmail();
+    }
+  }
+
+  void _jumpScrollViewToTopOfEmail() {
+    Future.delayed(const Duration(milliseconds: 200), () {
+      final context = GlobalObjectKey(initialEmail?.id?.id.value ?? '').currentContext;
+      if (context != null && context.mounted) {
+        Scrollable.ensureVisible(context);
+      }
+    });
   }
 
   void _handleUnsubscribe(String listUnsubscribe) {
