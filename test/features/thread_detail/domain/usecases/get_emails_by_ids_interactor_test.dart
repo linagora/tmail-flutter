@@ -4,6 +4,7 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/annotations.dart';
 import 'package:model/email/email_property.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/exceptions/thread_detail_overload_exception.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/repository/thread_detail_repository.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_by_ids_interactor.dart';
@@ -19,7 +20,7 @@ void main() {
 
   group('get emails by ids interactor test:', () {
     test(
-      'should throw assertion error '
+      'should throw ThreadDetailOverloadException '
       'when there are more than 1 emailIds '
       'and properties contains any of htmlBody, bodyValues or attachments',
     () async {
@@ -41,8 +42,7 @@ void main() {
       expect(
         result.fold(
           (failure) => failure is GetEmailsByIdsFailure &&
-            failure.exception is AssertionError &&
-            failure.exception.message == 'Only one email can be fetched with heavy properties',
+            failure.exception is ThreadDetailOverloadException,
           (success) => false,
         ),
         true,
