@@ -1,0 +1,1 @@
+class ThreadDetailOverloadException implements Exception {}
