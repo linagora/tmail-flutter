@@ -258,7 +258,6 @@ class MailboxDashBoardController extends ReloadableController
   final isRecoveringDeletedMessage = RxBool(false);
   final localFileDraggableAppState = Rxn<DraggableAppState>();
   final isSenderImportantFlagEnabled = RxBool(true);
-  final currentThreadId = Rxn<ThreadId>();
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
@@ -832,7 +831,6 @@ class MailboxDashBoardController extends ReloadableController
     if (singleEmail) {
       dispatchRoute(DashboardRoutes.emailDetailed);
     } else {
-      currentThreadId.value = presentationEmail.threadId;
       dispatchRoute(DashboardRoutes.threadDetailed);
     }
     if (PlatformInfo.isWeb && presentationEmail.routeWeb != null) {
@@ -870,7 +868,7 @@ class MailboxDashBoardController extends ReloadableController
     if (_searchInsideEmailDetailedViewIsActive()) {
       _closeEmailDetailedView();
     } else if (_searchInsideThreadDetailViewIsActive()) {
-      _closeThreadDetailView();
+      _closeEmailDetailedView();
     }
     _unSelectedMailbox();
     searchController.clearFilterSuggestion();
@@ -897,7 +895,7 @@ class MailboxDashBoardController extends ReloadableController
     if (_searchInsideEmailDetailedViewIsActive()) {
       _closeEmailDetailedView();
     } else if (_searchInsideThreadDetailViewIsActive()) {
-      _closeThreadDetailView();
+      _closeEmailDetailedView();
     }
     _unSelectedMailbox();
     searchController.clearFilterSuggestion();
@@ -931,11 +929,6 @@ class MailboxDashBoardController extends ReloadableController
       && currentContext != null
       && responsiveUtils.isDesktop(currentContext!)
       && dashboardRoute.value == DashboardRoutes.threadDetailed;
-  }
-
-  void _closeThreadDetailView() {
-    currentThreadId.value = null;
-    dispatchRoute(DashboardRoutes.thread);
   }
 
   void clearSearchEmail() {
