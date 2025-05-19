@@ -65,7 +65,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
       }
 
       return EmailView(
-        key: ValueKey(presentationEmail.id?.id.value),
+        key: GlobalObjectKey(presentationEmail.id?.id.value ?? ''),
         emailId: presentationEmail.id,
         isFirstEmailInThreadDetail: isFirstEmailInThreadDetail,
         isLastEmailInThreadDetail: isLastEmailInThreadDetail,
