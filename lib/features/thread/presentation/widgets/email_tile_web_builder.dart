@@ -376,8 +376,8 @@ class _EmailTileBuilderState extends State<EmailTileBuilder>  with BaseEmailItem
                   iconPadding: EdgeInsets.zero,
                   minSize: 28,
                   tooltip: widget.presentationEmail.hasStarred
-                    ? AppLocalizations.of(context).starred
-                    : AppLocalizations.of(context).not_starred,
+                    ? AppLocalizations.of(context).not_starred
+                    : AppLocalizations.of(context).mark_as_starred,
                   onTap: () => widget.emailActionClick?.call(
                     widget.presentationEmail.hasStarred
                       ? EmailActionType.unMarkAsStarred
