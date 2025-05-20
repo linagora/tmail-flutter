@@ -82,7 +82,7 @@ class EmailView extends GetWidget<SingleEmailController> {
             clipBehavior: Clip.antiAlias,
             decoration: _getDecorationEmailView(context),
             margin: _getMarginEmailView(context),
-            child: Obx(() {
+            child: Builder(builder: (context) {
               final currentEmail = controller.currentEmail;
               if (currentEmail != null) {
                 return Column(children: [
