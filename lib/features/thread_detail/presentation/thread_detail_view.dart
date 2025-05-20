@@ -61,7 +61,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                           child: ColoredBox(color: Colors.white),
                         ),
                         SingleChildScrollView(
-                          reverse: controller.scrollReverse.value,
+                          reverse: true,
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: controller.getThreadDetailEmailViews()
