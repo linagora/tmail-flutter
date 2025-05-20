@@ -40,7 +40,7 @@ class ThreadDetailController extends BaseController {
     PresentationMailbox.roleSent,
   );
   String? get ownEmailAddress => session?.getOwnEmailAddress();
-  int get emailsNotLoadedCount => emailIdsPresentation
+  int get emailsToLoadMoreCount => emailIdsPresentation
     .values
     .where((email) => email == null)
     .length;
