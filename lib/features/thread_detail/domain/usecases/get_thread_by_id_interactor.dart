@@ -5,7 +5,6 @@ import 'package:dartz/dartz.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:tmail_ui_user/features/thread_detail/domain/exceptions/empty_thread_detail_exception.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/repository/thread_detail_repository.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
@@ -31,10 +30,6 @@ class GetThreadByIdInteractor {
         sentMailboxId,
         ownEmailAddress,
       );
-
-      if (result.isEmpty) {
-        throw EmptyThreadDetailException();
-      }
 
       yield Right(GetThreadByIdSuccess(result));
     } catch (e) {
