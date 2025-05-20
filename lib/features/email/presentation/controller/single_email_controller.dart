@@ -103,7 +103,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/send_receipt_to_sen
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/calendar_event_interactor_bindings.dart';
-import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/attachment_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_attendee_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_organizer_extension.dart';
@@ -138,7 +137,6 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_id
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
-import 'package:tmail_ui_user/features/thread/domain/constants/thread_constants.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -160,7 +158,6 @@ import 'package:twake_previewer_flutter/twake_plain_text_previewer/twake_plain_t
 class SingleEmailController extends BaseController with AppLoaderMixin {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
-  final emailSupervisorController = Get.find<EmailSupervisorController>();
   final _downloadManager = Get.find<DownloadManager>();
   final _printUtils = Get.find<PrintUtils>();
   final _attachmentListScrollController = ScrollController();
@@ -403,11 +400,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }));
   }
 
-  bool isListEmailContainSelectedEmail(PresentationEmail selectedEmail) {
-    return emailSupervisorController.currentListEmail.isNotEmpty 
-      && emailSupervisorController.currentListEmail.listEmailIds.contains(selectedEmail.id);
-  }
-
   void _handleOpenEmailDetailedView() {
     if (currentEmail == null) {
       log('SingleEmailController::_handleOpenEmailDetailedView(): email unselected');
@@ -415,14 +407,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
     emailLoadedViewState.value = Right<Failure, Success>(GetEmailContentLoading());
 
-    emailSupervisorController.updateNewCurrentListEmail();
     _resetToOriginalValue();
 
-    if (isListEmailContainSelectedEmail(currentEmail!)) {
-      _createMultipleEmailViewAsPageView(currentEmail!.id!);
-    } else {
-      _createSingleEmailView(currentEmail!.id!);
-    }
+    _createSingleEmailView(currentEmail!.id!);
 
     if (!currentEmail!.hasRead) {
       markAsEmailRead(currentEmail!, ReadActions.markAsRead, MarkReadAction.tap);
@@ -435,16 +422,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _createMultipleEmailViewAsPageView(EmailId emailId) {
-    log('SingleEmailController::_createMultipleEmailViewAsPageView():');
-    emailSupervisorController.supportedPageView.value = true;
-    emailSupervisorController.createPageControllerAndJumpToEmailById(emailId);
-    _getEmailContentAction(emailId);
-  }
-
   void _createSingleEmailView(EmailId emailId) {
     log('SingleEmailController::_createSingleEmailView():');
-    emailSupervisorController.supportedPageView.value = false;
     _getEmailContentAction(emailId);
   }
 
@@ -455,7 +434,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           (failure) => null,
           (success) {
             if (success is StartDownloadAttachmentForWeb && !success.previewerSupported) {
-              emailSupervisorController.mailboxDashBoardController.addDownloadTask(
+              mailboxDashBoardController.addDownloadTask(
                 DownloadTaskState(
                   taskId: success.taskId,
                   attachment: success.attachment,
@@ -474,7 +453,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
               final percent = success.progress.round();
               log('SingleEmailController::DownloadingAttachmentForWeb(): $percent%');
 
-              emailSupervisorController.mailboxDashBoardController.updateDownloadTask(
+              mailboxDashBoardController.updateDownloadTask(
                 success.taskId,
                 (currentTask) {
                   final newTask = currentTask.copyWith(
@@ -485,7 +464,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
                   return newTask;
                 });
             } else if (success is StartDownloadAllAttachmentsForWeb) {
-              emailSupervisorController.mailboxDashBoardController.addDownloadTask(
+              mailboxDashBoardController.addDownloadTask(
                 DownloadTaskState(
                   taskId: success.taskId,
                   attachment: success.attachment,
@@ -504,7 +483,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
               final percent = success.progress.round();
               log('SingleEmailController::DownloadingAttachmentForWeb(): $percent%');
 
-              emailSupervisorController.mailboxDashBoardController.updateDownloadTask(
+              mailboxDashBoardController.updateDownloadTask(
                 success.taskId,
                 (currentTask) {
                   final newTask = currentTask.copyWith(
@@ -584,59 +563,42 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _getEmailContentAction(EmailId emailId) {
-    final emailLoaded = emailSupervisorController.getEmailInQueueByEmailId(emailId);
+    if (session != null && accountId != null) {
+      try {
+        final baseDownloadUrl = session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
+        TransformConfiguration transformConfiguration = PlatformInfo.isWeb
+          ? TransformConfiguration.forPreviewEmailOnWeb()
+          : TransformConfiguration.forPreviewEmail();
 
-    if (emailLoaded != null) {
-      consumeState(Stream.value(Right<Failure, Success>(
-        GetEmailContentSuccess(
-          htmlEmailContent: emailLoaded.htmlContent,
-          attachments: emailLoaded.attachments,
-          inlineImages: emailLoaded.inlineImages,
-          emailCurrent: emailLoaded.emailCurrent
-        )
-      )));
-    } else {
-      if (session != null && accountId != null) {
-        try {
-          final baseDownloadUrl = session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl);
-          TransformConfiguration transformConfiguration = PlatformInfo.isWeb
-            ? TransformConfiguration.forPreviewEmailOnWeb()
-            : TransformConfiguration.forPreviewEmail();
-
-          consumeState(_getEmailContentInteractor.execute(
-            session!,
-            accountId!,
-            emailId,
-            baseDownloadUrl,
-            transformConfiguration
-          ));
-        } catch (e) {
-          logError('SingleEmailController::_getEmailContentAction(): $e');
-          consumeState(Stream.value(Left(GetEmailContentFailure(
-            e,
-            onRetry: e is UnknownUriException
-              ? null
-              : _getEmailContentInteractor.execute(
-                  session!,
-                  accountId!,
-                  emailId,
-                  session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl),
-                  PlatformInfo.isWeb
-                    ? TransformConfiguration.forPreviewEmailOnWeb()
-                    : TransformConfiguration.forPreviewEmail(),
-                ),
-          ))));
-        }
+        consumeState(_getEmailContentInteractor.execute(
+          session!,
+          accountId!,
+          emailId,
+          baseDownloadUrl,
+          transformConfiguration
+        ));
+      } catch (e) {
+        logError('SingleEmailController::_getEmailContentAction(): $e');
+        consumeState(Stream.value(Left(GetEmailContentFailure(
+          e,
+          onRetry: e is UnknownUriException
+            ? null
+            : _getEmailContentInteractor.execute(
+                session!,
+                accountId!,
+                emailId,
+                session!.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl),
+                PlatformInfo.isWeb
+                  ? TransformConfiguration.forPreviewEmailOnWeb()
+                  : TransformConfiguration.forPreviewEmail(),
+              ),
+        ))));
       }
     }
   }
 
   void _getEmailContentOfflineSuccess(GetEmailContentFromCacheSuccess success) {
     emailLoadedViewState.value = Right<Failure, Success>(success);
-    if (emailSupervisorController.presentationEmailsLoaded.length > ThreadConstants.defaultLimit.value.toInt()) {
-      emailSupervisorController.popFirstEmailQueue();
-    }
-    emailSupervisorController.popEmailQueue(success.emailCurrent.id);
 
     currentEmailLoaded.value = EmailLoaded(
       htmlContent: success.htmlEmailContent,
@@ -644,7 +606,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       inlineImages: List.of(success.inlineImages ?? []),
       emailCurrent: success.emailCurrent,
     );
-    emailSupervisorController.pushEmailQueue(currentEmailLoaded.value!);
 
     if (success.emailCurrent.id == currentEmail?.id) {
       attachments.value = success.attachments ?? [];
@@ -677,10 +638,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _getEmailContentSuccess(GetEmailContentSuccess success) {
     emailLoadedViewState.value = Right<Failure, Success>(success);
-    if (emailSupervisorController.presentationEmailsLoaded.length > ThreadConstants.defaultLimit.value.toInt()) {
-      emailSupervisorController.popFirstEmailQueue();
-    }
-    emailSupervisorController.popEmailQueue(success.emailCurrent?.id);
 
     currentEmailLoaded.value = EmailLoaded(
       htmlContent: success.htmlEmailContent,
@@ -688,7 +645,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       inlineImages: List.of(success.inlineImages ?? []),
       emailCurrent: success.emailCurrent,
     );
-    emailSupervisorController.pushEmailQueue(currentEmailLoaded.value!);
 
     if (success.emailCurrent?.id == currentEmail?.id) {
       attachments.value = success.attachments ?? [];
@@ -1704,8 +1660,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  bool get isOpenEmailNotMailboxFromRoute => emailSupervisorController.supportedPageView.isFalse
-    && mailboxDashBoardController.selectedMailbox.value == null;
+  bool get isOpenEmailNotMailboxFromRoute => mailboxDashBoardController.selectedMailbox.value == null;
 
   void _replaceBrowserHistory() {
     if (PlatformInfo.isWeb) {
@@ -1831,15 +1786,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void toggleScrollPhysicsPagerView(bool leftDirection) {
-    log('SingleEmailController::toggleScrollPhysicsPagerView():leftDirection: $leftDirection');
-    if (leftDirection) {
-      emailSupervisorController.moveToNextEmail();
-    } else {
-      emailSupervisorController.backToPreviousEmail();
-    }
-  }
-
   void _storeOpenedEmailAction(Session? session, AccountId? accountId, DetailedEmail detailedEmail) async {
     if (session != null && accountId != null) {
       consumeState(_storeOpenedEmailInteractor.execute(session, accountId, detailedEmail));
@@ -1884,19 +1830,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void _handleParseCalendarEventSuccess(ParseCalendarEventSuccess success) {
     emailLoadedViewState.value = Right<Failure, Success>(success);
     blobCalendarEvent.value = success.blobCalendarEventList.firstOrNull;
-    if (PlatformInfo.isMobile) {
-      _enableScrollPageView();
-    }
     updateAttendanceStatus(success);
   }
 
   void _handleParseCalendarEventFailure(ParseCalendarEventFailure failure) {
     emailLoadedViewState.value = Left<Failure, Success>(failure);
     emailContents.value = currentEmailLoaded.value?.htmlContent;
-  }
-
-  void _enableScrollPageView() {
-    emailSupervisorController.scrollPhysicsPageView.value = null;
   }
 
   void openNewTabAction(String link) {
