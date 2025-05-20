@@ -176,7 +176,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   final GetHtmlContentFromAttachmentInteractor _getHtmlContentFromAttachmentInteractor;
   final DownloadAllAttachmentsForWebInteractor _downloadAllAttachmentsForWebInteractor;
   final ExportAllAttachmentsInteractor _exportAllAttachmentsInteractor;
-  final EmailId? currentEmailId;
+  final EmailId? _currentEmailId;
 
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   SendReceiptToSenderInteractor? _sendReceiptToSenderInteractor;
@@ -208,7 +208,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   Stream<Either<Failure, Success>> get downloadProgressState => _downloadProgressStateController.stream;
 
   PresentationEmail? get currentEmail {
-    return _threadDetailController?.emailIdsPresentation[currentEmailId];
+    return _threadDetailController?.emailIdsPresentation[_currentEmailId];
   }
 
   bool get calendarEventProcessing => viewState.value.fold(
@@ -242,8 +242,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     this._getHtmlContentFromAttachmentInteractor,
     this._downloadAllAttachmentsForWebInteractor,
     this._exportAllAttachmentsInteractor, {
-    this.currentEmailId,
-  });
+    EmailId? currentEmailId,
+  }) : _currentEmailId = currentEmailId;
 
   @override
   void onInit() {
@@ -701,7 +701,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   void _jumpScrollViewToTopOfEmail() {
     Future.delayed(const Duration(milliseconds: 200), () {
-      final context = GlobalObjectKey(currentEmailId!.id.value).currentContext;
+      final context = GlobalObjectKey(_currentEmailId!.id.value).currentContext;
       if (context != null && context.mounted) {
         Scrollable.ensureVisible(context);
       }
@@ -1871,7 +1871,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void openAttachmentList(BuildContext context, List<Attachment> attachments) {
-    final tag = currentEmailId?.id.value;
+    final tag = _currentEmailId?.id.value;
     if (responsiveUtils.isMobile(context)) {
       (AttachmentListBottomSheetBuilder(context, attachments, imagePaths, _attachmentListScrollController, tag)
         ..onCloseButtonAction(() => popBack())
