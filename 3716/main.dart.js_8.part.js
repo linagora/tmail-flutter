@@ -5,13 +5,10 @@
   s[d][e].push({p: "main.dart.js_8", e: "beginPart"});
 })(self, "$__dart_deferred_initializers__", "eventLog");
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
-  var J, B, C,
-  A = {HtmlContentViewerController: function HtmlContentViewerController() {
-      this.htmlElementKey = this.iframeHandler = null;
-      this.isIFrameLoaded = false;
-    },
-    HtmlContentViewerOnWeb$(allowResizeToDocumentSize, contentHtml, contentPadding, direction, heightContent, isInsideThreadDetailView, key, mailtoDelegate, onClickHyperLinkAction, useDefaultFont, widthContent) {
-      return new A.HtmlContentViewerOnWeb(contentHtml, widthContent, heightContent, direction, contentPadding, useDefaultFont, mailtoDelegate, onClickHyperLinkAction, allowResizeToDocumentSize, isInsideThreadDetailView, key);
+  var J, A, C,
+  B = {
+    HtmlContentViewerOnWeb$(allowResizeToDocumentSize, contentHtml, contentPadding, direction, heightContent, key, mailtoDelegate, onClickHyperLinkAction, scrollController, useDefaultFont, widthContent) {
+      return new B.HtmlContentViewerOnWeb(contentHtml, widthContent, heightContent, direction, contentPadding, useDefaultFont, mailtoDelegate, onClickHyperLinkAction, allowResizeToDocumentSize, scrollController, key);
     },
     HtmlContentViewerOnWeb: function HtmlContentViewerOnWeb(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10) {
       var _ = this;
@@ -24,7 +21,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.mailtoDelegate = t6;
       _.onClickHyperLinkAction = t7;
       _.allowResizeToDocumentSize = t8;
-      _.isInsideThreadDetailView = t9;
+      _.scrollController = t9;
       _.key = t10;
     },
     _HtmlContentViewerOnWebState: function _HtmlContentViewerOnWebState() {
@@ -33,21 +30,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._html_content_viewer_on_web_widget$_htmlData = _._webInit = null;
       _._html_content_viewer_on_web_widget$_isLoading = true;
       _.minHeight = 100;
-      _.___HtmlContentViewerOnWebState_sizeListener_F = $;
+      _.___HtmlContentViewerOnWebState__onMessageSubscription_F = $;
       _._html_content_viewer_on_web_widget$_iframeLoaded = false;
-      _._framework$_element = _._widget = _._contentCursorNotifier = _._viewerController = null;
+      _._framework$_element = _._widget = null;
     },
-    _HtmlContentViewerOnWebState_initState_closure: function _HtmlContentViewerOnWebState_initState_closure(t0) {
-      this.$this = t0;
-    },
-    _HtmlContentViewerOnWebState_initState__closure: function _HtmlContentViewerOnWebState_initState__closure(t0, t1) {
+    _HtmlContentViewerOnWebState__handleContentHeightEvent_closure: function _HtmlContentViewerOnWebState__handleContentHeightEvent_closure(t0, t1) {
       this.$this = t0;
       this.scrollHeightWithBuffer = t1;
     },
-    _HtmlContentViewerOnWebState_initState__closure0: function _HtmlContentViewerOnWebState_initState__closure0(t0) {
+    _HtmlContentViewerOnWebState__handleContentHeightEvent_closure0: function _HtmlContentViewerOnWebState__handleContentHeightEvent_closure0(t0) {
       this.$this = t0;
     },
-    _HtmlContentViewerOnWebState_initState__closure1: function _HtmlContentViewerOnWebState_initState__closure1(t0, t1) {
+    _HtmlContentViewerOnWebState__handleContentWidthEvent_closure: function _HtmlContentViewerOnWebState__handleContentWidthEvent_closure(t0, t1) {
       this.$this = t0;
       this.docWidth = t1;
     },
@@ -62,80 +56,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     _HtmlContentViewerOnWebState_build__closure: function _HtmlContentViewerOnWebState_build__closure(t0) {
       this.$this = t0;
-    },
-    _HtmlContentViewerOnWebState_build___closure: function _HtmlContentViewerOnWebState_build___closure() {
-    },
-    EventData: function EventData() {
-    },
-    _EventData_Object_EquatableMixin: function _EventData_Object_EquatableMixin() {
-    },
-    _$MouseEventDataToJson(instance) {
-      return B.LinkedHashMap_LinkedHashMap$_literal(["viewId", instance.viewId, "command", instance.command, "eventType", instance.eventType, "shouldBubble", true, "isCancelable", true, "screenX", instance.screenX, "screenY", instance.screenY, "clientX", instance.clientX, "clientY", instance.clientY, "clickedMouseButtonType", instance.clickedMouseButtonType, "pressedMouseButtonsMaskType", instance.pressedMouseButtonsMaskType, "isPointerDown", instance.isPointerDown], type$.String, type$.dynamic);
-    },
-    MouseEventData: function MouseEventData(t0, t1, t2, t3, t4, t5, t6, t7, t8, t9, t10, t11) {
-      var _ = this;
-      _.screenX = t0;
-      _.screenY = t1;
-      _.clientX = t2;
-      _.clientY = t3;
-      _.clickedMouseButtonType = t4;
-      _.pressedMouseButtonsMaskType = t5;
-      _.isPointerDown = t6;
-      _.viewId = t7;
-      _.command = t8;
-      _.eventType = t9;
-      _.shouldBubble = t10;
-      _.isCancelable = t11;
-    },
-    IframeHandler: function IframeHandler() {
-      this.__IframeHandler_viewId_A = this.__IframeHandler_iframeElement_A = $;
-      this.isPointerDown = false;
-    },
-    IframeHandler_initialize_closure: function IframeHandler_initialize_closure(t0) {
-      this.$this = t0;
-    },
-    PointerEventExtension_getEventType(_this, isPointerDown) {
-      var _s9_ = "mouseover";
-      if (type$.PointerDownEvent._is(_this))
-        return "mousedown";
-      if (type$.PointerUpEvent._is(_this))
-        return "mouseup";
-      if (type$.PointerHoverEvent._is(_this))
-        return _s9_;
-      if (type$.PointerMoveEvent._is(_this))
-        return isPointerDown ? "mousemove" : _s9_;
-      return "";
     }
   },
   D;
   J = holdersList[1];
-  B = holdersList[0];
+  A = holdersList[0];
   C = holdersList[2];
-  A = hunkHelpers.updateHolder(holdersList[12], A);
+  B = hunkHelpers.updateHolder(holdersList[12], B);
   D = holdersList[21];
-  A.HtmlContentViewerController.prototype = {
-    initializeIframe$4$content$height$id$width($content, height, id, width) {
-      var t1, _this = this;
-      if (_this.isIFrameLoaded)
-        return;
-      t1 = new A.IframeHandler();
-      _this.iframeHandler = t1;
-      _this.htmlElementKey = new B.LabeledGlobalKey(null, type$.LabeledGlobalKey_State_StatefulWidget);
-      t1.initialize$4$content$height$id$width(0, $content, height, id, width);
-      _this.isIFrameLoaded = true;
-    },
-    handlePointerEvent$1($event) {
-      var t1 = this.iframeHandler;
-      if (t1 != null)
-        t1.handlePointerEvent$2$event$htmlElementKey($event, this.htmlElementKey);
-    }
-  };
-  A.HtmlContentViewerOnWeb.prototype = {
+  B.HtmlContentViewerOnWeb.prototype = {
     createState$0() {
-      return new A._HtmlContentViewerOnWebState();
+      return new B._HtmlContentViewerOnWebState();
     }
   };
-  A._HtmlContentViewerOnWebState.prototype = {
+  B._HtmlContentViewerOnWebState.prototype = {
     initState$0() {
       var t1, _this = this;
       _this.super$State$initState();
@@ -143,22 +77,121 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _this.___HtmlContentViewerOnWebState__actualHeight_A = t1.heightContent;
       _this.___HtmlContentViewerOnWebState__actualWidth_A = t1.widthContent;
       _this.___HtmlContentViewerOnWebState__createdViewId_A = _this._getRandString$1(10);
-      if (_this._widget.isInsideThreadDetailView) {
-        _this._viewerController = new A.HtmlContentViewerController();
-        _this._contentCursorNotifier = new B.ValueNotifier(C.SystemMouseCursor_basic, $.$get$ChangeNotifier__emptyListeners(), type$.ValueNotifier_SystemMouseCursor);
-      }
       _this._html_content_viewer_on_web_widget$_setUpWeb$0();
       t1 = window;
       t1.toString;
-      t1 = B._EventStreamSubscription$(t1, "message", new A._HtmlContentViewerOnWebState_initState_closure(_this), false, type$.MessageEvent);
-      _this.___HtmlContentViewerOnWebState_sizeListener_F !== $ && B.throwUnnamedLateFieldAI();
-      _this.___HtmlContentViewerOnWebState_sizeListener_F = t1;
+      t1 = A._EventStreamSubscription$(t1, "message", _this.get$_handleMessageEvent(), false, type$.MessageEvent);
+      _this.___HtmlContentViewerOnWebState__onMessageSubscription_F !== $ && A.throwUnnamedLateFieldAI();
+      _this.___HtmlContentViewerOnWebState__onMessageSubscription_F = t1;
+    },
+    _handleMessageEvent$1($event) {
+      var data, viewId, type, e, t1, t2, deltaY, t3, newOffset, exception, _this = this, _null = null;
+      try {
+        data = C.C_JsonCodec.decode$1(0, new A._AcceptStructuredCloneDart2Js([], []).convertNativeToDart_AcceptStructuredClone$2$mustCopy($event.data, true));
+        viewId = J.$index$asx(data, "view");
+        t1 = _this.___HtmlContentViewerOnWebState__createdViewId_A;
+        t1 === $ && A.throwUnnamedLateFieldNI();
+        if (!J.$eq$(viewId, t1))
+          return;
+        type = J.$index$asx(data, "type");
+        t1 = type;
+        t2 = _this._widget.scrollController;
+        if (t2 != null)
+          t1 = (t1 == null ? _null : C.JSString_methods.contains$1(t1, "toDart: onScrollChanged")) === true;
+        else
+          t1 = false;
+        if (t1) {
+          t2.toString;
+          deltaY = J.$index$asx(data, "deltaY");
+          if (deltaY == null)
+            deltaY = 0;
+          t1 = t2._positions;
+          t3 = C.JSArray_methods.get$single(t1)._pixels;
+          t3.toString;
+          newOffset = t3 + deltaY;
+          A.log("_HtmlContentViewerOnWebState::_handleIframeOnScrollChangedListener:deltaY = " + A.S(deltaY) + " | newOffset = " + A.S(newOffset), C.Level_3);
+          if (newOffset < C.JSArray_methods.get$single(t1).get$minScrollExtent())
+            t2.jumpTo$1(C.JSArray_methods.get$single(t1).get$minScrollExtent());
+          else if (newOffset > C.JSArray_methods.get$single(t1).get$maxScrollExtent())
+            t2.jumpTo$1(C.JSArray_methods.get$single(t1).get$maxScrollExtent());
+          else
+            t2.jumpTo$1(newOffset);
+          return;
+        }
+        if (J.$eq$(J.$index$asx(data, "message"), "iframeHasBeenLoaded"))
+          _this._html_content_viewer_on_web_widget$_iframeLoaded = true;
+        if (!_this._html_content_viewer_on_web_widget$_iframeLoaded)
+          return;
+        t1 = type;
+        if ((t1 == null ? _null : C.JSString_methods.contains$1(t1, "toDart: htmlHeight")) === true)
+          _this._handleContentHeightEvent$1(J.$index$asx(data, "height"));
+        else {
+          t1 = type;
+          t1 = (t1 == null ? _null : C.JSString_methods.contains$1(t1, "toDart: htmlWidth")) === true;
+          if (t1)
+            _this._widget.toString;
+          if (t1)
+            _this._handleContentWidthEvent$1(J.$index$asx(data, "width"));
+          else {
+            t1 = type;
+            if ((t1 == null ? _null : C.JSString_methods.contains$1(t1, "toDart: OpenLink")) === true) {
+              t1 = J.$index$asx(data, "url");
+              if (t1 != null && _this._framework$_element != null && typeof t1 == "string" && C.JSString_methods.startsWith$1(t1, "mailto:")) {
+                t2 = _this._widget.mailtoDelegate;
+                if (t2 != null)
+                  t2.call$1(A.Uri_tryParse(t1));
+              }
+            } else {
+              t1 = type;
+              if ((t1 == null ? _null : C.JSString_methods.contains$1(t1, "toDart: onClickHyperLink")) === true) {
+                t1 = J.$index$asx(data, "url");
+                if (t1 != null && _this._framework$_element != null && typeof t1 == "string") {
+                  t2 = _this._widget.onClickHyperLinkAction;
+                  if (t2 != null)
+                    t2.call$1(A.Uri_tryParse(t1));
+                }
+              }
+            }
+          }
+        }
+      } catch (exception) {
+        e = A.unwrapException(exception);
+        A.log("_HtmlContentViewerOnWebState::_handleMessageEvent:Exception = " + A.S(e), C.Level_1);
+      }
+    },
+    _handleContentHeightEvent$1(height) {
+      var t1, docHeight, scrollHeightWithBuffer, _this = this;
+      if (height == null) {
+        t1 = _this.___HtmlContentViewerOnWebState__actualHeight_A;
+        t1 === $ && A.throwUnnamedLateFieldNI();
+        docHeight = t1;
+      } else
+        docHeight = height;
+      t1 = _this._framework$_element;
+      if (t1 != null) {
+        scrollHeightWithBuffer = J.$add$ansx(docHeight, 30);
+        if (J.$gt$n(scrollHeightWithBuffer, _this.minHeight))
+          _this.setState$1(new B._HtmlContentViewerOnWebState__handleContentHeightEvent_closure(_this, scrollHeightWithBuffer));
+      }
+      if (_this._framework$_element != null && _this._html_content_viewer_on_web_widget$_isLoading)
+        _this.setState$1(new B._HtmlContentViewerOnWebState__handleContentHeightEvent_closure0(_this));
+    },
+    _handleContentWidthEvent$1(width) {
+      var t1, docWidth, _this = this;
+      if (width == null) {
+        t1 = _this.___HtmlContentViewerOnWebState__actualWidth_A;
+        t1 === $ && A.throwUnnamedLateFieldNI();
+        docWidth = t1;
+      } else
+        docWidth = width;
+      if (_this._framework$_element != null && J.$gt$n(docWidth, 300) && _this._widget.allowResizeToDocumentSize)
+        _this.setState$1(new B._HtmlContentViewerOnWebState__handleContentWidthEvent_closure(_this, docWidth));
     },
     didUpdateWidget$1(oldWidget) {
       var t1, t2, _this = this;
       _this.super$State$didUpdateWidget(oldWidget);
       t1 = oldWidget.direction;
-      B.log("_HtmlContentViewerOnWebState::didUpdateWidget():Old-Direction: " + t1.toString$0(0) + " | Current-Direction: " + _this._widget.direction.toString$0(0), C.Level_3);
+      A.log("_HtmlContentViewerOnWebState::didUpdateWidget():Old-Direction: " + t1.toString$0(0) + " | Current-Direction: " + _this._widget.direction.toString$0(0), C.Level_3);
       t2 = _this._widget;
       if (t2.contentHtml !== oldWidget.contentHtml || t2.direction !== t1) {
         _this.___HtmlContentViewerOnWebState__createdViewId_A = _this._getRandString$1(10);
@@ -181,262 +214,65 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return C.Base64Codec_Base64Encoder_true.get$encoder().convert$1(values);
     },
     _html_content_viewer_on_web_widget$_setUpWeb$0() {
-      var t4, t5, t6, t7, t8, t9, htmlTemplate, _this = this,
+      var t4, t5, t6, t7, t8, t9, t10, t11, t12, _this = this,
         t1 = _this._widget,
         t2 = t1.contentHtml,
         t3 = _this.___HtmlContentViewerOnWebState__createdViewId_A;
-      t3 === $ && B.throwUnnamedLateFieldNI();
+      t3 === $ && A.throwUnnamedLateFieldNI();
       t4 = t1.mailtoDelegate != null;
       t5 = t4 ? '                function handleOnClickEmailLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: OpenLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ' : "";
       t6 = t1.onClickHyperLinkAction != null;
       t7 = t6 ? '                function onClickHyperLink(e) {\n                   var href = this.href;\n                   window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: onClickHyperLink", "url": "" + href}), "*");\n                   e.preventDefault();\n                }\n              ' : "";
       t6 = t6 ? "                  var hyperLinks = document.querySelectorAll('a');\n                  for (var i=0; i < hyperLinks.length; i++){\n                      hyperLinks[i].addEventListener('click', onClickHyperLink);\n                  }\n                " : "";
       t4 = t4 ? "                  var emailLinks = document.querySelectorAll('a[href^=\"mailto:\"]');\n                  for (var i=0; i < emailLinks.length; i++){\n                      emailLinks[i].addEventListener('click', handleOnClickEmailLink);\n                  }\n                " : "";
-      t4 = "" + ("      <script type=\"text/javascript\">\n        window.parent.addEventListener('message', handleMessage, false);\n        window.addEventListener('load', handleOnLoad);\n        window.addEventListener('pagehide', (event) => {\n          window.parent.removeEventListener('message', handleMessage, false);\n        });\n      \n        function handleMessage(e) {\n          if (e && e.data && e.data.includes(\"toIframe:\")) {\n            var data = JSON.parse(e.data);\n            if (data[\"view\"].includes(\"" + t3 + '")) {\n              if (data["type"].includes("getHeight")) {\n                var height = document.body.scrollHeight;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlHeight", "height": height}), "*");\n              }\n              if (data["type"].includes("getWidth")) {\n                var width = document.body.scrollWidth;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlWidth", "width": width}), "*");\n              }\n              if (data["type"].includes("execCommand")) {\n                if (data["argument"] === null) {\n                  document.execCommand(data["command"], false);\n                } else {\n                  document.execCommand(data["command"], false, data["argument"]);\n                }\n              }\n            }\n          }\n        }\n\n        const resizeObserver = new ResizeObserver((entries) => {\n          var height = document.body.scrollHeight;\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlHeight", "height": height}), "*");\n        });\n        \n        ' + t5 + "\n        \n        \n        \n        " + t7 + '\n        \n        function handleOnLoad() {\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "message": "iframeHasBeenLoaded"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toIframe: getHeight"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toIframe: getWidth"}), "*");\n          \n          ' + t6 + "\n          \n          " + t4 + "\n          \n          resizeObserver.observe(document.body);\n        }\n      </script>\n    ") + "      <script type=\"text/javascript\">\n        document.addEventListener('wheel', function(e) {\n          e.ctrlKey && e.preventDefault();\n        }, {\n          passive: false,\n        });\n        window.addEventListener('keydown', function(e) {\n          if (event.metaKey || event.ctrlKey) {\n            switch (event.key) {\n              case '=':\n              case '-':\n                event.preventDefault();\n                break;\n            }\n          }\n        });\n      </script>\n    " + "    <script>\n      const lazyImages = document.querySelectorAll('[lazy]');\n      const lazyImageObserver = new IntersectionObserver((entries, observer) => {\n        entries.forEach((entry) => {\n          if (entry.isIntersecting) {\n            const lazyImage = entry.target;\n            const src = lazyImage.dataset.src;\n            lazyImage.tagName.toLowerCase() === 'img'\n              ? lazyImage.src = src\n              : lazyImage.style.backgroundImage = \"url('\" + src + \"')\";\n            lazyImage.removeAttribute('lazy');\n            observer.unobserve(lazyImage);\n          }\n        });\n      });\n      \n      lazyImages.forEach((lazyImage) => {\n        lazyImageObserver.observe(lazyImage);\n      });\n    </script>\n  ";
-      t5 = t1.isInsideThreadDetailView;
-      if (t5)
-        t4 += "    <script type=\"text/javascript\">\n      function initializeEventListeners() {\n        document.querySelectorAll('*').forEach(element => {\n          element.setAttribute('tabindex', '-1');\n        });\n      }\n\n      window.addEventListener('message', function (event) {\n        try {\n          if (typeof event.data !== 'string') return;\n    \n          const data = JSON.parse(event.data);\n\n          if (data.viewId !== \"" + t3 + "\") return;\n          \n          if (data.command === 'mouseEvent') {\n            const element = document.elementFromPoint(data.clientX, data.clientY);\n\n            if (element) {\n              const eventDataInit = {\n                bubbles: data.shouldBubble,\n                cancelable: data.isCancelable,\n                view: window,\n                detail: 1,\n                screenX: data.screenX,\n                screenY: data.screenY,\n                clientX: data.clientX,\n                clientY: data.clientY,\n                button: data.clickedMouseButtonType,\n                buttons: data.pressedMouseButtonsMaskType,\n                relatedTarget: null,\n              };\n              const mouseEvent = new MouseEvent(data.eventType, eventDataInit);\n              element.dispatchEvent(mouseEvent);\n              \n              if (data.eventType === 'mousedown') {\n                if (window.getSelection && document.caretRangeFromPoint) {\n                  const range = document.caretRangeFromPoint(data.clientX, data.clientY);\n                  if (range) {\n                    const selection = window.getSelection();\n                    selection.removeAllRanges();\n                    selection.addRange(range);\n                  }\n                }\n                \n                event.stopPropagation();\n              } else if (data.eventType === 'mousemove' && data.isPointerDown) {\n                const selection = window.getSelection();\n                if (selection.rangeCount > 0) {\n                  const newRange = document.caretRangeFromPoint(data.clientX, data.clientY);\n                  if (newRange) {\n                    try {\n                      selection.extend(newRange.startContainer, newRange.startOffset);\n                      const range = selection.getRangeAt(0);\n                      range.startContainer.parentElement?.scrollIntoView({ block: 'nearest' });\n                    } catch (e) {\n                      console.error('Selection error:', e);\n                    }\n                  }\n                }\n                \n                event.stopPropagation();\n              } else if (data.eventType === 'mouseup') {\n                element.focus();\n                \n                const selection = window.getSelection();\n                if (selection && selection.toString().length > 0) {\n                  document.designMode = 'off';\n                } else {\n                  const clickEvent = new MouseEvent('click', eventDataInit);\n                  element.dispatchEvent(clickEvent);\n                }\n                \n                event.stopPropagation();\n              } else if (data.eventType === 'mouseover') {\n                if (element.tagName.toLowerCase() === 'a') {\n                  window.parent.postMessage(JSON.stringify({\n                    \"view\": \"" + t3 + '",\n                     "type": "toDart: changeCursor",\n                    "value": "pointer"\n                  }), "*");\n                } else if (element.textContent.trim() !== \'\') {\n                  window.parent.postMessage(JSON.stringify({\n                    "view": "' + t3 + '",\n                     "type": "toDart: changeCursor",\n                    "value": "text"\n                  }), "*");\n                } else {\n                  window.parent.postMessage(JSON.stringify({\n                    "view": "' + t3 + "\",\n                     \"type\": \"toDart: changeCursor\",\n                    \"value\": \"default\"\n                  }), \"*\");\n                }\n      \n                document.querySelectorAll('a.tmail-tooltip span.tooltiptext').forEach(element => {\n                  element.style.visibility = 'hidden';\n                });\n                \n                if (element.tagName.toLowerCase() === 'a' && element.classList.contains('tmail-tooltip')) {\n                  const tooltipElement = element.querySelector('span.tooltiptext');\n                  if (tooltipElement) {\n                    tooltipElement.style.visibility = 'visible';\n                  }\n                }\n                event.stopPropagation();\n              }\n            }\n          }\n        } catch (e) {\n          console.error('Message handling error:', e);\n        }\n      });\n      \n      // Initialize when page loads\n      if (document.readyState === 'loading') {\n          document.addEventListener('DOMContentLoaded', initializeEventListeners);\n      } else {\n          initializeEventListeners();\n      }\n    </script>\n  ";
-      t6 = _this.minHeight;
-      t7 = t1.direction;
-      t8 = t1.contentPadding;
+      t8 = t1.scrollController != null ? '          window.addEventListener(\'wheel\', function (event) {\n            const deltaY = event.deltaY;\n            window.parent.postMessage(JSON.stringify({\n              "view": "' + t3 + '",\n              "type": "toDart: onScrollChanged",\n              "deltaY": deltaY\n            }), "*");\n          });\n        ' : "";
+      t9 = _this.minHeight;
+      t10 = t1.direction;
+      t11 = t1.contentPadding;
       t1 = t1.useDefaultFont;
       t1;
+      t12 = "";
       t1 = t1 ? "          body {\n            font-family: 'Inter', sans-serif;\n            font-weight: 500;\n            font-size: 16px;\n            line-height: 24px;\n          }\n        " : "";
-      t9 = t5 ? "          *:focus {\n            outline: none;\n          }\n        " : "";
-      t7 = t7 === C.TextDirection_0 ? 'dir="rtl"' : "";
-      t8 = t8 != null ? "margin: " + B.S(t8) + ";" : "";
-      htmlTemplate = '      <!DOCTYPE html>\n      <html>\n      <head>\n      <meta name="viewport" content="width=device-width, initial-scale=1.0">\n      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n      ' + "" + "\n      <style>\n        " + t1 + "\n        .tmail-content {\n          min-height: " + B.S(t6) + "px;\n          min-width: 300px;\n          overflow: auto;\n          overflow-wrap: break-word;\n          word-break: break-word;\n        }\n                  .tmail-content::-webkit-scrollbar {\n            display: none;\n          }\n          .tmail-content {\n            -ms-overflow-style: none;  /* IE and Edge */\n            scrollbar-width: none;  /* Firefox */\n          }\n        \n        \n        " + t9 + "\n        \n            .tmail-tooltip .tooltiptext {\n      visibility: hidden;\n      max-width: 400px;\n      background-color: black;\n      color: #fff;\n      text-align: center;\n      border-radius: 6px;\n      padding: 5px 8px 5px 8px;\n      white-space: nowrap; \n      overflow: hidden;\n      text-overflow: ellipsis;\n      position: absolute;\n      z-index: 1;\n    }\n    .tmail-tooltip:hover .tooltiptext {\n      visibility: visible;\n    }\n  \n      </style>\n      </head>\n      <body " + t7 + ' style = "overflow-x: hidden; ' + t8 + '";>\n      <div class="tmail-content">' + t2 + "</div>\n      " + (t4.charCodeAt(0) == 0 ? t4 : t4) + "\n      </body>\n      </html> \n    ";
-      _this._html_content_viewer_on_web_widget$_htmlData = htmlTemplate;
-      if (t5 && _this._viewerController != null) {
-        t1 = _this._viewerController;
-        t1.toString;
-        t2 = _this.___HtmlContentViewerOnWebState__actualWidth_A;
-        t2 === $ && B.throwUnnamedLateFieldNI();
-        t4 = _this.___HtmlContentViewerOnWebState__actualHeight_A;
-        t4 === $ && B.throwUnnamedLateFieldNI();
-        t1.initializeIframe$4$content$height$id$width(htmlTemplate, t4, t3, t2);
-      } else {
-        t1 = document.createElement("iframe");
-        t1.toString;
-        t2 = _this.___HtmlContentViewerOnWebState__actualWidth_A;
-        t2 === $ && B.throwUnnamedLateFieldNI();
-        t1.width = C.JSNumber_methods.toString$0(t2);
-        t2 = _this.___HtmlContentViewerOnWebState__actualHeight_A;
-        t2 === $ && B.throwUnnamedLateFieldNI();
-        t1.height = C.JSNumber_methods.toString$0(t2);
-        t2 = _this._html_content_viewer_on_web_widget$_htmlData;
-        t1.srcdoc = t2 == null ? "" : t2;
-        t2 = t1.style;
-        t2.border = "none";
-        t2 = t1.style;
-        t2.overflow = "hidden";
-        t2 = t1.style;
-        t2.width = "100%";
-        t2 = t1.style;
-        t2.height = "100%";
-        $.$get$platformViewRegistry();
-        t2 = _this.___HtmlContentViewerOnWebState__createdViewId_A;
-        $.$get$PlatformViewManager_instance().registerFactory$3$isVisible(t2, new A._HtmlContentViewerOnWebState__setUpWeb_closure(t1), true);
-      }
-      if (_this._framework$_element != null)
-        _this.setState$1(new A._HtmlContentViewerOnWebState__setUpWeb_closure0(_this));
-    },
-    build$1(context) {
-      return new B.LayoutBuilder(new A._HtmlContentViewerOnWebState_build_closure(this), null);
-    },
-    dispose$0() {
-      var t1, _this = this;
-      _this._html_content_viewer_on_web_widget$_htmlData = null;
-      t1 = _this.___HtmlContentViewerOnWebState_sizeListener_F;
-      t1 === $ && B.throwUnnamedLateFieldNI();
-      t1.cancel$0(0);
-      t1 = _this._contentCursorNotifier;
-      if (t1 != null) {
-        t1.ChangeNotifier__listeners = $.$get$ChangeNotifier__emptyListeners();
-        t1.ChangeNotifier__count = 0;
-      }
-      _this._contentCursorNotifier = null;
-      t1 = _this._viewerController;
-      if (t1 != null) {
-        t1.iframeHandler = t1.htmlElementKey = null;
-        t1.isIFrameLoaded = false;
-      }
-      _this._viewerController = null;
-      _this.super$State$dispose();
-    }
-  };
-  A.EventData.prototype = {
-    get$props() {
-      return B._setArrayType([this.viewId, this.command, this.eventType, true, true], type$.JSArray_Object);
-    }
-  };
-  A._EventData_Object_EquatableMixin.prototype = {};
-  A.MouseEventData.prototype = {
-    toJson$0() {
-      var _this = this;
-      return B.LinkedHashMap_LinkedHashMap$_literal(["viewId", _this.viewId, "command", _this.command, "eventType", _this.eventType, "shouldBubble", true, "isCancelable", true, "screenX", _this.screenX, "screenY", _this.screenY, "clientX", _this.clientX, "clientY", _this.clientY, "clickedMouseButtonType", _this.clickedMouseButtonType, "pressedMouseButtonsMaskType", _this.pressedMouseButtonsMaskType, "isPointerDown", _this.isPointerDown], type$.String, type$.dynamic);
-    },
-    get$props() {
-      var _this = this,
-        t1 = B.List_List$of(A.EventData.prototype.get$props.call(_this), true, type$.Object);
-      t1.push(_this.screenX);
-      t1.push(_this.screenY);
-      t1.push(_this.clientX);
-      t1.push(_this.clientY);
-      t1.push(_this.clickedMouseButtonType);
-      t1.push(_this.pressedMouseButtonsMaskType);
-      t1.push(_this.isPointerDown);
-      return t1;
-    }
-  };
-  A.IframeHandler.prototype = {
-    initialize$4$content$height$id$width(_, $content, height, id, width) {
-      var t1, t2, _this = this;
-      _this.__IframeHandler_viewId_A = id;
+      t10 = t10 === C.TextDirection_0 ? 'dir="rtl"' : "";
+      t11 = t11 != null ? "margin: " + A.S(t11) + ";" : "";
+      _this._html_content_viewer_on_web_widget$_htmlData = '      <!DOCTYPE html>\n      <html>\n      <head>\n      <meta name="viewport" content="width=device-width, initial-scale=1.0">\n      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">\n      ' + t12 + "\n      <style>\n        " + t1 + "\n        .tmail-content {\n          min-height: " + A.S(t9) + "px;\n          min-width: 300px;\n          overflow: auto;\n          overflow-wrap: break-word;\n          word-break: break-word;\n        }\n                  .tmail-content::-webkit-scrollbar {\n            display: none;\n          }\n          .tmail-content {\n            -ms-overflow-style: none;  /* IE and Edge */\n            scrollbar-width: none;  /* Firefox */\n          }\n        \n            .tmail-tooltip .tooltiptext {\n      visibility: hidden;\n      max-width: 400px;\n      background-color: black;\n      color: #fff;\n      text-align: center;\n      border-radius: 6px;\n      padding: 5px 8px 5px 8px;\n      white-space: nowrap; \n      overflow: hidden;\n      text-overflow: ellipsis;\n      position: absolute;\n      z-index: 1;\n    }\n    .tmail-tooltip:hover .tooltiptext {\n      visibility: visible;\n    }\n  \n      </style>\n      </head>\n      <body " + t10 + ' style = "overflow-x: hidden; ' + t11 + '";>\n      <div class="tmail-content">' + t2 + "</div>\n      " + ("      <script type=\"text/javascript\">\n        window.parent.addEventListener('message', handleMessage, false);\n        window.addEventListener('load', handleOnLoad);\n        window.addEventListener('pagehide', (event) => {\n          window.parent.removeEventListener('message', handleMessage, false);\n        });\n      \n        function handleMessage(e) {\n          if (e && e.data && e.data.includes(\"toIframe:\")) {\n            var data = JSON.parse(e.data);\n            if (data[\"view\"].includes(\"" + t3 + '")) {\n              if (data["type"].includes("getHeight")) {\n                var height = document.body.scrollHeight;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlHeight", "height": height}), "*");\n              }\n              if (data["type"].includes("getWidth")) {\n                var width = document.body.scrollWidth;\n                window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlWidth", "width": width}), "*");\n              }\n              if (data["type"].includes("execCommand")) {\n                if (data["argument"] === null) {\n                  document.execCommand(data["command"], false);\n                } else {\n                  document.execCommand(data["command"], false, data["argument"]);\n                }\n              }\n            }\n          }\n        }\n\n        const resizeObserver = new ResizeObserver((entries) => {\n          var height = document.body.scrollHeight;\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toDart: htmlHeight", "height": height}), "*");\n        });\n        \n        ' + t5 + "\n        \n        \n        \n        " + t7 + '\n        \n        function handleOnLoad() {\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "message": "iframeHasBeenLoaded"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toIframe: getHeight"}), "*");\n          window.parent.postMessage(JSON.stringify({"view": "' + t3 + '", "type": "toIframe: getWidth"}), "*");\n          \n          ' + t6 + "\n          \n          " + t4 + "\n          \n          resizeObserver.observe(document.body);\n        }\n        \n        " + t8 + "\n      </script>\n          <script type=\"text/javascript\">\n        document.addEventListener('wheel', function(e) {\n          e.ctrlKey && e.preventDefault();\n        }, {\n          passive: false,\n        });\n        window.addEventListener('keydown', function(e) {\n          if (event.metaKey || event.ctrlKey) {\n            switch (event.key) {\n              case '=':\n              case '-':\n                event.preventDefault();\n                break;\n            }\n          }\n        });\n      </script>\n        <script>\n      const lazyImages = document.querySelectorAll('[lazy]');\n      const lazyImageObserver = new IntersectionObserver((entries, observer) => {\n        entries.forEach((entry) => {\n          if (entry.isIntersecting) {\n            const lazyImage = entry.target;\n            const src = lazyImage.dataset.src;\n            lazyImage.tagName.toLowerCase() === 'img'\n              ? lazyImage.src = src\n              : lazyImage.style.backgroundImage = \"url('\" + src + \"')\";\n            lazyImage.removeAttribute('lazy');\n            observer.unobserve(lazyImage);\n          }\n        });\n      });\n      \n      lazyImages.forEach((lazyImage) => {\n        lazyImageObserver.observe(lazyImage);\n      });\n    </script>\n  ") + "\n      </body>\n      </html> \n    ";
       t1 = document.createElement("iframe");
       t1.toString;
-      t1.width = C.JSNumber_methods.toString$0(width);
-      t1.height = C.JSNumber_methods.toString$0(height);
-      t1.srcdoc = $content;
+      t2 = _this.___HtmlContentViewerOnWebState__actualWidth_A;
+      t2 === $ && A.throwUnnamedLateFieldNI();
+      t1.width = C.JSNumber_methods.toString$0(t2);
+      t2 = _this.___HtmlContentViewerOnWebState__actualHeight_A;
+      t2 === $ && A.throwUnnamedLateFieldNI();
+      t1.height = C.JSNumber_methods.toString$0(t2);
+      t2 = _this._html_content_viewer_on_web_widget$_htmlData;
+      t1.srcdoc = t2 == null ? "" : t2;
       t2 = t1.style;
       t2.border = "none";
-      t2 = t1.style;
-      t2.outline = "none";
       t2 = t1.style;
       t2.overflow = "hidden";
       t2 = t1.style;
       t2.width = "100%";
       t2 = t1.style;
       t2.height = "100%";
-      _this.__IframeHandler_iframeElement_A = t1;
       $.$get$platformViewRegistry();
-      t1 = _this.__IframeHandler_viewId_A;
-      $.$get$PlatformViewManager_instance().registerFactory$3$isVisible(t1, new A.IframeHandler_initialize_closure(_this), true);
+      t2 = _this.___HtmlContentViewerOnWebState__createdViewId_A;
+      $.$get$PlatformViewManager_instance().registerFactory$3$isVisible(t2, new B._HtmlContentViewerOnWebState__setUpWeb_closure(t1), true);
+      if (_this._framework$_element != null)
+        _this.setState$1(new B._HtmlContentViewerOnWebState__setUpWeb_closure0(_this));
     },
-    handlePointerEvent$2$event$htmlElementKey($event, htmlElementKey) {
-      var localPosition, eventType, t2, t3, t4, _this = this, _null = null,
-        t1 = _this.__IframeHandler_iframeElement_A;
-      t1 === $ && B.throwUnnamedLateFieldNI();
-      if (B._convertNativeToDart_Window(t1.contentWindow) == null)
-        return;
-      if (htmlElementKey == null)
-        t1 = _null;
-      else {
-        t1 = $.WidgetsBinding__instance.WidgetsBinding__buildOwner._globalKeyRegistry.$index(0, htmlElementKey);
-        t1 = t1 == null ? _null : t1.get$renderObject();
-      }
-      type$.nullable_RenderBox._as(t1);
-      if (t1 == null)
-        return;
-      localPosition = $event.get$position($event).$sub(0, B.MatrixUtils_transformPoint(t1.getTransformTo$1(0, _null), C.Offset_0_0));
-      eventType = A.PointerEventExtension_getEventType($event, _this.isPointerDown);
-      if (eventType.length === 0)
-        return;
-      t1 = type$.PointerDownEvent._is($event);
-      if (t1)
-        _this.isPointerDown = true;
-      else if (type$.PointerUpEvent._is($event))
-        _this.isPointerDown = false;
-      t2 = _this.__IframeHandler_viewId_A;
-      t2 === $ && B.throwUnnamedLateFieldNI();
-      t3 = $event.get$position($event);
-      t4 = $event.get$position($event);
-      t1 = t1 ? 0 : $event.get$buttons($event) - 1;
-      t2 = C.C_JsonCodec.encode$2$toEncodable(A._$MouseEventDataToJson(new A.MouseEventData(t3._dx, t4._dy, localPosition._dx, localPosition._dy, t1, $event.get$buttons($event), $event.get$down(), t2, "mouseEvent", eventType, true, true)), _null);
-      t1 = B._convertNativeToDart_Window(_this.__IframeHandler_iframeElement_A.contentWindow);
-      if (t1 != null)
-        J.postMessage$2$x(t1, t2, "*");
+    build$1(context) {
+      return new A.LayoutBuilder(new B._HtmlContentViewerOnWebState_build_closure(this), null);
+    },
+    dispose$0() {
+      this._html_content_viewer_on_web_widget$_htmlData = null;
+      var t1 = this.___HtmlContentViewerOnWebState__onMessageSubscription_F;
+      t1 === $ && A.throwUnnamedLateFieldNI();
+      t1.cancel$0(0);
+      this.super$State$dispose();
     }
   };
-  var typesOffset = hunkHelpers.updateTypes(["~(PointerEvent)"]);
-  A._HtmlContentViewerOnWebState_initState_closure.prototype = {
-    call$1($event) {
-      var docHeight, scrollHeightWithBuffer, docWidth, link, cursor, _s4_ = "type",
-        data = C.C_JsonCodec.decode$1(0, new B._AcceptStructuredCloneDart2Js([], []).convertNativeToDart_AcceptStructuredClone$2$mustCopy($event.data, true)),
-        t1 = J.getInterceptor$asx(data),
-        t2 = t1.$index(data, "view"),
-        t3 = this.$this,
-        t4 = t3.___HtmlContentViewerOnWebState__createdViewId_A;
-      t4 === $ && B.throwUnnamedLateFieldNI();
-      if (!J.$eq$(t2, t4))
-        return;
-      if (J.$eq$(t1.$index(data, "message"), "iframeHasBeenLoaded"))
-        t3._html_content_viewer_on_web_widget$_iframeLoaded = true;
-      if (!t3._html_content_viewer_on_web_widget$_iframeLoaded)
-        return;
-      if (t1.$index(data, _s4_) != null && J.contains$1$asx(t1.$index(data, _s4_), "toDart: htmlHeight")) {
-        docHeight = t1.$index(data, "height");
-        if (docHeight == null) {
-          t2 = t3.___HtmlContentViewerOnWebState__actualHeight_A;
-          t2 === $ && B.throwUnnamedLateFieldNI();
-          docHeight = t2;
-        }
-        t2 = t3._framework$_element;
-        if (t2 != null) {
-          scrollHeightWithBuffer = J.$add$ansx(docHeight, 30);
-          if (J.$gt$n(scrollHeightWithBuffer, t3.minHeight))
-            t3.setState$1(new A._HtmlContentViewerOnWebState_initState__closure(t3, scrollHeightWithBuffer));
-        }
-        if (t3._framework$_element != null && t3._html_content_viewer_on_web_widget$_isLoading)
-          t3.setState$1(new A._HtmlContentViewerOnWebState_initState__closure0(t3));
-      }
-      if (t1.$index(data, _s4_) != null) {
-        t2 = J.contains$1$asx(t1.$index(data, _s4_), "toDart: htmlWidth");
-        if (t2)
-          t3._widget.toString;
-      } else
-        t2 = false;
-      if (t2) {
-        docWidth = t1.$index(data, "width");
-        if (docWidth == null) {
-          t2 = t3.___HtmlContentViewerOnWebState__actualWidth_A;
-          t2 === $ && B.throwUnnamedLateFieldNI();
-          docWidth = t2;
-        }
-        t2 = t3._framework$_element;
-        if (t2 != null)
-          if (J.$gt$n(docWidth, 300) && t3._widget.allowResizeToDocumentSize)
-            t3.setState$1(new A._HtmlContentViewerOnWebState_initState__closure1(t3, docWidth));
-      }
-      if (t1.$index(data, _s4_) != null && J.contains$1$asx(t1.$index(data, _s4_), "toDart: OpenLink")) {
-        link = t1.$index(data, "url");
-        if (link != null && t3._framework$_element != null) {
-          B._asString(link);
-          if (C.JSString_methods.startsWith$1(link, "mailto:")) {
-            t2 = t3._widget.mailtoDelegate;
-            if (t2 != null)
-              t2.call$1(B.Uri_parse(link, 0, null));
-          }
-        }
-      }
-      if (t1.$index(data, _s4_) != null && J.contains$1$asx(t1.$index(data, _s4_), "toDart: onClickHyperLink")) {
-        link = B._asStringQ(t1.$index(data, "url"));
-        if (link != null && t3._framework$_element != null) {
-          t2 = t3._widget.onClickHyperLinkAction;
-          if (t2 != null)
-            t2.call$1(B.Uri_parse(link, 0, null));
-        }
-      }
-      if (t1.$index(data, _s4_) != null && J.contains$1$asx(t1.$index(data, _s4_), "toDart: changeCursor")) {
-        cursor = B._asStringQ(t1.$index(data, "value"));
-        if (cursor != null && t3._framework$_element != null)
-          if (cursor === "pointer") {
-            t1 = t3._contentCursorNotifier;
-            if (t1 != null)
-              t1.set$value(0, C.SystemMouseCursor_click);
-          } else {
-            t1 = t3._contentCursorNotifier;
-            if (cursor === "text") {
-              if (t1 != null)
-                t1.set$value(0, C.SystemMouseCursor_text);
-            } else if (t1 != null)
-              t1.set$value(0, C.SystemMouseCursor_basic);
-          }
-      }
-    },
-    $signature: 141
-  };
-  A._HtmlContentViewerOnWebState_initState__closure.prototype = {
+  var typesOffset = hunkHelpers.updateTypes(["~(MessageEvent)"]);
+  B._HtmlContentViewerOnWebState__handleContentHeightEvent_closure.prototype = {
     call$0() {
       var t1 = this.$this;
       t1.___HtmlContentViewerOnWebState__actualHeight_A = this.scrollHeightWithBuffer;
@@ -444,148 +280,97 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     },
     $signature: 0
   };
-  A._HtmlContentViewerOnWebState_initState__closure0.prototype = {
+  B._HtmlContentViewerOnWebState__handleContentHeightEvent_closure0.prototype = {
     call$0() {
       this.$this._html_content_viewer_on_web_widget$_isLoading = false;
     },
     $signature: 0
   };
-  A._HtmlContentViewerOnWebState_initState__closure1.prototype = {
+  B._HtmlContentViewerOnWebState__handleContentWidthEvent_closure.prototype = {
     call$0() {
-      this.$this.___HtmlContentViewerOnWebState__actualWidth_A = this.docWidth;
+      return this.$this.___HtmlContentViewerOnWebState__actualWidth_A = this.docWidth;
     },
     $signature: 0
   };
-  A._HtmlContentViewerOnWebState__setUpWeb_closure.prototype = {
+  B._HtmlContentViewerOnWebState__setUpWeb_closure.prototype = {
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 297
+    $signature: 478
   };
-  A._HtmlContentViewerOnWebState__setUpWeb_closure0.prototype = {
+  B._HtmlContentViewerOnWebState__setUpWeb_closure0.prototype = {
     call$0() {
-      this.$this._webInit = B.Future_Future$value(true, type$.bool);
+      this.$this._webInit = A.Future_Future$value(true, type$.bool);
     },
     $signature: 0
   };
-  A._HtmlContentViewerOnWebState_build_closure.prototype = {
+  B._HtmlContentViewerOnWebState_build_closure.prototype = {
     call$2(context, constraint) {
       var t2, t3,
         t1 = this.$this;
       t1.minHeight = Math.min(constraint.maxHeight, t1.minHeight);
-      t2 = B._setArrayType([], type$.JSArray_Widget);
+      t2 = A._setArrayType([], type$.JSArray_Widget);
       t3 = t1._html_content_viewer_on_web_widget$_htmlData;
       if ((t3 == null ? null : t3.length !== 0) === false)
         t2.push(C.SizedBox_0_0_null_null);
       else
-        t2.push(B.FutureBuilder$(new A._HtmlContentViewerOnWebState_build__closure(t1), t1._webInit, type$.bool));
+        t2.push(A.FutureBuilder$(new B._HtmlContentViewerOnWebState_build__closure(t1), t1._webInit, type$.bool));
       if (t1._html_content_viewer_on_web_widget$_isLoading)
         t2.push(D.Align_ChN);
       t1._widget.toString;
-      return new B.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
+      return new A.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
     },
-    $signature: 1864
+    $signature: 1860
   };
-  A._HtmlContentViewerOnWebState_build__closure.prototype = {
+  B._HtmlContentViewerOnWebState_build__closure.prototype = {
     call$2(context, snapshot) {
-      var t1, t2, t3, t4, t5, eventOverlayView, _null = null;
+      var t1, t2, t3, t4, t5;
       if (snapshot.data != null) {
         t1 = this.$this;
-        t2 = t1._viewerController;
-        t3 = t2 != null && t2.iframeHandler != null;
-        t4 = t1.___HtmlContentViewerOnWebState__actualHeight_A;
-        t5 = t1.___HtmlContentViewerOnWebState__actualWidth_A;
-        if (t3) {
-          t3 = t2.get$handlePointerEvent();
-          t4 === $ && B.throwUnnamedLateFieldNI();
-          t5 === $ && B.throwUnnamedLateFieldNI();
-          eventOverlayView = B.PointerInterceptor$(B.Listener$(C.HitTestBehavior_2, B.Container$(_null, _null, C.Clip_0, C.Color_0, _null, _null, _null, t4, _null, _null, _null, _null, _null, t5), _null, _null, t3, t3, t3, _null, _null, t3));
-          t3 = t2.htmlElementKey;
-          t2 = t2.iframeHandler.__IframeHandler_viewId_A;
-          t2 === $ && B.throwUnnamedLateFieldNI();
-          t3 = B._setArrayType([new B.SizedBox(t5, t4, new B.HtmlElementView(t2, _null, _null, t3), _null)], type$.JSArray_Widget);
-          t1 = t1._contentCursorNotifier;
-          if (t1 != null)
-            t3.push(new B.ValueListenableBuilder(t1, new A._HtmlContentViewerOnWebState_build___closure(), eventOverlayView, _null, type$.ValueListenableBuilder_SystemMouseCursor));
-          else
-            t3.push(B.MouseRegion$(eventOverlayView, C.SystemMouseCursor_text, _null, _null, _null, _null, _null));
-          return new B.Stack(C.AlignmentDirectional_m1_m1, _null, C.StackFit_0, C.Clip_1, t3, _null);
-        } else {
-          t4 === $ && B.throwUnnamedLateFieldNI();
-          t5 === $ && B.throwUnnamedLateFieldNI();
-          t1 = t1.___HtmlContentViewerOnWebState__createdViewId_A;
-          t1 === $ && B.throwUnnamedLateFieldNI();
-          return new B.SizedBox(t5, t4, new B.HtmlElementView(t1, _null, _null, _null), _null);
-        }
+        t2 = t1.___HtmlContentViewerOnWebState__actualHeight_A;
+        t2 === $ && A.throwUnnamedLateFieldNI();
+        t3 = t1.___HtmlContentViewerOnWebState__actualWidth_A;
+        t3 === $ && A.throwUnnamedLateFieldNI();
+        t4 = t1._html_content_viewer_on_web_widget$_htmlData;
+        t5 = A.S(t1._widget.key);
+        t1 = t1.___HtmlContentViewerOnWebState__createdViewId_A;
+        t1 === $ && A.throwUnnamedLateFieldNI();
+        return new A.SizedBox(t3, t2, new A.HtmlElementView(t1, null, null, new A.ValueKey(A.S(t4) + "-" + t5, type$.ValueKey_String)), null);
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1865
-  };
-  A._HtmlContentViewerOnWebState_build___closure.prototype = {
-    call$3(context, value, child) {
-      var _null = null;
-      return B.MouseRegion$(child, value, _null, _null, _null, _null, _null);
-    },
-    $signature: 1866
-  };
-  A.IframeHandler_initialize_closure.prototype = {
-    call$1(viewId) {
-      var t1 = this.$this.__IframeHandler_iframeElement_A;
-      t1 === $ && B.throwUnnamedLateFieldNI();
-      return t1;
-    },
-    $signature: 297
+    $signature: 1861
   };
   (function installTearOffs() {
     var _instance_1_u = hunkHelpers._instance_1u;
-    _instance_1_u(A.HtmlContentViewerController.prototype, "get$handlePointerEvent", "handlePointerEvent$1", 0);
+    _instance_1_u(B._HtmlContentViewerOnWebState.prototype, "get$_handleMessageEvent", "_handleMessageEvent$1", 0);
   })();
   (function inheritance() {
-    var _mixin = hunkHelpers.mixin,
-      _inheritMany = hunkHelpers.inheritMany,
-      _inherit = hunkHelpers.inherit;
-    _inheritMany(B.Object, [A.HtmlContentViewerController, A._EventData_Object_EquatableMixin, A.IframeHandler]);
-    _inherit(A.HtmlContentViewerOnWeb, B.StatefulWidget);
-    _inherit(A._HtmlContentViewerOnWebState, B.State0);
-    _inheritMany(B.Closure, [A._HtmlContentViewerOnWebState_initState_closure, A._HtmlContentViewerOnWebState__setUpWeb_closure, A._HtmlContentViewerOnWebState_build___closure, A.IframeHandler_initialize_closure]);
-    _inheritMany(B.Closure0Args, [A._HtmlContentViewerOnWebState_initState__closure, A._HtmlContentViewerOnWebState_initState__closure0, A._HtmlContentViewerOnWebState_initState__closure1, A._HtmlContentViewerOnWebState__setUpWeb_closure0]);
-    _inheritMany(B.Closure2Args, [A._HtmlContentViewerOnWebState_build_closure, A._HtmlContentViewerOnWebState_build__closure]);
-    _inherit(A.EventData, A._EventData_Object_EquatableMixin);
-    _inherit(A.MouseEventData, A.EventData);
-    _mixin(A._EventData_Object_EquatableMixin, B.EquatableMixin);
+    var _inherit = hunkHelpers.inherit,
+      _inheritMany = hunkHelpers.inheritMany;
+    _inherit(B.HtmlContentViewerOnWeb, A.StatefulWidget);
+    _inherit(B._HtmlContentViewerOnWebState, A.State0);
+    _inheritMany(A.Closure0Args, [B._HtmlContentViewerOnWebState__handleContentHeightEvent_closure, B._HtmlContentViewerOnWebState__handleContentHeightEvent_closure0, B._HtmlContentViewerOnWebState__handleContentWidthEvent_closure, B._HtmlContentViewerOnWebState__setUpWeb_closure0]);
+    _inherit(B._HtmlContentViewerOnWebState__setUpWeb_closure, A.Closure);
+    _inheritMany(A.Closure2Args, [B._HtmlContentViewerOnWebState_build_closure, B._HtmlContentViewerOnWebState_build__closure]);
   })();
-  B._Universe_addRules(init.typeUniverse, JSON.parse('{"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]},"EventData":{"EquatableMixin":[]},"MouseEventData":{"EquatableMixin":[]}}'));
-  var type$ = (function rtii() {
-    var findType = B.findType;
-    return {
-      JSArray_Object: findType("JSArray<Object>"),
-      JSArray_Widget: findType("JSArray<Widget>"),
-      LabeledGlobalKey_State_StatefulWidget: findType("LabeledGlobalKey<State0<StatefulWidget>>"),
-      MessageEvent: findType("MessageEvent"),
-      Object: findType("Object"),
-      PointerDownEvent: findType("PointerDownEvent"),
-      PointerHoverEvent: findType("PointerHoverEvent"),
-      PointerMoveEvent: findType("PointerMoveEvent"),
-      PointerUpEvent: findType("PointerUpEvent"),
-      String: findType("String"),
-      ValueListenableBuilder_SystemMouseCursor: findType("ValueListenableBuilder<SystemMouseCursor>"),
-      ValueNotifier_SystemMouseCursor: findType("ValueNotifier<SystemMouseCursor>"),
-      bool: findType("bool"),
-      dynamic: findType("@"),
-      int: findType("int"),
-      nullable_RenderBox: findType("RenderBox?")
-    };
-  })();
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"HtmlContentViewerOnWeb":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_HtmlContentViewerOnWebState":{"State0":["HtmlContentViewerOnWeb"]}}'));
+  var type$ = {
+    JSArray_Widget: A.findType("JSArray<Widget>"),
+    MessageEvent: A.findType("MessageEvent"),
+    ValueKey_String: A.findType("ValueKey<String>"),
+    bool: A.findType("bool"),
+    int: A.findType("int")
+  };
   (function constants() {
-    D.SizedBox_qzd0 = new B.SizedBox(30, 30, C.CupertinoActivityIndicator_Rjd, null);
-    D.Padding_J28 = new B.Padding(C.EdgeInsets_16_16_16_16, D.SizedBox_qzd0, null);
-    D.Align_ChN = new B.Align(C.Alignment_0_m1, null, null, D.Padding_J28, null);
+    D.SizedBox_qzd0 = new A.SizedBox(30, 30, C.CupertinoActivityIndicator_Rjd, null);
+    D.Padding_J28 = new A.Padding(C.EdgeInsets_16_16_16_16, D.SizedBox_qzd0, null);
+    D.Align_ChN = new A.Align(C.Alignment_0_m1, null, null, D.Padding_J28, null);
   })();
 };
 ;
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_8", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "+mZAlDbu029FlGosnvFqRzF+T2U=");
+})($__dart_deferred_initializers__, "rBEbKQDOHp9+dXGOJgV5g8H6UUc=");
 ;
