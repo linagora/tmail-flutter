@@ -60,24 +60,31 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         child: Container(
           color: Colors.white,
           child: Column(children: [
-            Container(
-                height: 52,
-                color: Colors.white,
-                padding: SearchEmailViewStyle.getAppBarPadding(
-                  context,
-                  controller.responsiveUtils
-                ),
-                child: Obx(() {
-                  if (controller.selectionMode.value == SelectMode.ACTIVE) {
-                    return AppBarSelectionMode(
-                        controller.listResultSearch.listEmailSelected,
-                        controller.mailboxDashBoardController.mapMailboxById,
-                        onCancelSelection: controller.cancelSelectionMode,
-                        onHandleEmailAction: controller.handleSelectionEmailAction);
-                  } else {
-                    return _buildSearchInputForm(context);
-                  }
-                })
+            PopScope(
+              canPop: false,
+              onPopInvokedWithResult: (_, __) {
+                if (!PlatformInfo.isAndroid) return;
+                controller.closeSearchView(context: context);
+              },
+              child: Container(
+                  height: 52,
+                  color: Colors.white,
+                  padding: SearchEmailViewStyle.getAppBarPadding(
+                    context,
+                    controller.responsiveUtils
+                  ),
+                  child: Obx(() {
+                    if (controller.selectionMode.value == SelectMode.ACTIVE) {
+                      return AppBarSelectionMode(
+                          controller.listResultSearch.listEmailSelected,
+                          controller.mailboxDashBoardController.mapMailboxById,
+                          onCancelSelection: controller.cancelSelectionMode,
+                          onHandleEmailAction: controller.handleSelectionEmailAction);
+                    } else {
+                      return _buildSearchInputForm(context);
+                    }
+                  })
+              ),
             ),
             const Divider(color: AppColor.colorDividerComposer, height: 1),
             _buildListSearchFilterAction(context),
