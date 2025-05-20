@@ -36,7 +36,6 @@ void main() {
     }.obs);
     when(controller.session).thenReturn(SessionFixtures.aliceSession);
     when(controller.accountId).thenReturn(AccountFixtures.aliceAccountId);
-    when(controller.scrollReverse).thenReturn(true.obs);
     when(controller.getEmailsByIdsInteractor).thenReturn(getEmailsByIdsInteractor);
 
     // Act
@@ -62,7 +61,6 @@ void main() {
     }.obs);
     when(controller.session).thenReturn(SessionFixtures.aliceSession);
     when(controller.accountId).thenReturn(AccountFixtures.aliceAccountId);
-    when(controller.scrollReverse).thenReturn(true.obs);
     when(controller.getEmailsByIdsInteractor).thenReturn(getEmailsByIdsInteractor);
 
     // Act
@@ -87,7 +85,6 @@ void main() {
     }.obs);
     when(controller.session).thenReturn(SessionFixtures.aliceSession);
     when(controller.accountId).thenReturn(AccountFixtures.aliceAccountId);
-    when(controller.scrollReverse).thenReturn(true.obs);
     when(controller.getEmailsByIdsInteractor).thenReturn(getEmailsByIdsInteractor);
 
     // Act
