@@ -1232,6 +1232,7 @@ class ThreadController extends BaseController with EmailActionController {
   void goToSearchView() {
     SearchEmailBindings().dependencies();
     _replaceBrowserHistory();
+    searchController.activateSimpleSearch();
     mailboxDashBoardController.dispatchRoute(DashboardRoutes.searchEmail);
   }
 
