@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
@@ -33,6 +34,8 @@ class ThreadDetailController extends BaseController {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final searchEmailController = Get.find<SearchEmailController>();
+
+  ScrollController? scrollController;
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
   Session? get session => mailboxDashBoardController.sessionCurrent;
@@ -71,6 +74,7 @@ class ThreadDetailController extends BaseController {
           accountId != null &&
           sentMailboxId != null &&
           ownEmailAddress != null) {
+        scrollController = ScrollController();
         consumeState(_getEmailIdsByThreadIdInteractor.execute(
           presentationEmail!.threadId!,
           session!,
@@ -85,6 +89,8 @@ class ThreadDetailController extends BaseController {
   void reset() {
     emailIds.clear();
     emailIdsPresentation.clear();
+    scrollController?.dispose();
+    scrollController = null;
   }
 
   @override
