@@ -11,6 +11,7 @@ import 'package:model/email/email_property.dart';
 import 'package:model/extensions/list_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/email_extension.dart';
 import 'package:tmail_ui_user/features/thread_detail/data/data_source/thread_detail_data_source.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/exceptions/empty_thread_detail_exception.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/repository/thread_detail_repository.dart';
 
 class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
@@ -28,6 +29,10 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
   ) async {
     final originalEmailIds = await threadDetailDataSource[DataSourceType.network]!
       .getThreadById(threadId, accountId);
+
+    if (originalEmailIds.isEmpty) {
+      throw EmptyThreadDetailException();
+    }
     
     final filteredEmailIds = await Future.wait(
       originalEmailIds
