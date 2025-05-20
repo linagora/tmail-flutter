@@ -136,6 +136,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/da
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/focus_thread_detail_expanded_email.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -693,19 +694,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         emailUnsubscribe.value = null;
       }
     }
-    if (currentEmail?.id == _threadDetailController?.emailIds.last &&
-        (_threadDetailController?.emailIds.length ?? 0) > 1 == true) {
+    if ((_threadDetailController?.emailIds.length ?? 0) > 1 == true) {
       _jumpScrollViewToTopOfEmail();
     }
   }
 
   void _jumpScrollViewToTopOfEmail() {
-    Future.delayed(const Duration(milliseconds: 200), () {
-      final context = GlobalObjectKey(_currentEmailId!.id.value).currentContext;
-      if (context != null && context.mounted) {
-        Scrollable.ensureVisible(context, alignment: 1);
-      }
-    });
+    _threadDetailController?.focusExpandedEmail(_currentEmailId!);
   }
 
   void _handleUnsubscribe(String listUnsubscribe) {
