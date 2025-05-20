@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
@@ -78,7 +76,8 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: SelectionArea(
                 child: TextOverflowBuilder(
-                  preview.substring(0, min(65, preview.length)),
+                  preview,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.bodyMedium,
                 ),
