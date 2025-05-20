@@ -2793,6 +2793,8 @@ class MailboxDashBoardController extends ReloadableController
     searchController.clearFilterSuggestion();
     if (_searchInsideEmailDetailedViewIsActive()) {
       _closeEmailDetailedView();
+    } else if (_searchInsideThreadDetailViewIsActive()) {
+      _closeEmailDetailedView();
     }
     _unSelectedMailbox();
     dispatchAction(QuickSearchEmailByFromAction(emailAddress));
