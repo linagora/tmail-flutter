@@ -110,24 +110,26 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
               padding: controller.responsiveUtils.isDesktop(context)
                 ? const EdgeInsetsDirectional.only(end: 16)
                 : EdgeInsets.zero,
-              child: EmailViewBottomBarWidget(
-                key: const Key('email_view_button_bar'),
-                imagePaths: expandedEmailController.imagePaths,
-                responsiveUtils: expandedEmailController.responsiveUtils,
-                emailLoaded: lastEmailLoaded,
-                presentationEmail: expandedPresentationEmail,
-                userName: expandedEmailController.getOwnEmailAddress(),
-                emailActionCallback: expandedEmailController.pressEmailAction,
-                bottomBarDecoration: const BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                    top: BorderSide(color: AppColor.colorDividerEmailView),
-                  ),
-                  borderRadius: BorderRadius.vertical(
-                    bottom: Radius.circular(20),
-                  ),
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(20),
                 ),
-                padding: EdgeInsets.zero,
+                child: EmailViewBottomBarWidget(
+                  key: const Key('email_view_button_bar'),
+                  imagePaths: expandedEmailController.imagePaths,
+                  responsiveUtils: expandedEmailController.responsiveUtils,
+                  emailLoaded: lastEmailLoaded,
+                  presentationEmail: expandedPresentationEmail,
+                  userName: expandedEmailController.getOwnEmailAddress(),
+                  emailActionCallback: expandedEmailController.pressEmailAction,
+                  bottomBarDecoration: const BoxDecoration(
+                    color: Colors.white,
+                    border: Border(
+                      top: BorderSide(color: AppColor.colorDividerEmailView),
+                    ),
+                  ),
+                  padding: EdgeInsets.zero,
+                ),
               ),
             );
           }),
