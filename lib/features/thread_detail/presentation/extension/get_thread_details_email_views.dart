@@ -11,7 +11,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread
 extension GetThreadDetailEmailViews on ThreadDetailController {
   List<Widget> getThreadDetailEmailViews() {
     int? firstEmailNotLoadedIndex;
-    if (emailsNotLoadedCount > 0) {
+    if (emailsToLoadMoreCount > 0) {
       firstEmailNotLoadedIndex = emailIds.indexOf(
         emailIdsPresentation.entries.firstWhereOrNull(
           (entry) => entry.value == null
@@ -28,7 +28,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
         }
 
         return ThreadDetailLoadMoreCircle(
-          count: emailsNotLoadedCount,
+          count: emailsToLoadMoreCount,
           onTap: loadMoreThreadDetailEmails,
           imagePaths: imagePaths,
           isLoading: loadingThreadDetail,
