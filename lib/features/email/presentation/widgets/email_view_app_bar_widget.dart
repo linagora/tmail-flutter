@@ -110,7 +110,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (_, __) {
-        if (!PlatformInfo.isAndroid) return;
+        if (PlatformInfo.isAndroid) return;
         onBackAction();
       },
       child: child,
