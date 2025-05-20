@@ -15,7 +15,6 @@ import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_app
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_back_button.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
-
 class ThreadDetailAppBar extends StatelessWidget {
   const ThreadDetailAppBar({
     super.key,
@@ -50,7 +49,7 @@ class ThreadDetailAppBar extends StatelessWidget {
       emailLoaded?.emailCurrent?.listPost ?? '',
     );
 
-    return LayoutBuilder(
+    final child = LayoutBuilder(
       builder: (context, constraints) {
         return Container(
           height: PlatformInfo.isIOS
@@ -175,6 +174,14 @@ class ThreadDetailAppBar extends StatelessWidget {
           ),
         );
       },
+    );
+
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (_, __) {
+        closeThreadDetailAction(context);
+      },
+      child: child,
     );
   }
 
