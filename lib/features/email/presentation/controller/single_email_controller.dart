@@ -700,7 +700,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     Future.delayed(const Duration(milliseconds: 200), () {
       final context = GlobalObjectKey(_currentEmailId!.id.value).currentContext;
       if (context != null && context.mounted) {
-        Scrollable.ensureVisible(context);
+        Scrollable.ensureVisible(context, alignment: 1);
       }
     });
   }
