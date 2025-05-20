@@ -33,7 +33,6 @@ import 'package:tmail_ui_user/features/email/domain/usecases/preview_email_from_
 import 'package:tmail_ui_user/features/email/domain/usecases/print_email_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/get_html_content_from_attachment_interactor.dart';
 import 'package:tmail_ui_user/features/email/domain/usecases/store_opened_email_interactor.dart';
-import 'package:tmail_ui_user/features/email/presentation/controller/email_supervisor_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/repository/account_repository.dart';
@@ -71,9 +70,6 @@ class EmailBindings extends BaseBindings {
 
   @override
   void bindingsController() {
-    if (currentEmailId == null) {
-      Get.put(EmailSupervisorController(), tag: tag);
-    }
     Get.put(SingleEmailController(
       Get.find<GetEmailContentInteractor>(),
       Get.find<MarkAsEmailReadInteractor>(),
