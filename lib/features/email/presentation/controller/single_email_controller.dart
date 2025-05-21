@@ -704,6 +704,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void _jumpScrollViewToTopOfEmail() {
+    if (_currentEmailId == null) return;
     _threadDetailController?.focusExpandedEmail(_currentEmailId!);
   }
 
