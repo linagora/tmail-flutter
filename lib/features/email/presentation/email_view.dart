@@ -215,7 +215,7 @@ class EmailView extends GetWidget<SingleEmailController> {
       );
     }
 
-    if (controller.currentEmail == null) {
+    if (controller.currentEmail == null || !isInsideThreadDetailView) {
       return const BoxDecoration(color: Colors.white);
     }
 
