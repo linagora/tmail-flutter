@@ -389,6 +389,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       } else if (action is ShowEmailContentViewAction) {
         isEmailContentHidden.value = false;
         mailboxDashBoardController.clearEmailUIAction();
+      } else if (action is CloseEmailInThreadDetailAction) {
+        if (action.emailId != _currentEmailId) return;
+        closeEmailView(context: currentContext);
+        for (var worker in obxListeners) {
+          worker.dispose();
+        }
+        Get.delete<SingleEmailController>(tag: _currentEmailId?.id.value);
       }
     }));
 
@@ -399,6 +406,37 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         }
       });
     }));
+    if (_threadDetailController != null) {  
+      obxListeners.add(ever(
+        _threadDetailController!.currentExpandedEmailId,
+        (emailId) {
+          if (emailId == null || emailId != _currentEmailId) return;
+
+          _threadDetailController!.currentEmailLoaded.value = currentEmailLoaded.value;
+        },
+      ));
+      obxListeners.add(ever(
+        _threadDetailController!.threadAction,
+        (threadAction) {
+          if (threadAction?.emailActionType == null ||
+              threadAction?.presentationEmail.id == null ||
+              threadAction!.presentationEmail.id! != _currentEmailId ||
+              currentContext == null) return;
+
+          handleEmailAction(
+            currentContext!,
+            threadAction.presentationEmail,
+            threadAction.emailActionType,
+          );
+        },
+      ));
+      obxListeners.add(ever(
+        currentEmailLoaded,
+        (emailLoaded) {
+          _threadDetailController!.currentEmailLoaded.value = currentEmailLoaded.value;
+        },
+      ));
+    }
   }
 
   void _handleOpenEmailDetailedView() {
