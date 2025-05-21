@@ -60,6 +60,7 @@ class ThreadConstants {
     EmailProperty.hasAttachment,
     EmailProperty.replyTo,
     EmailProperty.mailboxIds,
+    EmailProperty.threadId,
     EmailProperty.bodyValues,
     EmailProperty.htmlBody,
     EmailProperty.attachments,
