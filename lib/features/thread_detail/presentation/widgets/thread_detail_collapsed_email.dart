@@ -58,8 +58,9 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             if (showSubject)
-              EmailSubjectWidget(presentationEmail: presentationEmail),
-            const SizedBox(height: 16),
+              EmailSubjectWidget(presentationEmail: presentationEmail)
+            else
+              const SizedBox(height: 16),
             InformationSenderAndReceiverBuilder(
               emailSelected: presentationEmail,
               responsiveUtils: responsiveUtils,
