@@ -17,7 +17,7 @@ class EmailSubjectWidget extends StatelessWidget {
 
     return Padding(
       padding: EmailSubjectStyles.padding,
-      child: SelectableText(
+      child: Text(
         presentationEmail.getEmailTitle(),
         maxLines: EmailSubjectStyles.maxLines,
         style: ThemeUtils.textStyleHeadingH5(color: Colors.black)
