@@ -4440,5 +4440,97 @@
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
+  },
+  "saveMessageToTemplateSuccess": "已成功将邮件保存到模板文件夹",
+  "@saveMessageToTemplateSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "savingTemplate": "保存模板",
+  "@savingTemplate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noLogsHaveBeenRecordedYet": "尚未记录任何日志。",
+  "@noLogsHaveBeenRecordedYet": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "savingMessageToTemplateFolder": "将邮件保存到模板文件夹",
+  "@savingMessageToTemplateFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exportTraceLogSuccess": "已成功导出跟踪日志至“{path}”",
+  "@exportTraceLogSuccess": {
+    "type": "text",
+    "placeholders_order": [
+      "path"
+    ],
+    "placeholders": {
+      "path": {}
+    }
+  },
+  "exportTraceLogFailed": "导出跟踪日志失败",
+  "@exportTraceLogFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exportTraceLog": "导出跟踪日志",
+  "@exportTraceLog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "updateMessageToTemplateSuccess": "已成功将邮件更新到模板文件夹",
+  "@updateMessageToTemplateSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youNeedToGrantFilesPermissionToExportFile": "您需要授予文件权限才能导出文件",
+  "@youNeedToGrantFilesPermissionToExportFile": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveMessageToTemplateFailed": "将邮件保存到模板文件夹失败",
+  "@saveMessageToTemplateFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageExportTraceLogDialog": "已跟踪移动 API 错误消息日志。是否要导出？",
+  "@messageExportTraceLogDialog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveMessageToTemplateCancelled": "已取消将邮件保存到模板文件夹",
+  "@saveMessageToTemplateCancelled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "invalidArguments": "无效参数：“{description}”",
+  "@invalidArguments": {
+    "type": "text",
+    "placeholders_order": [
+      "description"
+    ],
+    "placeholders": {
+      "description": {}
+    }
+  },
+  "saveAsTemplate": "保存为模板",
+  "@saveAsTemplate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
   }
 }
