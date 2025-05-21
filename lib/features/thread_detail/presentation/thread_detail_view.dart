@@ -20,7 +20,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
   
   @override
   Widget build(BuildContext context) {
-    final multipleEmailsView = SafeArea(
+    final multipleEmailsView = SelectionArea(child: SafeArea(
       child: Column(
         children: [
           Obx(() => ThreadDetailAppBar(
@@ -137,7 +137,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             const SizedBox(height: 16),
         ],
       ),
-    );
+    ));
 
     return Obx(() {
       if (controller.emailIds.length == 1 &&
