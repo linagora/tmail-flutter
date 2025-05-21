@@ -55,6 +55,7 @@ class EmailView extends GetWidget<SingleEmailController> {
     this.isFirstEmailInThreadDetail = false,
     this.threadSubject,
     this.onToggleThreadDetailCollapseExpand,
+    this.scrollController,
   });
 
   final bool isInsideThreadDetailView;
@@ -62,7 +63,8 @@ class EmailView extends GetWidget<SingleEmailController> {
   final bool isFirstEmailInThreadDetail;
   final String? threadSubject;
   final VoidCallback? onToggleThreadDetailCollapseExpand;
-  
+  final ScrollController? scrollController;
+
   @override
   String? get tag => emailId?.id.value;
 
@@ -377,6 +379,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                               direction: AppUtils.getCurrentDirection(context),
                               contentPadding: 0,
                               useDefaultFont: true,
+                              scrollController: scrollController,
                             ),
                             if (controller.mailboxDashBoardController.isAttachmentDraggableAppActive)
                               PointerInterceptor(
