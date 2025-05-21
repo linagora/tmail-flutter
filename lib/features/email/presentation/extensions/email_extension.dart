@@ -32,4 +32,15 @@ extension EmailExtension on Email {
       (emailAdress) => emailAdress.email == ownEmailAddress
     ) == true;
   }
+
+  bool recipientsHasMe(String ownEmailAddress) {
+    final recipients = {
+      ...to ?? {},
+      ...cc ?? {},
+      ...bcc ?? {},
+    };
+    return recipients.any(
+      (emailAdress) => emailAdress.email == ownEmailAddress
+    ) == true;
+  }
 }
