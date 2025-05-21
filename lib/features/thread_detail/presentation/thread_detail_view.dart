@@ -2,7 +2,7 @@ import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:model/email/email_in_thread_status.dart';
+import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
@@ -75,32 +75,21 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             );
           }),
           Obx(() {
-            final expandedEmailMap = controller
-              .emailIdsPresentation
-              .entries
-              .firstWhereOrNull(
-                (entry) => entry.value?.emailInThreadStatus == EmailInThreadStatus.expanded
-              );
-
-            if (expandedEmailMap == null) {
+            final expandedEmailId = controller.currentExpandedEmailId.value;
+            if (expandedEmailId == null) {
               return _roundBottomPlaceHolder(
                 isDesktop: controller.responsiveUtils.isDesktop(context),
               );
             }
-            
-            final expandedEmailId = expandedEmailMap.key;
-            final expandedEmailController = getBinding<SingleEmailController>(
-              tag: expandedEmailId.id.value
-            );
-            if (expandedEmailController == null) {
+            final expandedPresentationEmail = controller.emailIdsPresentation[expandedEmailId];
+            if (expandedPresentationEmail == null) {
               return _roundBottomPlaceHolder(
                 isDesktop: controller.responsiveUtils.isDesktop(context),
               );
             }
 
-            final expandedPresentationEmail = expandedEmailMap.value;
-            final lastEmailLoaded = expandedEmailController.currentEmailLoaded.value;
-            if (lastEmailLoaded == null || expandedPresentationEmail == null) {
+            final currentEmailLoaded = controller.currentEmailLoaded.value;
+            if (currentEmailLoaded == null) {
               return _roundBottomPlaceHolder(
                 isDesktop: controller.responsiveUtils.isDesktop(context),
               );
@@ -116,12 +105,22 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                 ),
                 child: EmailViewBottomBarWidget(
                   key: const Key('email_view_button_bar'),
-                  imagePaths: expandedEmailController.imagePaths,
-                  responsiveUtils: expandedEmailController.responsiveUtils,
-                  emailLoaded: lastEmailLoaded,
+                  imagePaths: controller.imagePaths,
+                  responsiveUtils: controller.responsiveUtils,
+                  emailLoaded: currentEmailLoaded,
                   presentationEmail: expandedPresentationEmail,
-                  userName: expandedEmailController.getOwnEmailAddress(),
-                  emailActionCallback: expandedEmailController.pressEmailAction,
+                  userName: controller.session?.getOwnEmailAddress() ?? '',
+                  emailActionCallback: (action, email) {
+                    final threadAction = (
+                      emailActionType: action,
+                      presentationEmail: email,
+                    );
+                    if (threadAction == controller.threadAction.value) {
+                      controller.threadAction.refresh();
+                    } else {
+                      controller.threadAction.value = threadAction;
+                    }
+                  },
                   bottomBarDecoration: const BoxDecoration(
                     color: Colors.white,
                     border: Border(
