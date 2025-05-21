@@ -5889,7 +5889,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = A._setArrayType([], t1);
       if (!_this.isInsideThreadDetailView || _this.isFirstEmailInThreadDetail)
         t2.push(new C.EmailSubjectWidget(presentationEmail.copyWith$1$subject(_this.threadSubject), _null));
-      t2.push(B.SizedBox_null_16_null_null);
+      else
+        t2.push(B.SizedBox_null_16_null_null);
       t2.push(new A.Obx(new C.EmailView__buildEmailMessage_closure(_this, presentationEmail, maxBodyHeight, context), _null));
       t2.push(new A.Obx(new C.EmailView__buildEmailMessage_closure0(_this), _null));
       t2.push(new A.Obx(new C.EmailView__buildEmailMessage_closure1(_this, context), _null));
@@ -10295,7 +10296,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = A._setArrayType([], type$.JSArray_Widget);
       if (_this.showSubject)
         t2.push(new C.EmailSubjectWidget(_this.presentationEmail, _null));
-      t2.push(B.SizedBox_null_16_null_null);
+      else
+        t2.push(B.SizedBox_null_16_null_null);
       t3 = _this.presentationEmail;
       t2.push(C.InformationSenderAndReceiverBuilder$(_this.emailLoaded, t3, _null, _this.imagePaths, true, _null, _null, _null, t1, _null, _this.openEmailAddressDetailAction, _this.responsiveUtils, _null, false));
       t2.push(new A.Padding(B.EdgeInsets_16_16_16_16, A.TextOverflowBuilder$(t3.getPartialContent$0(), 1, B.TextOverflow_2, A.Theme_of(context).textTheme.bodyMedium), _null));
@@ -16586,7 +16588,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t4 = t4 == null ? _null : t4.subject;
       } else
         t4 = _null;
-      return new C.EmailView(true, t1, isFirstEmailInThreadDetail, t4, new C.GetThreadDetailEmailViews_getThreadDetailEmailViews__closure1(t2, presentationEmail), new A.GlobalObjectKey(t3, type$.GlobalObjectKey_State_StatefulWidget));
+      return new A.Padding(D.EdgeInsetsDirectional_0_0_0_16, new C.EmailView(true, t1, isFirstEmailInThreadDetail, t4, new C.GetThreadDetailEmailViews_getThreadDetailEmailViews__closure1(t2, presentationEmail), new A.GlobalObjectKey(t3, type$.GlobalObjectKey_State_StatefulWidget)), _null);
     },
     $signature: 1858
   };
@@ -17217,6 +17219,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Divider_SfU1 = new A.Divider(null, null, null, null, B.Color_520093696, null);
     D.Duration_170000 = new A.Duration(170000);
     D.EdgeInsetsDirectional_0_0_0_10 = new A.EdgeInsetsDirectional(0, 0, 0, 10);
+    D.EdgeInsetsDirectional_0_0_0_16 = new A.EdgeInsetsDirectional(0, 0, 0, 16);
     D.EdgeInsetsDirectional_0_0_16_16 = new A.EdgeInsetsDirectional(0, 0, 16, 16);
     D.EdgeInsetsDirectional_0_0_16_8 = new A.EdgeInsetsDirectional(0, 0, 16, 8);
     D.EdgeInsetsDirectional_0_0_5_0 = new A.EdgeInsetsDirectional(0, 0, 5, 0);
@@ -17422,5 +17425,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "yOMevCsvp2uI58dzxhB7ASV3LPo=");
+})($__dart_deferred_initializers__, "JJi72UR7i6WQlIVl6u/zNOPSdyA=");
 ;
