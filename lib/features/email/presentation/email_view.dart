@@ -232,7 +232,7 @@ class EmailView extends GetWidget<SingleEmailController> {
     if (PlatformInfo.isMobile) return null;
 
     if (isInsideThreadDetailView) {
-      return const EdgeInsetsDirectional.only(bottom: 16);
+      return EdgeInsets.zero;
     }
 
     if (!controller.responsiveUtils.isDesktop(context)) {
