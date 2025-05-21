@@ -5868,7 +5868,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if (t3.size._dx >= 1200 && !_this.isInsideThreadDetailView)
         return B.BoxDecoration_yXb6;
       A.Expando__checkType(_this);
-      if (t2._as(t1.get(_this)).get$currentEmail() == null)
+      if (t2._as(t1.get(_this)).get$currentEmail() == null || !_this.isInsideThreadDetailView)
         return D.BoxDecoration_MUU;
       return D.BoxDecoration_cAf0;
     },
@@ -17422,5 +17422,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "fYngao3bctnS2UA7KcwCyVCoywU=");
+})($__dart_deferred_initializers__, "srz2dihRVrR5g2fvUFMkudap5q4=");
 ;
