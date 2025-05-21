@@ -1,10 +1,10 @@
+import 'package:get/get.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/email/presentation/bindings/email_bindings.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:model/email/email_in_thread_status.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/focus_thread_detail_expanded_email.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension ToggleThreadDetailCollapeExpand on ThreadDetailController {
   void toggleThreadDetailCollapeExpand(PresentationEmail presentationEmail) {
@@ -16,12 +16,13 @@ extension ToggleThreadDetailCollapeExpand on ThreadDetailController {
       emailIdsPresentation[emailId] = presentationEmail.copyWith(
         emailInThreadStatus: EmailInThreadStatus.collapsed,
       );
+      currentExpandedEmailId.value = null;
       return;
     }
 
-    final isInitialized = getBinding<SingleEmailController>(
+    final isInitialized = Get.isRegistered<SingleEmailController>(
       tag: emailId.id.value,
-    ) != null;
+    );
     if (!isInitialized) {
       EmailBindings(currentEmailId: presentationEmail.id).dependencies();
     } else {
@@ -34,6 +35,7 @@ extension ToggleThreadDetailCollapeExpand on ThreadDetailController {
         emailIdsPresentation[key] = presentationEmail.copyWith(
           emailInThreadStatus: EmailInThreadStatus.expanded,
         );
+        currentExpandedEmailId.value = key;
         continue;
       }
 

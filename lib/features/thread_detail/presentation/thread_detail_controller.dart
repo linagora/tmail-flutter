@@ -4,10 +4,12 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
@@ -31,6 +33,9 @@ class ThreadDetailController extends BaseController {
 
   final emailIds = <EmailId>[].obs;
   final emailIdsPresentation = <EmailId, PresentationEmail?>{}.obs;
+  final currentExpandedEmailId = Rxn<EmailId>();
+  final currentEmailLoaded = Rxn<EmailLoaded>();
+  final threadAction = Rxn<({EmailActionType emailActionType, PresentationEmail presentationEmail})>();
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final searchEmailController = Get.find<SearchEmailController>();
@@ -91,6 +96,9 @@ class ThreadDetailController extends BaseController {
     emailIdsPresentation.clear();
     scrollController?.dispose();
     scrollController = null;
+    currentExpandedEmailId.value = null;
+    currentEmailLoaded.value = null;
+    threadAction.value = null;
   }
 
   @override
