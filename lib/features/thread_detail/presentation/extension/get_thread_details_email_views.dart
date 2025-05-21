@@ -82,6 +82,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
           onToggleThreadDetailCollapseExpand: () {
             toggleThreadDetailCollapeExpand(presentationEmail);
           },
+          scrollController: scrollController,
         ),
       );
     }).toList();
