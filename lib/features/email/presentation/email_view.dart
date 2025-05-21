@@ -82,8 +82,9 @@ class EmailView extends GetWidget<SingleEmailController> {
             clipBehavior: Clip.antiAlias,
             decoration: _getDecorationEmailView(context),
             margin: _getMarginEmailView(context),
-            child: Builder(builder: (context) {
-              final currentEmail = controller.currentEmail;
+            child: Obx(() {
+              final currentEmailListener = Rxn(controller.currentEmail);
+              final currentEmail = currentEmailListener.value;
               if (currentEmail != null) {
                 return Column(children: [
                   if (!isInsideThreadDetailView)
