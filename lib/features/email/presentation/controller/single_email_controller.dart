@@ -207,7 +207,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   Stream<Either<Failure, Success>> get downloadProgressState => _downloadProgressStateController.stream;
 
   PresentationEmail? get currentEmail {
-    return _threadDetailController?.emailIdsPresentation[_currentEmailId];
+    return _currentEmailId == null
+      ? null
+      : _threadDetailController?.emailIdsPresentation[_currentEmailId];
   }
 
   bool get calendarEventProcessing => viewState.value.fold(
