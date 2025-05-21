@@ -231,7 +231,7 @@ class EmailView extends GetWidget<SingleEmailController> {
     if (PlatformInfo.isMobile) return null;
 
     if (isInsideThreadDetailView) {
-      return EdgeInsets.zero;
+      return const EdgeInsetsDirectional.only(bottom: 16);
     }
 
     if (!controller.responsiveUtils.isDesktop(context)) {
@@ -264,8 +264,9 @@ class EmailView extends GetWidget<SingleEmailController> {
             presentationEmail: presentationEmail.copyWith(
               subject: threadSubject,
             ),
-          ),
-        const SizedBox(height: 16),
+          )
+        else
+          const SizedBox(height: 16),
         Obx(() => InformationSenderAndReceiverBuilder(
           emailSelected: presentationEmail,
           imagePaths: controller.imagePaths,
