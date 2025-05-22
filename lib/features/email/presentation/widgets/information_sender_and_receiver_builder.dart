@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/icon_utils.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:core/utils/platform_info.dart';
@@ -40,6 +41,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
   final VoidCallback? onToggleThreadDetailCollapseExpand;
   final OnTapAvatarActionClick? onTapAvatarActionClick;
   final PresentationMailbox? mailboxContain;
+  final bool showUnreadVisualization;
 
   const InformationSenderAndReceiverBuilder({
     Key? key,
@@ -58,6 +60,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
     this.onToggleThreadDetailCollapseExpand,
     this.onTapAvatarActionClick,
     this.mailboxContain,
+    this.showUnreadVisualization = false,
   }) : super(key: key);
 
   @override
@@ -86,11 +89,29 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                       Expanded(
                         child: Row(
                           children: [
+                            if (showUnreadVisualization &&
+                                !emailSelected.hasRead &&
+                                responsiveUtils.isMobile(context))
+                              Padding(
+                                padding: const EdgeInsetsDirectional.only(end: 8),
+                                child: SvgPicture.asset(
+                                  imagePaths.icUnreadStatus,
+                                  width: 9,
+                                  height: 9,
+                                  fit: BoxFit.fill,
+                                ),
+                              ),
                             if (emailSelected.from?.isNotEmpty == true)
                               Flexible(
                                 child: EmailSenderBuilder(
                                   emailAddress: emailSelected.from!.first,
                                   openEmailAddressDetailAction: openEmailAddressDetailAction,
+                                  customStyle: ThemeUtils.textStyleHeadingHeadingSmall(
+                                    color: Colors.black,
+                                    fontWeight: showUnreadVisualization && !emailSelected.hasRead
+                                      ? FontWeight.w700
+                                      : null,
+                                  ),
                                 ),
                               ),
                             if (sMimeStatus != null && sMimeStatus != SMimeSignatureStatus.notSigned)
@@ -122,6 +143,19 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                               ReceivedTimeBuilder(
                                 emailSelected: emailSelected,
                                 padding: const EdgeInsetsDirectional.only(start: 16, top: 2),
+                              ),
+                            if (showUnreadVisualization &&
+                                !emailSelected.hasRead &&
+                                !responsiveUtils.isMobile(context))
+                              TMailButtonWidget.fromIcon(
+                                icon: imagePaths.icUnreadStatus,
+                                backgroundColor: Colors.transparent,
+                                iconSize: 9,
+                                margin: const EdgeInsetsDirectional.only(start: 8),
+                                onTapActionCallback: () => onEmailActionClick?.call(
+                                  emailSelected,
+                                  EmailActionType.markAsRead,
+                                ),
                               ),
                           ],
                         ),

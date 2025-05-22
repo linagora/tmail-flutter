@@ -62,6 +62,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                   EmailActionType.printAll,
                   EmailActionType.moveToMailbox,
                 ],
+                emailIsRead: presentationEmail.hasRead,
               ),
             );
           }),
