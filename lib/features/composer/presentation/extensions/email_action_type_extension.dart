@@ -134,6 +134,8 @@ extension EmailActionTypeExtension on EmailActionType {
 
   String getIcon(ImagePaths imagePaths) {
     switch(this) {
+      case EmailActionType.markAsRead:
+        return imagePaths.icRead;
       case EmailActionType.markAsUnread:
         return imagePaths.icUnreadEmail;
       case EmailActionType.unSpam:
@@ -174,6 +176,8 @@ extension EmailActionTypeExtension on EmailActionType {
 
   String getTitle(BuildContext context) {
     switch(this) {
+      case EmailActionType.markAsRead:
+        return AppLocalizations.of(context).mark_as_read;
       case EmailActionType.markAsUnread:
         return AppLocalizations.of(context).mark_as_unread;
       case EmailActionType.unSpam:
