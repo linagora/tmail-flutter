@@ -736,7 +736,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         emailUnsubscribe.value = null;
       }
     }
-    if ((_threadDetailController?.emailIds.length ?? 0) > 1 == true) {
+    if ((_threadDetailController?.emailIdsPresentation.keys.length ?? 0) > 1 == true) {
       _jumpScrollViewToTopOfEmail();
     }
   }
