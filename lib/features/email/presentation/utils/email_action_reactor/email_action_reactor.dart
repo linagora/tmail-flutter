@@ -514,6 +514,7 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
       EmailActionType action,
     ) handleEmailAction,
     required List<EmailActionType> additionalActions,
+    required bool emailIsRead,
   }) {
     if (currentContext == null) return;
 
@@ -542,7 +543,10 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
         _canDeletePermanently(presentationEmail)
           ? EmailActionType.deletePermanently
           : EmailActionType.moveToTrash,
-      EmailActionType.markAsUnread,
+      if (emailIsRead)
+        EmailActionType.markAsUnread
+      else
+        EmailActionType.markAsRead,
       if (mailboxContain?.isChildOfTeamMailboxes == false)
         if (mailboxContain?.isSpam == true)
           EmailActionType.unSpam

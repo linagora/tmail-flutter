@@ -15,12 +15,14 @@ class EmailSenderBuilder extends StatelessWidget {
   final EmailAddress emailAddress;
   final OnOpenEmailAddressDetailAction? openEmailAddressDetailAction;
   final bool showSenderEmail;
+  final TextStyle? customStyle;
 
   const EmailSenderBuilder({
     super.key,
     required this.emailAddress,
     this.openEmailAddressDetailAction,
     this.showSenderEmail = true,
+    this.customStyle,
   });
 
   @override
@@ -41,7 +43,7 @@ class EmailSenderBuilder extends StatelessWidget {
               },
               borderRadius: 8,
               padding: EdgeInsets.zero,
-              customStyle: ThemeUtils.textStyleHeadingHeadingSmall(
+              customStyle: customStyle ?? ThemeUtils.textStyleHeadingHeadingSmall(
                 color: Colors.black,
               ),
               overflow: CommonTextStyle.defaultTextOverFlow,
