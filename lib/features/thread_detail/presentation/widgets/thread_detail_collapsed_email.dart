@@ -72,6 +72,7 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
               openEmailAddressDetailAction: openEmailAddressDetailAction,
               showRecipients: false,
               onTapAvatarActionClick: onToggleThreadDetailCollapseExpand,
+              showUnreadVisualization: true,
             ),
             Padding(
               padding: const EdgeInsets.all(16),
@@ -79,7 +80,11 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
                 preview,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodyMedium,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    fontWeight: presentationEmail.hasRead
+                      ? FontWeight.normal
+                      : FontWeight.bold,
+                  ),
               ),
             ),
           ],
