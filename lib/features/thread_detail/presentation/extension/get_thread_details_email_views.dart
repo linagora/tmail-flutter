@@ -12,18 +12,25 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
   List<Widget> getThreadDetailEmailViews() {
     int? firstEmailNotLoadedIndex;
     if (emailsToLoadMoreCount > 0) {
-      firstEmailNotLoadedIndex = emailIds.indexOf(
-        emailIdsPresentation.entries.firstWhereOrNull(
-          (entry) => entry.value == null
-        )?.key
-      );
+      final firstNotLoadedEmailId = emailIdsPresentation.entries.firstWhereOrNull(
+        (entry) => entry.value == null
+      )?.key;
+      if (firstNotLoadedEmailId == null) {
+        firstEmailNotLoadedIndex = -1;
+      } else {
+        firstEmailNotLoadedIndex = emailIdsPresentation
+          .keys
+          .toList()
+          .indexOf(firstNotLoadedEmailId);
+      }
     }
 
     return emailIdsPresentation.entries.map((entry) {
       final emailId = entry.key;
       final presentationEmail = entry.value;
+      final indexOfEmailId = emailIdsPresentation.keys.toList().indexOf(emailId);
       if (presentationEmail == null) {
-        if (emailIds.indexOf(emailId) != firstEmailNotLoadedIndex) {
+        if (indexOfEmailId != firstEmailNotLoadedIndex) {
           return const SizedBox.shrink();
         }
 
@@ -39,7 +46,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
         return const SizedBox.shrink();
       }
 
-      final isFirstEmailInThreadDetail = emailIds.indexOf(emailId) == 0;
+      final isFirstEmailInThreadDetail = indexOfEmailId == 0;
 
       if (presentationEmail.emailInThreadStatus == EmailInThreadStatus.collapsed) {
         return ThreadDetailCollapsedEmail(

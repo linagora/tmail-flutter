@@ -5,7 +5,6 @@ import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
-import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_by_ids_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
@@ -37,8 +36,9 @@ void main() {
         EmailId(Id('email5')),
       ];
 
-      when(threadDetailController.emailIds).thenReturn(emailIds.obs);
-      when(threadDetailController.emailIdsPresentation).thenReturn(<EmailId, PresentationEmail?>{}.obs);
+      when(threadDetailController.emailIdsPresentation).thenReturn(
+        Map.fromEntries(emailIds.map((emailId) => MapEntry(emailId, null))).obs,
+      );
       when(threadDetailController.getEmailsByIdsInteractor).thenReturn(getEmailsByIdsInteractor);
       when(getEmailsByIdsInteractor.execute(
         any,
