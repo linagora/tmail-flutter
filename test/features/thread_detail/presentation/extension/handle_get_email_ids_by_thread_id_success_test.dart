@@ -28,13 +28,15 @@ void main() {
         EmailId(Id('1')),
         EmailId(Id('2')),
       ]);
-      when(threadDetailController.emailIds).thenReturn(<EmailId>[].obs);
+      when(threadDetailController.emailIdsPresentation).thenReturn(
+        <EmailId, PresentationEmail?>{}.obs,
+      );
       
       // act
       threadDetailController.handleGetEmailIdsByThreadIdSuccess(success);
       
       // assert
-      expect(threadDetailController.emailIds, success.emailIds);
+      expect(threadDetailController.emailIdsPresentation.keys, success.emailIds);
     });
 
     test(
@@ -48,14 +50,19 @@ void main() {
       when(mailboxDashBoardController.selectedEmail).thenReturn(
         Rxn(PresentationEmail(id: EmailId(Id('1')))),
       );
-      when(threadDetailController.emailIds).thenReturn(<EmailId>[].obs);
+      when(threadDetailController.emailIdsPresentation).thenReturn(
+        <EmailId, PresentationEmail?>{}.obs,
+      );
       when(threadDetailController.mailboxDashBoardController).thenReturn(mailboxDashBoardController);
       
       // act
       threadDetailController.handleGetEmailIdsByThreadIdSuccess(success);
       
       // assert
-      expect(threadDetailController.emailIds, [mailboxDashBoardController.selectedEmail.value!.id!]);
+      expect(
+        threadDetailController.emailIdsPresentation.keys,
+        [mailboxDashBoardController.selectedEmail.value!.id!],
+      );
     });
   });
 }

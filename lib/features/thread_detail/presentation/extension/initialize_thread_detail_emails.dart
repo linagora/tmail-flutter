@@ -7,10 +7,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/utils/thread_d
 
 extension InitializeThreadDetailEmails on ThreadDetailController {
   void initializeThreadDetailEmails() {
-    emailIdsPresentation.value = Map.fromEntries(
-      emailIds.map((id) => MapEntry(id, null))
-    );
-    final emailIdToLoadContent = emailIds.last;
+    final emailIdToLoadContent = emailIdsPresentation.keys.last;
     final emailIdsToLoadMetaData = ThreadDetailPresentationUtils.getEmailIdsToLoad(
       Map.from(emailIdsPresentation)..remove(emailIdToLoadContent),
     );
