@@ -1,6 +1,8 @@
 
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:model/email/email_action_type.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 
 class EmailUIAction extends UIAction {
@@ -38,4 +40,19 @@ class CloseEmailInThreadDetailAction extends EmailUIAction {
 
   @override
   List<Object?> get props => [emailId];
+}
+class ReplyForwardBottomBarAction extends EmailUIAction {
+  ReplyForwardBottomBarAction({
+    required this.emailActionType,
+    required this.presentationEmail,
+  });
+
+  final EmailActionType emailActionType;
+  final PresentationEmail presentationEmail;
+
+  @override
+  List<Object?> get props => [
+    emailActionType,
+    presentationEmail,
+  ];
 }

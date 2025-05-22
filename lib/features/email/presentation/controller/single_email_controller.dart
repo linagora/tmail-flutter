@@ -389,6 +389,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       } else if (action is ShowEmailContentViewAction) {
         isEmailContentHidden.value = false;
         mailboxDashBoardController.clearEmailUIAction();
+      } else if (action is ReplyForwardBottomBarAction) {
+        if (action.presentationEmail.id != _currentEmailId) return;
+        pressEmailAction(
+          action.emailActionType,
+          action.presentationEmail,
+        );
       } else if (action is CloseEmailInThreadDetailAction) {
         if (action.emailId != _currentEmailId) return;
         closeEmailView(context: currentContext);
@@ -413,21 +419,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           if (emailId == null || emailId != _currentEmailId) return;
 
           _threadDetailController!.currentEmailLoaded.value = currentEmailLoaded.value;
-        },
-      ));
-      obxListeners.add(ever(
-        _threadDetailController!.threadAction,
-        (threadAction) {
-          if (threadAction?.emailActionType == null ||
-              threadAction?.presentationEmail.id == null ||
-              threadAction!.presentationEmail.id! != _currentEmailId ||
-              currentContext == null) return;
-
-          handleEmailAction(
-            currentContext!,
-            threadAction.presentationEmail,
-            threadAction.emailActionType,
-          );
         },
       ));
     }
