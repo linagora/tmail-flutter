@@ -1,4 +1,4 @@
-import 'package:core/utils/app_logger.dart';
+import 'package:core/core.dart';
 import 'package:date_format/date_format.dart' as date_format;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/localizations/language_code_constants.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:tmail_ui_user/main/universal_import/html_stub.dart' as html;
 
 class AppUtils {
   const AppUtils._();
@@ -31,12 +32,16 @@ class AppUtils {
     );
   }
 
-  static Future<bool> launchLink(String url, {bool isNewTab = true}) async {
-    return await launchUrl(
-      Uri.parse(url),
-      webOnlyWindowName: isNewTab ? '_blank' : '_self',
-      mode: LaunchMode.externalApplication
-    );
+  static void launchLink(String url, {bool isNewTab = true}) {
+    if (PlatformInfo.isWeb) {
+      html.window.open(url, isNewTab ? '_blank' : '_self');
+    } else {
+      launchUrl(
+        Uri.parse(url),
+        webOnlyWindowName: isNewTab ? '_blank' : '_self',
+        mode: LaunchMode.externalApplication,
+      );
+    }
   }
 
   static bool isDirectionRTL(BuildContext context) {
