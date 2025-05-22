@@ -753,8 +753,7 @@ class ComposerController extends BaseController
   void updateStatusEmailSendButton() {
     if (listToEmailAddress.isNotEmpty
         || listCcEmailAddress.isNotEmpty
-        || listBccEmailAddress.isNotEmpty
-        || listReplyToEmailAddress.isNotEmpty) {
+        || listBccEmailAddress.isNotEmpty) {
       isEnableEmailSendButton.value = true;
     } else {
       isEnableEmailSendButton.value = false;
