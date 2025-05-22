@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_bottom_bar_widget.dart';
@@ -111,15 +112,12 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                   presentationEmail: expandedPresentationEmail,
                   userName: controller.session?.getOwnEmailAddress() ?? '',
                   emailActionCallback: (action, email) {
-                    final threadAction = (
-                      emailActionType: action,
-                      presentationEmail: email,
-                    );
-                    if (threadAction == controller.threadAction.value) {
-                      controller.threadAction.refresh();
-                    } else {
-                      controller.threadAction.value = threadAction;
-                    }
+                    controller.mailboxDashBoardController
+                      ..dispatchEmailUIAction(ReplyForwardBottomBarAction(
+                        emailActionType: action,
+                        presentationEmail: email,
+                      ))
+                      ..dispatchEmailUIAction(EmailUIAction());
                   },
                   bottomBarDecoration: const BoxDecoration(
                     color: Colors.white,
