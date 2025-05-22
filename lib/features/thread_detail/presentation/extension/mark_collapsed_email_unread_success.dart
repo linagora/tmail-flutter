@@ -5,12 +5,14 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/clos
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-extension MarkCollapsedEmailUnreadSuccess on ThreadDetailController {
-  void markCollapsedEmailUnreadSuccess(MarkAsEmailReadSuccess success) {
+extension MarkCollapsedEmailReadSuccess on ThreadDetailController {
+  void markCollapsedEmailReadSuccess(MarkAsEmailReadSuccess success) {
     mailboxDashBoardController.updateEmailFlagByEmailIds(
       [success.emailId],
-      readAction: ReadActions.markAsUnread,
+      readAction: success.readActions,
     );
-    closeThreadDetailAction(currentContext);
+    if (success.readActions == ReadActions.markAsUnread) {
+      closeThreadDetailAction(currentContext);
+    }
   }
 }

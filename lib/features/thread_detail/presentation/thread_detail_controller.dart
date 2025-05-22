@@ -156,7 +156,7 @@ class ThreadDetailController extends BaseController {
     } else if (success is GetEmailsByIdsSuccess) {
       handleGetEmailsByIdsSuccess(success);
     } else if (success is MarkAsEmailReadSuccess) {
-      markCollapsedEmailUnreadSuccess(success);
+      markCollapsedEmailReadSuccess(success);
     } else if (success is MarkAsStarEmailSuccess) {
       markCollapsedEmailStarSuccess(success);
     } else if (success is CreateNewRuleFilterSuccess) {

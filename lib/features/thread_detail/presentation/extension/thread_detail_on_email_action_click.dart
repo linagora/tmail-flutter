@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/html_transformer/transform_configuration
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
@@ -21,6 +22,9 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
     EmailActionType emailActionType,
   ) {
     switch(emailActionType) {
+      case EmailActionType.markAsRead:
+        _markRead(presentationEmail);
+        break;
       case EmailActionType.markAsUnread:
         _unRead(presentationEmail);
         break;
@@ -80,13 +84,25 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
     }
   }
 
-  void _unRead(PresentationEmail presentationEmail) {
+  void _markRead(PresentationEmail presentationEmail) {
     if (session == null || accountId == null) return;
 
-    consumeState(emailActionReactor.markAsEmailUnread(
+    consumeState(emailActionReactor.markAsEmailRead(
       session!,
       accountId!,
       presentationEmail,
+      readAction: ReadActions.markAsRead,
+    ));
+  }
+
+  void _unRead(PresentationEmail presentationEmail) {
+    if (session == null || accountId == null) return;
+
+    consumeState(emailActionReactor.markAsEmailRead(
+      session!,
+      accountId!,
+      presentationEmail,
+      readAction: ReadActions.markAsUnread,
     ));
   }
 
