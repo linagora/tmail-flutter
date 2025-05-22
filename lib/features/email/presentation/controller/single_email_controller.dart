@@ -389,7 +389,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       } else if (action is ShowEmailContentViewAction) {
         isEmailContentHidden.value = false;
         mailboxDashBoardController.clearEmailUIAction();
-      } else if (action is ReplyForwardBottomBarAction) {
+      } else if (action is PerformEmailActionInThreadDetailAction) {
         if (action.presentationEmail.id != _currentEmailId) return;
         pressEmailAction(
           action.emailActionType,
