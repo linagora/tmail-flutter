@@ -92,6 +92,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
                 EmailActionType.deletePermanently,
               ],
             ],
+            emailIsRead: presentationEmail.hasRead,
           ),
           openEmailAddressDetailAction: (_, emailAddress) {
             openEmailAddressDetailAction(emailAddress);

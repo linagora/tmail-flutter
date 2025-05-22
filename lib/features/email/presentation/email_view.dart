@@ -97,6 +97,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                         username: controller.session?.username,
                         handleEmailAction: (email, action) => controller.handleEmailAction(context, email, action),
                         additionalActions: [],
+                        emailIsRead: presentationEmail.hasRead,
                       ),
                       supportBackAction: !isInsideThreadDetailView,
                       appBarDecoration: isInsideThreadDetailView
@@ -299,6 +300,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                 EmailActionType.deletePermanently,
               ],
             ],
+            emailIsRead: presentationEmail.hasRead,
           ),
           onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
           onTapAvatarActionClick: onToggleThreadDetailCollapseExpand,
