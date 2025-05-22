@@ -554,4 +554,25 @@ class HtmlUtils {
         .replaceAll('\n', '')
         .replaceAll('\t', '');
   }
+
+
+  /// Returns true if the browser is Safari and its major version is less than 17.
+  static bool isSafariBelow17() {
+    try {
+      final userAgent = html.window.navigator.userAgent;
+      log('HtmlUtils::isOldSafari:UserAgent = $userAgent');
+      final isSafari = userAgent.contains('Safari') && !userAgent.contains('Chrome');
+      if (!isSafari) return false;
+
+      final match = RegExp(r'Version/(\d+)\.').firstMatch(userAgent);
+      if (match == null) return false;
+
+      final version = int.tryParse(match.group(1)!);
+      log('HtmlUtils::isOldSafari:Version = $version');
+      return version != null && version < 17;
+    } catch (e) {
+      logError('HtmlUtils::isOldSafari:Exception = $e');
+      return false;
+    }
+  }
 }
