@@ -31,7 +31,6 @@ class ThreadDetailController extends BaseController {
     this.getEmailsByIdsInteractor,
   );
 
-  final emailIds = <EmailId>[].obs;
   final emailIdsPresentation = <EmailId, PresentationEmail?>{}.obs;
   final currentExpandedEmailId = Rxn<EmailId>();
   final currentEmailLoaded = Rxn<EmailLoaded>();
@@ -92,7 +91,6 @@ class ThreadDetailController extends BaseController {
   }
 
   void reset() {
-    emailIds.clear();
     emailIdsPresentation.clear();
     scrollController?.dispose();
     scrollController = null;

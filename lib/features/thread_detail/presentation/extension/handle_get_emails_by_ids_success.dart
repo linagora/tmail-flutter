@@ -23,12 +23,12 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
     
     for (var presentationEmail in success.presentationEmails) {
       if (presentationEmail.id == null) continue;
-      if (presentationEmail.id == emailIds.last) {
+      if (presentationEmail.id == emailIdsPresentation.keys.last) {
         EmailBindings(currentEmailId: presentationEmail.id).dependencies();
         currentExpandedEmailId.value = presentationEmail.id;
       }
       emailIdsPresentation[presentationEmail.id!] = presentationEmail.copyWith(
-        emailInThreadStatus: presentationEmail.id == emailIds.last
+        emailInThreadStatus: presentationEmail.id == emailIdsPresentation.keys.last
           ? EmailInThreadStatus.expanded
           : EmailInThreadStatus.collapsed,
       );
@@ -36,14 +36,13 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
 
     if (!isLoadMore) return;
     
-    final currentExpandedEmailIndex = emailIds.indexOf(emailIdsPresentation
-      .entries
-      .firstWhereOrNull(
-        (entry) => entry.value?.emailInThreadStatus == EmailInThreadStatus.expanded,
-      )
-      ?.key);
-    final firstLoadedMoreEmailIndex = emailIds
-      .indexOf(success.presentationEmails.firstOrNull?.id);
+    final currentExpandedEmailIndex = currentExpandedEmailId.value == null
+      ? -1
+      : emailIdsPresentation.keys.toList().indexOf(currentExpandedEmailId.value!);
+    final firstLoadedMoreEmailId = success.presentationEmails.firstOrNull?.id;
+    final firstLoadedMoreEmailIndex = firstLoadedMoreEmailId == null
+      ? -1
+      : emailIdsPresentation.keys.toList().indexOf(firstLoadedMoreEmailId);
     if (currentExpandedEmailIndex == -1 || firstLoadedMoreEmailIndex == -1) {
       return;
     }

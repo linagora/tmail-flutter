@@ -28,7 +28,7 @@ extension ToggleThreadDetailCollapeExpand on ThreadDetailController {
     } else {
       focusExpandedEmail(emailId);
     }
-    for (var key in emailIds) {
+    for (var key in emailIdsPresentation.keys) {
       if (emailIdsPresentation[key] == null) continue;
 
       if (key == emailId) {
