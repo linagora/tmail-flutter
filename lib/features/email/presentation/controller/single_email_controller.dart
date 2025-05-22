@@ -428,12 +428,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           );
         },
       ));
-      obxListeners.add(ever(
-        currentEmailLoaded,
-        (emailLoaded) {
-          _threadDetailController!.currentEmailLoaded.value = currentEmailLoaded.value;
-        },
-      ));
     }
   }
 
@@ -642,6 +636,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       inlineImages: List.of(success.inlineImages ?? []),
       emailCurrent: success.emailCurrent,
     );
+    _threadDetailController?.currentEmailLoaded.value = currentEmailLoaded.value;
 
     if (success.emailCurrent.id == currentEmail?.id) {
       attachments.value = success.attachments ?? [];
@@ -681,6 +676,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       inlineImages: List.of(success.inlineImages ?? []),
       emailCurrent: success.emailCurrent,
     );
+    _threadDetailController?.currentEmailLoaded.value = currentEmailLoaded.value;
 
     if (success.emailCurrent?.id == currentEmail?.id) {
       attachments.value = success.attachments ?? [];
