@@ -41,8 +41,8 @@ class CloseEmailInThreadDetailAction extends EmailUIAction {
   @override
   List<Object?> get props => [emailId];
 }
-class ReplyForwardBottomBarAction extends EmailUIAction {
-  ReplyForwardBottomBarAction({
+class PerformEmailActionInThreadDetailAction extends EmailUIAction {
+  PerformEmailActionInThreadDetailAction({
     required this.emailActionType,
     required this.presentationEmail,
   });
