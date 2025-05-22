@@ -316,6 +316,7 @@ class IdentityCreatorController extends BaseController with DragDropFileMixin im
   void _setUpValueFromIdentity() {
     _nameIdentity = identity?.name ?? '';
     inputNameIdentityController.text = identity?.name ?? '';
+    errorNameIdentity.value = '';
 
     if (identity?.signatureAsString.isNotEmpty == true) {
       updateContentHtmlEditor(arguments?.identity?.signatureAsString ?? '');

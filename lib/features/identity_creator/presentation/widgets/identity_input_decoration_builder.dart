@@ -27,7 +27,7 @@ class IdentityInputDecorationBuilder extends InputDecorationBuilder {
       isDense: true,
       hintStyle: hintStyle ?? const TextStyle(color: AppColor.colorHintInputCreateMailbox, fontSize: 16),
       contentPadding: contentPadding ?? const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-      errorText: errorText,
+      errorText: errorText?.isNotEmpty == true ? errorText : null,
       errorStyle: errorTextStyle ?? const TextStyle(color: AppColor.colorInputBorderErrorVerifyName, fontSize: 13),
       filled: true,
       fillColor: errorText?.isNotEmpty == true
