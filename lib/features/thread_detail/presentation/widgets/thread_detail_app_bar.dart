@@ -5,10 +5,8 @@ import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
-import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_app_bar_widget.dart';
@@ -28,7 +26,6 @@ class ThreadDetailAppBar extends StatelessWidget {
     this.optionWidgets = const [],
     this.onEmailActionClick,
     this.onMoreActionClick,
-    this.emailLoaded,
   });
 
   final ResponsiveUtils responsiveUtils;
@@ -41,12 +38,11 @@ class ThreadDetailAppBar extends StatelessWidget {
   final List<Widget> optionWidgets;
   final OnEmailActionClick? onEmailActionClick;
   final OnMoreActionClick? onMoreActionClick;
-  final EmailLoaded? emailLoaded;
 
   @override
   Widget build(BuildContext context) {
     final isReplyToListEnabled = EmailUtils.isReplyToListEnabled(
-      emailLoaded?.emailCurrent?.listPost ?? '',
+      lastEmailOfThread?.listPost ?? '',
     );
 
     final child = LayoutBuilder(

@@ -7,7 +7,6 @@ import 'package:model/extensions/session_extension.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
-import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_bottom_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/get_mailbox_contain_extension.dart';
@@ -18,7 +17,6 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/get_
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/thread_detail_on_email_action_click.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread_detail_app_bar.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ThreadDetailView extends GetWidget<ThreadDetailController> {
   const ThreadDetailView({super.key});
@@ -42,17 +40,11 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
               lastEmailOfThread: controller.emailIdsPresentation.values.lastOrNull,
               ownUserName: controller.session?.getOwnEmailAddress() ?? '',
               mailboxContain: _getMailboxContain(),
-              emailLoaded: getBinding<SingleEmailController>(
-                tag: controller.emailIdsPresentation.keys.lastOrNull?.id.value
-              )?.currentEmailLoaded.value,
               onEmailActionClick: controller.threadDetailOnEmailActionClick,
               onMoreActionClick: (presentationEmail, position) => controller.emailActionReactor.handleMoreEmailAction(
                 mailboxContain: controller.mailboxDashBoardController.getMailboxContain(presentationEmail),
                 presentationEmail: presentationEmail,
                 position: position,
-                emailLoaded: getBinding<SingleEmailController>(
-                  tag: presentationEmail.id?.id.value,
-                )?.currentEmailLoaded.value,
                 responsiveUtils: controller.responsiveUtils,
                 imagePaths: controller.imagePaths,
                 username: controller.session?.username,
