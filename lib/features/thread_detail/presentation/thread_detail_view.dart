@@ -1,5 +1,6 @@
 import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/session_extension.dart';
@@ -24,24 +25,31 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
     final multipleEmailsView = SelectionArea(child: SafeArea(
       child: Column(
         children: [
-          Obx(() => ThreadDetailAppBar(
-            responsiveUtils: controller.responsiveUtils,
-            imagePaths: controller.imagePaths,
-            isSearchRunning: controller.isSearchRunning,
-            closeThreadDetailAction: controller.closeThreadDetailAction,
-            lastEmailOfThread: controller.emailIdsPresentation.values.lastOrNull,
-            ownUserName: controller.session?.username.value ?? '',
-            mailboxContain: _getMailboxContain(),
-            emailLoaded: getBinding<SingleEmailController>(
-              tag: controller.emailIdsPresentation.keys.lastOrNull?.id.value
-            )?.currentEmailLoaded.value,
-            onEmailActionClick: (email, action) {
-              // TODO: Next PR
-            },
-            onMoreActionClick: (p0, p1) {
-              // TODO: Next PR
-            },
-          )),
+          Obx(() {
+            final currentViewState = controller.viewState.value.fold(id, id);
+            if (currentViewState is GettingThreadById) {
+              return const SizedBox.shrink();
+            }
+
+            return ThreadDetailAppBar(
+              responsiveUtils: controller.responsiveUtils,
+              imagePaths: controller.imagePaths,
+              isSearchRunning: controller.isSearchRunning,
+              closeThreadDetailAction: controller.closeThreadDetailAction,
+              lastEmailOfThread: controller.emailIdsPresentation.values.lastOrNull,
+              ownUserName: controller.session?.username.value ?? '',
+              mailboxContain: _getMailboxContain(),
+              emailLoaded: getBinding<SingleEmailController>(
+                tag: controller.emailIdsPresentation.keys.lastOrNull?.id.value
+              )?.currentEmailLoaded.value,
+              onEmailActionClick: (email, action) {
+                // TODO: Next PR
+              },
+              onMoreActionClick: (p0, p1) {
+                // TODO: Next PR
+              },
+            );
+          }),
           Obx(() => controller.getThreadDetailLoadingView(
             isResponsiveDesktop: controller.responsiveUtils.isDesktop(context),
           )),
@@ -76,6 +84,11 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             );
           }),
           Obx(() {
+            final currentViewState = controller.viewState.value.fold(id, id);
+            if (currentViewState is GettingThreadById) {
+              return const SizedBox.shrink();
+            }
+
             final expandedEmailId = controller.currentExpandedEmailId.value;
             if (expandedEmailId == null) {
               return _roundBottomPlaceHolder(
@@ -137,6 +150,12 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
     ));
 
     return Obx(() {
+      final currentViewState = controller.viewState.value.fold(id, id);
+      if (currentViewState is GettingThreadById &&
+          controller.responsiveUtils.isTabletLarge(context)) {
+        return controller.getThreadDetailLoadingView(isResponsiveDesktop: false);
+      }
+
       if (controller.emailIdsPresentation.length == 1 &&
           controller.emailIdsPresentation.values.firstOrNull != null) {
         return EmailView(
