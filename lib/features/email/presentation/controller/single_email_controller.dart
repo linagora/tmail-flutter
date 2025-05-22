@@ -132,6 +132,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/da
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/focus_thread_detail_expanded_email.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/mark_collapsed_email_unread_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -276,7 +277,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     } else if (success is GetEmailContentFromCacheSuccess) {
       _getEmailContentOfflineSuccess(success);
     } else if (success is MarkAsEmailReadSuccess) {
-      _handleMarkAsEmailReadCompleted(success.readActions);
+      _handleMarkAsEmailReadCompleted(success);
     } else if (success is ExportAttachmentSuccess) {
       _exportAttachmentSuccessAction(success);
     } else if (success is ExportAllAttachmentsSuccess) {
@@ -334,7 +335,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   void handleFailureViewState(Failure failure) {
     super.handleFailureViewState(failure);
     if (failure is MarkAsEmailReadFailure) {
-      _handleMarkAsEmailReadCompleted(failure.readActions);
+      _handleMarkAsEmailReadFailure(failure);
     } else if (failure is DownloadAttachmentsFailure) {
       _downloadAttachmentsFailure(failure);
     } else if (failure is ExportAttachmentFailure) {
@@ -361,6 +362,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _handleGetHtmlContentFromAttachmentFailure(failure);
     } else if (failure is PreviewPDFFileFailure) {
       _handlePreviewPDFFileFailure(failure);
+    }
+  }
+
+  void _handleMarkAsEmailReadFailure(MarkAsEmailReadFailure failure) {
+    if (currentContext != null && currentOverlayContext != null) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).an_error_occurred,
+      );
     }
   }
 
@@ -790,16 +800,8 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  void _handleMarkAsEmailReadCompleted(ReadActions readActions) {
-    if (currentEmail?.id != null) {
-      mailboxDashBoardController.updateEmailFlagByEmailIds(
-        [currentEmail!.id!],
-        readAction: readActions,
-      );
-    }
-    if (readActions == ReadActions.markAsUnread) {
-      closeEmailView(context: currentContext);
-    }
+  void _handleMarkAsEmailReadCompleted(MarkAsEmailReadSuccess success) {
+    _threadDetailController?.markCollapsedEmailReadSuccess(success);
   }
 
   void downloadAttachments(BuildContext context, List<Attachment> attachments) async {
