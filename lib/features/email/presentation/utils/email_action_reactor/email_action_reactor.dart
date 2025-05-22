@@ -90,16 +90,17 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
   final GetEmailContentInteractor _getEmailContentInteractor;
   final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
 
-  Stream<Either<Failure, Success>> markAsEmailUnread(
+  Stream<Either<Failure, Success>> markAsEmailRead(
     Session session,
     AccountId accountId,
-    PresentationEmail presentationEmail,
-  ) {
+    PresentationEmail presentationEmail, {
+    required ReadActions readAction,
+  }) {
     return _markAsEmailReadInteractor.execute(
       session,
       accountId,
       presentationEmail.id!,
-      ReadActions.markAsUnread,
+      readAction,
       MarkReadAction.tap,
       presentationEmail.mailboxContain?.mailboxId,
     );

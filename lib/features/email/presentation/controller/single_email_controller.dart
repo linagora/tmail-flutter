@@ -1365,10 +1365,11 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     switch(actionType) {
       case EmailActionType.markAsUnread:
         if (session != null && accountId != null) {
-          consumeState(emailActionReactor.markAsEmailUnread(
+          consumeState(emailActionReactor.markAsEmailRead(
             session!,
             accountId!,
             presentationEmail,
+            readAction: ReadActions.markAsUnread,
           ));
         }
         break;
