@@ -505,7 +505,6 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
   void handleMoreEmailAction({
     required PresentationEmail presentationEmail,
     required PresentationMailbox? mailboxContain,
-    required EmailLoaded? emailLoaded,
     required RelativeRect? position,
     required ResponsiveUtils responsiveUtils,
     required ImagePaths imagePaths,
