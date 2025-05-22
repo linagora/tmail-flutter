@@ -20,7 +20,9 @@ class EmailSubjectWidget extends StatelessWidget {
       child: Text(
         presentationEmail.getEmailTitle(),
         maxLines: EmailSubjectStyles.maxLines,
-        style: ThemeUtils.textStyleHeadingH5(color: Colors.black)
+        style: ThemeUtils.textStyleHeadingH5(color: Colors.black).copyWith(
+          overflow: TextOverflow.ellipsis,
+        ),
       )
     );
   }
