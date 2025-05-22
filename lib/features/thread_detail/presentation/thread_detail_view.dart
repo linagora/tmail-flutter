@@ -32,7 +32,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
             ownUserName: controller.session?.username.value ?? '',
             mailboxContain: _getMailboxContain(),
             emailLoaded: getBinding<SingleEmailController>(
-              tag: controller.emailIds.lastOrNull?.id.value
+              tag: controller.emailIdsPresentation.keys.lastOrNull?.id.value
             )?.currentEmailLoaded.value,
             onEmailActionClick: (email, action) {
               // TODO: Next PR
@@ -139,7 +139,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
     ));
 
     return Obx(() {
-      if (controller.emailIds.length == 1 &&
+      if (controller.emailIdsPresentation.length == 1 &&
           controller.emailIdsPresentation.values.firstOrNull != null) {
         return EmailView(
           emailId: controller.emailIdsPresentation.values.firstOrNull?.id,
