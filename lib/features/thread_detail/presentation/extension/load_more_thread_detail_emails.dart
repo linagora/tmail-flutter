@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:dartz/dartz.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
@@ -6,7 +8,10 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_
 import 'package:tmail_ui_user/features/thread_detail/presentation/utils/thread_detail_presentation_utils.dart';
 
 extension LoadMoreThreadDetailEmails on ThreadDetailController {
-  void loadMoreThreadDetailEmails() {
+  void loadMoreThreadDetailEmails({
+    required int loadMoreIndex,
+    required int loadMoreCount,
+  }) {
     if (accountId == null || session == null) {
       consumeState(Stream.value(Left(GetEmailsByIdsFailure(
         exception: NotFoundSessionException(),
@@ -14,8 +19,21 @@ extension LoadMoreThreadDetailEmails on ThreadDetailController {
       return;
     }
 
-    final emailIdsToLoadMetaData = ThreadDetailPresentationUtils
-      .getEmailIdsToLoad(emailIdsPresentation);
+    final currentExpandedEmailIndex = currentExpandedEmailId.value == null
+      ? -1
+      : emailIdsPresentation.keys.toList().indexOf(currentExpandedEmailId.value!);
+    final loadMoreEmailIds = emailIdsPresentation.keys.toList().sublist(
+      loadMoreIndex,
+      min(
+        loadMoreIndex + loadMoreCount,
+        emailIdsPresentation.length,
+      ),
+    );
+
+    final emailIdsToLoadMetaData = ThreadDetailPresentationUtils.getLoadMoreEmailIds(
+      loadMoreEmailIds,
+      loadEmailsAfterSelectedEmail: loadMoreIndex > currentExpandedEmailIndex,
+    );
     if (emailIdsToLoadMetaData.isEmpty) {
       return;
     }
@@ -27,6 +45,7 @@ extension LoadMoreThreadDetailEmails on ThreadDetailController {
         session!,
         accountId!,
       ).union(additionalProperties),
+      loadMoreIndex: loadMoreIndex,
     ));
   }
 }

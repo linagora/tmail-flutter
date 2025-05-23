@@ -90,15 +90,6 @@ class ThreadDetailController extends BaseController {
     PresentationMailbox.roleSent,
   );
   String? get ownEmailAddress => session?.getOwnEmailAddress();
-  int get emailsToLoadMoreCount => emailIdsPresentation
-    .values
-    .where((email) => email == null)
-    .length;
-  bool get loadingThreadDetail => viewState.value.fold(
-    (failure) => false,
-    (success) => success is GettingThreadById
-      || success is GettingEmailsByIds,
-  );
   bool get isSearchRunning {
     final isWebSearchRunning = mailboxDashBoardController
       .searchController
