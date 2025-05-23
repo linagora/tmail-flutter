@@ -1623,7 +1623,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       return;
     }
 
-    final receiverEmailAddress = _getReceiverEmailAddress(currentEmail!) ?? session!.getOwnEmailAddress();
+    final receiverEmailAddress = _getReceiverEmailAddress(currentEmail!) ?? session!.getOwnEmailAddressOrEmpty();
     log('SingleEmailController::_handleSendReceiptToSenderAction():receiverEmailAddress: $receiverEmailAddress');
     final mdnToSender = _generateMDN(context, currentEmail!, receiverEmailAddress);
     final sendReceiptRequest = SendReceiptToSenderRequest(
@@ -2568,13 +2568,7 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     }
   }
 
-  String getOwnEmailAddress() {
-    try {
-      return session?.getOwnEmailAddress() ?? '';
-    } catch (e) {
-      return '';
-    }
-  }
+  String getOwnEmailAddress() => session?.getOwnEmailAddressOrEmpty() ?? '';
 
   void onHtmlContentClippedAction(bool isClipped) {
     log('SingleEmailController::onHtmlContentClippedAction:isClipped = $isClipped');
