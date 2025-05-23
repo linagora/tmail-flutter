@@ -88,6 +88,7 @@ void main() {
     when(controller.session).thenReturn(SessionFixtures.aliceSession);
     when(controller.accountId).thenReturn(AccountFixtures.aliceAccountId);
     when(controller.getEmailsByIdsInteractor).thenReturn(getEmailsByIdsInteractor);
+    when(controller.additionalProperties).thenReturn(Properties.empty());
 
     // Act
     controller.loadMoreThreadDetailEmails();
