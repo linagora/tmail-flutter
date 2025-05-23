@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.d
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/app_grid_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/bottom_bar_selection_mailbox_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folder_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folders_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
@@ -237,39 +238,11 @@ class MailboxView extends BaseMailboxView {
         }),
         const SizedBox(height: 8),
         const Divider(color: AppColor.colorDividerMailbox, height: 1),
-        Container(
-          padding: const EdgeInsetsDirectional.symmetric(
-            horizontal: 16,
-            vertical: 6
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  AppLocalizations.of(context).folders,
-                  style: ThemeUtils.textStyleInter700(color: Colors.black),
-                ),
-              ),
-              Row(children: [
-                TMailButtonWidget.fromIcon(
-                  icon: controller.imagePaths.icSearchBar,
-                  iconColor: AppColor.steelGrayA540,
-                  iconSize: 20,
-                  backgroundColor: Colors.transparent,
-                  tooltipMessage: AppLocalizations.of(context).searchForFolders,
-                  onTapActionCallback: () => controller.openSearchViewAction(context)
-                ),
-                TMailButtonWidget.fromIcon(
-                  icon: controller.imagePaths.icAddNewFolder,
-                  iconColor: AppColor.steelGrayA540,
-                  iconSize: 20,
-                  backgroundColor: Colors.transparent,
-                  tooltipMessage: AppLocalizations.of(context).newFolder,
-                  onTapActionCallback: () => controller.goToCreateNewMailboxView(context)
-                ),
-              ]),
-            ],
-          ),
+        FoldersBarWidget(
+          onOpenSearchFolder: () => controller.openSearchViewAction(context),
+          onAddNewFolder:  () => controller.goToCreateNewMailboxView(context),
+          imagePaths: controller.imagePaths,
+          responsiveUtils: controller.responsiveUtils,
         ),
         Obx(() {
           if (controller.personalMailboxIsNotEmpty) {
