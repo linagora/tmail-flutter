@@ -10,12 +10,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   B = holdersList[14];
   var typesOffset = hunkHelpers.updateTypes([]);
   (function constants() {
-    B.CupertinoLoadingWidget_null_null_null = new A.CupertinoLoadingWidget(null, null, null);
+    B.CupertinoLoadingWidget_null_null_null_null = new A.CupertinoLoadingWidget(null, null, null, null);
   })();
 };
 ;
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_7", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "RN9Mi4BIacGBButSjIMnTWQTg2A=");
+})($__dart_deferred_initializers__, "DV2iCL1wDaMSf7lgPAtT5mjF1zY=");
 ;
