@@ -4,11 +4,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/app_grid_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/bottom_bar_selection_mailbox_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folder_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
@@ -89,7 +91,7 @@ class MailboxView extends BaseMailboxView {
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Divider(color: AppColor.colorDividerHorizontal),
-                              QuotasView(isDisplayedContactSupport: true)
+                              QuotasView()
                             ],
                           );
                         }),
@@ -292,27 +294,80 @@ class MailboxView extends BaseMailboxView {
             return const SizedBox.shrink();
           }
         }),
+        Obx(() {
+          final accountId = controller
+              .mailboxDashBoardController
+              .accountId
+              .value;
+
+          if (accountId == null) return const SizedBox.shrink();
+
+          final contactSupportCapability = controller
+              .mailboxDashBoardController
+              .sessionCurrent
+              ?.getContactSupportCapability(accountId);
+
+          if (contactSupportCapability?.isAvailable != true) {
+            return const SizedBox.shrink();
+          }
+
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const SizedBox(height: 8),
+              const Divider(color: AppColor.colorDividerMailbox, height: 1),
+              const SizedBox(height: 8),
+              FolderWidget(
+                icon: controller.imagePaths.icHelp,
+                label: AppLocalizations.of(context).support,
+                onOpenFolderAction: () => controller
+                    .mailboxDashBoardController
+                    .onGetHelpOrReportBug(contactSupportCapability!),
+                tooltip: AppLocalizations.of(context).getHelpOrReportABug,
+                padding: const EdgeInsets.symmetric(horizontal: 16)
+              ),
+            ],
+          );
+        }),
       ])
     );
   }
 
-  Widget _buildBodyMailboxCategory(BuildContext context, MailboxCategories categories, MailboxNode mailboxNode) {
+  Widget _buildBodyMailboxCategory({
+    required BuildContext context,
+    required MailboxCategories categories,
+    required MailboxNode mailboxNode,
+    EdgeInsetsGeometry? padding,
+  }) {
     final lastNode = mailboxNode.childrenItems?.last;
 
-    return Container(
-        margin: EdgeInsetsDirectional.only(
-          start: controller.responsiveUtils.isLandscapeMobile(context) ? 0 : 8,
-          end: 16
-        ),
-        padding: const EdgeInsetsDirectional.only(start: 12),
-        child: TreeView(
-            key: Key('${categories.keyValue}_mailbox_list'),
-            children: _buildListChildTileWidget(context, mailboxNode, lastNode: lastNode)));
+    final treeView = TreeView(
+      key: Key('${categories.keyValue}_mailbox_list'),
+      children: _buildListChildTileWidget(
+        context,
+        mailboxNode,
+        lastNode: lastNode,
+      ),
+    );
+
+    if (padding != null) {
+      return Padding(
+        padding: padding,
+        child: treeView,
+      );
+    } else {
+      return treeView;
+    }
   }
 
   Widget _buildMailboxCategory(BuildContext context, MailboxCategories categories, MailboxNode mailboxNode) {
     if (categories == MailboxCategories.exchange) {
-      return _buildBodyMailboxCategory(context, categories, mailboxNode);
+      return _buildBodyMailboxCategory(
+        context: context,
+        categories: categories,
+        mailboxNode: mailboxNode,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+      );
     }
     return Column(children: [
       Obx(() => MailboxCategoryWidget(
@@ -327,15 +382,24 @@ class MailboxView extends BaseMailboxView {
               itemKey,
             ),
         isArrangeLTR: false,
-        padding: EdgeInsetsDirectional.only(
-          start: 16,
-          end: controller.responsiveUtils.isLandscapeMobile(context) ? 8 : 28,
+        showIcon: true,
+        padding: const EdgeInsetsDirectional.only(
+          start: 26,
+          end: 16,
         ),
       )),
       AnimatedContainer(
         duration: const Duration(milliseconds: 400),
         child: categories.getExpandMode(controller.mailboxCategoriesExpandMode.value) == ExpandMode.EXPAND
-            ? _buildBodyMailboxCategory(context, categories, mailboxNode)
+            ? _buildBodyMailboxCategory(
+                context: context,
+                categories: categories,
+                mailboxNode: mailboxNode,
+                padding: const EdgeInsetsDirectional.only(
+                  start: 30,
+                  end: 16,
+                ),
+              )
             : const Offstage())
     ]);
   }
