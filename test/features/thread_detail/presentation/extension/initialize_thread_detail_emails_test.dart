@@ -6,6 +6,7 @@ import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_by_ids_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
@@ -16,15 +17,18 @@ import 'initialize_thread_detail_emails_test.mocks.dart';
 @GenerateNiceMocks([
   MockSpec<GetEmailsByIdsInteractor>(),
   MockSpec<ThreadDetailController>(),
+  MockSpec<MailboxDashBoardController>(),
 ])
 void main() {
   group('InitializeThreadDetailEmails', () {
     late MockGetEmailsByIdsInteractor getEmailsByIdsInteractor;
     late MockThreadDetailController threadDetailController;
+    late MockMailboxDashBoardController mailboxDashboardController;
 
     setUp(() {
       getEmailsByIdsInteractor = MockGetEmailsByIdsInteractor();
       threadDetailController = MockThreadDetailController();
+      mailboxDashboardController = MockMailboxDashBoardController();
     });
 
     test('initializeThreadDetailEmails should call getEmailsByIdsInteractor with 3 elements', () async {
@@ -52,6 +56,8 @@ void main() {
       final session = SessionFixtures.aliceSession;
       when(threadDetailController.accountId).thenReturn(accountId);
       when(threadDetailController.session).thenReturn(session);
+      when(threadDetailController.mailboxDashBoardController).thenReturn(mailboxDashboardController);
+      when(mailboxDashboardController.selectedEmail).thenReturn(Rxn());
 
       // Act
       threadDetailController.initializeThreadDetailEmails();
