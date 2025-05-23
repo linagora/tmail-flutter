@@ -7,9 +7,9 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/utils/thread_d
 
 extension InitializeThreadDetailEmails on ThreadDetailController {
   void initializeThreadDetailEmails() {
-    final emailIdToLoadContent = emailIdsPresentation.keys.last;
-    final emailIdsToLoadMetaData = ThreadDetailPresentationUtils.getEmailIdsToLoad(
-      Map.from(emailIdsPresentation)..remove(emailIdToLoadContent),
+    final emailIdsToLoadMetaData = ThreadDetailPresentationUtils.getFirstLoadEmailIds(
+      emailIdsPresentation.keys.toList(),
+      selectedEmailId: mailboxDashBoardController.selectedEmail.value?.id,
     );
 
     if (accountId == null || session == null) {
@@ -21,7 +21,7 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
     consumeState(getEmailsByIdsInteractor.execute(
       session!,
       accountId!,
-      [...emailIdsToLoadMetaData, emailIdToLoadContent],
+      emailIdsToLoadMetaData,
       properties: EmailUtils.getPropertiesForEmailGetMethod(
         session!,
         accountId!,
