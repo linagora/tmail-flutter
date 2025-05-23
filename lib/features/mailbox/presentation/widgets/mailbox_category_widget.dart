@@ -3,10 +3,13 @@ import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/expand_mode_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_icon_widget_styles.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_widget_styles.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnToggleMailboxCategories = Function(MailboxCategories, GlobalKey);
@@ -16,6 +19,7 @@ class MailboxCategoryWidget extends StatefulWidget {
   final ExpandMode expandMode;
   final OnToggleMailboxCategories onToggleMailboxCategories;
   final bool isArrangeLTR;
+  final bool showIcon;
   final EdgeInsetsGeometry? padding;
 
   const MailboxCategoryWidget({
@@ -24,6 +28,7 @@ class MailboxCategoryWidget extends StatefulWidget {
     required this.expandMode,
     required this.onToggleMailboxCategories,
     this.isArrangeLTR = true,
+    this.showIcon = false,
     this.padding,
   });
 
@@ -42,6 +47,16 @@ class _MailboxCategoryWidgetState extends State<MailboxCategoryWidget> {
     final item = Row(
       key: _key,
       children: [
+        if (widget.showIcon)
+          ...[
+            SvgPicture.asset(
+              _imagePaths.icFolderMailbox,
+              width: MailboxIconWidgetStyles.iconSize,
+              height: MailboxIconWidgetStyles.iconSize,
+              fit: BoxFit.fill,
+            ),
+            const SizedBox(width: MailboxItemWidgetStyles.labelIconSpace),
+          ],
         if (!widget.isArrangeLTR)
           Flexible(
             child: Text(
