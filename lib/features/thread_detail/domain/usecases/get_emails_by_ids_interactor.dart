@@ -22,6 +22,7 @@ class GetEmailsByIdsInteractor {
     AccountId accountId,
     List<EmailId> emailIds, {
     Properties? properties,
+    int? loadMoreIndex,
   }) async* {
     try {
       if (emailIds.length > 1 && (
@@ -31,7 +32,7 @@ class GetEmailsByIdsInteractor {
         throw ThreadDetailOverloadException();
       }
 
-      yield Right(GettingEmailsByIds());
+      yield Right(GettingEmailsByIds(loadingIndex: loadMoreIndex));
       final result = await _threadDetailRepository.getEmailsByIds(
         session,
         accountId,
