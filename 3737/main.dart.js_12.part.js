@@ -64,7 +64,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = C.TextDirection_1;
       t4 = $.$get$GetWidget__cache();
       A.Expando__checkType(this);
-      return F.HtmlContentViewerOnWeb$(true, emlPreviewer.content, _null, t3, t1.size._dy, _null, _null, A._instanceType(this)._eval$1("GetWidget.S")._as(t4._jsWeakMap.get(this)).get$onClickHyperLink(), false, t2.size._dx);
+      return F.HtmlContentViewerOnWeb$(true, emlPreviewer.content, _null, t3, t1.size._dy, _null, _null, A._instanceType(this)._eval$1("GetWidget.S")._as(t4._jsWeakMap.get(this)).get$onClickHyperLink(), _null, false, t2.size._dx);
     }
   };
   var typesOffset = hunkHelpers.updateTypes(["DownloadAttachmentLoadingBar()"]);
@@ -85,7 +85,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       A.Localizations_of(this.context, C.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
       return A.Center$(A.Text$(A.Intl__message("Cannot preview this eml file", _null, "previewEmailFromEMLFileFailed", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null);
     },
-    $signature: 1896
+    $signature: 1923
   };
   B.EmailPreviewerView_build__closure0.prototype = {
     call$1(success) {
@@ -97,7 +97,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else if (success instanceof A.PreviewEmailFromEmlFileSuccess)
         return _this.$this._buildEMLPreviewerWidget$2(_this.context, success.emlPreviewer);
       else
-        return D.Center_yTp;
+        return D.Center_OaN;
     },
     $signature: 50
   };
@@ -125,7 +125,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     MediaQuery: A.findType("MediaQuery")
   };
   (function constants() {
-    D.Center_yTp = new A.Center(C.Alignment_0_0, null, null, E.CupertinoLoadingWidget_null_null_null, null);
+    D.Center_OaN = new A.Center(C.Alignment_0_0, null, null, E.CupertinoLoadingWidget_null_null_null_null, null);
     D.LinearProgressIndicator_UVb = new A.LinearProgressIndicator(5, C.BorderRadius_ww8, null, C.Color_4293128703, C.Color_4278221567, null, null, null, null);
   })();
 };
@@ -133,5 +133,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_12", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "7saTcZbddAp+CF/UCTWA7fFfxfM=");
+})($__dart_deferred_initializers__, "A3BQOfNcZy0UU/OblrFdD0ei7Hs=");
 ;
