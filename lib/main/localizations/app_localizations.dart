@@ -4745,4 +4745,11 @@ class AppLocalizations {
       name: 'exportTraceLogFailed',
     );
   }
+
+  String get support {
+    return Intl.message(
+      'Support',
+      name: 'support',
+    );
+  }
 }

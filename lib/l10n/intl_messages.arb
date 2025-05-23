@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-05-16T20:14:59.453269",
+  "@@last_modified": "2025-05-23T15:09:48.827638",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4506,6 +4506,12 @@
   },
   "exportTraceLogFailed": "Export trace log failed",
   "@exportTraceLogFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "support": "Support",
+  "@support": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

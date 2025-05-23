@@ -11,8 +11,6 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/app_utils.dart';
 
-typedef OnTapContactSupportAction = Function(ContactSupportCapability contactSupport);
-
 mixin ContactSupportMixin {
 
   void onGetHelpOrReportBug(
