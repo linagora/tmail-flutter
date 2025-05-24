@@ -309,6 +309,7 @@ class SearchEmailController extends BaseController
   }
 
   Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
+    log('SearchEmailController::_handleWebSocketMessage(): ${message.newState}');
     try {
       if (mailboxDashBoardController.currentEmailState == null ||
           mailboxDashBoardController.currentEmailState == message.newState) {
