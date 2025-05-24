@@ -7,6 +7,7 @@ import 'package:core/utils/app_logger.dart';
 import 'package:dartz/dartz.dart' as dartz;
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/filter/filter.dart';
+import 'package:jmap_dart_client/jmap/core/id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
@@ -65,6 +66,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       return EmailsResponse(emailList: response.first, state: response.last);
     });
 
+    log('ThreadRepositoryImpl::getAllEmail(): local: ${localEmailResponse.emailList?.length} - local state ${localEmailResponse.state}');
     EmailsResponse? networkEmailResponse;
 
     if (!localEmailResponse.hasEmails()
@@ -197,9 +199,14 @@ class ThreadRepositoryImpl extends ThreadRepository {
       : null;
     if (emailOld != null) {
       log('ThreadRepositoryImpl::_combineUpdatedWithEmailInCache(): cache hit');
+      final inboxId = MailboxId(Id('6add3d00-ef44-11ea-8665-3109e4489b2e'));
+      if (emailOld.mailboxIds?.containsKey(inboxId) == true) {
+        log('ThredRepositoryImpl::_combineUpdatedWithEmailInCache(): cache hit for this email -> ${emailOld.id} - ${emailOld.subject}');
+        log('ThreadRepositoryImpl::_combineUpdatedWithEmailInCache(): cache hit for this email -> ${emailOld.id} - new update in $updatedEmail');
+      }
       return dartz.Tuple2(updatedEmail, emailOld);
     } else {
-      log('ThreadRepositoryImpl::_combineUpdatedWithEmailInCache(): cache miss');
+      log('ThreadRepositoryImpl::_combineUpdatedWithEmailInCache(): cache miss for emailId ${updatedEmail.id}');
       return dartz.Tuple2(updatedEmail, null);
     }
   }
@@ -385,6 +392,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
         propertiesUpdated: propertiesUpdated);
 
       hasMoreChanges = changesResponse.hasMoreChanges;
+      log('ThreadRepositoryImpl::_synchronizeCacheWithChanges(): hasMoreChanges = $hasMoreChanges - new state = ${changesResponse.newStateChanges}');
       sinceState = changesResponse.newStateChanges;
 
       if (emailChangeResponse != null) {
@@ -400,7 +408,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
           updatedProperties: emailChangeResponse.updatedProperties,
           emailCacheList: localEmailList);
 
-      log('ThreadRepositoryImpl::_synchronizeCacheWithChanges(): [Changes]: '
+      log('ThreadRepositoryImpl::_synchronizeCacheWithChanges(): from state $currentState [Changes]: '
           'created = ${emailChangeResponse.created?.length} - '
           'updated = ${newEmailUpdated?.length} - '
           'destroyed = ${emailChangeResponse.destroyed?.length}');

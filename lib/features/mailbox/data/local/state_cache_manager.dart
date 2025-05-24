@@ -1,3 +1,4 @@
+import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/state.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
@@ -17,15 +18,18 @@ class StateCacheManager {
   Future<State?> getState(AccountId accountId, UserName userName, StateType stateType) async {
     final stateKey = TupleKey(stateType.name, accountId.asString, userName.value).encodeKey;
     final stateCache = await _stateCacheClient.getItem(stateKey);
+    log('StateCacheManager::getState(): [${stateType.name}] stateCache: $stateCache from storage');
     return stateCache?.toState();
   }
 
   Future<void> saveState(AccountId accountId, UserName userName, StateCache stateCache) async {
+    log('StateCacheManager::saveState(): [${stateCache.type.name}] stateCache: $stateCache');
     final stateKey = TupleKey(stateCache.type.name, accountId.asString, userName.value).encodeKey;
     return await _stateCacheClient.insertItem(stateKey, stateCache);
   }
 
   Future<void> deleteState(AccountId accountId, UserName userName, StateType stateType) async {
+    log('StateCacheManager::deleteState(): [${stateType.name}]');
     final stateKey = TupleKey(stateType.name, accountId.asString, userName.value).encodeKey;
     return await _stateCacheClient.deleteItem(stateKey);
   }

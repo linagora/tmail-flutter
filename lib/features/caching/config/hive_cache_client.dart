@@ -127,6 +127,7 @@ abstract class HiveCacheClient<T> {
   }
 
   Future<void> deleteItem(String key) {
+    log('$runtimeType::deleteItem:encryption: $encryption - key = $key');
     return Future.sync(() async {
       final boxItem = encryption ? await openBoxEncryption() : await openBox();
       return boxItem.delete(key);

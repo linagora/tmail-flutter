@@ -639,6 +639,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
+    log('ThreadController::_handleWebSocketMessage(): ${message.newState}');
     try {
       if (mailboxDashBoardController.currentEmailState == null ||
           mailboxDashBoardController.currentEmailState == message.newState) {

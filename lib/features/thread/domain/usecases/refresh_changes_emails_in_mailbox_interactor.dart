@@ -28,6 +28,7 @@ class RefreshChangesEmailsInMailboxInteractor {
       EmailFilter? emailFilter,
     }
   ) async* {
+    log('RefreshChangesEmailsInMailboxInteractor::execute currentState = $currentState');
     yield Right<Failure, Success>(RefreshChangesAllEmailLoading());
 
     try {
