@@ -1223,7 +1223,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
     MoveToMailboxRequest moveRequest,
     Map<EmailId, bool> emailIdsWithReadStatus,
   ) {
-    closeEmailView(context: context);
     consumeState(_moveToMailboxInteractor.execute(
       session,
       accountId,
