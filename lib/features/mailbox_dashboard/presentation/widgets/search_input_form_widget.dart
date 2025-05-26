@@ -147,7 +147,9 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
 
     if (queryString.isNotEmpty || _searchController.listFilterOnSuggestionForm.isNotEmpty) {
       _searchController.clearSearchFilter();
-      _searchController.applyFilterSuggestionToSearchFilter(_dashBoardController.sessionCurrent?.getOwnEmailAddress());
+      _searchController.applyFilterSuggestionToSearchFilter(
+        _dashBoardController.sessionCurrent?.getOwnEmailAddressOrEmpty(),
+      );
       _dashBoardController.searchEmailByQueryString(queryString);
     } else {
       _dashBoardController.clearSearchEmail();
@@ -167,7 +169,9 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     _searchController.searchFocus.unfocus();
     _searchController.enableSearch();
     _searchController.clearSearchFilter();
-    _searchController.applyFilterSuggestionToSearchFilter(_dashBoardController.sessionCurrent?.getOwnEmailAddress());
+    _searchController.applyFilterSuggestionToSearchFilter(
+      _dashBoardController.sessionCurrent?.getOwnEmailAddressOrEmpty(),
+    );
     _dashBoardController.searchEmailByQueryString(recent.value);
   }
 

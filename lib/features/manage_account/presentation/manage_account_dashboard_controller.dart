@@ -404,14 +404,8 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
       accountId: accountId.value!);
   }
 
-  String getOwnEmailAddress() {
-    try {
-      return sessionCurrent?.getOwnEmailAddress() ?? '';
-    } catch (e) {
-      logError('ManageAccountDashBoardController::getOwnEmailAddress:Exception: $e');
-      return '';
-    }
-  }
+  String getOwnEmailAddress() =>
+      sessionCurrent?.getOwnEmailAddressOrEmpty() ?? '';
 
   @override
   void onClose() {
