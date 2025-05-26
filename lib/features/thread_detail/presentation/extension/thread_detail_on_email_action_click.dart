@@ -11,7 +11,6 @@ import 'package:tmail_ui_user/features/email/presentation/controller/single_emai
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
-import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
@@ -134,7 +133,6 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
 
     if (moveActionRequest == null) return;
 
-    closeThreadDetailAction(currentContext);
     mailboxDashBoardController.moveToMailbox(
       session!,
       accountId!,
@@ -154,7 +152,6 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
     );
     if (moveActionRequest == null) return;
-    closeThreadDetailAction(currentContext);
     mailboxDashBoardController.moveToMailbox(
       session!,
       accountId!,
@@ -174,7 +171,6 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
     );
     if (moveActionRequest == null) return;
-    closeThreadDetailAction(currentContext);
     mailboxDashBoardController.moveToMailbox(
       session!,
       accountId!,
@@ -194,7 +190,6 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
     );
     if (moveActionRequest == null) return;
-    closeThreadDetailAction(currentContext);
     mailboxDashBoardController.moveToMailbox(
       session!,
       accountId!,
@@ -208,7 +203,6 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
       email,
       onDeleteEmailRequest: (email) {
         popBack();
-        closeThreadDetailAction(currentContext);
         mailboxDashBoardController.deleteEmailPermanently(email);
       },
       responsiveUtils: responsiveUtils,
