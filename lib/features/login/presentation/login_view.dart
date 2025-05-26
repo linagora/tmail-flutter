@@ -3,6 +3,7 @@ import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/type_ahead_form_field_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/recent_item_tile_widget.dart';
@@ -10,6 +11,7 @@ import 'package:tmail_ui_user/features/login/domain/model/recent_login_url.dart'
 import 'package:tmail_ui_user/features/login/presentation/base_login_view.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/privacy_link_widget.dart';
+import 'package:tmail_ui_user/features/login/presentation/widgets/applicative_token_field.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/dns_lookup_input_form.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/horizontal_progress_loading_button.dart';
 import 'package:tmail_ui_user/features/login/presentation/widgets/login_back_button.dart';
@@ -90,10 +92,22 @@ class LoginView extends BaseLoginView {
                 style: const TextStyle(fontSize: 32, color: AppColor.colorNameEmail, fontWeight: FontWeight.w900)
               )
             ),
-            Obx(() => LoginMessageWidget(
-              formType: controller.loginFormType.value,
-              viewState: controller.viewState.value,
-            )),
+            KeyboardVisibilityBuilder(
+              builder: (context, visible) {
+                return Obx(() {
+                  if (visible && (controller.loginFormType.value == LoginFormType.passwordForm
+                      || controller.loginFormType.value == LoginFormType.credentialForm)) {
+                    return const SizedBox.shrink();
+                  }
+
+                  return LoginMessageWidget(
+                    formType: controller.loginFormType.value,
+                    viewState: controller.viewState.value,
+                    isShowingMessage: controller.isShowingMessage,
+                  );
+                });
+              }
+            ),
             Obx(() {
               switch (controller.loginFormType.value) {
                 case LoginFormType.dnsLookupForm:
@@ -122,12 +136,35 @@ class LoginView extends BaseLoginView {
                   return const SizedBox.shrink();
               }
             }),
+            Obx(() {
+              switch (controller.loginFormType.value) {
+                case LoginFormType.passwordForm:
+                case LoginFormType.credentialForm:
+                  return ApplicativeTokenField(
+                    onChanged: controller.onApplicativeTokenChange,
+                    appLocalizations: AppLocalizations.of(context),
+                    imagePath: controller.imagePaths,
+                  );
+                default:
+                  return const SizedBox.shrink();
+              }
+            }),
             _buildLoadingProgress(context),
-            const Padding(
-              padding: EdgeInsets.only(top: 16),
-              child: PrivacyLinkWidget(),
+            KeyboardVisibilityBuilder(
+              builder: (context, visible) {
+                if (visible) return const SizedBox.shrink();
+
+                return const Column(
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(top: 16),
+                      child: PrivacyLinkWidget(),
+                    ),
+                    ApplicationVersionWidget(),
+                  ],
+                );
+              },
             ),
-            const ApplicationVersionWidget(),
           ]
         ),
       )
