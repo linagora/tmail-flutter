@@ -1,3 +1,12 @@
+## [0.15.5] - 2025-05-19
+### Fixed
+- Changing position of Get help button in Left menu
+- Open email in new tab Safari v16.6
+- #3735 Clearer warning message in composer when adding recipient
+- #3740 Duplicate signature when changing From field
+- Back button in Search list mobile
+- #3701 Translation for favorite toggle 
+
 ## [0.15.4] - 2025-05-19
 ### Fixed
 - #3691 support html escape in search result
