@@ -4745,4 +4745,25 @@ class AppLocalizations {
       name: 'support',
     );
   }
+
+  String get addRecipientsFailed {
+    return Intl.message(
+      'Adding recipient failed.',
+      name: 'addRecipientsFailed',
+    );
+  }
+
+  String get editLocalCopyInForwardFailed {
+    return Intl.message(
+      'Edit local copy in forward failed.',
+      name: 'editLocalCopyInForwardFailed',
+    );
+  }
+
+  String get deleteRecipientsFailed {
+    return Intl.message(
+      'Delete recipients failed.',
+      name: 'deleteRecipientsFailed',
+    );
+  }
 }

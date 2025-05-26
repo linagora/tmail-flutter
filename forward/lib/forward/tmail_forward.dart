@@ -9,12 +9,12 @@ part 'tmail_forward.g.dart';
 @JsonSerializable(explicitToJson: true, includeIfNull: false)
 class TMailForward extends Forward {
   final ForwardId? id;
-  final bool localCopy;
-  final Set<String> forwards;
+  final bool? localCopy;
+  final Set<String>? forwards;
   TMailForward({
     this.id,
-    required this.localCopy,
-    required this.forwards,
+    this.localCopy,
+    this.forwards,
   });
 
   factory TMailForward.fromJson(Map<String, dynamic> json) =>

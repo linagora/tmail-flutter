@@ -11,11 +11,11 @@ class DeleteRecipientInForwardingRequest with EquatableMixin {
   });
 
   TMailForward get newTMailForward {
-    final newListRecipients = currentForward.forwards
-        .where((recipient) => !listRecipientDeleted.contains(recipient))
-        .toSet();
+    final currentRecipients = currentForward.forwards ?? {};
 
-    return currentForward.copyWith(forwards: newListRecipients);
+    final updatedRecipients = currentRecipients.difference(listRecipientDeleted.toSet());
+
+    return currentForward.copyWith(forwards: updatedRecipients);
   }
 
   @override

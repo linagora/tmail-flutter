@@ -11,11 +11,14 @@ class AddRecipientInForwardingRequest with EquatableMixin {
   });
 
   TMailForward get newTMailForward {
-    final newListRecipients = currentForward.forwards
-        .where((recipient) => !listRecipientAdded.contains(recipient))
-        .toSet();
-    newListRecipients.addAll(listRecipientAdded);
-    return currentForward.copyWith(forwards: newListRecipients);
+    final currentRecipients = currentForward.forwards ?? {};
+
+    final updatedRecipients = {
+      ...currentRecipients,
+      ...listRecipientAdded,
+    };
+
+    return currentForward.copyWith(forwards: updatedRecipients);
   }
 
   @override
