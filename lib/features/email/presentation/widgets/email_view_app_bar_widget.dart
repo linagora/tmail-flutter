@@ -31,7 +31,6 @@ class EmailViewAppBarWidget extends StatelessWidget {
   final BoxDecoration? appBarDecoration;
   final EmailLoaded? emailLoaded;
   final bool isInsideThreadDetailView;
-  final double? height;
   final EdgeInsetsGeometry? iconPadding;
   final EdgeInsetsGeometry? iconMargin;
   final EdgeInsetsGeometry? padding;
@@ -49,7 +48,6 @@ class EmailViewAppBarWidget extends StatelessWidget {
     this.supportBackAction = true,
     this.appBarDecoration,
     this.isInsideThreadDetailView = false,
-    this.height,
     this.iconPadding,
     this.iconMargin,
     this.padding,
@@ -59,9 +57,9 @@ class EmailViewAppBarWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final child = LayoutBuilder(builder: (context, constraints) {
       return Container(
-        height: height ?? (PlatformInfo.isIOS
+        height: PlatformInfo.isIOS
           ? EmailViewAppBarWidgetStyles.heightIOS(context, _responsiveUtils)
-          : EmailViewAppBarWidgetStyles.height),
+          : EmailViewAppBarWidgetStyles.height,
         padding: padding ?? (PlatformInfo.isIOS
           ? EmailViewAppBarWidgetStyles.paddingIOS(context, _responsiveUtils)
           : EmailViewAppBarWidgetStyles.padding),
