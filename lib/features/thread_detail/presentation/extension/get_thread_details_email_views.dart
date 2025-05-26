@@ -1,6 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/email_action_type.dart';
+import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/email_view.dart';
 import 'package:model/email/email_in_thread_status.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/get_mailbox_contain_extension.dart';
@@ -62,7 +63,9 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
           showSubject: isFirstEmailInThreadDetail,
           imagePaths: imagePaths,
           responsiveUtils: responsiveUtils,
-          mailboxContain: presentationEmail.mailboxContain,
+          mailboxContain: presentationEmail.findMailboxContain(
+            mailboxDashBoardController.mapMailboxById,
+          ),
           emailLoaded: null,
           onEmailActionClick: threadDetailOnEmailActionClick,
           onMoreActionClick: (presentationEmail, position) => emailActionReactor.handleMoreEmailAction(
