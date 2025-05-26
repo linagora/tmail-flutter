@@ -4,7 +4,9 @@ import 'package:core/presentation/utils/icon_utils.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
@@ -13,6 +15,7 @@ import 'package:tmail_ui_user/features/base/widget/email_avatar_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_unsubscribe.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/smime_signature_status.dart';
+import 'package:tmail_ui_user/features/email/presentation/styles/email_view_app_bar_widget_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_receiver_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_sender_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_app_bar_widget.dart';
@@ -126,21 +129,29 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                           padding: const EdgeInsetsDirectional.only(start: 16, top: 2),
                         ),
                       if (isInsideThreadDetailView)
-                        EmailViewAppBarWidget(
-                          key: const Key('email_view_app_bar_widget'),
-                          presentationEmail: emailSelected,
-                          isSearchActivated: false,
-                          onBackAction: () {},
-                          onEmailActionClick: onEmailActionClick,
-                          onMoreActionClick: onMoreActionClick,
-                          supportBackAction: false,
-                          appBarDecoration: const BoxDecoration(),
-                          emailLoaded: emailLoaded,
-                          isInsideThreadDetailView: isInsideThreadDetailView,
+                        SizedBox(
                           height: IconUtils.defaultIconSize,
-                          iconPadding: EdgeInsets.zero,
-                          iconMargin: const EdgeInsetsDirectional.only(start: 16),
-                          padding: const EdgeInsets.symmetric(horizontal: 8),
+                          child: OverflowBox(
+                            maxHeight: PlatformInfo.isIOS
+                              ? EmailViewAppBarWidgetStyles.heightIOS(context, responsiveUtils)
+                              : EmailViewAppBarWidgetStyles.height,
+                            fit: OverflowBoxFit.deferToChild,
+                            child: EmailViewAppBarWidget(
+                              key: const Key('email_view_app_bar_widget'),
+                              presentationEmail: emailSelected,
+                              isSearchActivated: false,
+                              onBackAction: () {},
+                              onEmailActionClick: onEmailActionClick,
+                              onMoreActionClick: onMoreActionClick,
+                              supportBackAction: false,
+                              appBarDecoration: const BoxDecoration(),
+                              emailLoaded: emailLoaded,
+                              isInsideThreadDetailView: isInsideThreadDetailView,
+                              iconPadding: const EdgeInsets.all(8),
+                              iconMargin: EdgeInsets.zero,
+                              padding: EdgeInsets.zero,
+                            ),
+                          ),
                         ),
                     ],
                   ),
