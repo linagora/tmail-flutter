@@ -246,7 +246,7 @@ class EmailViewAppBarWidget extends StatelessWidget {
   }) {
     if (!isInsideThreadDetailView) {
       return [
-        if (!PlatformInfo.isMobile)
+        if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit)
           _getPrintButton(appLocalizations),
         _getMoveEmailButton(appLocalizations),
         _getMarkStarButton(appLocalizations),
