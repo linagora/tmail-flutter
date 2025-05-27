@@ -4865,15 +4865,18 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _this.consumeState$1(_this.getEmailsByIdsInteractor.execute$5$loadingIndex$properties(t3, t4, emailIdsToLoadMetaData, loadingIndex, A.EmailUtils_getPropertiesForEmailGetMethod(t1, t2)));
     },
     ThreadDetailLoadMoreSegments_get_loadMoreSegments(_this) {
-      var t2, currentIndex, currentIndex0, segmentCount,
+      var t2, emailIds, currentIndex, currentIndex0, segmentCount,
         t1 = type$.int,
         loadMoreInfo = A.LinkedHashMap_LinkedHashMap$_empty(t1, t1);
-      for (t1 = _this.emailIdsPresentation, t2 = t1.$ti._eval$1("_MapBaseValueIterable<MapBase.K,MapBase.V>"), currentIndex = 0; currentIndex < J.get$length$asx(t1.get$keys(0));)
-        if (new A._MapBaseValueIterable(t1, t2).elementAt$1(0, currentIndex) == null) {
+      t1 = _this.emailIdsPresentation;
+      t2 = t1.$ti._eval$1("_MapBaseValueIterable<MapBase.K,MapBase.V>");
+      emailIds = A.List_List$of(new A._MapBaseValueIterable(t1, t2), true, t2._eval$1("Iterable.E"));
+      for (currentIndex = 0; currentIndex < J.get$length$asx(t1.get$keys(0));)
+        if (emailIds[currentIndex] == null) {
           currentIndex0 = currentIndex;
           segmentCount = 0;
           while (true) {
-            if (!(currentIndex0 < J.get$length$asx(t1.get$keys(0)) && new A._MapBaseValueIterable(t1, t2).elementAt$1(0, currentIndex0) == null))
+            if (!(currentIndex0 < J.get$length$asx(t1.get$keys(0)) && emailIds[currentIndex0] == null))
               break;
             ++segmentCount;
             ++currentIndex0;
@@ -20275,5 +20278,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "ovAyfHCf8QtvklUpRJ7MQc1E8LU=");
+})($__dart_deferred_initializers__, "plZD2hRRhXHgr4/KpK86UNK6kB8=");
 ;
