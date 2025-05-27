@@ -11,9 +11,9 @@ extension CloseThreadDetailAction on ThreadDetailController {
       mailboxDashBoardController.dispatchRoute(DashboardRoutes.thread);
     }
     for (var emailId in emailIdsPresentation.keys) {
-      mailboxDashBoardController.dispatchEmailUIAction(
-        CloseEmailInThreadDetailAction(emailId),
-      );
+      mailboxDashBoardController
+        ..dispatchEmailUIAction(CloseEmailInThreadDetailAction(emailId))
+        ..dispatchEmailUIAction(EmailUIAction());
     }
 
     reset();
