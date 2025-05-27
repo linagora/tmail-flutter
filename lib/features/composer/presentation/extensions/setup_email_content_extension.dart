@@ -68,7 +68,7 @@ extension SetupEmailContentExtension on ComposerController {
         if (arguments.emailContents?.trim().isNotEmpty != true) {
           await _getEmailContent(
             arguments,
-            transformConfiguration: TransformConfiguration.forReplyForwardEmail(),
+            transformConfiguration: TransformConfiguration.forReplyForwardEmptyEmail(),
           );
         } else {
           final resultState = await transformHtmlEmailContentInteractor.execute(
