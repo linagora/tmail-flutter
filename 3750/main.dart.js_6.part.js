@@ -938,7 +938,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return new C.AppGridDashboardIcon(t1.imagePaths, t2, null);
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 3
+    $signature: 4
   };
   C.NavigationBarWidget_build_closure0.prototype = {
     call$0() {
@@ -963,7 +963,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return new C.AppGridDashboardIcon(t1.imagePaths, t2, null);
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 3
+    $signature: 4
   };
   C.DefaultLinkDelegate_build_closure.prototype = {
     call$0() {
@@ -1028,6 +1028,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Color_4291217096 = new A.Color(4291217096);
     D.Divider_0 = new A.Divider(1, null, null, null, D.Color_4291217096, null);
     D.EdgeInsetsDirectional_0_10_0_0 = new A.EdgeInsetsDirectional(0, 10, 0, 0);
+    D.EdgeInsetsDirectional_10_0_0_0 = new A.EdgeInsetsDirectional(10, 0, 0, 0);
     D.EdgeInsetsDirectional_10_14_10_14 = new A.EdgeInsetsDirectional(10, 14, 10, 14);
     D.EdgeInsetsDirectional_12_0_16_0 = new A.EdgeInsetsDirectional(12, 0, 16, 0);
     D.EdgeInsetsDirectional_12_8_12_0 = new A.EdgeInsetsDirectional(12, 8, 12, 0);
@@ -1059,5 +1060,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "jH0uVqzptC+5Druo9xz1hEpQVVs=");
+})($__dart_deferred_initializers__, "/hQFkjzKF4GcPJG+NetsqHxR4/I=");
 ;
