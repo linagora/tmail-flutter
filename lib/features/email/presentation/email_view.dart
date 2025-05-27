@@ -99,6 +99,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                           if (controller.responsiveUtils.isMobile(context))
                             EmailActionType.moveToMailbox,
                         ],
+                        emailIsRead: presentationEmail.hasRead,
                       ),
                       supportBackAction: !isInsideThreadDetailView,
                       appBarDecoration: isInsideThreadDetailView
@@ -295,6 +296,7 @@ class EmailView extends GetWidget<SingleEmailController> {
               if (controller.responsiveUtils.isMobile(context))
                 EmailActionType.moveToMailbox,
             ],
+            emailIsRead: presentationEmail.hasRead,
           ),
           onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
           onTapAvatarActionClick: onToggleThreadDetailCollapseExpand,

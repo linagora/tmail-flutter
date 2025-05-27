@@ -86,6 +86,7 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
                   responsiveUtils.isMobile(currentContext!))
                 EmailActionType.moveToMailbox,
             ],
+            emailIsRead: presentationEmail.hasRead,
           ),
           openEmailAddressDetailAction: (_, emailAddress) {
             openEmailAddressDetailAction(emailAddress);
