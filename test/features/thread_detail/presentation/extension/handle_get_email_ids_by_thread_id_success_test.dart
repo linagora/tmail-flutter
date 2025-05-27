@@ -28,9 +28,14 @@ void main() {
         EmailId(Id('1')),
         EmailId(Id('2')),
       ]);
+      final mailboxDashBoardController = MockMailboxDashBoardController();
       when(threadDetailController.emailIdsPresentation).thenReturn(
         <EmailId, PresentationEmail?>{}.obs,
       );
+      when(mailboxDashBoardController.selectedEmail).thenReturn(
+        Rxn(PresentationEmail(id: EmailId(Id('1')))),
+      );
+      when(threadDetailController.mailboxDashBoardController).thenReturn(mailboxDashBoardController);
       
       // act
       threadDetailController.handleGetEmailIdsByThreadIdSuccess(success);

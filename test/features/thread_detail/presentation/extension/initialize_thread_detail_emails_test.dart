@@ -58,7 +58,10 @@ void main() {
       when(mailboxDashboardController.selectedEmail).thenReturn(Rxn());
 
       // Act
-      threadDetailController.initializeThreadDetailEmails();
+      threadDetailController.initializeThreadDetailEmails(
+        updateCurrentThreadDetail: false,
+        newEmailIdsInThreadDetail: [],
+      );
 
       // Assert
       final captured = verify(getEmailsByIdsInteractor.execute(
