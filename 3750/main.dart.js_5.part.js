@@ -3353,7 +3353,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
               t1 = t1.filterMessageOption.get$value(0);
               t4 = t4.get$value(0);
               t4 = t4 == null ? null : t4.id;
-              _this.consumeState$1(_this.cleanAndGetEmailsInMailboxInteractor.execute$8$emailFilter$getLatestChanges$limit$propertiesCreated$propertiesUpdated$sort(session, accountId, new A.EmailFilter(t5, t1, t4), true, t2, A.EmailUtils_getPropertiesForEmailGetMethod(session, accountId), $.$get$ThreadConstants_propertiesUpdatedDefault(), t3));
+              _this.consumeState$1(_this.cleanAndGetEmailsInMailboxInteractor.execute$8$emailFilter$getLatestChanges$limit$propertiesCreated$propertiesUpdated$sort(session, accountId, new A.EmailFilter(t5, t1, t4), true, t2, A.EmailUtils_getPropertiesForEmailGetMethod(session, accountId), A.EmailUtils_getPropertiesForEmailChangeMethod(session, accountId), t3));
             case 1:
               // return
               return A._asyncReturn($async$returnValue, $async$completer);
@@ -19292,5 +19292,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "N2iaRrXE9u7D0Wb+HLgxMVePMoY=");
+})($__dart_deferred_initializers__, "hRVOaGmHJZGNhftR6qn24BX7x0A=");
 ;
