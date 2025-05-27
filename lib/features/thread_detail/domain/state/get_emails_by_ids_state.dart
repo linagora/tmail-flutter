@@ -12,14 +12,27 @@ class GettingEmailsByIds extends LoadingState {
 }
 
 class GetEmailsByIdsSuccess extends UIState {
-  GetEmailsByIdsSuccess(this.presentationEmails);
+  GetEmailsByIdsSuccess(
+    this.presentationEmails, {
+    this.updateCurrentThreadDetail = false,
+  });
 
   final List<PresentationEmail> presentationEmails;
+  final bool updateCurrentThreadDetail;
 
   @override
-  List<Object?> get props => [presentationEmails];
+  List<Object?> get props => [presentationEmails, updateCurrentThreadDetail];
 }
 
 class GetEmailsByIdsFailure extends FeatureFailure {
-  GetEmailsByIdsFailure({super.exception, super.onRetry});
+  GetEmailsByIdsFailure({
+    super.exception,
+    super.onRetry,
+    required this.updateCurrentThreadDetail,
+  });
+
+  final bool updateCurrentThreadDetail;
+
+  @override
+  List<Object?> get props => [...super.props, updateCurrentThreadDetail];
 }

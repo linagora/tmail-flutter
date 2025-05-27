@@ -23,6 +23,7 @@ class GetEmailsByIdsInteractor {
     List<EmailId> emailIds, {
     Properties? properties,
     int? loadMoreIndex,
+    bool updateCurrentThreadDetail = false,
   }) async* {
     try {
       if (emailIds.length > 1 && (
@@ -41,12 +42,14 @@ class GetEmailsByIdsInteractor {
       );
       yield Right(GetEmailsByIdsSuccess(
         result.map((e) => e.toPresentationEmail()).toList(),
+        updateCurrentThreadDetail: updateCurrentThreadDetail,
       ));
     } catch (e) {
       logError('GetEmailsByIdsInteractor::execute(): Exception: $e');
       yield Left(GetEmailsByIdsFailure(
         exception: e,
         onRetry: execute(session, accountId, emailIds, properties: properties),
+        updateCurrentThreadDetail: updateCurrentThreadDetail,
       ));
     }
   }

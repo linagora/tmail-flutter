@@ -3,6 +3,7 @@ import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
+import 'package:tmail_ui_user/features/thread/data/model/email_change_response.dart';
 
 class EmailUIAction extends UIAction {
   static final idle = EmailUIAction();
@@ -48,4 +49,13 @@ class PerformEmailActionInThreadDetailAction extends EmailUIAction {
     emailActionType,
     presentationEmail,
   ];
+}
+
+class RefreshThreadDetailAction extends EmailUIAction {
+  RefreshThreadDetailAction(this.emailChangeResponse);
+
+  final EmailChangeResponse emailChangeResponse;
+
+  @override
+  List<Object?> get props => [emailChangeResponse];
 }

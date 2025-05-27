@@ -19,19 +19,27 @@ class GetThreadByIdInteractor {
     Session session,
     AccountId accountId,
     MailboxId sentMailboxId,
-    String ownEmailAddress,
-  ) async* {
+    String ownEmailAddress, {
+    required EmailId? selectedEmailId,
+    bool updateCurrentThreadDetail = false,
+  }) async* {
     try {
-      yield Right(GettingThreadById());
+      yield Right(GettingThreadById(
+        updateCurrentThreadDetail: updateCurrentThreadDetail,
+      ));
       final result = await _threadDetailRepository.getThreadById(
         threadId,
         session,
         accountId,
         sentMailboxId,
         ownEmailAddress,
+        selectedEmailId: selectedEmailId,
       );
 
-      yield Right(GetThreadByIdSuccess(result));
+      yield Right(GetThreadByIdSuccess(
+        result,
+        updateCurrentThreadDetail: updateCurrentThreadDetail,
+      ));
     } catch (e) {
       logError('GetEmailIdsByThreadIdInteractor::execute(): Exception: $e');
       yield Left(GetThreadByIdFailure(
@@ -42,7 +50,9 @@ class GetThreadByIdInteractor {
           accountId,
           sentMailboxId,
           ownEmailAddress,
+          selectedEmailId: selectedEmailId,
         ),
+        updateCurrentThreadDetail: updateCurrentThreadDetail,
       ));
     }
   }
