@@ -59,6 +59,8 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                     EmailActionType.markAsStarred,
                     EmailActionType.unMarkAsStarred
                   ],
+                  EmailActionType.printAll,
+                  EmailActionType.moveToMailbox,
                 ],
               ),
             );
