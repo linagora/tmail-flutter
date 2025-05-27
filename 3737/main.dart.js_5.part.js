@@ -5133,8 +5133,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = $.GetInstance__getInstance = C.C_GetInstance;
       if (!$.GetInstance__singl.containsKey$1(0, t2._getKey$2(0, A.createRuntimeType(type$.SingleEmailController), t1.value)))
         new A.EmailBindings(emailId).dependencies$0();
-      else
+      else {
         A.FocusThreadDetailExpandedEmail_focusExpandedEmail(_this, emailId);
+        B.ThreadDetailOnEmailActionClick_threadDetailOnEmailActionClick(_this, presentationEmail, C.EmailActionType_5);
+      }
       for (t1 = _this.emailIdsPresentation, t2 = J.get$iterator$ax(J.get$keys$x(t1.get$value(0))), t3 = t1.NotifyManager_subject, t4 = _this.currentExpandedEmailId; t2.moveNext$0();) {
         t5 = t2.get$current(t2);
         t6 = $.RxInterface_proxy;
@@ -13772,7 +13774,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3._as(t2.get(t1)).toString;
       if (A.InheritedModel_inheritFrom(t9, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx < 600)
         t10.push(C.EmailActionType_9);
-      return t4.handleMoreEmailAction$8$additionalActions$handleEmailAction$imagePaths$mailboxContain$position$presentationEmail$responsiveUtils$username(t10, new B.EmailView_build____closure(t1, t9), t7, t5, position, presentationEmail, t6, t8);
+      return t4.handleMoreEmailAction$9$additionalActions$emailIsRead$handleEmailAction$imagePaths$mailboxContain$position$presentationEmail$responsiveUtils$username(t10, presentationEmail.get$hasRead(), new B.EmailView_build____closure(t1, t9), t7, t5, position, presentationEmail, t6, t8);
     },
     $signature: 173
   };
@@ -13952,7 +13954,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3._as(t2.get(t1)).toString;
       if (A.InheritedModel_inheritFrom(t9, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx < 600)
         t10.push(C.EmailActionType_9);
-      return t4.handleMoreEmailAction$8$additionalActions$handleEmailAction$imagePaths$mailboxContain$position$presentationEmail$responsiveUtils$username(t10, new B.EmailView__buildEmailMessage___closure0(t1, t9), t7, t5, position, presentationEmail, t6, t8);
+      return t4.handleMoreEmailAction$9$additionalActions$emailIsRead$handleEmailAction$imagePaths$mailboxContain$position$presentationEmail$responsiveUtils$username(t10, presentationEmail.get$hasRead(), new B.EmailView__buildEmailMessage___closure0(t1, t9), t7, t5, position, presentationEmail, t6, t8);
     },
     $signature: 173
   };
@@ -19423,7 +19425,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t7 = false;
       if (t7)
         t6.push(C.EmailActionType_9);
-      return t2.handleMoreEmailAction$8$additionalActions$handleEmailAction$imagePaths$mailboxContain$position$presentationEmail$responsiveUtils$username(t6, t5, t1.imagePaths, t4, position, presentationEmail, t1.responsiveUtils, t3);
+      return t2.handleMoreEmailAction$9$additionalActions$emailIsRead$handleEmailAction$imagePaths$mailboxContain$position$presentationEmail$responsiveUtils$username(t6, presentationEmail.get$hasRead(), t5, t1.imagePaths, t4, position, presentationEmail, t1.responsiveUtils, t3);
     },
     $signature: 173
   };
@@ -19698,7 +19700,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         C.JSArray_methods.addAll$1(t11, A._setArrayType([C.EmailActionType_7, C.EmailActionType_8], t10));
       t11.push(C.EmailActionType_29);
       t11.push(C.EmailActionType_9);
-      return t4.handleMoreEmailAction$8$additionalActions$handleEmailAction$imagePaths$mailboxContain$position$presentationEmail$responsiveUtils$username(t11, t9, t7, t5, position, presentationEmail, t6, t8);
+      return t4.handleMoreEmailAction$9$additionalActions$emailIsRead$handleEmailAction$imagePaths$mailboxContain$position$presentationEmail$responsiveUtils$username(t11, presentationEmail.get$hasRead(), t9, t7, t5, position, presentationEmail, t6, t8);
     },
     $signature: 173
   };
@@ -20622,5 +20624,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "YHd2pJcURwkbxteN1wyAHwDWJ8E=");
+})($__dart_deferred_initializers__, "Ur95qlDQ79DaHTUdwOkYDNxOL6w=");
 ;
