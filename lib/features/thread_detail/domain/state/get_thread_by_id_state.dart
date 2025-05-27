@@ -2,15 +2,23 @@ import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 
-class GettingThreadById extends LoadingState {}
+class GettingThreadById extends LoadingState {
+  final bool updateCurrentThreadDetail;
+
+  GettingThreadById({this.updateCurrentThreadDetail = false});
+
+  @override
+  List<Object> get props => [updateCurrentThreadDetail];
+}
 
 class GetThreadByIdSuccess extends UIState {
   final List<EmailId> emailIds;
+  final bool updateCurrentThreadDetail;
 
-  GetThreadByIdSuccess(this.emailIds);
+  GetThreadByIdSuccess(this.emailIds, {this.updateCurrentThreadDetail = false});
 
   @override
-  List<Object> get props => [emailIds];
+  List<Object> get props => [emailIds, updateCurrentThreadDetail];
 }
 
 class GetThreadByIdFailure extends FeatureFailure {
