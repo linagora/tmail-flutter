@@ -48,7 +48,10 @@ extension HandlePullToRefreshListEmailExtension on ThreadController {
         mailboxId: selectedMailboxId,
       ),
       propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(session, accountId),
-      propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+      propertiesUpdated: EmailUtils.getPropertiesForEmailChangeMethod(
+        session,
+        accountId,
+      ),
       getLatestChanges: true,
     ));
   }
