@@ -46,6 +46,10 @@ class TransformConfiguration {
       const RemoveTooltipLinkTransformer(),
     const SignatureTransformer(),
     const RemoveCollapsedSignatureButtonTransformer(),
+  ]);
+
+  factory TransformConfiguration.forReplyForwardEmptyEmail() => TransformConfiguration.fromDomTransformers([
+    ...TransformConfiguration.forReplyForwardEmail().domTransformers,
     const ImageTransformer(),
   ]);
 
