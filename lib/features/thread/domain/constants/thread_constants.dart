@@ -30,6 +30,7 @@ class ThreadConstants {
   static final propertiesUpdatedDefault = Properties({
     EmailProperty.keywords,
     EmailProperty.mailboxIds,
+    EmailProperty.threadId,
   });
 
   static final propertiesGetEmailContent = Properties({
