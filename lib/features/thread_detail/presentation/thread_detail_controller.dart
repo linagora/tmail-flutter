@@ -18,6 +18,7 @@ import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
+import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/email_loaded.dart';
 import 'package:tmail_ui_user/features/email/domain/state/download_attachment_for_web_state.dart';
 import 'package:tmail_ui_user/features/email/domain/state/mark_as_email_read_state.dart';
@@ -43,6 +44,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/clos
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_email_ids_by_thread_id_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_emails_by_ids_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_thread_by_id_failure.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_refresh_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/refresh_thread_detail_on_setting_changed.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/model/thread_detail_setting_status.dart';
@@ -188,6 +190,14 @@ class ThreadDetailController extends BaseController {
         );
       }
     });
+    ever(mailboxDashBoardController.emailUIAction, (action) {
+      if (action is RefreshThreadDetailAction) {
+        handleRefreshThreadDetailAction(
+          action,
+          _getEmailIdsByThreadIdInteractor,
+        );
+      }
+    });
   }
 
   void reset() {
@@ -202,7 +212,7 @@ class ThreadDetailController extends BaseController {
   void handleSuccessViewState(success) {
     if (success is GetThreadByIdSuccess) {
       handleGetEmailIdsByThreadIdSuccess(success);
-      initializeThreadDetailEmails();
+      initializeThreadDetailEmails(success);
     } else if (success is GetEmailsByIdsSuccess) {
       handleGetEmailsByIdsSuccess(success);
     } else if (success is MarkAsEmailReadSuccess) {
