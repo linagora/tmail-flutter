@@ -2085,7 +2085,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "sending": "Seoladh",
+  "sending": "Ag seoladh",
   "@sending": {
     "type": "text",
     "placeholders_order": [],
@@ -4443,6 +4443,98 @@
   },
   "releaseTo": "Scaoileadh chuig",
   "@releaseTo": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youNeedToGrantFilesPermissionToExportFile": "Ní mór duit cead a thabhairt do chomhaid chun comhaid a easpórtáil",
+  "@youNeedToGrantFilesPermissionToExportFile": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "messageExportTraceLogDialog": "Tá log teachtaireachta earráide an API soghluaiste rianaithe. Ar mhaith leat é a easpórtáil?",
+  "@messageExportTraceLogDialog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "updateMessageToTemplateSuccess": "Nuashonraigh an teachtaireacht chuig an bhfillteán teimpléid go rathúil",
+  "@updateMessageToTemplateSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveMessageToTemplateCancelled": "Cealaíodh sábháil teachtaireachta chuig fillteán teimpléid",
+  "@saveMessageToTemplateCancelled": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exportTraceLogFailed": "Theip ar log rianaithe a onnmhairiú",
+  "@exportTraceLogFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveAsTemplate": "Sábháil mar theimpléad",
+  "@saveAsTemplate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "savingTemplate": "Sábháil teimpléid",
+  "@savingTemplate": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "invalidArguments": "Argóintí neamhbhailí: \"{description}\"",
+  "@invalidArguments": {
+    "type": "text",
+    "placeholders_order": [
+      "description"
+    ],
+    "placeholders": {
+      "description": {}
+    }
+  },
+  "exportTraceLog": "Easpórtáil log rianaithe",
+  "@exportTraceLog": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "noLogsHaveBeenRecordedYet": "Níl aon logaí taifeadta go fóill.",
+  "@noLogsHaveBeenRecordedYet": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "exportTraceLogSuccess": "Easpórtáil logaí rianaithe rathúla ag \"{path}\"",
+  "@exportTraceLogSuccess": {
+    "type": "text",
+    "placeholders_order": [
+      "path"
+    ],
+    "placeholders": {
+      "path": {}
+    }
+  },
+  "saveMessageToTemplateSuccess": "Sábháil an teachtaireacht chuig an bhfillteán teimpléid go rathúil",
+  "@saveMessageToTemplateSuccess": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "saveMessageToTemplateFailed": "Theip ar an teachtaireacht a shábháil chuig fillteán teimpléid",
+  "@saveMessageToTemplateFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "savingMessageToTemplateFolder": "Ag sábháil teachtaireachta chuig fillteán teimpléid",
+  "@savingMessageToTemplateFolder": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}
