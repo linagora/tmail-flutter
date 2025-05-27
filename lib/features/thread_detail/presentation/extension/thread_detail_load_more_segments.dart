@@ -8,16 +8,17 @@ extension ThreadDetailLoadMoreSegments on ThreadDetailController {
   LoadMoreSegments get loadMoreSegments {
     final loadMoreInfo = <LoadMoreIndex, LoadMoreCount>{};
     int currentIndex = 0;
+    final emailIds = emailIdsPresentation.values.toList();
 
     while (currentIndex < emailIdsPresentation.length) {
-      if (emailIdsPresentation.values.elementAt(currentIndex) == null) {
+      if (emailIds[currentIndex] == null) {
         // Found start of a null segment
         int segmentIndex = currentIndex;
         int segmentCount = 0;
         
         // Count consecutive nulls
         while (currentIndex < emailIdsPresentation.length &&
-              emailIdsPresentation.values.elementAt(currentIndex) == null) {
+              emailIds[currentIndex] == null) {
           segmentCount++;
           currentIndex++;
         }
