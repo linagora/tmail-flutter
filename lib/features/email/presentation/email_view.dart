@@ -97,9 +97,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                         username: controller.session?.username,
                         handleEmailAction: (email, action) => controller.handleEmailAction(context, email, action),
                         additionalActions: [
-                          EmailActionType.forward,
-                          EmailActionType.replyAll,
-                          EmailActionType.replyToList,
+                          if (controller.responsiveUtils.isMobile(context))
+                            EmailActionType.moveToMailbox,
                         ],
                       ),
                       supportBackAction: !isInsideThreadDetailView,
@@ -293,6 +292,9 @@ class EmailView extends GetWidget<SingleEmailController> {
               EmailActionType.forward,
               EmailActionType.replyAll,
               EmailActionType.replyToList,
+              EmailActionType.printAll,
+              if (controller.responsiveUtils.isMobile(context))
+                EmailActionType.moveToMailbox,
             ],
           ),
           onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,

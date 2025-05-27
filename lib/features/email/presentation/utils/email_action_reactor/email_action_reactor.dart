@@ -525,9 +525,11 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
       if (EmailUtils.isReplyToListEnabled(presentationEmail.listPost ?? '') &&
           additionalActions.contains(EmailActionType.replyToList))
         EmailActionType.replyToList,
-      if (PlatformInfo.isWeb && PlatformInfo.isCanvasKit)
+      if (PlatformInfo.isWeb &&
+          PlatformInfo.isCanvasKit &&
+          additionalActions.contains(EmailActionType.printAll))
         EmailActionType.printAll,
-      if (responsiveUtils.isMobile(currentContext!))
+      if (additionalActions.contains(EmailActionType.moveToMailbox))
         EmailActionType.moveToMailbox,
       if (!responsiveUtils.isDesktop(currentContext!)) ...[
         presentationEmail.hasStarred
