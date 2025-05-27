@@ -19611,7 +19611,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ThreadDetailView_build__closure2.prototype = {
     call$2(presentationEmail, position) {
-      var t3, t4, t5, t6, t7, t8, t9, t10, t11,
+      var t3, t4, t5, t6, t7, t8, t9, t10, t11, t12, t13,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
@@ -19634,10 +19634,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t11 = A._setArrayType([], t10);
       A.Expando__checkType(t1);
       t3._as(t2.get(t1)).toString;
-      if (A.InheritedModel_inheritFrom(this.context, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx < 600)
+      t12 = this.context;
+      t13 = type$.MediaQuery;
+      if (A.InheritedModel_inheritFrom(t12, C._MediaQueryAspect_0, t13).data.size._dx < 600)
         C.JSArray_methods.addAll$1(t11, A._setArrayType([C.EmailActionType_2, C.EmailActionType_3, C.EmailActionType_1], t10));
-      t11.push(C.EmailActionType_7);
-      t11.push(C.EmailActionType_8);
+      A.Expando__checkType(t1);
+      t3._as(t2.get(t1)).toString;
+      if (A.InheritedModel_inheritFrom(t12, C._MediaQueryAspect_0, t13).data.size._dx >= 1200)
+        C.JSArray_methods.addAll$1(t11, A._setArrayType([C.EmailActionType_7, C.EmailActionType_8], t10));
       return t4.handleMoreEmailAction$8$additionalActions$handleEmailAction$imagePaths$mailboxContain$position$presentationEmail$responsiveUtils$username(t11, t9, t7, t5, position, presentationEmail, t6, t8);
     },
     $signature: 173
@@ -20562,5 +20566,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "C6RBPQGlfRJMX9GB8pwHaIwPNVQ=");
+})($__dart_deferred_initializers__, "Gf48/HPpotDfT3nXBB4PVxTR7hk=");
 ;
