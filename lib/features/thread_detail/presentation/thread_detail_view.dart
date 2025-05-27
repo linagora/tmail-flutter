@@ -1,5 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -27,8 +29,7 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
       child: Column(
         children: [
           Obx(() {
-            final currentViewState = controller.viewState.value.fold(id, id);
-            if (currentViewState is GettingThreadById) {
+            if (showLoadingView(controller.viewState.value)) {
               return const SizedBox.shrink();
             }
 
@@ -68,40 +69,35 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
           }),
           Obx(() => controller.getThreadDetailLoadingView(
             isResponsiveDesktop: controller.responsiveUtils.isDesktop(context),
+            isLoading: showLoadingView(controller.viewState.value),
           )),
           Obx(() {
-            return controller.viewState.value.fold(
-              (failure) => const SizedBox.shrink(),
-              (success) {
-                if (success is GettingThreadById) {
-                  return const SizedBox.shrink();
-                }
+            if (showLoadingView(controller.viewState.value)) {
+              return const SizedBox.shrink();
+            }
 
-                return Expanded(
-                  child: Padding(
-                    padding: _padding(context),
-                    child: Stack(
-                      children: [
-                        const Positioned.fill(
-                          child: ColoredBox(color: Colors.white),
-                        ),
-                        SingleChildScrollView(
-                          controller: controller.scrollController,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: controller.getThreadDetailEmailViews()
-                          ),
-                        ),
-                      ],
+            return Expanded(
+              child: Padding(
+                padding: _padding(context),
+                child: Stack(
+                  children: [
+                    const Positioned.fill(
+                      child: ColoredBox(color: Colors.white),
                     ),
-                  ),
-                );
-              },
+                    SingleChildScrollView(
+                      controller: controller.scrollController,
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: controller.getThreadDetailEmailViews()
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             );
           }),
           Obx(() {
-            final currentViewState = controller.viewState.value.fold(id, id);
-            if (currentViewState is GettingThreadById) {
+            if (showLoadingView(controller.viewState.value)) {
               return const SizedBox.shrink();
             }
 
@@ -166,10 +162,12 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
     ));
 
     return Obx(() {
-      final currentViewState = controller.viewState.value.fold(id, id);
-      if (currentViewState is GettingThreadById &&
+      if (showLoadingView(controller.viewState.value) &&
           controller.responsiveUtils.isTabletLarge(context)) {
-        return controller.getThreadDetailLoadingView(isResponsiveDesktop: false);
+        return controller.getThreadDetailLoadingView(
+          isResponsiveDesktop: false,
+          isLoading: true,
+        );
       }
 
       if (controller.emailIdsPresentation.length == 1 &&
@@ -214,5 +212,11 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
         ),
       )
     );
+  }
+
+  bool showLoadingView(Either<Failure, Success> viewState) {
+    final viewStateValue = viewState.fold(id, id);
+    return viewStateValue is GettingThreadById &&
+      !viewStateValue.updateCurrentThreadDetail;
   }
 }

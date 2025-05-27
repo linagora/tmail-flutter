@@ -65,6 +65,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_em
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/refresh_thread_detail_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/email_action_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
@@ -710,7 +711,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   Future<Either<Failure, Success>> _refreshChangeListEmailCache() async {
-    return _refreshChangesEmailsInMailboxInteractor.execute(
+    final refreshState = await _refreshChangesEmailsInMailboxInteractor.execute(
       _session!,
       _accountId!,
       mailboxDashBoardController.currentEmailState!,
@@ -726,6 +727,17 @@ class ThreadController extends BaseController with EmailActionController {
         mailboxId: selectedMailboxId,
       ),
     ).last;
+
+    refreshState.fold(
+      (failure) {},
+      (success) {
+        if (success is RefreshChangesAllEmailSuccess) {
+          refreshThreadDetail(success.emailChangeResponse);
+        }
+      },
+    );
+
+    return refreshState;
   }
 
   Future<void> _refreshChangeListEmail() async {
