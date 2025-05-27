@@ -1206,7 +1206,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         isSearchEmailRunning: mailboxDashBoardController.searchController.isSearchEmailRunning,
       );
       if (!context.mounted || moveActionRequest == null) return;
-      closeEmailView(context: context);
       mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
@@ -1281,7 +1280,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
       );
       if (!context.mounted || moveActionRequest == null) return;
-      closeEmailView(context: context);
       mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
@@ -1301,7 +1299,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
       );
       if (!context.mounted || moveActionRequest == null) return;
-      closeEmailView(context: context);
       mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
@@ -1321,7 +1318,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
       );
       if (!context.mounted || moveActionRequest == null) return;
-      closeEmailView(context: context);
       mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
@@ -1478,7 +1474,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       email,
       onDeleteEmailRequest: (email) {
         popBack();
-        closeEmailView(context: context);
         mailboxDashBoardController.deleteEmailPermanently(email);
       },
       responsiveUtils: responsiveUtils,
