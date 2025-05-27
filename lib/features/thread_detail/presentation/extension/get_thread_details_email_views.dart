@@ -12,6 +12,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/togg
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread_detail_collapsed_email.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/widgets/thread_detail_load_more_circle.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension GetThreadDetailEmailViews on ThreadDetailController {
   List<Widget> getThreadDetailEmailViews() {
@@ -80,6 +81,10 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
               EmailActionType.forward,
               EmailActionType.replyAll,
               EmailActionType.replyToList,
+              EmailActionType.printAll,
+              if (currentContext != null &&
+                  responsiveUtils.isMobile(currentContext!))
+                EmailActionType.moveToMailbox,
             ],
           ),
           openEmailAddressDetailAction: (_, emailAddress) {
