@@ -554,7 +554,10 @@ class ThreadController extends BaseController with EmailActionController {
           mailboxId: selectedMailboxId
         ),
         propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
-        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+        propertiesUpdated: EmailUtils.getPropertiesForEmailChangeMethod(
+          _session!,
+          _accountId!,
+        ),
         getLatestChanges: getLatestChanges,
       ));
     } else {
@@ -709,7 +712,10 @@ class ThreadController extends BaseController with EmailActionController {
         _session!,
         _accountId!,
       ),
-      propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+      propertiesUpdated: EmailUtils.getPropertiesForEmailChangeMethod(
+        _session!,
+        _accountId!,
+      ),
       emailFilter: EmailFilter(
         filter: getFilterCondition(mailboxIdSelected: selectedMailboxId),
         filterOption: mailboxDashBoardController.filterMessageOption.value,

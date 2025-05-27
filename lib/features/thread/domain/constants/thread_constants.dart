@@ -26,10 +26,7 @@ class ThreadConstants {
     IndividualHeaderIdentifier.importanceHeader.value,
     IndividualHeaderIdentifier.priorityHeader.value,
   });
-  static final propertiesUpdatedDefault = Properties({
-    EmailProperty.keywords,
-    EmailProperty.mailboxIds,
-  });
+  static final propertiesUpdatedDefault = propertiesDefault;
 
   static final propertiesGetEmailContent = Properties({
     EmailProperty.bodyValues,
