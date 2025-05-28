@@ -191,7 +191,7 @@ extension EmailActionTypeExtension on EmailActionType {
       case EmailActionType.editAsNewEmail:
         return AppLocalizations.of(context).editAsNewEmail;
       case EmailActionType.printAll:
-        return AppLocalizations.of(context).printAll;
+        return AppLocalizations.of(context).print;
       case EmailActionType.forward:
         return AppLocalizations.of(context).forward;
       case EmailActionType.replyAll:
