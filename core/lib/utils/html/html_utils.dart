@@ -575,4 +575,115 @@ class HtmlUtils {
       return false;
     }
   }
+
+  static String addQuoteToggle(String htmlString) {
+    final likelyHtml = htmlString.contains(RegExp(r'<[a-zA-Z][^>]*>')) && // Contains a start tag
+      htmlString.contains(RegExp(r'</[a-zA-Z][^>]*>')); // Contains an end tag
+
+    if (!likelyHtml) {
+      return htmlString; // Not likely HTML, return original
+    }
+
+    try {
+      html.DomParser().parseFromString(htmlString, 'text/html');
+    } catch (e) {
+      return htmlString;
+    }
+
+    final containerElement = '<div class="quote-toggle-container" >$htmlString</div>';
+
+    final containerDom = html.DomParser().parseFromString(containerElement, 'text/html');
+    html.ElementList blockquotes = containerDom.querySelectorAll('.quote-toggle-container > blockquote');
+    int currentSearchLevel = 1;
+
+    while (blockquotes.isEmpty) {
+      // Finish searching at level [currentSearchLevel]
+      if (currentSearchLevel >= 3) return htmlString;
+      // No blockquote elements found on first level, try another level
+      blockquotes = containerDom.querySelectorAll('.quote-toggle-container${' > div' * currentSearchLevel} > blockquote');
+      currentSearchLevel++;
+    }
+
+    final lastBlockquote = blockquotes.last;
+
+    const buttonHtmlContent = '''
+      <button class="quote-toggle-button collapsed" title="Show trimmed content">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+      </button>''';
+
+    // Parse the button HTML content as a fragment
+    final tempDoc =
+        html.DomParser().parseFromString(buttonHtmlContent, 'text/html');
+
+    final buttonElement = tempDoc.querySelector('.quote-toggle-button');
+
+    // Insert the button before the last blockquote
+    if (lastBlockquote.parentNode != null && buttonElement != null) {
+      lastBlockquote.parentNode!.insertBefore(buttonElement, lastBlockquote);
+    }
+
+    // Return the modified HTML string
+    return containerDom.documentElement?.outerHtml ?? htmlString;
+  }
+
+  static String get quoteToggleStyle => '''
+    <style>
+      .quote-toggle-button + blockquote {
+        display: block; /* Default display */
+      }
+      .quote-toggle-button.collapsed + blockquote {
+        display: none;
+      }
+      .quote-toggle-button {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        background-color: #e8eaed;
+        padding: 4px 8px;
+        margin: 8px 0;
+        border-radius: 9999px;
+        transition: background-color 0.2s ease-in-out;
+        border: none;
+        cursor: pointer;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        -webkit-user-select: none; /* Safari */
+        -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* IE 10+ */
+        user-select: none; /* Standard syntax */
+        -webkit-user-drag: none; /* Prevent dragging on WebKit browsers (e.g., Chrome, Safari) */
+      }
+      .quote-toggle-button:hover {
+        background-color: #cdcdcd !important;
+      }
+      .dot {
+        width: 4px;
+        height: 4px;
+        background-color: #4b5563;
+        border-radius: 9999px;
+      }
+    </style>''';
+
+  static String get quoteToggleScript => '''
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.quote-toggle-button');
+        buttons.forEach(button => {
+          button.onclick = function() {
+            const blockquote = this.nextElementSibling;
+            if (blockquote && blockquote.tagName === 'BLOCKQUOTE') {
+              this.classList.toggle('collapsed');
+              if (this.classList.contains('collapsed')) {
+                this.title = 'Show trimmed content';
+              } else {
+                this.title = 'Hide expanded content';
+              }
+            }
+          };
+        });
+      });
+    </script>''';
 }
