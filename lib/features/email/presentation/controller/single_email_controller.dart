@@ -1208,15 +1208,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         isSearchEmailRunning: mailboxDashBoardController.searchController.isSearchEmailRunning,
       );
       if (!context.mounted || moveActionRequest == null) return;
-      if (_threadDetailController?.emailIdsPresentation.length == 1) {
-        _threadDetailController?.closeThreadDetailAction(context);
-      }
       mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
         moveActionRequest.moveRequest,
         moveActionRequest.emailIdsWithReadStatus,
       );
+      if (_threadDetailController?.emailIdsPresentation.length == 1) {
+        _threadDetailController?.closeThreadDetailAction(context);
+      }
     }
   }
 
@@ -1285,15 +1285,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
       );
       if (!context.mounted || moveActionRequest == null) return;
-      if (_threadDetailController?.emailIdsPresentation.length == 1) {
-        _threadDetailController?.closeThreadDetailAction(context);
-      }
       mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
         moveActionRequest.moveRequest,
         moveActionRequest.emailIdsWithReadStatus,
       );
+      if (_threadDetailController?.emailIdsPresentation.length == 1) {
+        _threadDetailController?.closeThreadDetailAction(context);
+      }
     }
   }
 
@@ -1307,15 +1307,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
       );
       if (!context.mounted || moveActionRequest == null) return;
-      if (_threadDetailController?.emailIdsPresentation.length == 1) {
-        _threadDetailController?.closeThreadDetailAction(context);
-      }
       mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
         moveActionRequest.moveRequest,
         moveActionRequest.emailIdsWithReadStatus,
       );
+      if (_threadDetailController?.emailIdsPresentation.length == 1) {
+        _threadDetailController?.closeThreadDetailAction(context);
+      }
     }
   }
 
@@ -1329,15 +1329,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
       );
       if (!context.mounted || moveActionRequest == null) return;
-      if (_threadDetailController?.emailIdsPresentation.length == 1) {
-        _threadDetailController?.closeThreadDetailAction(context);
-      }
       mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
         moveActionRequest.moveRequest,
         moveActionRequest.emailIdsWithReadStatus,
       );
+      if (_threadDetailController?.emailIdsPresentation.length == 1) {
+        _threadDetailController?.closeThreadDetailAction(context);
+      }
     }
   }
 
@@ -1487,14 +1487,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void deleteEmailPermanently(BuildContext context, PresentationEmail email) {
-    if (_threadDetailController?.emailIdsPresentation.length == 1) {
-      _threadDetailController?.closeThreadDetailAction(context);
-    }
     emailActionReactor.deleteEmailPermanently(
       email,
       onDeleteEmailRequest: (email) {
         popBack();
         mailboxDashBoardController.deleteEmailPermanently(email);
+        if (_threadDetailController?.emailIdsPresentation.length == 1) {
+          _threadDetailController?.closeThreadDetailAction(context);
+        }
       },
       responsiveUtils: responsiveUtils,
       imagePaths: imagePaths,
