@@ -33,6 +33,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
 
   final bool keepWidthWhileLoading;
   final ScrollController? scrollController;
+  final bool enableQuoteToggle;
 
   const HtmlContentViewerOnWeb({
     Key? key,
@@ -47,6 +48,7 @@ class HtmlContentViewerOnWeb extends StatefulWidget {
     this.keepWidthWhileLoading = false,
     this.contentPadding,
     this.scrollController,
+    this.enableQuoteToggle = false,
   }) : super(key: key);
 
   @override
@@ -332,14 +334,18 @@ class _HtmlContentViewerOnWebState extends State<HtmlContentViewerOnWeb> {
     ''';
 
     final htmlTemplate = HtmlUtils.generateHtmlDocument(
-      content: content,
+      content: widget.enableQuoteToggle
+        ? HtmlUtils.addQuoteToggle(content)
+        : content,
       minHeight: minHeight,
       minWidth: _minWidth,
-      styleCSS: HtmlTemplate.tooltipLinkCss,
+      styleCSS: HtmlTemplate.tooltipLinkCss
+          + (widget.enableQuoteToggle ? HtmlUtils.quoteToggleStyle : ''),
       javaScripts: webViewActionScripts
           + scriptsDisableZoom
           + HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage
-          + HtmlInteraction.generateNormalizeImageScript(widget.widthContent),
+          + HtmlInteraction.generateNormalizeImageScript(widget.widthContent)
+          + (widget.enableQuoteToggle ? HtmlUtils.quoteToggleScript : ''),
       direction: widget.direction,
       contentPadding: widget.contentPadding,
       useDefaultFont: widget.useDefaultFont,
