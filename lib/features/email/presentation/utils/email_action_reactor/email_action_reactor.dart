@@ -285,6 +285,7 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
     AccountId accountId, {
     required EmailAddress? emailAddress,
   }) async* {
+    Get.back();
     final arguments = RulesFilterCreatorArguments(
       accountId,
       session,
@@ -685,6 +686,7 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
     required ImagePaths imagePaths,
     required AppToast appToast,
     required void Function(EmailAddress emailAddress) onComposeEmailFromEmailAddressRequest,
+    required void Function(Stream<Either<Failure, Success>> quickCreateRuleStream) onQuickCreateRuleRequest,
   }) {
     if (currentContext?.mounted != true) return;
 
@@ -700,7 +702,9 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
             onComposeEmailAction: (emailAddress) =>
                 onComposeEmailFromEmailAddressRequest(emailAddress),
             onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
-                quickCreateRule(session, accountId, emailAddress: emailAddress),
+                onQuickCreateRuleRequest(
+              quickCreateRule(session, accountId, emailAddress: emailAddress),
+            ),
           ),
         ),
         useRootNavigator: true,
@@ -726,7 +730,9 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
             onComposeEmailAction: (emailAddress) =>
                 onComposeEmailFromEmailAddressRequest(emailAddress),
             onQuickCreatingRuleEmailDialogAction: (emailAddress) =>
-                quickCreateRule(session, accountId, emailAddress: emailAddress),
+                onQuickCreateRuleRequest(
+              quickCreateRule(session, accountId, emailAddress: emailAddress),
+            ),
           ),
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,

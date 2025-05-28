@@ -255,7 +255,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
   void _printEmail(PresentationEmail presentationEmail) {
     consumeState(emailActionReactor.printEmail(
       presentationEmail,
-      ownEmailAddress: mailboxDashBoardController.getOwnEmailAddress(),
+      ownEmailAddress: mailboxDashBoardController.ownEmailAddress.value,
       emailLoaded: getBinding<SingleEmailController>(
         tag: presentationEmail.id?.id.value,
       )?.currentEmailLoaded.value,
