@@ -196,7 +196,7 @@ extension EmailActionTypeExtension on EmailActionType {
       case EmailActionType.openInNewTab:
         return appLocalizations.openInNewTab;
       case EmailActionType.printAll:
-        return appLocalizations.printAll;
+        return appLocalizations.print;
       case EmailActionType.forward:
         return appLocalizations.forward;
       case EmailActionType.replyAll:
