@@ -501,7 +501,7 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
     onForwardRequest(presentationEmail, emailLoaded);
   }
 
-  void handleMoreEmailAction({
+  Future<void> handleMoreEmailAction({
     required PresentationEmail presentationEmail,
     required PresentationMailbox? mailboxContain,
     required RelativeRect? position,
@@ -513,7 +513,7 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
       EmailActionType action,
     ) handleEmailAction,
     required List<EmailActionType> additionalActions,
-  }) {
+  }) async {
     if (currentContext == null) return;
 
     final moreActions = [
@@ -574,7 +574,17 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
         )
       );
     } else {
-      openPopupMenuAction(
+      Get.dialog(
+        PointerInterceptor(
+          child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () => popBack(),
+            child: Container(color: Colors.transparent),
+          ),
+        ),
+        barrierColor: Colors.transparent,
+      );
+      await openPopupMenuAction(
         currentContext!,
         position,
         _popupMenuEmailActionTile(
@@ -585,6 +595,7 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
           handleEmailAction: handleEmailAction,
         )
       );
+      popBack();
     }
   }
 
