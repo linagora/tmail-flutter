@@ -682,6 +682,7 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
     required ResponsiveUtils responsiveUtils,
     required ImagePaths imagePaths,
     required void Function(EmailAddress emailAddress) onComposeEmailFromEmailAddressRequest,
+    required void Function(Stream<Either<Failure, Success>> quickCreateRuleStream) onQuickCreateRuleRequest,
   }) {
     if (currentContext?.mounted != true) return;
 
@@ -693,11 +694,14 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
           emailAddress,
         ))
         ..addOnComposeEmailAction((emailAddress) => onComposeEmailFromEmailAddressRequest(emailAddress))
-        ..addOnQuickCreatingRuleEmailBottomSheetAction((emailAddress) => quickCreateRule(
-          session,
-          accountId,
-          emailAddress: emailAddress
-        ))
+        ..addOnQuickCreatingRuleEmailBottomSheetAction((emailAddress) {
+          popBack();
+          onQuickCreateRuleRequest(quickCreateRule(
+            session,
+            accountId,
+            emailAddress: emailAddress
+          ));
+        })
       ).show();
     } else {
       Get.dialog(
@@ -710,11 +714,14 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
               emailAddress,
             ),
             onComposeEmailAction: (emailAddress) => onComposeEmailFromEmailAddressRequest(emailAddress),
-            onQuickCreatingRuleEmailDialogAction: (emailAddress) => quickCreateRule(
-              session,
-              accountId,
-              emailAddress: emailAddress,
-            )
+            onQuickCreatingRuleEmailDialogAction: (emailAddress) {
+              popBack();
+              onQuickCreateRuleRequest(quickCreateRule(
+                session,
+                accountId,
+                emailAddress: emailAddress,
+              ));
+            }
           )
         ),
         barrierColor: AppColor.colorDefaultCupertinoActionSheet,
