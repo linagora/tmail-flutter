@@ -1457,9 +1457,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       responsiveUtils: responsiveUtils,
       imagePaths: imagePaths,
       onComposeEmailFromEmailAddressRequest: (emailAddress) {
+        popBack();
         mailboxDashBoardController.openComposer(
           ComposerArguments.fromEmailAddress(emailAddress),
         );
+      },
+      onQuickCreateRuleRequest: (quickCreateRuleStream) {
+        consumeState(quickCreateRuleStream);
       },
     );
   }
