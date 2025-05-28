@@ -132,6 +132,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/focus_thread_detail_expanded_email.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -1207,6 +1208,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         isSearchEmailRunning: mailboxDashBoardController.searchController.isSearchEmailRunning,
       );
       if (!context.mounted || moveActionRequest == null) return;
+      if (_threadDetailController?.emailIdsPresentation.length == 1) {
+        _threadDetailController?.closeThreadDetailAction(context);
+      }
       mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
@@ -1281,6 +1285,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
       );
       if (!context.mounted || moveActionRequest == null) return;
+      if (_threadDetailController?.emailIdsPresentation.length == 1) {
+        _threadDetailController?.closeThreadDetailAction(context);
+      }
       mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
@@ -1300,6 +1307,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
       );
       if (!context.mounted || moveActionRequest == null) return;
+      if (_threadDetailController?.emailIdsPresentation.length == 1) {
+        _threadDetailController?.closeThreadDetailAction(context);
+      }
       mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
@@ -1319,6 +1329,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         mapDefaultMailboxIdByRole: mailboxDashBoardController.mapDefaultMailboxIdByRole,
       );
       if (!context.mounted || moveActionRequest == null) return;
+      if (_threadDetailController?.emailIdsPresentation.length == 1) {
+        _threadDetailController?.closeThreadDetailAction(context);
+      }
       mailboxDashBoardController.moveToMailbox(
         session!,
         accountId!,
@@ -1470,6 +1483,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   }
 
   void deleteEmailPermanently(BuildContext context, PresentationEmail email) {
+    if (_threadDetailController?.emailIdsPresentation.length == 1) {
+      _threadDetailController?.closeThreadDetailAction(context);
+    }
     emailActionReactor.deleteEmailPermanently(
       email,
       onDeleteEmailRequest: (email) {
