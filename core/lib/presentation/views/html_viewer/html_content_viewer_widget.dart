@@ -33,6 +33,7 @@ class HtmlContentViewer extends StatefulWidget {
   final double minHtmlContentHeight;
   final double offsetHtmlContentHeight;
   final bool keepAlive;
+  final bool enableQuoteToggle;
 
   final OnLoadWidthHtmlViewerAction? onLoadWidthHtmlViewer;
   final OnMailtoDelegateAction? onMailtoDelegateAction;
@@ -49,6 +50,7 @@ class HtmlContentViewer extends StatefulWidget {
     this.minHtmlContentHeight = ConstantsUI.htmlContentMinHeight,
     this.offsetHtmlContentHeight = ConstantsUI.htmlContentOffsetHeight,
     this.keepAlive = false,
+    this.enableQuoteToggle = false,
     this.keepWidthWhileLoading = false,
     this.contentPadding,
     this.useDefaultFont = false,
@@ -100,6 +102,9 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
     }
     _customScriptsBuilder = StringBuffer();
     _customScriptsBuilder.write(HtmlInteraction.scriptsHandleLazyLoadingBackgroundImage);
+    if (widget.enableQuoteToggle) {
+      _customScriptsBuilder.write(HtmlUtils.quoteToggleScript);
+    }
     if (widget.initialWidth != null) {
       _customScriptsBuilder.write(HtmlInteraction.generateNormalizeImageScript(widget.initialWidth!));
     }
@@ -122,11 +127,14 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
   void _initialData() {
     _actualHeight = widget.minHtmlContentHeight;
     _htmlData = HtmlUtils.generateHtmlDocument(
-      content: widget.contentHtml,
+      content: widget.enableQuoteToggle
+        ? HtmlUtils.addQuoteToggle(widget.contentHtml)
+        : widget.contentHtml,
       direction: widget.direction,
       javaScripts: _customScriptsBuilder.toString(),
       contentPadding: widget.contentPadding,
       useDefaultFont: widget.useDefaultFont,
+      styleCSS: widget.enableQuoteToggle ? HtmlUtils.quoteToggleStyle : null
     );
   }
 
@@ -218,7 +226,6 @@ class HtmlContentViewState extends State<HtmlContentViewer> with AutomaticKeepAl
     if (result is! num) return;
 
     final double maxContentHeight = result.toDouble();
-    if (maxContentHeight <= _actualHeight) return;
 
     double currentHeight = maxContentHeight + widget.offsetHtmlContentHeight;
 
