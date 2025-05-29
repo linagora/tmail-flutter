@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 class UserAvatarBuilder extends StatelessWidget {
   final String username;
   final double? size;
+  final EdgeInsetsGeometry? padding;
   final VoidCallback? onTapAction;
 
   const UserAvatarBuilder({
     Key? key,
     required this.username,
     this.size,
+    this.padding,
     this.onTapAction,
   }) : super(key: key);
 
@@ -28,6 +30,13 @@ class UserAvatarBuilder extends StatelessWidget {
       avatarBuilder.addOnTapActionClick(onTapAction!);
     }
 
-    return avatarBuilder.build();
+    if (padding != null) {
+      return Padding(
+        padding: padding!,
+        child: avatarBuilder.build(),
+      );
+    } else {
+      return avatarBuilder.build();
+    }
   }
 }

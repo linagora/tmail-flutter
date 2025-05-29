@@ -251,6 +251,9 @@ extension AppColor on Color {
   static const warningColor = Color(0xFFFFC107);
   static const primaryMain = Color(0xFF0A84FF);
   static const m3LayerDarkOutline = Color(0xFF938F99);
+  static const blackAlpha40 = Color.fromRGBO(0, 0, 0, 0.4);
+  static const blackAlpha20 = Color.fromRGBO(0, 0, 0, 0.2);
+  static const textPrimary = Color(0xFF424244);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
