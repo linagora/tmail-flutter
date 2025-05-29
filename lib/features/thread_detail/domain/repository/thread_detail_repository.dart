@@ -19,4 +19,6 @@ abstract class ThreadDetailRepository {
     List<EmailId> emailIds, {
     Properties? properties,
   });
+
+  Future<bool> getThreadDetailStatus();
 }

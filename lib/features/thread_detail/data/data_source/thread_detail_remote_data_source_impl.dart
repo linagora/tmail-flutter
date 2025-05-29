@@ -41,4 +41,9 @@ class ThreadDetailRemoteDataSourceImpl implements ThreadDetailDataSource {
       );
     }).catchError(exceptionThrower.throwException);
   }
+
+  @override
+  Future<bool> getThreadDetailStatus() {
+    throw UnimplementedError();
+  }
 }

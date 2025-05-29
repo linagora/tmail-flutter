@@ -32,8 +32,10 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_detail_status_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_by_ids_interactor.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_detail_status_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_email_ids_by_thread_id_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_emails_by_ids_success.dart';
@@ -45,6 +47,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/mark
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/quick_create_rule_from_collapsed_email_success.dart';
 
 class ThreadDetailController extends BaseController {
+  final GetThreadDetailStatusInteractor _getThreadDetailStatusInteractor;
   final GetThreadByIdInteractor _getEmailIdsByThreadIdInteractor;
   final GetEmailsByIdsInteractor getEmailsByIdsInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
@@ -55,6 +58,7 @@ class ThreadDetailController extends BaseController {
   final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
 
   ThreadDetailController(
+    this._getThreadDetailStatusInteractor,
     this._getEmailIdsByThreadIdInteractor,
     this.getEmailsByIdsInteractor,
     this._markAsEmailReadInteractor,
@@ -107,6 +111,17 @@ class ThreadDetailController extends BaseController {
     return isWebSearchRunning || isMobileSearchRunning;
   }
 
+  Future<bool> get isThreadDetailEnabled async {
+    return (await _getThreadDetailStatusInteractor
+      .execute()
+      .last)
+      .fold(
+        (failure) => false,
+        (success) => success is GetThreadDetailStatusSuccess &&
+          success.threadDetailEnabled,
+      );
+  }
+
   @override
   void onInit() {
     super.onInit();
@@ -119,11 +134,20 @@ class ThreadDetailController extends BaseController {
       _downloadAttachmentForWebInteractor,
     );
     downloadProgressState.stream.listen(handleDownloadProgressState);
-    ever(mailboxDashBoardController.selectedEmail, (presentationEmail) {
+    ever(mailboxDashBoardController.selectedEmail, (presentationEmail) async {
       if (presentationEmail?.threadId == null) {
         closeThreadDetailAction(currentContext);
         return;
       }
+
+      final threadDetailEnabled = await isThreadDetailEnabled;
+      if (!threadDetailEnabled && presentationEmail?.id != null) {
+        consumeState(Stream.value(Right(GetThreadByIdSuccess([
+          presentationEmail!.id!,
+        ]))));
+        return;
+      }
+
       if (session != null &&
           accountId != null &&
           sentMailboxId != null &&

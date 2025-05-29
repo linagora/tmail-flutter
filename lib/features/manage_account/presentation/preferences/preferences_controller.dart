@@ -5,7 +5,12 @@ import 'package:get/get.dart';
 import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/home/data/exceptions/session_exceptions.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/get_local_settings_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/update_local_settings_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_local_settings_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_local_settings_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/local_setting_options.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/setting_option_type.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/get_server_setting_state.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/state/update_server_setting_state.dart';
@@ -18,12 +23,17 @@ class PreferencesController extends BaseController {
   PreferencesController(
     this._getServerSettingInteractor,
     this._updateServerSettingInteractor,
+    this._getLocalSettingInteractor,
+    this._updateLocalSettingsInteractor,
   );
 
   final GetServerSettingInteractor _getServerSettingInteractor;
   final UpdateServerSettingInteractor _updateServerSettingInteractor;
+  final GetLocalSettingsInteractor _getLocalSettingInteractor;
+  final UpdateLocalSettingsInteractor _updateLocalSettingsInteractor;
 
   final settingOption = Rxn<TMailServerSettingOptions>();
+  final localSettingOption = Rxn<LocalSettingOptions>();
 
   bool get isLoading => viewState.value.fold(
     (failure) => false, 
@@ -43,6 +53,14 @@ class PreferencesController extends BaseController {
       _updateSettingOptionValue(newSettingOption: success.settingOption);
     } else if (success is UpdateServerSettingSuccess) {
       _updateSettingOptionValue(newSettingOption: success.settingOption);
+    } else if (success is GetLocalSettingsSuccess) {
+      _updateLocalSettingOptionValue(
+        newLocalSettingOption: success.localSettingOptions,
+      );
+    } else if (success is UpdateLocalSettingsSuccess) {
+      _updateLocalSettingOptionValue(
+        newLocalSettingOption: success.localSettingOptions,
+      );
     } else {
       super.handleSuccessViewState(success);
     }
@@ -71,16 +89,46 @@ class PreferencesController extends BaseController {
     settingOption.value = newSettingOption;
   }
 
+  void _updateLocalSettingOptionValue({
+    required LocalSettingOptions newLocalSettingOption,
+  }) {
+    localSettingOption.value = newLocalSettingOption;
+    localSettingOption.refresh();
+  }
+
   void _getSettingOption() {
+    consumeState(_getLocalSettingInteractor.execute());
     final accountId = _manageAccountDashBoardController.accountId.value;
     if (accountId != null) {
       consumeState(_getServerSettingInteractor.execute(accountId));
     } else {
       consumeState(Stream.value(Left(GetServerSettingFailure(NotFoundAccountIdException()))));
+      consumeState(Stream.value(Left(GetLocalSettingsFailure(
+        exception: NotFoundAccountIdException(),
+      ))));
     }
   }
 
   void updateStateSettingOption(SettingOptionType optionType, bool isEnabled) {
+    if (optionType.isLocal) {
+      LocalSettingOptions? newLocalSettingOption;
+      switch(optionType) {
+        case SettingOptionType.thread:
+          final currentLocalSettings = localSettingOption.value?.settings ?? {};
+          currentLocalSettings[SupportedLocalSetting.threadDetail] = !isEnabled;
+          newLocalSettingOption = LocalSettingOptions(settings: currentLocalSettings);
+          break;
+        default:
+          break;
+      }
+      if (newLocalSettingOption != null) {
+        consumeState(_updateLocalSettingsInteractor.execute(
+          newLocalSettingOption,
+        ));
+      }
+      return;
+    }
+
     TMailServerSettingOptions? newSettingOption;
     switch(optionType) {
       case SettingOptionType.readReceipt:

@@ -6,7 +6,14 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_
 import 'package:tmail_ui_user/features/thread_detail/presentation/utils/thread_detail_presentation_utils.dart';
 
 extension InitializeThreadDetailEmails on ThreadDetailController {
-  void initializeThreadDetailEmails() {
+  Future<void> initializeThreadDetailEmails() async {
+    final threadDetailEnabled = await isThreadDetailEnabled;
+    final selectedEmail = mailboxDashBoardController.selectedEmail.value;
+    if (!threadDetailEnabled && selectedEmail != null) {
+      consumeState(Stream.value(Right(GetEmailsByIdsSuccess([selectedEmail]))));
+      return;
+    }
+
     final emailIdToLoadContent = emailIdsPresentation.keys.last;
     final emailIdsToLoadMetaData = ThreadDetailPresentationUtils.getEmailIdsToLoad(
       Map.from(emailIdsPresentation)..remove(emailIdToLoadContent),
