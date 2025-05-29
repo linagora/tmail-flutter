@@ -65,6 +65,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/refresh_changes_em
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/search_more_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/list_presentation_email_extensions.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/refresh_thread_detail_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/mixin/email_action_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
@@ -546,6 +547,8 @@ class ThreadController extends BaseController with EmailActionController {
     if (PlatformInfo.isWeb) {
       _validateBrowserHeight();
     }
+
+    refreshThreadDetail(emailsAfterChanges);
   }
 
   void getAllEmailAction({
@@ -1034,6 +1037,8 @@ class ThreadController extends BaseController with EmailActionController {
     if (PlatformInfo.isWeb) {
       _validateBrowserHeight();
     }
+
+    refreshThreadDetail(emailsSearchAfterChanges);
   }
 
   @visibleForTesting

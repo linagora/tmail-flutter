@@ -6,6 +6,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_by_ids_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
@@ -58,7 +59,9 @@ void main() {
       when(mailboxDashboardController.selectedEmail).thenReturn(Rxn());
 
       // Act
-      threadDetailController.initializeThreadDetailEmails();
+      threadDetailController.initializeThreadDetailEmails(
+        GetThreadByIdSuccess(emailIds),
+      );
 
       // Assert
       final captured = verify(getEmailsByIdsInteractor.execute(

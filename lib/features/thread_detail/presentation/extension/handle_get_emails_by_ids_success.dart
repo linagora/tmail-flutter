@@ -23,6 +23,15 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
     
     for (var presentationEmail in success.presentationEmails) {
       if (presentationEmail.id == null) continue;
+
+      if (success.updateCurrentThreadDetail) {
+        emailIdsPresentation[presentationEmail.id!] = presentationEmail.copyWith(
+          emailInThreadStatus: emailIdsPresentation[presentationEmail.id!]
+            ?.emailInThreadStatus ?? EmailInThreadStatus.collapsed,
+        );
+        continue;
+      }
+
       if (presentationEmail.id == mailboxDashBoardController.selectedEmail.value?.id) {
         EmailBindings(currentEmailId: presentationEmail.id).dependencies();
         currentExpandedEmailId.value = presentationEmail.id;
