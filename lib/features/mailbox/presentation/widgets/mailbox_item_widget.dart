@@ -68,43 +68,51 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
       return DragTarget<List<PresentationEmail>>(
         key: _key,
         builder: (context, candidateEmails, rejectedEmails) {
-          return InkWell(
-            onTap: () => widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
-            onHover: (value) => setState(() => _isItemHovered = value),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(MailboxItemWidgetStyles.borderRadius)),
-                color: backgroundColorItem
+          return Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              onTap: () => widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
+              onHover: (value) => setState(() => _isItemHovered = value),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(MailboxItemWidgetStyles.borderRadius),
               ),
-              padding: const EdgeInsetsDirectional.symmetric(
-                horizontal: MailboxItemWidgetStyles.itemPadding,
-              ),
-              height: widget.mailboxNode.item.isTeamMailboxes
-                  ? MailboxItemWidgetStyles.teamMailboxHeight
-                  : MailboxItemWidgetStyles.height,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: widget.mailboxNode.item.isTeamMailboxes
-                  ? CrossAxisAlignment.start
-                  : CrossAxisAlignment.center,
-                children: [
-                  if (_isIconDisplayed)
-                    MailboxIconWidget(icon: _iconMailbox),
-                  Expanded(
-                    child: LabelMailboxItemWidget(
-                      itemKey: _key,
-                      responsiveUtils: _responsiveUtils,
-                      mailboxNode: widget.mailboxNode,
-                      imagePaths: _imagePaths,
-                      isItemHovered: _isItemHovered,
-                      isSelected: _isSelected,
-                      onMenuActionClick: widget.onMenuActionClick,
-                      onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback,
-                      onClickExpandMailboxNodeAction: widget.onExpandFolderActionClick,
-                    )
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(MailboxItemWidgetStyles.borderRadius),
                   ),
-                ]
-              )
+                  color: backgroundColorItem,
+                ),
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: MailboxItemWidgetStyles.itemPadding,
+                ),
+                height: widget.mailboxNode.item.isTeamMailboxes
+                    ? MailboxItemWidgetStyles.teamMailboxHeight
+                    : MailboxItemWidgetStyles.height,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: widget.mailboxNode.item.isTeamMailboxes
+                    ? CrossAxisAlignment.start
+                    : CrossAxisAlignment.center,
+                  children: [
+                    if (_isIconDisplayed)
+                      MailboxIconWidget(icon: _iconMailbox),
+                    Expanded(
+                      child: LabelMailboxItemWidget(
+                        itemKey: _key,
+                        responsiveUtils: _responsiveUtils,
+                        mailboxNode: widget.mailboxNode,
+                        imagePaths: _imagePaths,
+                        isItemHovered: _isItemHovered,
+                        isSelected: _isSelected,
+                        onMenuActionClick: widget.onMenuActionClick,
+                        onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback,
+                        onClickExpandMailboxNodeAction: widget.onExpandFolderActionClick,
+                      )
+                    ),
+                  ]
+                )
+              ),
             ),
           );
         },
@@ -113,46 +121,54 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
     } else {
       if (widget.mailboxDisplayed == MailboxDisplayed.mailbox) {
         if (PlatformInfo.isWeb) {
-          return InkWell(
-            key: _key,
-            onTap: () => widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
-            onHover: (value) => setState(() => _isItemHovered = value),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.all(Radius.circular(MailboxItemWidgetStyles.borderRadius)),
-                color: backgroundColorItem
+          return Material(
+            type: MaterialType.transparency,
+            child: InkWell(
+              key: _key,
+              onTap: () => widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
+              onHover: (value) => setState(() => _isItemHovered = value),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(MailboxItemWidgetStyles.borderRadius),
               ),
-              padding: const EdgeInsetsDirectional.symmetric(
-                horizontal: MailboxItemWidgetStyles.itemPadding,
-              ),
-              height: widget.mailboxNode.item.isTeamMailboxes
-                  ? MailboxItemWidgetStyles.teamMailboxHeight
-                  : MailboxItemWidgetStyles.height,
-              child: Row(
-                children: [
-                  if (_isIconDisplayed)
-                    MailboxIconWidget(icon: _iconMailbox),
-                  Expanded(
-                    child: LabelMailboxItemWidget(
-                      itemKey: _key,
-                      responsiveUtils: _responsiveUtils,
-                      mailboxNode: widget.mailboxNode,
-                      imagePaths: _imagePaths,
-                      isItemHovered: _isItemHovered,
-                      isSelected: _isSelected,
-                      onMenuActionClick: widget.onMenuActionClick,
-                      onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback,
-                      onClickExpandMailboxNodeAction: widget.onExpandFolderActionClick,
-                    )
+              child: Container(
+                decoration: BoxDecoration(
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(MailboxItemWidgetStyles.borderRadius),
                   ),
-                ]
-              )
+                  color: backgroundColorItem,
+                ),
+                padding: const EdgeInsetsDirectional.symmetric(
+                  horizontal: MailboxItemWidgetStyles.itemPadding,
+                ),
+                height: widget.mailboxNode.item.isTeamMailboxes
+                    ? MailboxItemWidgetStyles.teamMailboxHeight
+                    : MailboxItemWidgetStyles.height,
+                child: Row(
+                  children: [
+                    if (_isIconDisplayed)
+                      MailboxIconWidget(icon: _iconMailbox),
+                    Expanded(
+                      child: LabelMailboxItemWidget(
+                        itemKey: _key,
+                        responsiveUtils: _responsiveUtils,
+                        mailboxNode: widget.mailboxNode,
+                        imagePaths: _imagePaths,
+                        isItemHovered: _isItemHovered,
+                        isSelected: _isSelected,
+                        onMenuActionClick: widget.onMenuActionClick,
+                        onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback,
+                        onClickExpandMailboxNodeAction: widget.onExpandFolderActionClick,
+                      )
+                    ),
+                  ]
+                )
+              ),
             ),
           );
         } else {
           return Material(
             key: _key,
-            color: Colors.transparent,
+            type: MaterialType.transparency,
             child: InkWell(
               onLongPress: () => widget.onLongPressMailboxNodeAction?.call(widget.mailboxNode),
               onTap: () => widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
@@ -268,7 +284,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
     if (widget.mailboxDisplayed == MailboxDisplayed.destinationPicker) {
       return Colors.white;
     } else {
-      if (_isSelected || _isItemHovered) {
+      if (_isSelected) {
         return AppColor.blue100;
       } else {
         return Colors.transparent;
