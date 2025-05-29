@@ -156,22 +156,32 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
             child: InkWell(
               onLongPress: () => widget.onLongPressMailboxNodeAction?.call(widget.mailboxNode),
               onTap: () => widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
-              borderRadius: const BorderRadius.all(Radius.circular(MailboxItemWidgetStyles.borderRadius)),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(MailboxItemWidgetStyles.mobileBorderRadius),
+              ),
               child: Container(
                 decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.all(Radius.circular(MailboxItemWidgetStyles.borderRadius)),
+                  borderRadius: const BorderRadius.all(
+                    Radius.circular(MailboxItemWidgetStyles.mobileBorderRadius),
+                  ),
                   color: backgroundColorItem
                 ),
                 padding: const EdgeInsetsDirectional.symmetric(
-                  horizontal: MailboxItemWidgetStyles.itemPadding,
+                  horizontal: MailboxItemWidgetStyles.mobileItemPadding,
                 ),
                 height: widget.mailboxNode.item.isTeamMailboxes
                     ? MailboxItemWidgetStyles.teamMailboxHeight
-                    : MailboxItemWidgetStyles.height,
+                    : MailboxItemWidgetStyles.mobileHeight,
                 child: Row(
                   children: [
                     if (_isIconDisplayed)
-                      MailboxIconWidget(icon: _iconMailbox),
+                      MailboxIconWidget(
+                        icon: _iconMailbox,
+                        padding: const EdgeInsetsDirectional.only(
+                          end: MailboxItemWidgetStyles.mobileLabelIconSpace,
+                        ),
+                        color: AppColor.iconFolder,
+                      ),
                     Expanded(
                       child: LabelMailboxItemWidget(
                         itemKey: _key,
@@ -183,15 +193,8 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                         onMenuActionClick: widget.onMenuActionClick,
                         onEmptyMailboxActionCallback: widget.onEmptyMailboxActionCallback,
                         onClickExpandMailboxNodeAction: widget.onExpandFolderActionClick,
-                    )
+                      ),
                     ),
-                    if (_isSelectActionNoValid)
-                      SvgPicture.asset(
-                        _imagePaths.icSelectedSB,
-                        width: MailboxItemWidgetStyles.selectionIconSize,
-                        height: MailboxItemWidgetStyles.selectionIconSize,
-                        fit: BoxFit.fill
-                      )
                   ]
                 ),
               ),

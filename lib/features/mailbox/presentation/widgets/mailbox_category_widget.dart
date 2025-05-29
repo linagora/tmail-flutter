@@ -2,6 +2,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -21,6 +22,9 @@ class MailboxCategoryWidget extends StatefulWidget {
   final bool isArrangeLTR;
   final bool showIcon;
   final EdgeInsetsGeometry? padding;
+  final double? height;
+  final double? iconSpace;
+  final TextStyle? labelTextStyle;
 
   const MailboxCategoryWidget({
     super.key,
@@ -30,6 +34,9 @@ class MailboxCategoryWidget extends StatefulWidget {
     this.isArrangeLTR = true,
     this.showIcon = false,
     this.padding,
+    this.height,
+    this.iconSpace,
+    this.labelTextStyle,
   });
 
   @override
@@ -55,7 +62,7 @@ class _MailboxCategoryWidgetState extends State<MailboxCategoryWidget> {
               height: MailboxIconWidgetStyles.iconSize,
               fit: BoxFit.fill,
             ),
-            const SizedBox(width: MailboxItemWidgetStyles.labelIconSpace),
+            SizedBox(width: widget.iconSpace ?? MailboxItemWidgetStyles.labelIconSpace),
           ],
         if (!widget.isArrangeLTR)
           Flexible(
@@ -63,7 +70,7 @@ class _MailboxCategoryWidgetState extends State<MailboxCategoryWidget> {
               widget.categories.getTitle(context),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: ThemeUtils.textStyleBodyBody3(color: Colors.black),
+              style: widget.labelTextStyle ?? ThemeUtils.textStyleBodyBody3(color: Colors.black),
             ),
           ),
         TMailButtonWidget.fromIcon(
@@ -72,9 +79,12 @@ class _MailboxCategoryWidgetState extends State<MailboxCategoryWidget> {
               DirectionUtils.isDirectionRTLByLanguage(context),
             ),
             iconColor: Colors.black,
-            iconSize: 20,
+            iconSize: PlatformInfo.isMobile ? 17 : 20,
             backgroundColor: Colors.transparent,
-            padding: const EdgeInsets.all(5),
+            margin: PlatformInfo.isMobile
+              ? const EdgeInsetsDirectional.only(start: 8)
+              : null,
+            padding: EdgeInsets.all(PlatformInfo.isMobile ? 3 : 5),
             tooltipMessage: widget.expandMode.getTooltipMessage(AppLocalizations.of(context)),
             onTapActionCallback: () =>
                 widget.onToggleMailboxCategories(widget.categories, _key)),
@@ -84,13 +94,19 @@ class _MailboxCategoryWidgetState extends State<MailboxCategoryWidget> {
               widget.categories.getTitle(context),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
-              style: ThemeUtils.textStyleBodyBody3(color: Colors.black),
+              style: widget.labelTextStyle ?? ThemeUtils.textStyleBodyBody3(color: Colors.black),
             ),
           ),
       ],
     );
 
-    if (widget.padding != null) {
+    if (widget.padding != null && widget.height != null) {
+      return Container(
+        padding: widget.padding!,
+        height: widget.height!,
+        child: item,
+      );
+    } else if (widget.padding != null) {
       return Padding(padding: widget.padding!, child: item);
     } else {
       return item;

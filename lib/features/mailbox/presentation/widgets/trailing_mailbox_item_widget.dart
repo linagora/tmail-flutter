@@ -45,12 +45,16 @@ class TrailingMailboxItemWidget extends StatelessWidget {
         return const SizedBox();
       } else if (mailboxNode.item.allowedToDisplayCountOfUnreadEmails) {
         return Padding(
-          padding: TrailingMailboxItemWidgetStyles.countEmailsPadding,
+          padding: PlatformInfo.isMobile
+            ? TrailingMailboxItemWidgetStyles.mobileCountEmailsPadding
+            : TrailingMailboxItemWidgetStyles.countEmailsPadding,
           child: CountOfEmailsWidget(value: mailboxNode.item.countUnReadEmailsAsString),
         );
       } else if (mailboxNode.item.allowedToDisplayCountOfTotalEmails) {
         return Padding(
-          padding: TrailingMailboxItemWidgetStyles.countEmailsPadding,
+          padding: PlatformInfo.isMobile
+            ? TrailingMailboxItemWidgetStyles.mobileCountEmailsPadding
+            : TrailingMailboxItemWidgetStyles.countEmailsPadding,
           child: CountOfEmailsWidget(value: mailboxNode.item.countTotalEmailsAsString),
         );
       } else {
@@ -59,12 +63,16 @@ class TrailingMailboxItemWidget extends StatelessWidget {
     } else {
       if (mailboxNode.item.allowedToDisplayCountOfUnreadEmails) {
         return Padding(
-          padding: TrailingMailboxItemWidgetStyles.countEmailsPadding,
+          padding: PlatformInfo.isMobile
+            ? TrailingMailboxItemWidgetStyles.mobileCountEmailsPadding
+            : TrailingMailboxItemWidgetStyles.countEmailsPadding,
           child: CountOfEmailsWidget(value: mailboxNode.item.countUnReadEmailsAsString),
         );
       } else if (mailboxNode.item.allowedToDisplayCountOfTotalEmails) {
         return Padding(
-          padding: TrailingMailboxItemWidgetStyles.countEmailsPadding,
+          padding: PlatformInfo.isMobile
+            ? TrailingMailboxItemWidgetStyles.mobileCountEmailsPadding
+            : TrailingMailboxItemWidgetStyles.countEmailsPadding,
           child: CountOfEmailsWidget(value: mailboxNode.item.countTotalEmailsAsString),
         );
       } else {

@@ -2,9 +2,8 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_icon_widget_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_widget_styles.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_icon_widget.dart';
 
 class FolderWidget extends StatelessWidget {
   final String icon;
@@ -12,6 +11,10 @@ class FolderWidget extends StatelessWidget {
   final VoidCallback onOpenFolderAction;
   final String? tooltip;
   final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry? itemPadding;
+  final double? borderRadius;
+  final double? height;
+  final TextStyle? labelTextStyle;
 
   const FolderWidget({
     super.key,
@@ -20,35 +23,36 @@ class FolderWidget extends StatelessWidget {
     required this.onOpenFolderAction,
     this.tooltip,
     this.padding,
+    this.itemPadding,
+    this.borderRadius,
+    this.height,
+    this.labelTextStyle,
   });
 
   @override
   Widget build(BuildContext context) {
     Widget item = Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         borderRadius: BorderRadius.all(
-          Radius.circular(MailboxItemWidgetStyles.borderRadius),
+          Radius.circular(borderRadius ?? MailboxItemWidgetStyles.borderRadius),
         ),
       ),
-      padding: const EdgeInsets.symmetric(
+      padding: itemPadding ?? const EdgeInsets.symmetric(
         horizontal: MailboxItemWidgetStyles.itemPadding,
       ),
-      height: MailboxItemWidgetStyles.height,
+      height: height ?? MailboxItemWidgetStyles.height,
       child: Row(children: [
-        SvgPicture.asset(
-          icon,
-          width: MailboxIconWidgetStyles.iconSize,
-          height: MailboxIconWidgetStyles.iconSize,
-          fit: BoxFit.fill,
+        MailboxIconWidget(
+          icon: icon,
+          padding: const EdgeInsetsDirectional.only(
+            end: MailboxItemWidgetStyles.mobileLabelIconSpace,
+          ),
+          color: AppColor.iconFolder,
         ),
-        const SizedBox(width: MailboxItemWidgetStyles.labelIconSpace),
         Expanded(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 3),
-            child: TextOverflowBuilder(
-              label,
-              style: ThemeUtils.textStyleBodyBody3(color: Colors.black),
-            ),
+          child: TextOverflowBuilder(
+            label,
+            style: labelTextStyle ?? ThemeUtils.textStyleBodyBody3(color: Colors.black),
           ),
         )
       ]),
@@ -65,8 +69,8 @@ class FolderWidget extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onOpenFolderAction,
-        borderRadius: const BorderRadius.all(
-          Radius.circular(MailboxItemWidgetStyles.borderRadius),
+        borderRadius: BorderRadius.all(
+          Radius.circular(borderRadius ?? MailboxItemWidgetStyles.borderRadius),
         ),
         hoverColor: AppColor.blue100,
         child: item,
