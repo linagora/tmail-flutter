@@ -12,11 +12,11 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/app_grid_vie
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/bottom_bar_selection_mailbox_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folder_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folders_bar_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_app_bar.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/sending_queue_mailbox_widget.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/user_information_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/quotas_view.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -36,6 +36,22 @@ class MailboxView extends BaseMailboxView {
           children: [
             Expanded(
               child: Column(children: [
+                Obx(() {
+                  final accountId = controller
+                      .mailboxDashBoardController
+                      .accountId
+                      .value;
+
+                  final username = accountId != null
+                    ? controller.mailboxDashBoardController.getOwnEmailAddress()
+                    : '';
+
+                  return MailboxAppBar(
+                    username: username,
+                    openSettingsAction:
+                        controller.mailboxDashBoardController.goToSettings,
+                  );
+                }),
                 _buildHeaderMailbox(context),
                 Expanded(child: Container(
                   color: Colors.white,
@@ -170,24 +186,6 @@ class MailboxView extends BaseMailboxView {
       physics: const AlwaysScrollableScrollPhysics(),
       padding: const EdgeInsets.only(bottom: 16),
       child: Column(children: [
-        Obx(() {
-          if (controller.isSelectionEnabled() && controller.responsiveUtils.isLandscapeMobile(context)) {
-            return const SizedBox.shrink();
-          }
-          return UserInformationWidget(
-            userName: controller.mailboxDashBoardController.accountId.value != null
-              ? controller.mailboxDashBoardController.getOwnEmailAddress()
-              : '',
-            subtitle: AppLocalizations.of(context).manage_account,
-            onSubtitleClick: controller.mailboxDashBoardController.goToSettings,
-            border: const Border(
-                bottom: BorderSide(
-                  color: AppColor.colorDividerHorizontal,
-                  width: 0.5,
-                )
-            ),
-          );
-        }),
         Obx(() => MailboxLoadingBarWidget(viewState: controller.viewState.value)),
         Obx(() {
           final linagoraApps = controller

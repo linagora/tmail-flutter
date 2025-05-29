@@ -92,6 +92,8 @@ class ThemeUtils {
         fontFamily: ConstantsUI.fontApp,
         fontWeight: FontWeight.w500,
         letterSpacing: 0.15,
+        fontSize: 16,
+        height: 24 / 16,
       ),
       titleSmall: TextStyle(
         fontFamily: ConstantsUI.fontApp,
