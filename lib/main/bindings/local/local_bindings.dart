@@ -34,6 +34,7 @@ import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
+import 'package:tmail_ui_user/features/manage_account/data/local/local_setting_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_manager.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/new_email_cache_worker_queue.dart';
 import 'package:tmail_ui_user/features/offline_mode/manager/opened_email_cache_manager.dart';
@@ -74,6 +75,7 @@ class LocalBindings extends Bindings {
     Get.put(OidcConfigurationCacheClient());
     Get.put(OidcConfigurationCacheManager(Get.find<SharedPreferences>(), Get.find<OidcConfigurationCacheClient>()));
     Get.put(LanguageCacheManager(Get.find<SharedPreferences>()));
+    Get.put(LocalSettingCacheManager(Get.find<SharedPreferences>()));
     Get.put(RecentLoginUrlCacheClient());
     Get.put(RecentLoginUrlCacheManager((Get.find<RecentLoginUrlCacheClient>())));
     Get.put(RecentLoginUsernameCacheClient());

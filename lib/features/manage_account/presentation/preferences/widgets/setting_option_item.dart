@@ -4,6 +4,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:server_settings/server_settings/tmail_server_settings.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/local_setting_options.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/setting_option_type.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -12,7 +13,8 @@ typedef OnTapSettingOptionAction = Function(SettingOptionType optionType, bool i
 class SettingOptionItem extends StatelessWidget {
 
   final ImagePaths imagePaths;
-  final TMailServerSettingOptions settingOption;
+  final TMailServerSettingOptions? settingOption;
+  final LocalSettingOptions? localSettingOptions;
   final SettingOptionType optionType;
   final OnTapSettingOptionAction onTapSettingOptionAction;
 
@@ -20,6 +22,7 @@ class SettingOptionItem extends StatelessWidget {
     super.key,
     required this.imagePaths,
     required this.settingOption,
+    required this.localSettingOptions,
     required this.optionType,
     required this.onTapSettingOptionAction,
   });
@@ -56,10 +59,10 @@ class SettingOptionItem extends StatelessWidget {
             InkWell(
               onTap: () => onTapSettingOptionAction(
                 optionType,
-                optionType.isEnabled(settingOption),
+                optionType.isEnabled(settingOption, localSettingOptions),
               ),
               child: SvgPicture.asset(
-                optionType.isEnabled(settingOption)
+                optionType.isEnabled(settingOption, localSettingOptions)
                   ? imagePaths.icSwitchOn
                   : imagePaths.icSwitchOff,
                 fit: BoxFit.fill,
