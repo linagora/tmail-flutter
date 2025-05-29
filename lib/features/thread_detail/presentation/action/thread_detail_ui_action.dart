@@ -21,3 +21,5 @@ class UpdatedEmailKeywordsAction extends ThreadDetailUIAction {
   @override
   List<Object?> get props => [emailId, updatedKeyword, value];
 }
+
+class UpdatedThreadDetailSettingAction extends ThreadDetailUIAction {}

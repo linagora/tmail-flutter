@@ -15,4 +15,6 @@ abstract class ThreadDetailDataSource {
     List<EmailId> emailIds, {
     Properties? properties,
   });
+
+  Future<bool> getThreadDetailStatus();
 }

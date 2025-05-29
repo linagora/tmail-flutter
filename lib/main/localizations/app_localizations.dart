@@ -4732,6 +4732,27 @@ class AppLocalizations {
     );
   }
 
+  String get thread {
+    return Intl.message(
+      'Thread',
+      name: 'thread',
+    );
+  }
+
+  String get threadSettingExplanation {
+    return Intl.message(
+      'View multiple related emails like a conversation',
+      name: 'threadSettingExplanation',
+    );
+  }
+
+  String get threadToggleDescription {
+    return Intl.message(
+      'Enable thread',
+      name: 'threadToggleDescription',
+    );
+  }
+
   String get exportTraceLogFailed {
     return Intl.message(
       'Export trace log failed',

@@ -1,11 +1,14 @@
 
 import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:server_settings/server_settings/tmail_server_settings_extension.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/local_setting_options_extensions.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/local_setting_options.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum SettingOptionType {
   readReceipt,
-  senderPriority;
+  senderPriority,
+  thread;
 
   String getTitle(AppLocalizations appLocalizations) {
     switch(this) {
@@ -13,6 +16,8 @@ enum SettingOptionType {
         return appLocalizations.emailReadReceipts;
       case SettingOptionType.senderPriority:
         return appLocalizations.senderSetImportantFlag;
+      case SettingOptionType.thread:
+        return appLocalizations.thread;
     }
   }
 
@@ -22,6 +27,8 @@ enum SettingOptionType {
         return appLocalizations.emailReadReceiptsSettingExplanation;
       case SettingOptionType.senderPriority:
         return appLocalizations.senderImportantSettingExplanation;
+      case SettingOptionType.thread:
+        return appLocalizations.threadSettingExplanation;
     }
   }
 
@@ -31,15 +38,29 @@ enum SettingOptionType {
         return appLocalizations.emailReadReceiptsToggleDescription;
       case SettingOptionType.senderPriority:
         return appLocalizations.senderImportantSettingToggleDescription;
+      case SettingOptionType.thread:
+        return appLocalizations.threadToggleDescription;
     }
   }
 
-  bool isEnabled(TMailServerSettingOptions settingOption) {
+  bool isEnabled(
+    TMailServerSettingOptions? settingOption,
+    LocalSettingOptions? localSettingOption,
+  ) {
     switch(this) {
       case SettingOptionType.readReceipt:
-        return settingOption.isAlwaysReadReceipts;
+        return settingOption?.isAlwaysReadReceipts ?? false;
       case SettingOptionType.senderPriority:
-        return settingOption.isDisplaySenderPriority;
+        return settingOption?.isDisplaySenderPriority ?? false;
+      case SettingOptionType.thread:
+        return localSettingOption?.threadDetailEnabled ?? false;
     }
+  }
+
+  bool get isLocal {
+    return switch (this) {
+      thread => true,
+      _ => false,
+    };
   }
 }
