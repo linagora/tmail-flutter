@@ -3,7 +3,11 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/utils/direction_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
+import 'package:model/mailbox/expand_mode.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/expand_mode_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class FoldersBarWidget extends StatelessWidget {
@@ -14,6 +18,8 @@ class FoldersBarWidget extends StatelessWidget {
   final double? height;
   final EdgeInsetsGeometry? padding;
   final TextStyle? labelStyle;
+  final ExpandMode? expandMode;
+  final VoidCallback? onToggleExpandFolder;
 
   const FoldersBarWidget({
     super.key,
@@ -24,6 +30,8 @@ class FoldersBarWidget extends StatelessWidget {
     this.height,
     this.padding,
     this.labelStyle,
+    this.expandMode,
+    this.onToggleExpandFolder,
   });
 
   @override
@@ -61,6 +69,13 @@ class FoldersBarWidget extends StatelessWidget {
       );
     }
 
+    final labelFolder = Text(
+      AppLocalizations.of(context).folders,
+      style: labelStyle ?? ThemeUtils.textStyleInter700(),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
+
     return Container(
       padding: padding ?? EdgeInsetsDirectional.only(
         start: responsiveUtils.isWebDesktop(context) ? 10 : 26,
@@ -69,15 +84,30 @@ class FoldersBarWidget extends StatelessWidget {
       height: height ?? 48,
       child: Row(
         children: [
-          Expanded(
-            child: Text(
-              AppLocalizations.of(context).folders,
-              style: labelStyle ?? ThemeUtils.textStyleInter700(),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
+          if (expandMode != null)
+            Expanded(child: Row(
+              children: [
+                Flexible(child: labelFolder),
+                TMailButtonWidget.fromIcon(
+                  icon: expandMode!.getIcon(
+                    imagePaths,
+                    DirectionUtils.isDirectionRTLByLanguage(context),
+                  ),
+                  iconColor: Colors.black,
+                  iconSize: PlatformInfo.isMobile ? 17 : 20,
+                  backgroundColor: Colors.transparent,
+                  padding: EdgeInsets.all(PlatformInfo.isMobile ? 3 : 5),
+                  tooltipMessage: expandMode!.getTooltipMessage(AppLocalizations.of(context)),
+                  onTapActionCallback: () => onToggleExpandFolder?.call(),
+                )
+              ],
+            ))
+          else
+            Expanded(child: labelFolder),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [searchBarIcon, newFolderIcon],
           ),
-          Row(children: [searchBarIcon, newFolderIcon]),
         ],
       ),
     );

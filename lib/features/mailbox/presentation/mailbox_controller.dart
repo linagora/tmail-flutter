@@ -122,6 +122,7 @@ class MailboxController extends BaseMailboxController
 
   final _activeScrollTop = RxBool(false);
   final _activeScrollBottom = RxBool(true);
+  final foldersExpandMode = Rx(ExpandMode.EXPAND);
 
   MailboxId? _newFolderId;
   NavigationRouter? _navigationRouter;

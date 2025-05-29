@@ -5,6 +5,7 @@ import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/toggle_expand_folders_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_widget_styles.dart';
@@ -98,37 +99,25 @@ class MailboxView extends BaseMailboxView {
             return const SizedBox.shrink();
           }
         }),
-        FoldersBarWidget(
-          onOpenSearchFolder: () => controller.openSearchViewAction(context),
-          onAddNewFolder:  () => controller.goToCreateNewMailboxView(context),
-          imagePaths: controller.imagePaths,
-          responsiveUtils: controller.responsiveUtils,
-          height: 40,
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          labelStyle: ThemeUtils.textStyleInter500(),
-        ),
         Obx(() {
-          if (controller.personalMailboxIsNotEmpty) {
-            return _buildMailboxCategory(
-              context,
-              MailboxCategories.personalFolders,
-              controller.personalRootNode
-            );
-          } else {
-            return const SizedBox.shrink();
-          }
+          return FoldersBarWidget(
+            onOpenSearchFolder: () => controller.openSearchViewAction(context),
+            onAddNewFolder:  () => controller.goToCreateNewMailboxView(context),
+            imagePaths: controller.imagePaths,
+            responsiveUtils: controller.responsiveUtils,
+            height: 40,
+            padding: const EdgeInsetsDirectional.only(start: 24, end: 12),
+            labelStyle: ThemeUtils.textStyleInter500(),
+            expandMode: controller.foldersExpandMode.value,
+            onToggleExpandFolder: controller.toggleExpandFolders,
+          );
         }),
-        Obx(() {
-          if (controller.teamMailboxesIsNotEmpty) {
-            return _buildMailboxCategory(
-              context,
-              MailboxCategories.teamMailboxes,
-              controller.teamMailboxesRootNode
-            );
-          } else {
-            return const SizedBox.shrink();
-          }
-        }),
+        Obx(() => AnimatedContainer(
+          duration: const Duration(milliseconds: 400),
+          child: controller.foldersExpandMode.value == ExpandMode.EXPAND
+            ? _buildFolders(context)
+            : const Offstage(),
+        )),
         Obx(() {
           final accountId = controller
               .mailboxDashBoardController
@@ -146,12 +135,17 @@ class MailboxView extends BaseMailboxView {
             return const SizedBox.shrink();
           }
 
+          final isFoldersExpanded =
+              controller.foldersExpandMode.value == ExpandMode.EXPAND;
+
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Padding(
-                padding: EdgeInsets.only(top: 8),
-                child: Divider(color: AppColor.folderDivider, height: 1),
+              Padding(
+                padding: isFoldersExpanded
+                  ? const EdgeInsets.only(top: 8)
+                  : EdgeInsets.zero,
+                child: const Divider(color: AppColor.folderDivider, height: 1),
               ),
               FolderWidget(
                 icon: controller.imagePaths.icHelp,
@@ -172,6 +166,36 @@ class MailboxView extends BaseMailboxView {
           );
         }),
       ])
+    );
+  }
+
+  Widget _buildFolders(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Obx(() {
+          if (controller.personalMailboxIsNotEmpty) {
+            return _buildMailboxCategory(
+              context,
+              MailboxCategories.personalFolders,
+              controller.personalRootNode,
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
+        Obx(() {
+          if (controller.teamMailboxesIsNotEmpty) {
+            return _buildMailboxCategory(
+              context,
+              MailboxCategories.teamMailboxes,
+              controller.teamMailboxesRootNode,
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
+      ],
     );
   }
 
