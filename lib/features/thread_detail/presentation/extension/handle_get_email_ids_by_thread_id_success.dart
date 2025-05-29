@@ -1,6 +1,5 @@
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
-import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
 
 extension HandleGetEmailIdsByThreadIdSuccess on ThreadDetailController {
@@ -33,10 +32,5 @@ extension HandleGetEmailIdsByThreadIdSuccess on ThreadDetailController {
         mailboxDashBoardController.selectedEmail.value!.id!: null,
       };
     }
-
-    initializeThreadDetailEmails(
-      updateCurrentThreadDetail: success.updateCurrentThreadDetail,
-      newEmailIdsInThreadDetail: newEmailsInThreadDetail,
-    );
   }
 }

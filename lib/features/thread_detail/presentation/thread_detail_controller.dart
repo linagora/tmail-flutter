@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_email_ids_by_thread_id_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_emails_by_ids_success.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class ThreadDetailController extends BaseController {
@@ -109,6 +110,7 @@ class ThreadDetailController extends BaseController {
   void handleSuccessViewState(success) {
     if (success is GetThreadByIdSuccess) {
       handleGetEmailIdsByThreadIdSuccess(success);
+      initializeThreadDetailEmails(success);
     } else if (success is GetEmailsByIdsSuccess) {
       handleGetEmailsByIdsSuccess(success);
     } else {
