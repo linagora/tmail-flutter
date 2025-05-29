@@ -7,6 +7,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_by_ids_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_controller.dart';
@@ -56,11 +57,15 @@ void main() {
       final session = SessionFixtures.aliceSession;
       when(threadDetailController.accountId).thenReturn(accountId);
       when(threadDetailController.session).thenReturn(session);
-      when(threadDetailController.mailboxDashBoardController).thenReturn(mailboxDashboardController);
-      when(mailboxDashboardController.selectedEmail).thenReturn(Rxn());
+      when(threadDetailController.isThreadDetailEnabled)
+        .thenReturn(true);
+      when(threadDetailController.mailboxDashBoardController)
+        .thenReturn(mailboxDashboardController);
+      when(mailboxDashboardController.selectedEmail)
+        .thenReturn(Rxn(PresentationEmail()));
 
       // Act
-      threadDetailController.initializeThreadDetailEmails();
+      await threadDetailController.initializeThreadDetailEmails();
 
       // Assert
       final captured = verify(getEmailsByIdsInteractor.execute(
