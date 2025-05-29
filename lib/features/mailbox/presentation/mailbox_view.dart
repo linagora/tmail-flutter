@@ -40,13 +40,21 @@ class MailboxView extends BaseMailboxView {
                 child: _buildListMailbox(context),
               ),
             ),
-            const QuotasView(),
+            QuotasView(
+              labelStyle: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: AppColor.steelGray400,
+              ),
+              labelMaxLines: 1,
+              padding: const EdgeInsetsDirectional.only(
+                start: 24,
+                end: 23,
+                top: 16,
+              ),
+            ),
             Container(
-              width: double.infinity,
-              color: Colors.white,
-              padding: const EdgeInsets.all(16),
+              alignment: AlignmentDirectional.centerStart,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
               child: ApplicationVersionWidget(
-                padding: EdgeInsets.zero,
                 title: '${AppLocalizations.of(context).version} ',
               ),
             ),

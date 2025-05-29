@@ -12,8 +12,15 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 class QuotasView extends GetWidget<QuotasController> {
 
   final EdgeInsetsGeometry? padding;
+  final TextStyle? labelStyle;
+  final int? labelMaxLines;
 
-  const QuotasView({super.key, this.padding});
+  const QuotasView({
+    super.key,
+    this.padding,
+    this.labelStyle,
+    this.labelMaxLines,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -52,12 +59,12 @@ class QuotasView extends GetWidget<QuotasController> {
                     Flexible(
                       child: Text(
                         AppLocalizations.of(context).storageQuotas,
-                        style: const TextStyle(
+                        style: labelStyle ?? const TextStyle(
                           fontSize: QuotasViewStyles.labelTextSize,
                           fontWeight: QuotasViewStyles.labelFontWeight,
                           color: QuotasViewStyles.labelTextColor,
                         ),
-                        maxLines: 2,
+                        maxLines: labelMaxLines ?? 2,
                         overflow: TextOverflow.ellipsis,
                       ),
                     ),
@@ -89,12 +96,12 @@ class QuotasView extends GetWidget<QuotasController> {
                 const SizedBox(height: QuotasViewStyles.space),
                 Text(
                   octetQuota.getQuotasStateTitle(context),
-                  style: TextStyle(
+                  style: labelStyle ?? TextStyle(
                     fontSize: QuotasViewStyles.progressStateTextSize,
                     fontWeight: QuotasViewStyles.progressStateFontWeight,
                     color: octetQuota.getQuotasStateTitleColor(),
                   ),
-                  maxLines: 2,
+                  maxLines: labelMaxLines ?? 2,
                   overflow: TextOverflow.ellipsis,
                 )
               ],
