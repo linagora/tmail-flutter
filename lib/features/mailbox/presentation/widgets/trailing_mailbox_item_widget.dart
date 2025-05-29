@@ -35,7 +35,7 @@ class TrailingMailboxItemWidget extends StatelessWidget {
           margin: responsiveUtils.isDesktop(context) && mailboxNode.item.allowedHasEmptyAction
             ? EdgeInsets.zero
             : TrailingMailboxItemWidgetStyles.menuIconMargin,
-          icon: imagePaths.icComposerMenu,
+          icon: imagePaths.icMoreVertical,
           iconSize: TrailingMailboxItemWidgetStyles.menuIconSize,
           padding: TrailingMailboxItemWidgetStyles.menuIconPadding,
           backgroundColor: TrailingMailboxItemWidgetStyles.menuIconBackgroundColor,
