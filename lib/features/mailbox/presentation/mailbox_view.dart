@@ -27,97 +27,87 @@ class MailboxView extends BaseMailboxView {
 
   @override
   Widget build(BuildContext context) {
-    ThemeUtils.setStatusBarTransparentColor();
-
-    return SafeArea(bottom: false, left: false, right: false,
-        top: controller.responsiveUtils.isMobile(context),
-        child: ClipRRect(
-            borderRadius: controller.responsiveUtils.isPortraitMobile(context)
-                ? const BorderRadius.only(
-                    topRight: Radius.circular(14),
-                    topLeft: Radius.circular(14))
-                : const BorderRadius.all(Radius.zero),
-            child: Drawer(
-                child: Scaffold(
-                  backgroundColor: Colors.white,
-                  body: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(children: [
-                            _buildHeaderMailbox(context),
-                            Expanded(child: Container(
-                              color: Colors.white,
-                              child: RefreshIndicator(
-                                color: AppColor.primaryColor,
-                                onRefresh: controller.refreshAllMailbox,
-                                child: SafeArea(
-                                  top: false,
-                                  right: false,
-                                  bottom: false,
-                                  child: _buildListMailbox(context)
-                                )
-                              ),
-                            )),
-                            Obx(() {
-                              if (controller.isSelectionEnabled()
-                                  && controller.listActionOfMailboxSelected.isNotEmpty) {
-                                return SafeArea(
-                                  right: false,
-                                  top: false,
-                                  child: BottomBarSelectionMailboxWidget(
-                                    controller.listMailboxSelected,
-                                    controller.listActionOfMailboxSelected,
-                                    onMailboxActionsClick: (actions, listMailboxSelected) {
-                                      return controller.pressMailboxSelectionAction(
-                                        context,
-                                        actions,
-                                        listMailboxSelected
-                                      );
-                                    }
-                                  )
-                                );
-                              } else {
-                                return const SizedBox.shrink();
-                              }
-                            }),
-                          ]),
-                        ),
-                        Obx(() {
-                          if (controller.isSelectionEnabled()) {
-                            return const SizedBox.shrink();
-                          }
-
-                          return const Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Divider(color: AppColor.colorDividerHorizontal),
-                              QuotasView()
-                            ],
+    return SafeArea(
+      child: Drawer(
+        backgroundColor: Colors.white,
+        shape: InputBorder.none,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              child: Column(children: [
+                _buildHeaderMailbox(context),
+                Expanded(child: Container(
+                  color: Colors.white,
+                  child: RefreshIndicator(
+                    color: AppColor.primaryColor,
+                    onRefresh: controller.refreshAllMailbox,
+                    child: SafeArea(
+                      top: false,
+                      right: false,
+                      bottom: false,
+                      child: _buildListMailbox(context)
+                    )
+                  ),
+                )),
+                Obx(() {
+                  if (controller.isSelectionEnabled()
+                      && controller.listActionOfMailboxSelected.isNotEmpty) {
+                    return SafeArea(
+                      right: false,
+                      top: false,
+                      child: BottomBarSelectionMailboxWidget(
+                        controller.listMailboxSelected,
+                        controller.listActionOfMailboxSelected,
+                        onMailboxActionsClick: (actions, listMailboxSelected) {
+                          return controller.pressMailboxSelectionAction(
+                            context,
+                            actions,
+                            listMailboxSelected
                           );
-                        }),
-                        Obx(() {
-                          if (!controller.isSelectionEnabled() && controller.responsiveUtils.isPortraitMobile(context)) {
-                            return Container(
-                              width: double.infinity,
-                              color: Colors.white,
-                              padding: const EdgeInsets.all(16),
-                              child: SafeArea(
-                                top: false,
-                                child: ApplicationVersionWidget(
-                                  padding: EdgeInsets.zero,
-                                  title: '${AppLocalizations.of(context).version} ',
-                                ),
-                              ),
-                            );
-                          } else {
-                            return const SizedBox.shrink();
-                          }
-                        })
-                  ]),
-                )
-            )
-        )
+                        }
+                      )
+                    );
+                  } else {
+                    return const SizedBox.shrink();
+                  }
+                }),
+              ]),
+            ),
+            Obx(() {
+              if (controller.isSelectionEnabled()) {
+                return const SizedBox.shrink();
+              }
+
+              return const Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Divider(color: AppColor.colorDividerHorizontal),
+                  QuotasView()
+                ],
+              );
+            }),
+            Obx(() {
+              if (!controller.isSelectionEnabled() && controller.responsiveUtils.isPortraitMobile(context)) {
+                return Container(
+                  width: double.infinity,
+                  color: Colors.white,
+                  padding: const EdgeInsets.all(16),
+                  child: SafeArea(
+                    top: false,
+                    child: ApplicationVersionWidget(
+                      padding: EdgeInsets.zero,
+                      title: '${AppLocalizations.of(context).version} ',
+                    ),
+                  ),
+                );
+              } else {
+                return const SizedBox.shrink();
+              }
+            }),
+          ],
+        ),
+      ),
     );
   }
 
