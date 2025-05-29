@@ -34,13 +34,18 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_id_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_detail_status_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_by_ids_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
+import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_detail_status_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_email_ids_by_thread_id_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_emails_by_ids_success.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_thread_by_id_failure.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/refresh_thread_detail_on_setting_changed.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/model/thread_detail_setting_status.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_collapsed_email_download_states.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/mark_collapsed_email_star_success.dart';
@@ -48,6 +53,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/mark
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/quick_create_rule_from_collapsed_email_success.dart';
 
 class ThreadDetailController extends BaseController {
+  final GetThreadDetailStatusInteractor _getThreadDetailStatusInteractor;
   final GetThreadByIdInteractor _getEmailIdsByThreadIdInteractor;
   final GetEmailsByIdsInteractor getEmailsByIdsInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
@@ -57,6 +63,7 @@ class ThreadDetailController extends BaseController {
   final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
 
   ThreadDetailController(
+    this._getThreadDetailStatusInteractor,
     this._getEmailIdsByThreadIdInteractor,
     this.getEmailsByIdsInteractor,
     this._markAsEmailReadInteractor,
@@ -83,6 +90,9 @@ class ThreadDetailController extends BaseController {
 
   ScrollController? scrollController;
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
+  AppLifecycleListener? appLifecycleListener;
+  ThreadDetailSettingStatus threadDetailSettingStatus = ThreadDetailSettingStatus.loading;
+  bool threadDetailWasEnabled = true;
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
   Session? get session => mailboxDashBoardController.sessionCurrent;
@@ -99,10 +109,22 @@ class ThreadDetailController extends BaseController {
       .value == true;
     return isWebSearchRunning || isMobileSearchRunning;
   }
+  bool get isThreadDetailEnabled =>
+      threadDetailSettingStatus == ThreadDetailSettingStatus.enabled;
 
   @override
   void onInit() {
     super.onInit();
+    consumeState(_getThreadDetailStatusInteractor.execute());
+    appLifecycleListener = AppLifecycleListener(
+      onResume: () {
+        if (threadDetailSettingStatus == ThreadDetailSettingStatus.loading) {
+          return;
+        }
+
+        consumeState(_getThreadDetailStatusInteractor.execute());
+      },
+    );
     ever(mailboxDashBoardController.accountId, (accountId) {
       if (accountId == null) return;
 
@@ -118,11 +140,19 @@ class ThreadDetailController extends BaseController {
       );
     });
     downloadProgressState.stream.listen(handleDownloadProgressState);
-    ever(mailboxDashBoardController.selectedEmail, (presentationEmail) {
+    ever(mailboxDashBoardController.selectedEmail, (presentationEmail) async {
       if (presentationEmail?.threadId == null) {
         closeThreadDetailAction(currentContext);
         return;
       }
+
+      if (!isThreadDetailEnabled && presentationEmail?.id != null) {
+        consumeState(Stream.value(Right(GetThreadByIdSuccess([
+          presentationEmail!.id!,
+        ]))));
+        return;
+      }
+
       if (session != null &&
           accountId != null &&
           sentMailboxId != null &&
@@ -151,6 +181,11 @@ class ThreadDetailController extends BaseController {
             })
             ..listUnsubscribeHeader?.clear();
         }
+      } else if (action is UpdatedThreadDetailSettingAction) {
+        consumeState(_getThreadDetailStatusInteractor.execute());
+        mailboxDashBoardController.dispatchThreadDetailUIAction(
+          ThreadDetailUIAction(),
+        );
       }
     });
   }
@@ -178,6 +213,13 @@ class ThreadDetailController extends BaseController {
       quickCreateRuleFromCollapsedEmailSuccess(success);
     } else if (success is DownloadAttachmentForWebSuccess) {
       handleDownloadSuccess(success);
+    } else if (success is GetThreadDetailStatusSuccess) {
+      threadDetailSettingStatus = success.threadDetailEnabled
+          ? ThreadDetailSettingStatus.enabled
+          : ThreadDetailSettingStatus.disabled;
+      refreshThreadDetailOnSettingChanged();
+    } else if (success is GettingThreadDetailStatus) {
+      threadDetailSettingStatus = ThreadDetailSettingStatus.loading;
     } else {
       super.handleSuccessViewState(success);
     }
@@ -186,8 +228,7 @@ class ThreadDetailController extends BaseController {
   @override
   void handleFailureViewState(failure) {
     if (failure is GetThreadByIdFailure) {
-      showRetryToast(failure);
-      return;
+      handleGetThreadByIdFailure(failure);
     }
     if (failure is GetEmailsByIdsFailure) {
       showRetryToast(failure);
@@ -196,6 +237,10 @@ class ThreadDetailController extends BaseController {
     if (failure is DownloadAttachmentForWebFailure) {
       handleDownloadFailure(failure);
       return;
+    }
+    if (failure is GetThreadDetailStatusFailure) {
+      threadDetailSettingStatus = ThreadDetailSettingStatus.enabled;
+      refreshThreadDetailOnSettingChanged();
     }
     super.handleFailureViewState(failure);
   }

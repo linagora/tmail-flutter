@@ -180,7 +180,7 @@ extension EmailActionTypeExtension on EmailActionType {
   String getTitle(AppLocalizations appLocalizations) {
     switch(this) {
       case EmailActionType.markAsRead:
-        return AppLocalizations.of(context).mark_as_read;
+        return appLocalizations.mark_as_read;
       case EmailActionType.markAsUnread:
         return appLocalizations.mark_as_unread;
       case EmailActionType.unSpam:
