@@ -127,7 +127,7 @@ class LoginView extends BaseLoginView {
               padding: EdgeInsets.only(top: 16),
               child: PrivacyLinkWidget(),
             ),
-            const ApplicationVersionWidget(),
+            const ApplicationVersionWidget(padding: EdgeInsets.only(top: 8)),
           ]
         ),
       )

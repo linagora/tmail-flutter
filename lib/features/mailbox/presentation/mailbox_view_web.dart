@@ -79,7 +79,6 @@ class MailboxView extends BaseMailboxView {
                   ? AppColor.colorBgDesktop
                   : Colors.white,
               child: ApplicationVersionWidget(
-                padding: EdgeInsets.zero,
                 title: '${AppLocalizations.of(context).version.toLowerCase()} ',
               ),
             ),

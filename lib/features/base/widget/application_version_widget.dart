@@ -37,16 +37,22 @@ class _ApplicationVersionWidgetState extends State<ApplicationVersionWidget> {
       future: _versionStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return Padding(
-            padding: widget.padding ?? const EdgeInsets.only(top: 8),
-            child: Text(
-              '${widget.title ?? 'v.'}${snapshot.data}',
-              textAlign: TextAlign.center,
-              style: widget.textStyle ?? Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: AppColor.steelGray400,
-              ),
+          final versionLabel = Text(
+            '${widget.title ?? 'v.'}${snapshot.data}',
+            textAlign: TextAlign.center,
+            style: widget.textStyle ?? Theme.of(context).textTheme.bodySmall?.copyWith(
+              color: AppColor.steelGray400,
             ),
           );
+
+          if (widget.padding != null) {
+            return Padding(
+              padding: widget.padding!,
+              child: versionLabel,
+            );
+          } else {
+            return versionLabel;
+          }
         } else {
           return const SizedBox.shrink();
         }
