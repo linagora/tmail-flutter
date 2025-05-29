@@ -4504,6 +4504,24 @@
     "placeholders_order": [],
     "placeholders": {}
   },
+  "thread": "Thread",
+  "@thread": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "threadSettingExplanation": "View multiple related emails like a conversation",
+  "@threadSettingExplanation": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "threadToggleDescription": "Enable thread",
+  "@threadToggleDescription": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
   "exportTraceLogFailed": "Export trace log failed",
   "@exportTraceLogFailed": {
     "type": "text",
