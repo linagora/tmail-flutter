@@ -120,7 +120,6 @@ class MailboxController extends BaseMailboxController
 
   IOSSharingManager? _iosSharingManager;
 
-  final currentSelectMode = SelectMode.INACTIVE.obs;
   final _activeScrollTop = RxBool(false);
   final _activeScrollBottom = RxBool(true);
 
@@ -929,16 +928,6 @@ class MailboxController extends BaseMailboxController
     closeMailboxScreen(context);
   }
 
-  void enableSelectionMailbox() {
-    currentSelectMode.value = SelectMode.ACTIVE;
-  }
-
-  void disableSelectionMailbox() {
-    _cancelSelectMailbox();
-  }
-
-  bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
-
   List<MailboxActions> get listActionOfMailboxSelected {
     final currentMailboxesSelected = listMailboxSelected;
 
@@ -962,11 +951,6 @@ class MailboxController extends BaseMailboxController
     } else {
       return [];
     }
-  }
-
-  void _cancelSelectMailbox() {
-    unAllSelectedMailboxNode();
-    currentSelectMode.value = SelectMode.INACTIVE;
   }
 
   List<PresentationMailbox> get listMailboxSelected {
@@ -1042,7 +1026,6 @@ class MailboxController extends BaseMailboxController
       _deleteMailboxFailure(DeleteMultipleMailboxFailure(null));
     }
 
-    _cancelSelectMailbox();
     popBack();
   }
 
@@ -1112,7 +1095,6 @@ class MailboxController extends BaseMailboxController
       _deleteMailboxFailure(DeleteMultipleMailboxFailure(null));
     }
 
-    _cancelSelectMailbox();
     popBack();
   }
 
@@ -1141,8 +1123,6 @@ class MailboxController extends BaseMailboxController
         RenameMailboxRequest(presentationMailbox.id, newMailboxName))
       );
     }
-
-    _cancelSelectMailbox();
   }
 
   void _handleMovingMailbox(
@@ -1324,7 +1304,6 @@ class MailboxController extends BaseMailboxController
         mailboxSelected,
         destinationMailbox: destinationMailbox
       );
-      _cancelSelectMailbox();
     }
   }
 
@@ -1352,7 +1331,6 @@ class MailboxController extends BaseMailboxController
   }
 
   void closeMailboxScreen(BuildContext context) {
-    _cancelSelectMailbox();
     mailboxDashBoardController.closeMailboxMenuDrawer();
   }
 

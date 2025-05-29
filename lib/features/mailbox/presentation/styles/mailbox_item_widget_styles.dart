@@ -6,5 +6,4 @@ class MailboxItemWidgetStyles {
   static const double height = 36;
   static const double teamMailboxHeight = 52;
   static const double labelIconSpace = 16;
-  static const double teamMailboxLabelSpace = 3;
 }
