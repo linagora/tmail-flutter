@@ -9,7 +9,7 @@ import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
-import 'package:model/mailbox/select_mode.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -21,7 +21,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_icon
 class MailboxItemWidget extends StatefulWidget {
 
   final MailboxNode mailboxNode;
-  final SelectMode selectionMode;
   final MailboxDisplayed mailboxDisplayed;
   final PresentationMailbox? mailboxNodeSelected;
   final MailboxActions? mailboxActions;
@@ -38,7 +37,6 @@ class MailboxItemWidget extends StatefulWidget {
   const MailboxItemWidget({
     super.key,
     required this.mailboxNode,
-    this.selectionMode = SelectMode.INACTIVE,
     this.mailboxDisplayed = MailboxDisplayed.mailbox,
     this.mailboxNodeSelected,
     this.mailboxActions,
@@ -90,17 +88,8 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                   ? CrossAxisAlignment.start
                   : CrossAxisAlignment.center,
                 children: [
-                  MailboxIconWidget(
-                    imagePaths: _imagePaths,
-                    mailboxNode: widget.mailboxNode,
-                    selectionMode: widget.selectionMode,
-                    padding: EdgeInsetsDirectional.only(
-                      end: widget.mailboxNode.item.isTeamMailboxes
-                          ? MailboxItemWidgetStyles.teamMailboxLabelSpace
-                          : MailboxItemWidgetStyles.labelIconSpace,
-                    ),
-                    onSelectMailboxFolderClick: widget.onSelectMailboxFolderClick,
-                  ),
+                  if (_isIconDisplayed)
+                    MailboxIconWidget(icon: _iconMailbox),
                   Expanded(
                     child: LabelMailboxItemWidget(
                       itemKey: _key,
@@ -141,17 +130,8 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                   : MailboxItemWidgetStyles.height,
               child: Row(
                 children: [
-                  MailboxIconWidget(
-                    imagePaths: _imagePaths,
-                    mailboxNode: widget.mailboxNode,
-                    selectionMode: widget.selectionMode,
-                    padding: EdgeInsetsDirectional.only(
-                      end: widget.mailboxNode.item.isTeamMailboxes
-                          ? MailboxItemWidgetStyles.teamMailboxLabelSpace
-                          : MailboxItemWidgetStyles.labelIconSpace,
-                    ),
-                    onSelectMailboxFolderClick: widget.onSelectMailboxFolderClick,
-                  ),
+                  if (_isIconDisplayed)
+                    MailboxIconWidget(icon: _iconMailbox),
                   Expanded(
                     child: LabelMailboxItemWidget(
                       itemKey: _key,
@@ -175,9 +155,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
             color: Colors.transparent,
             child: InkWell(
               onLongPress: () => widget.onLongPressMailboxNodeAction?.call(widget.mailboxNode),
-              onTap: () => widget.selectionMode == SelectMode.ACTIVE
-                ? widget.onSelectMailboxFolderClick?.call(widget.mailboxNode)
-                : widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
+              onTap: () => widget.onOpenMailboxFolderClick?.call(widget.mailboxNode),
               borderRadius: const BorderRadius.all(Radius.circular(MailboxItemWidgetStyles.borderRadius)),
               child: Container(
                 decoration: BoxDecoration(
@@ -192,17 +170,8 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                     : MailboxItemWidgetStyles.height,
                 child: Row(
                   children: [
-                    MailboxIconWidget(
-                      imagePaths: _imagePaths,
-                      mailboxNode: widget.mailboxNode,
-                      selectionMode: widget.selectionMode,
-                      padding: EdgeInsetsDirectional.only(
-                        end: widget.mailboxNode.item.isTeamMailboxes
-                            ? MailboxItemWidgetStyles.teamMailboxLabelSpace
-                            : MailboxItemWidgetStyles.labelIconSpace,
-                      ),
-                      onSelectMailboxFolderClick: widget.onSelectMailboxFolderClick,
-                    ),
+                    if (_isIconDisplayed)
+                      MailboxIconWidget(icon: _iconMailbox),
                     Expanded(
                       child: LabelMailboxItemWidget(
                         itemKey: _key,
@@ -255,17 +224,8 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                       : Colors.transparent,
                   child: Row(
                     children: [
-                      MailboxIconWidget(
-                        imagePaths: _imagePaths,
-                        mailboxNode: widget.mailboxNode,
-                        selectionMode: widget.selectionMode,
-                        padding: EdgeInsetsDirectional.only(
-                          end: widget.mailboxNode.item.isTeamMailboxes
-                              ? MailboxItemWidgetStyles.teamMailboxLabelSpace
-                              : MailboxItemWidgetStyles.labelIconSpace,
-                        ),
-                        onSelectMailboxFolderClick: widget.onSelectMailboxFolderClick,
-                      ),
+                      if (_isIconDisplayed)
+                        MailboxIconWidget(icon: _iconMailbox),
                       Expanded(
                         child: LabelMailboxItemWidget(
                           itemKey: _key,
@@ -320,4 +280,11 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
       widget.mailboxActions == MailboxActions.create ||
       widget.mailboxActions == MailboxActions.moveEmail
     );
+
+  bool get _isIconDisplayed =>
+      widget.mailboxNode.item.isPersonal ||
+      widget.mailboxNode.item.hasParentId();
+
+  String get _iconMailbox =>
+      widget.mailboxNode.item.getMailboxIcon(_imagePaths);
 }

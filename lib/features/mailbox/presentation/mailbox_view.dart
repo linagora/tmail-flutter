@@ -7,7 +7,6 @@ import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/bottom_bar_selection_mailbox_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folder_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folders_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
@@ -31,69 +30,25 @@ class MailboxView extends BaseMailboxView {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            buildMailboxAppBar(),
             Expanded(
-              child: Column(children: [
-                buildMailboxAppBar(),
-                Expanded(child: RefreshIndicator(
-                  color: AppColor.primaryColor,
-                  onRefresh: controller.refreshAllMailbox,
-                  child: _buildListMailbox(context)
-                )),
-                Obx(() {
-                  if (controller.isSelectionEnabled()
-                      && controller.listActionOfMailboxSelected.isNotEmpty) {
-                    return SafeArea(
-                      right: false,
-                      top: false,
-                      child: BottomBarSelectionMailboxWidget(
-                        controller.listMailboxSelected,
-                        controller.listActionOfMailboxSelected,
-                        onMailboxActionsClick: (actions, listMailboxSelected) {
-                          return controller.pressMailboxSelectionAction(
-                            context,
-                            actions,
-                            listMailboxSelected
-                          );
-                        }
-                      )
-                    );
-                  } else {
-                    return const SizedBox.shrink();
-                  }
-                }),
-              ]),
+              child: RefreshIndicator(
+                color: AppColor.primaryColor,
+                onRefresh: controller.refreshAllMailbox,
+                child: _buildListMailbox(context),
+              ),
             ),
-            Obx(() {
-              if (controller.isSelectionEnabled()) {
-                return const SizedBox.shrink();
-              }
-
-              return const Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Divider(color: AppColor.colorDividerHorizontal),
-                  QuotasView()
-                ],
-              );
-            }),
-            Obx(() {
-              if (!controller.isSelectionEnabled() && controller.responsiveUtils.isPortraitMobile(context)) {
-                return Container(
-                  width: double.infinity,
-                  color: Colors.white,
-                  padding: const EdgeInsets.all(16),
-                  child: SafeArea(
-                    top: false,
-                    child: ApplicationVersionWidget(
-                      padding: EdgeInsets.zero,
-                      title: '${AppLocalizations.of(context).version} ',
-                    ),
-                  ),
-                );
-              } else {
-                return const SizedBox.shrink();
-              }
-            }),
+            const Divider(color: AppColor.colorDividerHorizontal),
+            const QuotasView(),
+            Container(
+              width: double.infinity,
+              color: Colors.white,
+              padding: const EdgeInsets.all(16),
+              child: ApplicationVersionWidget(
+                padding: EdgeInsets.zero,
+                title: '${AppLocalizations.of(context).version} ',
+              ),
+            ),
           ],
         ),
       ),
@@ -121,8 +76,7 @@ class MailboxView extends BaseMailboxView {
         }),
         Obx(() {
           if (controller.mailboxDashBoardController.listSendingEmails.isNotEmpty &&
-              PlatformInfo.isMobile &&
-              !controller.isSelectionEnabled()) {
+              PlatformInfo.isMobile) {
             return SendingQueueMailboxWidget(
               listSendingEmails: controller.mailboxDashBoardController.listSendingEmails,
               onOpenSendingQueueAction: () => controller.openSendingQueueViewAction(context),
@@ -284,7 +238,6 @@ class MailboxView extends BaseMailboxView {
               paddingChild: const EdgeInsetsDirectional.only(start: 14),
               parent: Obx(() => MailboxItemWidget(
                 mailboxNode: mailboxNode,
-                selectionMode: controller.currentSelectMode.value,
                 mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value,
                 onLongPressMailboxNodeAction: (mailboxNode) => openMailboxMenuActionOnMobile(context, controller.imagePaths, mailboxNode.item, controller),
                 onOpenMailboxFolderClick: (mailboxNode) => controller.openMailbox(context, mailboxNode.item),
@@ -301,7 +254,6 @@ class MailboxView extends BaseMailboxView {
           } else {
             return Obx(() => MailboxItemWidget(
               mailboxNode: mailboxNode,
-              selectionMode: controller.currentSelectMode.value,
               mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value,
               onLongPressMailboxNodeAction: (mailboxNode) => openMailboxMenuActionOnMobile(context, controller.imagePaths, mailboxNode.item, controller),
               onOpenMailboxFolderClick: (mailboxNode) => controller.openMailbox(context, mailboxNode.item),
