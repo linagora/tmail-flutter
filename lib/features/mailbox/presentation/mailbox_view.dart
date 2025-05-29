@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
@@ -8,11 +7,9 @@ import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/app_grid_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/bottom_bar_selection_mailbox_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folder_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folders_bar_widget.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_app_bar.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_loading_bar_widget.dart';
@@ -27,44 +24,20 @@ class MailboxView extends BaseMailboxView {
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: Drawer(
-        backgroundColor: Colors.white,
-        shape: InputBorder.none,
+    return Drawer(
+      backgroundColor: Colors.white,
+      shape: InputBorder.none,
+      child: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: Column(children: [
-                Obx(() {
-                  final accountId = controller
-                      .mailboxDashBoardController
-                      .accountId
-                      .value;
-
-                  final username = accountId != null
-                    ? controller.mailboxDashBoardController.getOwnEmailAddress()
-                    : '';
-
-                  return MailboxAppBar(
-                    username: username,
-                    openSettingsAction:
-                        controller.mailboxDashBoardController.goToSettings,
-                  );
-                }),
-                _buildHeaderMailbox(context),
-                Expanded(child: Container(
-                  color: Colors.white,
-                  child: RefreshIndicator(
-                    color: AppColor.primaryColor,
-                    onRefresh: controller.refreshAllMailbox,
-                    child: SafeArea(
-                      top: false,
-                      right: false,
-                      bottom: false,
-                      child: _buildListMailbox(context)
-                    )
-                  ),
+                buildMailboxAppBar(),
+                Expanded(child: RefreshIndicator(
+                  color: AppColor.primaryColor,
+                  onRefresh: controller.refreshAllMailbox,
+                  child: _buildListMailbox(context)
                 )),
                 Obx(() {
                   if (controller.isSelectionEnabled()
@@ -127,79 +100,14 @@ class MailboxView extends BaseMailboxView {
     );
   }
 
-  Widget _buildHeaderMailbox(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: EdgeInsets.only(top: controller.responsiveUtils.isMobile(context) ? 10 : 30, bottom: 8),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsetsDirectional.only(start: 10),
-                child: _buildCloseScreenButton(context)),
-              SizedBox(width: controller.isSelectionEnabled() ? 49 : 40),
-              Expanded(child: Text(
-                AppLocalizations.of(context).folders,
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 21, color: Colors.black, fontWeight: FontWeight.bold))),
-              Obx(() => _buildEditMailboxButton(context, controller.isSelectionEnabled()))
-            ]
-          )
-        ),
-        if (!controller.responsiveUtils.isTabletLarge(context))
-          const Divider(color: AppColor.colorDividerMailbox, height: 1),
-      ]
-    );
-  }
-
-  Widget _buildCloseScreenButton(BuildContext context) {
-    return buildIconWeb(
-        icon: SvgPicture.asset(controller.imagePaths.icCircleClose, width: 28, height: 28, fit: BoxFit.fill),
-        tooltip: AppLocalizations.of(context).close,
-        onTap: () => controller.closeMailboxScreen(context));
-  }
-
-  Widget _buildEditMailboxButton(BuildContext context, bool isSelectionEnabled) {
-    return Padding(
-      padding: const EdgeInsetsDirectional.only(end: 10),
-      child: Material(
-          shape: const CircleBorder(),
-          color: Colors.transparent,
-          child: TextButton(
-              child: Text(
-                !isSelectionEnabled ? AppLocalizations.of(context).select : AppLocalizations.of(context).cancel,
-                style: const TextStyle(fontSize: 17, color: AppColor.colorTextButton, fontWeight: FontWeight.normal)),
-              onPressed: () => !isSelectionEnabled
-                  ? controller.enableSelectionMailbox()
-                  : controller.disableSelectionMailbox()
-          )
-      ),
-    );
-  }
-
   Widget _buildListMailbox(BuildContext context) {
     return SingleChildScrollView(
       controller: controller.mailboxListScrollController,
       key: const PageStorageKey('mailbox_list'),
       physics: const AlwaysScrollableScrollPhysics(),
-      padding: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.only(bottom: 16, top: 16),
       child: Column(children: [
         Obx(() => MailboxLoadingBarWidget(viewState: controller.viewState.value)),
-        Obx(() {
-          final linagoraApps = controller
-              .mailboxDashBoardController
-              .appGridDashboardController
-              .listLinagoraApp;
-
-          if (linagoraApps.isNotEmpty) {
-            return AppGridView(linagoraApps: linagoraApps);
-          } else {
-            return const SizedBox.shrink();
-          }
-        }),
-        const SizedBox(height: 8),
         Obx(() {
           if (controller.defaultMailboxIsNotEmpty) {
             return _buildMailboxCategory(
