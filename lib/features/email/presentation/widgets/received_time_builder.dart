@@ -30,7 +30,10 @@ class ReceivedTimeBuilder extends StatelessWidget {
         maxLines: 1,
         overflow: CommonTextStyle.defaultTextOverFlow,
         softWrap: CommonTextStyle.defaultSoftWrap,
-        style: ThemeUtils.textStyleBodyBody3(color: AppColor.steelGray400)
+        style: ThemeUtils.textStyleBodyBody3(color: AppColor.steelGray400).copyWith(
+          height: 1,
+          letterSpacing: -0.14
+        ),
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/icon_utils.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:core/utils/platform_info.dart';
@@ -74,6 +75,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
           EmailAvatarBuilder(
             emailSelected: emailSelected,
             onTapAvatarActionClick: onTapAvatarActionClick,
+            size: 56,
           ),
           const SizedBox(width: 16),
           Expanded(child: LayoutBuilder(builder: (context, constraints) {
@@ -82,7 +84,6 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 4),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -92,13 +93,13 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                             if (showUnreadVisualization &&
                                 !emailSelected.hasRead &&
                                 responsiveUtils.isMobile(context))
-                              Padding(
-                                padding: const EdgeInsetsDirectional.only(end: 8),
-                                child: SvgPicture.asset(
-                                  imagePaths.icUnreadStatus,
-                                  width: 9,
-                                  height: 9,
-                                  fit: BoxFit.fill,
+                              TMailButtonWidget.fromIcon(
+                                icon: imagePaths.icUnreadStatus,
+                                backgroundColor: Colors.transparent,
+                                iconSize: 9,
+                                onTapActionCallback: () => onEmailActionClick?.call(
+                                  emailSelected,
+                                  EmailActionType.markAsRead,
                                 ),
                               ),
                             if (emailSelected.from?.isNotEmpty == true)
@@ -129,7 +130,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                                   color: AppColor.colorTextBody,
                                   decoration: TextDecoration.underline,
                                 ),
-                                padding: const EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8),
+                                padding: const EdgeInsetsDirectional.symmetric(vertical: 4, horizontal: 8),
                                 backgroundColor: Colors.transparent,
                                 onTapActionCallback: () => onEmailActionClick?.call(emailSelected, EmailActionType.unsubscribe),
                               ),
@@ -154,7 +155,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                           ],
                         ),
                       ),
-                      if (!isInsideThreadDetailView && !responsiveUtils.isMobile(context))
+                      if (!isInsideThreadDetailView)
                         ReceivedTimeBuilder(
                           emailSelected: emailSelected,
                           padding: const EdgeInsetsDirectional.only(start: 16, top: 2),
@@ -187,11 +188,10 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                         ),
                     ],
                   ),
-                  const SizedBox(height: 4),
-                  if (responsiveUtils.isMobile(context))
+                  if (responsiveUtils.isMobile(context) && isInsideThreadDetailView)
                     ReceivedTimeBuilder(
                       emailSelected: emailSelected,
-                      padding: const EdgeInsetsDirectional.only(top: 5),
+                      padding: const EdgeInsetsDirectional.symmetric(vertical: 5),
                     ),
                   if (emailSelected.countRecipients > 0 && showRecipients)
                     EmailReceiverWidget(

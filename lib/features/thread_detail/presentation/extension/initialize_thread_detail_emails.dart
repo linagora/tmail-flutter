@@ -7,6 +7,13 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/utils/thread_d
 
 extension InitializeThreadDetailEmails on ThreadDetailController {
   void initializeThreadDetailEmails() {
+    final threadDetailEnabled = isThreadDetailEnabled;
+    final selectedEmail = mailboxDashBoardController.selectedEmail.value;
+    if (!threadDetailEnabled && selectedEmail != null) {
+      consumeState(Stream.value(Right(GetEmailsByIdsSuccess([selectedEmail]))));
+      return;
+    }
+
     final emailIdsToLoadMetaData = ThreadDetailPresentationUtils.getFirstLoadEmailIds(
       emailIdsPresentation.keys.toList(),
       selectedEmailId: mailboxDashBoardController.selectedEmail.value?.id,
