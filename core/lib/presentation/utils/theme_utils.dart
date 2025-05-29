@@ -222,7 +222,25 @@ class ThemeUtils {
     letterSpacing: 0.0,
     fontSize: fontSize ?? 15,
     height: 20 / (fontSize ?? 15),
-    color: color,
+    color: color ?? Colors.black,
+  );
+
+  static TextStyle textStyleInter500() => const TextStyle(
+    fontFamily: ConstantsUI.fontApp,
+    fontWeight: FontWeight.w500,
+    letterSpacing: 0.0,
+    fontSize: 14,
+    height: 18 / 14,
+    color: Colors.black,
+  );
+
+  static TextStyle textStyleInter400() => const TextStyle(
+    fontFamily: ConstantsUI.fontApp,
+    fontWeight: FontWeight.normal,
+    letterSpacing: 0.01,
+    fontSize: 13,
+    height: 16 / 13,
+    color: Colors.black,
   );
 
   static TextStyle textStyleM3LabelLarge({Color? color}) => TextStyle(

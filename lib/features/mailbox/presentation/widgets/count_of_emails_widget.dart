@@ -1,5 +1,6 @@
 
-import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 
 class CountOfEmailsWidget extends StatelessWidget {
@@ -13,11 +14,12 @@ class CountOfEmailsWidget extends StatelessWidget {
     return Text(
       value,
       maxLines: 1,
-      overflow: CommonTextStyle.defaultTextOverFlow,
-      softWrap: CommonTextStyle.defaultSoftWrap,
-      style: Theme.of(context).textTheme.bodySmall?.copyWith(
-        color: Colors.black,
-      ),
+      overflow: TextOverflow.ellipsis,
+      style: PlatformInfo.isMobile
+        ? ThemeUtils.textStyleInter400()
+        : Theme.of(context).textTheme.bodyMedium?.copyWith(
+            color: Colors.black,
+          ),
     );
   }
 }

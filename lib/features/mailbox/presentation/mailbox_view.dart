@@ -7,6 +7,7 @@ import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_widget_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folder_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/folders_bar_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
@@ -38,7 +39,6 @@ class MailboxView extends BaseMailboxView {
                 child: _buildListMailbox(context),
               ),
             ),
-            const Divider(color: AppColor.colorDividerHorizontal),
             const QuotasView(),
             Container(
               width: double.infinity,
@@ -75,9 +75,10 @@ class MailboxView extends BaseMailboxView {
           }
         }),
         Obx(() {
-          if (controller.mailboxDashBoardController.listSendingEmails.isNotEmpty &&
-              PlatformInfo.isMobile) {
+          if (controller.mailboxDashBoardController.listSendingEmails.isNotEmpty) {
             return SendingQueueMailboxWidget(
+              imagePaths: controller.imagePaths,
+              responsiveUtils: controller.responsiveUtils,
               listSendingEmails: controller.mailboxDashBoardController.listSendingEmails,
               onOpenSendingQueueAction: () => controller.openSendingQueueViewAction(context),
               isSelected: controller.mailboxDashBoardController.dashboardRoute.value == DashboardRoutes.sendingQueue,
@@ -86,13 +87,25 @@ class MailboxView extends BaseMailboxView {
             return const SizedBox.shrink();
           }
         }),
-        const SizedBox(height: 8),
-        const Divider(color: AppColor.colorDividerMailbox, height: 1),
+        Obx(() {
+          if (controller.defaultMailboxIsNotEmpty ||
+              controller.mailboxDashBoardController.listSendingEmails.isNotEmpty) {
+            return const Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: Divider(color: AppColor.folderDivider, height: 1),
+            );
+          } else {
+            return const SizedBox.shrink();
+          }
+        }),
         FoldersBarWidget(
           onOpenSearchFolder: () => controller.openSearchViewAction(context),
           onAddNewFolder:  () => controller.goToCreateNewMailboxView(context),
           imagePaths: controller.imagePaths,
           responsiveUtils: controller.responsiveUtils,
+          height: 40,
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          labelStyle: ThemeUtils.textStyleInter500(),
         ),
         Obx(() {
           if (controller.personalMailboxIsNotEmpty) {
@@ -105,7 +118,6 @@ class MailboxView extends BaseMailboxView {
             return const SizedBox.shrink();
           }
         }),
-        const SizedBox(height: 8),
         Obx(() {
           if (controller.teamMailboxesIsNotEmpty) {
             return _buildMailboxCategory(
@@ -137,9 +149,10 @@ class MailboxView extends BaseMailboxView {
           return Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const SizedBox(height: 8),
-              const Divider(color: AppColor.colorDividerMailbox, height: 1),
-              const SizedBox(height: 8),
+              const Padding(
+                padding: EdgeInsets.only(top: 8),
+                child: Divider(color: AppColor.folderDivider, height: 1),
+              ),
               FolderWidget(
                 icon: controller.imagePaths.icHelp,
                 label: AppLocalizations.of(context).support,
@@ -147,7 +160,13 @@ class MailboxView extends BaseMailboxView {
                     .mailboxDashBoardController
                     .onGetHelpOrReportBug(contactSupportCapability!),
                 tooltip: AppLocalizations.of(context).getHelpOrReportABug,
-                padding: const EdgeInsets.symmetric(horizontal: 16)
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                itemPadding: const EdgeInsets.symmetric(
+                  horizontal: MailboxItemWidgetStyles.mobileItemPadding,
+                ),
+                borderRadius: MailboxItemWidgetStyles.mobileBorderRadius,
+                height: MailboxItemWidgetStyles.mobileHeight,
+                labelTextStyle: ThemeUtils.textStyleInter500(),
               ),
             ],
           );
@@ -189,7 +208,7 @@ class MailboxView extends BaseMailboxView {
         context: context,
         categories: categories,
         mailboxNode: mailboxNode,
-        padding: const EdgeInsets.symmetric(horizontal: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 12),
       );
     }
     return Column(children: [
@@ -206,10 +225,10 @@ class MailboxView extends BaseMailboxView {
             ),
         isArrangeLTR: false,
         showIcon: true,
-        padding: const EdgeInsetsDirectional.only(
-          start: 26,
-          end: 16,
-        ),
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        height: 40,
+        iconSpace: MailboxItemWidgetStyles.mobileLabelIconSpace,
+        labelTextStyle: ThemeUtils.textStyleInter500(),
       )),
       AnimatedContainer(
         duration: const Duration(milliseconds: 400),
@@ -219,8 +238,8 @@ class MailboxView extends BaseMailboxView {
                 categories: categories,
                 mailboxNode: mailboxNode,
                 padding: const EdgeInsetsDirectional.only(
-                  start: 30,
-                  end: 16,
+                  start: 24,
+                  end: 12,
                 ),
               )
             : const Offstage())
@@ -235,7 +254,7 @@ class MailboxView extends BaseMailboxView {
               context,
               key: const Key('children_tree_mailbox_child'),
               isExpanded: mailboxNode.expandMode == ExpandMode.EXPAND,
-              paddingChild: const EdgeInsetsDirectional.only(start: 14),
+              paddingChild: const EdgeInsetsDirectional.only(start: 12),
               parent: Obx(() => MailboxItemWidget(
                 mailboxNode: mailboxNode,
                 mailboxNodeSelected: controller.mailboxDashBoardController.selectedMailbox.value,

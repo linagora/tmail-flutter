@@ -2,6 +2,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/expand_mode_extension.dart';
@@ -31,8 +32,11 @@ class MailboxExpandButton extends StatelessWidget {
         DirectionUtils.isDirectionRTLByLanguage(context),
       ),
       iconColor: _expandIconColor,
-      iconSize: 20,
-      padding: const EdgeInsets.all(5),
+      iconSize: PlatformInfo.isMobile ? 17 : 20,
+      margin: PlatformInfo.isMobile
+        ? const EdgeInsetsDirectional.only(start: 8)
+        : null,
+      padding: EdgeInsets.all(PlatformInfo.isMobile ? 3 : 5),
       backgroundColor: Colors.transparent,
       tooltipMessage: mailboxNode.expandMode.getTooltipMessage(AppLocalizations.of(context)),
       onTapActionCallback: () => onExpandFolderActionClick?.call(mailboxNode, itemKey),

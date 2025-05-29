@@ -11,6 +11,9 @@ class FoldersBarWidget extends StatelessWidget {
   final VoidCallback onAddNewFolder;
   final ImagePaths imagePaths;
   final ResponsiveUtils responsiveUtils;
+  final double? height;
+  final EdgeInsetsGeometry? padding;
+  final TextStyle? labelStyle;
 
   const FoldersBarWidget({
     super.key,
@@ -18,6 +21,9 @@ class FoldersBarWidget extends StatelessWidget {
     required this.onAddNewFolder,
     required this.imagePaths,
     required this.responsiveUtils,
+    this.height,
+    this.padding,
+    this.labelStyle,
   });
 
   @override
@@ -56,17 +62,19 @@ class FoldersBarWidget extends StatelessWidget {
     }
 
     return Container(
-      padding: EdgeInsetsDirectional.only(
+      padding: padding ?? EdgeInsetsDirectional.only(
         start: responsiveUtils.isWebDesktop(context) ? 10 : 26,
         end: responsiveUtils.isWebDesktop(context) ? 0 : 8,
       ),
-      height: 48,
+      height: height ?? 48,
       child: Row(
         children: [
           Expanded(
             child: Text(
               AppLocalizations.of(context).folders,
-              style: ThemeUtils.textStyleInter700(color: Colors.black),
+              style: labelStyle ?? ThemeUtils.textStyleInter700(),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           Row(children: [searchBarIcon, newFolderIcon]),
