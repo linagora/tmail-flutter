@@ -96,10 +96,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                         imagePaths: controller.imagePaths,
                         username: controller.session?.username,
                         handleEmailAction: (email, action) => controller.handleEmailAction(context, email, action),
-                        additionalActions: [
-                          if (controller.responsiveUtils.isMobile(context))
-                            EmailActionType.moveToMailbox,
-                        ],
+                        additionalActions: [],
                       ),
                       supportBackAction: !isInsideThreadDetailView,
                       appBarDecoration: isInsideThreadDetailView
@@ -295,6 +292,12 @@ class EmailView extends GetWidget<SingleEmailController> {
               EmailActionType.printAll,
               if (controller.responsiveUtils.isMobile(context))
                 EmailActionType.moveToMailbox,
+              if (!controller.responsiveUtils.isDesktop(context)) ...[
+                EmailActionType.markAsStarred,
+                EmailActionType.unMarkAsStarred,
+                EmailActionType.moveToTrash,
+                EmailActionType.deletePermanently,
+              ],
             ],
           ),
           onToggleThreadDetailCollapseExpand: onToggleThreadDetailCollapseExpand,
