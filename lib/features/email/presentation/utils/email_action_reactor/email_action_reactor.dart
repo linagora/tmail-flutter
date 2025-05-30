@@ -534,19 +534,16 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
         EmailActionType.printAll,
       if (additionalActions.contains(EmailActionType.moveToMailbox))
         EmailActionType.moveToMailbox,
-      if (!responsiveUtils.isDesktop(currentContext!)) ...[
-        presentationEmail.hasStarred
-          ? EmailActionType.unMarkAsStarred
-          : EmailActionType.markAsStarred,
-        _canDeletePermanently(presentationEmail)
-          ? EmailActionType.deletePermanently
-          : EmailActionType.moveToTrash,
-      ],
       if (additionalActions.contains(EmailActionType.markAsStarred) &&
           additionalActions.contains(EmailActionType.unMarkAsStarred))
         presentationEmail.hasStarred
           ? EmailActionType.unMarkAsStarred
           : EmailActionType.markAsStarred,
+      if (additionalActions.contains(EmailActionType.moveToTrash) &&
+          additionalActions.contains(EmailActionType.deletePermanently))
+        _canDeletePermanently(presentationEmail)
+          ? EmailActionType.deletePermanently
+          : EmailActionType.moveToTrash,
       EmailActionType.markAsUnread,
       if (mailboxContain?.isChildOfTeamMailboxes == false)
         if (mailboxContain?.isSpam == true)

@@ -85,6 +85,12 @@ extension GetThreadDetailEmailViews on ThreadDetailController {
               if (currentContext != null &&
                   responsiveUtils.isMobile(currentContext!))
                 EmailActionType.moveToMailbox,
+              if (!responsiveUtils.isDesktop(currentContext!)) ...[
+                EmailActionType.markAsStarred,
+                EmailActionType.unMarkAsStarred,
+                EmailActionType.moveToTrash,
+                EmailActionType.deletePermanently,
+              ],
             ],
           ),
           openEmailAddressDetailAction: (_, emailAddress) {

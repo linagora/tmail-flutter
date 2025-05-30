@@ -55,10 +55,10 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
                     EmailActionType.replyAll,
                     EmailActionType.replyToList,
                   ],
-                  if (controller.responsiveUtils.isDesktop(context)) ...[
-                    EmailActionType.markAsStarred,
-                    EmailActionType.unMarkAsStarred
-                  ],
+                  EmailActionType.markAsStarred,
+                  EmailActionType.unMarkAsStarred,
+                  EmailActionType.moveToTrash,
+                  EmailActionType.deletePermanently,
                   EmailActionType.printAll,
                   EmailActionType.moveToMailbox,
                 ],
