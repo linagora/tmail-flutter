@@ -412,7 +412,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           [action.presentationEmail.id!] = currentEmail?.copyWith(
             keywords: action.presentationEmail.keywords,
           );
-        _handleUnsubscribe(action.presentationEmail.listUnsubscribe ?? '');
+        if (action.updatedKeyword == KeyWordIdentifierExtension.unsubscribeMail) {
+          _handleUnsubscribe(action.presentationEmail.listUnsubscribe ?? '');
+        }
       }
     }));
 
