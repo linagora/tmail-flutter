@@ -4,6 +4,7 @@ import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/presentation_email_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 
@@ -80,7 +81,7 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
       final newEmail = selectedEmail.value!.updateKeywords({
         KeyWordIdentifier.emailAnswered: true,
       });
-      setSelectedEmail(newEmail);
+      dispatchEmailUIAction(UpdatedEmailKeywordsAction(newEmail));
     }
 
     updateEmailFlagByEmailIds([emailId], markAsAnswered: true);
@@ -91,7 +92,7 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
       final newEmail = selectedEmail.value!.updateKeywords({
         KeyWordIdentifier.emailForwarded: true,
       });
-      setSelectedEmail(newEmail);
+      dispatchEmailUIAction(UpdatedEmailKeywordsAction(newEmail));
     }
 
     updateEmailFlagByEmailIds([emailId], markAsForwarded: true);
