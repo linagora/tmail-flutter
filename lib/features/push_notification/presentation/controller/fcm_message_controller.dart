@@ -17,14 +17,10 @@ import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions
 import 'package:tmail_ui_user/features/home/domain/state/get_session_state.dart';
 import 'package:tmail_ui_user/features/home/domain/usecases/get_session_interactor.dart';
 import 'package:tmail_ui_user/features/home/presentation/home_bindings.dart';
-import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/interceptors/authorization_interceptors.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_credential_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_token_oidc_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/get_authenticated_account_interactor.dart';
-import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/bindings/mailbox_dashboard_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/bindings/fcm_interactor_bindings.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_token_controller.dart';
@@ -42,11 +38,6 @@ class FcmMessageController extends PushBaseController {
   DynamicUrlInterceptors? _dynamicUrlInterceptors;
   AuthorizationInterceptors? _authorizationInterceptors;
   GetSessionInteractor? _getSessionInteractor;
-
-  AccountCacheManager? _accountCacheManager;
-  TokenOidcCacheManager? _tokenOidcCacheManager;
-  StateCacheManager? _stateCacheManager;
-  AuthenticationInfoCacheManager? _authenticationInfoCacheManager;
 
   FcmMessageController._internal();
 
@@ -96,17 +87,6 @@ class FcmMessageController extends PushBaseController {
     });
 
     _getInteractorBindings();
-    
-    await Future.wait([
-      if (_accountCacheManager != null)
-        _accountCacheManager!.closeAccountHiveCacheBox(),
-      if (_tokenOidcCacheManager != null)
-        _tokenOidcCacheManager!.closeTokenOIDCHiveCacheBox(),
-      if (_stateCacheManager != null)
-        _stateCacheManager!.closeStateHiveCacheBox(),
-      if (_authenticationInfoCacheManager != null)
-        _authenticationInfoCacheManager!.closeAuthenticationInfoHiveCacheBox(),
-    ]);
   }
 
   void _getInteractorBindings() {
@@ -114,10 +94,6 @@ class FcmMessageController extends PushBaseController {
     _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
     _authorizationInterceptors = getBinding<AuthorizationInterceptors>();
     _getSessionInteractor = getBinding<GetSessionInteractor>();
-    _accountCacheManager = getBinding<AccountCacheManager>();
-    _tokenOidcCacheManager = getBinding<TokenOidcCacheManager>();
-    _stateCacheManager = getBinding<StateCacheManager>();
-    _authenticationInfoCacheManager = getBinding<AuthenticationInfoCacheManager>();
 
     FcmTokenController.instance.initialBindingInteractor();
   }

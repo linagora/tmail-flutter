@@ -52,12 +52,8 @@ abstract class HiveCacheClient<T> {
     });
   }
 
-  Future<T?> getItem(String key, {bool needToReopen = false}) {
-    log('$runtimeType::getItem() key: $encryption - needToReopen: $needToReopen');
+  Future<T?> getItem(String key) {
     return Future.sync(() async {
-      if (needToReopen) {
-        await closeBox();
-      }
       final boxItem = encryption
           ? await openBoxEncryption()
           : await openBox();

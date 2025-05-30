@@ -34,6 +34,4 @@ class TokenOidcCacheManager {
   Future<void> deleteTokenOidc() async {
     await _tokenOidcCacheClient.clearAllData();
   }
-
-  Future<void> closeTokenOIDCHiveCacheBox() => _tokenOidcCacheClient.closeBox();
 }
