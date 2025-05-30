@@ -407,6 +407,14 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           worker.dispose();
         }
         Get.delete<SingleEmailController>(tag: _currentEmailId?.id.value);
+      } else if (action is UpdatedUnsubscribedEmailAction) {
+        if (action.presentationEmail.id != _currentEmailId) return;
+        _threadDetailController
+          ?.emailIdsPresentation
+          [action.presentationEmail.id!] = currentEmail?.copyWith(
+            keywords: action.presentationEmail.keywords,
+          );
+        _handleUnsubscribe(action.presentationEmail.listUnsubscribe ?? '');
       }
     }));
 
