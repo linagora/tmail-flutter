@@ -23,7 +23,7 @@ class FCMCacheManager {
 
   Future<jmap.State> getStateToRefresh(AccountId accountId, UserName userName, TypeName typeName) async {
     final stateKeyCache = TupleKey(typeName.value, accountId.asString, userName.value).encodeKey;
-    final stateValue = await _fcmCacheClient.getItem(stateKeyCache, needToReopen: true);
+    final stateValue = await _fcmCacheClient.getItem(stateKeyCache);
     if (stateValue != null) {
       return jmap.State(stateValue);
     } else {
@@ -52,7 +52,7 @@ class FCMCacheManager {
   }
   
   Future<FirebaseRegistrationCache> getStoredFirebaseRegistration() async {
-    final firebaseRegistration = await _firebaseRegistrationCacheClient.getItem(FirebaseRegistrationCache.keyCacheValue, needToReopen: true);
+    final firebaseRegistration = await _firebaseRegistrationCacheClient.getItem(FirebaseRegistrationCache.keyCacheValue);
     if (firebaseRegistration == null) {
       throw NotFoundFirebaseRegistrationCacheException();
     } else {

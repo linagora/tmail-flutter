@@ -111,7 +111,7 @@ class EmailCacheManager {
 
   Future<EmailCache> getStoredEmail(AccountId accountId, UserName userName, EmailId emailId) async {
     final keyCache = TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey;
-    final emailCache = await _emailCacheClient.getItem(keyCache, needToReopen: true);
+    final emailCache = await _emailCacheClient.getItem(keyCache);
     if (emailCache != null) {
       return emailCache;
     } else {
