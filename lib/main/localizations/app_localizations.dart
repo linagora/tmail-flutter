@@ -890,13 +890,6 @@ class AppLocalizations {
     );
   }
 
-  String get mark_all_as_read {
-    return Intl.message(
-      'Mark all as read',
-      name: 'mark_all_as_read',
-    );
-  }
-
   String get filter_messages {
     return Intl.message(
       'Filter messages',

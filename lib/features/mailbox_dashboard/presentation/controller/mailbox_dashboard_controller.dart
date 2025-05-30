@@ -2155,10 +2155,6 @@ class MailboxDashBoardController extends ReloadableController
     dispatchAction(EmptyTrashAction());
   }
 
-  bool isAbleMarkAllAsRead(){
-    return !searchController.isSearchEmailRunning && selectedMailbox.value != null && selectedMailbox.value!.isDrafts;
-  }
-
   void refreshActionWhenBackToApp() {
     log('MailboxDashBoardController::refreshActionWhenBackToApp():');
     _refreshActionEventController.add(RefreshActionViewEvent());

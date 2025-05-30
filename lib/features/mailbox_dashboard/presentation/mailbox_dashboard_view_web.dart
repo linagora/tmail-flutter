@@ -351,27 +351,6 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         }
       }),
       Obx(() {
-        if (controller.isAbleMarkAllAsRead()) {
-          return TMailButtonWidget(
-            key: const Key('mark_as_read_emails_button'),
-            text: AppLocalizations.of(context).mark_all_as_read,
-            icon: controller.imagePaths.icSelectAll,
-            iconColor: AppColor.colorFilterMessageIcon,
-            textStyle: const TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.normal,
-              color: AppColor.colorFilterMessageTitle),
-            borderRadius: 10,
-            margin: const EdgeInsetsDirectional.only(start: 16),
-            iconSize: 16,
-            padding: const EdgeInsetsDirectional.symmetric(horizontal: 12, vertical: 8),
-            onTapActionCallback: () => controller.markAsReadMailboxAction(context),
-          );
-        } else {
-          return const SizedBox.shrink();
-        }
-      }),
-      Obx(() {
         final filterMessageCurrent = controller.filterMessageOption.value;
 
         if (controller.validateNoEmailsInTrashAndSpamFolder()) {
