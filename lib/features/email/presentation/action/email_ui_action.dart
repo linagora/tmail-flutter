@@ -57,8 +57,8 @@ class PerformEmailActionInThreadDetailAction extends EmailUIAction {
   ];
 }
 
-class UpdatedUnsubscribedEmailAction extends EmailUIAction {
-  UpdatedUnsubscribedEmailAction(this.presentationEmail);
+class UpdatedEmailKeywordsAction extends EmailUIAction {
+  UpdatedEmailKeywordsAction(this.presentationEmail);
 
   final PresentationEmail presentationEmail;
 
