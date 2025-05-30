@@ -11,11 +11,13 @@ class ApplicationLogoWidthTextWidget extends StatelessWidget {
 
   final VoidCallback? onTapAction;
   final EdgeInsetsGeometry? margin;
+  final double? iconSize;
 
   ApplicationLogoWidthTextWidget({
     super.key,
     this.onTapAction,
     this.margin,
+    this.iconSize,
   });
 
   @override
@@ -24,7 +26,7 @@ class ApplicationLogoWidthTextWidget extends StatelessWidget {
       icon: PlatformInfo.isWeb && AppConfig.isSaasPlatForm
         ? _imagePaths.icLogoWithTextBeta
         : _imagePaths.icLogoWithText,
-      iconSize: 33,
+      iconSize: iconSize ?? 33,
       padding: EdgeInsets.zero,
       margin: margin,
       backgroundColor: Colors.transparent,

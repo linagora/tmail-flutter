@@ -37,12 +37,7 @@ mixin ImageLoaderMixin {
         },
         errorBuilder: (context, error, stackTrace) {
           logError('ImageLoaderMixin::buildImage:Exception = $error');
-          return Container(
-            width: imageSize ?? 150,
-            height: imageSize ?? 150,
-            alignment: Alignment.center,
-            child: const Icon(Icons.error_outline),
-          );
+          return buildNoImage(imageSize ?? 150);
         },
       );
     } else if (isImageSVG(imagePath)) {
@@ -59,6 +54,15 @@ mixin ImageLoaderMixin {
         height: imageSize ?? 150,
       );
     }
+  }
+
+  Widget buildNoImage(double imageSize) {
+    return Container(
+      width: imageSize,
+      height: imageSize,
+      alignment: Alignment.center,
+      child: const Icon(Icons.error_outline),
+    );
   }
 
   bool isImageNetworkLink(String imagePath) {

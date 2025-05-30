@@ -3,7 +3,10 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/utils/direction_utils.dart';
 import 'package:flutter/material.dart';
+import 'package:model/mailbox/expand_mode.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/extensions/expand_mode_extension.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class FoldersBarWidget extends StatelessWidget {
@@ -11,6 +14,11 @@ class FoldersBarWidget extends StatelessWidget {
   final VoidCallback onAddNewFolder;
   final ImagePaths imagePaths;
   final ResponsiveUtils responsiveUtils;
+  final double? height;
+  final EdgeInsetsGeometry? padding;
+  final TextStyle? labelStyle;
+  final ExpandMode? expandMode;
+  final VoidCallback? onToggleExpandFolder;
 
   const FoldersBarWidget({
     super.key,
@@ -18,10 +26,17 @@ class FoldersBarWidget extends StatelessWidget {
     required this.onAddNewFolder,
     required this.imagePaths,
     required this.responsiveUtils,
+    this.height,
+    this.padding,
+    this.labelStyle,
+    this.expandMode,
+    this.onToggleExpandFolder,
   });
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop = responsiveUtils.isDesktop(context);
+
     Widget searchBarIcon = TMailButtonWidget.fromIcon(
       icon: imagePaths.icSearchBar,
       backgroundColor: Colors.transparent,
@@ -31,7 +46,7 @@ class FoldersBarWidget extends StatelessWidget {
       onTapActionCallback: onOpenSearchFolder,
     );
 
-    if (responsiveUtils.isWebDesktop(context)) {
+    if (isDesktop) {
       searchBarIcon = Transform(
         transform: Matrix4.translationValues(8, 0, 0),
         child: searchBarIcon,
@@ -48,28 +63,55 @@ class FoldersBarWidget extends StatelessWidget {
       onTapActionCallback: onAddNewFolder,
     );
 
-    if (responsiveUtils.isWebDesktop(context)) {
+    if (isDesktop) {
       newFolderIcon = Transform(
         transform: Matrix4.translationValues(8, 0, 0),
         child: newFolderIcon,
       );
     }
 
+    final labelFolder = Text(
+      AppLocalizations.of(context).folders,
+      style: labelStyle ?? ThemeUtils.textStyleInter700(),
+      maxLines: 1,
+      overflow: TextOverflow.ellipsis,
+    );
+
     return Container(
-      padding: EdgeInsetsDirectional.only(
-        start: responsiveUtils.isWebDesktop(context) ? 10 : 26,
-        end: responsiveUtils.isWebDesktop(context) ? 0 : 8,
+      padding: padding ?? EdgeInsetsDirectional.only(
+        start: isDesktop ? 10 : 26,
+        end: isDesktop ? 0 : 8,
       ),
-      height: 48,
+      height: height ?? 48,
       child: Row(
         children: [
-          Expanded(
-            child: Text(
-              AppLocalizations.of(context).folders,
-              style: ThemeUtils.textStyleInter700(color: Colors.black),
-            ),
+          if (expandMode != null)
+            Expanded(child: Row(
+              children: [
+                Flexible(child: labelFolder),
+                TMailButtonWidget.fromIcon(
+                  icon: expandMode!.getIcon(
+                    imagePaths,
+                    DirectionUtils.isDirectionRTLByLanguage(context),
+                  ),
+                  iconColor: Colors.black,
+                  iconSize: 17,
+                  margin: isDesktop
+                    ? const EdgeInsetsDirectional.only(start: 8)
+                    : null,
+                  backgroundColor: Colors.transparent,
+                  padding: const EdgeInsets.all(3),
+                  tooltipMessage: expandMode!.getTooltipMessage(AppLocalizations.of(context)),
+                  onTapActionCallback: () => onToggleExpandFolder?.call(),
+                )
+              ],
+            ))
+          else
+            Expanded(child: labelFolder),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [searchBarIcon, newFolderIcon],
           ),
-          Row(children: [searchBarIcon, newFolderIcon]),
         ],
       ),
     );

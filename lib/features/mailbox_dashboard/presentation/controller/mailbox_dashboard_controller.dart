@@ -258,6 +258,7 @@ class MailboxDashBoardController extends ReloadableController
   final isRecoveringDeletedMessage = RxBool(false);
   final localFileDraggableAppState = Rxn<DraggableAppState>();
   final isSenderImportantFlagEnabled = RxBool(true);
+  final isAppGridDialogDisplayed = RxBool(false);
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};
@@ -2284,17 +2285,7 @@ class MailboxDashBoardController extends ReloadableController
 
   void handleOnForegroundGained() {
     log('MailboxDashBoardController::handleOnForegroundGained():');
-    if (PlatformInfo.isMobile) {
-      _updateTheme();
-    }
     refreshActionWhenBackToApp();
-  }
-
-  void _updateTheme() {
-    ThemeUtils.setSystemDarkUIStyle();
-    if (isDrawerOpen) {
-      ThemeUtils.setStatusBarTransparentColor();
-    }
   }
 
   void updateEmailList(List<PresentationEmail> newEmailList) {

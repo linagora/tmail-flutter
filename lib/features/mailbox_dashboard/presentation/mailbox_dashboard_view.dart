@@ -99,11 +99,7 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       drawer: ResponsiveWidget(
         responsiveUtils: controller.responsiveUtils,
         mobile: SizedBox(
-          width: double.infinity,
-          child: MailboxView()
-        ),
-        landscapeMobile: SizedBox(
-          width: ResponsiveUtils.defaultSizeDrawer,
+          width: ResponsiveUtils.mobileLeftMenuSize,
           child: MailboxView()
         ),
         tablet: SizedBox(

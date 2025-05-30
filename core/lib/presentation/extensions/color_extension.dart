@@ -248,6 +248,11 @@ extension AppColor on Color {
   static const grayBackgroundColor = Color(0xFFF3F6F9);
   static const m3SurfaceBackground = Color(0xFF1C1B1F);
   static const warningColor = Color(0xFFFFC107);
+  static const blackAlpha40 = Color.fromRGBO(0, 0, 0, 0.4);
+  static const blackAlpha20 = Color.fromRGBO(0, 0, 0, 0.2);
+  static const textPrimary = Color(0xFF424244);
+  static const iconFolder = Color(0xFF297EF2);
+  static const folderDivider = Color(0xFFE4E8EC);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],
