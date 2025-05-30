@@ -17,6 +17,7 @@ import 'package:model/email/email_in_thread_status.dart';
 import 'package:model/email/mail_priority_header.dart';
 import 'package:model/extensions/email_address_extension.dart';
 import 'package:model/extensions/keyword_identifier_extension.dart';
+import 'package:model/extensions/list_email_header_extension.dart';
 import 'package:model/extensions/media_type_nullable_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:model/mailbox/select_mode.dart';
@@ -140,6 +141,10 @@ class PresentationEmail with EquatableMixin, SearchSnippetMixin {
   bool get pushNotificationActivated => !isDraft && !hasRead;
 
   bool get hasCalendarEvent => headerCalendarEvent?[IndividualHeaderIdentifier.headerCalendarEvent]?.isNotEmpty == true;
+
+  String? get listPost => emailHeader?.toSet().listPost.trim();
+
+  String? get listUnsubscribe => emailHeader?.toSet().listUnsubscribe;
 
   bool get isMarkAsImportant {
     final xPriority = xPriorityHeader?[IndividualHeaderIdentifier.xPriorityHeader]

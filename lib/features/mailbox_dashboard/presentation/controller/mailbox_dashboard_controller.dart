@@ -2865,7 +2865,11 @@ class MailboxDashBoardController extends ReloadableController
     final newEmail = selectedEmail.value?.updateKeywords({
       KeyWordIdentifierExtension.unsubscribeMail: true,
     });
-    setSelectedEmail(newEmail);
+    if (newEmail == null) return;
+    dispatchEmailUIAction(UpdatedEmailKeywordsAction(
+      newEmail,
+      KeyWordIdentifierExtension.unsubscribeMail,
+    ));
   }
 
   void _replaceBrowserHistory({Uri? uri}) {
