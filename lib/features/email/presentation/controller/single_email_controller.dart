@@ -247,6 +247,10 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
 
   @override
   void onInit() {
+    _threadDetailController = getBinding<ThreadDetailController>();
+    _injectCalendarEventBindings(session, accountId);
+    _registerObxStreamListener();
+    _listenDownloadAttachmentProgressState();
     emailActionReactor = EmailActionReactor(
       _markAsEmailReadInteractor,
       _markAsStarEmailInteractor,
@@ -255,10 +259,6 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _getEmailContentInteractor,
       _downloadAttachmentForWebInteractor,
     );
-    _threadDetailController = getBinding<ThreadDetailController>();
-    _injectCalendarEventBindings(session, accountId);
-    _registerObxStreamListener();
-    _listenDownloadAttachmentProgressState();
     super.onInit();
   }
 
