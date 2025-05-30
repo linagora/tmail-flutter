@@ -878,12 +878,6 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "mark_all_as_read": "Mark all as read",
-  "@mark_all_as_read": {
-    "type": "text",
-    "placeholders_order": [],
-    "placeholders": {}
-  },
   "filter_messages": "Filter messages",
   "@filter_messages": {
     "type": "text",
