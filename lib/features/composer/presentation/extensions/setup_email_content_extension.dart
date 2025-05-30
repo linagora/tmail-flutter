@@ -1,5 +1,4 @@
 
-import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/html_transformer/transform_configuration.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:dartz/dartz.dart';
@@ -237,7 +236,7 @@ extension SetupEmailContentExtension on ComposerController {
       emailContentsViewState.value = Left(uiState);
       consumeState(Stream.value(Left(uiState)));
     } else {
-      emailContentsViewState.value = Right(UIState.idle);
+      emailContentsViewState.value = Right(LoadEmailContentCompleted());
     }
   }
 }
