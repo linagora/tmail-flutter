@@ -56,3 +56,12 @@ class PerformEmailActionInThreadDetailAction extends EmailUIAction {
     presentationEmail,
   ];
 }
+
+class UpdatedUnsubscribedEmailAction extends EmailUIAction {
+  UpdatedUnsubscribedEmailAction(this.presentationEmail);
+
+  final PresentationEmail presentationEmail;
+
+  @override
+  List<Object?> get props => [presentationEmail];
+}
