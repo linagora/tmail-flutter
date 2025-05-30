@@ -13,6 +13,7 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
       return;
     }
 
+    final selectedEmailId = mailboxDashBoardController.selectedEmail.value?.id;
     final isLoadMore = emailIdsPresentation.values.whereNotNull().isNotEmpty;
     final currentScrollPosition = scrollController?.position.pixels;
     final maxScrollExtent = scrollController?.position.maxScrollExtent;
@@ -23,12 +24,12 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
     
     for (var presentationEmail in success.presentationEmails) {
       if (presentationEmail.id == null) continue;
-      if (presentationEmail.id == mailboxDashBoardController.selectedEmail.value?.id) {
+      if (presentationEmail.id == selectedEmailId) {
         EmailBindings(currentEmailId: presentationEmail.id).dependencies();
         currentExpandedEmailId.value = presentationEmail.id;
       }
       emailIdsPresentation[presentationEmail.id!] = presentationEmail.copyWith(
-        emailInThreadStatus: presentationEmail.id == mailboxDashBoardController.selectedEmail.value?.id
+        emailInThreadStatus: presentationEmail.id == selectedEmailId
           ? EmailInThreadStatus.expanded
           : EmailInThreadStatus.collapsed,
       );
