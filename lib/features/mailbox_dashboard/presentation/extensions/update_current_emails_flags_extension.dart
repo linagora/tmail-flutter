@@ -81,7 +81,10 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
       final newEmail = selectedEmail.value!.updateKeywords({
         KeyWordIdentifier.emailAnswered: true,
       });
-      dispatchEmailUIAction(UpdatedEmailKeywordsAction(newEmail));
+      dispatchEmailUIAction(UpdatedEmailKeywordsAction(
+        newEmail,
+        KeyWordIdentifier.emailAnswered,
+      ));
     }
 
     updateEmailFlagByEmailIds([emailId], markAsAnswered: true);
@@ -92,7 +95,10 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
       final newEmail = selectedEmail.value!.updateKeywords({
         KeyWordIdentifier.emailForwarded: true,
       });
-      dispatchEmailUIAction(UpdatedEmailKeywordsAction(newEmail));
+      dispatchEmailUIAction(UpdatedEmailKeywordsAction(
+        newEmail,
+        KeyWordIdentifier.emailForwarded,
+      ));
     }
 
     updateEmailFlagByEmailIds([emailId], markAsForwarded: true);
