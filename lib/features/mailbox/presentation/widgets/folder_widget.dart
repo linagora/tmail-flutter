@@ -72,7 +72,6 @@ class FolderWidget extends StatelessWidget {
         borderRadius: BorderRadius.all(
           Radius.circular(borderRadius ?? MailboxItemWidgetStyles.borderRadius),
         ),
-        hoverColor: AppColor.blue100,
         child: item,
       ),
     );

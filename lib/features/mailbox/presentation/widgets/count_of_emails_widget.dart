@@ -17,7 +17,7 @@ class CountOfEmailsWidget extends StatelessWidget {
       overflow: TextOverflow.ellipsis,
       style: PlatformInfo.isMobile
         ? ThemeUtils.textStyleInter400()
-        : Theme.of(context).textTheme.bodyMedium?.copyWith(
+        : Theme.of(context).textTheme.bodySmall?.copyWith(
             color: Colors.black,
           ),
     );

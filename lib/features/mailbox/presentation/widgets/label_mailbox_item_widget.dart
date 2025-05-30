@@ -3,7 +3,6 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
@@ -72,7 +71,8 @@ class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
             itemKey: widget.itemKey,
             mailboxNode: widget.mailboxNode,
             imagePaths: widget.imagePaths,
-            onExpandFolderActionClick: widget.onClickExpandMailboxNodeAction,
+            responsiveUtils: widget.responsiveUtils,
+            onExpandFolderActionClick: onClickExpandMailboxNodeAction,
           ),
       ],
     );
@@ -163,13 +163,13 @@ class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
   TextStyle get _displayNameTextStyle {
     if (isSelected) {
       return ThemeUtils.textStyleInter700(
-        color: PlatformInfo.isMobile ? AppColor.iconFolder : null,
+        color: responsiveUtils.isDesktop(context) ? null : AppColor.iconFolder,
         fontSize: 14,
       );
     } else {
-      return PlatformInfo.isMobile
-        ? ThemeUtils.textStyleInter500()
-        : ThemeUtils.textStyleBodyBody3(color: Colors.black);
+      return responsiveUtils.isWebDesktop(context)
+        ? ThemeUtils.textStyleBodyBody3(color: Colors.black)
+        : ThemeUtils.textStyleInter500();
     }
   }
 }

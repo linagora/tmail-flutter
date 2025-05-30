@@ -11,114 +11,96 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 class QuotasView extends GetWidget<QuotasController> {
 
-  final EdgeInsetsGeometry? padding;
-  final TextStyle? labelStyle;
-  final int? labelMaxLines;
-
-  const QuotasView({
-    super.key,
-    this.padding,
-    this.labelStyle,
-    this.labelMaxLines,
-  });
+  const QuotasView({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Obx(() {
       final octetQuota = controller.octetsQuota.value;
-      if (octetQuota != null && octetQuota.storageAvailable) {
-        return LayoutBuilder(builder: (context, constraints) {
-          return Container(
-            padding: padding ?? const EdgeInsetsDirectional.only(
-              start: QuotasViewStyles.padding,
-              top: QuotasViewStyles.padding,
-            ),
-            margin: controller.responsiveUtils.isWebDesktop(context)
-                ? const EdgeInsetsDirectional.only(end: QuotasViewStyles.margin)
-                : null,
-            decoration: BoxDecoration(
-              color: controller.responsiveUtils.isWebDesktop(context)
-                  ? QuotasViewStyles.webBackgroundColor
-                  : QuotasViewStyles.mobileBackgroundColor,
-            ),
-            alignment: AlignmentDirectional.centerStart,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  children: [
-                    SvgPicture.asset(
-                      controller.imagePaths.icQuotas,
-                      width: QuotasViewStyles.iconSize,
-                      height: QuotasViewStyles.iconSize,
-                      colorFilter: AppColor.steelGray400.asFilter(),
-                      fit: BoxFit.fill,
-                    ),
-                    const SizedBox(width: QuotasViewStyles.iconPadding),
-                    Flexible(
-                      child: Text(
-                        AppLocalizations.of(context).storageQuotas,
-                        style: labelStyle ?? const TextStyle(
-                          fontSize: QuotasViewStyles.labelTextSize,
-                          fontWeight: QuotasViewStyles.labelFontWeight,
-                          color: QuotasViewStyles.labelTextColor,
-                        ),
-                        maxLines: labelMaxLines ?? 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: QuotasViewStyles.iconPadding),
-                    Obx(() {
-                      final isLoading = controller.viewState.value.fold(
-                            (failure) => false,
-                            (success) => success is GetQuotasLoading,
-                      );
+      bool isDesktop = controller.responsiveUtils.isDesktop(context);
 
-                      return QuotaReloadButton(
-                        icon: controller.imagePaths.icRefresh,
-                        isLoading: isLoading,
-                        onTap: controller.reloadQuota,
-                      );
-                    }),
-                  ],
-                ),
-                const SizedBox(height: QuotasViewStyles.space),
-                SizedBox(
-                  width: _getProgressBarMaxWith(constraints.maxWidth),
-                  child: LinearProgressIndicator(
-                    color: octetQuota.getQuotasStateProgressBarColor(),
-                    minHeight: QuotasViewStyles.progressBarHeight,
-                    backgroundColor: QuotasViewStyles.progressBarBackgroundColor,
-                    value: octetQuota.usedStoragePercent,
+      if (octetQuota != null && octetQuota.storageAvailable) {
+        final quotasWidget = Container(
+          padding: isDesktop
+            ? const EdgeInsets.all(16)
+            : const EdgeInsets.symmetric(vertical: 16),
+          margin: isDesktop
+            ? const EdgeInsetsDirectional.only(start: 8)
+            : const EdgeInsetsDirectional.only(start: 24),
+          width: isDesktop ? 224 : 196,
+          alignment: isDesktop
+            ? AlignmentDirectional.center
+            : AlignmentDirectional.centerStart,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  SvgPicture.asset(
+                    controller.imagePaths.icQuotas,
+                    width: QuotasViewStyles.iconSize,
+                    height: QuotasViewStyles.iconSize,
+                    colorFilter: AppColor.steelGray400.asFilter(),
+                    fit: BoxFit.fill,
                   ),
-                ),
-                const SizedBox(height: QuotasViewStyles.space),
-                Text(
-                  octetQuota.getQuotasStateTitle(context),
-                  style: labelStyle ?? TextStyle(
-                    fontSize: QuotasViewStyles.progressStateTextSize,
-                    fontWeight: QuotasViewStyles.progressStateFontWeight,
-                    color: octetQuota.getQuotasStateTitleColor(),
+                  const SizedBox(width: QuotasViewStyles.iconPadding),
+                  Expanded(
+                    child: Text(
+                      AppLocalizations.of(context).storageQuotas,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColor.steelGray400,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  maxLines: labelMaxLines ?? 2,
-                  overflow: TextOverflow.ellipsis,
-                )
-              ],
-            ),
-          );
-        });
+                  const SizedBox(width: QuotasViewStyles.iconPadding),
+                  Obx(() {
+                    final isLoading = controller.viewState.value.fold(
+                      (failure) => false,
+                      (success) => success is GetQuotasLoading,
+                    );
+
+                    return QuotaReloadButton(
+                      icon: controller.imagePaths.icRefreshQuotas,
+                      isLoading: isLoading,
+                      onTap: controller.reloadQuota,
+                    );
+                  }),
+                ],
+              ),
+              const SizedBox(height: QuotasViewStyles.space),
+              SizedBox(
+                width: QuotasViewStyles.progressBarMaxWidth,
+                child: LinearProgressIndicator(
+                  color: octetQuota.getQuotasStateProgressBarColor(),
+                  minHeight: QuotasViewStyles.progressBarHeight,
+                  backgroundColor: QuotasViewStyles.progressBarBackgroundColor,
+                  value: octetQuota.usedStoragePercent,
+                ),
+              ),
+              const SizedBox(height: QuotasViewStyles.space),
+              Text(
+                octetQuota.getQuotasStateTitle(context),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: octetQuota.getQuotasStateTitleColor(),
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              )
+            ],
+          ),
+        );
+
+        if (isDesktop) {
+          return Center(child: quotasWidget);
+        } else {
+          return quotasWidget;
+        }
       } else {
-        return const SizedBox.shrink();
+        return const SizedBox(height: 16);
       }
     });
-  }
-
-  double _getProgressBarMaxWith(double maxWith) {
-    if (maxWith > QuotasViewStyles.progressBarMaxWidth) {
-      return QuotasViewStyles.progressBarMaxWidth;
-    } else {
-      return maxWith;
-    }
   }
 }

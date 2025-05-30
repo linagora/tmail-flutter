@@ -71,6 +71,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -105,7 +106,8 @@ import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 class MailboxController extends BaseMailboxController
     with MailboxActionHandlerMixin,
         ContactSupportMixin,
-        LauncherApplicationMixin {
+        LauncherApplicationMixin,
+        MailboxWidgetMixin {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final isMailboxListScrollable = false.obs;

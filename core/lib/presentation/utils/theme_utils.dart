@@ -261,6 +261,15 @@ class ThemeUtils {
     color: AppColor.textPrimary,
   );
 
+  static TextStyle textStyleContentCaption() => const TextStyle(
+    fontFamily: ConstantsUI.fontApp,
+    fontWeight: FontWeight.normal,
+    letterSpacing: 0,
+    fontSize: 11,
+    height: 14 / 11,
+    color: AppColor.steelGray400,
+  );
+
   static TextSelectionThemeData get _textSelectionTheme {
     return const TextSelectionThemeData(
       cursorColor: AppColor.primaryColor,
