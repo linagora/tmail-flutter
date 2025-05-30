@@ -56,7 +56,7 @@ mixin PopupContextMenuActionMixin {
     );
   }
 
-  Future<void> openPopupMenuAction(
+  void openPopupMenuAction(
     BuildContext context,
     RelativeRect position,
     List<PopupMenuEntry> popupMenuItems,
