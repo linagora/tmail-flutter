@@ -48,7 +48,7 @@ class MemoryAccountCacheClient implements AccountCacheClient {
   }
 
   @override
-  Future<AccountCache?> getItem(String key, {bool needToReopen = false}) {
+  Future<AccountCache?> getItem(String key) {
     return Future.value(_cache[key]);
   }
 
