@@ -413,20 +413,15 @@ class EmailView extends GetWidget<SingleEmailController> {
                               contentPadding: 0,
                               useDefaultFont: true,
                             ),
-                            if (controller.mailboxDashBoardController.isAttachmentDraggableAppActive)
+                            if (controller.mailboxDashBoardController.isAttachmentDraggableAppActive ||
+                                controller.mailboxDashBoardController.isLocalFileDraggableAppActive ||
+                                controller.mailboxDashBoardController.isAppGridDialogDisplayed.isTrue)
                               PointerInterceptor(
                                 child: SizedBox(
                                   width: constraints.maxWidth,
                                   height: constraints.maxHeight,
                                 )
                               ),
-                            if (controller.mailboxDashBoardController.isLocalFileDraggableAppActive)
-                              PointerInterceptor(
-                                child: SizedBox(
-                                  width: constraints.maxWidth,
-                                  height: constraints.maxHeight,
-                                )
-                              )
                           ],
                         );
                       });

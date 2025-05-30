@@ -142,11 +142,17 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                 ),
                 height: widget.mailboxNode.item.isTeamMailboxes
                     ? MailboxItemWidgetStyles.teamMailboxHeight
-                    : MailboxItemWidgetStyles.height,
+                    : MailboxItemWidgetStyles.mobileHeight,
                 child: Row(
                   children: [
                     if (_isIconDisplayed)
-                      MailboxIconWidget(icon: _iconMailbox),
+                      MailboxIconWidget(
+                        icon: _iconMailbox,
+                        padding: const EdgeInsetsDirectional.only(
+                          end: MailboxItemWidgetStyles.mobileLabelIconSpace,
+                        ),
+                        color: AppColor.iconFolder,
+                      ),
                     Expanded(
                       child: LabelMailboxItemWidget(
                         itemKey: _key,

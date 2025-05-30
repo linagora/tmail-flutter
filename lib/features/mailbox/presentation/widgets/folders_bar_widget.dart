@@ -4,7 +4,6 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:model/mailbox/expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/expand_mode_extension.dart';
@@ -36,6 +35,8 @@ class FoldersBarWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDesktop = responsiveUtils.isDesktop(context);
+
     Widget searchBarIcon = TMailButtonWidget.fromIcon(
       icon: imagePaths.icSearchBar,
       backgroundColor: Colors.transparent,
@@ -45,7 +46,7 @@ class FoldersBarWidget extends StatelessWidget {
       onTapActionCallback: onOpenSearchFolder,
     );
 
-    if (responsiveUtils.isWebDesktop(context)) {
+    if (isDesktop) {
       searchBarIcon = Transform(
         transform: Matrix4.translationValues(8, 0, 0),
         child: searchBarIcon,
@@ -62,7 +63,7 @@ class FoldersBarWidget extends StatelessWidget {
       onTapActionCallback: onAddNewFolder,
     );
 
-    if (responsiveUtils.isWebDesktop(context)) {
+    if (isDesktop) {
       newFolderIcon = Transform(
         transform: Matrix4.translationValues(8, 0, 0),
         child: newFolderIcon,
@@ -78,8 +79,8 @@ class FoldersBarWidget extends StatelessWidget {
 
     return Container(
       padding: padding ?? EdgeInsetsDirectional.only(
-        start: responsiveUtils.isWebDesktop(context) ? 10 : 26,
-        end: responsiveUtils.isWebDesktop(context) ? 0 : 8,
+        start: isDesktop ? 10 : 26,
+        end: isDesktop ? 0 : 8,
       ),
       height: height ?? 48,
       child: Row(
@@ -94,9 +95,12 @@ class FoldersBarWidget extends StatelessWidget {
                     DirectionUtils.isDirectionRTLByLanguage(context),
                   ),
                   iconColor: Colors.black,
-                  iconSize: PlatformInfo.isMobile ? 17 : 20,
+                  iconSize: 17,
+                  margin: isDesktop
+                    ? const EdgeInsetsDirectional.only(start: 8)
+                    : null,
                   backgroundColor: Colors.transparent,
-                  padding: EdgeInsets.all(PlatformInfo.isMobile ? 3 : 5),
+                  padding: const EdgeInsets.all(3),
                   tooltipMessage: expandMode!.getTooltipMessage(AppLocalizations.of(context)),
                   onTapActionCallback: () => onToggleExpandFolder?.call(),
                 )

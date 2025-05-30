@@ -264,7 +264,10 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
       key: controller.scaffoldKey,
       drawer: ResponsiveWidget(
         responsiveUtils: controller.responsiveUtils,
-        mobile: SizedBox(width: ResponsiveUtils.defaultSizeDrawer, child: MailboxView()),
+        mobile: SizedBox(
+          width: ResponsiveUtils.mobileLeftMenuSize,
+          child: MailboxView(),
+        ),
         tabletLarge: SizedBox(width: ResponsiveUtils.defaultSizeLeftMenuMobile, child: MailboxView()),
         desktop: const SizedBox.shrink()
       ),

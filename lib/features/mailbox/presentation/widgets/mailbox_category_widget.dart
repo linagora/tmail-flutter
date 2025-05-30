@@ -2,7 +2,6 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/utils/direction_utils.dart';
-import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -79,12 +78,10 @@ class _MailboxCategoryWidgetState extends State<MailboxCategoryWidget> {
               DirectionUtils.isDirectionRTLByLanguage(context),
             ),
             iconColor: Colors.black,
-            iconSize: PlatformInfo.isMobile ? 17 : 20,
+            iconSize: 17,
             backgroundColor: Colors.transparent,
-            margin: PlatformInfo.isMobile
-              ? const EdgeInsetsDirectional.only(start: 8)
-              : null,
-            padding: EdgeInsets.all(PlatformInfo.isMobile ? 3 : 5),
+            margin: const EdgeInsetsDirectional.only(start: 8),
+            padding: const EdgeInsets.all(3),
             tooltipMessage: widget.expandMode.getTooltipMessage(AppLocalizations.of(context)),
             onTapActionCallback: () =>
                 widget.onToggleMailboxCategories(widget.categories, _key)),

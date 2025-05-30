@@ -10,6 +10,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 extension OpenAppGridExtension on MailboxController {
   void openAppGrid(List<AppLinagoraEcosystem> linagoraApps) {
     log('OpenAppGridExtension::openAppGrid: length of linagoraApps = ${linagoraApps.length}');
+    mailboxDashBoardController.isAppGridDialogDisplayed.value = true;
     Get.dialog(
       Center(
         child: Dialog(
@@ -55,7 +56,8 @@ extension OpenAppGridExtension on MailboxController {
         ),
       ),
       barrierColor: AppColor.blackAlpha20,
-    );
+    ).whenComplete(() =>
+        mailboxDashBoardController.isAppGridDialogDisplayed.value = false);
   }
 
   Future<void> _handleOpenApp(AppLinagoraEcosystem app) async {

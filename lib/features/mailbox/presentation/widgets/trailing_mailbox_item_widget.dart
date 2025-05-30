@@ -36,8 +36,12 @@ class TrailingMailboxItemWidget extends StatelessWidget {
             ? EdgeInsets.zero
             : TrailingMailboxItemWidgetStyles.menuIconMargin,
           icon: imagePaths.icMoreVertical,
-          iconSize: TrailingMailboxItemWidgetStyles.menuIconSize,
-          padding: TrailingMailboxItemWidgetStyles.menuIconPadding,
+          iconSize: mailboxNode.item.isTeamMailboxes
+            ? 17
+            : TrailingMailboxItemWidgetStyles.menuIconSize,
+          padding:  mailboxNode.item.isTeamMailboxes
+            ? const EdgeInsets.all(3)
+            : TrailingMailboxItemWidgetStyles.menuIconPadding,
           backgroundColor: TrailingMailboxItemWidgetStyles.menuIconBackgroundColor,
           onTapActionAtPositionCallback: (position) => onMenuActionClick?.call(position, mailboxNode),
         );
