@@ -65,6 +65,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
       return EmailsResponse(emailList: response.first, state: response.last);
     });
 
+    log('ThreadRepositoryImpl::getAllEmail(): local: ${localEmailResponse.emailList?.length} - local state ${localEmailResponse.state}');
     EmailsResponse? networkEmailResponse;
 
     if (!localEmailResponse.hasEmails()
@@ -176,32 +177,42 @@ class ThreadRepositoryImpl extends ThreadRepository {
     Properties? updatedProperties,
     List<Email>? emailCacheList
   }) async {
-    if (emailUpdated != null && emailUpdated.isNotEmpty) {
-      if (updatedProperties == null) {
-        return null;
-      }
-      final newEmailUpdated = emailUpdated
-        .map((updatedEmail) => _combineUpdatedWithEmailInCache(updatedEmail, emailCacheList))
-        .where((tuple) => tuple.value2 != null)
-        .map((tuple) => tuple.value2!.combineEmail(tuple.value1, updatedProperties))
+    if (emailUpdated == null || emailUpdated.isEmpty) return emailUpdated;
+
+    if (updatedProperties == null) return null;
+
+    log('ThreadRepositoryImpl::_combineEmailCache(): updatedProperties = $updatedProperties');
+    log('ThreadRepositoryImpl::_combineEmailCache(): propertiesDefault = ${ThreadConstants.propertiesDefault}');
+    if (updatedProperties.value.containsAll(ThreadConstants.propertiesDefault.value)) {
+      log('ThreadRepositoryImpl::_combineEmailCache(): Update use properties default');
+      return emailUpdated;
+    }
+
+    final combinedEmails = emailUpdated
+        .map((email) => _combineUpdatedWithEmailInCache(email, emailCacheList))
+        .where((record) => record.oldEmail != null)
+        .map((record) => record.oldEmail!.combineEmail(
+          record.updatedEmail,
+          updatedProperties,
+        ))
         .toList();
 
-      return newEmailUpdated;
-    }
-    return emailUpdated;
+    return combinedEmails;
   }
 
-  dartz.Tuple2<Email, Email?> _combineUpdatedWithEmailInCache(Email updatedEmail, List<Email>? emailCacheList) {
-    final emailOld = updatedEmail.id != null
+  ({Email updatedEmail, Email? oldEmail}) _combineUpdatedWithEmailInCache(
+    Email updatedEmail,
+    List<Email>? emailCacheList,
+  ) {
+    final oldEmail = updatedEmail.id != null
       ? emailCacheList?.findEmailById(updatedEmail.id!)
       : null;
-    if (emailOld != null) {
-      log('ThreadRepositoryImpl::_combineUpdatedWithEmailInCache(): cache hit');
-      return dartz.Tuple2(updatedEmail, emailOld);
+    if (oldEmail != null) {
+      log('ThredRepositoryImpl::_combineUpdatedWithEmailInCache(): cache hit for this email -> ${oldEmail.id} - ${oldEmail.subject} - ${oldEmail.keywords} - ${oldEmail.mailboxIds} - new update in $updatedEmail');
     } else {
-      log('ThreadRepositoryImpl::_combineUpdatedWithEmailInCache(): cache miss');
-      return dartz.Tuple2(updatedEmail, null);
+      log('ThreadRepositoryImpl::_combineUpdatedWithEmailInCache(): cache miss for emailId ${updatedEmail.id}');
     }
+    return (oldEmail: oldEmail, updatedEmail: updatedEmail);
   }
 
   Future<void> _updateEmailCache(
@@ -385,6 +396,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
         propertiesUpdated: propertiesUpdated);
 
       hasMoreChanges = changesResponse.hasMoreChanges;
+      log('ThreadRepositoryImpl::_synchronizeCacheWithChanges(): hasMoreChanges = $hasMoreChanges - new state = ${changesResponse.newStateChanges}');
       sinceState = changesResponse.newStateChanges;
 
       if (emailChangeResponse != null) {
@@ -400,7 +412,7 @@ class ThreadRepositoryImpl extends ThreadRepository {
           updatedProperties: emailChangeResponse.updatedProperties,
           emailCacheList: localEmailList);
 
-      log('ThreadRepositoryImpl::_synchronizeCacheWithChanges(): [Changes]: '
+      log('ThreadRepositoryImpl::_synchronizeCacheWithChanges(): from state $currentState [Changes]: '
           'created = ${emailChangeResponse.created?.length} - '
           'updated = ${newEmailUpdated?.length} - '
           'destroyed = ${emailChangeResponse.destroyed?.length}');

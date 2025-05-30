@@ -15,7 +15,7 @@ class AppConfig {
   static const int defaultLimitAutocomplete = 8;
 
   // For testing
-  static bool isApiLoggingEnabled = PlatformInfo.isAndroid;
+  static bool isApiLoggingEnabled = PlatformInfo.isMobile;
 
   static const String envFileName = 'env.file';
   static const String appDashboardConfigurationPath = "configurations/app_dashboard.json";

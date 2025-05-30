@@ -30,6 +30,7 @@ class GetListDetailedEmailByIdInteractor {
       yield Right<Failure, Success>(GetDetailedEmailByIdLoading());
 
       final ascendingEmailIds = emailIds.reversed.toList();
+      log('GetListDetailedEmailByIdInteractor::execute: length ascendingEmailIds = ${ascendingEmailIds.length}');
       Map<Email, DetailedEmail> mapDetailedEmails = {};
 
       for (var emailId in ascendingEmailIds) {
@@ -37,7 +38,7 @@ class GetListDetailedEmailByIdInteractor {
         final tupleEmail = await _convertEmailToDetailedEmail(accountId, email, baseDownloadUrl);
         mapDetailedEmails[tupleEmail.value1] = tupleEmail.value2;
       }
-      log('GetListDetailedEmailByIdInteractor::execute: mapDetailedEmails = ${mapDetailedEmails.length}');
+      log('GetListDetailedEmailByIdInteractor::execute: length mapDetailedEmails = ${mapDetailedEmails.length}');
       yield Right<Failure, Success>(GetDetailedEmailByIdSuccess(
         mapDetailedEmails,
         accountId,

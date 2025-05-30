@@ -106,8 +106,10 @@ extension ListPresentationEmailExtension on List<PresentationEmail> {
       if (presentationEmail.id != null) {
         final emailBefore = listEmailBefore.findEmail(presentationEmail.id!);
         if (emailBefore != null) {
+          log('ListPresentationEmailExtension::combine():found before email id: ${presentationEmail.id}');
           return presentationEmail.toSelectedEmail(selectMode: emailBefore.selectMode);
         } else {
+          log('ListPresentationEmailExtension::combine():missing before email id: ${presentationEmail.id}');
           return presentationEmail;
         }
       } else {

@@ -527,16 +527,19 @@ class ThreadController extends BaseController with EmailActionController {
       return;
     }
     mailboxDashBoardController.setCurrentEmailState(success.currentEmailState);
-    log('ThreadController::_refreshChangesAllEmailSuccess: COUNT = ${success.emailList.length}');
     final emailsBeforeChanges = mailboxDashBoardController.emailsInCurrentMailbox;
+    log('ThreadController::_refreshChangesAllEmailSuccess: length emailsBeforeChanges = ${emailsBeforeChanges.length}');
     final emailsAfterChanges = success.emailList;
+    log('ThreadController::_refreshChangesAllEmailSuccess: length emailsAfterChanges = ${emailsAfterChanges.length}');
     final newListEmail = emailsAfterChanges.combine(emailsBeforeChanges);
+    log('ThreadController::_refreshChangesAllEmailSuccess: length newListEmail = ${newListEmail.length}');
     final emailListSynced = newListEmail.syncPresentationEmail(
       mapMailboxById: mailboxDashBoardController.mapMailboxById,
       selectedMailbox: selectedMailbox,
       searchQuery: searchController.searchQuery,
       isSearchEmailRunning: searchController.isSearchEmailRunning
     );
+    log('ThreadController::_refreshChangesAllEmailSuccess: length emailListSynced = ${emailListSynced.length}');
     mailboxDashBoardController.updateEmailList(emailListSynced);
     if (mailboxDashBoardController.isSelectionEnabled()) {
       mailboxDashBoardController.listEmailSelected.value = listEmailSelected;
@@ -564,7 +567,10 @@ class ThreadController extends BaseController with EmailActionController {
           mailboxId: selectedMailboxId
         ),
         propertiesCreated: EmailUtils.getPropertiesForEmailGetMethod(_session!, _accountId!),
-        propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+        propertiesUpdated: EmailUtils.getPropertiesForEmailChangeMethod(
+          _session!,
+          _accountId!,
+        ),
         getLatestChanges: getLatestChanges,
       ));
     } else {
@@ -639,6 +645,7 @@ class ThreadController extends BaseController with EmailActionController {
   }
 
   Future<void> _handleWebSocketMessage(WebSocketMessage message) async {
+    log('ThreadController::_handleWebSocketMessage(): ${message.newState}');
     try {
       if (mailboxDashBoardController.currentEmailState == null ||
           mailboxDashBoardController.currentEmailState == message.newState) {
@@ -719,7 +726,10 @@ class ThreadController extends BaseController with EmailActionController {
         _session!,
         _accountId!,
       ),
-      propertiesUpdated: ThreadConstants.propertiesUpdatedDefault,
+      propertiesUpdated: EmailUtils.getPropertiesForEmailChangeMethod(
+        _session!,
+        _accountId!,
+      ),
       emailFilter: EmailFilter(
         filter: getFilterCondition(mailboxIdSelected: selectedMailboxId),
         filterOption: mailboxDashBoardController.filterMessageOption.value,

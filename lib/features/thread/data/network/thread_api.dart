@@ -337,7 +337,7 @@ class ThreadAPI {
         }
       }
     }
-    log('ThreadAPI::getChanges:newStateChanges = $newStateChanges | newStateEmail = $newStateEmail | hasMoreChanges = $hasMoreChanges');
+    log('ThreadAPI::getChanges:oldState = $sinceState | newStateChanges = $newStateChanges | newStateEmail = $newStateEmail | hasMoreChanges = $hasMoreChanges');
     log('ThreadAPI::getChanges:updatedEmailSize = ${updatedEmail?.length} | createdEmailSize = ${createdEmail?.length}');
     log('ThreadAPI::getChanges:destroyedEmailIds = $destroyedEmailIds');
     return EmailChangeResponse(
