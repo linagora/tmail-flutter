@@ -245,9 +245,11 @@ extension AppColor on Color {
   static const blue400 = Color(0xFF80BDFF);
   static const m3Tertiary = Color(0xFF8C9CAF);
   static const m3Neutral70 = Color(0xFFAEAAAE);
+  static const m3Neutral90 = Color(0xFFE6E1E5);
   static const grayBackgroundColor = Color(0xFFF3F6F9);
   static const m3SurfaceBackground = Color(0xFF1C1B1F);
   static const warningColor = Color(0xFFFFC107);
+  static const primaryMain = Color(0xFF0A84FF);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

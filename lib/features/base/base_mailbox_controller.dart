@@ -3,7 +3,6 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
-import 'package:core/presentation/views/dialog/edit_text_dialog_builder.dart';
 import 'package:core/presentation/views/modal_sheets/edit_text_modal_sheet_builder.dart';
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
@@ -379,34 +378,27 @@ abstract class BaseMailboxController extends BaseController {
             )))
       ).show(context);
     } else {
-      Get.dialog(
-        PointerInterceptor(child: (EditTextDialogBuilder()
-          ..key(const Key('rename_mailbox_dialog'))
-          ..title(AppLocalizations.of(context).renameFolder)
-          ..cancelText(AppLocalizations.of(context).cancel)
-          ..setErrorString((value) {
-            return verifyMailboxNameAction(
-              context,
-              value,
-              listMailboxName,
-              MailboxActions.rename
-            );
-          })
-          ..setTextController(TextEditingController.fromValue(
-              TextEditingValue(
-                text: presentationMailbox.name?.name ?? '',
-                selection: TextSelection(
-                  baseOffset: 0,
-                  extentOffset: presentationMailbox.name?.name.length ?? 0
-                )
-              ))
-          )
-          ..onConfirmButtonAction(
-              AppLocalizations.of(context).rename,
-              (value) => onRenameMailboxAction(presentationMailbox, MailboxName(value))
-          )
-        ).build()),
-        barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+      showInputDialogAction(
+        key: const Key('rename_mailbox_dialog'),
+        context: context,
+        title: AppLocalizations.of(context).renameFolder,
+        value: presentationMailbox.name?.name ?? '',
+        negativeText: AppLocalizations.of(context).cancel,
+        positiveText: AppLocalizations.of(context).rename,
+        closeIcon: imagePaths.icComposerClose,
+        onPositiveButtonAction: (value) {
+          onRenameMailboxAction(presentationMailbox, MailboxName(value));
+          popBack();
+        },
+        onNegativeButtonAction: popBack,
+        onInputErrorChanged: (value) {
+          return verifyMailboxNameAction(
+            context,
+            value,
+            listMailboxName,
+            MailboxActions.rename,
+          );
+        },
       );
     }
   }

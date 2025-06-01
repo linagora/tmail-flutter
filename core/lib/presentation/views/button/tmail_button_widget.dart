@@ -42,6 +42,7 @@ class TMailButtonWidget extends StatelessWidget {
   final bool isLoading;
   final Color? hoverColor;
   final TextOverflow? textOverflow;
+  final Alignment? alignment;
 
   const TMailButtonWidget({
     super.key,
@@ -78,6 +79,7 @@ class TMailButtonWidget extends StatelessWidget {
     this.isLoading = false,
     this.hoverColor,
     this.textOverflow,
+    this.alignment,
   });
 
   factory TMailButtonWidget.fromIcon({
@@ -104,6 +106,7 @@ class TMailButtonWidget extends StatelessWidget {
     List<BoxShadow>? boxShadow,
     EdgeInsetsGeometry? margin,
     Color? hoverColor,
+    Alignment? alignment,
   }) {
     return TMailButtonWidget(
       key: key,
@@ -130,6 +133,7 @@ class TMailButtonWidget extends StatelessWidget {
       boxShadow: boxShadow,
       margin: margin,
       hoverColor: hoverColor,
+      alignment: alignment,
     );
   }
 
@@ -157,6 +161,7 @@ class TMailButtonWidget extends StatelessWidget {
     int? maxLines,
     Color? hoverColor,
     TextOverflow? textOverflow,
+    Alignment? alignment,
   }) {
     return TMailButtonWidget(
       key: key,
@@ -182,6 +187,7 @@ class TMailButtonWidget extends StatelessWidget {
       maxLines: maxLines,
       hoverColor: hoverColor,
       textOverflow: textOverflow,
+      alignment: alignment,
     );
   }
 
@@ -371,6 +377,7 @@ class TMailButtonWidget extends StatelessWidget {
       boxShadow: boxShadow,
       border: border,
       hoverColor: hoverColor,
+      alignment: alignment,
       child: childWidget,
     );
   }
