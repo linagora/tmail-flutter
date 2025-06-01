@@ -23,6 +23,7 @@ class TMailContainerWidget extends StatelessWidget {
   final List<BoxShadow>? boxShadow;
   final BoxBorder? border;
   final Color? hoverColor;
+  final Alignment? alignment;
 
   const TMailContainerWidget({
     super.key,
@@ -43,6 +44,7 @@ class TMailContainerWidget extends StatelessWidget {
     this.margin,
     this.border,
     this.hoverColor,
+    this.alignment,
   });
 
   @override
@@ -61,6 +63,7 @@ class TMailContainerWidget extends StatelessWidget {
         maxHeight: maxHeight,
         minWidth: minWidth,
       ),
+      alignment: alignment,
       padding: padding ?? const EdgeInsetsDirectional.all(8),
       child: child,
     );
