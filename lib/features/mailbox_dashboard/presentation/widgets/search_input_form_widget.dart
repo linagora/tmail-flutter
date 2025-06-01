@@ -3,6 +3,7 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
+import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/quick_search/quick_search_input_form.dart';
 import 'package:core/presentation/views/quick_search/quick_search_suggestion_box_decoration.dart';
 import 'package:core/presentation/views/quick_search/quick_search_suggestion_list.dart';
@@ -221,12 +222,15 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         labelStyle: const TextStyle(color: Colors.black, fontSize: 16.0)
       ),
       leftButton: Padding(
-        padding: const EdgeInsetsDirectional.only(start: 8),
-        child: buildIconWeb(
-          minSize: 40,
-          iconPadding: EdgeInsets.zero,
-          icon: SvgPicture.asset(_imagePaths.icSearchBar, fit: BoxFit.fill),
-          onTap: () => _invokeSearchEmailAction(_searchController.searchInputController.text.trim())
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
+        child: TMailButtonWidget.fromIcon(
+          icon: _imagePaths.icSearchBar,
+          iconColor: AppColor.steelGray400,
+          iconSize: 28,
+          backgroundColor: Colors.transparent,
+          padding: const EdgeInsets.all(4),
+          tooltipMessage: AppLocalizations.of(context).search,
+          onTapActionCallback: () => _invokeSearchEmailAction(_searchController.searchInputController.text.trim())
         )
       ),
       clearTextButton: buildIconWeb(
@@ -234,6 +238,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
           _imagePaths.icClearTextSearch,
           width: 16,
           height: 16,
+          colorFilter: AppColor.steelGray400.asFilter(),
           fit: BoxFit.fill
         ),
         onTap: _searchController.clearTextSearch
