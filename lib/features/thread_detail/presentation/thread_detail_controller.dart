@@ -52,7 +52,6 @@ class ThreadDetailController extends BaseController {
   final GetEmailsByIdsInteractor getEmailsByIdsInteractor;
   final MarkAsEmailReadInteractor _markAsEmailReadInteractor;
   final MarkAsStarEmailInteractor _markAsStarEmailInteractor;
-  final CreateNewEmailRuleFilterInteractor _createNewEmailRuleFilterInteractor;
   final PrintEmailInteractor _printEmailInteractor;
   final GetEmailContentInteractor _getEmailContentInteractor;
   final DownloadAttachmentForWebInteractor _downloadAttachmentForWebInteractor;
@@ -62,7 +61,6 @@ class ThreadDetailController extends BaseController {
     this.getEmailsByIdsInteractor,
     this._markAsEmailReadInteractor,
     this._markAsStarEmailInteractor,
-    this._createNewEmailRuleFilterInteractor,
     this._printEmailInteractor,
     this._getEmailContentInteractor,
     this._downloadAttachmentForWebInteractor,
@@ -84,6 +82,7 @@ class ThreadDetailController extends BaseController {
   final downloadProgressState = StreamController<Either<Failure, Success>>();
 
   ScrollController? scrollController;
+  CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
   Session? get session => mailboxDashBoardController.sessionCurrent;
@@ -113,6 +112,8 @@ class ThreadDetailController extends BaseController {
   @override
   void onInit() {
     super.onInit();
+    injectRuleFilterBindings(session, accountId);
+    _createNewEmailRuleFilterInteractor = getBinding<CreateNewEmailRuleFilterInteractor>();
     emailActionReactor = EmailActionReactor(
       _markAsEmailReadInteractor,
       _markAsStarEmailInteractor,
