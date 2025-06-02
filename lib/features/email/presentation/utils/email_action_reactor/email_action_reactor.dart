@@ -458,47 +458,47 @@ class EmailActionReactor with MessageDialogActionMixin, PopupContextMenuActionMi
     ) onEditAsEmailRequest,  
   }) => onEditAsEmailRequest(presentationEmail);
 
-  Future<void> replyEmail(
+  void replyEmail(
     PresentationEmail presentationEmail, {
     required void Function(
       PresentationEmail presentationEmail,
       EmailLoaded? emailLoaded,
     ) onReplyEmailRequest,
     required EmailLoaded? emailLoaded,
-  }) async {
+  }) {
     onReplyEmailRequest(presentationEmail, emailLoaded);
   }
 
-  Future<void> replyAll(
+  void replyAll(
     PresentationEmail presentationEmail, {
     required void Function(
       PresentationEmail presentationEmail,
       EmailLoaded? emailLoaded,
     ) onReplyAllRequest,
     required EmailLoaded? emailLoaded,
-  }) async {
+  }) {
     onReplyAllRequest(presentationEmail, emailLoaded);
   }
 
-  Future<void> replyToList(
+  void replyToList(
     PresentationEmail presentationEmail, {
     required void Function(
       PresentationEmail presentationEmail,
       EmailLoaded? emailLoaded,
     ) onReplyToListRequest,
     required EmailLoaded? emailLoaded,
-  }) async {
+  }) {
     onReplyToListRequest(presentationEmail, emailLoaded);
   }
 
-  Future<void> forward(
+  void forward(
     PresentationEmail presentationEmail, {
     required void Function(
       PresentationEmail presentationEmail,
       EmailLoaded? emailLoaded,
     ) onForwardRequest,
     required EmailLoaded? emailLoaded,
-  }) async {
+  }) {
     onForwardRequest(presentationEmail, emailLoaded);
   }
 
