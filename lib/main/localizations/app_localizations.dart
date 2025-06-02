@@ -4766,4 +4766,18 @@ class AppLocalizations {
       name: 'deleteRecipientsFailed',
     );
   }
+
+  String get youDoNotHaveAnyEmailInYourCurrentFolder {
+    return Intl.message(
+      'You don’t have any emails\n in this folder.',
+      name: 'youDoNotHaveAnyEmailInYourCurrentFolder',
+    );
+  }
+
+  String get startToComposeEmails {
+    return Intl.message(
+      'Start to compose emails.',
+      name: 'startToComposeEmails',
+    );
+  }
 }

@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-05-27T01:35:50.697124",
+  "@@last_modified": "2025-06-02T16:27:17.653715",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4524,6 +4524,18 @@
   },
   "deleteRecipientsFailed": "Delete recipients failed.",
   "@deleteRecipientsFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "youDoNotHaveAnyEmailInYourCurrentFolder": "You don’t have any emails in this folder.",
+  "@youDoNotHaveAnyEmailInYourCurrentFolder": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "startToComposeEmails": "Start to compose emails.",
+  "@startToComposeEmails": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

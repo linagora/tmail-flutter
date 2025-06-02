@@ -737,7 +737,6 @@ class ThreadView extends GetWidget<ThreadController>
               isNetworkConnectionAvailable: controller.networkConnectionController.isNetworkConnectionAvailable(),
               isSearchActive: controller.isSearchActive,
               isFilterMessageActive: controller.mailboxDashBoardController.filterMessageOption.value != FilterMessageOption.all,
-              onCreateFiltersActionCallback: controller.goToCreateEmailRuleView
             ),
           );
         }
