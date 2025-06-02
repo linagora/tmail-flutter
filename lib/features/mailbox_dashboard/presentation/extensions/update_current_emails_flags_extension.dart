@@ -3,7 +3,6 @@ import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/mark_star_action.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
-import 'package:model/extensions/presentation_email_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/action/email_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
@@ -77,29 +76,21 @@ extension UpdateCurrentEmailsFlagsExtension on MailboxDashBoardController {
   }
 
   void updateEmailAnswered(EmailId emailId) {
-    if (selectedEmail.value != null) {
-      final newEmail = selectedEmail.value!.updateKeywords({
-        KeyWordIdentifier.emailAnswered: true,
-      });
-      dispatchEmailUIAction(UpdatedEmailKeywordsAction(
-        newEmail,
-        KeyWordIdentifier.emailAnswered,
-      ));
-    }
+    dispatchEmailUIAction(UpdatedEmailKeywordsAction(
+      emailId,
+      KeyWordIdentifier.emailAnswered,
+      true,
+    ));
 
     updateEmailFlagByEmailIds([emailId], markAsAnswered: true);
   }
 
   void updateEmailForwarded(EmailId emailId) {
-    if (selectedEmail.value != null) {
-      final newEmail = selectedEmail.value!.updateKeywords({
-        KeyWordIdentifier.emailForwarded: true,
-      });
-      dispatchEmailUIAction(UpdatedEmailKeywordsAction(
-        newEmail,
-        KeyWordIdentifier.emailForwarded,
-      ));
-    }
+    dispatchEmailUIAction(UpdatedEmailKeywordsAction(
+      emailId,
+      KeyWordIdentifier.emailForwarded,
+      true,
+    ));
 
     updateEmailFlagByEmailIds([emailId], markAsForwarded: true);
   }
