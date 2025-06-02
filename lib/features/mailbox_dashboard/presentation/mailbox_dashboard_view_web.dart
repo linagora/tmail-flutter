@@ -6,6 +6,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
+import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/web/composer_overlay_view.dart';
@@ -39,8 +40,6 @@ import 'package:tmail_ui_user/features/search/email/presentation/search_email_vi
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_view.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete_all_spam_emails_widget.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_empty_trash_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_web_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -113,22 +112,49 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
                         QuotasBannerWidget(),
                         _buildVacationNotificationMessage(context),
                         Obx(() {
-                          final presentationMailbox = controller.selectedMailbox.value;
-                          if (controller.isEmptyTrashBannerEnabledOnWeb(context, presentationMailbox)) {
-                            return BannerEmptyTrashWidget(
-                              responsiveUtils: controller.responsiveUtils,
-                              imagePaths: controller.imagePaths,
-                              onTapAction: controller.emptyTrashAction,
+                          final selectedMailbox = controller
+                            .selectedMailbox
+                            .value;
+
+                          bool showTrashBanner = controller
+                            .isEmptyTrashBannerEnabledOnWeb(
+                              context,
+                              selectedMailbox,
                             );
-                          } else {
-                            return const SizedBox.shrink();
-                          }
-                        }),
-                        Obx(() {
-                          final presentationMailbox = controller.selectedMailbox.value;
-                          if (controller.isEmptySpamBannerEnabledOnWeb(context, presentationMailbox)) {
-                            return BannerDeleteAllSpamEmailsWidget(
-                              onTapAction: () => controller.openDialogEmptySpamFolder(context)
+                          bool showSpamBanner = controller
+                            .isEmptySpamBannerEnabledOnWeb(
+                              context,
+                              selectedMailbox,
+                            );
+
+                          if (showTrashBanner) {
+                            return CleanMessagesBanner(
+                              message: AppLocalizations
+                                .of(context)
+                                .message_delete_all_email_in_trash_button,
+                              positiveAction: AppLocalizations
+                                .of(context)
+                                .empty_trash_now,
+                              onPositiveAction: controller.emptyTrashAction,
+                              margin: const EdgeInsetsDirectional.only(
+                                bottom: 8,
+                                end: 16,
+                              ),
+                            );
+                          } else if (showSpamBanner) {
+                            return CleanMessagesBanner(
+                              message: AppLocalizations
+                                .of(context)
+                                .bannerDeleteAllSpamEmailsMessage,
+                              positiveAction: AppLocalizations
+                                .of(context)
+                                .deleteAllSpamEmailsNow,
+                              onPositiveAction: () =>
+                                controller.openDialogEmptySpamFolder(context),
+                              margin: const EdgeInsetsDirectional.only(
+                                bottom: 8,
+                                end: 16,
+                              ),
                             );
                           } else {
                             return const SizedBox.shrink();
