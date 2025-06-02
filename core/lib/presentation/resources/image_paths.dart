@@ -12,7 +12,7 @@ class ImagePaths {
   String get icDownload => _getImagePath('ic_download.svg');
   String get icMore => _getImagePath('ic_more.svg');
   String get icPhotoLibrary => _getImagePath('ic_photo_library.svg');
-  String get icEmptyEmail => _getImagePath('ic_empty_email.svg');
+  String get icEmptyFolder => _getImagePath('ic_empty_folder.svg');
   String get icStar => _getImagePath('ic_star.svg');
   String get icUnStar => _getImagePath('ic_unstar.svg');
   String get icAttachment => _getImagePath('ic_attachment.svg');

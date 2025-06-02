@@ -270,6 +270,24 @@ class ThemeUtils {
     color: AppColor.steelGray400,
   );
 
+  static TextStyle textStyleInter600() => TextStyle(
+    fontFamily: ConstantsUI.fontApp,
+    fontWeight: FontWeight.w600,
+    letterSpacing: 0.0,
+    fontSize: 24,
+    height: 28.01 / 24,
+    color: AppColor.color424244.withOpacity(0.9),
+  );
+
+  static TextStyle textStyleInter400() => TextStyle(
+    fontFamily: ConstantsUI.fontApp,
+    fontWeight: FontWeight.w400,
+    letterSpacing: -0.15,
+    fontSize: 16,
+    height: 21.01 / 16,
+    color: AppColor.color424244.withOpacity(0.64),
+  );
+
   static TextSelectionThemeData get _textSelectionTheme {
     return const TextSelectionThemeData(
       cursorColor: AppColor.primaryColor,
