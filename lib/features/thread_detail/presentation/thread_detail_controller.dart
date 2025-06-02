@@ -12,7 +12,9 @@ import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
+import 'package:model/email/email_property.dart';
 import 'package:model/email/presentation_email.dart';
+import 'package:model/extensions/keyword_identifier_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
@@ -34,6 +36,7 @@ import 'package:tmail_ui_user/features/thread_detail/domain/state/get_thread_by_
 import 'package:tmail_ui_user/features/thread_detail/domain/state/get_emails_by_ids_state.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_by_id_interactor.dart';
 import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_emails_by_ids_interactor.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_email_ids_by_thread_id_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_emails_by_ids_success.dart';
@@ -136,6 +139,22 @@ class ThreadDetailController extends BaseController {
           sentMailboxId!,
           ownEmailAddress!,
         ));
+      }
+    });
+    ever(mailboxDashBoardController.threadDetailUIAction, (action) {
+      if (action is UpdatedEmailKeywordsAction) {
+        emailIdsPresentation
+          [action.emailId]
+          ?.keywords
+          ?[action.updatedKeyword] = action.value;
+        if (action.updatedKeyword == KeyWordIdentifierExtension.unsubscribeMail) {
+          emailIdsPresentation
+            [action.emailId]
+            ?..emailHeader?.removeWhere((element) {
+              return element.name == EmailProperty.headerUnsubscribeKey;
+            })
+            ..listUnsubscribeHeader?.clear();
+        }
       }
     });
   }
