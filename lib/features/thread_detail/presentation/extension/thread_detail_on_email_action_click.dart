@@ -7,7 +7,6 @@ import 'package:model/email/presentation_email.dart';
 import 'package:model/email/read_actions.dart';
 import 'package:model/extensions/email_extension.dart';
 import 'package:model/extensions/session_extension.dart';
-import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/utils/email_utils.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
@@ -256,9 +255,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
     consumeState(emailActionReactor.printEmail(
       presentationEmail,
       ownEmailAddress: mailboxDashBoardController.getOwnEmailAddress(),
-      emailLoaded: getBinding<SingleEmailController>(
-        tag: presentationEmail.id?.id.value,
-      )?.currentEmailLoaded.value,
+      emailLoaded: null,
       session: session,
       accountId: accountId,
       baseDownloadUrl: session?.getDownloadUrl(jmapUrl: dynamicUrlInterceptors.jmapUrl),
@@ -307,9 +304,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
           )
         );
       },
-      emailLoaded: getBinding<SingleEmailController>(
-        tag: presentationEmail.id?.id.value,
-      )?.currentEmailLoaded.value,
+      emailLoaded: null,
     );
   }
 
@@ -329,9 +324,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
           )
         );
       },
-      emailLoaded: getBinding<SingleEmailController>(
-        tag: presentationEmail.id?.id.value,
-      )?.currentEmailLoaded.value,
+      emailLoaded: null,
     );
   }
   void _replyToList(PresentationEmail presentationEmail) {
@@ -350,9 +343,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
           )
         );
       },
-      emailLoaded: getBinding<SingleEmailController>(
-        tag: presentationEmail.id?.id.value,
-      )?.currentEmailLoaded.value,
+      emailLoaded: null,
     );
   }
   void _forward(PresentationEmail presentationEmail) {
@@ -370,9 +361,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
           )
         );
       },
-      emailLoaded: getBinding<SingleEmailController>(
-        tag: presentationEmail.id?.id.value,
-      )?.currentEmailLoaded.value,
+      emailLoaded: null,
     );
   }
 
