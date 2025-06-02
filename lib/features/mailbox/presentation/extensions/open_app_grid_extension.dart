@@ -33,7 +33,6 @@ extension OpenAppGridExtension on MailboxController {
                   blurRadius: 2,
                 ),
               ],
-              color: Colors.white,
               borderRadius: BorderRadius.all(Radius.circular(14)),
             ),
             child: GridView(
