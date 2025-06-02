@@ -436,7 +436,7 @@ class MailboxDashBoardController extends ReloadableController
     } else if (success is DeleteSendingEmailSuccess) {
       getAllSendingEmails();
     } else if (success is UnsubscribeEmailSuccess) {
-      _handleUnsubscribeMailSuccess();
+      _handleUnsubscribeMailSuccess(success.emailId);
     } else if (success is RestoreDeletedMessageSuccess) {
       _handleRestoreDeletedMessageSuccess(success.emailRecoveryAction.id!);
     } else if (success is GetRestoredDeletedMessageSuccess) {
@@ -2817,20 +2817,27 @@ class MailboxDashBoardController extends ReloadableController
     }
   }
 
-  void _handleUnsubscribeMailSuccess() {
+  void _handleUnsubscribeMailSuccess(EmailId emailId) {
     if (currentContext != null && currentOverlayContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).unsubscribedFromThisMailingList);
     }
-    final newEmail = selectedEmail.value?.updateKeywords({
+    dispatchEmailUIAction(UpdatedEmailKeywordsAction(
+      emailId,
+      KeyWordIdentifierExtension.unsubscribeMail,
+      true,
+    ));
+
+    final listEmail = searchController.isSearchEmailRunning
+      ? listResultSearch
+      : emailsInCurrentMailbox;
+    var newEmailIndex = listEmail.indexWhere((email) => email.id == emailId);
+    if (newEmailIndex == -1) return;
+
+    listEmail[newEmailIndex] = listEmail[newEmailIndex].updateKeywords({
       KeyWordIdentifierExtension.unsubscribeMail: true,
     });
-    if (newEmail == null) return;
-    dispatchEmailUIAction(UpdatedEmailKeywordsAction(
-      newEmail,
-      KeyWordIdentifierExtension.unsubscribeMail,
-    ));
   }
 
   void _replaceBrowserHistory({Uri? uri}) {

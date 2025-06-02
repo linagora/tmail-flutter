@@ -59,11 +59,16 @@ class PerformEmailActionInThreadDetailAction extends EmailUIAction {
 }
 
 class UpdatedEmailKeywordsAction extends EmailUIAction {
-  UpdatedEmailKeywordsAction(this.presentationEmail, this.updatedKeyword);
+  UpdatedEmailKeywordsAction(
+    this.emailId,
+    this.updatedKeyword,
+    this.value,
+  );
 
-  final PresentationEmail presentationEmail;
+  final EmailId emailId;
   final KeyWordIdentifier updatedKeyword;
+  final bool value;
 
   @override
-  List<Object?> get props => [presentationEmail, updatedKeyword];
+  List<Object?> get props => [emailId, updatedKeyword];
 }
