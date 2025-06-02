@@ -408,21 +408,19 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         }
         Get.delete<SingleEmailController>(tag: _currentEmailId?.id.value);
       } else if (action is UpdatedEmailKeywordsAction) {
-        if (action.presentationEmail.id != _currentEmailId) return;
+        if (action.emailId != _currentEmailId) return;
         _threadDetailController
           ?.emailIdsPresentation
-          [action.presentationEmail.id!] = currentEmail?.copyWith(
-            keywords: action.presentationEmail.keywords,
-          );
-        if (action.updatedKeyword == KeyWordIdentifierExtension.unsubscribeMail) {
-          _handleUnsubscribe(action.presentationEmail.listUnsubscribe ?? '');
-        }
+          [action.emailId]
+          ?.keywords
+          ?[action.updatedKeyword] = action.value;
       }
     }));
 
     obxListeners.add(ever(mailboxDashBoardController.viewState, (viewState) {
       viewState.map((success) {
         if (success is UnsubscribeEmailSuccess) {
+          if (success.emailId != _currentEmailId) return;
           emailUnsubscribe.value = null;
         }
       });
