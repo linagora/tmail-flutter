@@ -9,6 +9,23 @@ import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension MarkCollapsedEmailReadSuccess on ThreadDetailController {
   void markCollapsedEmailReadSuccess(MarkAsEmailReadSuccess success) {
+    _updateEmailListInMailboxDashboardController(success);
+    _updateEmailKeywordInThreadDetailController(success);
+    _updateEmailCollapsedStatusInThreadDetailController(success);
+  }
+
+  void _updateEmailListInMailboxDashboardController(
+    MarkAsEmailReadSuccess success,
+  ) {
+    mailboxDashBoardController.updateEmailFlagByEmailIds(
+      [success.emailId],
+      readAction: success.readActions,
+    );
+  }
+
+  void _updateEmailKeywordInThreadDetailController(
+    MarkAsEmailReadSuccess success,
+  ) {
     if (success.readActions == ReadActions.markAsRead) {
       emailIdsPresentation[success.emailId]
         ?.keywords
@@ -17,11 +34,11 @@ extension MarkCollapsedEmailReadSuccess on ThreadDetailController {
       emailIdsPresentation[success.emailId]
         ?.keywords?.remove(KeyWordIdentifier.emailSeen);
     }
-    mailboxDashBoardController.updateEmailFlagByEmailIds(
-      [success.emailId],
-      readAction: success.readActions,
-    );
+  }
 
+  void _updateEmailCollapsedStatusInThreadDetailController(
+    MarkAsEmailReadSuccess success,
+  ) {
     if (success.readActions == ReadActions.markAsRead) return;
     if (emailIdsPresentation.length == 1) {
       closeThreadDetailAction(currentContext);
