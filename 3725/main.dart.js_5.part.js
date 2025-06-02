@@ -3951,7 +3951,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return new B.ThreadDetailOnEmailActionClick_get_threadDetailOnEmailActionClick_closure(_this);
     },
     ThreadDetailOnEmailActionClick_threadDetailOnEmailActionClick(_this, presentationEmail, emailActionType) {
-      var t1, t2, t3, t4, t5, t6, t7;
+      var t1, t2, t3, t4, t5, t6;
       switch (emailActionType.index) {
         case 5:
           B.ThreadDetailOnEmailActionClick__markRead(_this, presentationEmail);
@@ -3994,16 +3994,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t1 === $ && A.throwUnnamedLateFieldNI();
           t2 = _this.mailboxDashBoardController;
           t3 = t2.getOwnEmailAddress$0();
-          t4 = presentationEmail.id;
-          t4 = t4 == null ? null : t4.id.value;
-          t4 = A.getBinding(t4, type$.SingleEmailController);
-          t4 = t4 == null ? null : t4.currentEmailLoaded.get$value(0);
-          t5 = t2.sessionCurrent;
-          t6 = t2.accountId.get$value(0);
+          t4 = t2.sessionCurrent;
+          t5 = t2.accountId.get$value(0);
           t2 = t2.sessionCurrent;
           t2 = t2 == null ? null : A.SessionExtension_getDownloadUrl(t2, _this.dynamicUrlInterceptors._jmapUrl);
-          t7 = A.TransformConfiguration_TransformConfiguration$forPreviewEmailOnWeb();
-          _this.consumeState$1(t1.printEmail$8$accountId$baseDownloadUrl$emailLoaded$onGetEmailContentFailure$ownEmailAddress$session$transformConfiguration(presentationEmail, t6, t2, t4, B.ThreadDetailOnEmailActionClick_get__showUnknownErrorToast(_this), t3, t5, t7));
+          t6 = A.TransformConfiguration_TransformConfiguration$forPreviewEmailOnWeb();
+          _this.consumeState$1(t1.printEmail$8$accountId$baseDownloadUrl$emailLoaded$onGetEmailContentFailure$ownEmailAddress$session$transformConfiguration(presentationEmail, t5, t2, null, B.ThreadDetailOnEmailActionClick_get__showUnknownErrorToast(_this), t3, t4, t6));
           break;
         case 30:
           B.ThreadDetailOnEmailActionClick__downloadMessageAsEML(_this, presentationEmail);
@@ -4235,44 +4231,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       new B.ThreadDetailOnEmailActionClick__editAsNewEmail_closure(_this).call$1(presentationEmail);
     },
     ThreadDetailOnEmailActionClick__replyEmail(_this, presentationEmail) {
-      var t2,
-        t1 = _this.__ThreadDetailController_emailActionReactor_F;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t2 = presentationEmail.id;
-      t2 = t2 == null ? null : t2.id.value;
-      t2 = A.getBinding(t2, type$.SingleEmailController);
-      t2 = t2 == null ? null : t2.currentEmailLoaded.get$value(0);
-      t1.replyEmail$3$emailLoaded$onReplyEmailRequest(presentationEmail, t2, new B.ThreadDetailOnEmailActionClick__replyEmail_closure(_this));
+      _this.__ThreadDetailController_emailActionReactor_F === $ && A.throwUnnamedLateFieldNI();
+      new B.ThreadDetailOnEmailActionClick__replyEmail_closure(_this).call$2(presentationEmail, null);
     },
     ThreadDetailOnEmailActionClick__replyAll(_this, presentationEmail) {
-      var t2,
-        t1 = _this.__ThreadDetailController_emailActionReactor_F;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t2 = presentationEmail.id;
-      t2 = t2 == null ? null : t2.id.value;
-      t2 = A.getBinding(t2, type$.SingleEmailController);
-      t2 = t2 == null ? null : t2.currentEmailLoaded.get$value(0);
-      t1.replyAll$3$emailLoaded$onReplyAllRequest(presentationEmail, t2, new B.ThreadDetailOnEmailActionClick__replyAll_closure(_this));
+      _this.__ThreadDetailController_emailActionReactor_F === $ && A.throwUnnamedLateFieldNI();
+      new B.ThreadDetailOnEmailActionClick__replyAll_closure(_this).call$2(presentationEmail, null);
     },
     ThreadDetailOnEmailActionClick__replyToList(_this, presentationEmail) {
-      var t2,
-        t1 = _this.__ThreadDetailController_emailActionReactor_F;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t2 = presentationEmail.id;
-      t2 = t2 == null ? null : t2.id.value;
-      t2 = A.getBinding(t2, type$.SingleEmailController);
-      t2 = t2 == null ? null : t2.currentEmailLoaded.get$value(0);
-      t1.replyToList$3$emailLoaded$onReplyToListRequest(presentationEmail, t2, new B.ThreadDetailOnEmailActionClick__replyToList_closure(_this));
+      _this.__ThreadDetailController_emailActionReactor_F === $ && A.throwUnnamedLateFieldNI();
+      new B.ThreadDetailOnEmailActionClick__replyToList_closure(_this).call$2(presentationEmail, null);
     },
     ThreadDetailOnEmailActionClick__forward(_this, presentationEmail) {
-      var t2,
-        t1 = _this.__ThreadDetailController_emailActionReactor_F;
-      t1 === $ && A.throwUnnamedLateFieldNI();
-      t2 = presentationEmail.id;
-      t2 = t2 == null ? null : t2.id.value;
-      t2 = A.getBinding(t2, type$.SingleEmailController);
-      t2 = t2 == null ? null : t2.currentEmailLoaded.get$value(0);
-      t1.forward$3$emailLoaded$onForwardRequest(0, presentationEmail, t2, new B.ThreadDetailOnEmailActionClick__forward_closure(_this));
+      _this.__ThreadDetailController_emailActionReactor_F === $ && A.throwUnnamedLateFieldNI();
+      new B.ThreadDetailOnEmailActionClick__forward_closure(_this).call$2(presentationEmail, null);
     },
     ThreadDetailOnEmailActionClick_get__showUnknownErrorToast(_this) {
       return new B.ThreadDetailOnEmailActionClick_get__showUnknownErrorToast_closure(_this);
@@ -9160,7 +9132,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         _s26_ = "assets/images/ic_reply.svg",
         countMailAddress = A.PresentationEmailExtension_getCountMailAddressWithoutMe(_this.presentationEmail, _this.userName),
         t1 = _this.emailLoaded.emailCurrent;
-      t1 = t1 == null ? _null : C.JSString_methods.trim$0(A.ListEmailHeaderExtension_get_listPost(t1.headers));
+      t1 = t1 == null ? _null : A.EmailExtension_get_listPost(t1);
       isReplyToListEnabled = A.EmailUtils_isReplyToListEnabled(t1 == null ? "" : t1);
       t1 = _this.bottomBarDecoration;
       if (t1 == null)
@@ -19492,7 +19464,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = _null;
       else {
         t1 = emailLoaded.emailCurrent;
-        t1 = t1 == null ? _null : C.JSString_methods.trim$0(A.ListEmailHeaderExtension_get_listPost(t1.headers));
+        t1 = t1 == null ? _null : A.EmailExtension_get_listPost(t1);
       }
       A.OpenAndCloseComposerExtension_openComposer(this._this.mailboxDashBoardController, A.ComposerArguments_ComposerArguments$replyEmail(t2, t3, t1, t4, t5, presentationEmail, t6));
     },
@@ -19500,84 +19472,26 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.ThreadDetailOnEmailActionClick__replyAll_closure.prototype = {
     call$2(presentationEmail, emailLoaded) {
-      var t5, t6, _null = null,
-        t1 = emailLoaded == null,
-        t2 = t1 ? _null : emailLoaded.htmlContent,
-        t3 = t1 ? _null : emailLoaded.inlineImages,
-        t4 = presentationEmail.mailboxContain;
-      t4 = t4 == null ? _null : t4.role;
-      if (t1)
-        t5 = _null;
-      else {
-        t5 = emailLoaded.emailCurrent;
-        t5 = t5 == null ? _null : t5.messageId;
-      }
-      if (t1)
-        t6 = _null;
-      else {
-        t6 = emailLoaded.emailCurrent;
-        t6 = t6 == null ? _null : t6.references;
-      }
-      if (t1)
-        t1 = _null;
-      else {
-        t1 = emailLoaded.emailCurrent;
-        t1 = t1 == null ? _null : C.JSString_methods.trim$0(A.ListEmailHeaderExtension_get_listPost(t1.headers));
-      }
-      A.OpenAndCloseComposerExtension_openComposer(this._this.mailboxDashBoardController, A.ComposerArguments_ComposerArguments$replyAllEmail(t2, t3, t1, t4, t5, presentationEmail, t6));
+      var _null = null,
+        t1 = presentationEmail.mailboxContain;
+      t1 = t1 == null ? _null : t1.role;
+      A.OpenAndCloseComposerExtension_openComposer(this._this.mailboxDashBoardController, A.ComposerArguments_ComposerArguments$replyAllEmail(_null, _null, _null, t1, _null, presentationEmail, _null));
     },
     $signature: 224
   };
   B.ThreadDetailOnEmailActionClick__replyToList_closure.prototype = {
     call$2(presentationEmail, emailLoaded) {
-      var t5, t6, _null = null,
-        t1 = emailLoaded == null,
-        t2 = t1 ? _null : emailLoaded.htmlContent,
-        t3 = t1 ? _null : emailLoaded.inlineImages,
-        t4 = presentationEmail.mailboxContain;
-      t4 = t4 == null ? _null : t4.role;
-      if (t1)
-        t5 = _null;
-      else {
-        t5 = emailLoaded.emailCurrent;
-        t5 = t5 == null ? _null : t5.messageId;
-      }
-      if (t1)
-        t6 = _null;
-      else {
-        t6 = emailLoaded.emailCurrent;
-        t6 = t6 == null ? _null : t6.references;
-      }
-      if (t1)
-        t1 = _null;
-      else {
-        t1 = emailLoaded.emailCurrent;
-        t1 = t1 == null ? _null : C.JSString_methods.trim$0(A.ListEmailHeaderExtension_get_listPost(t1.headers));
-      }
-      A.OpenAndCloseComposerExtension_openComposer(this._this.mailboxDashBoardController, A.ComposerArguments_ComposerArguments$replyToListEmail(t2, t3, t1, t4, t5, presentationEmail, t6));
+      var _null = null,
+        t1 = presentationEmail.mailboxContain;
+      t1 = t1 == null ? _null : t1.role;
+      A.OpenAndCloseComposerExtension_openComposer(this._this.mailboxDashBoardController, A.ComposerArguments_ComposerArguments$replyToListEmail(_null, _null, _null, t1, _null, presentationEmail, _null));
     },
     $signature: 224
   };
   B.ThreadDetailOnEmailActionClick__forward_closure.prototype = {
     call$2(presentationEmail, emailLoaded) {
-      var t5, _null = null,
-        t1 = emailLoaded == null,
-        t2 = t1 ? _null : emailLoaded.htmlContent,
-        t3 = t1 ? _null : emailLoaded.attachments,
-        t4 = t1 ? _null : emailLoaded.inlineImages;
-      if (t1)
-        t5 = _null;
-      else {
-        t5 = emailLoaded.emailCurrent;
-        t5 = t5 == null ? _null : t5.messageId;
-      }
-      if (t1)
-        t1 = _null;
-      else {
-        t1 = emailLoaded.emailCurrent;
-        t1 = t1 == null ? _null : t1.references;
-      }
-      A.OpenAndCloseComposerExtension_openComposer(this._this.mailboxDashBoardController, A.ComposerArguments_ComposerArguments$forwardEmail(t3, t2, t4, t5, presentationEmail, t1));
+      var _null = null;
+      A.OpenAndCloseComposerExtension_openComposer(this._this.mailboxDashBoardController, A.ComposerArguments_ComposerArguments$forwardEmail(_null, _null, _null, _null, presentationEmail, _null));
     },
     $signature: 224
   };
@@ -20606,5 +20520,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "SrHjtXc79FSkyrGMmVTXwGSb9Bw=");
+})($__dart_deferred_initializers__, "qrUdKurS/MUjqI3WuyHuuuQrCUU=");
 ;
