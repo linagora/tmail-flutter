@@ -12,7 +12,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/empty_mailbo
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_expand_button.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/trailing_mailbox_item_widget.dart';
 
-class LabelMailboxItemWidget extends StatelessWidget {
+class LabelMailboxItemWidget extends StatefulWidget {
 
   final GlobalKey itemKey;
   final ResponsiveUtils responsiveUtils;
@@ -40,17 +40,25 @@ class LabelMailboxItemWidget extends StatelessWidget {
   });
 
   @override
+  State<LabelMailboxItemWidget> createState() => _LabelMailboxItemWidgetState();
+}
+
+class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
+
+  bool _popupVisible = false;
+
+  @override
   Widget build(BuildContext context) {
     final displayNameWidget = TextOverflowBuilder(
-      mailboxNode.item.getDisplayName(context),
-      style: isSelected
+      widget.mailboxNode.item.getDisplayName(context),
+      style: widget.isSelected
         ? ThemeUtils.textStyleInter700(color: Colors.black, fontSize: 14)
         : ThemeUtils.textStyleBodyBody3(color: Colors.black),
     );
 
     final nameWithExpandIcon = Row(
       children: [
-        if (mailboxNode.hasChildren())
+        if (widget.mailboxNode.hasChildren())
           Flexible(child: displayNameWidget)
         else
           Flexible(
@@ -59,25 +67,25 @@ class LabelMailboxItemWidget extends StatelessWidget {
               child: displayNameWidget,
             ),
           ),
-        if (mailboxNode.hasChildren())
+        if (widget.mailboxNode.hasChildren())
           MailboxExpandButton(
-            itemKey: itemKey,
-            mailboxNode: mailboxNode,
-            imagePaths: imagePaths,
-            onExpandFolderActionClick: onClickExpandMailboxNodeAction,
+            itemKey: widget.itemKey,
+            mailboxNode: widget.mailboxNode,
+            imagePaths: widget.imagePaths,
+            onExpandFolderActionClick: widget.onClickExpandMailboxNodeAction,
           ),
       ],
     );
 
-    if (!showTrailing) {
-      if (mailboxNode.item.isTeamMailboxes) {
+    if (!widget.showTrailing) {
+      if (widget.mailboxNode.item.isTeamMailboxes) {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             nameWithExpandIcon,
             TextOverflowBuilder(
-              mailboxNode.item.emailTeamMailBoxes,
+              widget.mailboxNode.item.emailTeamMailBoxes,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                 fontSize: LabelMailboxItemWidgetStyles.labelFolderTextSize,
                 color: LabelMailboxItemWidgetStyles.teamMailboxEmailTextColor,
@@ -92,35 +100,40 @@ class LabelMailboxItemWidget extends StatelessWidget {
     }
 
     final trailingWidget = TrailingMailboxItemWidget(
-      mailboxNode: mailboxNode,
-      responsiveUtils: responsiveUtils,
-      imagePaths: imagePaths,
-      isItemHovered: isItemHovered,
-      onMenuActionClick: onMenuActionClick,
+      mailboxNode: widget.mailboxNode,
+      responsiveUtils: widget.responsiveUtils,
+      imagePaths: widget.imagePaths,
+      isItemHovered: widget.isItemHovered,
+      onMenuActionClick: widget.onMenuActionClick,
     );
 
     final childWidget = Row(
       children: [
         Expanded(child: nameWithExpandIcon),
-        if (responsiveUtils.isWebDesktop(context) &&
-            mailboxNode.item.allowedHasEmptyAction)
-          EmptyMailboxPopupDialogWidget(
-            mailboxNode: mailboxNode,
-            onEmptyMailboxActionCallback: (mailboxNode) =>
-                onEmptyMailboxActionCallback?.call(mailboxNode),
+        if (_showCleanButton(context))
+          Offstage(
+            offstage: !_shouldShowPopup,
+            child: EmptyMailboxPopupDialogWidget(
+              mailboxNode: widget.mailboxNode,
+              onEmptyMailboxActionCallback: (mailboxNode) {
+                _onPopupVisibleChange(false);
+                widget.onEmptyMailboxActionCallback?.call(mailboxNode);
+              },
+              onPopupVisibleChange: _onPopupVisibleChange,
+            ),
           ),
         trailingWidget,
       ],
     );
 
-    if (mailboxNode.item.isTeamMailboxes) {
+    if (widget.mailboxNode.item.isTeamMailboxes) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
           childWidget,
           TextOverflowBuilder(
-            mailboxNode.item.emailTeamMailBoxes,
+            widget.mailboxNode.item.emailTeamMailBoxes,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
               fontSize: LabelMailboxItemWidgetStyles.labelFolderTextSize,
               color: LabelMailboxItemWidgetStyles.teamMailboxEmailTextColor,
@@ -132,5 +145,18 @@ class LabelMailboxItemWidget extends StatelessWidget {
     } else {
       return childWidget;
     }
+  }
+
+  void _onPopupVisibleChange(bool visible) {
+    if (_popupVisible != visible) {
+      setState(() => _popupVisible = visible);
+    }
+  }
+
+  bool get _shouldShowPopup => widget.isItemHovered || _popupVisible;
+
+  bool _showCleanButton(BuildContext context) {
+    return widget.responsiveUtils.isWebDesktop(context) &&
+        widget.mailboxNode.item.allowedHasEmptyAction;
   }
 }
