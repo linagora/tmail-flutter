@@ -112,16 +112,20 @@ class ThreadDetailController extends BaseController {
   @override
   void onInit() {
     super.onInit();
-    injectRuleFilterBindings(session, accountId);
-    _createNewEmailRuleFilterInteractor = getBinding<CreateNewEmailRuleFilterInteractor>();
-    emailActionReactor = EmailActionReactor(
-      _markAsEmailReadInteractor,
-      _markAsStarEmailInteractor,
-      _createNewEmailRuleFilterInteractor,
-      _printEmailInteractor,
-      _getEmailContentInteractor,
-      _downloadAttachmentForWebInteractor,
-    );
+    ever(mailboxDashBoardController.accountId, (accountId) {
+      if (accountId == null) return;
+
+      injectRuleFilterBindings(session, accountId);
+      _createNewEmailRuleFilterInteractor = getBinding<CreateNewEmailRuleFilterInteractor>();
+      emailActionReactor = EmailActionReactor(
+        _markAsEmailReadInteractor,
+        _markAsStarEmailInteractor,
+        _createNewEmailRuleFilterInteractor,
+        _printEmailInteractor,
+        _getEmailContentInteractor,
+        _downloadAttachmentForWebInteractor,
+      );
+    });
     downloadProgressState.stream.listen(handleDownloadProgressState);
     ever(mailboxDashBoardController.selectedEmail, (presentationEmail) {
       if (presentationEmail?.threadId == null) {
