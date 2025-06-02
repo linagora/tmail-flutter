@@ -167,6 +167,7 @@ import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_multiple_e
 import 'package:tmail_ui_user/features/thread/domain/usecases/mark_as_star_multiple_email_interactor.dart';
 import 'package:tmail_ui_user/features/thread/domain/usecases/move_multiple_email_to_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_detail_ui_action.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_link_data.dart';
 import 'package:tmail_ui_user/main/deep_links/deep_links_manager.dart';
 import 'package:tmail_ui_user/main/deep_links/open_app_deep_link_data.dart';
@@ -240,6 +241,7 @@ class MailboxDashBoardController extends ReloadableController
   final dashBoardAction = Rxn<UIAction>();
   final mailboxUIAction = Rxn<MailboxUIAction>();
   final emailUIAction = Rxn<EmailUIAction>();
+  final threadDetailUIAction = Rxn<ThreadDetailUIAction>();
   final dashboardRoute = DashboardRoutes.waiting.obs;
   final currentSelectMode = SelectMode.INACTIVE.obs;
   final filterMessageOption = FilterMessageOption.all.obs;
@@ -1735,6 +1737,11 @@ class MailboxDashBoardController extends ReloadableController
     emailUIAction.value = newAction;
   }
 
+  void dispatchThreadDetailUIAction(ThreadDetailUIAction newAction) {
+    log('MailboxDashBoardController::dispatchThreadDetailUIAction():newAction: ${newAction.runtimeType}');
+    threadDetailUIAction.value = newAction;
+  }
+
   void dispatchRoute(DashboardRoutes route) {
     log('MailboxDashBoardController::dispatchRoute(): $route');
     dashboardRoute.value = route;
@@ -2823,11 +2830,13 @@ class MailboxDashBoardController extends ReloadableController
         currentOverlayContext!,
         AppLocalizations.of(currentContext!).unsubscribedFromThisMailingList);
     }
-    dispatchEmailUIAction(UpdatedEmailKeywordsAction(
+    dispatchThreadDetailUIAction(UpdatedEmailKeywordsAction(
       emailId,
       KeyWordIdentifierExtension.unsubscribeMail,
       true,
     ));
+    // Reset threadDetailUIAction
+    dispatchThreadDetailUIAction(ThreadDetailUIAction());
 
     final listEmail = searchController.isSearchEmailRunning
       ? listResultSearch

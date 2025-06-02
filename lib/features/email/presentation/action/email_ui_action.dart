@@ -1,7 +1,6 @@
 
 import 'package:jmap_dart_client/jmap/core/state.dart' as jmap;
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
-import 'package:jmap_dart_client/jmap/mail/email/keyword_identifier.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
@@ -56,19 +55,4 @@ class PerformEmailActionInThreadDetailAction extends EmailUIAction {
     emailActionType,
     presentationEmail,
   ];
-}
-
-class UpdatedEmailKeywordsAction extends EmailUIAction {
-  UpdatedEmailKeywordsAction(
-    this.emailId,
-    this.updatedKeyword,
-    this.value,
-  );
-
-  final EmailId emailId;
-  final KeyWordIdentifier updatedKeyword;
-  final bool value;
-
-  @override
-  List<Object?> get props => [emailId, updatedKeyword];
 }
