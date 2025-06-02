@@ -83,7 +83,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
   }
 
   void _markRead(PresentationEmail presentationEmail) {
-    if (session == null || accountId == null) return;
+    if (session == null || accountId == null || presentationEmail.hasRead) return;
 
     consumeState(emailActionReactor.markAsEmailRead(
       session!,
@@ -94,7 +94,7 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
   }
 
   void _unRead(PresentationEmail presentationEmail) {
-    if (session == null || accountId == null) return;
+    if (session == null || accountId == null || !presentationEmail.hasRead) return;
 
     consumeState(emailActionReactor.markAsEmailRead(
       session!,
@@ -108,7 +108,10 @@ extension ThreadDetailOnEmailActionClick on ThreadDetailController {
     PresentationEmail presentationEmail,
     MarkStarAction markStarAction,
   ) {
-    if (session == null || accountId == null) return;
+    if (session == null ||
+        accountId == null ||
+        (presentationEmail.hasStarred && markStarAction == MarkStarAction.markStar) ||
+        (!presentationEmail.hasStarred && markStarAction == MarkStarAction.unMarkStar)) return;
 
     consumeState(emailActionReactor.markAsStarEmail(
       session!,
