@@ -10,8 +10,8 @@ import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/properties/properties.dart';
 import 'package:jmap_dart_client/jmap/core/session/session.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email.dart';
+import 'package:jmap_dart_client/jmap/mail/email/individual_header_identifier.dart';
 import 'package:jmap_dart_client/jmap/mail/mailbox/mailbox.dart';
-import 'package:model/email/email_property.dart';
 import 'package:model/email/presentation_email.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
@@ -71,8 +71,8 @@ class ThreadDetailController extends BaseController {
 
   late final EmailActionReactor emailActionReactor;
   final additionalProperties = Properties({
-    'header:${EmailProperty.headerListPostKey}:asText',
-    'header:${EmailProperty.headerUnsubscribeKey}:asText',
+    IndividualHeaderIdentifier.listPostHeader.value,
+    IndividualHeaderIdentifier.listUnsubscribeHeader.value,
   });
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
