@@ -20,6 +20,7 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:rxdart/transformers.dart';
 import 'package:tmail_ui_user/features/base/base_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/base/mixin/contact_support_mixin.dart';
+import 'package:tmail_ui_user/features/base/mixin/launcher_application_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/mailbox_action_handler_mixin.dart';
 import 'package:tmail_ui_user/features/composer/domain/state/save_email_as_drafts_state.dart';
 import 'package:tmail_ui_user/features/email/domain/model/move_action.dart';
@@ -70,6 +71,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_mailbox
 import 'package:tmail_ui_user/features/mailbox/domain/usecases/subscribe_multiple_mailbox_interactor.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/action/mailbox_ui_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/mixin/mailbox_widget_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories_expand_mode.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -102,7 +104,10 @@ import 'package:tmail_ui_user/main/routes/route_utils.dart';
 import 'package:tmail_ui_user/main/utils/ios_sharing_manager.dart';
 
 class MailboxController extends BaseMailboxController
-    with MailboxActionHandlerMixin, ContactSupportMixin {
+    with MailboxActionHandlerMixin,
+        ContactSupportMixin,
+        LauncherApplicationMixin,
+        MailboxWidgetMixin {
 
   final mailboxDashBoardController = Get.find<MailboxDashBoardController>();
   final isMailboxListScrollable = false.obs;
@@ -117,9 +122,9 @@ class MailboxController extends BaseMailboxController
 
   IOSSharingManager? _iosSharingManager;
 
-  final currentSelectMode = SelectMode.INACTIVE.obs;
   final _activeScrollTop = RxBool(false);
   final _activeScrollBottom = RxBool(true);
+  final foldersExpandMode = Rx(ExpandMode.EXPAND);
 
   MailboxId? _newFolderId;
   NavigationRouter? _navigationRouter;
@@ -926,16 +931,6 @@ class MailboxController extends BaseMailboxController
     closeMailboxScreen(context);
   }
 
-  void enableSelectionMailbox() {
-    currentSelectMode.value = SelectMode.ACTIVE;
-  }
-
-  void disableSelectionMailbox() {
-    _cancelSelectMailbox();
-  }
-
-  bool isSelectionEnabled() => currentSelectMode.value == SelectMode.ACTIVE;
-
   List<MailboxActions> get listActionOfMailboxSelected {
     final currentMailboxesSelected = listMailboxSelected;
 
@@ -959,11 +954,6 @@ class MailboxController extends BaseMailboxController
     } else {
       return [];
     }
-  }
-
-  void _cancelSelectMailbox() {
-    unAllSelectedMailboxNode();
-    currentSelectMode.value = SelectMode.INACTIVE;
   }
 
   List<PresentationMailbox> get listMailboxSelected {
@@ -1039,7 +1029,6 @@ class MailboxController extends BaseMailboxController
       _deleteMailboxFailure(DeleteMultipleMailboxFailure(null));
     }
 
-    _cancelSelectMailbox();
     popBack();
   }
 
@@ -1109,7 +1098,6 @@ class MailboxController extends BaseMailboxController
       _deleteMailboxFailure(DeleteMultipleMailboxFailure(null));
     }
 
-    _cancelSelectMailbox();
     popBack();
   }
 
@@ -1138,8 +1126,6 @@ class MailboxController extends BaseMailboxController
         RenameMailboxRequest(presentationMailbox.id, newMailboxName))
       );
     }
-
-    _cancelSelectMailbox();
   }
 
   void _handleMovingMailbox(
@@ -1321,7 +1307,6 @@ class MailboxController extends BaseMailboxController
         mailboxSelected,
         destinationMailbox: destinationMailbox
       );
-      _cancelSelectMailbox();
     }
   }
 
@@ -1349,7 +1334,6 @@ class MailboxController extends BaseMailboxController
   }
 
   void closeMailboxScreen(BuildContext context) {
-    _cancelSelectMailbox();
     mailboxDashBoardController.closeMailboxMenuDrawer();
   }
 

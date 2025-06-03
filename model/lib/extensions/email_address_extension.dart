@@ -1,8 +1,7 @@
-import 'dart:ui';
-
+import 'package:core/presentation/extensions/capitalize_extension.dart';
+import 'package:core/presentation/extensions/string_extension.dart';
+import 'package:flutter/material.dart';
 import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
-import 'package:core/core.dart';
-import 'package:collection/collection.dart';
 
 extension EmailAddressExtension on EmailAddress {
 
@@ -44,19 +43,5 @@ extension EmailAddressExtension on EmailAddress {
 
   String get labelAvatar => asString().isNotEmpty ? asString()[0].toUpperCase() : '';
 
-  List<Color> get avatarColors {
-    return AppColor.mapGradientColor[_generateIndex()];
-  }
-
-  int _generateIndex() {
-    if (emailAddress.isNotEmpty) {
-      final codeUnits = emailAddress.codeUnits;
-      if (codeUnits.isNotEmpty) {
-        final sumCodeUnits = codeUnits.sum;
-        final index = sumCodeUnits % AppColor.mapGradientColor.length;
-        return index;
-      }
-    }
-    return 0;
-  }
+  List<Color> get avatarColors => emailAddress.gradientColors;
 }

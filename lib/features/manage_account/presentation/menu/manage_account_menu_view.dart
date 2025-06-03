@@ -31,7 +31,9 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                        padding: const EdgeInsetsDirectional.only(top: 16, bottom: 16, start: 16),
                        child: Row(children: [
                          ApplicationLogoWidthTextWidget(),
-                         const ApplicationVersionWidget()
+                         const ApplicationVersionWidget(
+                           padding: EdgeInsets.only(top: 8),
+                         ),
                        ])
                    ),
                  if (!controller.responsiveUtils.isWebDesktop(context))
@@ -156,7 +158,6 @@ class ManageAccountMenuView extends GetWidget<ManageAccountMenuController> {
                      : AlignmentDirectional.center,
                    padding: const EdgeInsets.all(16),
                    child: ApplicationVersionWidget(
-                     padding: EdgeInsets.zero,
                      title: '${AppLocalizations.of(context).version.toLowerCase()} ',
                    ),
                  ),

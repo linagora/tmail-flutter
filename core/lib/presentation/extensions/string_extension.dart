@@ -1,4 +1,7 @@
+import 'package:collection/collection.dart';
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter/material.dart';
 
 extension StringExtension on String {
 
@@ -76,6 +79,23 @@ extension StringExtension on String {
         return 'image/avif';
       default:
         return 'application/octet-stream'; // Unknown type
+    }
+  }
+
+  List<Color> get gradientColors {
+    return AppColor.mapGradientColor[_generateGradientColorIndex()];
+  }
+
+  int _generateGradientColorIndex() {
+    try {
+      if (isNotEmpty && codeUnits.isNotEmpty) {
+        return codeUnits.sum % AppColor.mapGradientColor.length;
+      } else {
+        return 0;
+      }
+    } catch (e) {
+      logError('StringExtension::_generateGradientColorIndex(): $e');
+      return 0;
     }
   }
 }

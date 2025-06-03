@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
@@ -43,9 +44,7 @@ class LabelMailboxItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final displayNameWidget = TextOverflowBuilder(
       mailboxNode.item.getDisplayName(context),
-      style: isSelected
-        ? ThemeUtils.textStyleInter700(color: Colors.black, fontSize: 14)
-        : ThemeUtils.textStyleBodyBody3(color: Colors.black),
+      style: getDisplayNameTextStyle(context),
     );
 
     final nameWithExpandIcon = Row(
@@ -64,6 +63,7 @@ class LabelMailboxItemWidget extends StatelessWidget {
             itemKey: itemKey,
             mailboxNode: mailboxNode,
             imagePaths: imagePaths,
+            responsiveUtils: responsiveUtils,
             onExpandFolderActionClick: onClickExpandMailboxNodeAction,
           ),
       ],
@@ -131,6 +131,19 @@ class LabelMailboxItemWidget extends StatelessWidget {
       );
     } else {
       return childWidget;
+    }
+  }
+
+  TextStyle getDisplayNameTextStyle(BuildContext context) {
+    if (isSelected) {
+      return ThemeUtils.textStyleInter700(
+        color: responsiveUtils.isDesktop(context) ? null : AppColor.iconFolder,
+        fontSize: 14,
+      );
+    } else {
+      return responsiveUtils.isWebDesktop(context)
+        ? ThemeUtils.textStyleBodyBody3(color: Colors.black)
+        : ThemeUtils.textStyleInter500();
     }
   }
 }

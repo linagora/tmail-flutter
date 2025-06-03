@@ -35,9 +35,13 @@ class TrailingMailboxItemWidget extends StatelessWidget {
           margin: responsiveUtils.isDesktop(context) && mailboxNode.item.allowedHasEmptyAction
             ? EdgeInsets.zero
             : TrailingMailboxItemWidgetStyles.menuIconMargin,
-          icon: imagePaths.icComposerMenu,
-          iconSize: TrailingMailboxItemWidgetStyles.menuIconSize,
-          padding: TrailingMailboxItemWidgetStyles.menuIconPadding,
+          icon: imagePaths.icMoreVertical,
+          iconSize: mailboxNode.item.isTeamMailboxes
+            ? 17
+            : TrailingMailboxItemWidgetStyles.menuIconSize,
+          padding:  mailboxNode.item.isTeamMailboxes
+            ? const EdgeInsets.all(3)
+            : TrailingMailboxItemWidgetStyles.menuIconPadding,
           backgroundColor: TrailingMailboxItemWidgetStyles.menuIconBackgroundColor,
           onTapActionAtPositionCallback: (position) => onMenuActionClick?.call(position, mailboxNode),
         );
@@ -45,12 +49,16 @@ class TrailingMailboxItemWidget extends StatelessWidget {
         return const SizedBox();
       } else if (mailboxNode.item.allowedToDisplayCountOfUnreadEmails) {
         return Padding(
-          padding: TrailingMailboxItemWidgetStyles.countEmailsPadding,
+          padding: PlatformInfo.isMobile
+            ? TrailingMailboxItemWidgetStyles.mobileCountEmailsPadding
+            : TrailingMailboxItemWidgetStyles.countEmailsPadding,
           child: CountOfEmailsWidget(value: mailboxNode.item.countUnReadEmailsAsString),
         );
       } else if (mailboxNode.item.allowedToDisplayCountOfTotalEmails) {
         return Padding(
-          padding: TrailingMailboxItemWidgetStyles.countEmailsPadding,
+          padding: PlatformInfo.isMobile
+            ? TrailingMailboxItemWidgetStyles.mobileCountEmailsPadding
+            : TrailingMailboxItemWidgetStyles.countEmailsPadding,
           child: CountOfEmailsWidget(value: mailboxNode.item.countTotalEmailsAsString),
         );
       } else {
@@ -59,12 +67,16 @@ class TrailingMailboxItemWidget extends StatelessWidget {
     } else {
       if (mailboxNode.item.allowedToDisplayCountOfUnreadEmails) {
         return Padding(
-          padding: TrailingMailboxItemWidgetStyles.countEmailsPadding,
+          padding: PlatformInfo.isMobile
+            ? TrailingMailboxItemWidgetStyles.mobileCountEmailsPadding
+            : TrailingMailboxItemWidgetStyles.countEmailsPadding,
           child: CountOfEmailsWidget(value: mailboxNode.item.countUnReadEmailsAsString),
         );
       } else if (mailboxNode.item.allowedToDisplayCountOfTotalEmails) {
         return Padding(
-          padding: TrailingMailboxItemWidgetStyles.countEmailsPadding,
+          padding: PlatformInfo.isMobile
+            ? TrailingMailboxItemWidgetStyles.mobileCountEmailsPadding
+            : TrailingMailboxItemWidgetStyles.countEmailsPadding,
           child: CountOfEmailsWidget(value: mailboxNode.item.countTotalEmailsAsString),
         );
       } else {

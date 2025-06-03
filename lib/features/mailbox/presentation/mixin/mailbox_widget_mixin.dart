@@ -2,18 +2,11 @@
 import 'package:core/core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:jmap_dart_client/jmap/account_id.dart';
-import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
-import 'package:jmap_dart_client/jmap/core/session/session.dart';
-import 'package:model/mailbox/mailbox_constants.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_bottom_sheet_action_tile_builder.dart';
-import 'package:tmail_ui_user/main/error/capability_validator.dart';
 
 mixin MailboxWidgetMixin {
 
@@ -105,43 +98,6 @@ mixin MailboxWidgetMixin {
     }
   }
 
-  void openMailboxMenuActionOnMobile(
-    BuildContext context,
-    ImagePaths imagePaths,
-    PresentationMailbox mailbox,
-    MailboxController controller
-  ) {
-    final bool deletedMessageVaultSupported = MailboxUtils.isDeletedMessageVaultSupported(
-        controller.mailboxDashBoardController.sessionCurrent,
-        controller.mailboxDashBoardController.accountId.value);
-
-    final bool subaddressingSupported = isSubaddressingSupported(
-        controller.mailboxDashBoardController.sessionCurrent,
-        controller.mailboxDashBoardController.accountId.value);
-
-    final contextMenuActions = listContextMenuItemAction(
-      mailbox,
-      controller.mailboxDashBoardController.enableSpamReport,
-      deletedMessageVaultSupported,
-      subaddressingSupported,
-    );
-
-    if (contextMenuActions.isEmpty) {
-      return;
-    }
-
-    controller.openContextMenuAction(
-      context,
-      contextMenuMailboxActionTiles(
-        context,
-        imagePaths,
-        mailbox,
-        contextMenuActions,
-        handleMailboxAction: controller.handleMailboxAction
-      )
-    );
-  }
-
   List<Widget> contextMenuMailboxActionTiles(
     BuildContext context,
     ImagePaths imagePaths,
@@ -207,59 +163,6 @@ mixin MailboxWidgetMixin {
     return listContextMenuItemAction;
   }
 
-  void openMailboxMenuActionOnWeb(
-    BuildContext context,
-    ImagePaths imagePaths,
-    ResponsiveUtils responsiveUtils,
-    RelativeRect position,
-    PresentationMailbox mailbox,
-    MailboxController controller
-  ) {
-    final bool deletedMessageVaultSupported = MailboxUtils.isDeletedMessageVaultSupported(
-        controller.mailboxDashBoardController.sessionCurrent,
-        controller.mailboxDashBoardController.accountId.value);
-
-    final bool subaddressingSupported = isSubaddressingSupported(
-      controller.mailboxDashBoardController.sessionCurrent,
-      controller.mailboxDashBoardController.accountId.value);
-
-    final contextMenuActions = listContextMenuItemAction(
-      mailbox,
-      controller.mailboxDashBoardController.enableSpamReport,
-      deletedMessageVaultSupported,
-      subaddressingSupported,
-    );
-
-    if (contextMenuActions.isEmpty) {
-      return;
-    }
-
-    if (responsiveUtils.isScreenWithShortestSide(context)) {
-      controller.openContextMenuAction(
-        context,
-          contextMenuMailboxActionTiles(
-            context,
-            imagePaths,
-            mailbox,
-            contextMenuActions,
-            handleMailboxAction: controller.handleMailboxAction
-          )
-      );
-    } else {
-      controller.openPopupMenuAction(
-        context,
-        position,
-        popupMenuMailboxActionTiles(
-          context,
-          imagePaths,
-          mailbox,
-          contextMenuActions,
-          handleMailboxAction: controller.handleMailboxAction
-        )
-      );
-    }
-  }
-
   List<PopupMenuEntry> popupMenuMailboxActionTiles(
     BuildContext context,
     ImagePaths imagePaths,
@@ -278,20 +181,6 @@ mixin MailboxWidgetMixin {
         handleMailboxAction: handleMailboxAction
       ))
       .toList();
-  }
-
-  static bool isSubaddressingSupported(Session? session, AccountId? accountId) {
-    if (session == null || accountId == null) {
-      return false;
-    }
-    if (!CapabilityIdentifier.jmapTeamMailboxes.isSupported(session, accountId)) {
-      return false;
-    }
-
-    return (session.getCapabilityProperties(accountId, CapabilityIdentifier.jmapTeamMailboxes)
-        ?.props[0] as Map<String, dynamic>?)
-        ?[subaddressingSupported]
-        ?? false;
   }
 
   PopupMenuItem _buildPopupMenuItem(
