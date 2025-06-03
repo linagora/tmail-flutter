@@ -401,12 +401,12 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
           action.presentationEmail,
         );
       } else if (action is CloseEmailInThreadDetailAction) {
-        if (action.emailId != _currentEmailId) return;
+        if (_currentEmailId == null) return;
         closeEmailView(context: currentContext);
         for (var worker in obxListeners) {
           worker.dispose();
         }
-        Get.delete<SingleEmailController>(tag: _currentEmailId?.id.value);
+        Get.delete<SingleEmailController>(tag: _currentEmailId!.id.value);
       }
     }));
 
