@@ -42,6 +42,7 @@ import 'package:tmail_ui_user/features/thread_detail/domain/usecases/get_thread_
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/close_thread_detail_action.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_email_ids_by_thread_id_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_emails_by_ids_success.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_thread_by_id_failure.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_collapsed_email_download_states.dart';
@@ -203,8 +204,7 @@ class ThreadDetailController extends BaseController {
   @override
   void handleFailureViewState(failure) {
     if (failure is GetThreadByIdFailure) {
-      showRetryToast(failure);
-      return;
+      handleGetThreadByIdFailure(failure);
     }
     if (failure is GetEmailsByIdsFailure) {
       showRetryToast(failure);
