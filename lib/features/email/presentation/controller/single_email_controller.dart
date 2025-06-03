@@ -336,7 +336,9 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
   @override
   void handleFailureViewState(Failure failure) {
     super.handleFailureViewState(failure);
-    if (failure is DownloadAttachmentsFailure) {
+    if (failure is MarkAsEmailReadFailure) {
+      _handleMarkAsEmailReadFailure(failure);
+    } else if (failure is DownloadAttachmentsFailure) {
       _downloadAttachmentsFailure(failure);
     } else if (failure is ExportAttachmentFailure) {
       _exportAttachmentFailureAction(failure);
@@ -362,6 +364,15 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
       _handleGetHtmlContentFromAttachmentFailure(failure);
     } else if (failure is PreviewPDFFileFailure) {
       _handlePreviewPDFFileFailure(failure);
+    }
+  }
+
+  void _handleMarkAsEmailReadFailure(MarkAsEmailReadFailure failure) {
+    if (currentContext != null && currentOverlayContext != null) {
+      appToast.showToastErrorMessage(
+        currentOverlayContext!,
+        AppLocalizations.of(currentContext!).an_error_occurred,
+      );
     }
   }
 
