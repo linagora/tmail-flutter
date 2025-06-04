@@ -15,6 +15,7 @@ import 'package:jmap_dart_client/jmap/core/unsigned_int.dart';
 import 'package:model/download_all/download_all_capability.dart';
 import 'package:model/mailbox/mailbox_constants.dart';
 import 'package:model/model.dart';
+import 'package:server_settings/server_settings/capability_server_settings.dart';
 import 'package:tmail_ui_user/features/home/data/model/session_hive_obj.dart';
 import 'package:tmail_ui_user/features/home/domain/converter/session_account_converter.dart';
 import 'package:tmail_ui_user/features/home/domain/converter/session_capabilities_converter.dart';
@@ -29,6 +30,7 @@ extension SessionExtensions on Session {
     linagoraContactSupportCapability: ContactSupportCapability.deserialize,
     tmailContactCapabilityIdentifier: AutocompleteCapability.deserialize,
     linagoraDownloadAllCapability: DownloadAllCapability.deserialize,
+    capabilityServerSettings: SettingsCapability.deserialize,
   };
 
   Map<String, dynamic> toJson() {
@@ -138,5 +140,13 @@ extension SessionExtensions on Session {
       logError('SessionExtensions::isSubAddressingSupported:Exception = $e');
       return false;
     }
+  }
+
+  bool isLanguageReadOnly(AccountId accountId) {
+    final settingsCapability = getCapabilityProperties<SettingsCapability>(
+      accountId,
+      capabilityServerSettings,
+    );
+    return settingsCapability?.readOnlyProperties?.contains('language') == true;
   }
 }
