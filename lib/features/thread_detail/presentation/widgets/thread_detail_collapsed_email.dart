@@ -83,11 +83,10 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
                 style: ThemeUtils.textStyleBodyBody1(
-                  height: 24,
                   fontWeight: presentationEmail.hasRead
                     ? FontWeight.normal
                     : FontWeight.w600,
-                ),
+                ).copyWith(height: 24),
               ),
             ),
           ],
