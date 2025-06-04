@@ -197,7 +197,11 @@ class SettingsView extends GetWidget<SettingsController> {
         case AccountMenuItem.profiles:
           return ProfilesView(responsiveUtils: controller.responsiveUtils);
         case AccountMenuItem.languageAndRegion:
-          return const LanguageAndRegionView();
+          if (controller.manageAccountDashboardController.isLanguageSettingDisplayed) {
+            return const LanguageAndRegionView();
+          } else {
+            return const SizedBox.shrink();
+          }
         case AccountMenuItem.emailRules:
           if (controller.manageAccountDashboardController.isRuleFilterCapabilitySupported) {
             return EmailRulesView();

@@ -46,7 +46,8 @@ class ManageAccountMenuController extends GetxController with ContactSupportMixi
       if (dashBoardController.isVacationCapabilitySupported)
         AccountMenuItem.vacation,
       AccountMenuItem.mailboxVisibility,
-      AccountMenuItem.languageAndRegion
+      if (dashBoardController.isLanguageSettingDisplayed)
+        AccountMenuItem.languageAndRegion,
     ];
     listAccountMenuItem.value = newListMenuSetting;
 

@@ -15,6 +15,7 @@ import 'package:rule_filter/rule_filter/capability_rule_filter.dart';
 import 'package:server_settings/server_settings/capability_server_settings.dart';
 import 'package:tmail_ui_user/features/base/action/ui_action.dart';
 import 'package:tmail_ui_user/features/base/reloadable/reloadable_controller.dart';
+import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/export_trace_log_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
@@ -233,6 +234,16 @@ class ManageAccountDashBoardController extends ReloadableController {
         RouteUtils.generateNavigationRoute(AppRoutes.dashboard),
         arguments: sessionCurrent);
     }
+  }
+
+  bool get isLanguageSettingDisplayed {
+    if (!isServerSettingsCapabilitySupported) return true;
+
+    if (accountId.value == null || sessionCurrent == null) {
+      return false;
+    }
+
+    return !sessionCurrent!.isLanguageReadOnly(accountId.value!);
   }
 
   bool get isVacationCapabilitySupported {

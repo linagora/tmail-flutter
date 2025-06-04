@@ -128,17 +128,25 @@ class SettingsFirstLevelView extends GetWidget<SettingsController> {
           subtitle: AppLocalizations.of(context).folderVisibilitySubtitle,
           () => controller.selectSettings(AccountMenuItem.mailboxVisibility)
         ),
-        Divider(
-          color: AppColor.colorDividerHorizontal,
-          height: 1,
-          indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
-          endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
-        ),
-        SettingFirstLevelTileBuilder(
-          AccountMenuItem.languageAndRegion.getName(AppLocalizations.of(context)),
-          AccountMenuItem.languageAndRegion.getIcon(controller.imagePaths),
-          () => controller.selectSettings(AccountMenuItem.languageAndRegion)
-        ),
+        Obx(() {
+          if (!controller.manageAccountDashboardController.isLanguageSettingDisplayed) {
+            return const SizedBox.shrink();
+          }
+
+          return Column(children: [
+            Divider(
+              color: AppColor.colorDividerHorizontal,
+              height: 1,
+              indent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils),
+              endIndent: SettingsUtils.getHorizontalPadding(context, controller.responsiveUtils)
+            ),
+            SettingFirstLevelTileBuilder(
+              AccountMenuItem.languageAndRegion.getName(AppLocalizations.of(context)),
+              AccountMenuItem.languageAndRegion.getIcon(controller.imagePaths),
+              () => controller.selectSettings(AccountMenuItem.languageAndRegion)
+            ),
+          ]);
+        }),
         Obx(() {
           if (controller.manageAccountDashboardController.isFcmCapabilitySupported && PlatformInfo.isMobile) {
             return Column(children: [
