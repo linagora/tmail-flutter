@@ -2,7 +2,6 @@ import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/icon_utils.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
-import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/image/avatar_builder.dart';
 import 'package:core/utils/platform_info.dart';
@@ -83,6 +82,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 4),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -106,12 +106,6 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                                 child: EmailSenderBuilder(
                                   emailAddress: emailSelected.from!.first,
                                   openEmailAddressDetailAction: openEmailAddressDetailAction,
-                                  customStyle: ThemeUtils.textStyleHeadingHeadingSmall(
-                                    color: Colors.black,
-                                    fontWeight: showUnreadVisualization && !emailSelected.hasRead
-                                      ? FontWeight.w700
-                                      : null,
-                                  ),
                                 ),
                               ),
                             if (sMimeStatus != null && sMimeStatus != SMimeSignatureStatus.notSigned)
@@ -193,6 +187,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                         ),
                     ],
                   ),
+                  const SizedBox(height: 4),
                   if (responsiveUtils.isMobile(context))
                     ReceivedTimeBuilder(
                       emailSelected: emailSelected,

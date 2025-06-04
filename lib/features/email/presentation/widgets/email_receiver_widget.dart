@@ -54,7 +54,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
     if (PlatformInfo.isWeb) {
       if (_isDisplayAll) {
         return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Flexible(
               child: Container(
@@ -147,7 +147,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
     } else {
       if (_isDisplayAll) {
         return Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Flexible(
                 child: Column(
@@ -238,8 +238,12 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
         text: index == listEmailAddress.length - 1
           ? emailAddress.asString()
           : '${emailAddress.asString()},',
-        textStyle: ThemeUtils.textStyleBodyBody1(color: AppColor.steelGray400),
-        padding: const EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8),
+        textStyle: ThemeUtils.textStyleHeadingHeadingSmall(
+          color: Colors.black,
+          height: 17,
+          fontWeight: FontWeight.w400,
+        ),
+        padding: const EdgeInsetsDirectional.symmetric(vertical: 2, horizontal: 8),
         backgroundColor: Colors.transparent,
         onTapActionCallback: () => widget.openEmailAddressDetailAction?.call(context, emailAddress),
         onLongPressActionCallback: () => AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress),
