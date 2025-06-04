@@ -107,13 +107,12 @@ class ThemeUtils {
     Color? color,
     FontWeight? fontWeight,
     double? fontSize,
-    double? height,
   }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
     fontWeight: fontWeight ?? FontWeight.w500,
     letterSpacing: 0.0,
     fontSize: fontSize ?? 16,
-    height: (height ?? 20) / (fontSize ?? 16),
+    height: 20 / (fontSize ?? 16),
     color: color,
   );
 
@@ -160,13 +159,12 @@ class ThemeUtils {
   static TextStyle textStyleHeadingH6({
     Color? color,
     FontWeight? fontWeight,
-    double? height,
   }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
     fontWeight: fontWeight ?? FontWeight.w700,
     letterSpacing: 0.0,
     fontSize: 20,
-    height: (height ?? 24) / 20,
+    height: 24 / 20,
     color: color,
   );
 
@@ -197,13 +195,12 @@ class ThemeUtils {
   static TextStyle textStyleHeadingHeadingSmall({
     Color? color,
     FontWeight? fontWeight,
-    double? height,
   }) => TextStyle(
     fontFamily: ConstantsUI.fontApp,
     fontWeight: fontWeight ?? FontWeight.w500,
     letterSpacing: 0.0,
     fontSize: 17,
-    height: (height ?? 22) / 17,
+    height: 22 / 17,
     color: color,
   );
 
