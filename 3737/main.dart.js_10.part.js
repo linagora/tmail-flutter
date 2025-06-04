@@ -3211,7 +3211,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = B.EdgeInsets_16_16_16_16;
       t2 = A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t2.toString;
-      return new A.Padding(t1, A.Text$(this.menuItem.getExplanation$1(t2), _null, _null, _null, _null, _null, _null, _null, _null, A.ThemeUtils_textStyleBodyBody1(B.Color_4286680217, _null, _null, _null), _null, _null, _null, _null, _null), _null);
+      return new A.Padding(t1, A.Text$(this.menuItem.getExplanation$1(t2), _null, _null, _null, _null, _null, _null, _null, _null, A.ThemeUtils_textStyleBodyBody1(B.Color_4286680217, _null, _null), _null, _null, _null, _null, _null), _null);
     }
   };
   C.SettingHeaderWidget.prototype = {
@@ -3220,7 +3220,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations);
       t1.toString;
       t2 = this.menuItem;
-      return new A.Padding(B.EdgeInsets_16_16_16_16, A.Column$(A._setArrayType([A.Text$(t2.getName$1(t1), _null, _null, _null, _null, _null, _null, _null, _null, E.ThemeUtils_textStyleHeadingH6(B.Color_4278190080, _null, _null), _null, _null, _null, _null, _null), B.SizedBox_null_8_null_null, A.Text$(t2.getExplanation$1(t1), _null, _null, _null, _null, _null, _null, _null, _null, A.ThemeUtils_textStyleBodyBody1(B.Color_4286680217, _null, _null, _null), _null, _null, _null, _null, _null)], type$.JSArray_Widget), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), _null);
+      return new A.Padding(B.EdgeInsets_16_16_16_16, A.Column$(A._setArrayType([A.Text$(t2.getName$1(t1), _null, _null, _null, _null, _null, _null, _null, _null, E.ThemeUtils_textStyleHeadingH6(B.Color_4278190080, _null), _null, _null, _null, _null, _null), B.SizedBox_null_8_null_null, A.Text$(t2.getExplanation$1(t1), _null, _null, _null, _null, _null, _null, _null, _null, A.ThemeUtils_textStyleBodyBody1(B.Color_4286680217, _null, _null), _null, _null, _null, _null, _null)], type$.JSArray_Widget), B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), _null);
     }
   };
   var typesOffset = hunkHelpers.updateTypes(["~()", "~(bool?)", "EmailRulesItemWidget(BuildContext,int)", "List<SuggestionEmailAddress>/(String{limit:int?})", "bool(EmailAddress)", "ContactInputTagItem(BuildContext,int)", "EmailForwardItemWidget(BuildContext,int)", "LanguageRegionOverlay()", "LanguageItemWidget(BuildContext,int)", "NavigationBarWidget()", "AccountMenuItemTileBuilder()", "UserInformationWidget()", "SettingOptionItem(BuildContext,int)", "FadingEdgeScrollView()", "IdentityListTileBuilder(BuildContext,int)"]);
@@ -5998,5 +5998,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_10", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "uymqI+jCxVCaMGGGu/TtQqYLSEk=");
+})($__dart_deferred_initializers__, "QQN1S3JQVb+ktbVoax/7yso05S0=");
 ;

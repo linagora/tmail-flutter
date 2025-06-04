@@ -226,10 +226,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       this.$this = t0;
       this.context = t1;
     },
-    ThemeUtils_textStyleHeadingH6(color, fontWeight, height) {
-      var _null = null,
-        t1 = fontWeight == null ? B.FontWeight_6_700 : fontWeight;
-      return A.TextStyle$(_null, _null, color, _null, _null, _null, _null, _null, "Inter", _null, _null, 20, _null, _null, t1, _null, (height == null ? 24 : height) / 20, true, _null, 0, _null, _null, _null, _null, _null, _null);
+    ThemeUtils_textStyleHeadingH6(color, fontWeight) {
+      var _null = null;
+      return A.TextStyle$(_null, _null, color, _null, _null, _null, _null, _null, "Inter", _null, _null, 20, _null, _null, fontWeight == null ? B.FontWeight_6_700 : fontWeight, _null, 1.2, true, _null, 0, _null, _null, _null, _null, _null, _null);
     },
     buildSVGIconButton(icon, iconColor, iconSize, onTap, onTapDown, padding, tooltip) {
       var _null = null,
@@ -1062,5 +1061,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "sd43cozx0voomhBcibDL2iu1krw=");
+})($__dart_deferred_initializers__, "TLkPHGI2TOAc3KsFmVd7CdZ+5xM=");
 ;
