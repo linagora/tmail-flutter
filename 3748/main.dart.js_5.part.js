@@ -3906,28 +3906,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     GetThreadDetailLoadingView_getThreadDetailLoadingView_closure0: function GetThreadDetailLoadingView_getThreadDetailLoadingView_closure0() {
     },
     GetThreadDetailEmailViews_getThreadDetailEmailViews(_this) {
-      var selectedEmailIndex,
-        t1 = _this.mailboxDashBoardController.selectedEmail,
-        t2 = t1.get$value(0);
-      if ((t2 == null ? null : t2.id) == null)
-        selectedEmailIndex = -1;
-      else {
-        t2 = J.toList$0$ax(J.get$keys$x(_this.emailIdsPresentation.get$value(0)));
-        t1 = t1.get$value(0).id;
-        t1.toString;
-        selectedEmailIndex = J.indexOf$1$asx(t2, t1);
-      }
+      var t1 = type$.int,
+        loadMoreSegments = A.LinkedHashMap_LinkedHashMap$from(B.ThreadDetailLoadMoreSegments_get_loadMoreSegments(_this), t1, t1);
       t1 = _this.emailIdsPresentation;
-      return t1.get$entries(t1).map$1$1(0, new B.GetThreadDetailEmailViews_getThreadDetailEmailViews_closure(_this, selectedEmailIndex), type$.Widget).toList$0(0);
+      return t1.get$entries(t1).map$1$1(0, new B.GetThreadDetailEmailViews_getThreadDetailEmailViews_closure(_this, loadMoreSegments), type$.Widget).toList$0(0);
     },
     GetThreadDetailEmailViews_getThreadDetailEmailViews_closure: function GetThreadDetailEmailViews_getThreadDetailEmailViews_closure(t0, t1) {
       this._this = t0;
-      this.selectedEmailIndex = t1;
+      this.loadMoreSegments = t1;
     },
     GetThreadDetailEmailViews_getThreadDetailEmailViews__closure: function GetThreadDetailEmailViews_getThreadDetailEmailViews__closure(t0, t1, t2) {
       this._this = t0;
       this.indexOfEmailId = t1;
-      this.selectedEmailIndex = t2;
+      this.loadMoreSegments = t2;
     },
     GetThreadDetailEmailViews_getThreadDetailEmailViews__closure0: function GetThreadDetailEmailViews_getThreadDetailEmailViews__closure0() {
     },
@@ -4843,16 +4834,26 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       else
         return D.EdgeInsetsDirectional_24_0_24_8;
     },
-    LoadMoreThreadDetailEmails_loadMoreThreadDetailEmails(_this, emailIds, loadEmailsAfterSelectedEmail, loadingIndex) {
-      var emailIdsToLoadMetaData, t3, t4,
+    LoadMoreThreadDetailEmails_loadMoreThreadDetailEmails(_this, loadMoreCount, loadMoreIndex) {
+      var t3, currentExpandedEmailIndex, t4, emailIdsToLoadMetaData,
         t1 = _this.mailboxDashBoardController,
         t2 = t1.accountId;
       if (t2.get$value(0) == null || t1.sessionCurrent == null) {
         _this.consumeState$1(A.Stream_Stream$value(new A.Left(new A.GetEmailsByIdsFailure(new A.NotFoundSessionException(), null), type$.Left_Failure_Success), type$.Either_Failure_Success));
         return;
       }
-      emailIdsToLoadMetaData = A.ThreadDetailPresentationUtils_getEmailIdsToLoad(emailIds, false, loadEmailsAfterSelectedEmail, null);
-      if (J.get$isEmpty$asx(emailIdsToLoadMetaData))
+      t3 = _this.currentExpandedEmailId;
+      if (t3.get$value(0) == null)
+        currentExpandedEmailIndex = -1;
+      else {
+        t4 = J.toList$0$ax(J.get$keys$x(_this.emailIdsPresentation.get$value(0)));
+        t3 = t3.get$value(0);
+        t3.toString;
+        currentExpandedEmailIndex = J.indexOf$1$asx(t4, t3);
+      }
+      t3 = _this.emailIdsPresentation;
+      emailIdsToLoadMetaData = B.ThreadDetailPresentationUtils_getLoadMoreEmailIds(J.sublist$2$ax(J.toList$0$ax(J.get$keys$x(t3.get$value(0))), loadMoreIndex, Math.min(loadMoreIndex + loadMoreCount, J.get$length$asx(t3.get$keys(0)))), loadMoreIndex > currentExpandedEmailIndex);
+      if (emailIdsToLoadMetaData.length === 0)
         return;
       t3 = t1.sessionCurrent;
       t3.toString;
@@ -4862,7 +4863,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1.toString;
       t2 = t2.get$value(0);
       t2.toString;
-      _this.consumeState$1(_this.getEmailsByIdsInteractor.execute$5$loadingIndex$properties(t3, t4, emailIdsToLoadMetaData, loadingIndex, A.EmailUtils_getPropertiesForEmailGetMethod(t1, t2)));
+      _this.consumeState$1(_this.getEmailsByIdsInteractor.execute$5$loadMoreIndex$properties(t3, t4, emailIdsToLoadMetaData, loadMoreIndex, A.EmailUtils_getPropertiesForEmailGetMethod(t1, t2)));
     },
     ThreadDetailLoadMoreSegments_get_loadMoreSegments(_this) {
       var t2, emailIds, currentIndex, currentIndex0, segmentCount,
@@ -4950,6 +4951,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
           t3._notifyData$1(t6);
         }
       }
+    },
+    ThreadDetailPresentationUtils_getLoadMoreEmailIds(emailIds, loadEmailsAfterSelectedEmail) {
+      var t1;
+      if (loadEmailsAfterSelectedEmail)
+        return C.JSArray_methods.sublist$2(emailIds, 0, Math.min(emailIds.length, 20));
+      t1 = emailIds.length;
+      return C.JSArray_methods.sublist$2(emailIds, t1 - Math.min(20, t1), t1);
     },
     AppUtils_getCurrentDateLocale() {
       var t1, currentLanguageCode;
@@ -19229,11 +19237,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = t1.emailIdsPresentation,
         indexOfEmailId = J.indexOf$1$asx(J.toList$0$ax(J.get$keys$x(t2.get$value(0))), entry.key);
       if (presentationEmail == null) {
-        if (B.ThreadDetailLoadMoreSegments_get_loadMoreSegments(t1).$index(0, indexOfEmailId) == null)
+        t2 = this.loadMoreSegments;
+        if (t2.$index(0, indexOfEmailId) == null)
           return C.SizedBox_0_0_null_null;
-        t2 = B.ThreadDetailLoadMoreSegments_get_loadMoreSegments(t1).$index(0, indexOfEmailId);
-        t2.toString;
-        return new B.ThreadDetailLoadMoreCircle(t2, new B.GetThreadDetailEmailViews_getThreadDetailEmailViews__closure(t1, indexOfEmailId, this.selectedEmailIndex), t1.imagePaths, J.fold$2$ax(t1.viewState.get$value(0), new B.GetThreadDetailEmailViews_getThreadDetailEmailViews__closure0(), new B.GetThreadDetailEmailViews_getThreadDetailEmailViews__closure1(indexOfEmailId)), _null);
+        t3 = t2.$index(0, indexOfEmailId);
+        t3.toString;
+        return new B.ThreadDetailLoadMoreCircle(t3, new B.GetThreadDetailEmailViews_getThreadDetailEmailViews__closure(t1, indexOfEmailId, t2), t1.imagePaths, J.fold$2$ax(t1.viewState.get$value(0), new B.GetThreadDetailEmailViews_getThreadDetailEmailViews__closure0(), new B.GetThreadDetailEmailViews_getThreadDetailEmailViews__closure1(indexOfEmailId)), _null);
       }
       t3 = presentationEmail.emailInThreadStatus;
       if (t3 == null)
@@ -19262,13 +19271,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.GetThreadDetailEmailViews_getThreadDetailEmailViews__closure.prototype = {
     call$0() {
-      var t1 = this._this,
-        t2 = t1.emailIdsPresentation,
-        t3 = J.toList$0$ax(J.get$keys$x(t2.get$value(0))),
-        t4 = this.indexOfEmailId,
-        t5 = B.ThreadDetailLoadMoreSegments_get_loadMoreSegments(t1).$index(0, t4);
-      t5.toString;
-      return B.LoadMoreThreadDetailEmails_loadMoreThreadDetailEmails(t1, J.sublist$2$ax(t3, t4, Math.min(t4 + t5, J.get$length$asx(t2.get$keys(0)))), t4 > this.selectedEmailIndex, t4);
+      var t1 = this.indexOfEmailId,
+        t2 = this.loadMoreSegments.$index(0, t1);
+      t2.toString;
+      return B.LoadMoreThreadDetailEmails_loadMoreThreadDetailEmails(this._this, t2, t1);
     },
     $signature: 0
   };
@@ -20278,5 +20284,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "plZD2hRRhXHgr4/KpK86UNK6kB8=");
+})($__dart_deferred_initializers__, "kW2Y3kdAl8ELXaQ2jDt2Fre/K4U=");
 ;
