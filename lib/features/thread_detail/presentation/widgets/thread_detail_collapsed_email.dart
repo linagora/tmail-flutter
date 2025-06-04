@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:flutter/material.dart';
 import 'package:model/email/presentation_email.dart';
@@ -81,11 +82,12 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
                 preview,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    fontWeight: presentationEmail.hasRead
-                      ? FontWeight.normal
-                      : FontWeight.bold,
-                  ),
+                style: ThemeUtils.textStyleBodyBody1(
+                  height: 24,
+                  fontWeight: presentationEmail.hasRead
+                    ? FontWeight.normal
+                    : FontWeight.w600,
+                ),
               ),
             ),
           ],
