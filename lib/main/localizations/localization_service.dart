@@ -2,6 +2,7 @@
 import 'dart:ui';
 
 import 'package:core/utils/app_logger.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/manage_account/data/local/language_cache_manager.dart';
 import 'package:tmail_ui_user/main/localizations/language_code_constants.dart';
@@ -45,17 +46,23 @@ class LocalizationService extends Translations {
       log('LocalizationService::_getLocaleFromLanguage:languageCacheManager: $languageCacheManager');
       final localeStored = languageCacheManager?.getStoredLanguage();
       log('LocalizationService::_getLocaleFromLanguage():localeStored: $localeStored');
-      if (localeStored != null) {
-        return localeStored;
-      } else {
-        final languageCodeCurrent = langCode ?? Get.deviceLocale?.languageCode;
-        log('LocalizationService::_getLocaleFromLanguage():languageCodeCurrent: $languageCodeCurrent');
-        final localeSelected = supportedLocales.firstWhereOrNull((locale) => locale.languageCode == languageCodeCurrent);
-        return localeSelected ?? Get.deviceLocale ?? defaultLocale;
-      }
+      final localeSelected = supportedLocales.firstWhereOrNull(
+        (locale) => locale.languageCode == langCode,
+      );
+      return localeSelected ?? localeStored ?? Get.deviceLocale ?? defaultLocale;
     } catch (e) {
       logError('LocalizationService::getLocaleFromLanguage: Exception: $e');
       return Get.deviceLocale ?? defaultLocale;
+    }
+  }
+
+  static Locale? getCachedLocale() {
+    try {
+      final languageCacheManager = getBinding<LanguageCacheManager>();
+      return languageCacheManager?.getStoredLanguage();
+    } catch (e) {
+      logError('LocalizationService::getCachedLocale: Exception: $e');
+      return null;
     }
   }
 
@@ -63,6 +70,51 @@ class LocalizationService extends Translations {
     final listLanguageTags = supportedLocales.map((locale) => locale.toLanguageTag()).join(', ');
     log('LocalizationService::supportedLocalesToLanguageTags:listLanguageTags: $listLanguageTags');
     return listLanguageTags;
+  }
+
+  static void initializeAppLanguage({
+    String? serverLanguage,
+    void Function(Locale locale)? onServerLanguageApplied,
+  }) {
+    final currentLocale = Get.locale;
+    try {
+      final serverLocale = supportedLocales
+        .firstWhereOrNull((locale) => locale.languageCode == serverLanguage);
+      final cachedLocale = getCachedLocale();
+      
+      // From server
+      if (serverLocale != null && supportedLocales.contains(serverLocale)) {
+        changeLocale(serverLocale.languageCode);
+        onServerLanguageApplied?.call(serverLocale);
+        return;
+      }
+      
+      // From cache
+      if (cachedLocale != null && supportedLocales.contains(cachedLocale)) {
+        changeLocale(cachedLocale.languageCode);
+        return;
+      } 
+      
+      // From device
+      final deviceLocale = WidgetsBinding.instance.platformDispatcher.locale;
+      if (supportedLocales.contains(deviceLocale)) {
+        changeLocale(deviceLocale.languageCode);
+        return;
+      } 
+      
+      // Default
+      if (currentLocale == null || !supportedLocales.contains(currentLocale)) {
+        changeLocale(defaultLocale.languageCode);
+        return;
+      }
+    } catch (e) {
+      logError('LocalizationService::initializeAppLanguage: Exception: $e');
+      // Default
+      if (currentLocale == null || !supportedLocales.contains(currentLocale)) {
+        changeLocale(defaultLocale.languageCode);
+        return;
+      }
+    }
   }
 
   @override

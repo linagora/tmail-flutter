@@ -4,11 +4,11 @@ import 'dart:ui';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
-import 'package:tmail_ui_user/features/manage_account/domain/repository/manage_account_repository.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/repository/preferences_repository.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/save_language_state.dart';
 
 class SaveLanguageInteractor {
-  final ManageAccountRepository manageAccountRepository;
+  final PreferencesRepository manageAccountRepository;
 
   SaveLanguageInteractor(this.manageAccountRepository);
 
