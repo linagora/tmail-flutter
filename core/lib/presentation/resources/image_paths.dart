@@ -229,9 +229,19 @@ class ImagePaths {
   String get icCloseDialog => _getImagePath('ic_close_dialog.svg');
   String get icDoubleArrowUp => _getImagePath('ic_double_arrow_up.svg');
   String get icDoubleArrowDown => _getImagePath('ic_double_arrow_down.svg');
+  String get icTwakeWorkplace => _getIconPath('icon_twp.png');
+  String get animLottieTmail => _getAnimationPath('lottie-tmail.json');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;
+  }
+
+  String _getIconPath(String iconName) {
+    return AssetsPaths.icons + iconName;
+  }
+
+  String _getAnimationPath(String animationName) {
+    return AssetsPaths.animations + animationName;
   }
 
   String getConfigurationImagePath(String imageName) {
