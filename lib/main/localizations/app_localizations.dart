@@ -4457,6 +4457,27 @@ class AppLocalizations {
     );
   }
 
+  String get advancedSettings {
+    return Intl.message(
+      'Advanced settings',
+      name: 'advancedSettings',
+    );
+  }
+
+  String get applicativeToken {
+    return Intl.message(
+      'Applicative token',
+      name: 'applicativeToken',
+    );
+  }
+
+  String get someJMAPServicesDoNotSupportLoginViaPassword {
+    return Intl.message(
+      'Some JMAP services do not support login via password for third party apps but instead allow generate applicative tokens.',
+      name: 'someJMAPServicesDoNotSupportLoginViaPassword',
+    );
+  }
+
   String get downloadAttachmentInEMLPreviewWarningMessage {
     return Intl.message(
       'Downloading attachment. You can only download one file at a time.',

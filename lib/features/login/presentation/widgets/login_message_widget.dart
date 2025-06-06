@@ -22,13 +22,15 @@ class LoginMessageWidget extends StatelessWidget {
 
   final LoginFormType formType;
   final Either<Failure, Success> viewState;
+  final bool isShowingMessage;
 
   final ToastManager? _toastManager = getBinding<ToastManager>();
 
   LoginMessageWidget({
     super.key,
     required this.formType,
-    required this.viewState
+    required this.viewState,
+    this.isShowingMessage = true,
   });
 
   @override
@@ -45,35 +47,7 @@ class LoginMessageWidget extends StatelessWidget {
           ? _loginTextFieldWidthSmallScreen
           : _loginTextFieldWidthLargeScreen,
         child: Text(
-          viewState.fold(
-            (failure) {
-              if (failure is GetOIDCConfigurationFailure) {
-                return AppLocalizations.of(context).canNotVerifySSOConfiguration;
-              } else if (failure is DNSLookupToGetJmapUrlFailure) {
-                return AppLocalizations.of(context).dnsLookupLoginMessage;
-              } else if (failure is GetTokenOIDCFailure && failure.exception is NoSuitableBrowserForOIDCException) {
-                return AppLocalizations.of(context).noSuitableBrowserForOIDC;
-              } else if (failure is FeatureFailure) {
-                return _toastManager?.getMessageByException(context, failure.exception)
-                  ?? AppLocalizations.of(context).unknownError;
-              } else {
-                return AppLocalizations.of(context).unknownError;
-              }
-            },
-            (success) {
-              if (formType == LoginFormType.credentialForm) {
-                return AppLocalizations.of(context).loginInputCredentialMessage;
-              } else if (formType == LoginFormType.dnsLookupForm) {
-                return AppLocalizations.of(context).dnsLookupLoginMessage;
-              } else if (formType == LoginFormType.passwordForm) {
-                return AppLocalizations.of(context).enterYourPasswordToSignIn;
-              } else if (formType == LoginFormType.baseUrlForm) {
-                return AppLocalizations.of(context).loginInputUrlMessage;
-              } else {
-                return '';
-              }
-            }
-          ),
+          isShowingMessage ? messageFromViewState(context) : '',
           textAlign: TextAlign.center,
           style: TextStyle(
             fontSize: 15,
@@ -85,6 +59,38 @@ class LoginMessageWidget extends StatelessWidget {
           ),
         )
       )
+    );
+  }
+
+  String messageFromViewState(BuildContext context) {
+    return viewState.fold(
+      (failure) {
+        if (failure is GetOIDCConfigurationFailure) {
+          return AppLocalizations.of(context).canNotVerifySSOConfiguration;
+        } else if (failure is DNSLookupToGetJmapUrlFailure) {
+          return AppLocalizations.of(context).dnsLookupLoginMessage;
+        } else if (failure is GetTokenOIDCFailure && failure.exception is NoSuitableBrowserForOIDCException) {
+          return AppLocalizations.of(context).noSuitableBrowserForOIDC;
+        } else if (failure is FeatureFailure) {
+          return _toastManager?.getMessageByException(context, failure.exception)
+            ?? AppLocalizations.of(context).unknownError;
+        } else {
+          return AppLocalizations.of(context).unknownError;
+        }
+      },
+      (success) {
+        if (formType == LoginFormType.credentialForm) {
+          return AppLocalizations.of(context).loginInputCredentialMessage;
+        } else if (formType == LoginFormType.dnsLookupForm) {
+          return AppLocalizations.of(context).dnsLookupLoginMessage;
+        } else if (formType == LoginFormType.passwordForm) {
+          return AppLocalizations.of(context).enterYourPasswordToSignIn;
+        } else if (formType == LoginFormType.baseUrlForm) {
+          return AppLocalizations.of(context).loginInputUrlMessage;
+        } else {
+          return '';
+        }
+      }
     );
   }
 }

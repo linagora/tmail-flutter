@@ -39,6 +39,8 @@ import 'package:tmail_ui_user/features/login/domain/state/get_oidc_configuration
 import 'package:tmail_ui_user/features/login/domain/state/get_oidc_is_available_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_stored_oidc_configuration_state.dart';
 import 'package:tmail_ui_user/features/login/domain/state/get_token_oidc_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/sign_in_with_applicative_token_state.dart';
+import 'package:tmail_ui_user/features/login/domain/state/update_authentication_account_state.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authenticate_oidc_on_browser_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/authentication_user_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/check_oidc_is_available_interactor.dart';
@@ -52,6 +54,7 @@ import 'package:tmail_ui_user/features/login/domain/usecases/get_stored_oidc_con
 import 'package:tmail_ui_user/features/login/domain/usecases/get_token_oidc_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_url_on_mobile_interactor.dart';
 import 'package:tmail_ui_user/features/login/domain/usecases/save_login_username_on_mobile_interactor.dart';
+import 'package:tmail_ui_user/features/login/domain/usecases/sign_in_with_applicative_token_interactor.dart';
 import 'package:tmail_ui_user/features/login/presentation/login_form_type.dart';
 import 'package:tmail_ui_user/features/login/presentation/model/login_arguments.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_twake_workplace_state.dart';
@@ -82,6 +85,7 @@ class LoginController extends ReloadableController {
   final GetAllRecentLoginUsernameOnMobileInteractor _getAllRecentLoginUsernameOnMobileInteractor;
   final DNSLookupToGetJmapUrlInteractor _dnsLookupToGetJmapUrlInteractor;
   final SignInTwakeWorkplaceInteractor _signInTwakeWorkplaceInteractor;
+  final SignInWithApplicativeTokenInteractor _signInWithApplicativeTokenInteractor;
 
   final TextEditingController urlInputController = TextEditingController();
   final TextEditingController usernameInputController = TextEditingController();
@@ -96,6 +100,20 @@ class LoginController extends ReloadableController {
   UserName? _username;
   Password? _password;
   Uri? _baseUri;
+  String _applicativeToken = '';
+  bool get isShowingMessage {
+    return viewState.value.fold(
+      (failure) {
+        // Ignore message when login by applicative token
+        if (failure is UpdateAccountCacheFailure && _password == null && _applicativeToken.isNotEmpty) {
+          return false;
+        }
+
+        return true;
+      },
+      (success) => true
+    );
+  }
 
   DeepLinksManager? _deepLinksManager;
   StreamSubscription<DeepLinkData?>? _deepLinkDataStreamSubscription;
@@ -115,6 +133,7 @@ class LoginController extends ReloadableController {
     this._getAllRecentLoginUsernameOnMobileInteractor,
     this._dnsLookupToGetJmapUrlInteractor,
     this._signInTwakeWorkplaceInteractor,
+    this._signInWithApplicativeTokenInteractor,
   );
 
   @override
@@ -195,6 +214,12 @@ class LoginController extends ReloadableController {
     } else if (success is DNSLookupToGetJmapUrlSuccess) {
       _handleDNSLookupToGetJmapUrlSuccess(success);
     } else if (success is SignInTwakeWorkplaceSuccess) {
+      _synchronizeTokenAndGetSession(
+        baseUri: success.baseUri,
+        tokenOIDC: success.tokenOIDC,
+        oidcConfiguration: success.oidcConfiguration,
+      );
+    } else if (success is SignInWithApplicativeTokenSuccess) {
       _synchronizeTokenAndGetSession(
         baseUri: success.baseUri,
         tokenOIDC: success.tokenOIDC,
@@ -366,25 +391,29 @@ class LoginController extends ReloadableController {
     log('LoginController::handleLoginPressed:_currentBaseUrl: $_currentBaseUrl | _username: $_username | _password: $_password');
     if (_currentBaseUrl == null) {
       consumeState(Stream.value(Left(AuthenticationUserFailure(CanNotFoundBaseUrl()))));
-    } else if (_username == null) {
+    } else if (_username == null && _applicativeToken.isEmpty) {
       consumeState(Stream.value(Left(AuthenticationUserFailure(CanNotFoundUserName()))));
-    } else if (_password == null) {
+    } else if (_password == null && _applicativeToken.isEmpty) {
       consumeState(Stream.value(Left(AuthenticationUserFailure(CanNotFoundPassword()))));
     } else {
-      if (PlatformInfo.isMobile && loginFormType.value == LoginFormType.credentialForm) {
+      if (PlatformInfo.isMobile && loginFormType.value == LoginFormType.credentialForm && _username != null) {
         TextInput.finishAutofillContext();
         if (_username!.value.isEmail) {
           _storeUsernameToCache(_username!.value);
         }
       }
 
-      consumeState(
-        _authenticationInteractor.execute(
-          baseUrl: _currentBaseUrl!,
-          userName: _username!,
-          password: _password!
-        )
-      );
+      if (_password != null && _username != null) {
+        consumeState(
+          _authenticationInteractor.execute(
+            baseUrl: _currentBaseUrl!,
+            userName: _username!,
+            password: _password!
+          )
+        );
+      } else {
+        _loginByApplicativeToken(_applicativeToken);
+      }
     }
   }
 
@@ -620,6 +649,18 @@ class LoginController extends ReloadableController {
     loginFormType.value == LoginFormType.dnsLookupForm ||
     loginFormType.value == LoginFormType.passwordForm ||
     loginFormType.value == LoginFormType.credentialForm;
+
+  void onApplicativeTokenChange(String value) {
+    _applicativeToken = value;
+  }
+
+  void _loginByApplicativeToken(String token) {
+    consumeState(_signInWithApplicativeTokenInteractor.execute(
+      applicativeToken: token,
+      baseUri: _currentBaseUrl!,
+      uuid: uuid,
+    ));
+  }
 
   @override
   void onClose() {
