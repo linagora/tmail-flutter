@@ -162,7 +162,7 @@ extension AppColor on Color {
   static const colorSpamReportBannerLabelColor = Color(0xFF626D7A);
   static const colorSpamReportBannerButtonBackground = Color(0xFFEBEDF0);
   static const colorSubtitle = Color(0xFF6D7885);
-  static const colorBackgroundSearchMailboxInput = Color(0xFFEBEDF0);
+  static const searchInputBackground = Color(0xFFE0E9F1);
   static const colorMailboxHovered = Color(0xFFEBEDF0);
   static const colorMailboxPath = Color(0xFF818C99);
   static const colorIconUnSubscribedMailbox = Color(0xFFAEB7C2);
