@@ -9049,7 +9049,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       if ((t4 ? "" : t3).length !== 0) {
         if (t4)
           t3 = "";
-        t1.push(E.MaterialTextButton$(8, E.ThemeUtils_textStyleHeadingH6(C.Color_4278190080, C.FontWeight_4_500).copyWith$1$height(20), t3, new B.EmailSenderBuilder_build_closure(_this, context), new B.EmailSenderBuilder_build_closure0(_this, context), C.TextOverflow_2, C.EdgeInsets_0_0_0_0, true));
+        t1.push(E.MaterialTextButton$(8, E.ThemeUtils_textStyleHeadingH6(C.Color_4278190080, C.FontWeight_4_500).copyWith$1$height(1), t3, new B.EmailSenderBuilder_build_closure(_this, context), new B.EmailSenderBuilder_build_closure0(_this, context), C.TextOverflow_2, C.EdgeInsets_0_0_0_0, true));
       }
       t2 = t2.email;
       if (t2 == null)
@@ -12743,7 +12743,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = _this.presentationEmail;
       t2.push(B.InformationSenderAndReceiverBuilder$(_this.emailLoaded, t3, _null, _this.imagePaths, true, _this.mailboxContain, _null, _this.onEmailActionClick, _this.onMoreActionClick, t1, _null, _this.openEmailAddressDetailAction, _this.responsiveUtils, _null, false, true));
       t4 = t3.getPartialContent$0();
-      t2.push(new A.Padding(C.EdgeInsets_16_16_16_16, A.TextOverflowBuilder$(t4, 1, C.TextOverflow_2, A.ThemeUtils_textStyleBodyBody1(_null, _null, t3.get$hasRead() ? C.FontWeight_3_400 : C.FontWeight_5_600).copyWith$1$height(24)), _null));
+      t2.push(new A.Padding(C.EdgeInsets_16_16_16_16, A.TextOverflowBuilder$(t4, 1, C.TextOverflow_2, A.ThemeUtils_textStyleBodyBody1(_null, _null, t3.get$hasRead() ? C.FontWeight_3_400 : C.FontWeight_5_600).copyWith$1$height(1.5)), _null));
       return A.DecoratedBox$(A.InkWell$(false, _null, true, A.Column$(t2, C.CrossAxisAlignment_0, C.MainAxisAlignment_0, C.MainAxisSize_0, C.VerticalDirection_1), _null, true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, t1, _null, _null, _null, _null, _null, _null, _null), D.BoxDecoration_cAf0, C.DecorationPosition_0);
     }
   };
@@ -20593,5 +20593,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "xuMpjYgmbXaSrqNupGxXCaVkchw=");
+})($__dart_deferred_initializers__, "Ejr4x8TzilhZMtVUWBhbFP/LkOw=");
 ;
