@@ -91,7 +91,7 @@ class EmailChangeListener extends ChangeListener {
 
   @override
   void dispatchActions(List<Action> actions) {
-    log('EmailChangeListener::dispatchActions():actions: $actions');
+    log('EmailChangeListener::dispatchActions():actions: ${actions.runtimeType}');
     for (var action in actions) {
       if (action is SynchronizeEmailOnForegroundAction) {
         if (PlatformInfo.isAndroid) {
@@ -208,7 +208,7 @@ class EmailChangeListener extends ChangeListener {
 
   @override
   void handleSuccessViewState(Success success) {
-    log('EmailChangeListener::_handleSuccessViewState(): $success');
+    log('EmailChangeListener::_handleSuccessViewState(): ${success.runtimeType}');
     if (success is GetStoredEmailDeliveryStateSuccess && _newStateEmailDelivery != success.state) {
       _getEmailChangesAction(success.state);
     } else if (success is GetStoredEmailStateSuccess) {

@@ -62,7 +62,7 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
   void onInit() {
     BackButtonInterceptor.add(_onBackButtonInterceptor, name: AppRoutes.settings);
     super.onInit();
-    if (AppConfig.isApiLoggingEnabled) {
+    if (LogTracking().enableTraceLog) {
       injectTraceLogDependencies();
     }
   }
@@ -416,7 +416,7 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
   @override
   void onClose() {
     BackButtonInterceptor.removeByName(AppRoutes.settings);
-    if (AppConfig.isApiLoggingEnabled) {
+    if (LogTracking().enableTraceLog) {
       disposeTraceLogDependencies();
     }
     super.onClose();

@@ -52,12 +52,8 @@ abstract class HiveCacheClient<T> {
     });
   }
 
-  Future<T?> getItem(String key, {bool needToReopen = false}) {
-    log('$runtimeType::getItem() key: $encryption - needToReopen: $needToReopen');
+  Future<T?> getItem(String key) {
     return Future.sync(() async {
-      if (needToReopen) {
-        await closeBox();
-      }
       final boxItem = encryption
           ? await openBoxEncryption()
           : await openBox();
@@ -118,6 +114,7 @@ abstract class HiveCacheClient<T> {
   }
 
   Future<void> updateMultipleItem(Map<String, T> mapObject) {
+    log('$runtimeType::updateMultipleItem:encryption: $encryption');
     return Future.sync(() async {
       final boxItem = encryption ? await openBoxEncryption() : await openBox();
       return boxItem.putAll(mapObject);
@@ -127,6 +124,7 @@ abstract class HiveCacheClient<T> {
   }
 
   Future<void> deleteItem(String key) {
+    log('$runtimeType::deleteItem:encryption: $encryption - key = $key');
     return Future.sync(() async {
       final boxItem = encryption ? await openBoxEncryption() : await openBox();
       return boxItem.delete(key);

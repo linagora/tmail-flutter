@@ -35,7 +35,7 @@ abstract class PushBaseController {
   void handleSuccessViewState(Success success);
 
   void handleErrorViewState(Object error, StackTrace stackTrace) {
-    logError('PushBaseController::handleErrorViewState():error: $error | stackTrace: $stackTrace');
+    logError('$runtimeType::handleErrorViewState():error: $error | stackTrace: $stackTrace');
   }
 
   void initialize({AccountId? accountId, Session? session}) {
@@ -54,7 +54,7 @@ abstract class PushBaseController {
     required EmailChangeListener emailChangeListener,
     required MailboxChangeListener mailboxChangeListener
   }) {
-    log('PushBaseController::mappingTypeStateToAction():mapTypeState: $mapTypeState');
+    log('$runtimeType::mappingTypeStateToAction():mapTypeState: $mapTypeState');
     final listTypeName = mapTypeState.keys
       .map((value) => TypeName(value))
       .toList();
@@ -65,7 +65,7 @@ abstract class PushBaseController {
       .whereNotNull()
       .toList();
 
-    log('PushBaseController::mappingTypeStateToAction():listEmailActions: $listEmailActions');
+    log('$runtimeType::mappingTypeStateToAction():listEmailActions: $listEmailActions');
 
     if (listEmailActions.isNotEmpty) {
        emailChangeListener.dispatchActions(listEmailActions);
@@ -77,7 +77,7 @@ abstract class PushBaseController {
       .whereNotNull()
       .toList();
 
-    log('PushBaseController::mappingTypeStateToAction():listMailboxActions: $listEmailActions');
+    log('$runtimeType::mappingTypeStateToAction():listMailboxActions: $listEmailActions');
 
     if (listMailboxActions.isNotEmpty) {
       mailboxChangeListener.dispatchActions(listMailboxActions);
@@ -92,6 +92,7 @@ abstract class PushBaseController {
     isForeground,
     {Session? session}
   ) {
+    log('$runtimeType::_toPushNotificationAction():typeName: $typeName - isForeground: $isForeground');
     final newState = jmap.State(mapTypeState[typeName.value]);
     switch (typeName) {
       case TypeName.emailType:

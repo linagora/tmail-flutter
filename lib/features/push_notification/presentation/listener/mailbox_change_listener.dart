@@ -33,7 +33,7 @@ class MailboxChangeListener extends ChangeListener {
 
   @override
   void dispatchActions(List<Action> actions) {
-    log('MailboxChangeListener::dispatchActions():actions: $actions');
+    log('MailboxChangeListener::dispatchActions():actions: ${actions.runtimeType}');
     for (var action in actions) {
       if (action is SynchronizeMailboxOnForegroundAction) {
         _synchronizeMailboxOnForegroundAction(action.newState);
@@ -50,7 +50,7 @@ class MailboxChangeListener extends ChangeListener {
 
   @override
   void handleSuccessViewState(Success success) {
-    log('MailboxChangeListener::_handleSuccessViewState(): $success');
+    log('MailboxChangeListener::_handleSuccessViewState(): ${success.runtimeType}');
   }
 
   void _synchronizeMailboxOnForegroundAction(jmap.State newState) {
