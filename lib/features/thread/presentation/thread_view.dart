@@ -8,6 +8,7 @@ import 'package:jmap_dart_client/jmap/mail/email/email.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
+import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
@@ -34,8 +35,6 @@ import 'package:tmail_ui_user/features/thread/presentation/styles/scroll_to_top_
 import 'package:tmail_ui_user/features/thread/presentation/styles/thread_view_style.dart';
 import 'package:tmail_ui_user/features/thread/presentation/thread_controller.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/app_bar/app_bar_thread_widget.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_delete_all_spam_emails_widget.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/banner_empty_trash_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/bottom_bar_thread_selection_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
@@ -149,26 +148,57 @@ class ThreadView extends GetWidget<ThreadController>
                             )),
                         ],
                       Obx(() {
-                        final presentationMailbox = controller.mailboxDashBoardController.selectedMailbox.value;
-                        if (controller.mailboxDashBoardController.isEmptyTrashBannerEnabledOnMobile(context, presentationMailbox)) {
-                          return BannerEmptyTrashWidget(
+                        final dashboardController = controller
+                          .mailboxDashBoardController;
+                        final selectedMailbox = dashboardController
+                          .selectedMailbox
+                          .value;
+
+                        bool showTrashBanner = dashboardController
+                          .isEmptyTrashBannerEnabledOnMobile(
+                            context,
+                            selectedMailbox,
+                          );
+                        bool showSpamBanner = dashboardController
+                          .isEmptySpamBannerEnabledOnMobile(
+                            context,
+                            selectedMailbox,
+                          );
+
+                        if (showTrashBanner) {
+                          return CleanMessagesBanner(
                             key: const Key('empty_trash_banner'),
-                            responsiveUtils: controller.responsiveUtils,
-                            imagePaths: controller.imagePaths,
-                            onTapAction: () => controller.deleteSelectionEmailsPermanently(
+                            message: AppLocalizations
+                              .of(context)
+                              .message_delete_all_email_in_trash_button,
+                            positiveAction: AppLocalizations
+                              .of(context)
+                              .empty_trash_now,
+                            onPositiveAction: () =>
+                              controller.deleteSelectionEmailsPermanently(
+                                context,
+                                DeleteActionType.all,
+                              ),
+                            margin: ThreadViewStyle.getBannerMargin(
                               context,
-                              DeleteActionType.all,
+                              controller.responsiveUtils,
                             ),
                           );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      }),
-                      Obx(() {
-                        final presentationMailbox = controller.mailboxDashBoardController.selectedMailbox.value;
-                        if (controller.mailboxDashBoardController.isEmptySpamBannerEnabledOnMobile(context, presentationMailbox)) {
-                          return BannerDeleteAllSpamEmailsWidget(
-                            onTapAction: () => controller.mailboxDashBoardController.openDialogEmptySpamFolder(context)
+                        } else if (showSpamBanner) {
+                          return CleanMessagesBanner(
+                            message: AppLocalizations
+                              .of(context)
+                              .bannerDeleteAllSpamEmailsMessage,
+                            positiveAction: AppLocalizations
+                              .of(context)
+                              .deleteAllSpamEmailsNow,
+                            onPositiveAction: () => controller
+                              .mailboxDashBoardController
+                              .openDialogEmptySpamFolder(context),
+                            margin: ThreadViewStyle.getBannerMargin(
+                              context,
+                              controller.responsiveUtils,
+                            ),
                           );
                         } else {
                           return const SizedBox.shrink();
