@@ -4,6 +4,7 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/bottom_popup/confirmation_dialog_action_sheet_builder.dart';
 import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart';
+import 'package:core/presentation/views/dialog/edit_text_dialog_builder.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -221,5 +222,36 @@ mixin MessageDialogActionMixin {
         );
       }
     }
+  }
+
+  Future<dynamic> showInputDialogAction({
+    required BuildContext context,
+    required String title,
+    required String value,
+    required String positiveText,
+    required String negativeText,
+    required OnInputDialogPositiveButtonAction onPositiveButtonAction,
+    Key? key,
+    String? closeIcon,
+    OnInputDialogNegativeButtonAction? onNegativeButtonAction,
+    OnInputDialogInputErrorChangedAction? onInputErrorChanged,
+  }) async {
+    return await Get.dialog(
+      PointerInterceptor(
+        child: EditTextDialogBuilder(
+          key: key,
+          title: AppLocalizations.of(context).renameFolder,
+          value: value,
+          positiveText: positiveText,
+          negativeText: negativeText,
+          closeIcon: closeIcon,
+          onInputErrorChanged: onInputErrorChanged,
+          onPositiveButtonAction: onPositiveButtonAction,
+          onNegativeButtonAction: onNegativeButtonAction,
+          onCloseButtonAction: closeIcon != null ? popBack : null,
+        ),
+      ),
+      barrierColor: AppColor.colorDefaultCupertinoActionSheet,
+    );
   }
 }
