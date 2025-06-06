@@ -397,6 +397,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                               contentPadding: 0,
                               useDefaultFont: true,
                               scrollController: scrollController,
+                              enableQuoteToggle: isInsideThreadDetailView,
                             ),
                             if (controller.mailboxDashBoardController.isAttachmentDraggableAppActive)
                               PointerInterceptor(
@@ -445,6 +446,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                               onMailtoDelegateAction: controller.openMailToLink,
                               onHtmlContentClippedAction: controller.onHtmlContentClippedAction,
                               keepAlive: isInsideThreadDetailView,
+                              enableQuoteToggle: isInsideThreadDetailView,
                             );
                           }),
                         ),
@@ -484,6 +486,7 @@ class EmailView extends GetWidget<SingleEmailController> {
                       useDefaultFont: true,
                       onMailtoDelegateAction: controller.openMailToLink,
                       keepAlive: isInsideThreadDetailView,
+                      enableQuoteToggle: isInsideThreadDetailView,
                     );
                   })
                 );

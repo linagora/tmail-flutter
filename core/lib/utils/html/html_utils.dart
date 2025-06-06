@@ -575,4 +575,79 @@ class HtmlUtils {
       return false;
     }
   }
+
+  static String addQuoteToggle(String htmlString) {
+    final likelyHtml = htmlString.contains(RegExp(r'<[a-zA-Z][^>]*>')) && // Contains a start tag
+      htmlString.contains(RegExp(r'</[a-zA-Z][^>]*>')); // Contains an end tag
+
+    if (!likelyHtml) {
+      return htmlString; // Not likely HTML, return original
+    }
+
+    try {
+      html.DomParser().parseFromString(htmlString, 'text/html');
+    } catch (e) {
+      return htmlString;
+    }
+
+    final containerElement = '<div class="quote-toggle-container" >$htmlString</div>';
+
+    final containerDom = html.DomParser().parseFromString(containerElement, 'text/html');
+    html.ElementList blockquotes = containerDom.querySelectorAll('.quote-toggle-container > blockquote');
+    int currentSearchLevel = 1;
+
+    while (blockquotes.isEmpty) {
+      // Finish searching at level [currentSearchLevel]
+      if (currentSearchLevel >= 3) return htmlString;
+      // No blockquote elements found on first level, try another level
+      blockquotes = containerDom.querySelectorAll('.quote-toggle-container${' > div' * currentSearchLevel} > blockquote');
+      currentSearchLevel++;
+    }
+
+    final lastBlockquote = blockquotes.last;
+
+    const buttonHtmlContent = '''
+      <span class="quote-toggle-button collapsed" style="cursor: pointer; font-weight: bold; display: inline-block; user-select: none;">
+        ...
+      </span>''';
+
+    // Parse the button HTML content as a fragment
+    final tempDoc =
+        html.DomParser().parseFromString(buttonHtmlContent, 'text/html');
+
+    final buttonElement = tempDoc.querySelector('.quote-toggle-button');
+
+    // Insert the button before the last blockquote
+    if (lastBlockquote.parentNode != null && buttonElement != null) {
+      lastBlockquote.parentNode!.insertBefore(buttonElement, lastBlockquote);
+    }
+
+    // Return the modified HTML string
+    return containerDom.documentElement?.outerHtml ?? htmlString;
+  }
+
+  static String get quoteToggleStyle => '''
+    <style>
+      .quote-toggle-button + blockquote {
+        display: block; /* Default display */
+      }
+      .quote-toggle-button.collapsed + blockquote {
+        display: none;
+      }
+    </style>''';
+
+  static String get quoteToggleScript => '''
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        const buttons = document.querySelectorAll('.quote-toggle-button');
+        buttons.forEach(button => {
+          button.onclick = function() {
+            const blockquote = this.nextElementSibling;
+            if (blockquote && blockquote.tagName === 'BLOCKQUOTE') {
+              this.classList.toggle('collapsed');
+            }
+          };
+        });
+      });
+    </script>''';
 }
