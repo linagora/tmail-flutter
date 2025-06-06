@@ -56,5 +56,40 @@ void main() {
       // assert
       expect(result.identityHeader, isNull);
     });
+
+    test(
+      'should return email with mdn and return path headers '
+      'when generateEmail is called '
+      'and hasRequestReadReceipt is true',
+    () {
+      // arrange
+      final createEmailRequest = CreateEmailRequest(
+        session: SessionFixtures.aliceSession,
+        accountId: AccountFixtures.aliceAccountId,
+        emailActionType: EmailActionType.editDraft,
+        subject: 'subject',
+        emailContent: 'emailContent',
+        hasRequestReadReceipt: true,
+      );
+      
+      // act
+      final result = createEmailRequest.generateEmail(
+        newEmailContent: 'newEmailContent',
+        newEmailAttachments: {},
+        userAgent: 'userAgent',
+        partId: PartId('value'),
+        withIdentityHeader: false
+      );
+      
+      // assert
+      expect(
+        result.headerMdn?[IndividualHeaderIdentifier.headerMdn],
+        createEmailRequest.createMdnEmailAddress(),
+      );
+      expect(
+        result.headerReturnPath?[IndividualHeaderIdentifier.headerReturnPath],
+        createEmailRequest.createMdnEmailAddress(),
+      );
+    });
   });
 }
