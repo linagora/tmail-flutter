@@ -109,6 +109,7 @@ class ThreadDetailController extends BaseController {
   @override
   void onInit() {
     super.onInit();
+    consumeState(_getThreadDetailStatusInteractor.execute());
     ever(mailboxDashBoardController.accountId, (accountId) {
       if (accountId == null) return;
 
