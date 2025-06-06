@@ -24,6 +24,7 @@ enum MailboxActions {
   emptyTrash,
   emptySpam,
   newSubfolder,
+  createFilter,
   confirmMailSpam,
   recoverDeletedMessages,
   allowSubaddressing,
@@ -55,6 +56,8 @@ extension MailboxActionsExtension on MailboxActions {
         return AppLocalizations.of(context).copySubaddress;
       case MailboxActions.newSubfolder:
         return AppLocalizations.of(context).newSubfolder;
+      case MailboxActions.createFilter:
+        return AppLocalizations.of(context).createFilter;
       case MailboxActions.disableSpamReport:
         return AppLocalizations.of(context).disableSpamReport;
       case MailboxActions.enableSpamReport:
@@ -96,6 +99,8 @@ extension MailboxActionsExtension on MailboxActions {
         return imagePaths.icCopy;
       case MailboxActions.newSubfolder:
         return imagePaths.icAddNewFolder;
+      case MailboxActions.createFilter:
+        return imagePaths.icFilterAdvanced;
       case MailboxActions.disableSpamReport:
         return imagePaths.icSpamReportDisable;
       case MailboxActions.enableSpamReport:
@@ -129,23 +134,9 @@ extension MailboxActionsExtension on MailboxActions {
     }
   }
 
-  Color getColorContextMenuTitle() {
-    switch(this) {
-      case MailboxActions.delete:
-        return AppColor.colorActionDeleteConfirmDialog;
-      default:
-        return Colors.black;
-    }
-  }
+  Color getColorContextMenuTitle() => Colors.black;
 
-  Color getColorContextMenuIcon() {
-    switch(this) {
-      case MailboxActions.delete:
-        return AppColor.colorActionDeleteConfirmDialog;
-      default:
-        return AppColor.primaryColor;
-    }
-  }
+  Color getColorContextMenuIcon() => AppColor.steelGrayA540;
 
   bool canSearch() {
     switch(this) {
@@ -188,6 +179,7 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.openInNewTab:
       case MailboxActions.copySubaddress:
       case MailboxActions.newSubfolder:
+      case MailboxActions.createFilter:
       case MailboxActions.disableSpamReport:
       case MailboxActions.enableSpamReport:
       case MailboxActions.enableMailbox:
@@ -208,6 +200,33 @@ extension MailboxActionsExtension on MailboxActions {
           : ContextMenuItemState.deactivated;
       default:
         return ContextMenuItemState.deactivated;
+    }
+  }
+
+  double getIconSize() {
+    switch(this) {
+      case MailboxActions.createFilter:
+        return 16;
+      default:
+        return 24;
+    }
+  }
+
+  double getIconSpace() {
+    switch(this) {
+      case MailboxActions.createFilter:
+        return 16;
+      default:
+        return 12;
+    }
+  }
+
+  EdgeInsetsGeometry getIconPadding() {
+    switch (this) {
+      case MailboxActions.createFilter:
+        return const EdgeInsetsDirectional.only(start: 16, end: 18);
+      default:
+        return const EdgeInsetsDirectional.only(start: 12, end: 16);
     }
   }
 }

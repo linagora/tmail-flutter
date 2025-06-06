@@ -34,6 +34,7 @@ mixin MailboxWidgetMixin {
         MailboxActions.openInNewTab,
       if (!mailbox.isRecovered)
         MailboxActions.newSubfolder,
+      MailboxActions.createFilter,
       if (mailbox.isTrash)
         ...[
           MailboxActions.emptyTrash,
@@ -56,6 +57,7 @@ mixin MailboxWidgetMixin {
       if (PlatformInfo.isWeb && mailbox.isSubscribedMailbox)
         MailboxActions.openInNewTab,
       MailboxActions.newSubfolder,
+      MailboxActions.createFilter,
       if (mailbox.countUnReadEmailsAsString.isNotEmpty)
         MailboxActions.markAsRead,
       MailboxActions.move,
@@ -176,11 +178,12 @@ mixin MailboxWidgetMixin {
           SvgPicture.asset(
             contextMenuItem.action.getContextMenuIcon(imagePaths),
             colorFilter: contextMenuItem.action.getColorContextMenuIcon().asFilter(),
-            width: 24,
-            height: 24
+            width: contextMenuItem.action.getIconSize(),
+            height: contextMenuItem.action.getIconSize(),
           ),
           contextMenuItem.action.getTitleContextMenu(context),
           mailbox,
+          iconLeftPadding: contextMenuItem.action.getIconPadding(),
           absorbing: !contextMenuItem.isActivated,
           opacity: !contextMenuItem.isActivated)
       ..actionTextStyle(textStyle: TextStyle(
@@ -313,11 +316,10 @@ mixin MailboxWidgetMixin {
             iconAction: contextMenuItem.action.getContextMenuIcon(imagePaths),
             nameAction: contextMenuItem.action.getTitleContextMenu(context),
             colorIcon: contextMenuItem.action.getColorContextMenuIcon(),
-            padding: const EdgeInsetsDirectional.only(start: 12),
-            iconSize: 24,
-            styleName: TextStyle(
-              fontWeight: FontWeight.w500,
-              fontSize: 16,
+            padding: contextMenuItem.action.getIconPadding(),
+            iconSize: contextMenuItem.action.getIconSize(),
+            iconSpace: contextMenuItem.action.getIconSpace(),
+            styleName: ThemeUtils.textStyleBodyBody3(
               color: contextMenuItem.action.getColorContextMenuTitle()
             ),
             onCallbackAction: () => handleMailboxAction(context, contextMenuItem.action, mailbox)
