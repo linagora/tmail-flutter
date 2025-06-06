@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-05-23T15:09:48.827638",
+  "@@last_modified": "2025-05-27T01:35:50.697124",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4506,6 +4506,24 @@
   },
   "support": "Support",
   "@support": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "addRecipientsFailed": "Adding recipient failed.",
+  "@addRecipientsFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "editLocalCopyInForwardFailed": "Edit local copy in forward failed.",
+  "@editLocalCopyInForwardFailed": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "deleteRecipientsFailed": "Delete recipients failed.",
+  "@deleteRecipientsFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

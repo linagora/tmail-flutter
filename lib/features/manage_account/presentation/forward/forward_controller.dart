@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_forwar
 import 'package:tmail_ui_user/features/manage_account/presentation/action/dashboard_setting_action.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/tmail_forward_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/controller/forward_recipient_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/forward/extensions/handle_error_when_update_forward_fail_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/recipient_forward.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -85,7 +86,6 @@ class ForwardController extends BaseController {
 
   @override
   void handleSuccessViewState(Success success) {
-    super.handleSuccessViewState(success);
     if (success is GetForwardSuccess) {
       currentForward.value = success.forward;
       listRecipientForward.value = currentForward.value!.listRecipientForward;
@@ -96,14 +96,19 @@ class ForwardController extends BaseController {
       _handleAddRecipientsSuccess(success);
     } else if (success is EditLocalCopyInForwardingSuccess) {
       _handleEditLocalCopySuccess(success);
+    } else {
+      super.handleSuccessViewState(success);
     }
   }
 
   @override
   void handleFailureViewState(Failure failure) {
-    super.handleFailureViewState(failure);
-    if (failure is DeleteRecipientInForwardingFailure) {
-      cancelSelectionMode();
+    if (failure is AddRecipientsInForwardingFailure ||
+        failure is DeleteRecipientInForwardingFailure ||
+        failure is EditLocalCopyInForwardingFailure) {
+      handleErrorWhenUpdateForwardFail(failure);
+    } else {
+      super.handleFailureViewState(failure);
     }
   }
 
@@ -262,7 +267,7 @@ class ForwardController extends BaseController {
           accountId,
           EditLocalCopyInForwardingRequest(
               currentForward: currentForward.value!,
-              keepLocalCopy: !currentForward.value!.localCopy)));
+              keepLocalCopy: currentForward.value!.localCopy != true)));
     }
   }
 
@@ -270,7 +275,7 @@ class ForwardController extends BaseController {
     if (currentOverlayContext != null && currentContext != null) {
       appToast.showToastSuccessMessage(
         currentOverlayContext!,
-        success.forward.localCopy
+        success.forward.localCopy == true
           ? AppLocalizations.of(currentContext!).toastMessageLocalCopyEnable
           : AppLocalizations.of(currentContext!).toastMessageLocalCopyDisable);
     }
