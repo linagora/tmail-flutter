@@ -142,6 +142,7 @@ void main() {
     when(controller.currentExpandedEmailId).thenReturn(Rxn(EmailId(Id('30'))));
     when(controller.session).thenReturn(SessionFixtures.aliceSession);
     when(controller.accountId).thenReturn(AccountFixtures.aliceAccountId);
+    when(controller.additionalProperties).thenReturn(Properties.empty());
     when(controller.getEmailsByIdsInteractor).thenReturn(getEmailsByIdsInteractor);
     when(controller.mailboxDashBoardController).thenReturn(mailboxDashBoardController);
     when(mailboxDashBoardController.selectedEmail).thenReturn(Rxn());
@@ -186,6 +187,7 @@ void main() {
     when(controller.currentExpandedEmailId).thenReturn(Rxn(EmailId(Id('30'))));
     when(controller.session).thenReturn(SessionFixtures.aliceSession);
     when(controller.accountId).thenReturn(AccountFixtures.aliceAccountId);
+    when(controller.additionalProperties).thenReturn(Properties.empty());
     when(controller.getEmailsByIdsInteractor).thenReturn(getEmailsByIdsInteractor);
     when(controller.mailboxDashBoardController).thenReturn(mailboxDashBoardController);
     when(mailboxDashBoardController.selectedEmail).thenReturn(Rxn());

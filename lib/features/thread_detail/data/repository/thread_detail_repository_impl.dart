@@ -118,4 +118,10 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
     return threadDetailDataSource[DataSourceType.network]!
       .getEmailsByIds(session, accountId, emailIds, properties: properties);
   }
+
+  @override
+  Future<bool> getThreadDetailStatus() {
+    return threadDetailDataSource[DataSourceType.local]!
+      .getThreadDetailStatus();
+  }
 }
