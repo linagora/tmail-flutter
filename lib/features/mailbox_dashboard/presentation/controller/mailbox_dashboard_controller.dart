@@ -106,6 +106,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_clear_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_preferences_setting_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/handle_save_email_as_draft_extension.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/initialize_app_language.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
@@ -124,6 +125,7 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/get_all_vacat
 import 'package:tmail_ui_user/features/manage_account/domain/state/update_vacation_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_identities_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_vacation_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/save_language_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_vacation_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/datetime_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
@@ -234,6 +236,7 @@ class MailboxDashBoardController extends ReloadableController
   GetAutoCompleteInteractor? _getAutoCompleteInteractor;
   IOSNotificationManager? _iosNotificationManager;
   GetServerSettingInteractor? getServerSettingInteractor;
+  SaveLanguageInteractor? saveLanguageInteractor;
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
   final selectedMailbox = Rxn<PresentationMailbox>();
@@ -457,6 +460,7 @@ class MailboxDashBoardController extends ReloadableController
       );
     } else if (success is GetServerSettingSuccess) {
       isSenderImportantFlagEnabled.value = success.settingOption.isDisplaySenderPriority;
+      initializeAppLanguage(success);
     } else if (success is ClearMailboxSuccess) {
       clearMailboxSuccess(success);
     }

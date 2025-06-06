@@ -37,9 +37,13 @@ class TMailServerSettingOptions with EquatableMixin {
   @JsonKey(name: 'display.sender.priority')
   final bool? displaySenderPriority;
 
+  @JsonKey(name: 'language')
+  final String? language;
+
   TMailServerSettingOptions({
     this.alwaysReadReceipts,
     this.displaySenderPriority,
+    this.language,
   });
 
   factory TMailServerSettingOptions.fromJson(Map<String, dynamic> json) =>
@@ -50,10 +54,12 @@ class TMailServerSettingOptions with EquatableMixin {
   TMailServerSettingOptions copyWith({
     bool? alwaysReadReceipts,
     bool? displaySenderPriority,
+    String? language,
   }) {
     return TMailServerSettingOptions(
       alwaysReadReceipts: alwaysReadReceipts ?? this.alwaysReadReceipts,
       displaySenderPriority: displaySenderPriority ?? this.displaySenderPriority,
+      language: language ?? this.language,
     );
   }
 
@@ -61,5 +67,6 @@ class TMailServerSettingOptions with EquatableMixin {
   List<Object?> get props => [
     alwaysReadReceipts,
     displaySenderPriority,
+    language,
   ];
 }

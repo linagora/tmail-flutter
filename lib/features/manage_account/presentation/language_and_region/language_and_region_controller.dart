@@ -7,17 +7,25 @@ import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_controller.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/save_language_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/save_language_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/save_language_to_server_settings_interactor.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/localization_service.dart';
 
 class LanguageAndRegionController extends BaseController {
 
   final SaveLanguageInteractor _saveLanguageInteractor;
+  final SaveLanguageToServerSettingsInteractor saveLanguageToServerSettingsInteractor;
 
   final listSupportedLanguages = <Locale>[].obs;
   final languageSelected = LocalizationService.defaultLocale.obs;
   final isLanguageMenuOverlayOpen = RxBool(false);
 
-  LanguageAndRegionController(this._saveLanguageInteractor);
+  final manageAccountDashBoardController = Get.find<ManageAccountDashBoardController>();
+
+  LanguageAndRegionController(
+    this._saveLanguageInteractor,
+    this.saveLanguageToServerSettingsInteractor,
+  );
 
   @override
   void onReady() {
@@ -53,6 +61,12 @@ class LanguageAndRegionController extends BaseController {
 
   void _saveLanguage(Locale localeCurrent) {
     consumeState(_saveLanguageInteractor.execute(localeCurrent));
+    if (manageAccountDashBoardController.accountId.value == null) return;
+
+    consumeState(saveLanguageToServerSettingsInteractor.execute(
+      manageAccountDashBoardController.accountId.value!,
+      localeCurrent,
+    ));
   }
 
   void toggleLanguageMenuOverlay() {

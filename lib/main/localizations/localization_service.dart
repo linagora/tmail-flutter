@@ -45,17 +45,23 @@ class LocalizationService extends Translations {
       log('LocalizationService::_getLocaleFromLanguage:languageCacheManager: $languageCacheManager');
       final localeStored = languageCacheManager?.getStoredLanguage();
       log('LocalizationService::_getLocaleFromLanguage():localeStored: $localeStored');
-      if (localeStored != null) {
-        return localeStored;
-      } else {
-        final languageCodeCurrent = langCode ?? Get.deviceLocale?.languageCode;
-        log('LocalizationService::_getLocaleFromLanguage():languageCodeCurrent: $languageCodeCurrent');
-        final localeSelected = supportedLocales.firstWhereOrNull((locale) => locale.languageCode == languageCodeCurrent);
-        return localeSelected ?? Get.deviceLocale ?? defaultLocale;
-      }
+      final localeSelected = supportedLocales.firstWhereOrNull(
+        (locale) => locale.languageCode == langCode,
+      );
+      return localeSelected ?? localeStored ?? Get.deviceLocale ?? defaultLocale;
     } catch (e) {
       logError('LocalizationService::getLocaleFromLanguage: Exception: $e');
       return Get.deviceLocale ?? defaultLocale;
+    }
+  }
+
+  static Locale? getCachedLocale() {
+    try {
+      final languageCacheManager = getBinding<LanguageCacheManager>();
+      return languageCacheManager?.getStoredLanguage();
+    } catch (e) {
+      logError('LocalizationService::getCachedLocale: Exception: $e');
+      return null;
     }
   }
 

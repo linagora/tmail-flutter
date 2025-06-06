@@ -1,6 +1,7 @@
 
 import 'package:server_settings/server_settings/capability_server_settings.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/usecases/save_language_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/preferences/bindings/preferences_interactors_bindings.dart';
 import 'package:tmail_ui_user/features/server_settings/domain/usecases/get_server_setting_interactor.dart';
 import 'package:tmail_ui_user/main/error/capability_validator.dart';
@@ -21,6 +22,7 @@ extension HandlePreferencesSettingExtension on MailboxDashBoardController {
     if (isServerSettingsCapabilitySupported) {
       PreferencesInteractorsBindings().dependencies();
       getServerSettingInteractor = getBinding<GetServerSettingInteractor>();
+      saveLanguageInteractor = getBinding<SaveLanguageInteractor>();
     }
   }
 

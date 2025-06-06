@@ -1,5 +1,5 @@
 import 'dart:ui';
 
-abstract class ManageAccountRepository {
+abstract class PreferencesRepository {
   Future<void> persistLanguage(Locale localeCurrent);
 }
