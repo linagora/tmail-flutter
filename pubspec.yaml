@@ -265,6 +265,8 @@ dependencies:
       url: https://github.com/linagora/twake-previewer-flutter.git
       ref: main
 
+  lottie_native: 0.1.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -324,6 +326,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/animations/
     - env.file
     - configurations/
     - configurations/icons/
