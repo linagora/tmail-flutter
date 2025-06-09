@@ -15,12 +15,6 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
 
     final selectedEmailId = mailboxDashBoardController.selectedEmail.value?.id;
     final isLoadMore = emailIdsPresentation.values.whereNotNull().isNotEmpty;
-    final currentScrollPosition = scrollController?.position.pixels;
-    final maxScrollExtent = scrollController?.position.maxScrollExtent;
-    final currentBottomScrollPosition = currentScrollPosition != null
-        && maxScrollExtent != null
-      ? maxScrollExtent - currentScrollPosition
-      : null;
     
     for (var presentationEmail in success.presentationEmails) {
       if (presentationEmail.id == null) continue;
@@ -47,6 +41,13 @@ extension HandleGetEmailsByIdsSuccess on ThreadDetailController {
     if (currentExpandedEmailIndex == -1 || firstLoadedMoreEmailIndex == -1) {
       return;
     }
+
+    final currentScrollPosition = scrollController?.position.pixels;
+    final maxScrollExtent = scrollController?.position.maxScrollExtent;
+    final currentBottomScrollPosition = currentScrollPosition != null
+        && maxScrollExtent != null
+      ? maxScrollExtent - currentScrollPosition
+      : null;
     
     if (currentBottomScrollPosition != null) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
