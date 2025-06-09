@@ -82,7 +82,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         ++currentSearchLevel;
       }
       lastBlockquote = blockquotes.$ti._precomputed1._as(C.NodeList_methods.get$last(blockquotes._nodeList));
-      buttonElement = new DOMParser().parseFromString('      <span class="quote-toggle-button collapsed" style="cursor: pointer; font-weight: bold; display: inline-block; user-select: none;">\n        ...\n      </span>', _s9_).querySelector(".quote-toggle-button");
+      buttonElement = new DOMParser().parseFromString('      <button class="quote-toggle-button collapsed" style="cursor: pointer; border: 1px solid #9fa2a4; height: 10px; border-radius: 5px; background-color: transparent;">\n          <p style="line-height: 0; margin-top: 0px;">...</p>\n      </button>', _s9_).querySelector(".quote-toggle-button");
       t1 = lastBlockquote.parentNode;
       if (t1 != null && buttonElement != null)
         t1.insertBefore(buttonElement, lastBlockquote).toString;
@@ -335,7 +335,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$1(viewId) {
       return this.iframe;
     },
-    $signature: 711
+    $signature: 716
   };
   B._HtmlContentViewerOnWebState__setUpWeb_closure0.prototype = {
     call$0() {
@@ -359,7 +359,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1._widget.toString;
       return new A.Stack(C.AlignmentDirectional_m1_m1, null, C.StackFit_0, C.Clip_1, t2, null);
     },
-    $signature: 1906
+    $signature: 1910
   };
   B._HtmlContentViewerOnWebState_build__closure.prototype = {
     call$2(context, snapshot) {
@@ -378,7 +378,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       } else
         return C.SizedBox_0_0_null_null;
     },
-    $signature: 1907
+    $signature: 1911
   };
   (function installTearOffs() {
     var _instance_1_u = hunkHelpers._instance_1u;
@@ -412,5 +412,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_8", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "DpKvjbYljiMB87cCfIifnDpYctY=");
+})($__dart_deferred_initializers__, "jylN90vZkq0+8xYZvxSyCuMsKxA=");
 ;
