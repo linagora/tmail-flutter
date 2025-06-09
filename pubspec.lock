@@ -1434,6 +1434,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  lottie_native:
+    dependency: "direct main"
+    description:
+      name: lottie_native
+      sha256: e834047f8172a0fe070eac6355d3c646b241b411619a26c914f0d804909b51a1
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
   matcher:
     dependency: transitive
     description:

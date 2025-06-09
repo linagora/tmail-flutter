@@ -89,7 +89,8 @@ class HomeController extends ReloadableController {
 
   static void downloadCallback(String id, DownloadTaskStatus status, int progress) {}
 
-  void _handleNavigateToScreen() {
+  Future<void> _handleNavigateToScreen() async {
+    await Future.delayed(2.seconds);
     final arguments = Get.arguments;
     if (arguments is LoginNavigateArguments) {
       _handleLoginNavigateArguments(arguments);
