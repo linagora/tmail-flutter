@@ -89,6 +89,7 @@ class ThreadDetailController extends BaseController {
   ScrollController? scrollController;
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   bool isThreadDetailEnabled = false;
+  AppLifecycleListener? appLifecycleListener;
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
   Session? get session => mailboxDashBoardController.sessionCurrent;
@@ -110,6 +111,9 @@ class ThreadDetailController extends BaseController {
   void onInit() {
     super.onInit();
     consumeState(_getThreadDetailStatusInteractor.execute());
+    appLifecycleListener = AppLifecycleListener(
+      onResume: () => consumeState(_getThreadDetailStatusInteractor.execute()),
+    );
     ever(mailboxDashBoardController.accountId, (accountId) {
       if (accountId == null) return;
 
