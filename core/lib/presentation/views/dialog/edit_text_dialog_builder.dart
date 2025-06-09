@@ -156,32 +156,63 @@ class _EditTextDialogBuilderState extends State<EditTextDialogBuilder> {
                       bottom: 25,
                     ),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        const Spacer(),
-                        TMailButtonWidget.fromText(
-                          text: widget.negativeText,
-                          textStyle: ThemeUtils.textStyleM3LabelLarge(),
-                          maxLines: 1,
-                          alignment: Alignment.center,
-                          height: 48,
-                          borderRadius: 100,
-                          padding: const EdgeInsets.symmetric(horizontal: 10),
-                          backgroundColor: Colors.transparent,
-                          onTapActionCallback: _onNegativeAction,
+                        Flexible(
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              overlayColor: Theme.of(context)
+                                .colorScheme
+                                .outline
+                                .withOpacity(0.08),
+                              minimumSize: const Size(67, 48),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(100),
+                                ),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                            ),
+                            onPressed: _onNegativeAction,
+                            child: Text(
+                              widget.negativeText,
+                              style: ThemeUtils.textStyleM3LabelLarge(),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         ),
                         const SizedBox(width: 8),
-                        TMailButtonWidget.fromText(
-                          text: widget.positiveText,
-                          textStyle: ThemeUtils.textStyleM3LabelLarge(
-                            color: Colors.white,
+                        Flexible(
+                          child: TextButton(
+                            style: TextButton.styleFrom(
+                              backgroundColor: AppColor.primaryMain,
+                              overlayColor: Theme.of(context)
+                                .colorScheme
+                                .outline
+                                .withOpacity(0.08),
+                              minimumSize: const Size(119, 48),
+                              shape: const RoundedRectangleBorder(
+                                borderRadius: BorderRadius.all(
+                                  Radius.circular(100),
+                                ),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 10,
+                              ),
+                            ),
+                            onPressed: _onPositiveAction,
+                            child: Text(
+                              widget.positiveText,
+                              style: ThemeUtils.textStyleM3LabelLarge(
+                                color: Colors.white,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
                           ),
-                          maxLines: 1,
-                          alignment: Alignment.center,
-                          height: 48,
-                          borderRadius: 100,
-                          padding: const EdgeInsets.symmetric(horizontal: 32),
-                          backgroundColor: AppColor.primaryMain,
-                          onTapActionCallback: _onPositiveAction,
                         ),
                       ],
                     ),
