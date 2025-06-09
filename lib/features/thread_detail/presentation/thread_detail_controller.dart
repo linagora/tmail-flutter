@@ -168,6 +168,9 @@ class ThreadDetailController extends BaseController {
         }
       } else if (action is UpdatedThreadDetailSettingAction) {
         consumeState(_getThreadDetailStatusInteractor.execute());
+        mailboxDashBoardController.dispatchThreadDetailUIAction(
+          ThreadDetailUIAction(),
+        );
       }
     });
   }
