@@ -4,9 +4,5 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/action/thread_
 extension NotifyThreadDetailSettingUpdated on MailboxDashBoardController {
   void notifyThreadDetailSettingUpdated() {
     dispatchThreadDetailUIAction(UpdatedThreadDetailSettingAction());
-    Future.delayed(
-      Duration.zero,
-      () => dispatchThreadDetailUIAction(ThreadDetailUIAction()),
-    );
   }
 }
