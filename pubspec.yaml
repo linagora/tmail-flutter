@@ -373,9 +373,13 @@ flutter_icons:
   adaptive_icon_foreground: "assets/icons/icon_launcher.png"
 
 flutter_native_splash:
-  color: "#000000"
-  branding: "assets/icons/icon_branding.png"
-  image: "assets/icons/icon_logo.png"
+  color: "#ffffff"
+  image_ios: "assets/icons/icon_logo_ios.png"
+  image_android: "assets/icons/icon_android.png"
+  branding: "assets/icons/icon_twp.png"
+  android_12:
+    image: "assets/icons/icon_android.png"
+    branding: "assets/icons/icon_twp_android12.png"
 
 cider:
   link_template:
