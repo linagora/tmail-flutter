@@ -18,6 +18,8 @@ class LocalSettingCacheManager {
   }
 
   Future<LocalSettingOptions> get() async {
+    await _sharedPreferences.reload();
+    
     final data = _sharedPreferences.getString(key);
     if (data == null) {
       return LocalSettingOptions.defaults();
