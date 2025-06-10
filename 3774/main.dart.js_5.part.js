@@ -14500,7 +14500,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null,
         t1 = index === this.listEmailAddress.length - 1 ? A.EmailAddressExtension_asString(emailAddress) : A.EmailAddressExtension_asString(emailAddress) + ",",
         t2 = this.$this;
-      return A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_0, 20, C.Alignment_0_0, _null, _null, 1 / 0, _null, 1 / 0, 0, new B._EmailReceiverWidgetState__buildRecipientsTag__closure(t2, emailAddress), new B._EmailReceiverWidgetState__buildRecipientsTag__closure0(t2, emailAddress), D.EdgeInsetsDirectional_8_2_8_2, t1, _null, A.ThemeUtils_textStyleHeadingHeadingSmall(C.Color_4278190080, C.FontWeight_3_400).copyWith$3$fontSize$height$letterSpacing(17, 1, -0.17), _null, _null);
+      return A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_0, 20, C.Alignment_m1_0, _null, _null, 1 / 0, _null, 1 / 0, 0, new B._EmailReceiverWidgetState__buildRecipientsTag__closure(t2, emailAddress), new B._EmailReceiverWidgetState__buildRecipientsTag__closure0(t2, emailAddress), D.EdgeInsetsDirectional_8_2_8_2, t1, _null, A.ThemeUtils_textStyleHeadingHeadingSmall(C.Color_4278190080, C.FontWeight_3_400).copyWith$3$fontSize$height$letterSpacing(17, 1, -0.17), _null, _null);
     },
     $signature: 1866
   };
@@ -20594,5 +20594,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "NAr2WD8IouAD0kiN4ScTEgZl7Kw=");
+})($__dart_deferred_initializers__, "v+QBy/WqiGFMTvR/dWB8pq1uDq4=");
 ;
