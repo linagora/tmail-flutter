@@ -59,6 +59,10 @@ class EmailSenderBuilder extends StatelessWidget {
               padding: EdgeInsets.zero,
               customStyle: ThemeUtils.textStyleBodyBody1(
                 color: AppColor.steelGray400,
+              ).copyWith(
+                fontSize: 17,
+                height: 1,
+                letterSpacing: -0.17,
               ),
               overflow: CommonTextStyle.defaultTextOverFlow,
               softWrap: CommonTextStyle.defaultSoftWrap

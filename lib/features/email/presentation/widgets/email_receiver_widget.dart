@@ -241,7 +241,11 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
         textStyle: ThemeUtils.textStyleHeadingHeadingSmall(
           color: Colors.black,
           fontWeight: FontWeight.w400,
-        ).copyWith(height: 1, letterSpacing: -0.14),
+        ).copyWith(
+          fontSize: PlatformInfo.isMobile ? 14 : 17,
+          height: 1,
+          letterSpacing: PlatformInfo.isMobile ? -0.14 : -0.17,
+        ),
         padding: const EdgeInsetsDirectional.symmetric(vertical: 2, horizontal: 8),
         backgroundColor: Colors.transparent,
         onTapActionCallback: () => widget.openEmailAddressDetailAction?.call(context, emailAddress),
