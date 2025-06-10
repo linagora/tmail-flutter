@@ -16,12 +16,16 @@ class ManageAccountRepositoryImpl extends ManageAccountRepository {
   }
 
   @override
-  Future<void> updateLocalSettings(LocalSettingOptions localSettingOptions) {
-    return dataSource.updateLocalSettings(localSettingOptions);
+  Future<void> updateLocalSettings(
+    Map<SupportedLocalSetting, LocalSettingOptions?> localSettings,
+  ) {
+    return dataSource.updateLocalSettings(localSettings);
   }
 
   @override
-  Future<LocalSettingOptions> getLocalSettings() {
-    return dataSource.getLocalSettings();
+  Future<Map<SupportedLocalSetting, LocalSettingOptions?>> getLocalSettings(
+    List<SupportedLocalSetting> supportedLocalSettings,
+  ) {
+    return dataSource.getLocalSettings(supportedLocalSettings);
   }
 }

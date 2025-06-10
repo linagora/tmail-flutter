@@ -57,9 +57,9 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                     ),
                   Obx(() {
                     final settingOption = controller.settingOption.value;
-                    final localSettingOption = controller.localSettingOption.value;
+                    final localSettingOption = controller.localSettings;
 
-                    if (settingOption == null && localSettingOption == null) {
+                    if (settingOption == null && localSettingOption.isEmpty) {
                       return const SizedBox.shrink();
                     }
 
@@ -67,7 +67,7 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                       if (settingOption != null) ...SettingOptionType.values.where(
                         (optionType) => !optionType.isLocal,
                       ),
-                      if (localSettingOption != null) ...SettingOptionType.values.where(
+                      ...SettingOptionType.values.where(
                         (optionType) => optionType.isLocal,
                       ),
                     ];
@@ -79,7 +79,7 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                           return SettingOptionItem(
                             imagePaths: controller.imagePaths,
                             settingOption: settingOption,
-                            localSettingOptions: localSettingOption,
+                            localSettings: localSettingOption,
                             optionType: availableSettingOptions[index],
                             onTapSettingOptionAction: controller.updateStateSettingOption,
                           );

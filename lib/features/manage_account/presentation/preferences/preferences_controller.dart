@@ -10,7 +10,6 @@ import 'package:tmail_ui_user/features/manage_account/domain/state/update_local_
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_local_settings_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/update_local_settings_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/model/local_setting_detail/local_setting_detail.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/local_setting_detail/thread_detail_local_setting_detail.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/local_setting_options.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/setting_option_type.dart';
@@ -35,7 +34,7 @@ class PreferencesController extends BaseController {
   final UpdateLocalSettingsInteractor _updateLocalSettingsInteractor;
 
   final settingOption = Rxn<TMailServerSettingOptions>();
-  final localSettingOption = Rxn<LocalSettingOptions>();
+  final localSettings = <SupportedLocalSetting, LocalSettingOptions?>{}.obs;
 
   bool get isLoading => viewState.value.fold(
     (failure) => false, 
@@ -57,11 +56,11 @@ class PreferencesController extends BaseController {
       _updateSettingOptionValue(newSettingOption: success.settingOption);
     } else if (success is GetLocalSettingsSuccess) {
       _updateLocalSettingOptionValue(
-        newLocalSettingOption: success.localSettingOptions,
+        newLocalSettings: success.localSettings,
       );
     } else if (success is UpdateLocalSettingsSuccess) {
       _updateLocalSettingOptionValue(
-        newLocalSettingOption: success.localSettingOptions,
+        newLocalSettings: success.localSettings,
       );
     } else {
       super.handleSuccessViewState(success);
@@ -92,14 +91,14 @@ class PreferencesController extends BaseController {
   }
 
   void _updateLocalSettingOptionValue({
-    required LocalSettingOptions newLocalSettingOption,
+    required Map<SupportedLocalSetting, LocalSettingOptions?> newLocalSettings
   }) {
-    localSettingOption.value = newLocalSettingOption;
-    localSettingOption.refresh();
+    localSettings.value = newLocalSettings;
+    localSettings.refresh();
   }
 
   void _getSettingOption() {
-    consumeState(_getLocalSettingInteractor.execute());
+    consumeState(_getLocalSettingInteractor.execute(SupportedLocalSetting.values));
     final accountId = _manageAccountDashBoardController.accountId.value;
     if (accountId != null) {
       consumeState(_getServerSettingInteractor.execute(accountId));
@@ -113,21 +112,17 @@ class PreferencesController extends BaseController {
 
   void updateStateSettingOption(SettingOptionType optionType, bool isEnabled) {
     if (optionType.isLocal) {
-      LocalSettingOptions? newLocalSettingOption;
+      Map<SupportedLocalSetting, LocalSettingOptions?> newLocalSettings = {};
       switch(optionType) {
         case SettingOptionType.thread:
-          Map<SupportedLocalSetting, LocalSettingDetail<dynamic>> currentLocalSettings = Map.from(localSettingOption.value?.settings ?? {});
-          currentLocalSettings[SupportedLocalSetting.threadDetail] = ThreadDetailLocalSettingDetail(!isEnabled);
-          newLocalSettingOption = LocalSettingOptions(settings: currentLocalSettings);
+          var currentLocalSettings = Map<SupportedLocalSetting, LocalSettingOptions?>.from(localSettings);
+          currentLocalSettings[SupportedLocalSetting.threadDetail] = LocalSettingOptions(setting: ThreadDetailLocalSettingDetail(!isEnabled));
+          newLocalSettings = currentLocalSettings;
           break;
         default:
           break;
       }
-      if (newLocalSettingOption != null) {
-        consumeState(_updateLocalSettingsInteractor.execute(
-          newLocalSettingOption,
-        ));
-      }
+      consumeState(_updateLocalSettingsInteractor.execute(newLocalSettings));
       return;
     }
 

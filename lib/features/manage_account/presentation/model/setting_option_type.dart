@@ -1,7 +1,7 @@
 
 import 'package:server_settings/server_settings/tmail_server_settings.dart';
 import 'package:server_settings/server_settings/tmail_server_settings_extension.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/extensions/local_setting_options_extensions.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/local_settings_map_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/model/local_setting_options.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
@@ -45,7 +45,7 @@ enum SettingOptionType {
 
   bool isEnabled(
     TMailServerSettingOptions? settingOption,
-    LocalSettingOptions? localSettingOption,
+    Map<SupportedLocalSetting, LocalSettingOptions?> localSettings,
   ) {
     switch(this) {
       case SettingOptionType.readReceipt:
@@ -53,7 +53,7 @@ enum SettingOptionType {
       case SettingOptionType.senderPriority:
         return settingOption?.isDisplaySenderPriority ?? false;
       case SettingOptionType.thread:
-        return localSettingOption?.threadDetailEnabled ?? false;
+        return localSettings.threadDetailEnabled ?? false;
     }
   }
 

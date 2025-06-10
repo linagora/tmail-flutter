@@ -11,20 +11,16 @@ enum SupportedLocalSetting {
 @JsonSerializable(converters: [LocalSettingDetailConverter()])
 class LocalSettingOptions with EquatableMixin {
   const LocalSettingOptions({
-    required this.settings,
+    required this.setting,
   });
   
-  final Map<SupportedLocalSetting, LocalSettingDetail> settings;
+  final LocalSettingDetail? setting;
 
   factory LocalSettingOptions.fromJson(Map<String, dynamic> json) =>
       _$LocalSettingOptionsFromJson(json);
 
   Map<String, dynamic> toJson() => _$LocalSettingOptionsToJson(this);
-
-  factory LocalSettingOptions.defaults() => const LocalSettingOptions(
-    settings: {},
-  );
   
   @override
-  List<Object?> get props => [settings];
+  List<Object?> get props => [setting];
 }

@@ -5,12 +5,12 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/local_s
 class GettingLocalSettingsState extends LoadingState {}
 
 class GetLocalSettingsSuccess extends UIState {
-  GetLocalSettingsSuccess(this.localSettingOptions);
+  GetLocalSettingsSuccess(this.localSettings);
 
-  final LocalSettingOptions localSettingOptions;
+  final Map<SupportedLocalSetting, LocalSettingOptions?> localSettings;
 
   @override
-  List<Object?> get props => [localSettingOptions];
+  List<Object?> get props => [localSettings];
 }
 
 class GetLocalSettingsFailure extends FeatureFailure {
