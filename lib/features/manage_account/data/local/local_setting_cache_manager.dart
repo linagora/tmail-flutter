@@ -8,22 +8,34 @@ class LocalSettingCacheManager {
 
   final SharedPreferences _sharedPreferences;
 
-  static const key = 'local_setting';
+  Future<void> update(
+    Map<SupportedLocalSetting, LocalSettingOptions?> localSettings,
+  ) async {
+    await Future.wait(localSettings.entries.map((entry) async {
+      if (entry.value == null) {
+        await _sharedPreferences.remove(entry.key.name);
+        return;
+      }
 
-  Future<void> update(LocalSettingOptions localSettingOptions) async {
-    await _sharedPreferences.setString(
-      key,
-      jsonEncode(localSettingOptions.toJson()),
-    );
+      await _sharedPreferences.setString(
+        entry.key.name,
+        jsonEncode(entry.value!.toJson()),
+      );
+    }));
   }
 
-  Future<LocalSettingOptions> get() async {
+  Future<Map<SupportedLocalSetting, LocalSettingOptions?>> get(
+    List<SupportedLocalSetting> supportedLocalSettings,
+  ) async {
     await _sharedPreferences.reload();
     
-    final data = _sharedPreferences.getString(key);
-    if (data == null) {
-      return LocalSettingOptions.defaults();
-    }
-    return LocalSettingOptions.fromJson(jsonDecode(data));
+    return Map.fromEntries(supportedLocalSettings.map((supportedLocalSetting) {
+      final data = _sharedPreferences.getString(supportedLocalSetting.name);
+
+      return MapEntry(
+        supportedLocalSetting,
+        data == null ? null : LocalSettingOptions.fromJson(jsonDecode(data)),
+      );
+    }));
   }
 }
