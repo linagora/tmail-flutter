@@ -44,6 +44,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/hand
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_emails_by_ids_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_thread_by_id_failure.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/model/thread_detail_setting_status.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_collapsed_email_download_states.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/mark_collapsed_email_star_success.dart';
@@ -88,8 +89,8 @@ class ThreadDetailController extends BaseController {
 
   ScrollController? scrollController;
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
-  bool isThreadDetailEnabled = false;
   AppLifecycleListener? appLifecycleListener;
+  ThreadDetailSettingStatus threadDetailSettingStatus = ThreadDetailSettingStatus.loading;
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
   Session? get session => mailboxDashBoardController.sessionCurrent;
@@ -106,13 +107,21 @@ class ThreadDetailController extends BaseController {
       .value == true;
     return isWebSearchRunning || isMobileSearchRunning;
   }
+  bool get isThreadDetailEnabled =>
+      threadDetailSettingStatus == ThreadDetailSettingStatus.enabled;
 
   @override
   void onInit() {
     super.onInit();
     consumeState(_getThreadDetailStatusInteractor.execute());
     appLifecycleListener = AppLifecycleListener(
-      onResume: () => consumeState(_getThreadDetailStatusInteractor.execute()),
+      onResume: () {
+        if (threadDetailSettingStatus == ThreadDetailSettingStatus.loading) {
+          return;
+        }
+
+        consumeState(_getThreadDetailStatusInteractor.execute());
+      },
     );
     ever(mailboxDashBoardController.accountId, (accountId) {
       if (accountId == null) return;
@@ -203,7 +212,11 @@ class ThreadDetailController extends BaseController {
     } else if (success is DownloadAttachmentForWebSuccess) {
       handleDownloadSuccess(success);
     } else if (success is GetThreadDetailStatusSuccess) {
-      isThreadDetailEnabled = success.threadDetailEnabled;
+      threadDetailSettingStatus = success.threadDetailEnabled
+          ? ThreadDetailSettingStatus.enabled
+          : ThreadDetailSettingStatus.disabled;
+    } else if (success is GettingThreadDetailStatus) {
+      threadDetailSettingStatus = ThreadDetailSettingStatus.loading;
     } else {
       super.handleSuccessViewState(success);
     }
@@ -223,7 +236,7 @@ class ThreadDetailController extends BaseController {
       return;
     }
     if (failure is GetThreadDetailStatusFailure) {
-      isThreadDetailEnabled = false;
+      threadDetailSettingStatus = ThreadDetailSettingStatus.disabled;
     }
     super.handleFailureViewState(failure);
   }
