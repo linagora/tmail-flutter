@@ -174,8 +174,11 @@ class ThreadDetailView extends GetWidget<ThreadDetailController> {
 
       if (controller.emailIdsPresentation.length == 1 &&
           controller.emailIdsPresentation.values.firstOrNull != null) {
+        final emailId = controller.emailIdsPresentation.values.firstOrNull!.id;
+
         return EmailView(
-          emailId: controller.emailIdsPresentation.values.firstOrNull?.id,
+          key: ValueKey(emailId?.id.value),
+          emailId: emailId,
         );
       }
 
