@@ -34,6 +34,7 @@ extension OpenAppGridExtension on MailboxController {
                 ),
               ],
               borderRadius: BorderRadius.all(Radius.circular(14)),
+              color: Colors.white,
             ),
             child: GridView(
               gridDelegate: const SliverGridDelegateFixedHeight(
