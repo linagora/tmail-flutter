@@ -12,9 +12,11 @@ class PrefixRecipientWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      '${prefixEmailAddress.asName(context)}:',
-      style: ThemeUtils.textStyleBodyBody1(color: AppColor.steelGray400),
+    return Center(
+      child: Text(
+        '${prefixEmailAddress.asName(context)}:',
+        style: ThemeUtils.textStyleBodyBody1(color: AppColor.steelGray400),
+      ),
     );
   }
 }
