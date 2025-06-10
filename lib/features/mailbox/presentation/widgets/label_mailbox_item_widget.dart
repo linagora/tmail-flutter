@@ -4,6 +4,7 @@ import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/text/text_overflow_builder.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
@@ -16,8 +17,6 @@ import 'package:tmail_ui_user/features/mailbox/presentation/widgets/trailing_mai
 class LabelMailboxItemWidget extends StatefulWidget {
 
   final GlobalKey itemKey;
-  final ResponsiveUtils responsiveUtils;
-  final ImagePaths imagePaths;
   final MailboxNode mailboxNode;
   final bool showTrailing;
   final bool isItemHovered;
@@ -30,8 +29,6 @@ class LabelMailboxItemWidget extends StatefulWidget {
     super.key,
     required this.itemKey,
     required this.mailboxNode,
-    required this.responsiveUtils,
-    required this.imagePaths,
     this.showTrailing = true,
     this.isItemHovered = false,
     this.isSelected = false,
@@ -46,6 +43,9 @@ class LabelMailboxItemWidget extends StatefulWidget {
 
 class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
 
+  final _responsiveUtils = Get.find<ResponsiveUtils>();
+  final _imagePaths = Get.find<ImagePaths>();
+  
   bool _popupVisible = false;
 
   @override
@@ -70,9 +70,9 @@ class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
           MailboxExpandButton(
             itemKey: widget.itemKey,
             mailboxNode: widget.mailboxNode,
-            imagePaths: widget.imagePaths,
-            responsiveUtils: widget.responsiveUtils,
-            onExpandFolderActionClick: onClickExpandMailboxNodeAction,
+            imagePaths: _imagePaths,
+            responsiveUtils: _responsiveUtils,
+            onExpandFolderActionClick: widget.onClickExpandMailboxNodeAction,
           ),
       ],
     );
@@ -101,8 +101,8 @@ class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
 
     final trailingWidget = TrailingMailboxItemWidget(
       mailboxNode: widget.mailboxNode,
-      responsiveUtils: widget.responsiveUtils,
-      imagePaths: widget.imagePaths,
+      responsiveUtils: _responsiveUtils,
+      imagePaths: _imagePaths,
       isItemHovered: widget.isItemHovered,
       onMenuActionClick: widget.onMenuActionClick,
     );
@@ -156,18 +156,18 @@ class _LabelMailboxItemWidgetState extends State<LabelMailboxItemWidget> {
   bool get _shouldShowPopup => widget.isItemHovered || _popupVisible;
 
   bool _showCleanButton(BuildContext context) {
-    return widget.responsiveUtils.isWebDesktop(context) &&
+    return _responsiveUtils.isWebDesktop(context) &&
         widget.mailboxNode.item.allowedHasEmptyAction;
   }
 
   TextStyle get _displayNameTextStyle {
-    if (isSelected) {
+    if (widget.isSelected) {
       return ThemeUtils.textStyleInter700(
-        color: responsiveUtils.isDesktop(context) ? null : AppColor.iconFolder,
+        color: _responsiveUtils.isDesktop(context) ? null : AppColor.iconFolder,
         fontSize: 14,
       );
     } else {
-      return responsiveUtils.isWebDesktop(context)
+      return _responsiveUtils.isWebDesktop(context)
         ? ThemeUtils.textStyleBodyBody3(color: Colors.black)
         : ThemeUtils.textStyleInter500();
     }

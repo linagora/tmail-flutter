@@ -100,9 +100,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                     Expanded(
                       child: LabelMailboxItemWidget(
                         itemKey: _key,
-                        responsiveUtils: _responsiveUtils,
                         mailboxNode: widget.mailboxNode,
-                        imagePaths: _imagePaths,
                         isItemHovered: _isItemHovered,
                         isSelected: _isSelected,
                         onMenuActionClick: widget.onMenuActionClick,
@@ -156,9 +154,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                     Expanded(
                       child: LabelMailboxItemWidget(
                         itemKey: _key,
-                        responsiveUtils: _responsiveUtils,
                         mailboxNode: widget.mailboxNode,
-                        imagePaths: _imagePaths,
                         isItemHovered: _isItemHovered,
                         isSelected: _isSelected,
                         onMenuActionClick: widget.onMenuActionClick,
@@ -207,9 +203,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                     Expanded(
                       child: LabelMailboxItemWidget(
                         itemKey: _key,
-                        responsiveUtils: _responsiveUtils,
                         mailboxNode: widget.mailboxNode,
-                        imagePaths: _imagePaths,
                         isItemHovered: _isItemHovered,
                         isSelected: _isSelected,
                         onMenuActionClick: widget.onMenuActionClick,
@@ -254,9 +248,7 @@ class _MailboxItemWidgetState extends State<MailboxItemWidget> {
                       Expanded(
                         child: LabelMailboxItemWidget(
                           itemKey: _key,
-                          responsiveUtils: _responsiveUtils,
                           mailboxNode: widget.mailboxNode,
-                          imagePaths: _imagePaths,
                           showTrailing: false,
                           isSelected: _isSelected,
                           isItemHovered: _isItemHovered,
