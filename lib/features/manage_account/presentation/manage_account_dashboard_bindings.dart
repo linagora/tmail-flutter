@@ -10,7 +10,7 @@ import 'package:tmail_ui_user/features/manage_account/presentation/manage_accoun
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/manage_account_menu_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/menu/settings/settings_bindings.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/profiles/profiles_bindings.dart';
-import 'package:tmail_ui_user/main/exceptions/remote_exception_thrower.dart';
+import 'package:tmail_ui_user/main/exceptions/cache_exception_thrower.dart';
 
 class ManageAccountDashBoardBindings extends BaseBindings {
 
@@ -37,7 +37,7 @@ class ManageAccountDashBoardBindings extends BaseBindings {
     Get.lazyPut(() => ManageAccountDataSourceImpl(
       Get.find<LanguageCacheManager>(),
       Get.find<LocalSettingCacheManager>(),
-      Get.find<RemoteExceptionThrower>()));
+      Get.find<CacheExceptionThrower>()));
   }
 
   @override
