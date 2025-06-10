@@ -246,7 +246,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
           height: 1,
           letterSpacing: PlatformInfo.isMobile ? -0.14 : -0.17,
         ),
-        alignment: Alignment.center,
+        alignment: Alignment.centerLeft,
         padding: const EdgeInsetsDirectional.symmetric(vertical: 2, horizontal: 8),
         backgroundColor: Colors.transparent,
         onTapActionCallback: () => widget.openEmailAddressDetailAction?.call(context, emailAddress),
