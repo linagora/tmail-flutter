@@ -5,7 +5,11 @@ import 'package:tmail_ui_user/features/manage_account/presentation/model/local_s
 abstract class ManageAccountDataSource {
   Future<void> persistLanguage(Locale localeCurrent);
 
-  Future<void> updateLocalSettings(LocalSettingOptions localSettingOptions);
+  Future<void> updateLocalSettings(
+    Map<SupportedLocalSetting, LocalSettingOptions?> localSettings,
+  );
 
-  Future<LocalSettingOptions> getLocalSettings();
+  Future<Map<SupportedLocalSetting, LocalSettingOptions?>> getLocalSettings(
+    List<SupportedLocalSetting> supportedLocalSettings,
+  );
 }
