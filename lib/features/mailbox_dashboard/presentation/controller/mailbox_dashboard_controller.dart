@@ -259,6 +259,7 @@ class MailboxDashBoardController extends ReloadableController
   final localFileDraggableAppState = Rxn<DraggableAppState>();
   final isSenderImportantFlagEnabled = RxBool(true);
   final isAppGridDialogDisplayed = RxBool(false);
+  final isDrawerOpened = RxBool(false);
 
   Session? sessionCurrent;
   Map<Role, MailboxId> mapDefaultMailboxIdByRole = {};

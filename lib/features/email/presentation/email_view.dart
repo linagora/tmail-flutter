@@ -415,7 +415,8 @@ class EmailView extends GetWidget<SingleEmailController> {
                             ),
                             if (controller.mailboxDashBoardController.isAttachmentDraggableAppActive ||
                                 controller.mailboxDashBoardController.isLocalFileDraggableAppActive ||
-                                controller.mailboxDashBoardController.isAppGridDialogDisplayed.isTrue)
+                                controller.mailboxDashBoardController.isAppGridDialogDisplayed.isTrue ||
+                                controller.mailboxDashBoardController.isDrawerOpened.isTrue)
                               PointerInterceptor(
                                 child: SizedBox(
                                   width: constraints.maxWidth,
