@@ -12,12 +12,12 @@ class UpdateLocalSettingsInteractor {
   final ManageAccountRepository _manageAccountRepository;
 
   Stream<Either<Failure, Success>> execute(
-    LocalSettingOptions localSettingOptions,
+    Map<SupportedLocalSetting, LocalSettingOptions?> localSettings,
   ) async* {
     try {
       yield Right(UpdatingLocalSettingsState());
-      await _manageAccountRepository.updateLocalSettings(localSettingOptions);
-      yield Right(UpdateLocalSettingsSuccess(localSettingOptions));
+      await _manageAccountRepository.updateLocalSettings(localSettings);
+      yield Right(UpdateLocalSettingsSuccess(localSettings));
     } catch (e) {
       logError('$runtimeType::execute(): exception: $e');
       yield Left(UpdateLocalSettingsFailure(exception: e));

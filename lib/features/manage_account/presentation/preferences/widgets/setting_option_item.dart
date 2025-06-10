@@ -14,7 +14,7 @@ class SettingOptionItem extends StatelessWidget {
 
   final ImagePaths imagePaths;
   final TMailServerSettingOptions? settingOption;
-  final LocalSettingOptions? localSettingOptions;
+  final Map<SupportedLocalSetting, LocalSettingOptions?> localSettings;
   final SettingOptionType optionType;
   final OnTapSettingOptionAction onTapSettingOptionAction;
 
@@ -22,7 +22,7 @@ class SettingOptionItem extends StatelessWidget {
     super.key,
     required this.imagePaths,
     required this.settingOption,
-    required this.localSettingOptions,
+    required this.localSettings,
     required this.optionType,
     required this.onTapSettingOptionAction,
   });
@@ -59,10 +59,10 @@ class SettingOptionItem extends StatelessWidget {
             InkWell(
               onTap: () => onTapSettingOptionAction(
                 optionType,
-                optionType.isEnabled(settingOption, localSettingOptions),
+                optionType.isEnabled(settingOption, localSettings),
               ),
               child: SvgPicture.asset(
-                optionType.isEnabled(settingOption, localSettingOptions)
+                optionType.isEnabled(settingOption, localSettings)
                   ? imagePaths.icSwitchOn
                   : imagePaths.icSwitchOff,
                 fit: BoxFit.fill,
