@@ -44,6 +44,7 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/extension/hand
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_emails_by_ids_success.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_get_thread_by_id_failure.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/initialize_thread_detail_emails.dart';
+import 'package:tmail_ui_user/features/thread_detail/presentation/extension/refresh_thread_detail_on_setting_changed.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/model/thread_detail_setting_status.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 import 'package:tmail_ui_user/features/thread_detail/presentation/extension/handle_collapsed_email_download_states.dart';
@@ -91,6 +92,7 @@ class ThreadDetailController extends BaseController {
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   AppLifecycleListener? appLifecycleListener;
   ThreadDetailSettingStatus threadDetailSettingStatus = ThreadDetailSettingStatus.loading;
+  bool threadDetailWasEnabled = false;
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
   Session? get session => mailboxDashBoardController.sessionCurrent;
@@ -215,6 +217,7 @@ class ThreadDetailController extends BaseController {
       threadDetailSettingStatus = success.threadDetailEnabled
           ? ThreadDetailSettingStatus.enabled
           : ThreadDetailSettingStatus.disabled;
+      refreshThreadDetailOnSettingChanged();
     } else if (success is GettingThreadDetailStatus) {
       threadDetailSettingStatus = ThreadDetailSettingStatus.loading;
     } else {
@@ -237,6 +240,7 @@ class ThreadDetailController extends BaseController {
     }
     if (failure is GetThreadDetailStatusFailure) {
       threadDetailSettingStatus = ThreadDetailSettingStatus.disabled;
+      refreshThreadDetailOnSettingChanged();
     }
     super.handleFailureViewState(failure);
   }
