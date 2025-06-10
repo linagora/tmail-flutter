@@ -26,16 +26,20 @@ class ManageAccountDataSourceImpl extends ManageAccountDataSource {
   }
 
   @override
-  Future<void> updateLocalSettings(LocalSettingOptions localSettingOptions) {
+  Future<void> updateLocalSettings(
+    Map<SupportedLocalSetting, LocalSettingOptions?> localSettings,
+  ) {
     return Future.sync(() async {
-      return await _localSettingCacheManager.update(localSettingOptions);
+      return await _localSettingCacheManager.update(localSettings);
     }).catchError(_exceptionThrower.throwException);
   }
 
   @override
-  Future<LocalSettingOptions> getLocalSettings() {
+  Future<Map<SupportedLocalSetting, LocalSettingOptions?>> getLocalSettings(
+    List<SupportedLocalSetting> supportedLocalSettings,
+  ) {
     return Future.sync(() async {
-      return await _localSettingCacheManager.get();
+      return await _localSettingCacheManager.get(supportedLocalSettings);
     }).catchError(_exceptionThrower.throwException);
   }
 }
