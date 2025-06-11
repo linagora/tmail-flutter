@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/widget/application_version_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/base_mailbox_view.dart';
@@ -19,7 +20,14 @@ class MailboxView extends BaseMailboxView {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            buildMailboxAppBar(),
+            PopScope(
+              canPop: false,
+              onPopInvokedWithResult: (_, __) {
+                if (!PlatformInfo.isAndroid) return;
+                controller.mailboxDashBoardController.closeMailboxMenuDrawer();
+              },
+              child: buildMailboxAppBar(),
+            ),
             Expanded(
               child: RefreshIndicator(
                 color: AppColor.primaryColor,
