@@ -222,7 +222,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         child: TMailButtonWidget.fromIcon(
           icon: _imagePaths.icSearchBar,
           iconColor: AppColor.steelGray400,
-          iconSize: 28,
+          iconSize: 22,
           backgroundColor: Colors.transparent,
           padding: const EdgeInsets.all(4),
           tooltipMessage: AppLocalizations.of(context).search,
