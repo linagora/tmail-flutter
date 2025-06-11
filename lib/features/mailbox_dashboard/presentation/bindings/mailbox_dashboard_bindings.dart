@@ -8,9 +8,9 @@ import 'package:core/utils/print_utils.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/base/base_bindings.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
-import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
+import 'package:tmail_ui_user/features/cleanup/data/local/recent_search_cache_manager.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/contact_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
@@ -233,7 +233,7 @@ class MailboxDashBoardBindings extends BaseBindings {
       Get.find<HtmlAnalyzer>(),
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => SearchDataSourceImpl(
-      Get.find<RecentSearchCacheClient>(),
+      Get.find<RecentSearchCacheManager>(),
       Get.find<CacheExceptionThrower>()));
     Get.lazyPut(() => ThreadDataSourceImpl(
       Get.find<ThreadAPI>(),

@@ -487,7 +487,7 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         onTap: () {
           final query = textSearch.trim();
           if (query.isNotEmpty) {
-            controller.saveRecentSearch(RecentSearch.now(query));
+            controller.saveRecentSearch(query);
             controller.showAllResultSearchAction(context, query);
           }
         },
