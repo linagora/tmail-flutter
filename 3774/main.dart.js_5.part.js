@@ -14755,7 +14755,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3.push(new B.ReceivedTimeBuilder(t5, D.EdgeInsetsDirectional_16_2_0_0, _null));
       if (t6)
         t3.push(new A.SizedBox(_null, 20, A.OverflowBox$(C.Alignment_0_0, B.EmailViewAppBarWidget$(D.BoxDecoration_EGl, t1.emailLoaded, C.EdgeInsets_0_0_0_0, C.EdgeInsets_8_8_8_8, true, false, D.ValueKey_email_view_app_bar_widget, t1.mailboxContain, new B.InformationSenderAndReceiverBuilder_build__closure1(), t1.onEmailActionClick, t1.onMoreActionClick, C.EdgeInsets_0_0_0_0, t5, false), C.OverflowBoxFit_1, 52, _null, _null, _null), _null));
-      t2 = A._setArrayType([A.Row$(t3, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null)], t2);
+      t2 = A._setArrayType([C.SizedBox_null_2_null_null, A.Row$(t3, C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), C.SizedBox_null_2_null_null], t2);
       if (A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, type$.MediaQuery).data.size._dx < 600 && t6)
         t2.push(new B.ReceivedTimeBuilder(t5, D.EdgeInsetsDirectional_0_5_0_5, _null));
       if (B.PresentationEmailExtension_get_countRecipients(t5) > 0 && t1.showRecipients)
@@ -20614,5 +20614,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "XnN407vEEji58rEZWEaQStxTCok=");
+})($__dart_deferred_initializers__, "HzeQtLQUIN7cHoSDvyujM5OdL0o=");
 ;
