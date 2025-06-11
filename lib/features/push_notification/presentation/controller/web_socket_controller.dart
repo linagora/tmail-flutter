@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:isolate';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:core/presentation/state/failure.dart';
@@ -50,7 +51,7 @@ class WebSocketController extends PushBaseController {
 
   @override
   void handleFailureViewState(Failure failure) {
-    logError('WebSocketController::handleFailureViewState():Failure $failure');
+    logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleFailureViewState():Failure $failure');
     if (failure is WebSocketConnectionFailed) {
       _handleWebSocketConnectionRetry();
     }
@@ -58,7 +59,7 @@ class WebSocketController extends PushBaseController {
 
   @override
   void handleSuccessViewState(Success success) {
-    log('WebSocketController::handleSuccessViewState():Success $success');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleSuccessViewState():Success $success');
     if (success is WebSocketConnectionSuccess) {
       _handleWebSocketConnectionSuccess(success);
     }
@@ -72,7 +73,7 @@ class WebSocketController extends PushBaseController {
 
   @override
   void initialize({AccountId? accountId, Session? session}) {
-    log('WebSocketController::initialize:AccountId = ${accountId?.asString}');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::initialize:AccountId = ${accountId?.asString}');
     super.initialize(accountId: accountId, session: session);
 
     _connectWebSocket();
@@ -99,14 +100,14 @@ class WebSocketController extends PushBaseController {
   }
 
   void _handleAppLifecycleStateChange(AppLifecycleState appLifecycleState) async {
-    log('WebSocketController::_handleAppLifecycleStateChange:appLifecycleState = $appLifecycleState');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleAppLifecycleStateChange:appLifecycleState = $appLifecycleState');
     switch (appLifecycleState) {
       case AppLifecycleState.resumed:
         if (PlatformInfo.isMobile) {
           _connectWebSocket();
         } else if (PlatformInfo.isWeb) {
           final isConnected = await _isWebSocketConnected();
-          log('WebSocketController::_handleAppLifecycleStateChange:isWebSocketConnected = $isConnected');
+          log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleAppLifecycleStateChange:isWebSocketConnected = $isConnected');
           if (!isConnected) {
             _connectWebSocket();
           }
@@ -125,14 +126,14 @@ class WebSocketController extends PushBaseController {
       if (_webSocketChannel == null) return false;
 
       await _webSocketChannel!.ready;
-      log('WebSocketController::_isWebSocketConnected:webSocketChannel ready');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_isWebSocketConnected:webSocketChannel ready');
       return true;
     } on SocketException catch (e) {
-      logError('WebSocketController::_isWebSocketConnected:SocketException = $e');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_isWebSocketConnected:SocketException = $e');
     } on WebSocketChannelException catch (e) {
-      logError('WebSocketController::_isWebSocketConnected:WebSocketChannelException = $e');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_isWebSocketConnected:WebSocketChannelException = $e');
     } catch (e) {
-      logError('WebSocketController::_isWebSocketConnected:Exception = $e');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_isWebSocketConnected:Exception = $e');
     }
     return false;
   }
@@ -140,18 +141,18 @@ class WebSocketController extends PushBaseController {
   void _connectWebSocket() {
     _connectWebSocketInteractor = getBinding<ConnectWebSocketInteractor>();
     if (_connectWebSocketInteractor == null || accountId == null || session == null) {
-      logError('WebSocketController::_connectWebSocket: Skipping');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_connectWebSocket: Skipping');
       return;
     }
     if (_isConnecting) return;
 
     _isConnecting = true;
-    log('WebSocketController::_connectWebSocket: Connecting');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_connectWebSocket: Connecting');
     consumeState(_connectWebSocketInteractor!.execute(session!, accountId!));
   }
 
   void _cleanUpWebSocketResources() {
-    log('WebSocketController::_cleanUpWebSocketResources:');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_cleanUpWebSocketResources:');
     _isConnecting = false;
     _webSocketSubscription?.cancel();
     _webSocketChannel?.sink.close();
@@ -161,7 +162,7 @@ class WebSocketController extends PushBaseController {
   }
 
   void _handleWebSocketConnectionSuccess(WebSocketConnectionSuccess success) {
-    log('WebSocketController::_handleWebSocketConnectionSuccess(): $success');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleWebSocketConnectionSuccess(): $success');
     _cleanUpWebSocketResources();
     _retryRemained = 3;
     _webSocketChannel = success.webSocketChannel;
@@ -174,7 +175,7 @@ class WebSocketController extends PushBaseController {
   }
 
   void _handleWebSocketConnectionRetry() {
-    log('WebSocketController::_handleWebSocketConnectionRetry:_retryRemained = $_retryRemained');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleWebSocketConnectionRetry:_retryRemained = $_retryRemained');
     _cleanUpWebSocketResources();
     if (_retryRemained > 0) {
       _retryRemained--;
@@ -189,9 +190,9 @@ class WebSocketController extends PushBaseController {
   }
 
   void _pingWebSocket() {
-    log('WebSocketController::_pingWebSocket:');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_pingWebSocket:');
     _webSocketPingTimer = Timer.periodic(const Duration(seconds: 10), (_) {
-      log('WebSocketController::_pingWebSocket: Processing');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_pingWebSocket: Processing');
       _webSocketChannel?.sink.add(jsonEncode(WebSocketEchoRequest().toJson()));
     });
   }
@@ -199,7 +200,7 @@ class WebSocketController extends PushBaseController {
   void _listenToWebSocket() {
     _webSocketSubscription = _webSocketChannel?.stream.listen(
       (data) {
-        log('WebSocketController::_listenToWebSocket(): $data');
+        log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_listenToWebSocket(): $data');
         if (session == null || accountId == null) return;
         if (data is String) {
           data = jsonDecode(data);
@@ -209,16 +210,16 @@ class WebSocketController extends PushBaseController {
           final stateChange = StateChange.fromJson(data);
           _stateChangeDebouncer?.value = stateChange;
         } catch (e) {
-          logError('WebSocketController::_listenToWebSocket(): Data is not StateChange');
+          logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_listenToWebSocket(): Data is not StateChange');
         }
       },
       cancelOnError: true,
       onError: (error) {
-        logError('WebSocketController::_listenToWebSocket():Error: $error');
+        logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_listenToWebSocket():Error: $error');
         handleFailureViewState(WebSocketConnectionFailed(exception: error));
       },
       onDone: () {
-        log('WebSocketController::_listenToWebSocket():onDone');
+        log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_listenToWebSocket():onDone');
         _handleWebSocketConnectionRetry();
       },
     );
@@ -235,7 +236,7 @@ class WebSocketController extends PushBaseController {
 
   void _handleStateChange(StateChange? stateChange) {
     try {
-      log('WebSocketController::_handleStateChange:stateChange = $stateChange');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleStateChange:stateChange = $stateChange');
       if (stateChange == null || accountId == null || session == null) return;
 
       final mapTypeState = stateChange.getMapTypeState(accountId!);
@@ -248,7 +249,7 @@ class WebSocketController extends PushBaseController {
         session: session,
       );
     } catch (e) {
-      logError('WebSocketController::_handleStateChange:Exception = $e');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleStateChange:Exception = $e');
     }
   }
 
@@ -258,10 +259,10 @@ class WebSocketController extends PushBaseController {
       ?.connectivity
       .onConnectivityChanged.listen((status) {
         if (status == ConnectivityResult.none) {
-          log('WebSocketController::_monitorNetwork:No network connection');
+          log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_monitorNetwork:No network connection');
           _cleanUpWebSocketResources();
         } else {
-          log('WebSocketController::_monitorNetwork:Network connection restore');
+          log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_monitorNetwork:Network connection restore');
           _connectWebSocket();
         }
       });

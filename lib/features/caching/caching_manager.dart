@@ -19,6 +19,7 @@ import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_clien
 import 'package:tmail_ui_user/features/caching/clients/session_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
+import 'package:tmail_ui_user/features/caching/config/isar/isar_database_config.dart';
 import 'package:tmail_ui_user/features/caching/utils/cache_utils.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/mailbox/data/model/state_type.dart';
@@ -171,8 +172,11 @@ class CachingManager {
     return _hiveCacheVersionClient.getLatestVersion();
   }
 
-  Future<void> closeHive() async {
-    return await HiveCacheConfig.instance.closeHive();
+  Future<void> closeDatabase() async {
+    await HiveCacheConfig.instance.onCloseDatabase();
+    if (PlatformInfo.isAndroid) {
+      await IsarDatabaseConfig().onCloseDatabase();
+    }
   }
 
   Future<void> clearAllFileInStorage() async {

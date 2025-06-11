@@ -14,6 +14,7 @@ import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_st
 import 'package:tmail_ui_user/features/base/upgradeable/upgrade_hive_database_steps_v7.dart';
 import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/config/cache_version.dart';
+import 'package:tmail_ui_user/features/caching/config/database_config.dart';
 import 'package:tmail_ui_user/features/caching/utils/caching_constants.dart';
 import 'package:tmail_ui_user/features/home/data/model/session_hive_obj.dart';
 import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_manager.dart';
@@ -39,7 +40,7 @@ import 'package:tmail_ui_user/features/thread/data/model/email_cache.dart';
 import 'package:tmail_ui_user/main/bindings/network/binding_tag.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
-class HiveCacheConfig {
+class HiveCacheConfig extends DatabaseConfig {
 
   HiveCacheConfig._internal();
 
@@ -49,12 +50,13 @@ class HiveCacheConfig {
 
   Future<void> setUp({String? cachePath}) async {
     log('HiveCacheConfig::setUp:');
-    await initializeDatabase(databasePath: cachePath);
+    await onInitializeDatabase(databasePath: cachePath);
     _registerAdapter();
   }
 
-  Future<void> initializeDatabase({String? databasePath}) async {
-    log('HiveCacheConfig::initializeDatabase:');
+  @override
+  Future<void> onInitializeDatabase({String? databasePath}) async {
+    log('HiveCacheConfig::onInitializeDatabase:');
     if (databasePath != null) {
       Hive.init(databasePath);
     } else {
@@ -65,7 +67,14 @@ class HiveCacheConfig {
     }
   }
 
-  Future<void> onUpgradeDatabase(CachingManager cachingManager) async {
+  @override
+  Future<void> onUpgradeDatabase() async {
+    final cachingManager = getBinding<CachingManager>();
+    if (cachingManager == null) {
+      logError('HiveCacheConfig::onUpgradeDatabase: cachingManager not found');
+      return;
+    }
+
     final oldVersion = await cachingManager.getLatestVersion() ?? 0;
     const newVersion = CacheVersion.hiveDBVersion;
     log('HiveCacheConfig::onUpgradeDatabase():oldVersion: $oldVersion | newVersion: $newVersion');
@@ -204,7 +213,11 @@ class HiveCacheConfig {
     }
   }
 
-  Future<void> closeHive() async {
-    return await Hive.close();
+  @override
+  String get databaseName => CachingConstants.databaseName;
+
+  @override
+  Future<void> onCloseDatabase() async {
+    await Hive.close();
   }
 }

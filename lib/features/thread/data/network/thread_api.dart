@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/http/http_client.dart';
@@ -101,9 +102,9 @@ class ThreadAPI {
       ?.notFound
       ?.toEmailIds()
       .toList();
-    log('ThreadAPI::getAllEmail:notFoundEmailIds = $notFoundEmailIds');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getAllEmail:notFoundEmailIds = $notFoundEmailIds');
     if (notFoundEmailIds?.isNotEmpty == true) {
-      log('ThreadAPI::getAllEmail:notFoundEmailIds = ${notFoundEmailIds!.asListString.toString()} | NewState = ${responseOfGetEmailMethod?.state.value}');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getAllEmail:notFoundEmailIds = ${notFoundEmailIds!.asListString.toString()} | NewState = ${responseOfGetEmailMethod?.state.value}');
     }
     return EmailsResponse(
       emailList: emailList,
@@ -215,7 +216,7 @@ class ThreadAPI {
           getSearchSnippetMethodCallId,
           SearchSnippetGetResponse.fromJson)?.list;
     } catch (e) {
-      logError('ThreadAPI::searchEmails:getSearchSnippetsFromResponse: Exception = $e');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::searchEmails:getSearchSnippetsFromResponse: Exception = $e');
       return null;
     }
   }
@@ -302,10 +303,10 @@ class ThreadAPI {
       updatedEmail = emailResponseUpdated?.list;
       newStateEmail = emailResponseUpdated?.state;
       final notFoundIdsUpdated = emailResponseUpdated?.notFound?.toEmailIds().toList() ?? [];
-      log('ThreadAPI::getChanges:notFoundIdsUpdated = $notFoundIdsUpdated');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getChanges:notFoundIdsUpdated = $notFoundIdsUpdated');
       if (notFoundIdsUpdated.isNotEmpty) {
         destroyedEmailIds.addAll(notFoundIdsUpdated);
-        log('ThreadAPI::getChanges:notFoundIdsUpdated = ${notFoundIdsUpdated.asListString.toString()} | SinceState = ${sinceState.value}',);
+        log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getChanges:notFoundIdsUpdated = ${notFoundIdsUpdated.asListString.toString()} | SinceState = ${sinceState.value}',);
       }
     }
 
@@ -317,15 +318,15 @@ class ThreadAPI {
       createdEmail = emailResponseCreated?.list;
       newStateEmail = emailResponseCreated?.state;
       final notFoundIdsCreated = emailResponseCreated?.notFound?.toEmailIds().toList() ?? [];
-      log('ThreadAPI::getChanges:notFoundIdsCreated = $notFoundIdsCreated');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getChanges:notFoundIdsCreated = $notFoundIdsCreated');
       if (notFoundIdsCreated.isNotEmpty) {
         destroyedEmailIds.addAll(notFoundIdsCreated);
-        log('ThreadAPI::getChanges:notFoundIdsCreated = ${notFoundIdsCreated.asListString.toString()} | SinceState = ${sinceState.value}');
+        log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getChanges:notFoundIdsCreated = ${notFoundIdsCreated.asListString.toString()} | SinceState = ${sinceState.value}');
       }
     }
-    log('ThreadAPI::getChanges:oldState = $sinceState | newStateChanges = $newStateChanges | newStateEmail = $newStateEmail | hasMoreChanges = $hasMoreChanges');
-    log('ThreadAPI::getChanges:updatedEmailSize = ${updatedEmail?.length} | createdEmailSize = ${createdEmail?.length}');
-    log('ThreadAPI::getChanges:destroyedEmailIds = $destroyedEmailIds');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getChanges:oldState = $sinceState | newStateChanges = $newStateChanges | newStateEmail = $newStateEmail | hasMoreChanges = $hasMoreChanges');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getChanges:updatedEmailSize = ${updatedEmail?.length} | createdEmailSize = ${createdEmail?.length}');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getChanges:destroyedEmailIds = $destroyedEmailIds');
     return EmailChangeResponse(
       updated: updatedEmail,
       created: createdEmail,

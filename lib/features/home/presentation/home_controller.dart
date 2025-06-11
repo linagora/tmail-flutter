@@ -105,7 +105,7 @@ class HomeController extends ReloadableController {
   }
 
   Future<void> _cleanupCache() async {
-    await HiveCacheConfig.instance.onUpgradeDatabase(cachingManager);
+    await HiveCacheConfig.instance.onUpgradeDatabase();
 
     await Future.wait([
       _cleanupEmailCacheInteractor.execute(EmailCleanupRule(Duration.defaultCacheInternal)),

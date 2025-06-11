@@ -11,7 +11,7 @@ import 'package:model/extensions/mailbox_extension.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/manager/token_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/oidc_http_client.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
@@ -23,7 +23,7 @@ import 'package:tmail_ui_user/features/push_notification/data/keychain/keychain_
 class IOSSharingManager {
   final KeychainSharingManager _keychainSharingManager;
   final StateCacheManager _stateCacheManager;
-  final TokenOidcCacheManager _tokenOidcCacheManager;
+  final TokenCacheManager _tokenCacheManager;
   final AuthenticationInfoCacheManager _authenticationInfoCacheManager;
   final OidcConfigurationCacheManager _oidcConfigurationCacheManager;
   final OIDCHttpClient _oidcHttpClient;
@@ -32,7 +32,7 @@ class IOSSharingManager {
   IOSSharingManager(
     this._keychainSharingManager,
     this._stateCacheManager,
-    this._tokenOidcCacheManager, 
+    this._tokenCacheManager,
     this._authenticationInfoCacheManager,
     this._oidcConfigurationCacheManager,
     this._oidcHttpClient,
@@ -126,7 +126,7 @@ class IOSSharingManager {
 
   Future<TokenOIDC?> _getTokenOidc({required String tokeHashId}) async {
     try {
-      return await _tokenOidcCacheManager.getTokenOidc(tokeHashId);
+      return await _tokenCacheManager.getTokenOidc(tokeHashId);
     } catch (e) {
       logError('IOSSharingManager::_getTokenOidc:Exception: $e');
       return null;

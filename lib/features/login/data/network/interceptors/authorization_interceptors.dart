@@ -13,7 +13,7 @@ import 'package:model/account/personal_account.dart';
 import 'package:model/oidc/oidc_configuration.dart';
 import 'package:model/oidc/token_oidc.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
-import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/manager/token_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/network/authentication_client/authentication_client_base.dart';
 import 'package:tmail_ui_user/features/login/domain/extensions/oidc_configuration_extensions.dart';
 import 'package:tmail_ui_user/features/upload/data/network/file_uploader.dart';
@@ -23,7 +23,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
   final Dio _dio;
   final AuthenticationClientBase _authenticationClient;
-  final TokenOidcCacheManager _tokenOidcCacheManager;
+  final TokenCacheManager _tokenCacheManager;
   final AccountCacheManager _accountCacheManager;
   final IOSSharingManager _iosSharingManager;
 
@@ -35,7 +35,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
   AuthorizationInterceptors(
     this._dio,
     this._authenticationClient,
-    this._tokenOidcCacheManager,
+    this._tokenCacheManager,
     this._accountCacheManager,
     this._iosSharingManager,
   );
@@ -210,7 +210,7 @@ class AuthorizationInterceptors extends QueuedInterceptorsWrapper {
 
     await _accountCacheManager.deleteCurrentAccount(currentAccount.id);
 
-    await _tokenOidcCacheManager.persistOneTokenOidc(tokenOIDC);
+    await _tokenCacheManager.persistOneTokenOidc(tokenOIDC);
 
     final personalAccount = PersonalAccount(
       tokenOIDC.tokenIdHash,

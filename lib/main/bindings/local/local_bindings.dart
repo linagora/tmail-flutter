@@ -1,5 +1,6 @@
 
 import 'package:core/utils/file_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,14 +23,17 @@ import 'package:tmail_ui_user/features/caching/clients/sending_email_hive_cache_
 import 'package:tmail_ui_user/features/caching/clients/session_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/token_oidc_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/interactions/isar/isar_token_oidc_collection_interaction.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_url_cache_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_login_username_cache_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_search_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/account_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/authentication_info_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/encryption_key_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/local/isar_token_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/oidc_configuration_cache_manager.dart';
 import 'package:tmail_ui_user/features/login/data/local/token_oidc_cache_manager.dart';
+import 'package:tmail_ui_user/features/login/data/manager/token_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/mailbox_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox/data/local/state_cache_manager.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/data/local/local_spam_report_manager.dart';
@@ -63,8 +67,20 @@ class LocalBindings extends Bindings {
     Get.put(EmailCacheManager(Get.find<EmailCacheClient>()));
     Get.put(RecentSearchCacheClient());
     Get.put(RecentSearchCacheManager(Get.find<RecentSearchCacheClient>()));
-    Get.put(TokenOidcCacheClient());
-    Get.put(TokenOidcCacheManager(Get.find<TokenOidcCacheClient>()));
+    if (PlatformInfo.isAndroid) {
+      Get.put(IsarTokenOidcCollectionInteraction());
+      Get.put(
+        IsarTokenCacheManager(Get.find<IsarTokenOidcCollectionInteraction>()),
+      );
+    } else {
+      Get.put(TokenOidcCacheClient());
+      Get.put(TokenOidcCacheManager(Get.find<TokenOidcCacheClient>()));
+    }
+    Get.put<TokenCacheManager>(
+        PlatformInfo.isAndroid
+          ? Get.find<IsarTokenCacheManager>()
+          : Get.find<TokenOidcCacheManager>(),
+    );
     Get.put(AccountCacheClient());
     Get.put(AccountCacheManager(Get.find<AccountCacheClient>()));
     Get.put(EncryptionKeyCacheClient());

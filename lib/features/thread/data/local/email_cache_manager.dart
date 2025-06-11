@@ -59,11 +59,9 @@ class EmailCacheManager {
   }
 
   bool _filterEmailByMailbox(Email email, FilterMessageOption option, MailboxId? inMailboxId) {
-    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_filterEmailByMailbox()::inMailboxId = $inMailboxId | option = $option | email = ${email.id} - ${email.subject} - ${email.keywords} - ${email.mailboxIds}');
     bool isBelongToMailbox = inMailboxId != null
         ? email.belongTo(inMailboxId) && option.filterEmail(email)
         : option.filterEmail(email);
-    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_filterEmailByMailbox()::isBelongToMailbox = $isBelongToMailbox');
     return isBelongToMailbox;
   }
 

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:isolate';
 import 'package:core/core.dart';
 import 'package:flutter/services.dart' as services;
 import 'package:contact/contact/model/capability_contact.dart';
@@ -141,7 +142,7 @@ abstract class BaseController extends GetxController
   }
 
   void onError(dynamic error, StackTrace stackTrace) {
-    logError('$runtimeType::onError():Error: $error | StackTrace: $stackTrace');
+    logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::onError():Error: $error | StackTrace: $stackTrace');
     final isUrgentException = validateUrgentException(error);
     if (isUrgentException) {
       handleUrgentException(exception: error);
@@ -171,7 +172,7 @@ abstract class BaseController extends GetxController
   }
 
   void handleUrgentExceptionOnMobile({Failure? failure, Exception? exception}) {
-    logError('$runtimeType::handleUrgentExceptionOnMobile():Failure: $failure | Exception: $exception');
+    logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleUrgentExceptionOnMobile():Failure: $failure | Exception: $exception');
     if (exception is ConnectionError) {
       _handleConnectionErrorException();
     } else if (exception is BadCredentialsException) {
@@ -180,7 +181,7 @@ abstract class BaseController extends GetxController
   }
 
   void handleUrgentExceptionOnWeb({Failure? failure, Exception? exception}) {
-    logError('$runtimeType::handleUrgentExceptionOnWeb():Failure: $failure | Exception: $exception');
+    logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleUrgentExceptionOnWeb():Failure: $failure | Exception: $exception');
     if (exception is NoNetworkError) {
       _handleNotNetworkErrorException();
     } else if (exception is ConnectionError) {
@@ -221,7 +222,7 @@ abstract class BaseController extends GetxController
   }
 
   void handleBadCredentialsException() {
-    log('$runtimeType::handleBadCredentialsException:');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleBadCredentialsException:');
     if (twakeAppManager.hasComposer) {
       _performSaveAndReconnection();
     } else {
@@ -242,7 +243,7 @@ abstract class BaseController extends GetxController
   }
 
   void onDataFailureViewState(Failure failure) {
-    log('$runtimeType::onDataFailureViewState:failure = ${failure.runtimeType}');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::onDataFailureViewState:failure = ${failure.runtimeType}');
     if (failure is FeatureFailure) {
       final isUrgentException = validateUrgentException(failure.exception);
       if (isUrgentException) {
@@ -256,7 +257,7 @@ abstract class BaseController extends GetxController
   }
 
   void handleFailureViewState(Failure failure) async {
-    logError('$runtimeType::handleFailureViewState():Failure = $failure');
+    logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleFailureViewState():Failure = $failure');
     if (failure is LogoutOidcFailure) {
       if (_isFcmEnabled) {
         _getStoredFirebaseRegistrationFromCache();
@@ -270,7 +271,7 @@ abstract class BaseController extends GetxController
   }
 
   void handleSuccessViewState(Success success) async {
-    log('$runtimeType::handleSuccessViewState():Success = ${success.runtimeType}');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleSuccessViewState():Success = ${success.runtimeType}');
     if (success is LogoutOidcSuccess) {
       if (_isFcmEnabled) {
         _getStoredFirebaseRegistrationFromCache();
@@ -287,7 +288,7 @@ abstract class BaseController extends GetxController
   void startFpsMeter() {
     FpsManager().start();
     fpsCallback = (fpsInfo) {
-      log('$runtimeType::startFpsMeter(): $fpsInfo');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::startFpsMeter(): $fpsInfo');
     };
     if (fpsCallback != null) {
       FpsManager().addFpsCallback(fpsCallback!);
@@ -307,7 +308,7 @@ abstract class BaseController extends GetxController
       requireCapability(session!, accountId!, [tmailContactCapabilityIdentifier]);
       TMailAutoCompleteBindings().dependencies();
     } catch (e) {
-      logError('$runtimeType::injectAutoCompleteBindings(): exception: $e');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::injectAutoCompleteBindings(): exception: $e');
     }
   }
 
@@ -316,7 +317,7 @@ abstract class BaseController extends GetxController
       requireCapability(session!, accountId!, [CapabilityIdentifier.jmapMdn]);
       MdnInteractorBindings().dependencies();
     } catch(e) {
-      logError('$runtimeType::injectMdnBindings(): exception: $e');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::injectMdnBindings(): exception: $e');
     }
   }
 
@@ -325,7 +326,7 @@ abstract class BaseController extends GetxController
       requireCapability(session!, accountId!, [capabilityForward]);
       ForwardingInteractorsBindings().dependencies();
     } catch(e) {
-      logError('$runtimeType::injectForwardBindings(): exception: $e');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::injectForwardBindings(): exception: $e');
     }
   }
 
@@ -334,14 +335,14 @@ abstract class BaseController extends GetxController
       requireCapability(session!, accountId!, [capabilityRuleFilter]);
       EmailRulesInteractorBindings().dependencies();
     } catch(e) {
-      logError('$runtimeType::injectRuleFilterBindings(): exception: $e');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::injectRuleFilterBindings(): exception: $e');
     }
   }
 
   Future<void> injectFCMBindings(Session? session, AccountId? accountId) async {
     try {
       requireCapability(session!, accountId!, [FirebaseCapability.fcmIdentifier]);
-      log('$runtimeType::injectFCMBindings: fcmAvailable = ${AppConfig.fcmAvailable}');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::injectFCMBindings: fcmAvailable = ${AppConfig.fcmAvailable}');
       if (AppConfig.fcmAvailable) {
         await FcmConfiguration.initialize();
         FcmInteractorBindings().dependencies();
@@ -356,13 +357,13 @@ abstract class BaseController extends GetxController
         throw NotSupportFCMException();
       }
     } catch(e) {
-      logError('$runtimeType::injectFCMBindings(): exception: $e');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::injectFCMBindings(): exception: $e');
     }
   }
 
   void injectWebSocket(Session? session, AccountId? accountId) {
     try {
-      log('$runtimeType::injectWebSocket:');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::injectWebSocket:');
       requireCapability(
         session!,
         accountId!,
@@ -380,7 +381,7 @@ abstract class BaseController extends GetxController
       WebSocketInteractorBindings().dependencies();
       WebSocketController.instance.initialize(accountId: accountId, session: session);
     } catch(e) {
-      logError('$runtimeType::injectWebSocket(): exception: $e');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::injectWebSocket(): exception: $e');
     }
   }
 
@@ -543,7 +544,7 @@ abstract class BaseController extends GetxController
   }
 
   Future<void> clearDataAndGoToLoginPage() async {
-    log('$runtimeType::clearDataAndGoToLoginPage:');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::clearDataAndGoToLoginPage:');
     await clearAllData();
     removeAllPageAndGoToLogin();
   }
@@ -571,7 +572,7 @@ abstract class BaseController extends GetxController
     }
     authorizationInterceptors.clear();
     authorizationIsolateInterceptors.clear();
-    await cachingManager.closeHive();
+    await cachingManager.closeDatabase();
   }
 
   Future<void> _clearOidcAuthData() async {
@@ -585,7 +586,7 @@ abstract class BaseController extends GetxController
     }
     authorizationIsolateInterceptors.clear();
     authorizationInterceptors.clear();
-    await cachingManager.closeHive();
+    await cachingManager.closeDatabase();
   }
 
   int getMinInputLengthAutocomplete({

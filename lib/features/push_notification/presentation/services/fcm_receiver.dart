@@ -2,12 +2,14 @@ import 'dart:isolate';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/controller/fcm_message_controller.dart';
 import 'package:tmail_ui_user/features/push_notification/presentation/services/fcm_service.dart';
 
 @pragma('vm:entry-point')
 Future<void> handleFirebaseBackgroundMessage(RemoteMessage message) async {
   log('FcmReceiver-in isolate: ${Isolate.current.hashCode}::handleFirebaseBackgroundMessage: [FCM] Background handler called');
+  WidgetsFlutterBinding.ensureInitialized();
   FcmService.instance.initialStreamController();
   FcmMessageController.instance.initialize();
   FcmService.instance.handleFirebaseBackgroundMessage(message);
