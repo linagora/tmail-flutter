@@ -14190,7 +14190,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t9 = A.Directionality_maybeOf(_this.context);
       if (t9 == null)
         t9 = C.TextDirection_1;
-      t8 = A._setArrayType([H.HtmlContentViewerOnWeb$(true, _this.allEmailContents, 0, t9, true, t5, new A.ValueKey(t2, type$.ValueKey_nullable_String), t8, _null, t1.scrollController, true, t4)], type$.JSArray_Widget);
+      t8 = A._setArrayType([H.HtmlContentViewerOnWeb$(true, _this.allEmailContents, 0, t9, t1.isInsideThreadDetailView, t5, new A.ValueKey(t2, type$.ValueKey_nullable_String), t8, _null, t1.scrollController, true, t4)], type$.JSArray_Widget);
       A.Expando__checkType(t1);
       if (J.$eq$(t7._as(t6.get(t1)).mailboxDashBoardController.attachmentDraggableAppState.get$value(0), C.DraggableAppState_0))
         t8.push(A.PointerInterceptor$(new A.SizedBox(t4, t3, _null, _null)));
@@ -20593,5 +20593,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "98btNuvxwwurRbKHt6CgeiY9ZJ4=");
+})($__dart_deferred_initializers__, "OUQlyhx//G2E0DC7dkYPi7OCFvI=");
 ;
