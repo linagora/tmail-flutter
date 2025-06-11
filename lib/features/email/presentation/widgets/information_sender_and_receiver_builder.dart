@@ -155,7 +155,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                           ],
                         ),
                       ),
-                      if (!isInsideThreadDetailView || !responsiveUtils.isMobile(context))
+                      if (!isInsideThreadDetailView)
                         ReceivedTimeBuilder(
                           emailSelected: emailSelected,
                           padding: const EdgeInsetsDirectional.only(start: 16, top: 2),
