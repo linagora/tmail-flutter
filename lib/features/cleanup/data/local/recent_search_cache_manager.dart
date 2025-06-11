@@ -88,10 +88,6 @@ class RecentSearchCacheManager {
         ? listRecentSearch.sublist(0, newLimit)
         : listRecentSearch;
 
-    for (var recentSearch in newListRecentSearch) {
-      log('RecentSearchCacheManager::getAllLatest: Recent search: ${recentSearch.toString()}');
-    }
-
     return newListRecentSearch;
   }
 
