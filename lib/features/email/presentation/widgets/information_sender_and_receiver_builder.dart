@@ -153,7 +153,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                           ],
                         ),
                       ),
-                      if (!isInsideThreadDetailView && !responsiveUtils.isMobile(context))
+                      if (!isInsideThreadDetailView || !responsiveUtils.isMobile(context))
                         ReceivedTimeBuilder(
                           emailSelected: emailSelected,
                           padding: const EdgeInsetsDirectional.only(start: 16, top: 2),
@@ -186,7 +186,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                         ),
                     ],
                   ),
-                  if (responsiveUtils.isMobile(context))
+                  if (responsiveUtils.isMobile(context) && isInsideThreadDetailView)
                     ReceivedTimeBuilder(
                       emailSelected: emailSelected,
                       padding: const EdgeInsetsDirectional.symmetric(vertical: 5),
