@@ -2076,10 +2076,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = this.createRule;
       if (!(A.InheritedModel_inheritFrom(context, B._MediaQueryAspect_0, type$.MediaQuery).data.size._dx < 600)) {
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
-        return A.Row$(A._setArrayType([A.TMailButtonWidget$(B.Color_4278221567, _null, 10, _null, _null, false, _null, _null, _s33_, B.TextDirection_1, B.Color_4294967295, 20, 8, D.ValueKey_new_rule_button, B.MainAxisSize_1, _null, 1 / 0, _null, 1 / 0, 130, _null, _null, t2, B.EdgeInsets_8_12_8_12, A.Intl__message(_s8_, _null, _s10_, _null, _null), _null, _null, B.TextStyle_mtF, _null, _null, _null, _null, false, _null), B.Spacer_null], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
+        return A.Row$(A._setArrayType([A.TMailButtonWidget$(B.Color_4278221567, _null, 10, _null, false, _null, _null, _s33_, B.TextDirection_1, B.Color_4294967295, 20, 8, D.ValueKey_new_rule_button, B.MainAxisSize_1, _null, 1 / 0, _null, 1 / 0, 130, _null, _null, t2, B.EdgeInsets_8_12_8_12, A.Intl__message(_s8_, _null, _s10_, _null, _null), _null, _null, B.TextStyle_mtF, _null, _null, _null, _null, false, _null), B.Spacer_null], type$.JSArray_Widget), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
       } else {
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t1).toString;
-        return A.TMailButtonWidget$(B.Color_4278221567, _null, 10, _null, _null, false, _null, _null, _s33_, B.TextDirection_1, B.Color_4294967295, 20, 8, D.ValueKey_new_rule_button, B.MainAxisSize_1, _null, 1 / 0, _null, 1 / 0, 0, _null, _null, t2, B.EdgeInsets_0_12_0_12, A.Intl__message(_s8_, _null, _s10_, _null, _null), _null, _null, B.TextStyle_mtF, _null, _null, _null, _null, false, _null);
+        return A.TMailButtonWidget$(B.Color_4278221567, _null, 10, _null, false, _null, _null, _s33_, B.TextDirection_1, B.Color_4294967295, 20, 8, D.ValueKey_new_rule_button, B.MainAxisSize_1, _null, 1 / 0, _null, 1 / 0, 0, _null, _null, t2, B.EdgeInsets_0_12_0_12, A.Intl__message(_s8_, _null, _s10_, _null, _null), _null, _null, B.TextStyle_mtF, _null, _null, _null, _null, false, _null);
       }
     }
   };
@@ -2770,7 +2770,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       t12 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t10).localizationsState._localizations$_locale.get$languageCode(0)) ? F.EdgeInsets_0_5_0_5 : D.EdgeInsets_0_10_0_10;
       t10 = A.Bidi_isRtlLanguage(context.dependOnInheritedWidgetOfExactType$1$0(t10).localizationsState._localizations$_locale.get$languageCode(0)) ? _null : 16;
-      t9 = A.TMailButtonWidget$(B.Color_2581915884, _null, 10, _null, _null, false, _null, _null, t11, B.TextDirection_1, B.Color_4278221567, t10, 8, D.ValueKey_back_to_dashboard_button, B.MainAxisSize_1, _null, 1 / 0, _null, 100, 0, _null, _null, new C.ManageAccountMenuView_build_closure(_this, context), t12, t9, _null, _null, B.TextStyle_yT31, _null, _null, _null, _null, false, _null);
+      t9 = A.TMailButtonWidget$(B.Color_2581915884, _null, 10, _null, false, _null, _null, t11, B.TextDirection_1, B.Color_4278221567, t10, 8, D.ValueKey_back_to_dashboard_button, B.MainAxisSize_1, _null, 1 / 0, _null, 100, 0, _null, _null, new C.ManageAccountMenuView_build_closure(_this, context), t12, t9, _null, _null, B.TextStyle_yT31, _null, _null, _null, _null, false, _null);
       A.Localizations_of(context, B.Type_AppLocalizations_CTL, t8).toString;
       t12 = A.Text$(A.Intl__message("Manage account", _null, "manage_account", _null, _null), _null, _null, _null, _null, _null, _null, _null, _null, B.TextStyle_69t8, _null, _null, _null, _null, _null);
       A.Expando__checkType(_this);
@@ -5061,9 +5061,14 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       settingOption = t3._as(t2.get(t1)).settingOption.get$value(0);
       A.Expando__checkType(t1);
-      localSettingOption = t3._as(t2.get(t1)).localSettings;
+      localSettingOption = t3._as(t2.get(t1)).localSettings.get$value(0);
       t2 = settingOption == null;
-      if (t2 && J.get$isEmpty$asx(localSettingOption.get$keys(0)))
+      if (t2) {
+        t3 = localSettingOption == null ? _null : J.get$isEmpty$asx(localSettingOption);
+        t3 = t3 !== false;
+      } else
+        t3 = false;
+      if (t3)
         return B.SizedBox_0_0_null_null;
       t3 = A._setArrayType([], type$.JSArray_SettingOptionType);
       if (!t2)
@@ -5087,16 +5092,19 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   C.PreferencesView_build__closure1.prototype = {
     call$2(context, index) {
-      var t3, t4, t5, _this = this,
+      var t3, t4, t5, t6, _this = this,
         t1 = _this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t2 = t2._jsWeakMap;
       t3 = A._instanceType(t1)._eval$1("GetWidget.S");
       t4 = t3._as(t2.get(t1)).imagePaths;
-      t5 = _this.availableSettingOptions[index];
+      t5 = _this.localSettingOption;
+      if (t5 == null)
+        t5 = A.LinkedHashMap_LinkedHashMap$_empty(type$.SupportedLocalSetting, type$.nullable_LocalSettingOptions);
+      t6 = _this.availableSettingOptions[index];
       A.Expando__checkType(t1);
-      return new C.SettingOptionItem(t4, _this.settingOption, _this.localSettingOption, t5, t3._as(t2.get(t1)).get$updateStateSettingOption(), null);
+      return new C.SettingOptionItem(t4, _this.settingOption, t5, t6, t3._as(t2.get(t1)).get$updateStateSettingOption(), null);
     },
     $signature: typesOffset + 12
   };
@@ -5901,6 +5909,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       ResponsiveUtils: findType("ResponsiveUtils"),
       String: findType("String"),
       SuggestionEmailAddress: findType("SuggestionEmailAddress"),
+      SupportedLocalSetting: findType("SupportedLocalSetting"),
       TimeOfDay: findType("TimeOfDay"),
       ValueKey_String: findType("ValueKey<String>"),
       WhereIterable_SettingOptionType: findType("WhereIterable<SettingOptionType>"),
@@ -5910,6 +5919,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _WidgetStatePropertyWith_nullable_Color: findType("_WidgetStatePropertyWith<Color?>"),
       dynamic: findType("@"),
       int: findType("int"),
+      nullable_LocalSettingOptions: findType("LocalSettingOptions?"),
       nullable_MouseCursor: findType("MouseCursor0?"),
       nullable_Object: findType("Object?"),
       nullable_ShaderMaskEngineLayer: findType("ShaderMaskEngineLayer0?"),
@@ -6026,5 +6036,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_10", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "PK4WPqZa8375RYLmLOdE8AsEGns=");
+})($__dart_deferred_initializers__, "o36y3GhKnzVV5i8hUgw73y3SHMI=");
 ;

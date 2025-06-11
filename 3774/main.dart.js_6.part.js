@@ -705,7 +705,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t3).toString;
         t4 = A.Intl__message("End now", _null, "endNow", _null, _null);
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t3).toString;
-        t1.push(A.TMailButtonWidget_TMailButtonWidget$fromText(B.Color_0, 10, _null, _null, _null, 1 / 0, 1, 180, 0, _null, t2, D.EdgeInsets_8_5_8_5, t4, _null, B.TextStyle_yT30, A.Intl__message("End now", _null, "endNow", _null, _null), _null));
+        t1.push(A.TMailButtonWidget_TMailButtonWidget$fromText(B.Color_0, 10, _null, _null, 1 / 0, 1, 180, 0, _null, t2, D.EdgeInsets_8_5_8_5, t4, _null, B.TextStyle_yT30, A.Intl__message("End now", _null, "endNow", _null, _null), _null));
       }
       t2 = _this.actionGotoVacationSetting;
       if (t2 != null) {
@@ -713,7 +713,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t3).toString;
         t4 = A.Intl__message(_s16_, _null, _s15_, _null, _null);
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t3).toString;
-        t1.push(A.TMailButtonWidget_TMailButtonWidget$fromText(B.Color_0, 10, _null, _null, _null, 1 / 0, 1, 310, 0, _null, t2, D.EdgeInsets_8_5_8_5, t4, _null, B.TextStyle_yT30, A.Intl__message(_s16_, _null, _s15_, _null, _null), _null));
+        t1.push(A.TMailButtonWidget_TMailButtonWidget$fromText(B.Color_0, 10, _null, _null, 1 / 0, 1, 310, 0, _null, t2, D.EdgeInsets_8_5_8_5, t4, _null, B.TextStyle_yT30, A.Intl__message(_s16_, _null, _s15_, _null, _null), _null));
       }
       return A.Row$(t1, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
@@ -737,7 +737,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t4).toString;
         t5 = A.Intl__message("End now", _null, "endNow", _null, _null);
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t4).toString;
-        t1.push(new A.Flexible(1, B.FlexFit_1, A.TMailButtonWidget_TMailButtonWidget$fromText(B.Color_0, 10, _null, _null, _null, 1 / 0, 1, 180, 0, _null, t3, D.EdgeInsets_8_5_8_5, t5, _null, B.TextStyle_yT30, A.Intl__message("End now", _null, "endNow", _null, _null), _null), _null));
+        t1.push(new A.Flexible(1, B.FlexFit_1, A.TMailButtonWidget_TMailButtonWidget$fromText(B.Color_0, 10, _null, _null, 1 / 0, 1, 180, 0, _null, t3, D.EdgeInsets_8_5_8_5, t5, _null, B.TextStyle_yT30, A.Intl__message("End now", _null, "endNow", _null, _null), _null), _null));
       }
       t3 = _this.actionGotoVacationSetting;
       if (t3 != null) {
@@ -745,7 +745,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t4).toString;
         t5 = A.Intl__message(_s16_, _null, _s15_, _null, _null);
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, t4).toString;
-        t1.push(new A.Flexible(1, B.FlexFit_1, A.TMailButtonWidget_TMailButtonWidget$fromText(B.Color_0, 10, _null, _null, _null, 1 / 0, 1, 180, 0, _null, t3, D.EdgeInsets_8_5_8_5, t5, _null, B.TextStyle_yT30, A.Intl__message(_s16_, _null, _s15_, _null, _null), _null), _null));
+        t1.push(new A.Flexible(1, B.FlexFit_1, A.TMailButtonWidget_TMailButtonWidget$fromText(B.Color_0, 10, _null, _null, 1 / 0, 1, 180, 0, _null, t3, D.EdgeInsets_8_5_8_5, t5, _null, B.TextStyle_yT30, A.Intl__message(_s16_, _null, _s15_, _null, _null), _null), _null));
       }
       t2.push(A.Row$(t1, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_2, B.MainAxisSize_1, _null));
       return A.Column$(t2, B.CrossAxisAlignment_2, B.MainAxisAlignment_2, B.MainAxisSize_0, B.VerticalDirection_1);
@@ -1061,5 +1061,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "c/O9RQEjtBikZ5xOib+t2Ip33LI=");
+})($__dart_deferred_initializers__, "BijPCyPeMnd0sm3rYHXnpF9cI2U=");
 ;
