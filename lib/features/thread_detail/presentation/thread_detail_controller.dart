@@ -92,7 +92,7 @@ class ThreadDetailController extends BaseController {
   CreateNewEmailRuleFilterInteractor? _createNewEmailRuleFilterInteractor;
   AppLifecycleListener? appLifecycleListener;
   ThreadDetailSettingStatus threadDetailSettingStatus = ThreadDetailSettingStatus.loading;
-  bool threadDetailWasEnabled = false;
+  bool threadDetailWasEnabled = true;
 
   AccountId? get accountId => mailboxDashBoardController.accountId.value;
   Session? get session => mailboxDashBoardController.sessionCurrent;
@@ -239,7 +239,7 @@ class ThreadDetailController extends BaseController {
       return;
     }
     if (failure is GetThreadDetailStatusFailure) {
-      threadDetailSettingStatus = ThreadDetailSettingStatus.disabled;
+      threadDetailSettingStatus = ThreadDetailSettingStatus.enabled;
       refreshThreadDetailOnSettingChanged();
     }
     super.handleFailureViewState(failure);
