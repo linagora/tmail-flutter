@@ -94,6 +94,7 @@ class LocalBindings extends Bindings {
       Get.find<MailboxCacheClient>(),
       Get.find<StateCacheClient>(),
       Get.find<EmailCacheClient>(),
+      Get.find<RecentSearchCacheClient>(),
       Get.find<RecentLoginUrlCacheClient>(),
       Get.find<RecentLoginUsernameCacheClient>(),
       Get.find<AccountCacheClient>(),
