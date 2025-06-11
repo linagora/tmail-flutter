@@ -15,6 +15,7 @@ import 'package:tmail_ui_user/features/caching/clients/new_email_hive_cache_clie
 import 'package:tmail_ui_user/features/caching/clients/opened_email_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_login_url_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/recent_login_username_cache_client.dart';
+import 'package:tmail_ui_user/features/caching/clients/recent_search_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/session_hive_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/clients/state_cache_client.dart';
 import 'package:tmail_ui_user/features/caching/config/hive_cache_config.dart';
@@ -30,6 +31,7 @@ class CachingManager {
   final MailboxCacheClient _mailboxCacheClient;
   final StateCacheClient _stateCacheClient;
   final EmailCacheClient _emailCacheClient;
+  final RecentSearchCacheClient _recentSearchCacheClient;
   final RecentLoginUrlCacheClient _recentLoginUrlCacheClient;
   final RecentLoginUsernameCacheClient _recentLoginUsernameCacheClient;
   final AccountCacheClient _accountCacheClient;
@@ -48,6 +50,7 @@ class CachingManager {
     this._mailboxCacheClient,
     this._stateCacheClient,
     this._emailCacheClient,
+    this._recentSearchCacheClient,
     this._recentLoginUrlCacheClient,
     this._recentLoginUsernameCacheClient,
     this._accountCacheClient,
@@ -194,5 +197,9 @@ class CachingManager {
       _recentLoginUrlCacheClient.clearAllData(),
       _recentLoginUsernameCacheClient.clearAllData(),
     ]);
+  }
+
+  Future<void> clearRecentSearchData() async {
+    await _recentSearchCacheClient.clearAllData();
   }
 }
