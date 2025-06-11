@@ -913,7 +913,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 395
+    $signature: 380
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -1059,5 +1059,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "Z5LapMH/ZipFdvDOD8vualUoVlI=");
+})($__dart_deferred_initializers__, "Jg/R5JUVsguE060j59wnIwgglTE=");
 ;
