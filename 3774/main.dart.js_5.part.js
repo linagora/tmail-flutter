@@ -14504,7 +14504,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B._EmailReceiverWidgetState__buildRecipientsTag_closure.prototype = {
     call$2(index, emailAddress) {
-      var t5, t6, _null = null,
+      var t5, t6, t7, _null = null,
         t1 = index === this.listEmailAddress.length - 1 ? A.EmailAddressExtension_asString(emailAddress) : A.EmailAddressExtension_asString(emailAddress) + ",",
         t2 = A.ThemeUtils_textStyleHeadingHeadingSmall(C.Color_4278190080, C.FontWeight_3_400),
         t3 = this.$this,
@@ -14520,7 +14520,11 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t4 = A.InheritedModel_inheritFrom(t4, C._MediaQueryAspect_0, t5).data.size._dx < 600 ? 2.5 : 3.5;
       t6 = t3._framework$_element;
       t6.toString;
-      return A.TMailButtonWidget_TMailButtonWidget$fromText(C.Color_0, 20, _null, new A.EdgeInsetsDirectional(0, A.InheritedModel_inheritFrom(t6, C._MediaQueryAspect_0, t5).data.size._dx < 600 ? 1.5 : 2, 0, 0), 1 / 0, _null, 1 / 0, 0, new B._EmailReceiverWidgetState__buildRecipientsTag__closure(t3, emailAddress), new B._EmailReceiverWidgetState__buildRecipientsTag__closure0(t3, emailAddress), new A.EdgeInsetsDirectional(4, t4, 4, t4), t1, _null, t2, _null, _null);
+      t6 = A.InheritedModel_inheritFrom(t6, C._MediaQueryAspect_0, t5).data.size._dx < 600 ? 1.5 : 2;
+      t7 = t3._framework$_element;
+      t7.toString;
+      t5 = A.InheritedModel_inheritFrom(t7, C._MediaQueryAspect_0, t5).data.size._dx < 600 ? C.Color_4285364357 : C.Color_0;
+      return A.TMailButtonWidget_TMailButtonWidget$fromText(t5, 20, _null, new A.EdgeInsetsDirectional(0, t6, 0, 0), 1 / 0, _null, 1 / 0, 0, new B._EmailReceiverWidgetState__buildRecipientsTag__closure(t3, emailAddress), new B._EmailReceiverWidgetState__buildRecipientsTag__closure0(t3, emailAddress), new A.EdgeInsetsDirectional(4, t4, 4, t4), t1, _null, t2, _null, _null);
     },
     $signature: 1866
   };
@@ -20614,5 +20618,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "HzeQtLQUIN7cHoSDvyujM5OdL0o=");
+})($__dart_deferred_initializers__, "W/1yodHrlgCdw7NrRXOfzfQrp/Y=");
 ;
