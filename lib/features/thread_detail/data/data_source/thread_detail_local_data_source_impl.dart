@@ -33,7 +33,7 @@ class ThreadDetailLocalDataSourceImpl implements ThreadDetailDataSource {
       final localSetting = await _localSettingCacheManager.get([
         SupportedLocalSetting.threadDetail,
       ]);
-      return (localSetting[SupportedLocalSetting.threadDetail]?.setting as ThreadDetailLocalSettingDetail?)?.value ?? false;
+      return (localSetting[SupportedLocalSetting.threadDetail]?.setting as ThreadDetailLocalSettingDetail?)?.value ?? true;
     }).catchError(_exceptionThrower.throwException);
   }
 }
