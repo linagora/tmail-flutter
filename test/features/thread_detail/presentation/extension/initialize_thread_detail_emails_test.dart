@@ -65,7 +65,7 @@ void main() {
         .thenReturn(Rxn(PresentationEmail()));
 
       // Act
-      await threadDetailController.initializeThreadDetailEmails();
+      threadDetailController.initializeThreadDetailEmails();
 
       // Assert
       final captured = verify(getEmailsByIdsInteractor.execute(
