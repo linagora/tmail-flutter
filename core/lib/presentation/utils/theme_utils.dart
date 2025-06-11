@@ -249,7 +249,16 @@ class ThemeUtils {
     letterSpacing: 0.1,
     fontSize: 14,
     height: 20 / 14,
-    color: color ??AppColor.primaryMain,
+    color: color ?? AppColor.primaryMain,
+  );
+
+  static const TextStyle textStyleM3BodyMedium1 = TextStyle(
+    fontFamily: ConstantsUI.fontApp,
+    fontWeight: FontWeight.w400,
+    letterSpacing: -0.15,
+    fontSize: 16,
+    height: 24 / 16,
+    color: AppColor.textPrimary,
   );
 
   static TextStyle textStyleAppShortcut() => const TextStyle(

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
+import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:core/presentation/views/text/text_field_builder.dart';
 import 'package:flutter/material.dart';
 
@@ -159,58 +160,25 @@ class _EditTextDialogBuilderState extends State<EditTextDialogBuilder> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Flexible(
-                          child: TextButton(
-                            style: TextButton.styleFrom(
-                              overlayColor: Theme.of(context)
-                                .colorScheme
-                                .outline
-                                .withOpacity(0.08),
-                              minimumSize: const Size(67, 48),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(100),
-                                ),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                              ),
-                            ),
-                            onPressed: _onNegativeAction,
-                            child: Text(
-                              widget.negativeText,
-                              style: ThemeUtils.textStyleM3LabelLarge(),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                          child: Container(
+                            constraints: const BoxConstraints(minWidth: 67),
+                            height: 48,
+                            child: ConfirmDialogButton(
+                              label: widget.negativeText,
+                              onTapAction: _onNegativeAction,
                             ),
                           ),
                         ),
                         const SizedBox(width: 8),
                         Flexible(
-                          child: TextButton(
-                            style: TextButton.styleFrom(
+                          child: Container(
+                            constraints: const BoxConstraints(minWidth: 119),
+                            height: 48,
+                            child: ConfirmDialogButton(
+                              label: widget.positiveText,
                               backgroundColor: AppColor.primaryMain,
-                              overlayColor: Theme.of(context)
-                                .colorScheme
-                                .outline
-                                .withOpacity(0.08),
-                              minimumSize: const Size(119, 48),
-                              shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(
-                                  Radius.circular(100),
-                                ),
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 10,
-                              ),
-                            ),
-                            onPressed: _onPositiveAction,
-                            child: Text(
-                              widget.positiveText,
-                              style: ThemeUtils.textStyleM3LabelLarge(
-                                color: Colors.white,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                              textColor: Colors.white,
+                              onTapAction: _onPositiveAction,
                             ),
                           ),
                         ),
@@ -258,13 +226,13 @@ class _EditTextDialogBuilderState extends State<EditTextDialogBuilder> {
 
   Widget _buildCloseButton() {
     return PositionedDirectional(
-      top: 0,
-      end: 0,
+      top: 4,
+      end: 4,
       child: TMailButtonWidget.fromIcon(
         icon: widget.closeIcon!,
         iconSize: 24,
         iconColor: AppColor.m3Tertiary,
-        padding: const EdgeInsets.all(12),
+        padding: const EdgeInsets.all(10),
         borderRadius: 24,
         backgroundColor: Colors.transparent,
         onTapActionCallback: widget.onCloseButtonAction,

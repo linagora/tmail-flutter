@@ -1,5 +1,5 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/extensions/either_view_state_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/string_convert.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -127,19 +127,11 @@ mixin OpenAppDeepLinkHandlerMixin on MessageDialogActionMixin {
       title: appLocalizations.switchAccountConfirmation,
       alignCenter: true,
       outsideDismissible: false,
-      titleActionButtonMaxLines: 1,
-      messageStyle: const TextStyle(
-        color: AppColor.colorTextBody,
-        fontSize: 15,
-        fontWeight: FontWeight.w400,
-      ),
       listTextSpan: [
         TextSpan(text: appLocalizations.youAreCurrentlyLoggedInWith),
         TextSpan(
           text: ' $currentUsername',
-          style: const TextStyle(
-            color: AppColor.colorTextBody,
-            fontSize: 15,
+          style: ThemeUtils.textStyleM3BodyMedium1.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -147,9 +139,7 @@ mixin OpenAppDeepLinkHandlerMixin on MessageDialogActionMixin {
         TextSpan(text: appLocalizations.doYouWantToLogOutAndSwitchTo),
         TextSpan(
           text: ' $newUsername',
-          style: const TextStyle(
-            color: AppColor.colorTextBody,
-            fontSize: 15,
+          style: ThemeUtils.textStyleM3BodyMedium1.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),

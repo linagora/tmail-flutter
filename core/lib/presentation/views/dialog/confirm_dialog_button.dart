@@ -1,57 +1,37 @@
-
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 
 class ConfirmDialogButton extends StatelessWidget {
-
   final String label;
-  final double? borderRadius;
-  final Color backgroundColor;
-  final EdgeInsetsGeometry? padding;
-  final int? maxLines;
-  final TextStyle? textStyle;
+  final Color? backgroundColor;
   final Color? textColor;
   final VoidCallback? onTapAction;
 
   const ConfirmDialogButton({
     super.key,
     required this.label,
-    required this.backgroundColor,
-    this.textStyle,
-    this.borderRadius,
-    this.padding,
-    this.maxLines,
+    this.backgroundColor,
     this.textColor,
-    this.onTapAction
+    this.onTapAction,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      type: MaterialType.transparency,
-      child: InkWell(
-        onTap: onTapAction,
-        borderRadius: BorderRadius.all(Radius.circular(borderRadius ?? 10)),
-        child: Container(
-          width: double.infinity,
-          height: maxLines == 1 ? 44 : null,
-          decoration: BoxDecoration(
-            color: backgroundColor,
-            borderRadius: BorderRadius.all(Radius.circular(borderRadius ?? 10)),
-          ),
-          alignment: Alignment.center,
-          padding: maxLines == 1
-            ? const EdgeInsets.symmetric(horizontal: 8)
-            : padding ?? const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-          child: Text(
-            label,
-            textAlign: TextAlign.center,
-            maxLines: maxLines,
-            overflow: TextOverflow.ellipsis,
-            style: textStyle ?? Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: textColor,
-            )
-          ),
+    return TextButton(
+      style: TextButton.styleFrom(
+        backgroundColor: backgroundColor,
+        overlayColor: Theme.of(context).colorScheme.outline.withOpacity(0.08),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.all(Radius.circular(100)),
         ),
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+      ),
+      onPressed: onTapAction,
+      child: Text(
+        label,
+        style: ThemeUtils.textStyleM3LabelLarge(color: textColor),
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }

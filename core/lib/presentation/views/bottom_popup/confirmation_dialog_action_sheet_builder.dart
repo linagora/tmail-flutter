@@ -1,5 +1,6 @@
 
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +20,6 @@ class ConfirmationDialogActionSheetBuilder {
   OnCancelActionClick? _onCancelActionClick;
   TextStyle? _styleConfirmButton;
   TextStyle? _styleCancelButton;
-  TextStyle? _styleMessage;
   List<TextSpan>? listTextSpan;
 
   ConfirmationDialogActionSheetBuilder(this._context, {this.listTextSpan});
@@ -36,10 +36,6 @@ class ConfirmationDialogActionSheetBuilder {
 
   void messageText(String message) {
     _messageText = message;
-  }
-
-  void styleMessage(TextStyle? style) {
-    _styleMessage = style;
   }
 
   void styleConfirmButton(TextStyle? style) {
@@ -66,9 +62,7 @@ class ConfirmationDialogActionSheetBuilder {
                     child: Text(
                         _messageText ?? '',
                         textAlign: TextAlign.center,
-                        style: _styleMessage ?? Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppColor.steelGrayA540,
-                        ),
+                        style: ThemeUtils.textStyleM3BodyMedium1,
                     ),
                     onPressed: () => {},
                   ),
@@ -82,9 +76,7 @@ class ConfirmationDialogActionSheetBuilder {
                 cursor: PlatformInfo.isWeb ? WidgetStateMouseCursor.clickable : MouseCursor.defer,
                 child: CupertinoActionSheetAction(
                   child: RichText(text: TextSpan(
-                    style: _styleMessage ?? Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppColor.steelGrayA540,
-                    ),
+                    style: ThemeUtils.textStyleM3BodyMedium1,
                     children: listTextSpan
                   )),
                   onPressed: () => {},

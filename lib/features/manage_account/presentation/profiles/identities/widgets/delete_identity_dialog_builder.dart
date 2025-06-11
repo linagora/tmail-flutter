@@ -32,7 +32,6 @@ class DeleteIdentityDialogBuilder extends StatelessWidget {
         appLocalizations: appLocalizations,
         alignment: Alignment.bottomCenter,
         outsideDialogPadding: EdgeInsets.only(bottom: PlatformInfo.isWeb ? 42 : 16),
-        widthDialog: MediaQuery.of(context).size.width - 16,
       ),
       landscapeMobile: _buildDeleteDialog(appLocalizations: appLocalizations),
       tablet: _buildDeleteDialog(appLocalizations: appLocalizations),
@@ -50,7 +49,6 @@ class DeleteIdentityDialogBuilder extends StatelessWidget {
     required AppLocalizations appLocalizations,
     Alignment? alignment,
     EdgeInsets? outsideDialogPadding,
-    double? widthDialog,
   }) {
     return ConfirmationDialogBuilder(
       key: const Key('confirm_dialog_delete_identity'),
@@ -61,7 +59,6 @@ class DeleteIdentityDialogBuilder extends StatelessWidget {
       confirmText: appLocalizations.cancel,
       alignment: alignment,
       outsideDialogPadding: outsideDialogPadding,
-      widthDialog: widthDialog,
       onCancelButtonAction: onDeleteIdentityAction,
       onConfirmButtonAction: popBack,
       onCloseButtonAction: popBack,
