@@ -83,6 +83,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox(height: 2),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -187,6 +188,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                         ),
                     ],
                   ),
+                  const SizedBox(height: 2),
                   if (responsiveUtils.isMobile(context) && isInsideThreadDetailView)
                     ReceivedTimeBuilder(
                       emailSelected: emailSelected,
