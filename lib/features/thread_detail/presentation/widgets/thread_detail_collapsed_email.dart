@@ -86,7 +86,7 @@ class ThreadDetailCollapsedEmail extends StatelessWidget {
                   fontWeight: presentationEmail.hasRead
                     ? FontWeight.normal
                     : FontWeight.w600,
-                ).copyWith(height: 24 / 16),
+                ).copyWith(height: 24 / 16, letterSpacing: -0.16),
               ),
             ),
           ],
