@@ -53,7 +53,7 @@ enum SettingOptionType {
       case SettingOptionType.senderPriority:
         return settingOption?.isDisplaySenderPriority ?? false;
       case SettingOptionType.thread:
-        return localSettings.threadDetailEnabled ?? false;
+        return localSettings.threadDetailEnabled ?? true;
     }
   }
 
