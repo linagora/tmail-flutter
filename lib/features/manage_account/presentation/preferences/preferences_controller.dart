@@ -34,7 +34,7 @@ class PreferencesController extends BaseController {
   final UpdateLocalSettingsInteractor _updateLocalSettingsInteractor;
 
   final settingOption = Rxn<TMailServerSettingOptions>();
-  final localSettings = <SupportedLocalSetting, LocalSettingOptions?>{}.obs;
+  final localSettings = Rxn(<SupportedLocalSetting, LocalSettingOptions?>{});
 
   bool get isLoading => viewState.value.fold(
     (failure) => false, 
@@ -94,7 +94,6 @@ class PreferencesController extends BaseController {
     required Map<SupportedLocalSetting, LocalSettingOptions?> newLocalSettings
   }) {
     localSettings.value = newLocalSettings;
-    localSettings.refresh();
   }
 
   void _getSettingOption() {
@@ -115,7 +114,7 @@ class PreferencesController extends BaseController {
       Map<SupportedLocalSetting, LocalSettingOptions?> newLocalSettings = {};
       switch(optionType) {
         case SettingOptionType.thread:
-          var currentLocalSettings = Map<SupportedLocalSetting, LocalSettingOptions?>.from(localSettings);
+          var currentLocalSettings = Map<SupportedLocalSetting, LocalSettingOptions?>.from(localSettings.value ?? {});
           currentLocalSettings[SupportedLocalSetting.threadDetail] = LocalSettingOptions(setting: ThreadDetailLocalSettingDetail(!isEnabled));
           newLocalSettings = currentLocalSettings;
           break;

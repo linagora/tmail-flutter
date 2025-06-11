@@ -59,7 +59,7 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                     final settingOption = controller.settingOption.value;
                     final localSettingOption = controller.localSettings;
 
-                    if (settingOption == null && localSettingOption.isEmpty) {
+                    if (settingOption == null && (localSettingOption.value?.isEmpty ?? true)) {
                       return const SizedBox.shrink();
                     }
 
@@ -79,7 +79,7 @@ class PreferencesView extends GetWidget<PreferencesController> with AppLoaderMix
                           return SettingOptionItem(
                             imagePaths: controller.imagePaths,
                             settingOption: settingOption,
-                            localSettings: localSettingOption,
+                            localSettings: localSettingOption.value ?? {},
                             optionType: availableSettingOptions[index],
                             onTapSettingOptionAction: controller.updateStateSettingOption,
                           );
