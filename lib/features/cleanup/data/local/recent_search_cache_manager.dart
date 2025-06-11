@@ -1,4 +1,5 @@
 
+import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/user_name.dart';
 import 'package:model/extensions/account_id_extensions.dart';
@@ -18,16 +19,27 @@ class RecentSearchCacheManager {
   RecentSearchCacheManager(this._recentSearchCacheClient);
 
   Future<void> clean(RecentSearchCleanupRule cleanupRule) async {
-      final listRecentSearchCache = await _recentSearchCacheClient.getAll();
-      listRecentSearchCache.sortByCreationDate();
+    final nestedKey = TupleKey(
+      cleanupRule.accountId.asString,
+      cleanupRule.userName.value,
+    ).encodeKey;
 
-      if (listRecentSearchCache.length > cleanupRule.storageLimit) {
-        final newListKeyRecent = listRecentSearchCache
-            .sublist(cleanupRule.storageLimit)
-            .map((recent) => recent.value)
-            .toList();
-        await _recentSearchCacheClient.deleteMultipleItem(newListKeyRecent);
-      }
+    final listRecentSearchCache = await _recentSearchCacheClient
+        .getListByNestedKey(nestedKey);
+
+    listRecentSearchCache.sortByCreationDate();
+
+    if (listRecentSearchCache.length > cleanupRule.storageLimit) {
+      final newListKeyRecent = listRecentSearchCache
+          .sublist(cleanupRule.storageLimit)
+          .map((recent) => recent.toRecentSearch().generateTupleKey(
+            cleanupRule.accountId,
+            cleanupRule.userName,
+          ))
+          .toList();
+      log('RecentSearchCacheManager::clean: list recent to delete $newListKeyRecent');
+      await _recentSearchCacheClient.deleteMultipleItem(newListKeyRecent);
+    }
   }
 
   Future<void> saveRecentSearch(
@@ -75,6 +87,10 @@ class RecentSearchCacheManager {
     final newListRecentSearch = listRecentSearch.length > newLimit
         ? listRecentSearch.sublist(0, newLimit)
         : listRecentSearch;
+
+    for (var recentSearch in newListRecentSearch) {
+      log('RecentSearchCacheManager::getAllLatest: Recent search: ${recentSearch.toString()}');
+    }
 
     return newListRecentSearch;
   }

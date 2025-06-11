@@ -1,4 +1,5 @@
-import 'package:core/core.dart';
+import 'package:core/presentation/state/failure.dart';
+import 'package:core/presentation/state/success.dart';
 import 'package:dartz/dartz.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/model/recent_search_cleanup_rule.dart';
 import 'package:tmail_ui_user/features/cleanup/domain/repository/cleanup_repository.dart';
@@ -9,13 +10,13 @@ class CleanupRecentSearchCacheInteractor {
 
   CleanupRecentSearchCacheInteractor(this.cleanupRepository);
 
-  Future<Either<Failure, Success>> execute(RecentSearchCleanupRule cleanupRule) async {
+  Stream<Either<Failure, Success>> execute(RecentSearchCleanupRule cleanupRule) async* {
     try {
+      yield Right<Failure, Success>(CleanupRecentSearchCacheLoading());
       await cleanupRepository.cleanRecentSearchCache(cleanupRule);
-      log('CleanupRecentSearchCacheInteractor::execute(): SUCCESS');
-      return Right<Failure, Success>(CleanupRecentSearchCacheSuccess());
+      yield Right<Failure, Success>(CleanupRecentSearchCacheSuccess());
     } catch (e) {
-      return Left(CleanupRecentSearchCacheFailure(e));
+      yield Left(CleanupRecentSearchCacheFailure(e));
     }
   }
 }
