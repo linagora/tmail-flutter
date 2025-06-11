@@ -2902,12 +2902,18 @@ class MailboxDashBoardController extends ReloadableController
             openDefaultMailbox();
             return true;
           }
-        }
-        if (searchController.isSearchEmailRunning) {
+        } else if (searchController.isSearchEmailRunning) {
           dispatchMailboxUIAction(SystemBackToInboxAction());
           return true;
         } else {
-          if (selectedMailbox.value?.isInbox == true) {
+          if (PlatformInfo.isWeb &&
+              currentContext != null &&
+              !responsiveUtils.isDesktop(currentContext!) &&
+              isDrawerOpen
+          ) {
+            closeMailboxMenuDrawer();
+            return true;
+          } else if (selectedMailbox.value?.isInbox == true) {
             pushAndPopAll(AppRoutes.home);
             return true;
           } else {
