@@ -119,7 +119,21 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
               padding: const EdgeInsets.only(bottom: 16),
               child: loadingWidget
             ),
-            fetchRecentActionCallback: _searchController.getAllRecentSearchAction,
+            fetchRecentActionCallback: (pattern) {
+              final accountId = _dashBoardController.accountId.value;
+              final userName = _dashBoardController.sessionCurrent?.username;
+
+              if (accountId == null || userName == null) {
+                logError('SearchInputFormWidget::fetchRecentActionCallback: accountId or userName is null');
+                return <RecentSearch>[];
+              } else {
+                return _searchController.getAllRecentSearchAction(
+                  accountId,
+                  userName,
+                  pattern,
+                );
+              }
+            },
             itemRecentBuilder: (context, recent) => RecentSearchItemTileWidget(recent),
             onRecentSelected: _invokeSelectRecentItem,
             suggestionsCallback: _dashBoardController.quickSearchEmails,
@@ -143,7 +157,7 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     _searchController.enableSearch();
 
     if (queryString.isNotEmpty) {
-      _searchController.saveRecentSearch(RecentSearch.now(queryString));
+      _saveRecentSearch(queryString);
     }
 
     if (queryString.isNotEmpty || _searchController.listFilterOnSuggestionForm.isNotEmpty) {
@@ -155,6 +169,22 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
     } else {
       _dashBoardController.clearSearchEmail();
     }
+  }
+
+  void _saveRecentSearch(String queryString) {
+    final accountId = _dashBoardController.accountId.value;
+    final userName = _dashBoardController.sessionCurrent?.username;
+
+    if (accountId == null || userName == null) {
+      logError('SearchInputFormWidget::_saveRecentSearch: accountId or userName is null');
+      return;
+    }
+
+    _searchController.saveRecentSearch(
+      accountId,
+      userName,
+      RecentSearch.now(queryString),
+    );
   }
 
   void _invokeSelectSuggestionItem(PresentationEmail presentationEmail) {
