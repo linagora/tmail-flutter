@@ -60,7 +60,7 @@ class EmailSenderBuilder extends StatelessWidget {
                 borderRadius: 8,
                 padding: const EdgeInsets.all(2),
                 customStyle: ThemeUtils.textStyleBodyBody1(
-                  color: AppColor.steelGray400,
+                  color: AppColor.gray6D7885,
                 ).copyWith(
                   fontSize: 17,
                   height: 1,

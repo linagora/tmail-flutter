@@ -22,7 +22,10 @@ class PrefixRecipientWidget extends StatelessWidget {
       padding: EdgeInsets.symmetric(vertical: responsiveUtils.isMobile(context) ? 4 : 5.5),
       child: Text(
         '${prefixEmailAddress.asName(context)}:',
-        style: ThemeUtils.textStyleBodyBody1(color: AppColor.steelGray400).copyWith(
+        style: ThemeUtils.textStyleBodyBody1(
+          color: AppColor.steelGray400,
+          fontWeight: FontWeight.w400,
+        ).copyWith(
           fontSize: responsiveUtils.isMobile(context) ? 14 : 17,
           height: 1,
           letterSpacing: responsiveUtils.isMobile(context) ? -0.14 : -0.17
