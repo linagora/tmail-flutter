@@ -82,7 +82,6 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 4),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -187,11 +186,10 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                         ),
                     ],
                   ),
-                  const SizedBox(height: 4),
                   if (responsiveUtils.isMobile(context))
                     ReceivedTimeBuilder(
                       emailSelected: emailSelected,
-                      padding: const EdgeInsetsDirectional.only(top: 5),
+                      padding: const EdgeInsetsDirectional.symmetric(vertical: 5),
                     ),
                   if (emailSelected.countRecipients > 0 && showRecipients)
                     EmailReceiverWidget(
