@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/caching/caching_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/local_storage_manager.dart';
 import 'package:tmail_ui_user/features/caching/utils/session_storage_manager.dart';
 import 'package:tmail_ui_user/features/cleanup/data/local/recent_search_cache_manager.dart';
+import 'package:tmail_ui_user/features/cleanup/presentation/cleanup_bindings.dart';
 import 'package:tmail_ui_user/features/composer/data/repository/contact_repository_impl.dart';
 import 'package:tmail_ui_user/features/composer/domain/repository/contact_repository.dart';
 import 'package:tmail_ui_user/features/composer/domain/usecases/send_email_interactor.dart';
@@ -144,6 +145,7 @@ class MailboxDashBoardBindings extends BaseBindings {
 
   @override
   void dependencies() {
+    CleanupBindings().dependencies();
     super.dependencies();
     SendingQueueBindings().dependencies();
     MailboxBindings().dependencies();
