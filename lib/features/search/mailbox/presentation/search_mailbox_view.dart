@@ -107,7 +107,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
             child: TMailButtonWidget.fromIcon(
               icon: controller.imagePaths.icSearchBar,
               iconColor: AppColor.steelGray400,
-              iconSize: 20,
+              iconSize: 22,
               backgroundColor: Colors.transparent,
               padding: const EdgeInsets.all(4),
               tooltipMessage: AppLocalizations.of(context).search,
@@ -123,7 +123,8 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
                 child: TMailButtonWidget.fromIcon(
                   icon: controller.imagePaths.icClearSearchInput,
                   iconColor: AppColor.steelGray400,
-                  iconSize: 20,
+                  iconSize: 22,
+                  backgroundColor: Colors.transparent,
                   padding: const EdgeInsets.all(4),
                   tooltipMessage: AppLocalizations.of(context).clearAll,
                   onTapActionCallback: controller.clearAllTextInputSearchForm,
