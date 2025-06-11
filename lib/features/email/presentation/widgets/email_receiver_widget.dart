@@ -103,7 +103,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
             ConstrainedBox(
               constraints: BoxConstraints(
                 maxWidth: _getMaxWidth(context),
-                maxHeight: 28,
+                maxHeight: _responsiveUtils.isMobile(context) ? 22 : 28,
               ),
               child: ListView(
                 scrollDirection: Axis.horizontal,
@@ -242,12 +242,15 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
           color: Colors.black,
           fontWeight: FontWeight.w400,
         ).copyWith(
-          fontSize: PlatformInfo.isMobile ? 14 : 17,
+          fontSize: _responsiveUtils.isMobile(context) ? 14 : 17,
           height: 1,
-          letterSpacing: PlatformInfo.isMobile ? -0.14 : -0.17,
+          letterSpacing: _responsiveUtils.isMobile(context) ? -0.14 : -0.17,
         ),
-        containerAlignment: Alignment.centerLeft,
-        padding: const EdgeInsetsDirectional.symmetric(vertical: 2, horizontal: 8),
+        padding: EdgeInsetsDirectional.symmetric(
+          vertical: _responsiveUtils.isMobile(context) ? 2.5 : 3.5,
+          horizontal: 4,
+        ),
+        margin: EdgeInsetsDirectional.only(top: _responsiveUtils.isMobile(context) ? 1.5 : 2),
         backgroundColor: Colors.transparent,
         onTapActionCallback: () => widget.openEmailAddressDetailAction?.call(context, emailAddress),
         onLongPressActionCallback: () => AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress),
@@ -264,7 +267,10 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        PrefixRecipientWidget(prefixEmailAddress: prefixEmailAddress),
+        PrefixRecipientWidget(
+          prefixEmailAddress: prefixEmailAddress,
+          responsiveUtils: _responsiveUtils,
+        ),
         Expanded(
           child: Wrap(
             children: _buildRecipientsTag(listEmailAddress: listEmailAddress)
@@ -280,7 +286,10 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
     required List<EmailAddress> listEmailAddress,
   }) {
     return [
-      PrefixRecipientWidget(prefixEmailAddress: prefixEmailAddress),
+      PrefixRecipientWidget(
+        prefixEmailAddress: prefixEmailAddress,
+        responsiveUtils: _responsiveUtils,
+      ),
       ..._buildRecipientsTag(listEmailAddress: listEmailAddress)
     ];
   }
