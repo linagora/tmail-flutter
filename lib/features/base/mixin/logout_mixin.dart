@@ -1,4 +1,3 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/base/mixin/message_dialog_action_mixin.dart';
@@ -19,14 +18,11 @@ mixin LogoutMixin implements MessageDialogActionMixin {
       title: appLocalizations.logoutConfirmation,
       alignCenter: true,
       outsideDismissible: false,
-      titleActionButtonMaxLines: 1,
-      messageStyle: ThemeUtils.textStyleBodyBody2(color: AppColor.steelGray400),
       listTextSpan: [
         TextSpan(text: AppLocalizations.of(context).messageConfirmationLogout),
         TextSpan(
           text: ' $userAddress',
-          style: ThemeUtils.textStyleBodyBody2(
-            color: AppColor.steelGray400,
+          style: ThemeUtils.textStyleM3BodyMedium1.copyWith(
             fontWeight: FontWeight.w700,
           ),
         ),

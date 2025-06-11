@@ -127,6 +127,7 @@ class ForwardController extends BaseController {
       cancelTitle: AppLocalizations.of(context).remove,
       onCancelAction: () => _handleDeleteRecipientAction({emailAddress}),
       showAsBottomSheet: true,
+      dialogMargin: MediaQuery.paddingOf(context).add(const EdgeInsets.only(bottom: 12)),
     );
   }
 
@@ -210,6 +211,7 @@ class ForwardController extends BaseController {
       cancelTitle: AppLocalizations.of(context).remove,
       onCancelAction: () => _handleDeleteRecipientAction(listEmailAddress),
       showAsBottomSheet: true,
+      dialogMargin: MediaQuery.paddingOf(context).add(const EdgeInsets.only(bottom: 12)),
     );
   }
 

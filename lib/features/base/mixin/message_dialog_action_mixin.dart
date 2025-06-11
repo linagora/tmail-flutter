@@ -33,20 +33,13 @@ mixin MessageDialogActionMixin {
         bool usePopScope = false,
         List<TextSpan>? listTextSpan,
         Widget? icon,
-        TextStyle? titleStyle,
-        TextStyle? messageStyle,
-        TextStyle? actionStyle,
-        TextStyle? cancelStyle,
         Color? actionButtonColor,
         Color? cancelButtonColor,
         Color? cancelLabelButtonColor,
         Color? confirmLabelButtonColor,
-        EdgeInsetsGeometry? marginIcon,
-        EdgeInsetsGeometry? paddingButton,
         PopInvokedWithResultCallback? onPopInvoked,
         bool isArrangeActionButtonsVertical = false,
-        int? titleActionButtonMaxLines,
-        bool useIconAsBasicLogo = true,
+        bool useIconAsBasicLogo = false,
         EdgeInsetsGeometry? dialogMargin,
       }
   ) async {
@@ -59,7 +52,6 @@ mixin MessageDialogActionMixin {
           key: key,
           imagePath: imagePaths,
           listTextSpan: listTextSpan,
-          titleActionButtonMaxLines: titleActionButtonMaxLines,
           isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
           useIconAsBasicLogo: useIconAsBasicLogo,
           title: title ?? '',
@@ -71,12 +63,6 @@ mixin MessageDialogActionMixin {
           confirmBackgroundButtonColor: actionButtonColor,
           cancelLabelButtonColor: cancelLabelButtonColor,
           confirmLabelButtonColor: confirmLabelButtonColor,
-          styleTextCancelButton: cancelStyle,
-          styleTextConfirmButton: actionStyle,
-          styleTitle: titleStyle,
-          styleContent: messageStyle,
-          paddingButton: paddingButton,
-          marginIcon: marginIcon,
           onConfirmButtonAction: () {
             if (autoPerformPopBack) {
               popBack();
@@ -108,21 +94,15 @@ mixin MessageDialogActionMixin {
             showAsBottomSheet: true,
             listTextSpan: listTextSpan,
             maxWidth: responsiveUtils.getSizeScreenShortestSide(context) - 16,
-            titleActionButtonMaxLines: titleActionButtonMaxLines,
             isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
             textContent: message,
             title: title ?? '',
             iconWidget: icon,
             margin: dialogMargin,
-            widthDialog: responsiveUtils.getSizeScreenWidth(context),
             confirmBackgroundButtonColor: actionButtonColor,
             cancelBackgroundButtonColor: cancelButtonColor,
             cancelLabelButtonColor: cancelLabelButtonColor,
             confirmLabelButtonColor: confirmLabelButtonColor,
-            styleContent: messageStyle,
-            styleTitle: titleStyle,
-            styleTextCancelButton: cancelStyle,
-            styleTextConfirmButton: actionStyle,
             confirmText: actionName,
             cancelText: hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
             useIconAsBasicLogo: useIconAsBasicLogo,
@@ -151,15 +131,12 @@ mixin MessageDialogActionMixin {
             backgroundColor: Colors.transparent,
             isDismissible: outsideDismissible,
             enableDrag: true,
-            ignoreSafeArea: false,
+            ignoreSafeArea: true,
             shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(18))),
           );
         } else {
           return (ConfirmationDialogActionSheetBuilder(context, listTextSpan: listTextSpan)
             ..messageText(message)
-            ..styleConfirmButton(actionStyle)
-            ..styleMessage(messageStyle)
-            ..styleCancelButton(cancelStyle)
             ..onCancelAction(
                 cancelTitle ?? AppLocalizations.of(context).cancel,
                 () {
@@ -182,7 +159,6 @@ mixin MessageDialogActionMixin {
             key: key,
             imagePath: imagePaths,
             listTextSpan: listTextSpan,
-            titleActionButtonMaxLines: titleActionButtonMaxLines,
             isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
             useIconAsBasicLogo: useIconAsBasicLogo,
             title: title ?? '',
@@ -192,10 +168,6 @@ mixin MessageDialogActionMixin {
             cancelBackgroundButtonColor: cancelButtonColor,
             cancelLabelButtonColor: cancelLabelButtonColor,
             confirmLabelButtonColor: confirmLabelButtonColor,
-            styleContent: messageStyle,
-            styleTitle: titleStyle,
-            styleTextCancelButton: cancelStyle,
-            styleTextConfirmButton: actionStyle,
             confirmText: actionName,
             cancelText: hasCancelButton ? cancelTitle ?? AppLocalizations.of(context).cancel : '',
             onConfirmButtonAction: () {

@@ -1,5 +1,6 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/dialog/confirm_dialog_button.dart';
 import 'package:flutter/material.dart';
@@ -23,23 +24,12 @@ class ConfirmationDialogBuilder extends StatelessWidget {
   final Color? confirmLabelButtonColor;
   final TextStyle? styleTextCancelButton;
   final TextStyle? styleTextConfirmButton;
-  final TextStyle? styleTitle;
-  final TextStyle? styleContent;
-  final double? radiusButton;
-  final EdgeInsetsGeometry? paddingTitle;
-  final EdgeInsetsGeometry? paddingContent;
-  final EdgeInsetsGeometry? paddingButton;
-  final EdgeInsetsGeometry? marginButton;
   final EdgeInsets? outsideDialogPadding;
-  final EdgeInsetsGeometry? marginIcon;
   final EdgeInsetsGeometry? margin;
-  final double? widthDialog;
   final double maxWidth;
   final Alignment? alignment;
-  final Color? backgroundColor;
   final bool showAsBottomSheet;
   final List<TextSpan>? listTextSpan;
-  final int? titleActionButtonMaxLines;
   final bool isArrangeActionButtonsVertical;
   final bool useIconAsBasicLogo;
   final OnConfirmButtonAction? onConfirmButtonAction;
@@ -61,25 +51,14 @@ class ConfirmationDialogBuilder extends StatelessWidget {
     this.confirmLabelButtonColor,
     this.styleTextCancelButton,
     this.styleTextConfirmButton,
-    this.styleTitle,
-    this.styleContent,
-    this.radiusButton,
-    this.paddingTitle,
-    this.paddingContent,
-    this.paddingButton,
-    this.marginButton,
     this.outsideDialogPadding,
-    this.marginIcon,
     this.margin,
-    this.widthDialog,
     this.maxWidth = double.infinity,
     this.alignment,
-    this.backgroundColor,
     this.showAsBottomSheet = false,
     this.listTextSpan,
-    this.titleActionButtonMaxLines,
     this.isArrangeActionButtonsVertical = false,
-    this.useIconAsBasicLogo = true,
+    this.useIconAsBasicLogo = false,
     this.onConfirmButtonAction,
     this.onCancelButtonAction,
     this.onCloseButtonAction,
@@ -100,21 +79,9 @@ class ConfirmationDialogBuilder extends StatelessWidget {
             confirmBackgroundButtonColor: confirmBackgroundButtonColor,
             cancelLabelButtonColor: cancelLabelButtonColor,
             confirmLabelButtonColor: confirmLabelButtonColor,
-            styleTextCancelButton: styleTextCancelButton,
-            styleTextConfirmButton: styleTextConfirmButton,
-            styleTitle: styleTitle,
-            styleContent: styleContent,
-            radiusButton: radiusButton,
-            paddingTitle: paddingTitle,
-            paddingContent: paddingContent,
-            paddingButton: paddingButton,
-            marginButton: marginButton,
-            marginIcon: marginIcon,
             margin: margin,
-            widthDialog: widthDialog,
             maxWidth: maxWidth,
             listTextSpan: listTextSpan,
-            titleActionButtonMaxLines: titleActionButtonMaxLines,
             isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
             useIconAsBasicLogo: useIconAsBasicLogo,
             onConfirmButtonAction: onConfirmButtonAction,
@@ -123,10 +90,11 @@ class ConfirmationDialogBuilder extends StatelessWidget {
           )
         : Dialog(
             shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(18))),
+              borderRadius: BorderRadius.all(Radius.circular(16)),
+            ),
             insetPadding: outsideDialogPadding,
             alignment: alignment ?? Alignment.center,
-            backgroundColor: backgroundColor,
+            backgroundColor: Colors.white,
             child: _BodyContent(
               imagePath: imagePath,
               title: title,
@@ -139,21 +107,9 @@ class ConfirmationDialogBuilder extends StatelessWidget {
               confirmBackgroundButtonColor: confirmBackgroundButtonColor,
               cancelLabelButtonColor: cancelLabelButtonColor,
               confirmLabelButtonColor: confirmLabelButtonColor,
-              styleTextCancelButton: styleTextCancelButton,
-              styleTextConfirmButton: styleTextConfirmButton,
-              styleTitle: styleTitle,
-              styleContent: styleContent,
-              radiusButton: radiusButton,
-              paddingTitle: paddingTitle,
-              paddingContent: paddingContent,
-              paddingButton: paddingButton,
-              marginButton: marginButton,
-              marginIcon: marginIcon,
               margin: margin,
-              widthDialog: widthDialog,
               maxWidth: maxWidth,
               listTextSpan: listTextSpan,
-              titleActionButtonMaxLines: titleActionButtonMaxLines,
               isArrangeActionButtonsVertical: isArrangeActionButtonsVertical,
               useIconAsBasicLogo: useIconAsBasicLogo,
               onConfirmButtonAction: onConfirmButtonAction,
@@ -176,21 +132,9 @@ class _BodyContent extends StatelessWidget {
   final Color? confirmBackgroundButtonColor;
   final Color? cancelLabelButtonColor;
   final Color? confirmLabelButtonColor;
-  final TextStyle? styleTextCancelButton;
-  final TextStyle? styleTextConfirmButton;
-  final TextStyle? styleTitle;
-  final TextStyle? styleContent;
-  final double? radiusButton;
-  final EdgeInsetsGeometry? paddingTitle;
-  final EdgeInsetsGeometry? paddingContent;
-  final EdgeInsetsGeometry? paddingButton;
-  final EdgeInsetsGeometry? marginButton;
-  final EdgeInsetsGeometry? marginIcon;
   final EdgeInsetsGeometry? margin;
-  final double? widthDialog;
   final double maxWidth;
   final List<TextSpan>? listTextSpan;
-  final int? titleActionButtonMaxLines;
   final bool isArrangeActionButtonsVertical;
   final bool useIconAsBasicLogo;
   final OnConfirmButtonAction? onConfirmButtonAction;
@@ -209,21 +153,9 @@ class _BodyContent extends StatelessWidget {
     this.confirmBackgroundButtonColor,
     this.cancelLabelButtonColor,
     this.confirmLabelButtonColor,
-    this.styleTextCancelButton,
-    this.styleTextConfirmButton,
-    this.styleTitle,
-    this.styleContent,
-    this.radiusButton,
-    this.paddingTitle,
-    this.paddingContent,
-    this.paddingButton,
-    this.marginButton,
-    this.marginIcon,
     this.margin,
-    this.widthDialog,
     required this.maxWidth,
     this.listTextSpan,
-    this.titleActionButtonMaxLines,
     required this.isArrangeActionButtonsVertical,
     required this.useIconAsBasicLogo,
     this.onConfirmButtonAction,
@@ -234,47 +166,55 @@ class _BodyContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: widthDialog ?? 400,
+      width: 421,
       constraints: BoxConstraints(maxWidth: maxWidth),
       decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(18)),
+        borderRadius: BorderRadius.all(Radius.circular(16)),
       ),
       margin: margin,
-      padding: const EdgeInsetsDirectional.only(
-        top: 11,
-        end: 11,
-        start: 16,
-        bottom: 24,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
+      child: Stack(
         children: [
-          _buildCloseButton(),
-          _buildIcon(),
-          _buildTitle(context),
-          _buildContent(context),
-          _buildAdditionalContent(),
-          _buildActionButtons(context),
-        ].where((widget) => widget != const SizedBox.shrink()).toList(),
+          Padding(
+            padding: const EdgeInsetsDirectional.only(
+              start: 32,
+              end: 32,
+              top: 24,
+              bottom: 32,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildIcon(),
+                _buildTitle(context),
+                _buildContent(context),
+                _buildAdditionalContent(),
+                _buildActionButtons(context),
+              ].where((widget) => widget != const SizedBox.shrink()).toList(),
+            ),
+          ),
+          if (_showCloseButton()) _buildCloseButton(),
+        ],
       ),
     );
   }
 
+  bool _showCloseButton() => onCloseButtonAction != null;
+
   Widget _buildCloseButton() {
-    return onCloseButtonAction != null
-        ? Align(
-            alignment: AlignmentDirectional.topEnd,
-            child: TMailButtonWidget.fromIcon(
-              icon: imagePath.icCloseDialog,
-              iconSize: 29,
-              iconColor: AppColor.steelGrayA540,
-              padding: const EdgeInsets.all(5),
-              backgroundColor: Colors.transparent,
-              onTapActionCallback: onCloseButtonAction,
-            ),
-          )
-        : const SizedBox(height: 24);
+    return PositionedDirectional(
+      top: 4,
+      end: 4,
+      child: TMailButtonWidget.fromIcon(
+        icon: imagePath.icCloseDialog,
+        iconSize: 24,
+        iconColor: AppColor.m3Tertiary,
+        padding: const EdgeInsets.all(10),
+        borderRadius: 24,
+        backgroundColor: Colors.transparent,
+        onTapActionCallback: onCloseButtonAction,
+      ),
+    );
   }
 
   Widget _buildIcon() {
@@ -289,28 +229,18 @@ class _BodyContent extends StatelessWidget {
         ),
       );
     } else if (iconWidget != null) {
-      return Container(
-        margin: marginIcon ?? EdgeInsets.zero,
-        alignment: Alignment.center,
-        child: iconWidget,
-      );
+      return Center(child: iconWidget);
     }
     return const SizedBox.shrink();
   }
 
   Widget _buildTitle(BuildContext context) {
     return title.trim().isNotEmpty
-        ? Padding(
-            padding: paddingTitle ??
-                const EdgeInsetsDirectional.only(top: 16, end: 5),
-            child: Center(
-              child: Text(
-                title,
-                textAlign: TextAlign.center,
-                style: styleTitle ??
-                    Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: AppColor.m3SurfaceBackground,
-                        ),
+        ? Center(
+            child: Text(
+              title,
+              style: ThemeUtils.textStyleM3HeadlineSmall.copyWith(
+                color: AppColor.textPrimary,
               ),
             ),
           )
@@ -320,33 +250,19 @@ class _BodyContent extends StatelessWidget {
   Widget _buildContent(BuildContext context) {
     if (textContent.trim().isNotEmpty) {
       return Padding(
-        padding:
-            paddingContent ?? const EdgeInsetsDirectional.only(top: 16, end: 5),
-        child: Center(
-          child: Text(
-            textContent,
-            textAlign: TextAlign.center,
-            style: styleContent ??
-                Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppColor.steelGrayA540,
-                    ),
-          ),
+        padding: const EdgeInsetsDirectional.only(top: 32),
+        child: Text(
+          textContent,
+          style: ThemeUtils.textStyleM3BodyMedium1,
         ),
       );
     } else if (listTextSpan != null) {
       return Padding(
-        padding:
-            paddingContent ?? const EdgeInsetsDirectional.only(top: 16, end: 5),
-        child: Center(
-          child: RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(
-              style: styleContent ??
-                  Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: AppColor.steelGrayA540,
-                      ),
-              children: listTextSpan,
-            ),
+        padding: const EdgeInsetsDirectional.only(top: 32),
+        child: RichText(
+          text: TextSpan(
+            style: ThemeUtils.textStyleM3BodyMedium1,
+            children: listTextSpan,
           ),
         ),
       );
@@ -357,42 +273,45 @@ class _BodyContent extends StatelessWidget {
   Widget _buildAdditionalContent() {
     return additionalWidgetContent != null
         ? Padding(
-            padding: const EdgeInsetsDirectional.only(top: 16, end: 5),
+            padding: const EdgeInsetsDirectional.only(top: 16),
             child: additionalWidgetContent!,
           )
         : const SizedBox.shrink();
   }
 
   Widget _buildActionButtons(BuildContext context) {
-    if (isArrangeActionButtonsVertical) {
+    if (isArrangeActionButtonsVertical ||
+        cancelText.isEmpty ||
+        confirmText.isEmpty
+    ) {
       return Padding(
-        padding: marginButton ??
-            const EdgeInsetsDirectional.only(start: 15, end: 20),
+        padding: const EdgeInsetsDirectional.only(top: 44),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             if (cancelText.isNotEmpty)
-              Padding(
-                padding: const EdgeInsetsDirectional.only(top: 16),
-                child: _buildButton(
-                  context,
-                  cancelText,
-                  onCancelButtonAction,
-                  cancelBackgroundButtonColor,
-                  cancelLabelButtonColor,
-                  styleTextCancelButton,
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ConfirmDialogButton(
+                  label: cancelText,
+                  backgroundColor: cancelBackgroundButtonColor,
+                  textColor: cancelLabelButtonColor,
+                  onTapAction: onCancelButtonAction,
                 ),
               ),
+            if (confirmText.isNotEmpty && cancelText.isNotEmpty)
+              const SizedBox(height: 8),
             if (confirmText.isNotEmpty)
-              Padding(
-                padding: const EdgeInsetsDirectional.only(top: 16),
-                child: _buildButton(
-                  context,
-                  confirmText,
-                  onConfirmButtonAction,
-                  confirmBackgroundButtonColor,
-                  confirmLabelButtonColor,
-                  styleTextConfirmButton,
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ConfirmDialogButton(
+                  label: confirmText,
+                  backgroundColor: confirmBackgroundButtonColor
+                      ?? AppColor.primaryMain,
+                  textColor: confirmLabelButtonColor ?? Colors.white,
+                  onTapAction: onConfirmButtonAction,
                 ),
               ),
           ],
@@ -400,63 +319,43 @@ class _BodyContent extends StatelessWidget {
       );
     } else {
       return Padding(
-        padding: marginButton ??
-            const EdgeInsetsDirectional.only(top: 16, start: 15, end: 20),
+        padding: const EdgeInsetsDirectional.only(
+          top: 44,
+          start: 12,
+          end: 12,
+        ),
         child: Row(
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            if (cancelText.isNotEmpty)
-              Expanded(
-                child: _buildButton(
-                  context,
-                  cancelText,
-                  onCancelButtonAction,
-                  cancelBackgroundButtonColor,
-                  cancelLabelButtonColor,
-                  styleTextCancelButton,
+            Flexible(
+              child: Container(
+                constraints: const BoxConstraints(minWidth: 67),
+                height: 48,
+                child: ConfirmDialogButton(
+                  label: cancelText,
+                  backgroundColor: cancelBackgroundButtonColor,
+                  textColor: cancelLabelButtonColor,
+                  onTapAction: onCancelButtonAction,
                 ),
               ),
-            if (confirmText.isNotEmpty && cancelText.isNotEmpty)
-              const SizedBox(width: 16),
-            if (confirmText.isNotEmpty)
-              Expanded(
-                child: _buildButton(
-                  context,
-                  confirmText,
-                  onConfirmButtonAction,
-                  confirmBackgroundButtonColor,
-                  confirmLabelButtonColor,
-                  styleTextConfirmButton,
+            ),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Container(
+                constraints: const BoxConstraints(minWidth: 135),
+                height: 48,
+                child: ConfirmDialogButton(
+                  label: confirmText,
+                  backgroundColor: confirmBackgroundButtonColor
+                      ?? AppColor.primaryMain,
+                  textColor: confirmLabelButtonColor ?? Colors.white,
+                  onTapAction: onConfirmButtonAction,
                 ),
               ),
+            ),
           ],
         ),
       );
     }
-  }
-
-  Widget _buildButton(
-    BuildContext context,
-    String label,
-    VoidCallback? onTapAction,
-    Color? bgColor,
-    Color? textColor,
-    TextStyle? textStyle,
-  ) {
-    return ConfirmDialogButton(
-      label: label,
-      backgroundColor: bgColor ??
-          (onTapAction == onConfirmButtonAction
-              ? AppColor.blue700
-              : AppColor.grayBackgroundColor),
-      borderRadius: radiusButton,
-      textStyle: textStyle,
-      padding: paddingButton,
-      textColor: textColor ??
-        (onTapAction == onConfirmButtonAction
-          ? Colors.white
-          : AppColor.steelGray600),
-      maxLines: titleActionButtonMaxLines,
-      onTapAction: onTapAction,
-    );
   }
 }

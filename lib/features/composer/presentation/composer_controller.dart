@@ -784,6 +784,7 @@ class ComposerController extends BaseController
         title: AppLocalizations.of(context).sending_failed,
         hasCancelButton: false,
         showAsBottomSheet: true,
+        dialogMargin: MediaQuery.paddingOf(context).add(const EdgeInsets.only(bottom: 12)),
       ).whenComplete(() => _sendButtonState = ButtonState.enabled);
       return;
     }
@@ -804,7 +805,8 @@ class ComposerController extends BaseController
         },
         showAsBottomSheet: true,
         title: AppLocalizations.of(context).sending_failed,
-        hasCancelButton: false
+        hasCancelButton: false,
+        dialogMargin: MediaQuery.paddingOf(context).add(const EdgeInsets.only(bottom: 12)),
       ).whenComplete(() => _sendButtonState = ButtonState.enabled);
       return;
     }
@@ -819,6 +821,7 @@ class ComposerController extends BaseController
         autoPerformPopBack: false,
         title: AppLocalizations.of(context).empty_subject,
         showAsBottomSheet: true,
+        dialogMargin: MediaQuery.paddingOf(context).add(const EdgeInsets.only(bottom: 12)),
       ).whenComplete(() => _sendButtonState = ButtonState.enabled);
       return;
     }
@@ -830,7 +833,8 @@ class ComposerController extends BaseController
         AppLocalizations.of(context).got_it,
         title: AppLocalizations.of(context).sending_failed,
         showAsBottomSheet: true,
-        hasCancelButton: false
+        hasCancelButton: false,
+        dialogMargin: MediaQuery.paddingOf(context).add(const EdgeInsets.only(bottom: 12)),
       ).whenComplete(() => _sendButtonState = ButtonState.enabled);
       return;
     }
@@ -1933,7 +1937,6 @@ class ComposerController extends BaseController
       alignCenter: true,
       outsideDismissible: false,
       autoPerformPopBack: false,
-      titleActionButtonMaxLines: 1,
       isArrangeActionButtonsVertical: true,
       usePopScope: true,
       onConfirmAction: () => _handleSaveMessageToDraft(context),

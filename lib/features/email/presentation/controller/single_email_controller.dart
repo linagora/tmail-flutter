@@ -1968,14 +1968,13 @@ class SingleEmailController extends BaseController with AppLoaderMixin {
         }
       },
       showAsBottomSheet: true,
+      dialogMargin: MediaQuery.paddingOf(context).add(const EdgeInsets.only(bottom: 12)),
       title: AppLocalizations.of(context).unsubscribeMail,
-      messageStyle: ThemeUtils.textStyleBodyBody2(color: AppColor.steelGray400),
       listTextSpan: [
         TextSpan(text: AppLocalizations.of(context).unsubscribeMailDialogMessage),
         TextSpan(
           text: ' ${presentationEmail.getSenderName()}',
-          style: ThemeUtils.textStyleBodyBody2(
-            color: AppColor.steelGray400,
+          style: ThemeUtils.textStyleM3BodyMedium1.copyWith(
             fontWeight: FontWeight.w700,
           ),
         ),
