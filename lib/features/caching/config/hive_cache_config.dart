@@ -48,11 +48,13 @@ class HiveCacheConfig {
   static HiveCacheConfig get instance => _instance;
 
   Future<void> setUp({String? cachePath}) async {
+    log('HiveCacheConfig::setUp:');
     await initializeDatabase(databasePath: cachePath);
     _registerAdapter();
   }
 
   Future<void> initializeDatabase({String? databasePath}) async {
+    log('HiveCacheConfig::initializeDatabase:');
     if (databasePath != null) {
       Hive.init(databasePath);
     } else {

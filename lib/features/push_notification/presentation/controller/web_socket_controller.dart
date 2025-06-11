@@ -226,7 +226,7 @@ class WebSocketController extends PushBaseController {
 
   void _initStateChangeDeouncerTimer() {
     _stateChangeDebouncer = Debouncer<StateChange?>(
-      const Duration(milliseconds: FcmUtils.durationMessageComing),
+      const Duration(milliseconds: FcmUtils.durationForegroundMessageComing),
       initialValue: null,
     );
 

@@ -3,6 +3,7 @@ import 'package:core/presentation/utils/style_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/button/multi_click_widget.dart';
 import 'package:core/utils/direction_utils.dart';
+import 'package:core/utils/logger/log_tracking.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -23,7 +24,6 @@ import 'package:tmail_ui_user/features/manage_account/presentation/profiles/prof
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/vacation_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 typedef CloseSettingsViewAction = void Function();
 
@@ -108,7 +108,7 @@ class SettingsView extends GetWidget<SettingsController> {
       ],
     );
 
-    if (AppConfig.isApiLoggingEnabled) {
+    if (LogTracking().enableTraceLog) {
       return MultiClickWidget(
         onMultiTap: () => controller
           .manageAccountDashboardController

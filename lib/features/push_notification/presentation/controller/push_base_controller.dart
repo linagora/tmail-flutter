@@ -61,11 +61,9 @@ abstract class PushBaseController {
 
     final listEmailActions = listTypeName
       .where((typeName) => typeName == TypeName.emailType || typeName == TypeName.emailDelivery)
-      .map((typeName) => _toPushNotificationAction(typeName, accountId, userName, mapTypeState, isForeground, session: session))
+      .map((typeName) => _toPushNotificationAction(typeName, accountId, userName, mapTypeState, isForeground, session: session,))
       .whereNotNull()
       .toList();
-
-    log('$runtimeType::mappingTypeStateToAction():listEmailActions: $listEmailActions');
 
     if (listEmailActions.isNotEmpty) {
        emailChangeListener.dispatchActions(listEmailActions);
@@ -73,11 +71,9 @@ abstract class PushBaseController {
 
     final listMailboxActions = listTypeName
       .where((typeName) => typeName == TypeName.mailboxType)
-      .map((typeName) => _toPushNotificationAction(typeName, accountId, userName, mapTypeState, isForeground))
+      .map((typeName) => _toPushNotificationAction(typeName, accountId, userName, mapTypeState, isForeground,))
       .whereNotNull()
       .toList();
-
-    log('$runtimeType::mappingTypeStateToAction():listMailboxActions: $listEmailActions');
 
     if (listMailboxActions.isNotEmpty) {
       mailboxChangeListener.dispatchActions(listMailboxActions);
@@ -89,7 +85,7 @@ abstract class PushBaseController {
     AccountId accountId,
     UserName userName,
     Map<String, dynamic> mapTypeState,
-    isForeground,
+    bool isForeground,
     {Session? session}
   ) {
     log('$runtimeType::_toPushNotificationAction():typeName: $typeName - isForeground: $isForeground');

@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:core/utils/app_logger.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:jmap_dart_client/jmap/core/sort/comparator.dart';
@@ -33,19 +35,16 @@ class EmailCacheManager {
     FilterMessageOption filterOption = FilterMessageOption.all
   }) async {
     final nestedKey = TupleKey(accountId.asString, userName.value).encodeKey;
-    log('EmailCacheManager::getAllEmail()::nestedKey = $nestedKey');
     final emailCacheList = await _emailCacheClient.getListByNestedKey(nestedKey);
-    log('EmailCacheManager::getAllEmail()::emailCacheList length = ${emailCacheList.length} ================');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getAllEmail():: email cache length ${emailCacheList.length} ================');
+    for (final emailCache in emailCacheList) {
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getAllEmail():ID = ${emailCache.id}, Subject =${emailCache.subject}, Keywords = ${emailCache.keywords}, MailboxIds = ${emailCache.mailboxIds}');
+    }
     final emailList = emailCacheList
       .toEmailList()
       .where((email) => _filterEmailByMailbox(email, filterOption, inMailboxId))
       .toList();
-
-    log('DATPH EmailCacheManager::getAllEmail(): emailList length ${emailList.length} ================');
-    for (final emailCache in emailCacheList) {
-      log('DATPH EmailCacheManager::getAllEmail(): ${emailCache.id} - ${emailCache.subject} - ${emailCache.keywords} - ${emailCache.mailboxIds}');
-    }
-    log('DATPH EmailCacheManager::getAllEmail(): ================');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::getAllEmail(): email in mailbox length ${emailList.length} ================');
 
     if (sort != null) {
       for (var comparator in sort) {
@@ -60,11 +59,11 @@ class EmailCacheManager {
   }
 
   bool _filterEmailByMailbox(Email email, FilterMessageOption option, MailboxId? inMailboxId) {
-    log('EmailCacheManager::_filterEmailByMailbox()::inMailboxId = $inMailboxId | option = $option | email = ${email.id} - ${email.subject} - ${email.keywords} - ${email.mailboxIds}');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_filterEmailByMailbox()::inMailboxId = $inMailboxId | option = $option | email = ${email.id} - ${email.subject} - ${email.keywords} - ${email.mailboxIds}');
     bool isBelongToMailbox = inMailboxId != null
         ? email.belongTo(inMailboxId) && option.filterEmail(email)
         : option.filterEmail(email);
-    log('EmailCacheManager::_filterEmailByMailbox()::isBelongToMailbox = $isBelongToMailbox');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_filterEmailByMailbox()::isBelongToMailbox = $isBelongToMailbox');
     return isBelongToMailbox;
   }
 
@@ -75,7 +74,7 @@ class EmailCacheManager {
     List<Email>? created,
     List<EmailId>? destroyed
   }) async {
-    log('EmailCacheManager::update() updated: ${updated?.length} created: ${created?.length} destroyed: ${destroyed?.length}');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::update() updated: ${updated?.length} created: ${created?.length} destroyed: ${destroyed?.length}');
     if (created?.isNotEmpty == true) {
       final createdCacheEmails = created!.toMapCache(accountId, userName);
       await _emailCacheClient.insertMultipleItem(createdCacheEmails);
@@ -90,28 +89,19 @@ class EmailCacheManager {
       final destroyedCacheEmails = destroyed!.toCacheKeyList(accountId, userName);
       await _emailCacheClient.deleteMultipleItem(destroyedCacheEmails);
     }
-    log('EmailCacheManager::update() start to get all in email cache ================');
-    final listEmailCache = await _emailCacheClient.getAll();
-    log('EmailCacheManager::update() cached length = ${listEmailCache.length} ================');
-    log('EmailCacheManager::update() end to get all in email cache ================');
   }
 
   Future<void> clean(EmailCleanupRule cleanupRule) async {
       final listEmailCache = await _emailCacheClient.getAll();
-      log('EmailCacheManager::clean():: start to get all in email cache length = ${listEmailCache.length} ================');
       final listEmailIdCacheExpire = listEmailCache
         .where((emailCache) => emailCache.expireTimeCaching(cleanupRule))
         .map((emailCache) => emailCache.id)
         .toList();
-      log('EmailCacheManager::clean():: listEmailIdCacheExpire length = ${listEmailIdCacheExpire.length} ================');
-      log('EmailCacheManager::clean():: listEmailIdCacheExpire = $listEmailIdCacheExpire ================');
       await _emailCacheClient.deleteMultipleItem(listEmailIdCacheExpire);
-      log('EmailCacheManager::clean() end deleteMultipleItem =================');
   }
 
   Future<void> storeEmail(AccountId accountId, UserName userName, EmailCache emailCache) {
     final keyCache = TupleKey(emailCache.id, accountId.asString, userName.value).encodeKey;
-    log('EmailCacheManager::storeEmail()::keyCache = $keyCache | ${emailCache.id} - ${emailCache.subject} - ${emailCache.keywords} - ${emailCache.mailboxIds}');
     return _emailCacheClient.insertItem(keyCache, emailCache);
   }
 
@@ -122,20 +112,12 @@ class EmailCacheManager {
         emailCache,
       ),
     ));
-    log('EmailCacheManager::storeMultipleEmails()::emailsToCache length = ${emailsToCache.length} ================');
-    for (final key in emailsToCache.keys) {
-      final emailCache = emailsToCache[key];
-      log('EmailCacheManager::storeMultipleEmails()::keyCache = $key - ${emailCache?.id} - ${emailCache?.subject} - ${emailCache?.keywords} - ${emailCache?.mailboxIds}');
-    }
     await _emailCacheClient.insertMultipleItem(emailsToCache);
-    log('EmailCacheManager::storeMultipleEmails() end insertMultipleItem =================');
   }
 
   Future<EmailCache> getStoredEmail(AccountId accountId, UserName userName, EmailId emailId) async {
     final keyCache = TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey;
-    log('EmailCacheManager::getStoredEmail()::keyCache = $keyCache');
     final emailCache = await _emailCacheClient.getItem(keyCache);
-    log('EmailCacheManager::getStoredEmail()::${emailCache?.id} - ${emailCache?.subject} - ${emailCache?.keywords} - ${emailCache?.mailboxIds}');
     if (emailCache != null) {
       return emailCache;
     } else {
@@ -151,12 +133,7 @@ class EmailCacheManager {
     final keys = emailIds
       .map((emailId) => TupleKey(emailId.asString, accountId.asString, userName.value).encodeKey)
       .toList();
-    log('EmailCacheManager::getMultipleStoredEmails()::keys length = ${keys.length} ================');
-    for (final key in keys) {
-      log('EmailCacheManager::getMultipleStoredEmails()::keyCache = $key');
-    }
     final emails = await _emailCacheClient.getValuesByListKey(keys);
-    log('EmailCacheManager::getMultipleStoredEmails()::emails length = ${emails.length} ================');
     return emails;
   }
 }

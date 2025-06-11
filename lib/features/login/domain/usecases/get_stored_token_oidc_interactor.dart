@@ -1,3 +1,5 @@
+import 'dart:isolate';
+
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/utils/app_logger.dart';
@@ -33,8 +35,8 @@ class GetStoredTokenOidcInteractor {
       final baseUrl = futureValue[0] as Uri;
       final tokenOidc = futureValue[1] as TokenOIDC;
       final oidcConfiguration = futureValue[2] as OIDCConfiguration;
-      log('GetStoredTokenOidcInteractor::execute(): $tokenOidc');
-      log('GetStoredTokenOidcInteractor::execute(): oidcConfiguration: $oidcConfiguration');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::execute(): $tokenOidc');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::execute(): oidcConfiguration: $oidcConfiguration');
 
       if (_isCredentialValid(baseUrl)) {
         yield Right(GetStoredTokenOidcSuccess(
@@ -47,7 +49,7 @@ class GetStoredTokenOidcInteractor {
         yield Left(GetStoredTokenOidcFailure(InvalidBaseUrl()));
       }
     } catch (e) {
-      log('GetStoredTokenOidcInteractor::execute(): $e');
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::execute(): $e');
       yield Left(GetStoredTokenOidcFailure(e));
     }
   }

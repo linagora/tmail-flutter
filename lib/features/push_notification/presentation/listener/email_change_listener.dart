@@ -1,4 +1,6 @@
 
+import 'dart:isolate';
+
 import 'package:core/data/network/config/dynamic_url_interceptors.dart';
 import 'package:core/presentation/state/failure.dart';
 import 'package:core/presentation/state/success.dart';
@@ -81,7 +83,7 @@ class EmailChangeListener extends ChangeListener {
       _dynamicUrlInterceptors = getBinding<DynamicUrlInterceptors>();
       _storeListNewEmailInteractor = getBinding<StoreListNewEmailInteractor>();
     } catch (e) {
-      logError('EmailChangeListener::_internal(): IS NOT REGISTERED: ${e.toString()}');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_internal(): IS NOT REGISTERED: ${e.toString()}');
     }
   }
 
@@ -91,7 +93,9 @@ class EmailChangeListener extends ChangeListener {
 
   @override
   void dispatchActions(List<Action> actions) {
-    log('EmailChangeListener::dispatchActions():actions: ${actions.runtimeType}');
+    for (var action in actions) {
+      log('$runtimeType-in isolate: ${Isolate.current.hashCode}::dispatchActions():action: ${action.runtimeType}');
+    }
     for (var action in actions) {
       if (action is SynchronizeEmailOnForegroundAction) {
         if (PlatformInfo.isAndroid) {
@@ -117,18 +121,20 @@ class EmailChangeListener extends ChangeListener {
   }
 
   void _synchronizeEmailOnForegroundAction(jmap.State newState) {
-    log('EmailChangeListener::_synchronizeEmailAction():newState: $newState');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_synchronizeEmailAction():newState: $newState');
     if (_dashBoardController != null) {
       _dashBoardController!.dispatchEmailUIAction(RefreshChangeEmailAction(newState));
+    } else {
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_synchronizeEmailAction():_dashBoardController is null');
     }
   }
 
   void _pushNotificationAction(jmap.State newState, AccountId accountId, UserName userName, Session? session) {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_pushNotificationAction():newState: $newState');
     _newStateEmailDelivery = newState;
     _accountId = accountId;
     _session = session;
     _userName = userName;
-    log('EmailChangeListener::_pushNotificationAction():newState: $newState');
 
     if (PlatformInfo.isWeb) {
       _storeEmailDeliveryStateAction(accountId, userName, _newStateEmailDelivery!);
@@ -140,18 +146,25 @@ class EmailChangeListener extends ChangeListener {
   }
 
   void _getStoredEmailDeliveryState(AccountId accountId, UserName userName) {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_getStoredEmailDeliveryState:');
     if (_getStoredEmailDeliveryStateInteractor != null) {
       consumeState(_getStoredEmailDeliveryStateInteractor!.execute(accountId, userName));
+    } else {
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_getStoredEmailDeliveryState():_getStoredEmailDeliveryStateInteractor is null');
     }
   }
 
   void _getStoredEmailState() {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_getStoredEmailState:');
     if (_getStoredEmailStateInteractor != null && _session != null && _accountId != null) {
       consumeState(_getStoredEmailStateInteractor!.execute(_session!, _accountId!));
+    } else {
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_getStoredEmailState():_getStoredEmailStateInteractor is null');
     }
   }
 
   void _getEmailChangesAction(jmap.State state) {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_getEmailChangesAction:');
     if (_getEmailChangesToPushNotificationInteractor != null &&
         _accountId != null &&
         _session != null &&
@@ -166,12 +179,21 @@ class EmailChangeListener extends ChangeListener {
           _accountId!,
         ),
       ));
+    } else {
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_getEmailChangesAction():_getEmailChangesToPushNotificationInteractor is null');
     }
   }
 
-  void _storeEmailDeliveryStateAction(AccountId accountId, UserName userName, jmap.State state) {
+  void _storeEmailDeliveryStateAction(
+    AccountId accountId,
+    UserName userName,
+    jmap.State state,
+  ) {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_storeEmailDeliveryStateAction:');
     if (_storeEmailDeliveryStateInteractor != null) {
       consumeState(_storeEmailDeliveryStateInteractor!.execute(accountId, userName, state));
+    } else {
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_storeEmailDeliveryStateAction():_storeEmailDeliveryStateInteractor is null');
     }
   }
 
@@ -180,6 +202,7 @@ class EmailChangeListener extends ChangeListener {
     required PresentationEmail presentationEmail,
     bool silent = false,
   }) async {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_showLocalNotification:');
     return await LocalNotificationManager.instance.showPushNotification(
       id: presentationEmail.id?.id.value ?? '',
       title: presentationEmail.subject ?? '',
@@ -193,7 +216,7 @@ class EmailChangeListener extends ChangeListener {
 
   @override
   void handleFailureViewState(Failure failure) {
-    log('EmailChangeListener::_handleFailureViewState(): $failure');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleFailureViewState(): $failure');
     if (failure is GetStoredEmailDeliveryStateFailure &&
         failure.exception is NotFoundEmailDeliveryStateException) {
       _getStoredEmailState();
@@ -208,7 +231,7 @@ class EmailChangeListener extends ChangeListener {
 
   @override
   void handleSuccessViewState(Success success) {
-    log('EmailChangeListener::_handleSuccessViewState(): ${success.runtimeType}');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleSuccessViewState(): ${success.runtimeType}');
     if (success is GetStoredEmailDeliveryStateSuccess && _newStateEmailDelivery != success.state) {
       _getEmailChangesAction(success.state);
     } else if (success is GetStoredEmailStateSuccess) {
@@ -260,11 +283,11 @@ class EmailChangeListener extends ChangeListener {
     }
   }
 
-  void _handleLocalPushNotification({
+  Future<void> _handleLocalPushNotification({
     required UserName userName,
     required List<PresentationEmail> emailList
   }) async {
-    log('EmailChangeListener::_handleLocalPushNotification(): EMAIL_LENGTH = ${emailList.length}');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleLocalPushNotification(): EMAIL_LENGTH = ${emailList.length}');
     if (emailList.isEmpty) {
       _emailsAvailablePushNotification.clear();
       return;
@@ -290,16 +313,25 @@ class EmailChangeListener extends ChangeListener {
     _emailsAvailablePushNotification.clear();
   }
 
-  void _handleStoreEmailStateToRefreshAction(AccountId accountId, UserName userName, jmap.State newState) {
-    log('EmailChangeListener::_handleStoreEmailStateToRefreshAction():newState: $newState');
+  void _handleStoreEmailStateToRefreshAction(
+    AccountId accountId,
+    UserName userName,
+    jmap.State newState,
+  ) {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleStoreEmailStateToRefreshAction():newState: $newState');
     if (_storeEmailStateToRefreshInteractor != null) {
       consumeState(_storeEmailStateToRefreshInteractor!.execute(accountId, userName, newState));
     } else {
-      logError('EmailChangeListener::_handleStoreEmailStateToRefreshAction():_storeEmailStateToRefreshInteractor is null');
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleStoreEmailStateToRefreshAction():_storeEmailStateToRefreshInteractor is null');
     }
   }
 
-  void _handleRemoveNotificationWhenEmailMarkAsRead(jmap.State newState, AccountId accountId, Session? session) {
+  void _handleRemoveNotificationWhenEmailMarkAsRead(
+    jmap.State newState,
+    AccountId accountId,
+    Session? session,
+  ) {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleRemoveNotificationWhenEmailMarkAsRead:');
     if (_getEmailChangesToRemoveNotificationInteractor != null && session != null) {
       consumeState(_getEmailChangesToRemoveNotificationInteractor!.execute(
         session,
@@ -307,6 +339,8 @@ class EmailChangeListener extends ChangeListener {
         newState,
         propertiesUpdated: Properties({EmailProperty.keywords}),
       ));
+    } else {
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleRemoveNotificationWhenEmailMarkAsRead():_getEmailChangesToRemoveNotificationInteractor is null');
     }
   }
 
@@ -314,12 +348,13 @@ class EmailChangeListener extends ChangeListener {
     required UserName userName,
     required List<EmailId> emailIds
   }) async {
-    log('EmailChangeListener::_handleRemoveLocalNotification():emailIds: $emailIds');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_handleRemoveLocalNotification():emailIds: $emailIds');
     await Future.wait(emailIds.map((emailId) => LocalNotificationManager.instance.removeNotification(emailId.id.value)));
     await LocalNotificationManager.instance.removeGroupPushNotification(userName.value);
   }
 
   void _getNewReceiveEmailFromNotificationAction(Session? session, AccountId accountId, jmap.State newState) {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_getNewReceiveEmailFromNotificationAction:');
     if (_getNewReceiveEmailFromNotificationInteractor != null && session != null) {
       consumeState(_getNewReceiveEmailFromNotificationInteractor!.execute(
         session: session,
@@ -327,11 +362,13 @@ class EmailChangeListener extends ChangeListener {
         userName: session.username,
         newState: newState
       ));
+    } else {
+      logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_getNewReceiveEmailFromNotificationAction():_getNewReceiveEmailFromNotificationInteractor is null');
     }
   }
 
   void _getListDetailedEmailByIdAction(Session? session, AccountId accountId, List<EmailId> emailIds) {
-    log('EmailChangeListener::_getListDetailedEmailByIdAction():emailIds: $emailIds');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_getListDetailedEmailByIdAction():emailIds: $emailIds');
     if (_getListDetailedEmailByIdInteractor != null &&
         _dynamicUrlInterceptors != null &&
         session != null) {
@@ -344,7 +381,7 @@ class EmailChangeListener extends ChangeListener {
             baseDownloadUrl
         ));
       } catch (e) {
-        logError('EmailChangeListener::_getListDetailedEmailByIdAction(): $e');
+        logError('$runtimeType-in isolate: ${Isolate.current.hashCode}::_getListDetailedEmailByIdAction(): $e');
         consumeState(Stream.value(Left(GetDetailedEmailByIdFailure(e))));
       }
     }
@@ -355,7 +392,7 @@ class EmailChangeListener extends ChangeListener {
     AccountId accountId,
     Map<Email, DetailedEmail> mapDetailedEmails
   ) {
-    log('EmailChangeListener::_storeNewEmailAction():mapDetailedEmails: ${mapDetailedEmails.length}');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::_storeNewEmailAction():mapDetailedEmails: ${mapDetailedEmails.length}');
     if (_storeListNewEmailInteractor != null) {
       consumeState(_storeListNewEmailInteractor!.execute(
         session,

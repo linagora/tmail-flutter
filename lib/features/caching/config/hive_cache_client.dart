@@ -1,3 +1,4 @@
+import 'dart:isolate';
 import 'dart:typed_data';
 
 import 'package:core/presentation/extensions/map_extensions.dart';
@@ -15,11 +16,14 @@ abstract class HiveCacheClient<T> {
   Future<Uint8List?> _getEncryptionKey() => HiveCacheConfig.instance.getEncryptionKey();
 
   Future<Box<T>> openBox() async {
+    Box<T> box;
     if (Hive.isBoxOpen(tableName)) {
-      return Hive.box<T>(tableName);
+      box = Hive.box<T>(tableName);
     } else {
-      return Hive.openBox<T>(tableName);
+      box = await Hive.openBox<T>(tableName);
     }
+    log('$runtimeType::openBox: Box ${box.name} is open in isolate: ${Isolate.current.hashCode}');
+    return box;
   }
 
   Future<Box<T>> openBoxEncryption() async {

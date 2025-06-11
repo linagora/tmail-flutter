@@ -1,5 +1,6 @@
 
 import 'dart:async';
+import 'dart:isolate';
 
 import 'package:core/utils/app_logger.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -16,24 +17,25 @@ class FcmService {
   static FcmService get instance => _instance;
 
   void handleFirebaseBackgroundMessage(RemoteMessage newRemoteMessage) {
-    log('FcmService::handleFirebaseBackgroundMessage():data: ${newRemoteMessage.data}');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleFirebaseBackgroundMessage():data: ${newRemoteMessage.data}');
     if (newRemoteMessage.data.isNotEmpty) {
       backgroundMessageStreamController?.add(newRemoteMessage.data);
     }
   }
 
   void handleToken(String? token) {
-    log('FcmService::handleToken():token: $token');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::handleToken():token: $token');
     fcmTokenStreamController?.add(token);
   }
 
   void initialStreamController() {
-    log('FcmService::initialStreamController:');
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::initialStreamController:');
     backgroundMessageStreamController = StreamController<Map<String, dynamic>>.broadcast();
     fcmTokenStreamController = StreamController<String?>.broadcast();
   }
 
   void closeStream() {
+    log('$runtimeType-in isolate: ${Isolate.current.hashCode}::closeStream:');
     backgroundMessageStreamController?.close();
     fcmTokenStreamController?.close();
 
