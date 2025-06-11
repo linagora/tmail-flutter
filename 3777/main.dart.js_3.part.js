@@ -289,7 +289,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2 = this.iconSize;
       if (t2 == null)
         t2 = 33;
-      return B.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, C.Color_0, t1, _null, t2, _null, _null, 1 / 0, _null, this.onTapAction, C.EdgeInsets_0_0_0_0, _null);
+      return B.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, C.Color_0, t1, _null, t2, _null, _null, 1 / 0, _null, this.onTapAction, C.EdgeInsets_0_0_0_0, _null, _null);
     }
   };
   A.ApplicationVersionWidget.prototype = {
@@ -372,7 +372,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         throw B.wrapException(A.NetworkImageLoadException$($status, this.resolved));
       }
     },
-    $signature: 183
+    $signature: 204
   };
   A.NetworkImage__loadAsync_closure0.prototype = {
     call$1(e) {
@@ -456,5 +456,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_3", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "H7+91bk/1a9EX9tDhPlVsb81nN4=");
+})($__dart_deferred_initializers__, "n+QUqHncrBLMk2AwOKFbmlQDHKw=");
 ;
