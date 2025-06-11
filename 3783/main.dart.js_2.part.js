@@ -283,7 +283,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _null = null,
         value = $.$get$dotenv().maybeGet$2$fallback("PLATFORM", "other"),
         t1 = value.toLowerCase() === "saas" ? "assets/images/ic_logo_with_text_beta.svg" : "assets/images/ic_logo_with_text.svg";
-      return B.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, C.Color_0, t1, _null, 33, _null, this.margin, 1 / 0, _null, this.onTapAction, C.EdgeInsets_0_0_0_0, _null);
+      return B.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, C.Color_0, t1, _null, 33, _null, this.margin, 1 / 0, _null, this.onTapAction, C.EdgeInsets_0_0_0_0, _null, _null);
     }
   };
   A.ApplicationVersionWidget.prototype = {
@@ -366,7 +366,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         throw B.wrapException(A.NetworkImageLoadException$($status, this.resolved));
       }
     },
-    $signature: 205
+    $signature: 202
   };
   A.NetworkImage__loadAsync_closure0.prototype = {
     call$1(e) {
@@ -448,5 +448,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_2", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "ys5riRqCA3KIzdfdjuUdlsvKpJU=");
+})($__dart_deferred_initializers__, "QC45Oxd9MCz0qgdYURPT3ziS9VI=");
 ;

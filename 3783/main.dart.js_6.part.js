@@ -642,7 +642,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = _this.contactSupportCapability;
         if ((t3 == null ? _null : t3.get$isAvailable()) === true) {
           A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-          t1.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build_closure0(_this), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null)));
+          t1.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build_closure0(_this), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null), _null));
         }
         if (_this.appGridController != null)
           t1.push(new A.Obx(new C.NavigationBarWidget_build_closure1(_this), _null));
@@ -863,7 +863,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1._widget;
       t6 = t1.linagoraApps;
       t1 = t1.imagePaths;
-      return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
+      return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
     },
     $signature: 1890
   };
@@ -895,7 +895,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = t1.contactSupportCapability;
       if ((t3 == null ? _null : t3.get$isAvailable()) === true) {
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-        t2.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build__closure(t1), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null)));
+        t2.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build__closure(t1), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null), _null));
       }
       if (t1.appGridController != null)
         t2.push(new A.Obx(new C.NavigationBarWidget_build__closure0(t1), _null));
@@ -938,7 +938,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return new C.AppGridDashboardIcon(t1.imagePaths, t2, null);
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 4
+    $signature: 5
   };
   C.NavigationBarWidget_build_closure0.prototype = {
     call$0() {
@@ -963,7 +963,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         return new C.AppGridDashboardIcon(t1.imagePaths, t2, null);
       return B.SizedBox_0_0_null_null;
     },
-    $signature: 4
+    $signature: 5
   };
   C.DefaultLinkDelegate_build_closure.prototype = {
     call$0() {
@@ -1041,7 +1041,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_0_5_0_5 = new A.EdgeInsets(0, 5, 0, 5);
     D.EdgeInsets_0_6_0_0 = new A.EdgeInsets(0, 6, 0, 0);
     D.EdgeInsets_12_5_12_5 = new A.EdgeInsets(12, 5, 12, 5);
-    D.EdgeInsets_32_16_32_16 = new A.EdgeInsets(32, 16, 32, 16);
     D.EdgeInsets_8_5_8_5 = new A.EdgeInsets(8, 5, 8, 5);
     D.PageStorageKey_mailbox_list = new A.PageStorageKey("mailbox_list", A.findType("PageStorageKey<String>"));
     D.SizedBox_24_null_null_null = new A.SizedBox(24, null, null, null);
@@ -1059,5 +1058,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "Xuse3cxwbgUDyyBfIh8zeAR+04A=");
+})($__dart_deferred_initializers__, "dsKeoacKl8m0845FUYSbkNm9dvE=");
 ;
