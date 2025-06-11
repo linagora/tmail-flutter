@@ -262,6 +262,8 @@ dependencies:
       url: https://github.com/linagora/twake-previewer-flutter.git
       ref: main
 
+  lottie_native: 0.1.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -321,6 +323,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/animations/
     - env.file
     - configurations/
     - configurations/icons/
@@ -370,9 +373,13 @@ flutter_icons:
   adaptive_icon_foreground: "assets/icons/icon_launcher.png"
 
 flutter_native_splash:
-  color: "#000000"
-  branding: "assets/icons/icon_branding.png"
-  image: "assets/icons/icon_logo.png"
+  color: "#ffffff"
+  image_ios: "assets/icons/icon_logo_ios.png"
+  branding_ios: "assets/icons/icon_twp.png"
+  image_android: "assets/icons/icon_logo_android.png"
+  android_12: 
+    color: "#ffffff"
+    image: "assets/icons/icon_logo_android.png"
 
 cider:
   link_template:
