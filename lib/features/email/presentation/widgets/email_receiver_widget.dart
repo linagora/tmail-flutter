@@ -251,7 +251,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
           horizontal: 4,
         ),
         margin: EdgeInsetsDirectional.only(top: _responsiveUtils.isMobile(context) ? 1.5 : 2),
-        backgroundColor: Colors.transparent,
+        backgroundColor: _responsiveUtils.isMobile(context) ? AppColor.gray6D7885 : Colors.transparent,
         onTapActionCallback: () => widget.openEmailAddressDetailAction?.call(context, emailAddress),
         onLongPressActionCallback: () => AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress),
       ))
