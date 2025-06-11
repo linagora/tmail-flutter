@@ -25,49 +25,52 @@ class EmailSenderBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: const NeverScrollableScrollPhysics(),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (emailAddress.displayName.isNotEmpty)
-            MaterialTextButton(
-              label: emailAddress.displayName,
-              onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
-              onLongPress: () {
-                AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
-              },
-              borderRadius: 8,
-              padding: EdgeInsets.zero,
-              customStyle: ThemeUtils.textStyleHeadingH6(
-                color: Colors.black,
-                fontWeight: FontWeight.w500,
-              ).copyWith(height: 1, letterSpacing: -0.2),
-              overflow: CommonTextStyle.defaultTextOverFlow,
-              softWrap: CommonTextStyle.defaultSoftWrap
-            ),
-          if (showSenderEmail)
-            MaterialTextButton(
-              label: '<${emailAddress.emailAddress}>',
-              onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
-              onLongPress: () {
-                AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
-              },
-              borderRadius: 8,
-              padding: EdgeInsets.zero,
-              customStyle: ThemeUtils.textStyleBodyBody1(
-                color: AppColor.steelGray400,
-              ).copyWith(
-                fontSize: 17,
-                height: 1,
-                letterSpacing: -0.17,
+    return Transform.translate(
+      offset: const Offset(-2, 0),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        physics: const NeverScrollableScrollPhysics(),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (emailAddress.displayName.isNotEmpty)
+              MaterialTextButton(
+                label: emailAddress.displayName,
+                onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
+                onLongPress: () {
+                  AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
+                },
+                borderRadius: 8,
+                padding: const EdgeInsets.all(2),
+                customStyle: ThemeUtils.textStyleHeadingH6(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500,
+                ).copyWith(height: 1, letterSpacing: -0.2),
+                overflow: CommonTextStyle.defaultTextOverFlow,
+                softWrap: CommonTextStyle.defaultSoftWrap
               ),
-              overflow: CommonTextStyle.defaultTextOverFlow,
-              softWrap: CommonTextStyle.defaultSoftWrap
-            )
-        ]
+            if (showSenderEmail)
+              MaterialTextButton(
+                label: '<${emailAddress.emailAddress}>',
+                onTap: () => openEmailAddressDetailAction?.call(context, emailAddress),
+                onLongPress: () {
+                  AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress);
+                },
+                borderRadius: 8,
+                padding: const EdgeInsets.all(2),
+                customStyle: ThemeUtils.textStyleBodyBody1(
+                  color: AppColor.steelGray400,
+                ).copyWith(
+                  fontSize: 17,
+                  height: 1,
+                  letterSpacing: -0.17,
+                ),
+                overflow: CommonTextStyle.defaultTextOverFlow,
+                softWrap: CommonTextStyle.defaultSoftWrap
+              )
+          ]
+        ),
       ),
     );
   }
