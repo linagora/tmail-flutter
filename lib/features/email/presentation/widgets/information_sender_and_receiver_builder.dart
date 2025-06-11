@@ -92,13 +92,13 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                             if (showUnreadVisualization &&
                                 !emailSelected.hasRead &&
                                 responsiveUtils.isMobile(context))
-                              Padding(
-                                padding: const EdgeInsetsDirectional.only(end: 8),
-                                child: SvgPicture.asset(
-                                  imagePaths.icUnreadStatus,
-                                  width: 9,
-                                  height: 9,
-                                  fit: BoxFit.fill,
+                              TMailButtonWidget.fromIcon(
+                                icon: imagePaths.icUnreadStatus,
+                                backgroundColor: Colors.transparent,
+                                iconSize: 9,
+                                onTapActionCallback: () => onEmailActionClick?.call(
+                                  emailSelected,
+                                  EmailActionType.markAsRead,
                                 ),
                               ),
                             if (emailSelected.from?.isNotEmpty == true)
