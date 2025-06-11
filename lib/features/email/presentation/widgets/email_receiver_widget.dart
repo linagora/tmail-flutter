@@ -239,7 +239,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
           ? emailAddress.asString()
           : '${emailAddress.asString()},',
         textStyle: ThemeUtils.textStyleHeadingHeadingSmall(
-          color: Colors.black,
+          color: _responsiveUtils.isMobile(context) ? AppColor.gray6D7885 :  Colors.black,
           fontWeight: FontWeight.w400,
         ).copyWith(
           fontSize: _responsiveUtils.isMobile(context) ? 14 : 17,
@@ -251,7 +251,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
           horizontal: 4,
         ),
         margin: EdgeInsetsDirectional.only(top: _responsiveUtils.isMobile(context) ? 1.5 : 2),
-        backgroundColor: _responsiveUtils.isMobile(context) ? AppColor.gray6D7885 : Colors.transparent,
+        backgroundColor: Colors.transparent,
         onTapActionCallback: () => widget.openEmailAddressDetailAction?.call(context, emailAddress),
         onLongPressActionCallback: () => AppUtils.copyEmailAddressToClipboard(context, emailAddress.emailAddress),
       ))
