@@ -1,5 +1,5 @@
 {
-  "@@last_modified": "2025-06-02T16:27:17.653715",
+  "@@last_modified": "2025-06-02T18:48:11.159281",
   "initializing_data": "Initializing data...",
   "@initializing_data": {
     "type": "text",
@@ -4528,7 +4528,7 @@
     "placeholders_order": [],
     "placeholders": {}
   },
-  "youDoNotHaveAnyEmailInYourCurrentFolder": "You don’t have any emails in this folder.",
+  "youDoNotHaveAnyEmailInYourCurrentFolder": "You don’t have any emails\n in this folder.",
   "@youDoNotHaveAnyEmailInYourCurrentFolder": {
     "type": "text",
     "placeholders_order": [],
@@ -4536,6 +4536,18 @@
   },
   "startToComposeEmails": "Start to compose emails.",
   "@startToComposeEmails": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createFilter": "Create filter",
+  "@createFilter": {
+    "type": "text",
+    "placeholders_order": [],
+    "placeholders": {}
+  },
+  "createFilterRuleFailed": "Create filter rule failed",
+  "@createFilterRuleFailed": {
     "type": "text",
     "placeholders_order": [],
     "placeholders": {}

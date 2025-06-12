@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class PopupItemWidgetStyle {
-  static const double iconSize = 24;
+  static const double iconSize = 20;
   static const double selectedIconSize = 16;
-  static const double space = 12;
+  static const double space = 16;
   static const double height = 48;
   static const double minWidth = 256;
 

@@ -10,6 +10,7 @@ class PopupItemWidget extends StatelessWidget {
   final String nameAction;
   final Color? colorIcon;
   final double? iconSize;
+  final double? iconSpace;
   final TextStyle? styleName;
   final bool? isSelected;
   final String? selectedIcon;
@@ -25,6 +26,7 @@ class PopupItemWidget extends StatelessWidget {
     this.styleName,
     this.isSelected,
     this.padding,
+    this.iconSpace,
     this.selectedIcon,
     this.onCallbackAction,
   }) : super(key: key);
@@ -48,7 +50,7 @@ class PopupItemWidget extends StatelessWidget {
                 fit: BoxFit.fill,
                 colorFilter: colorIcon?.asFilter()
               ),
-              const SizedBox(width: PopupItemWidgetStyle.space),
+              SizedBox(width: iconSpace ?? PopupItemWidgetStyle.space),
               Expanded(child: Text(
                 nameAction,
                 style: styleName ?? PopupItemWidgetStyle.labelTextStyle

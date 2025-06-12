@@ -4780,4 +4780,18 @@ class AppLocalizations {
       name: 'startToComposeEmails',
     );
   }
+
+  String get createFilter {
+    return Intl.message(
+      'Create filter',
+      name: 'createFilter',
+    );
+  }
+
+  String get createFilterRuleFailed {
+    return Intl.message(
+      'Create filter rule failed',
+      name: 'createFilterRuleFailed',
+    );
+  }
 }

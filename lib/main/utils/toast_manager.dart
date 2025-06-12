@@ -25,6 +25,7 @@ import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.
 import 'package:tmail_ui_user/features/manage_account/domain/state/add_recipient_in_forwarding_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/delete_recipient_in_forwarding_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/edit_local_copy_in_forwarding_state.dart';
+import 'package:tmail_ui_user/features/manage_account/domain/state/create_new_rule_filter_state.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/state/export_trace_log_state.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_in_twake_workplace_state.dart';
 import 'package:tmail_ui_user/features/starting_page/domain/state/sign_up_twake_workplace_state.dart';
@@ -198,6 +199,8 @@ class ToastManager {
       } else {
         message = AppLocalizations.of(currentContext!).deleteRecipientsFailed;
       }
+    } else if (failure is CreateNewRuleFilterFailure) {
+      message = AppLocalizations.of(currentContext!).createFilterRuleFailed;
     }
 
     if (message?.isNotEmpty == true) {
@@ -219,6 +222,8 @@ class ToastManager {
       message = AppLocalizations.of(currentContext!).toast_message_empty_trash_folder_success;
     } else if (success is ExportTraceLogSuccess) {
       message = AppLocalizations.of(currentContext!).exportTraceLogSuccess(success.savePath);
+    } else if (success is CreateNewRuleFilterSuccess) {
+      message = AppLocalizations.of(currentContext!).newFilterWasCreated;
     }
 
     if (message?.isNotEmpty == true) {
