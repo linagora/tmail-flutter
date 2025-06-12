@@ -74,6 +74,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
           EmailAvatarBuilder(
             emailSelected: emailSelected,
             onTapAvatarActionClick: onTapAvatarActionClick,
+            size: 56,
           ),
           const SizedBox(width: 16),
           Expanded(child: LayoutBuilder(builder: (context, constraints) {
@@ -82,7 +83,6 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 2),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -129,7 +129,7 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                                   color: AppColor.colorTextBody,
                                   decoration: TextDecoration.underline,
                                 ),
-                                padding: const EdgeInsetsDirectional.symmetric(vertical: 5, horizontal: 8),
+                                padding: const EdgeInsetsDirectional.symmetric(vertical: 4, horizontal: 8),
                                 backgroundColor: Colors.transparent,
                                 onTapActionCallback: () => onEmailActionClick?.call(emailSelected, EmailActionType.unsubscribe),
                               ),
@@ -187,7 +187,6 @@ class InformationSenderAndReceiverBuilder extends StatelessWidget {
                         ),
                     ],
                   ),
-                  const SizedBox(height: 2),
                   if (responsiveUtils.isMobile(context) && isInsideThreadDetailView)
                     ReceivedTimeBuilder(
                       emailSelected: emailSelected,

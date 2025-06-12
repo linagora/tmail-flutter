@@ -248,7 +248,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
         ),
         padding: EdgeInsetsDirectional.symmetric(
           vertical: _responsiveUtils.isMobile(context) ? 2.5 : 3.5,
-          horizontal: 4,
+          horizontal: 8,
         ),
         margin: EdgeInsetsDirectional.only(top: _responsiveUtils.isMobile(context) ? 1.5 : 2),
         backgroundColor: Colors.transparent,
