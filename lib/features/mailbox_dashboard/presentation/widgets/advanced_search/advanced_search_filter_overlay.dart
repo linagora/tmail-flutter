@@ -17,7 +17,7 @@ class AdvancedSearchFilterOverlay extends StatelessWidget {
           constraints: BoxConstraints(
             maxHeight: _getHeightOverlay(context),
           ),
-          margin: const EdgeInsetsDirectional.only(top: 4, bottom: 16, end: 22),
+          margin: const EdgeInsetsDirectional.only(top: 4, bottom: 16),
           padding: const EdgeInsets.symmetric(horizontal: 8),
           decoration: BoxDecoration(
             color: Colors.white,
