@@ -65,7 +65,7 @@ dependencies:
   jmap_dart_client:
     git:
       url: https://github.com/linagora/jmap-dart-client.git
-      ref: feature/return-path-header
+      ref: main
 
   contacts_service:
     git:
