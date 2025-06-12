@@ -8782,13 +8782,13 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var searchBarIcon, t2, t3, newFolderIcon, _null = null,
         t1 = type$.AppLocalizations;
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, t1).toString;
-      searchBarIcon = A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, _null, "assets/images/ic_search_bar.svg", C.Color_4283787389, 20, _null, _null, 1 / 0, _null, this.onOpenSearchFolder, _null, A.Intl__message("Search for folders", _null, "searchForFolders", _null, _null), _null);
+      searchBarIcon = A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, _null, "assets/images/ic_search_bar.svg", C.Color_4283787389, 20, _null, _null, 1 / 0, _null, this.onOpenSearchFolder, C.EdgeInsets_5_5_5_5, A.Intl__message("Search for folders", _null, "searchForFolders", _null, _null), _null);
       t2 = type$.MediaQuery;
       t3 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t2).data;
       if (t3.size._dx >= 1200)
         searchBarIcon = A.Transform$(_null, searchBarIcon, _null, A.Matrix4_Matrix4$translationValues(8, 0, 0), true);
       A.Localizations_of(context, C.Type_AppLocalizations_CTL, t1).toString;
-      newFolderIcon = A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, _null, "assets/images/ic_add_new_folder.svg", C.Color_4283787389, 24, _null, _null, 1 / 0, _null, this.onAddNewFolder, C.EdgeInsets_5_5_5_5, A.Intl__message("New folder", _null, "newFolder", _null, _null), _null);
+      newFolderIcon = A.TMailButtonWidget_TMailButtonWidget$fromIcon(C.Color_0, 20, _null, _null, "assets/images/ic_add_new_folder.svg", C.Color_4283787389, 20, _null, _null, 1 / 0, _null, this.onAddNewFolder, C.EdgeInsets_5_5_5_5, A.Intl__message("New folder", _null, "newFolder", _null, _null), _null);
       t3 = A.InheritedModel_inheritFrom(context, C._MediaQueryAspect_0, t2).data;
       if (t3.size._dx >= 1200)
         newFolderIcon = A.Transform$(_null, newFolderIcon, _null, A.Matrix4_Matrix4$translationValues(8, 0, 0), true);
@@ -10521,7 +10521,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = contextMenuItem.action,
         t4 = $.$get$GetWidget__cache();
       A.Expando__checkType(this);
-      return new B.FocusedMenuItem(A.Expanded$(A.AbsorbPointer$(!t1, A.Opacity$(A.Row$(A._setArrayType([A.SvgPicture$asset(A.MailboxActionsExtension_getContextMenuIcon(t3, A._instanceType(this)._eval$1("GetWidget.S")._as(t4._jsWeakMap.get(this)).imagePaths), C.Alignment_0_0, A.ColorNullableExtension_asFilter(C.Color_4283787389), C.BoxFit_0, 24, _null, _null, 24), C.SizedBox_12_null_null_null, A.Expanded$(A.Text$(A.MailboxActionsExtension_getTitleContextMenu(t3, context), _null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, C.Color_4278190080, _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_4_500, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null, t2), _null), 1), C.Color_4294967295);
+      return new B.FocusedMenuItem(A.Expanded$(A.AbsorbPointer$(!t1, A.Opacity$(A.Row$(A._setArrayType([A.SvgPicture$asset(A.MailboxActionsExtension_getContextMenuIcon(t3, A._instanceType(this)._eval$1("GetWidget.S")._as(t4._jsWeakMap.get(this)).imagePaths), C.Alignment_0_0, A.ColorNullableExtension_asFilter(A.MailboxActionsExtension_getColorContextMenuIcon(t3)), C.BoxFit_0, 24, _null, _null, 24), C.SizedBox_12_null_null_null, A.Expanded$(A.Text$(A.MailboxActionsExtension_getTitleContextMenu(t3, context), _null, _null, _null, _null, _null, _null, _null, _null, A.TextStyle$(_null, _null, A.MailboxActionsExtension_getColorContextMenuTitle(t3), _null, _null, _null, _null, _null, _null, _null, _null, 16, _null, _null, C.FontWeight_4_500, _null, _null, true, _null, _null, _null, _null, _null, _null, _null, _null), _null, _null, _null, _null, _null), 1)], type$.JSArray_Widget), C.CrossAxisAlignment_2, _null, C.MainAxisAlignment_0, C.MainAxisSize_1, _null), _null, t2), _null), 1), C.Color_4294967295);
     },
     _openMailboxMenuAction$3$position(context, mailbox, position) {
       var t2, t3, deletedMessageVaultSupported, subaddressingSupported, contextMenuActions, t4, _this = this,
@@ -13426,12 +13426,12 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   };
   B.EmailView__popupMenuEmailActionTile_closure.prototype = {
     call$1(action) {
-      var t3, _null = null,
+      var t3,
         t1 = this.$this,
         t2 = $.$get$GetWidget__cache();
       A.Expando__checkType(t1);
       t3 = this.context;
-      return A.PopupMenuItem$(A.PopupItemWidget$(C.Color_4278221567, B.EmailActionTypeExtension_getIcon(action, A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).imagePaths), _null, _null, _null, B.EmailActionTypeExtension_getTitle(action, t3), new B.EmailView__popupMenuEmailActionTile__closure(t1, t3, this.presentationEmail, action), C.EdgeInsetsDirectional_12_0_0_0, _null, C.TextStyle_69t7), true, 48, new A.ValueKey(action._name + "_action", type$.ValueKey_String), C.EdgeInsets_0_0_0_0, _null, type$.dynamic);
+      return A.PopupMenuItem$(A.PopupItemWidget$(C.Color_4278221567, B.EmailActionTypeExtension_getIcon(action, A._instanceType(t1)._eval$1("GetWidget.S")._as(t2._jsWeakMap.get(t1)).imagePaths), null, B.EmailActionTypeExtension_getTitle(action, t3), new B.EmailView__popupMenuEmailActionTile__closure(t1, t3, this.presentationEmail, action), C.EdgeInsetsDirectional_12_0_0_0, null, C.TextStyle_69t7), true, 48, new A.ValueKey(action._name + "_action", type$.ValueKey_String), C.EdgeInsets_0_0_0_0, null, type$.dynamic);
     },
     $signature: 1832
   };
@@ -19105,5 +19105,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "/Hvi5RS1KqRuq0vPz/4vKg0uAJc=");
+})($__dart_deferred_initializers__, "PP3WvcDBJl868V4QsKhbYNXxtR4=");
 ;
