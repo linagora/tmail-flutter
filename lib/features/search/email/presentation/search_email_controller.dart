@@ -888,6 +888,10 @@ class SearchEmailController extends BaseController
         popBack();
         unSpam(selectedEmail);
         break;
+      case EmailActionType.editAsNewEmail:
+        popBack();
+        editAsNewEmail(selectedEmail);
+        break;
       default:
         break;
     }
