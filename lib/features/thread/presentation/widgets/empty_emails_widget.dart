@@ -1,3 +1,4 @@
+import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
@@ -51,7 +52,12 @@ class EmptyEmailsWidget extends StatelessWidget {
             Text(
               key: const Key('empty_email_sub_message'),
               AppLocalizations.of(context).startToComposeEmails,
-              style: ThemeUtils.textStyleInter400(),
+              style: ThemeUtils.textStyleInter400().copyWith(
+                letterSpacing: -0.15,
+                fontSize: 16,
+                height: 21.01 / 16,
+                color: AppColor.gray424244.withOpacity(0.64),
+              ),
               textAlign: TextAlign.center,
             ),
         ],

@@ -279,15 +279,6 @@ class ThemeUtils {
     color: AppColor.gray424244.withOpacity(0.9),
   );
 
-  static TextStyle textStyleInter400() => TextStyle(
-    fontFamily: ConstantsUI.fontApp,
-    fontWeight: FontWeight.w400,
-    letterSpacing: -0.15,
-    fontSize: 16,
-    height: 21.01 / 16,
-    color: AppColor.gray424244.withOpacity(0.64),
-  );
-
   static TextSelectionThemeData get _textSelectionTheme {
     return const TextSelectionThemeData(
       cursorColor: AppColor.primaryColor,

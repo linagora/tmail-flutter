@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/state/success.dart';
 import 'package:core/presentation/utils/style_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/list/tree_view.dart';
 import 'package:core/presentation/views/search/search_bar_view.dart';
@@ -27,6 +28,8 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_categories.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_displayed.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_node.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_icon_widget_styles.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/styles/mailbox_item_widget_styles.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_category_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_creator/presentation/widgets/create_mailbox_name_input_decoration_builder.dart';
@@ -499,51 +502,54 @@ class DestinationPickerView extends GetWidget<DestinationPickerController>
               controller.dispatchSelectMailboxDestination(context);
             }
           },
-          customBorder: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+          customBorder: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(
+              PlatformInfo.isWeb
+                  ? MailboxItemWidgetStyles.borderRadius
+                  : MailboxItemWidgetStyles.mobileBorderRadius,
+            )),
+          ),
           hoverColor: AppColor.colorMailboxHovered,
           child: Obx(() => Container(
             padding: const EdgeInsetsDirectional.symmetric(
-              horizontal: 8,
-              vertical: 10,
+              horizontal: MailboxItemWidgetStyles.itemPadding,
             ),
             color: controller.mailboxDestination.value == PresentationMailbox.unifiedMailbox
               ? AppColor.colorItemSelected
               : Colors.transparent,
+            height: PlatformInfo.isWeb
+                ? MailboxItemWidgetStyles.height
+                : MailboxItemWidgetStyles.mobileHeight,
             child: Row(children: [
-              const SizedBox(width: 26),
               SvgPicture.asset(
                 controller.imagePaths.icFolderMailbox,
-                width: 20,
-                height: 20,
+                width: MailboxIconWidgetStyles.iconSize,
+                height: MailboxIconWidgetStyles.iconSize,
                 fit: BoxFit.fill
               ),
-              const SizedBox(width: 10),
+              const SizedBox(
+                width: MailboxItemWidgetStyles.labelIconSpace,
+              ),
               Expanded(child: Text(
                 AppLocalizations.of(context).allFolders,
                 maxLines: 1,
-                softWrap: CommonTextStyle.defaultSoftWrap,
-                overflow: CommonTextStyle.defaultTextOverFlow,
-                style: const TextStyle(
-                  fontSize: 14,
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal
-                ),
+                overflow: TextOverflow.ellipsis,
+                style: ThemeUtils.textStyleInter500(),
               )),
-              const SizedBox(width: 8),
+              const SizedBox(
+                width: MailboxItemWidgetStyles.labelIconSpace,
+              ),
               if (_validateDisplaySelectedIcon(
                 actions: actions,
                 mailboxIdSelected: mailboxIdSelected
               ))
-                Padding(
-                  padding: const EdgeInsetsDirectional.only(end: 30.0),
-                  child: SvgPicture.asset(
-                    actions == MailboxActions.create
-                      ? controller.imagePaths.icSelectedSB
-                      : controller.imagePaths.icFilterSelected,
-                    width: 20,
-                    height: 20,
-                    fit: BoxFit.fill
-                  ),
+                SvgPicture.asset(
+                  actions == MailboxActions.create
+                    ? controller.imagePaths.icSelectedSB
+                    : controller.imagePaths.icFilterSelected,
+                  width: MailboxIconWidgetStyles.iconSize,
+                  height: MailboxIconWidgetStyles.iconSize,
+                  fit: BoxFit.fill
                 )
             ])
           )),
