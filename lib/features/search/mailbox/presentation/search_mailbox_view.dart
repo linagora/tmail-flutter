@@ -211,6 +211,8 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
       controller.dashboardController.enableSpamReport,
       deletedMessageVaultSupported,
       isSubAddressingSupported,
+      controller.imagePaths,
+      AppLocalizations.of(context),
     );
     return contextMenuActions
       .map((action) => _mailboxFocusedMenuItem(context, action, mailbox))
@@ -231,30 +233,24 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
         isFocusedMenu: true
       ),
       title: Expanded(
-        child: AbsorbPointer(
-          absorbing: !contextMenuItem.isActivated,
-          child: Opacity(
-            opacity: contextMenuItem.isActivated ? 1.0 : 0.3,
-            child: Row(children: [
-              SvgPicture.asset(
-                contextMenuItem.action.getContextMenuIcon(controller.imagePaths),
-                width: 24,
-                height: 24,
-                fit: BoxFit.fill,
-                colorFilter: contextMenuItem.action.getColorContextMenuIcon().asFilter()
-              ),
-              const SizedBox(width: 12),
-              Expanded(child: Text(
-                contextMenuItem.action.getTitleContextMenu(context),
-                style: TextStyle(
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16,
-                  color: contextMenuItem.action.getColorContextMenuTitle()
-                )
-              )),
-            ]),
+        child: Row(children: [
+          SvgPicture.asset(
+            contextMenuItem.action.getContextMenuIcon(controller.imagePaths),
+            width: 24,
+            height: 24,
+            fit: BoxFit.fill,
+            colorFilter: contextMenuItem.action.getPopupMenuIconColor().asFilter()
           ),
-        ),
+          const SizedBox(width: 12),
+          Expanded(child: Text(
+            contextMenuItem.action.getTitleContextMenu(AppLocalizations.of(context)),
+            style: TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 16,
+              color: contextMenuItem.action.getPopupMenuTitleColor()
+            )
+          )),
+        ]),
       )
     );
   }
@@ -278,6 +274,8 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
       controller.dashboardController.enableSpamReport,
       deletedMessageVaultSupported,
       isSubAddressingSupported,
+      controller.imagePaths,
+      AppLocalizations.of(context),
     );
 
     if (contextMenuActions.isEmpty) {
@@ -287,13 +285,13 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
     if (controller.responsiveUtils.isScreenWithShortestSide(context) || position == null) {
       controller.openContextMenuAction(
         context,
-        contextMenuMailboxActionTiles(
+        [],
+        itemActions: contextMenuActions,
+        onContextMenuActionClick: (menuAction) => controller.handleMailboxAction(
           context,
-          controller.imagePaths,
+          menuAction.action,
           mailbox,
-          contextMenuActions,
-          handleMailboxAction: controller.handleMailboxAction
-        )
+        ),
       );
     } else {
       controller.openPopupMenuAction(
