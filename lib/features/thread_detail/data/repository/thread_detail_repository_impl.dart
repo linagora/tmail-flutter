@@ -25,8 +25,9 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
     Session session,
     AccountId accountId,
     MailboxId sentMailboxId,
-    String ownEmailAddress,
-  ) async {
+    String ownEmailAddress, {
+    required EmailId? selectedEmailId,
+  }) async {
     final originalEmailIds = await threadDetailDataSource[DataSourceType.network]!
       .getThreadById(threadId, accountId);
 
@@ -43,6 +44,7 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
           emailIds,
           sentMailboxId,
           ownEmailAddress,
+          selectedEmailId: selectedEmailId,
         ))
     );
 
@@ -60,8 +62,9 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
     AccountId accountId,
     List<EmailId> emailIds,
     MailboxId sentMailboxId,
-    String ownEmailAddress,
-  ) async {
+    String ownEmailAddress, {
+    required EmailId? selectedEmailId,
+  }) async {
     int retry = 3;
     while (retry > 0) {
       try {
@@ -85,6 +88,7 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
             email,
             sentMailboxId,
             ownEmailAddress,
+            selectedEmailId: selectedEmailId,
           ))
           .toList();
       } catch (e) {
@@ -99,12 +103,14 @@ class ThreadDetailRepositoryImpl implements ThreadDetailRepository {
   bool checkEmailValidForThreadDetail(
     Email email,
     MailboxId sentMailboxId,
-    String ownEmailAddress,
-  ) {
+    String ownEmailAddress, {
+    required EmailId? selectedEmailId
+  }) {
     return email.id != null && (
       !email.inSentMailbox(sentMailboxId)
       || !email.fromMe(ownEmailAddress)
       || !email.recipientsHasMe(ownEmailAddress)
+      || email.id == selectedEmailId
     );
   }
 
