@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnMailboxActionsClick = void Function(MailboxActions, List<PresentationMailbox>);
 
@@ -44,12 +45,12 @@ class BottomBarSelectionMailboxWidget extends StatelessWidget {
               key: Key('${action.name}_button'),
               text: responsiveUtils.isLandscapeMobile(context)
                 ? ''
-                : action.getTitleContextMenu(context),
+                : action.getTitleContextMenu(AppLocalizations.of(context)),
               icon: action.getContextMenuIcon(imagePaths),
               borderRadius: 0,
               backgroundColor: Colors.transparent,
               flexibleText: true,
-              tooltipMessage: action.getTitleContextMenu(context),
+              tooltipMessage: action.getTitleContextMenu(AppLocalizations.of(context)),
               textStyle: const TextStyle(fontSize: 12, color: AppColor.colorTextButton),
               onTapActionCallback: () => onMailboxActionsClick.call(action, _listSelectionMailbox),
             ));
