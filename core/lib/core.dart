@@ -91,7 +91,6 @@ export 'presentation/views/popup_menu/popup_menu_item_widget.dart';
 export 'presentation/views/quick_search/quick_search_input_form.dart';
 export 'presentation/views/toast/toast_position.dart';
 export 'presentation/views/toast/tmail_toast.dart';
-export 'presentation/views/bottom_popup/full_screen_action_sheet_builder.dart';
 export 'presentation/views/checkbox/labeled_checkbox.dart';
 export 'presentation/views/checkbox/default_labeled_checkbox.dart';
 export 'presentation/views/checkbox/custom_icon_labeled_checkbox.dart';

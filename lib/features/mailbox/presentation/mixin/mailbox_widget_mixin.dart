@@ -1,12 +1,20 @@
 
-import 'package:core/core.dart';
+import 'package:core/presentation/resources/image_paths.dart';
+import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:jmap_dart_client/jmap/account_id.dart';
+import 'package:jmap_dart_client/jmap/core/capability/capability_identifier.dart';
+import 'package:jmap_dart_client/jmap/core/session/session.dart';
+import 'package:model/mailbox/mailbox_constants.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
-import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_bottom_sheet_action_tile_builder.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
+import 'package:tmail_ui_user/main/error/capability_validator.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 mixin MailboxWidgetMixin {
 
@@ -100,54 +108,43 @@ mixin MailboxWidgetMixin {
     }
   }
 
-  List<Widget> contextMenuMailboxActionTiles(
+  void openMailboxMenuActionOnMobile(
     BuildContext context,
     ImagePaths imagePaths,
     PresentationMailbox mailbox,
-    List<ContextMenuItemMailboxAction> contextMenuActions,
-    {
-      required Function(BuildContext, MailboxActions, PresentationMailbox) handleMailboxAction
-    }
+    MailboxController controller
   ) {
-    return contextMenuActions
-      .map((action) => _buildContextMenuActionTile(
-        context,
-        imagePaths,
-        action,
-        mailbox,
-        handleMailboxAction: handleMailboxAction
-      ))
-      .toList();
-  }
+    final bool deletedMessageVaultSupported = MailboxUtils.isDeletedMessageVaultSupported(
+        controller.mailboxDashBoardController.sessionCurrent,
+        controller.mailboxDashBoardController.accountId.value);
 
-  Widget _buildContextMenuActionTile(
-    BuildContext context,
-    ImagePaths imagePaths,
-    ContextMenuItemMailboxAction contextMenuItem,
-    PresentationMailbox mailbox,
-    {
-      required Function(BuildContext, MailboxActions, PresentationMailbox) handleMailboxAction
+    final bool subaddressingSupported = isSubaddressingSupported(
+        controller.mailboxDashBoardController.sessionCurrent,
+        controller.mailboxDashBoardController.accountId.value);
+
+    final contextMenuActions = listContextMenuItemAction(
+      mailbox,
+      controller.mailboxDashBoardController.enableSpamReport,
+      deletedMessageVaultSupported,
+      subaddressingSupported,
+      imagePaths,
+      AppLocalizations.of(context),
+    );
+
+    if (contextMenuActions.isEmpty) {
+      return;
     }
-  ) {
-    return (MailboxBottomSheetActionTileBuilder(
-          Key('${contextMenuItem.action.name}_action'),
-          SvgPicture.asset(
-            contextMenuItem.action.getContextMenuIcon(imagePaths),
-            colorFilter: contextMenuItem.action.getColorContextMenuIcon().asFilter(),
-            width: 24,
-            height: 24
-          ),
-          contextMenuItem.action.getTitleContextMenu(context),
-          mailbox,
-          absorbing: !contextMenuItem.isActivated,
-          opacity: !contextMenuItem.isActivated)
-      ..actionTextStyle(textStyle: TextStyle(
-          fontSize: 16,
-          color: contextMenuItem.action.getColorContextMenuTitle(),
-          fontWeight: FontWeight.w500
-      ))
-      ..onActionClick((mailbox) => handleMailboxAction(context, contextMenuItem.action, mailbox))
-    ).build();
+
+    controller.openContextMenuAction(
+      context,
+      [],
+      itemActions: contextMenuActions,
+      onContextMenuActionClick: (menuAction) => controller.handleMailboxAction(
+        context,
+        menuAction.action,
+        mailbox,
+      ),
+    );
   }
 
   List<ContextMenuItemMailboxAction> listContextMenuItemAction(
@@ -155,14 +152,75 @@ mixin MailboxWidgetMixin {
     bool spamReportEnabled,
     bool deletedMessageVaultSupported,
     bool subaddressingSupported,
+    ImagePaths imagePaths,
+    AppLocalizations appLocalizations,
   ) {
     final mailboxActionsSupported = _listActionForAllMailboxType(mailbox, spamReportEnabled, deletedMessageVaultSupported, subaddressingSupported);
 
     final listContextMenuItemAction = mailboxActionsSupported
-      .map((action) => ContextMenuItemMailboxAction(action, action.getContextMenuItemState(mailbox)))
+      .map((action) => ContextMenuItemMailboxAction(
+        action,
+        appLocalizations,
+        imagePaths
+      ))
       .toList();
 
     return listContextMenuItemAction;
+  }
+
+  void openMailboxMenuActionOnWeb(
+    BuildContext context,
+    ImagePaths imagePaths,
+    ResponsiveUtils responsiveUtils,
+    RelativeRect position,
+    PresentationMailbox mailbox,
+    MailboxController controller
+  ) {
+    final bool deletedMessageVaultSupported = MailboxUtils.isDeletedMessageVaultSupported(
+        controller.mailboxDashBoardController.sessionCurrent,
+        controller.mailboxDashBoardController.accountId.value);
+
+    final bool subaddressingSupported = isSubaddressingSupported(
+      controller.mailboxDashBoardController.sessionCurrent,
+      controller.mailboxDashBoardController.accountId.value);
+
+    final contextMenuActions = listContextMenuItemAction(
+      mailbox,
+      controller.mailboxDashBoardController.enableSpamReport,
+      deletedMessageVaultSupported,
+      subaddressingSupported,
+      imagePaths,
+      AppLocalizations.of(context),
+    );
+
+    if (contextMenuActions.isEmpty) {
+      return;
+    }
+
+    if (responsiveUtils.isScreenWithShortestSide(context)) {
+      controller.openContextMenuAction(
+        context,
+        [],
+        itemActions: contextMenuActions,
+        onContextMenuActionClick: (menuAction) => controller.handleMailboxAction(
+          context,
+          menuAction.action,
+          mailbox,
+        ),
+      );
+    } else {
+      controller.openPopupMenuAction(
+        context,
+        position,
+        popupMenuMailboxActionTiles(
+          context,
+          imagePaths,
+          mailbox,
+          contextMenuActions,
+          handleMailboxAction: controller.handleMailboxAction
+        )
+      );
+    }
   }
 
   List<PopupMenuEntry> popupMenuMailboxActionTiles(
@@ -185,6 +243,20 @@ mixin MailboxWidgetMixin {
       .toList();
   }
 
+  static bool isSubaddressingSupported(Session? session, AccountId? accountId) {
+    if (session == null || accountId == null) {
+      return false;
+    }
+    if (!CapabilityIdentifier.jmapTeamMailboxes.isSupported(session, accountId)) {
+      return false;
+    }
+
+    return (session.getCapabilityProperties(accountId, CapabilityIdentifier.jmapTeamMailboxes)
+        ?.props[0] as Map<String, dynamic>?)
+        ?[subaddressingSupported]
+        ?? false;
+  }
+
   PopupMenuItem _buildPopupMenuItem(
     BuildContext context,
     ImagePaths imagePaths,
@@ -196,21 +268,15 @@ mixin MailboxWidgetMixin {
   ) {
     return PopupMenuItem(
       padding: EdgeInsets.zero,
-      child: AbsorbPointer(
-        absorbing: !contextMenuItem.isActivated,
-        child: Opacity(
-          opacity: contextMenuItem.isActivated ? 1.0 : 0.3,
-          child: PopupItemWidget(
-            iconAction: contextMenuItem.action.getContextMenuIcon(imagePaths),
-            nameAction: contextMenuItem.action.getTitleContextMenu(context),
-            colorIcon: contextMenuItem.action.getColorContextMenuIcon(),
-            padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
-            styleName: ThemeUtils.textStyleBodyBody3(
-              color: contextMenuItem.action.getColorContextMenuTitle()
-            ),
-            onCallbackAction: () => handleMailboxAction(context, contextMenuItem.action, mailbox)
-          ),
+      child: PopupItemWidget(
+        iconAction: contextMenuItem.action.getContextMenuIcon(imagePaths),
+        nameAction: contextMenuItem.action.getTitleContextMenu(AppLocalizations.of(context)),
+        colorIcon: contextMenuItem.action.getPopupMenuIconColor(),
+        padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
+        styleName: ThemeUtils.textStyleBodyBody3(
+            color: contextMenuItem.action.getPopupMenuTitleColor()
         ),
+        onCallbackAction: () => handleMailboxAction(context, contextMenuItem.action, mailbox)
       )
     );
   }
