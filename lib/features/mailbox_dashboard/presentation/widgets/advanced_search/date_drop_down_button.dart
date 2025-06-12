@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/advanced_search_input_form_style.dart';
 
 class DateDropDownButton extends StatelessWidget {
 
@@ -48,11 +49,7 @@ class DateDropDownButton extends StatelessWidget {
             child: Row(children: [
               Expanded(child: Text(
                 receiveTimeSelected?.getTitle(context, startDate: startDate, endDate: endDate) ?? '',
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.normal,
-                  color: Colors.black
-                ),
+                style: AdvancedSearchInputFormStyle.inputTextStyle,
                 maxLines: 1,
                 softWrap: CommonTextStyle.defaultSoftWrap,
                 overflow: CommonTextStyle.defaultTextOverFlow,
