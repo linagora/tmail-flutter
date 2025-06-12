@@ -28,6 +28,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_st
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_pull_to_refresh_list_email_extension.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_select_message_filter_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
 import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_tile_styles.dart';
@@ -39,7 +40,6 @@ import 'package:tmail_ui_user/features/thread/presentation/widgets/bottom_bar_th
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/empty_emails_widget.dart';
-import 'package:tmail_ui_user/features/thread/presentation/widgets/filter_message_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/scroll_to_top_button_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/spam_banner/spam_report_banner_widget.dart';
 import 'package:tmail_ui_user/features/thread/presentation/widgets/thread_view_loading_bar_widget.dart';
@@ -84,10 +84,7 @@ class ThreadView extends GetWidget<ThreadController>
                               cancelEditThreadAction: controller.cancelSelectEmail,
                               emailSelectionAction: controller.pressEmailSelectionAction,
                               onContextMenuFilterEmailAction: controller.responsiveUtils.isScreenWithShortestSide(context)
-                                ? (filterOption) => controller.openContextMenuAction(
-                                    context,
-                                    _filterMessagesCupertinoActionTile(context, filterOption)
-                                  )
+                                ? (filterOption) => controller.handleSelectMessageFilter(context, filterOption)
                                 : null,
                               onPopupMenuFilterEmailAction: !controller.responsiveUtils.isScreenWithShortestSide(context)
                                 ? (filterOption, position) => controller.openPopupMenuAction(
@@ -340,41 +337,6 @@ class ThreadView extends GetWidget<ThreadController>
         return const SizedBox.shrink();
       }
     });
-  }
-
-  List<Widget> _filterMessagesCupertinoActionTile(BuildContext context, FilterMessageOption optionCurrent) {
-    final listFilter = [
-      FilterMessageOption.attachments,
-      FilterMessageOption.unread,
-      FilterMessageOption.starred,
-    ];
-    
-    return listFilter.map((filter) => (FilterMessageCupertinoActionSheetActionBuilder(
-             Key('filter_email_${filter.name}'),
-            SvgPicture.asset(
-                filter.getContextMenuIcon(controller.imagePaths),
-                width: 20,
-                height: 20,
-                fit: BoxFit.fill,
-                colorFilter: filter == FilterMessageOption.attachments
-                  ? AppColor.colorTextButton.asFilter()
-                  : null),
-            filter.getName(context),
-            filter,
-            optionCurrent: optionCurrent,
-            iconLeftPadding: controller.responsiveUtils.isMobile(context)
-                ? const EdgeInsets.only(left: 12, right: 16)
-                : const EdgeInsets.only(right: 12),
-            iconRightPadding: controller.responsiveUtils.isMobile(context)
-                ? const EdgeInsets.only(right: 12)
-                : EdgeInsets.zero,
-            actionSelected: SvgPicture.asset(
-                controller.imagePaths.icFilterSelected,
-                width: 20,
-                height: 20,
-                fit: BoxFit.fill))
-        ..onActionClick(controller.filterMessagesAction))
-      .build()).toList();
   }
 
   Widget _buildResultListEmail(BuildContext context, List<PresentationEmail> listPresentationEmail) {
@@ -685,9 +647,8 @@ class ThreadView extends GetWidget<ThreadController>
               ))
           .toList();
 
-      controller.openContextMenuAction(
-        context,
-        [],
+      controller.openBottomSheetContextMenuAction(
+        context: context,
         itemActions: contextMenuActions,
         onContextMenuActionClick: (menuAction) {
           controller.handleEmailActionType(

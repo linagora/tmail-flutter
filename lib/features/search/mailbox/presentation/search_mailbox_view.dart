@@ -283,9 +283,8 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
     }
 
     if (controller.responsiveUtils.isScreenWithShortestSide(context) || position == null) {
-      controller.openContextMenuAction(
-        context,
-        [],
+      controller.openBottomSheetContextMenuAction(
+        context: context,
         itemActions: contextMenuActions,
         onContextMenuActionClick: (menuAction) => controller.handleMailboxAction(
           context,
