@@ -79,6 +79,7 @@ void main() {
         sentMailboxId,
         ownEmailAddress,
         updateCurrentThreadDetail: true,
+        selectedEmailId: emailId,
       )).called(1);
     });
 
@@ -120,6 +121,7 @@ void main() {
         sentMailboxId,
         ownEmailAddress,
         updateCurrentThreadDetail: true,
+        selectedEmailId: emailId,
       )).called(1);
     });
 
@@ -164,6 +166,7 @@ void main() {
         sentMailboxId,
         ownEmailAddress,
         updateCurrentThreadDetail: true,
+        selectedEmailId: emailId,
       )).called(1);
     });
 
@@ -199,6 +202,7 @@ void main() {
         any,
         any,
         updateCurrentThreadDetail: anyNamed('updateCurrentThreadDetail'),
+        selectedEmailId: anyNamed('selectedEmailId'),
       ));
       final args = verify(
         threadDetailController.consumeState(captureAny),
@@ -265,6 +269,7 @@ void main() {
         any,
         any,
         updateCurrentThreadDetail: anyNamed('updateCurrentThreadDetail'),
+        selectedEmailId: anyNamed('selectedEmailId'),
       ));
       verifyNever(threadDetailController.consumeState(any));
     });
@@ -303,6 +308,7 @@ void main() {
         any,
         any,
         updateCurrentThreadDetail: anyNamed('updateCurrentThreadDetail'),
+        selectedEmailId: anyNamed('selectedEmailId'),
       ));
       verifyNever(threadDetailController.consumeState(any));
     });

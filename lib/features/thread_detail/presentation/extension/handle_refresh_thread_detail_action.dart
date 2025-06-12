@@ -61,6 +61,7 @@ extension HandleRefreshThreadDetailAction on ThreadDetailController {
         sentMailboxId!,
         ownEmailAddress!,
         updateCurrentThreadDetail: true,
+        selectedEmailId: mailboxDashBoardController.selectedEmail.value?.id,
       ));
     }
   }
