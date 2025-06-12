@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/advanced_search_input_form_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/advanced_search_filter_form_bottom_view.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/date_drop_down_button.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/label_advanced_search_field_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/sort_by_drop_down_button.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/text_field_autocomplete_email_address_web.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -166,12 +167,8 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
       SizedBox(
         width: controller.responsiveUtils.isMobile(context) || controller.responsiveUtils.landscapeTabletSupported(context)
             ? null : 112,
-        child: Text(
-          advancedSearchFilterField.getTitle(context),
-          style: const TextStyle(
-            fontSize: 14,
-            color: AppColor.colorContentEmail,
-          ),
+        child: LabelAdvancedSearchFieldWidget(
+          name: advancedSearchFilterField.getTitle(context),
         ),
       ),
       const Padding(padding: EdgeInsets.all(4)),

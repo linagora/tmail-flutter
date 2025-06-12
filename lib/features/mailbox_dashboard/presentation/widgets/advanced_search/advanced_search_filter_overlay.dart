@@ -19,10 +19,10 @@ class AdvancedSearchFilterOverlay extends StatelessWidget {
           ),
           margin: const EdgeInsetsDirectional.only(top: 4, bottom: 16),
           padding: const EdgeInsets.symmetric(horizontal: 8),
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            boxShadow: const [
+            borderRadius: BorderRadius.all(Radius.circular(16)),
+            boxShadow: [
               BoxShadow(
                 color: AppColor.colorShadowComposer,
                 blurRadius: 32,

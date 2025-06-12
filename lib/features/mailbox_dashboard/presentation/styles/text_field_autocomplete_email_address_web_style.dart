@@ -32,10 +32,6 @@ class TextFieldAutoCompleteEmailAddressWebStyles {
   static const Color suggestionBoxBackgroundColor = Colors.white;
   static const Color cursorColor = AppColor.primaryColor;
 
-  static const TextStyle fieldTitleTextStyle = TextStyle(
-    color: AppColor.colorContentEmail,
-    fontSize: 14,
-  );
   static const TextStyle textInputHintStyle = TextStyle(
     fontSize: 16,
     color: AppColor.colorHintSearchBar,

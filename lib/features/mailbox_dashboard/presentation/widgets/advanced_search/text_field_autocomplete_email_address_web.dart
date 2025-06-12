@@ -21,6 +21,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/sear
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/advanced_search_input_form_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/styles/text_field_autocomplete_email_address_web_style.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/autocomplete_tag_item_widget_web.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/advanced_search/label_advanced_search_field_widget.dart';
 import 'package:tmail_ui_user/main/utils/app_config.dart';
 
 typedef OnSuggestionEmailAddress = Future<List<EmailAddress>> Function(String word, {int? limit});
@@ -107,9 +108,8 @@ class _TextFieldAutocompleteEmailAddressWebState extends State<TextFieldAutocomp
             children: [
               SizedBox(
                 width: TextFieldAutoCompleteEmailAddressWebStyles.fieldTitleWidth,
-                child: Text(
-                  widget.field.getTitle(context),
-                  style: TextFieldAutoCompleteEmailAddressWebStyles.fieldTitleTextStyle,
+                child: LabelAdvancedSearchFieldWidget(
+                  name: widget.field.getTitle(context),
                 ),
               ),
               const SizedBox(width: TextFieldAutoCompleteEmailAddressWebStyles.space),
