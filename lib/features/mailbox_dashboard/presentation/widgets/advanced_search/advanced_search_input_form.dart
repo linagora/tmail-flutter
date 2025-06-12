@@ -348,11 +348,10 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             ),
           ),
           hintText: advancedSearchFilterField.getHintText(context),
-          hintStyle: TextStyle(
-            fontSize: 16,
+          hintStyle: ThemeUtils.textStyleBodyBody3(
             color: advancedSearchFilterField == AdvancedSearchFilterField.mailBox
-              ? Colors.black
-              : AppColor.colorHintSearchBar,
+                ? Colors.black
+                : AppColor.m3Tertiary,
           ),
           suffixIconConstraints: const BoxConstraints(minHeight: 24, minWidth: 24),
           suffixIcon: isSelectFormList
