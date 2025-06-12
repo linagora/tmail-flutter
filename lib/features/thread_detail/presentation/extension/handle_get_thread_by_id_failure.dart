@@ -5,6 +5,8 @@ import 'package:tmail_ui_user/features/thread_detail/presentation/thread_detail_
 
 extension HandleGetThreadByIdFailure on ThreadDetailController {
   void handleGetThreadByIdFailure(GetThreadByIdFailure failure) {
+    if (failure.updateCurrentThreadDetail) return;
+
     final selectedEmail = mailboxDashBoardController.selectedEmail.value;
     if (selectedEmail != null) {
       consumeState(Stream.value(Right(GetEmailsByIdsSuccess([selectedEmail]))));
