@@ -3,24 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
-import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
 import 'package:rule_filter/rule_filter/rule_condition_group.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/rule_condition_extensions.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/select_rule_action_field_extension.dart';
+import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rule_filter_condition_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/rules_filter_creator_controller.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/styles/rule_filter_action_styles.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_action_bottom_sheet_action_tile_builder.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_condition_combiner_bottomsheet_action_tile_builder.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_condition_comparator_bottom_sheet_action_tile_builder.dart';
-import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_condition_field_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_action_list.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_condition_widget.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rule_filter_title_builder.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/widgets/rules_filter_input_field_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
-
-import 'model/rule_filter_condition_type.dart';
 
 class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
 
@@ -183,7 +175,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                       responsiveUtils: controller.responsiveUtils,
                       actionList: controller.listEmailRuleFilterActionSelected,
                       onActionChanged: (newAction, index) {
-                        controller.selectEmailRuleFilterAction(context, newAction, index);
+                        controller.updateEmailRuleFilterAction(context, newAction, index);
                       },
                       forwardEmailEditingController: controller.forwardEmailController,
                       forwardEmailFocusNode: controller.forwardEmailFocusNode,
@@ -344,7 +336,7 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                           responsiveUtils: controller.responsiveUtils,
                           actionList: controller.listEmailRuleFilterActionSelected,
                           onActionChanged: (newAction, index) {
-                            controller.selectEmailRuleFilterAction(context, newAction, index);
+                            controller.updateEmailRuleFilterAction(context, newAction, index);
                           },
                           forwardEmailEditingController: controller.forwardEmailController,
                           forwardEmailFocusNode: controller.forwardEmailFocusNode,
@@ -463,14 +455,12 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                       Obx(() => RuleFilterTitle(
                         conditionCombinerType: controller.conditionCombinerType.value,
                         ruleFilterConditionScreenType: RuleFilterConditionScreenType.mobile,
-                        tapActionCallback: (value) => {
-                          controller.openContextMenuAction(
+                        tapActionCallback: (_) {
+                          controller.selectRuleConditionCombinerAction(
                             context,
-                            _bottomSheetRuleConditionCombinerActionTiles(
-                              context,
-                              controller.conditionCombinerType.value,
-                            )
-                          ),
+                            controller.conditionCombinerType.value
+                                ?? ConditionCombiner.AND,
+                          );
                         },
                       )),
                       const SizedBox(height: 24),
@@ -519,14 +509,10 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
                           responsiveUtils: controller.responsiveUtils,
                           actionList: controller.listEmailRuleFilterActionSelected,
                           onActionChangeMobile: (currentAction, index) {
-                            KeyboardUtils.hideKeyboard(context);
-                            controller.openContextMenuAction(
+                            controller.selectRuleFilterAction(
                               context,
-                              _bottomSheetActionRuleFilterActionTiles(
-                                context,
-                                currentAction,
-                                index
-                              )
+                              currentAction,
+                              index
                             );
                           },
                           forwardEmailEditingController: controller.forwardEmailController,
@@ -631,34 +617,22 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
             conditionValueErrorText: controller.listRuleConditionValueArguments[index].errorText,
             conditionValueFocusNode: controller.listRuleConditionValueArguments[index].focusNode,
             conditionValueEditingController: controller.listRuleConditionValueArguments[index].controller,
-            tapRuleConditionFieldCallback: (value) => {
-              if (ruleFilterConditionScreenType == RuleFilterConditionScreenType.mobile) {
-                controller.openContextMenuAction(
+            tapRuleConditionFieldCallback: (value) =>
+                controller.selectRuleConditionFieldAction(
                   context,
-                  _bottomSheetRuleConditionFieldActionTiles(
-                    context,
-                    controller.listRuleCondition[index].field,
-                    index,
-                  )
+                  value,
+                  controller.listRuleCondition[index].field,
+                  ruleFilterConditionScreenType,
+                  index,
                 ),
-              } else {
-                controller.selectRuleConditionField(value, index)
-              }
-            },
-            tapRuleConditionComparatorCallback: (value) => {
-              if (ruleFilterConditionScreenType == RuleFilterConditionScreenType.mobile) {
-                controller.openContextMenuAction(
+            tapRuleConditionComparatorCallback: (value) =>
+                controller.selectRuleConditionComparatorAction(
                   context,
-                  _bottomSheetRuleConditionComparatorActionTiles(
-                    context,
-                    controller.listRuleCondition[index].comparator,
-                    index,
-                  )
+                  value,
+                  controller.listRuleCondition[index].comparator,
+                  ruleFilterConditionScreenType,
+                  index,
                 ),
-              } else {
-                controller.selectRuleConditionComparator(value, index),
-              }
-            },
             conditionValueOnChangeAction: (value) =>
               controller.updateConditionValue(context, value, index),
             tapRemoveRuleFilterConditionCallback: () => controller.tapRemoveCondition(index),
@@ -669,148 +643,5 @@ class RuleFilterCreatorView extends GetWidget<RulesFilterCreatorController> {
         },
       );
     });
-  }
-
-  List<Widget> _bottomSheetRuleConditionFieldActionTiles(
-      BuildContext context,
-      rule_condition.Field? fieldSelected,
-      int? ruleConditionIndex,
-  ) {
-    return rule_condition.Field.values
-      .map((field) =>
-        _buildRuleConditionFieldWidget(context, field, fieldSelected, ruleConditionIndex))
-      .toList();
-  }
-
-  Widget _buildRuleConditionFieldWidget(
-      BuildContext context,
-      rule_condition.Field field,
-      rule_condition.Field? fieldSelected,
-      int? ruleConditionIndex,
-  ) {
-    return (RuleConditionFieldSheetActionTileBuilder(
-        field.getTitle(context),
-        fieldSelected,
-        field,
-        iconLeftPadding: const EdgeInsets.only(left: 12, right: 16),
-        iconRightPadding: const EdgeInsets.only(right: 12),
-        actionSelected: SvgPicture.asset(
-            controller.imagePaths.icFilterSelected,
-            width: 20,
-            height: 20,
-            fit: BoxFit.fill))
-      ..onActionClick((field) {
-        controller.selectRuleConditionField(field, ruleConditionIndex);
-        popBack();
-      }))
-    .build();
-  }
-
-  List<Widget> _bottomSheetRuleConditionComparatorActionTiles(
-      BuildContext context,
-      rule_condition.Comparator? comparatorSelected,
-      int? ruleConditionIndex,
-  ) {
-    return rule_condition.Comparator.values
-      .map((comparator) =>
-        _buildRuleConditionComparatorWidget(context, comparator, comparatorSelected, ruleConditionIndex))
-      .toList();
-  }
-
-  Widget _buildRuleConditionComparatorWidget(
-      BuildContext context,
-      rule_condition.Comparator comparator,
-      rule_condition.Comparator? comparatorSelected,
-      int? ruleConditionIndex,
-  ) {
-    return (RuleConditionComparatorSheetActionTileBuilder(
-        comparator.getTitle(context),
-        comparatorSelected,
-        comparator,
-        iconLeftPadding: const EdgeInsets.only(left: 12, right: 16),
-        iconRightPadding: const EdgeInsets.only(right: 12),
-        actionSelected: SvgPicture.asset(
-            controller.imagePaths.icFilterSelected,
-            width: 20,
-            height: 20,
-            fit: BoxFit.fill))
-      ..onActionClick((comparator) {
-        controller.selectRuleConditionComparator(comparator, ruleConditionIndex);
-        popBack();
-      }))
-    .build();
-  }
-
-  List<Widget> _bottomSheetRuleConditionCombinerActionTiles(
-      BuildContext context,
-      ConditionCombiner? combinerSelected,
-  ) {
-    return ConditionCombiner.values
-      .map((combiner) =>
-        _buildRuleConditionCombinerWidget(context, combiner, combinerSelected))
-      .toList();
-  }
-
-  Widget _buildRuleConditionCombinerWidget(
-      BuildContext context,
-      ConditionCombiner combiner,
-      ConditionCombiner? combinerSelected,
-  ) {
-    return (RuleConditionCombinerSheetActionTileBuilder(
-        combiner.getTitle(context),
-        combiner,
-        combinerSelected,
-        iconLeftPadding: const EdgeInsets.only(left: 12, right: 16),
-        iconRightPadding: const EdgeInsets.only(right: 12),
-        actionSelected: SvgPicture.asset(
-            controller.imagePaths.icFilterSelected,
-            width: 20,
-            height: 20,
-            fit: BoxFit.fill))
-      ..onActionClick((combiner) {
-        controller.selectConditionCombiner(combiner);
-        popBack();
-      }))
-    .build();
-  }
-
-  List<Widget> _bottomSheetActionRuleFilterActionTiles(
-      BuildContext context,
-      EmailRuleFilterAction? ruleActionSelected,
-      int ruleActionIndex,
-  ) {
-    final supportedAction = EmailRuleFilterAction.values
-      .where((ruleAction) => ruleAction.getSupported() == true)
-      .toList();
-    return supportedAction
-      .map((ruleAction) =>
-        _buildRuleActionWidget(context, ruleAction, ruleActionSelected, ruleActionIndex))
-      .toList();
-  }
-
-  Widget _buildRuleActionWidget(
-      BuildContext context,
-      EmailRuleFilterAction ruleAction,
-      EmailRuleFilterAction? ruleActionSelected,
-      int ruleActionIndex,
-  ) {
-    return (RuleActionSheetActionTileBuilder(
-        ruleAction.getTitle(context),
-        ruleActionSelected,
-        ruleAction,
-        iconLeftPadding: const EdgeInsets.only(left: 12, right: 16),
-        iconRightPadding: const EdgeInsets.only(right: 12),
-        actionSelected: SvgPicture.asset(
-            controller.imagePaths.icFilterSelected,
-            width: 20,
-            height: 20,
-            fit: BoxFit.fill))
-      ..onActionClick((ruleAction) {
-        if (ruleAction != controller.listEmailRuleFilterActionSelected[ruleActionIndex].action) {
-          controller.selectEmailRuleFilterAction(context, ruleAction, ruleActionIndex);
-        }
-        popBack();
-      }))
-    .build();
   }
 }

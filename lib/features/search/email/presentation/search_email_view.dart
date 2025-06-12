@@ -22,15 +22,15 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/qu
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/search_filter_button.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_email_more_action_extension.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/model/context_item_receive_time_type_action.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/model/context_item_sort_order_type_action.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/search_more_state.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/styles/search_email_view_style.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/utils/search_email_utils.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/app_bar_selection_mode.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_receive_time_action_tile_widget.dart';
-import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_receive_time_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_sort_by_action_tile_widget.dart';
-import 'package:tmail_ui_user/features/search/email/presentation/widgets/email_sort_by_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/empty_search_email_widget.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/widgets/search_email_loading_bar_widget.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/search_query.dart';
@@ -352,17 +352,25 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   }
 
   void _openContextMenuDateFilter(BuildContext context) {
-    controller.openContextMenuAction(
-      context,
-      _emailReceiveTimeCupertinoActionTile(
-        context,
+    final contextMenuActions = EmailReceiveTimeType.values.map((timeType) {
+      return ContextItemReceiveTimeTypeAction(
+        timeType,
         controller.emailReceiveTimeType.value,
-        (receiveTime) => controller.selectReceiveTimeQuickSearchFilter(
-          context,
-          receiveTime
-        )
-      ),
+        AppLocalizations.of(context),
+        controller.imagePaths,
+      );
+    }).toList();
+
+    controller.openBottomSheetContextMenuAction(
       key: const Key('date_time_filter_context_menu'),
+      context: context,
+      itemActions: contextMenuActions,
+      onContextMenuActionClick: (menuAction) {
+        controller.selectReceiveTimeQuickSearchFilter(
+          context,
+          menuAction.action,
+        );
+      },
     );
   }
 
@@ -379,14 +387,25 @@ class SearchEmailView extends GetWidget<SearchEmailController>
   }
 
   void _openContextMenuSortFilter(BuildContext context) {
-    controller.openContextMenuAction(
-      context,
-      _emailSortOrderCupertinoActionTitle(
-        context,
+    final contextMenuActions = EmailSortOrderType.values.map((orderType) {
+      return ContextItemSortOrderTypeAction(
+        orderType,
         controller.emailSortOrderType.value,
-        controller.selectSortOrderQuickSearchFilter
-      ),
-      key: const Key('sort_filter_context_menu')
+        AppLocalizations.of(context),
+        controller.imagePaths,
+      );
+    }).toList();
+
+    controller.openBottomSheetContextMenuAction(
+      key: const Key('sort_filter_context_menu'),
+      context: context,
+      itemActions: contextMenuActions,
+      onContextMenuActionClick: (menuAction) {
+        controller.selectSortOrderQuickSearchFilter(
+          context,
+          menuAction.action,
+        );
+      },
     );
   }
 
@@ -406,32 +425,6 @@ class SearchEmailView extends GetWidget<SearchEmailController>
       .toList();
   }
 
-  List<Widget> _emailReceiveTimeCupertinoActionTile(
-      BuildContext context,
-      EmailReceiveTimeType? receiveTimeSelected,
-      Function(EmailReceiveTimeType)? onCallBack
-  ) {
-    return EmailReceiveTimeType.values
-        .map((timeType) => (EmailReceiveTimeCupertinoActionSheetActionBuilder(
-                timeType.getTitle(context),
-                timeType,
-                timeTypeCurrent: receiveTimeSelected,
-                iconLeftPadding: controller.responsiveUtils.isMobile(context)
-                    ? const EdgeInsetsDirectional.only(start: 12, end: 16)
-                    : const EdgeInsetsDirectional.only(end: 12),
-                iconRightPadding: controller.responsiveUtils.isMobile(context)
-                    ? const EdgeInsetsDirectional.only(end: 12)
-                    : EdgeInsets.zero,
-                actionSelected: SvgPicture.asset(
-                    controller.imagePaths.icFilterSelected,
-                    width: 20,
-                    height: 20,
-                    fit: BoxFit.fill))
-            ..onActionClick((timeType) => onCallBack?.call(timeType)))
-            .build())
-        .toList();
-  }
-
   List<PopupMenuEntry> _popupMenuEmailSortOrderType(
     BuildContext context,
     EmailSortOrderType? sortTypeSelected,
@@ -447,36 +440,6 @@ class SearchEmailView extends GetWidget<SearchEmailController>
           sortTypeSelected: sortTypeSelected,
         ),
       )).toList();
-  }
-
-  List<Widget> _emailSortOrderCupertinoActionTitle(
-    BuildContext context,
-    EmailSortOrderType? sortOrderSelected,
-    Function(BuildContext context, EmailSortOrderType)? onCallBack,
-  ) {
-    return EmailSortOrderType.values
-      .map(
-        (sortType) => (
-          EmailSortByCupertinoActionSheetActionBuilder(
-            sortType.getTitle(context),
-            sortType,
-            sortTypeCurrent: sortOrderSelected,
-            iconLeftPadding: controller.responsiveUtils.isMobile(context)
-              ? const EdgeInsetsDirectional.only(start: 12, end: 16)
-              : const EdgeInsetsDirectional.only(start: 12),
-            iconRightPadding: controller.responsiveUtils.isMobile(context)
-              ? const EdgeInsetsDirectional.only(end: 12)
-              : EdgeInsetsDirectional.zero,
-            actionSelected: SvgPicture.asset(
-              controller.imagePaths.icFilterSelected,
-              width: 20,
-              height: 20,
-              fit: BoxFit.fill
-            )
-          )
-          ..onActionClick((sortType) => onCallBack?.call(context, sortType))
-        ).build()
-      ).toList();
   }
 
   Widget _buildShowAllResultSearchButton(BuildContext context, String textSearch) {

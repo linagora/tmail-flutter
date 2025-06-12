@@ -7,6 +7,7 @@ import 'package:model/mailbox/presentation_mailbox.dart';
 import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 extension HandleMailboxActionExtension on MailboxController {
 
@@ -25,20 +26,21 @@ extension HandleMailboxActionExtension on MailboxController {
       mailboxDashBoardController.enableSpamReport,
       deletedMessageVaultSupported,
       isSubAddressingSupported,
+      imagePaths,
+      AppLocalizations.of(context),
     );
 
     if (contextMenuActions.isEmpty) {
       return;
     }
 
-    openContextMenuAction(
-      context,
-      contextMenuMailboxActionTiles(
+    openBottomSheetContextMenuAction(
+      context: context,
+      itemActions: contextMenuActions,
+      onContextMenuActionClick: (menuAction) => handleMailboxAction(
         context,
-        imagePaths,
+        menuAction.action,
         mailbox,
-        contextMenuActions,
-        handleMailboxAction: handleMailboxAction,
       ),
     );
   }
@@ -76,6 +78,8 @@ extension HandleMailboxActionExtension on MailboxController {
       mailboxDashBoardController.enableSpamReport,
       deletedMessageVaultSupported,
       isSubAddressingSupported,
+      imagePaths,
+      AppLocalizations.of(context),
     );
 
     if (contextMenuActions.isEmpty) {
@@ -83,15 +87,14 @@ extension HandleMailboxActionExtension on MailboxController {
     }
 
     if (responsiveUtils.isScreenWithShortestSide(context)) {
-      openContextMenuAction(
-        context,
-        contextMenuMailboxActionTiles(
+      openBottomSheetContextMenuAction(
+        context: context,
+        itemActions: contextMenuActions,
+        onContextMenuActionClick: (menuAction) => handleMailboxAction(
           context,
-          imagePaths,
+          menuAction.action,
           mailbox,
-          contextMenuActions,
-          handleMailboxAction: handleMailboxAction,
-        )
+        ),
       );
     } else {
       openPopupMenuAction(

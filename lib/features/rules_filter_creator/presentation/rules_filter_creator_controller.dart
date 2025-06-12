@@ -66,7 +66,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
   final TextEditingController forwardEmailController = TextEditingController();
   final FocusNode forwardEmailFocusNode = FocusNode();
   final listEmailRuleFilterActionSelected = RxList<RuleFilterActionArguments>();
-  int maxCountAction = EmailRuleFilterAction.values.where((action) => action.getSupported() == true).length - 1;
+  int maxCountAction = EmailRuleFilterAction.values.where((action) => action.isSupported).length - 1;
   final isShowAddAction = Rxn<bool>();
 
   String? _newRuleName;
@@ -330,7 +330,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
     );
   }
 
-  void selectRuleConditionField(rule_condition.Field? newField, int? ruleConditionIndex) {
+  void updateRuleConditionField(rule_condition.Field? newField, int? ruleConditionIndex) {
     if (newField != null && ruleConditionIndex != null) {
       RuleCondition newRuleCondition = RuleCondition(
         field: newField,
@@ -342,7 +342,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
     }
   }
 
-  void selectRuleConditionComparator(rule_condition.Comparator? newComparator, int? ruleConditionIndex) {
+  void updateRuleConditionComparator(rule_condition.Comparator? newComparator, int? ruleConditionIndex) {
     if (newComparator != null && ruleConditionIndex != null) {
       RuleCondition newRuleCondition = RuleCondition(
         field: listRuleCondition[ruleConditionIndex].field,
@@ -354,7 +354,7 @@ class RulesFilterCreatorController extends BaseMailboxController {
     }
   }
 
-  void selectEmailRuleFilterAction(
+  void updateEmailRuleFilterAction(
     BuildContext context,
     EmailRuleFilterAction? newAction,
     int ruleFilterActionIndex

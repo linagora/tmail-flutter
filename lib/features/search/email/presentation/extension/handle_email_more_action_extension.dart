@@ -36,9 +36,8 @@ extension HandleEmailMoreActionExtension on SearchEmailController {
               ))
           .toList();
 
-      openContextMenuAction(
-        context,
-        [],
+      openBottomSheetContextMenuAction(
+        context: context,
         itemActions: contextMenuActions,
         onContextMenuActionClick: (menuAction) {
           pressEmailAction(

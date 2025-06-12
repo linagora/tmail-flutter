@@ -11,6 +11,7 @@ import 'package:rule_filter/rule_filter/rule_condition_group.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/extensions/presentation_mailbox_extension.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/extensions/rule_condition_extensions.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/email_rule_filter_action.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 typedef OnTapActionCallback<T> = Function(T? value);
 
@@ -63,20 +64,22 @@ class RuleFilterButtonField<T> extends StatelessWidget {
   }
 
   String _getName(BuildContext context, T? value) {
+    final appLocalizations = AppLocalizations.of(context);
+
     if (value is PresentationMailbox) {
       return value.getDisplayName(context);
     }
     if (value is rule_condition.Field) {
-      return value.getTitle(context);
+      return value.getTitle(appLocalizations);
     }
     if (value is rule_condition.Comparator) {
-      return value.getTitle(context);
+      return value.getTitle(appLocalizations);
     }
     if (value is EmailRuleFilterAction) {
-      return value.getTitle(context);
+      return value.getTitle(appLocalizations);
     }
     if (value is ConditionCombiner) {
-      return value.getTitle(context);
+      return value.getTitle(appLocalizations);
     }
     return hintText ?? '';
   }
