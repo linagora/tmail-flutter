@@ -256,7 +256,8 @@ extension AppColor on Color {
   static const textPrimary = Color(0xFF424244);
   static const iconFolder = Color(0xFF297EF2);
   static const folderDivider = Color(0xFFE4E8EC);
-  static const color424244 = Color(0xFF424244);
+  static const gray424244 = Color(0xFF424244);
+  static const redFF3347 = Color(0xFFFF3347);
 
   static const mapGradientColor = [
     [Color(0xFF21D4FD), Color(0xFFB721FF)],

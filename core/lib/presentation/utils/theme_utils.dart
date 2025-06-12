@@ -276,7 +276,7 @@ class ThemeUtils {
     letterSpacing: 0.0,
     fontSize: 24,
     height: 28.01 / 24,
-    color: AppColor.color424244.withOpacity(0.9),
+    color: AppColor.gray424244.withOpacity(0.9),
   );
 
   static TextStyle textStyleInter400() => TextStyle(
@@ -285,7 +285,7 @@ class ThemeUtils {
     letterSpacing: -0.15,
     fontSize: 16,
     height: 21.01 / 16,
-    color: AppColor.color424244.withOpacity(0.64),
+    color: AppColor.gray424244.withOpacity(0.64),
   );
 
   static TextSelectionThemeData get _textSelectionTheme {

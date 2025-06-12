@@ -230,6 +230,7 @@ class ImagePaths {
   String get icDoubleArrowUp => _getImagePath('ic_double_arrow_up.svg');
   String get icDoubleArrowDown => _getImagePath('ic_double_arrow_down.svg');
   String get icRefreshQuotas => _getImagePath('ic_refresh_quotas.svg');
+  String get icCreateFilter => _getImagePath('ic_create_filter.svg');
 
   String _getImagePath(String imageName) {
     return AssetsPaths.images + imageName;

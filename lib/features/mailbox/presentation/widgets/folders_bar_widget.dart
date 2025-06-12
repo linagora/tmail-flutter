@@ -42,6 +42,7 @@ class FoldersBarWidget extends StatelessWidget {
       backgroundColor: Colors.transparent,
       iconColor: AppColor.steelGrayA540,
       iconSize: 20,
+      padding: const EdgeInsets.all(5),
       tooltipMessage: AppLocalizations.of(context).searchForFolders,
       onTapActionCallback: onOpenSearchFolder,
     );
@@ -57,7 +58,7 @@ class FoldersBarWidget extends StatelessWidget {
       icon: imagePaths.icAddNewFolder,
       backgroundColor: Colors.transparent,
       iconColor: AppColor.steelGrayA540,
-      iconSize: 24,
+      iconSize: 20,
       padding: const EdgeInsets.all(5),
       tooltipMessage: AppLocalizations.of(context).newFolder,
       onTapActionCallback: onAddNewFolder,

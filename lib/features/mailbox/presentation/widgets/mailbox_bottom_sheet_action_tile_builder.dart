@@ -11,8 +11,8 @@ class MailboxBottomSheetActionTileBuilder extends CupertinoActionSheetActionBuil
   final PresentationMailbox presentationMailbox;
   final SvgPicture? actionSelected;
   final Color? bgColor;
-  final EdgeInsets? iconLeftPadding;
-  final EdgeInsets? iconRightPadding;
+  final EdgeInsetsGeometry? iconLeftPadding;
+  final EdgeInsetsGeometry? iconRightPadding;
   final bool opacity;
   final bool absorbing;
 
@@ -46,8 +46,10 @@ class MailboxBottomSheetActionTileBuilder extends CupertinoActionSheetActionBuil
                 key: key,
                 child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
                   Padding(
-                      padding: iconLeftPadding ?? const EdgeInsets.only(left: 12, right: 16),
-                      child: actionIcon),
+                    padding: iconLeftPadding ??
+                        const EdgeInsetsDirectional.only(start: 12, end: 16),
+                    child: actionIcon,
+                  ),
                   Expanded(child: Text(actionName, textAlign: TextAlign.left, style: actionTextStyle())),
                 ]),
                 onPressed: () {

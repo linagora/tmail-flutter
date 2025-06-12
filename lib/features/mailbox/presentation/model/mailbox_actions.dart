@@ -24,6 +24,7 @@ enum MailboxActions {
   emptyTrash,
   emptySpam,
   newSubfolder,
+  createFilter,
   confirmMailSpam,
   recoverDeletedMessages,
   allowSubaddressing,
@@ -55,6 +56,8 @@ extension MailboxActionsExtension on MailboxActions {
         return AppLocalizations.of(context).copySubaddress;
       case MailboxActions.newSubfolder:
         return AppLocalizations.of(context).newSubfolder;
+      case MailboxActions.createFilter:
+        return AppLocalizations.of(context).createFilter;
       case MailboxActions.disableSpamReport:
         return AppLocalizations.of(context).disableSpamReport;
       case MailboxActions.enableSpamReport:
@@ -96,6 +99,8 @@ extension MailboxActionsExtension on MailboxActions {
         return imagePaths.icCopy;
       case MailboxActions.newSubfolder:
         return imagePaths.icAddNewFolder;
+      case MailboxActions.createFilter:
+        return imagePaths.icCreateFilter;
       case MailboxActions.disableSpamReport:
         return imagePaths.icSpamReportDisable;
       case MailboxActions.enableSpamReport:
@@ -132,7 +137,7 @@ extension MailboxActionsExtension on MailboxActions {
   Color getColorContextMenuTitle() {
     switch(this) {
       case MailboxActions.delete:
-        return AppColor.colorActionDeleteConfirmDialog;
+        return AppColor.redFF3347;
       default:
         return Colors.black;
     }
@@ -141,9 +146,9 @@ extension MailboxActionsExtension on MailboxActions {
   Color getColorContextMenuIcon() {
     switch(this) {
       case MailboxActions.delete:
-        return AppColor.colorActionDeleteConfirmDialog;
+        return AppColor.redFF3347;
       default:
-        return AppColor.primaryColor;
+        return AppColor.steelGrayA540;
     }
   }
 
@@ -188,6 +193,7 @@ extension MailboxActionsExtension on MailboxActions {
       case MailboxActions.openInNewTab:
       case MailboxActions.copySubaddress:
       case MailboxActions.newSubfolder:
+      case MailboxActions.createFilter:
       case MailboxActions.disableSpamReport:
       case MailboxActions.enableSpamReport:
       case MailboxActions.enableMailbox:
