@@ -13,7 +13,6 @@ import 'package:jmap_dart_client/jmap/mail/email/email_address.dart';
 import 'package:model/model.dart';
 import 'package:tmail_ui_user/features/base/mixin/app_loader_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/domain/model/recent_search.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_receive_time_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/search/email_sort_order_type.dart';
@@ -22,6 +21,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/qu
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/search_filter_button.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/extension/handle_email_more_action_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/search_more_state.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/styles/search_email_view_style.dart';
@@ -39,7 +39,6 @@ import 'package:tmail_ui_user/features/thread/presentation/styles/item_email_til
 import 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_builder.dart'
   if (dart.library.html) 'package:tmail_ui_user/features/thread/presentation/widgets/email_tile_web_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
-import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class SearchEmailView extends GetWidget<SearchEmailController>
     with AppLoaderMixin {
@@ -667,20 +666,12 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                       mailboxContain: currentPresentationEmail.mailboxContain
                     );
                   },
-                  onMoreActionClick: (email, position) {
-                    if (controller.responsiveUtils.isScreenWithShortestSide(context)) {
-                      controller.openContextMenuAction(
+                  onMoreActionClick: (email, position) =>
+                      controller.handleEmailMoreAction(
                         context,
-                        _contextMenuActionTile(context, email)
-                      );
-                    } else {
-                      controller.openPopupMenuAction(
-                        context,
+                        email,
                         position,
-                        _popupMenuActionTile(context, email)
-                      );
-                    }
-                  },
+                      ),
                 ));
               },
               separatorBuilder: (BuildContext context, int index) {
@@ -720,21 +711,12 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                       mailboxContain: currentPresentationEmail.mailboxContain
                     );
                   },
-                  onMoreActionClick: (email, position) {
-                    if (controller.responsiveUtils.isScreenWithShortestSide(context)) {
-                      controller.openContextMenuAction(
+                  onMoreActionClick: (email, position) =>
+                      controller.handleEmailMoreAction(
                         context,
-                        _contextMenuActionTile(context, email)
-                      );
-                    } else {
-                      controller.openPopupMenuAction(
-                        context,
+                        email,
                         position,
-                        _popupMenuActionTile(context, email)
-                      );
-                    }
-                  },
-
+                      ),
                 ));
               },
               separatorBuilder: (context, index) {
@@ -750,84 +732,6 @@ class SearchEmailView extends GetWidget<SearchEmailController>
               },
             )
     );
-  }
-
-  List<Widget> _contextMenuActionTile(BuildContext context, PresentationEmail email) {
-    return <Widget>[
-      _markAsEmailSpamOrUnSpamAction(context, email),
-      if (email.mailboxContain?.isDrafts == false)
-        _editAsNewEmailContextMenuItemAction(context, email),
-    ];
-  }
-
-  Widget _markAsEmailSpamOrUnSpamAction(BuildContext context, PresentationEmail email) {
-    final mailboxContain = email.mailboxContain;
-
-    return (EmailActionCupertinoActionSheetActionBuilder(
-        const Key('mark_as_spam_or_un_spam_action'),
-        SvgPicture.asset(
-          mailboxContain?.isSpam == true ? controller.imagePaths.icNotSpam : controller.imagePaths.icSpam,
-          width: 28,
-          height: 28,
-          fit: BoxFit.fill,
-          colorFilter: AppColor.colorTextButton.asFilter()),
-        mailboxContain?.isSpam == true
-            ? AppLocalizations.of(context).remove_from_spam
-            : AppLocalizations.of(context).mark_as_spam,
-        email,
-        iconLeftPadding: controller.responsiveUtils.isMobile(context)
-            ? const EdgeInsets.only(left: 12, right: 16)
-            : const EdgeInsets.only(right: 12),
-        iconRightPadding: controller.responsiveUtils.isMobile(context)
-            ? const EdgeInsets.only(right: 12)
-            : EdgeInsets.zero)
-      ..onActionClick((email) => controller.pressEmailAction(context,
-          mailboxContain?.isSpam == true
-              ? EmailActionType.unSpam
-              : EmailActionType.moveToSpam,
-          email)))
-      .build();
-  }
-
-  Widget _editAsNewEmailContextMenuItemAction(
-    BuildContext context,
-    PresentationEmail email,
-  ) {
-    return (
-      EmailActionCupertinoActionSheetActionBuilder(
-        const Key('edit_as_new_email_action'),
-        SvgPicture.asset(
-          controller.imagePaths.icEdit,
-          width: 24,
-          height: 24,
-          fit: BoxFit.fill,
-          colorFilter: AppColor.colorTextButton.asFilter()
-        ),
-        AppLocalizations.of(context).editAsNewEmail,
-        email,
-        iconLeftPadding: controller.responsiveUtils.isMobile(context)
-          ? const EdgeInsetsDirectional.only(start: 12, end: 16)
-          : const EdgeInsetsDirectional.only(end: 12),
-        iconRightPadding: controller.responsiveUtils.isMobile(context)
-          ? const EdgeInsetsDirectional.only(start: 12)
-          : EdgeInsets.zero)
-      ..onActionClick((email) {
-        popBack();
-        controller.editAsNewEmail(email);
-      })
-    ).build();
-  }
-
-  List<PopupMenuEntry> _popupMenuActionTile(BuildContext context, PresentationEmail email) {
-    return [
-      PopupMenuItem(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: _markAsEmailSpamOrUnSpamAction(context, email)),
-      if (email.mailboxContain?.isDrafts == false)
-        PopupMenuItem(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: _editAsNewEmailContextMenuItemAction(context, email)),
-    ];
   }
 
   Widget _buildLoadingViewLoadMore() {
