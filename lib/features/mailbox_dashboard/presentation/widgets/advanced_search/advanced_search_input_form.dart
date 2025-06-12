@@ -45,6 +45,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             onSearchAction: controller.onSearchAction,
             onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
           )),
+          const SizedBox(height: 12),
           Obx(() => TextFieldAutocompleteEmailAddressWeb(
             field: AdvancedSearchFilterField.to,
             listEmailAddress: controller.listToEmailAddress,
@@ -62,6 +63,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             onSearchAction: controller.onSearchAction,
             onRemoveDraggableEmailAddressAction: controller.removeDraggableEmailAddress,
           )),
+          const SizedBox(height: 12),
           _buildFilterField(
             textEditingController: controller.subjectFilterInputController,
             context: context,
@@ -73,6 +75,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
               value
             ),
           ),
+          const SizedBox(height: 12),
           _buildFilterField(
             textEditingController: controller.hasKeyWordFilterInputController,
             context: context,
@@ -84,6 +87,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
               value
             ),
           ),
+          const SizedBox(height: 12),
           _buildFilterField(
             textEditingController: controller.notKeyWordFilterInputController,
             context: context,
@@ -95,6 +99,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
               value
             ),
           ),
+          const SizedBox(height: 12),
           _buildFilterField(
             textEditingController: controller.mailBoxFilterInputController,
             context: context,
@@ -105,6 +110,7 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
             mouseCursor: SystemMouseCursors.click,
             onTap: () => controller.selectedMailBox(context)
           ),
+          const SizedBox(height: 12),
           Row(children: [
            Expanded(child: _buildFilterField(
              context: context,
@@ -117,21 +123,37 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
                );
              },
            )),
-            const SizedBox(width: 10),
-            buildIconWeb(
-                icon: SvgPicture.asset(
-                    controller.imagePaths.icCalendarSB,
-                    width: 24,
-                    height: 24,
-                    fit: BoxFit.fill),
-                tooltip: AppLocalizations.of(context).selectDate,
-                iconPadding: EdgeInsets.zero,
-                onTap: () => controller.selectDateRange(context)),
+            const SizedBox(width: 8),
+            Container(
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: AdvancedSearchInputFormStyle.inputFieldBorderColor,
+                  width: AdvancedSearchInputFormStyle.inputFieldBorderWidth,
+                ),
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(
+                    AdvancedSearchInputFormStyle.inputFieldBorderRadius,
+                  ),
+                ),
+              ),
+              height: 44,
+              width: 44,
+              child: TMailButtonWidget.fromIcon(
+                icon: controller.imagePaths.icCalendarSB,
+                iconSize: 22,
+                iconColor: AppColor.steelGray400,
+                backgroundColor: Colors.transparent,
+                tooltipMessage: AppLocalizations.of(context).selectDate,
+                onTapActionCallback: () => controller.selectDateRange(context),
+              ),
+            ),
           ]),
+          const SizedBox(height: 12),
           _buildFilterField(
             context: context,
             advancedSearchFilterField: AdvancedSearchFilterField.sortBy
           ),
+          const SizedBox(height: 24),
           AdvancedSearchFilterFormBottomView(focusManager: controller.focusManager)
         ],
       ),
@@ -165,13 +187,15 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
   }) {
     final child = [
       SizedBox(
-        width: controller.responsiveUtils.isMobile(context) || controller.responsiveUtils.landscapeTabletSupported(context)
-            ? null : 112,
+        width: _isVerticalArrange(context) ? null : 112,
         child: LabelAdvancedSearchFieldWidget(
           name: advancedSearchFilterField.getTitle(context),
         ),
       ),
-      const Padding(padding: EdgeInsets.all(4)),
+      if (_isVerticalArrange(context))
+        const SizedBox(height: 12)
+      else
+        const SizedBox(width: 12),
       if (controller.responsiveUtils.isMobile(context))
         _buildTextField(
           isSelectFormList: isSelectFormList,
@@ -226,18 +250,19 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
           ),
         )
     ];
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: controller.responsiveUtils.isMobile(context) || controller.responsiveUtils.landscapeTabletSupported(context)
-          ? Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: child,
-            )
-          : SizedBox(height: 44, child: Row(children: child)),
-    );
+    return _isVerticalArrange(context)
+        ? Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: child,
+          )
+        : SizedBox(height: 44, child: Row(children: child));
   }
+
+  bool _isVerticalArrange(BuildContext context) =>
+      controller.responsiveUtils.isMobile(context) ||
+      controller.responsiveUtils.landscapeTabletSupported(context);
 
   Widget _buildTextFieldFilterForWeb({
     required BuildContext context,
@@ -318,32 +343,32 @@ class AdvancedSearchInputForm extends GetWidget<AdvancedFilterController>
         onTextChange: onTextChange,
         decoration: InputDecoration(
           filled: true,
-          fillColor: isSelectFormList ? AppColor.colorItemSelected : Colors.white,
-          contentPadding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
-          enabledBorder: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(
-              Radius.circular(10),
+          fillColor: AdvancedSearchInputFormStyle.inputFieldBackgroundColor,
+          contentPadding: const EdgeInsetsDirectional.only(start: 12, end: 8),
+          enabledBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(AdvancedSearchInputFormStyle.inputFieldBorderRadius),
             ),
             borderSide: BorderSide(
-              width: isSelectFormList ? 0.5 : 1,
-              color: AppColor.colorInputBorderCreateMailbox,
+              width: AdvancedSearchInputFormStyle.inputFieldBorderWidth,
+              color: AdvancedSearchInputFormStyle.inputFieldBorderColor,
             ),
           ),
-          border: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(
-              Radius.circular(10),
+          border: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(AdvancedSearchInputFormStyle.inputFieldBorderRadius),
             ),
             borderSide: BorderSide(
-              width: isSelectFormList ? 0.5 : 1,
-              color: AppColor.colorInputBorderCreateMailbox,
+              width: AdvancedSearchInputFormStyle.inputFieldBorderWidth,
+              color: AdvancedSearchInputFormStyle.inputFieldBorderColor,
             ),
           ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: const BorderRadius.all(
-              Radius.circular(10),
+          focusedBorder: const OutlineInputBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(AdvancedSearchInputFormStyle.inputFieldBorderRadius),
             ),
             borderSide: BorderSide(
-              width: isSelectFormList ? 0.5 : 1,
+              width: AdvancedSearchInputFormStyle.inputFieldBorderWidth,
               color: AppColor.primaryColor,
             ),
           ),

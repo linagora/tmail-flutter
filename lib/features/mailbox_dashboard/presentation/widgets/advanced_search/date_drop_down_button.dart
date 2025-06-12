@@ -1,4 +1,3 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -38,14 +37,16 @@ class DateDropDownButton extends StatelessWidget {
           customButton: Container(
             height: 44,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(
-                color: AppColor.colorInputBorderCreateMailbox,
-                width: 0.5,
+              borderRadius: const BorderRadius.all(
+                Radius.circular(AdvancedSearchInputFormStyle.inputFieldBorderRadius),
               ),
-              color: AppColor.colorInputBackgroundCreateMailbox
+              border: Border.all(
+                color: AdvancedSearchInputFormStyle.inputFieldBorderColor,
+                width: AdvancedSearchInputFormStyle.inputFieldBorderWidth,
+              ),
+              color: AdvancedSearchInputFormStyle.inputFieldBackgroundColor,
             ),
-            padding: const EdgeInsets.only(left: 12, right: 10),
+            padding: const EdgeInsetsDirectional.only(start: 12, end: 8),
             child: Row(children: [
               Expanded(child: Text(
                 receiveTimeSelected?.getTitle(context, startDate: startDate, endDate: endDate) ?? '',
@@ -64,13 +65,17 @@ class DateDropDownButton extends StatelessWidget {
           },
           buttonStyleData: ButtonStyleData(
             height: 44,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsetsDirectional.only(start: 12, end: 8),
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(AdvancedSearchInputFormStyle.inputFieldBorderRadius),
+              ),
               border: Border.all(
-                color: AppColor.colorInputBorderCreateMailbox,
-                width: 1),
-              color: AppColor.colorInputBackgroundCreateMailbox)
+                color: AdvancedSearchInputFormStyle.inputFieldBorderColor,
+                width: AdvancedSearchInputFormStyle.inputFieldBorderWidth,
+              ),
+              color: AdvancedSearchInputFormStyle.inputFieldBackgroundColor,
+            )
           ),
           dropdownStyleData: DropdownStyleData(
             maxHeight: 200,

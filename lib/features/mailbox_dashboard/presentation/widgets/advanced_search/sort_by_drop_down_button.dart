@@ -1,4 +1,3 @@
-import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/style_utils.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
@@ -64,12 +63,14 @@ class SortByDropDownButton extends StatelessWidget {
           customButton: Container(
             height: SortByDropdownStyle.height,
             decoration: BoxDecoration(
-              borderRadius: SortByDropdownStyle.buttonBorderRadius,
-              border: Border.all(
-                color: AppColor.colorInputBorderCreateMailbox,
-                width: SortByDropdownStyle.buttonBorderWidth,
+              borderRadius: const BorderRadius.all(
+                Radius.circular(AdvancedSearchInputFormStyle.inputFieldBorderRadius),
               ),
-              color: AppColor.colorInputBackgroundCreateMailbox
+              border: Border.all(
+                color: AdvancedSearchInputFormStyle.inputFieldBorderColor,
+                width: AdvancedSearchInputFormStyle.inputFieldBorderWidth,
+              ),
+              color: AdvancedSearchInputFormStyle.inputFieldBackgroundColor,
             ),
             padding: SortByDropdownStyle.buttonPadding,
             child: Row(
@@ -92,12 +93,14 @@ class SortByDropDownButton extends StatelessWidget {
             height: SortByDropdownStyle.height,
             padding: SortByDropdownStyle.buttonPadding,
             decoration: BoxDecoration(
-              borderRadius: SortByDropdownStyle.buttonBorderRadius,
-              border: Border.all(
-                color: AppColor.colorInputBorderCreateMailbox,
-                width: SortByDropdownStyle.buttonBorderWidth,
+              borderRadius: const BorderRadius.all(
+                Radius.circular(AdvancedSearchInputFormStyle.inputFieldBorderRadius),
               ),
-              color: AppColor.colorInputBackgroundCreateMailbox
+              border: Border.all(
+                color: AdvancedSearchInputFormStyle.inputFieldBorderColor,
+                width: AdvancedSearchInputFormStyle.inputFieldBorderWidth,
+              ),
+              color: AdvancedSearchInputFormStyle.inputFieldBackgroundColor,
             )
           ),
           dropdownStyleData: DropdownStyleData(

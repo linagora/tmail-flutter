@@ -5,7 +5,6 @@ class SortByDropdownStyle {
   static const int dropdownElevation = 4;
   
   static const double height = 44;
-  static const double buttonBorderWidth = 0.5;
   static const double dropdownMaxHeight = 332;
   static const double scrollbarThickness = 6;
   static const double checkedIconSize = 20;
@@ -17,13 +16,11 @@ class SortByDropdownStyle {
     color: Colors.white
   );
 
-  static const EdgeInsetsDirectional buttonPadding = EdgeInsetsDirectional.only(start: 12, end: 10);
+  static const EdgeInsetsDirectional buttonPadding = EdgeInsetsDirectional.only(start: 12, end: 8);
   static const MenuItemStyleData menuItemStyleData = MenuItemStyleData(
     height: height,
     padding: EdgeInsets.symmetric(horizontal: 12),
   );
-
-  static const BorderRadius buttonBorderRadius = BorderRadius.all(Radius.circular(10));
 
   static const Radius dropdownScrollbarRadius = Radius.circular(40);
 }

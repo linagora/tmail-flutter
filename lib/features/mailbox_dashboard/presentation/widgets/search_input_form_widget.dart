@@ -2,6 +2,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/presentation/views/button/icon_button_web.dart';
 import 'package:core/presentation/views/button/tmail_button_widget.dart';
 import 'package:core/presentation/views/quick_search/quick_search_input_form.dart';
@@ -218,7 +219,9 @@ class SearchInputFormWidget extends StatelessWidget with AppLoaderMixin {
         enabledBorder: InputBorder.none,
         contentPadding: EdgeInsets.zero,
         hintText: AppLocalizations.of(context).search_emails,
-        hintStyle: const TextStyle(color: AppColor.colorHintSearchBar, fontSize: 16.0),
+        hintStyle: ThemeUtils.textStyleBodyBody2(
+          color: AppColor.steelGray400,
+        ),
         labelStyle: const TextStyle(color: Colors.black, fontSize: 16.0)
       ),
       leftButton: Padding(
