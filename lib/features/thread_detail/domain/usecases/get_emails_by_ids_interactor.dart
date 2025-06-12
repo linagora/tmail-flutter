@@ -49,6 +49,7 @@ class GetEmailsByIdsInteractor {
       yield Left(GetEmailsByIdsFailure(
         exception: e,
         onRetry: execute(session, accountId, emailIds, properties: properties),
+        updateCurrentThreadDetail: updateCurrentThreadDetail,
       ));
     }
   }
