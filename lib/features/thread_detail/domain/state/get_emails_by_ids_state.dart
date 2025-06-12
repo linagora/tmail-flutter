@@ -25,5 +25,14 @@ class GetEmailsByIdsSuccess extends UIState {
 }
 
 class GetEmailsByIdsFailure extends FeatureFailure {
-  GetEmailsByIdsFailure({super.exception, super.onRetry});
+  GetEmailsByIdsFailure({
+    super.exception,
+    super.onRetry,
+    required this.updateCurrentThreadDetail,
+  });
+
+  final bool updateCurrentThreadDetail;
+
+  @override
+  List<Object?> get props => [...super.props, updateCurrentThreadDetail];
 }
