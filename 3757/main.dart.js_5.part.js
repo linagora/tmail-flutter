@@ -5058,7 +5058,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t1 = _this.mailboxDashBoardController,
         t2 = t1.accountId;
       if (t2.get$value(0) == null || t1.sessionCurrent == null) {
-        _this.consumeState$1(A.Stream_Stream$value(new A.Left(new A.GetEmailsByIdsFailure(new A.NotFoundSessionException(), null), type$.Left_Failure_Success), type$.Either_Failure_Success));
+        _this.consumeState$1(A.Stream_Stream$value(new A.Left(new A.GetEmailsByIdsFailure(false, new A.NotFoundSessionException(), null), type$.Left_Failure_Success), type$.Either_Failure_Success));
         return;
       }
       t3 = _this.currentExpandedEmailId;
@@ -20603,5 +20603,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_5", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "xB8oWa7fdO07MtkAa3v7I2Ko0bM=");
+})($__dart_deferred_initializers__, "VdlSsRzYGjM7NFmuGrbqi/kdLA0=");
 ;
