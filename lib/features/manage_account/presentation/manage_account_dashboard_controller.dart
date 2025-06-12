@@ -236,6 +236,20 @@ class ManageAccountDashBoardController extends ReloadableController with UserSet
     }
   }
 
+  bool get isLanguageSupported {
+    if (!isServerSettingsCapabilitySupported) return false;
+
+    if (accountId.value == null || sessionCurrent == null) {
+      return false;
+    }
+
+    final settingsCapability = sessionCurrent!.getCapabilityProperties<SettingsCapability>(
+      accountId.value!,
+      capabilityServerSettings,
+    );
+    return !(settingsCapability?.readOnlyProperties?.contains('language') == true);
+  }
+
   bool get isVacationCapabilitySupported {
     if (accountId.value != null && sessionCurrent != null) {
       return CapabilityIdentifier.jmapVacationResponse.isSupported(sessionCurrent!, accountId.value!);

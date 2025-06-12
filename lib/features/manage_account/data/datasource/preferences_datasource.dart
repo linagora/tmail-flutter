@@ -1,5 +1,5 @@
 import 'dart:ui';
 
-abstract class ManageAccountDataSource {
+abstract class PreferencesDataSource {
   Future<void> persistLanguage(Locale localeCurrent);
 }
