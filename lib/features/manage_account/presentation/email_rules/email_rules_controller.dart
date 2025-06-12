@@ -5,7 +5,6 @@ import 'package:core/presentation/views/dialog/confirmation_dialog_builder.dart'
 import 'package:core/utils/app_logger.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/account_id.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
@@ -22,8 +21,9 @@ import 'package:tmail_ui_user/features/manage_account/domain/usecases/create_new
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/delete_email_rule_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/edit_email_rule_filter_interactor.dart';
 import 'package:tmail_ui_user/features/manage_account/domain/usecases/get_all_rules_interactor.dart';
-import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/widgets/email_rule_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/manage_account_dashboard_controller.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/context_item_email_rule_type_action.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/model/email_rule_action_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/creator_action_type.dart';
 import 'package:tmail_ui_user/features/rules_filter_creator/presentation/model/rules_filter_creator_arguments.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -241,45 +241,41 @@ class EmailRulesController extends BaseController {
   }
 
   void openEditRuleMenuAction(BuildContext context, TMailRule rule) {
-    openContextMenuAction(
-      context,
-      [
-        _editEmailRuleActionTile(context, rule),
-        _deleteEmailRuleActionTile(context, rule),
-      ],
+    final contextMenuActions = [
+      EmailRuleActionType.edit,
+      EmailRuleActionType.delete,
+    ].map((filter) {
+      return ContextItemEmailRuleTypeAction(
+        filter,
+        AppLocalizations.of(context),
+        imagePaths,
+      );
+    }).toList();
+
+    openBottomSheetContextMenuAction(
+      context: context,
+      itemActions: contextMenuActions,
+      onContextMenuActionClick: (action) {
+        popBack();
+        _handleRuleFilterActionType(context, rule, action.action);
+      },
     );
   }
 
-  Widget _deleteEmailRuleActionTile(BuildContext context, TMailRule rule) {
-    return (EmailRuleBottomSheetActionTileBuilder(
-      const Key('delete_emailRule_action'),
-      SvgPicture.asset(
-        imagePaths.icDeleteComposer,
-        colorFilter: AppColor.colorActionDeleteConfirmDialog.asFilter()),
-      AppLocalizations.of(context).deleteRule,
-      rule,
-      iconLeftPadding: const EdgeInsets.only(left: 12, right: 16),
-      iconRightPadding: const EdgeInsets.only(right: 12),
-      textStyleAction: const TextStyle(
-          fontSize: 17, color: AppColor.colorActionDeleteConfirmDialog),
-    )..onActionClick((rule) {
-      popBack();
-      deleteEmailRule(context, rule);
-    })).build();
-  }
-
-  Widget _editEmailRuleActionTile(BuildContext context, TMailRule rule) {
-    return (EmailRuleBottomSheetActionTileBuilder(
-          const Key('edit_emailRule_action'),
-          SvgPicture.asset(imagePaths.icEdit),
-          AppLocalizations.of(context).editRule,
-          rule,
-          iconLeftPadding: const EdgeInsets.only(left: 12, right: 16),
-          iconRightPadding: const EdgeInsets.only(right: 12))
-      ..onActionClick((rule) {
-        popBack();
+  void _handleRuleFilterActionType(
+    BuildContext context,
+    TMailRule rule,
+    EmailRuleActionType actionType,
+  ) {
+    switch (actionType) {
+      case EmailRuleActionType.edit:
         editEmailRule(context, rule);
-      }))
-    .build();
+        break;
+      case EmailRuleActionType.delete:
+        deleteEmailRule(context, rule);
+        break;
+      case EmailRuleActionType.add:
+        break;
+    }
   }
 }

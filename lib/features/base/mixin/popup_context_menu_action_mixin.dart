@@ -11,51 +11,49 @@ import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 mixin PopupContextMenuActionMixin {
-
-  void openContextMenuAction(
+  Future<void> openContextMenuAction(
     BuildContext context,
     List<Widget> actionTiles,
-    {
-      Widget? cancelButton,
-      Key? key,
-      List<ContextMenuItemAction>? itemActions,
-      OnContextMenuActionClick? onContextMenuActionClick,
-    }
   ) async {
-    if (actionTiles.isNotEmpty) {
-      await (CupertinoActionSheetBuilder(context, key: key)
-            ..addTiles(actionTiles)
-            ..addCancelButton(cancelButton ?? buildCancelButton(context)))
-          .show();
-    } else {
-      await showModalBottomSheet(
-        context: context,
-        showDragHandle: true,
-        useSafeArea: true,
-        isScrollControlled: true,
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(16.0),
-            topRight: Radius.circular(16.0),
-          ),
+    await (CupertinoActionSheetBuilder(context)
+          ..addTiles(actionTiles)
+          ..addCancelButton(buildCancelButton(context)))
+        .show();
+  }
+
+  Future<void> openBottomSheetContextMenuAction({
+    required BuildContext context,
+    required List<ContextMenuItemAction> itemActions,
+    required OnContextMenuActionClick onContextMenuActionClick,
+    Key? key,
+  }) async {
+    await showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      useSafeArea: true,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16.0),
+          topRight: Radius.circular(16.0),
         ),
-        backgroundColor: Colors.white,
-        barrierColor: Colors.black.withOpacity(0.2),
-        builder: (_) {
-          return PointerInterceptor(
-            child: Container(
-              color: Colors.white,
-              padding: const EdgeInsetsDirectional.only(bottom: 24),
-              child: ContextMenuDialogView(
-                actions: itemActions ?? [],
-                onContextMenuActionClick: (menuAction) =>
-                    onContextMenuActionClick?.call(menuAction),
-              ),
+      ),
+      backgroundColor: Colors.white,
+      barrierColor: Colors.black.withOpacity(0.2),
+      builder: (_) {
+        return PointerInterceptor(
+          child: Container(
+            key: key,
+            color: Colors.white,
+            padding: const EdgeInsetsDirectional.only(bottom: 24),
+            child: ContextMenuDialogView(
+              actions: itemActions,
+              onContextMenuActionClick: onContextMenuActionClick,
             ),
-          );
-        },
-      );
-    }
+          ),
+        );
+      },
+    );
   }
 
   void openPopupMenuAction(

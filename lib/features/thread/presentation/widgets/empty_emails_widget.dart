@@ -52,7 +52,7 @@ class EmptyEmailsWidget extends StatelessWidget {
             Text(
               key: const Key('empty_email_sub_message'),
               AppLocalizations.of(context).startToComposeEmails,
-              style: ThemeUtils.textStyleInter400().copyWith(
+              style: ThemeUtils.textStyleInter400.copyWith(
                 letterSpacing: -0.15,
                 fontSize: 16,
                 height: 21.01 / 16,

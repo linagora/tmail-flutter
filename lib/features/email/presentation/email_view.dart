@@ -556,9 +556,8 @@ class EmailView extends GetWidget<SingleEmailController> {
         .toList();
 
     if (position == null) {
-      controller.openContextMenuAction(
-        context,
-        [],
+      controller.openBottomSheetContextMenuAction(
+        context: context,
         itemActions: contextMenuActions,
         onContextMenuActionClick: (menuAction) {
           popBack();

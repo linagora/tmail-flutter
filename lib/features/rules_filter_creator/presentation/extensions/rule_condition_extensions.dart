@@ -1,51 +1,50 @@
 
-import 'package:flutter/cupertino.dart';
 import 'package:rule_filter/rule_filter/rule_condition.dart' as rule_condition;
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:rule_filter/rule_filter/rule_condition_group.dart' as rule_combiner;
 
 extension RuleConditionFieldExtension on rule_condition.Field {
 
-  String getTitle(BuildContext context) {
+  String getTitle(AppLocalizations appLocalizations) {
     switch(this) {
       case rule_condition.Field.from:
-        return AppLocalizations.of(context).ruleFilterAddressFromField;
+        return appLocalizations.ruleFilterAddressFromField;
       case rule_condition.Field.to:
-        return AppLocalizations.of(context).ruleFilterAddressToField;
+        return appLocalizations.ruleFilterAddressToField;
       case rule_condition.Field.cc:
-        return AppLocalizations.of(context).ruleFilterAddressCcField;
+        return appLocalizations.ruleFilterAddressCcField;
       case rule_condition.Field.recipient:
-        return AppLocalizations.of(context).recipient;
+        return appLocalizations.recipient;
       case rule_condition.Field.subject:
-        return AppLocalizations.of(context).subject;
+        return appLocalizations.subject;
     }
   }
 }
 
 extension RuleConditionComparatorExtension on rule_condition.Comparator {
 
-  String getTitle(BuildContext context) {
+  String getTitle(AppLocalizations appLocalizations) {
     switch(this) {
       case rule_condition.Comparator.contains:
-        return AppLocalizations.of(context).contains;
+        return appLocalizations.contains;
       case rule_condition.Comparator.notContains:
-        return AppLocalizations.of(context).notContains;
+        return appLocalizations.notContains;
       case rule_condition.Comparator.exactlyEquals:
-        return AppLocalizations.of(context).exactlyEquals;
+        return appLocalizations.exactlyEquals;
       case rule_condition.Comparator.notExactlyEquals:
-        return AppLocalizations.of(context).notExactlyEquals;
+        return appLocalizations.notExactlyEquals;
     }
   }
 }
 
 extension RuleConditionCombinerExtension on rule_combiner.ConditionCombiner {
 
-  String getTitle(BuildContext context) {
+  String getTitle(AppLocalizations appLocalizations) {
     switch(this) {
       case rule_combiner.ConditionCombiner.AND:
-        return AppLocalizations.of(context).all;
+        return appLocalizations.all;
       case rule_combiner.ConditionCombiner.OR:
-        return AppLocalizations.of(context).any;
+        return appLocalizations.any;
     }
   }
 }
