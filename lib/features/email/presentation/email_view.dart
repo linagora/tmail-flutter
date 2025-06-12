@@ -6,7 +6,6 @@ import 'package:core/presentation/views/html_viewer/html_content_viewer_widget.d
 import 'package:core/utils/direction_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:jmap_dart_client/jmap/mail/calendar/calendar_event.dart';
 import 'package:model/email/email_action_type.dart';
@@ -20,11 +19,11 @@ import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
 import 'package:tmail_ui_user/features/email/presentation/controller/single_email_controller.dart';
 import 'package:tmail_ui_user/features/email/presentation/extensions/calendar_event_extension.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
 import 'package:tmail_ui_user/features/email/presentation/styles/email_view_styles.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_action_banner_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_detail_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/calendar_event/calendar_event_information_widget.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_attachments_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_subject_widget.dart';
 import 'package:tmail_ui_user/features/email/presentation/widgets/email_view_app_bar_widget.dart';
@@ -548,10 +547,26 @@ class EmailView extends GetWidget<SingleEmailController> {
         EmailActionType.editAsNewEmail,
     ];
 
+    final contextMenuActions = moreActions
+        .map((action) => ContextItemEmailAction(
+          action,
+          AppLocalizations.of(context),
+          controller.imagePaths,
+        ))
+        .toList();
+
     if (position == null) {
       controller.openContextMenuAction(
         context,
-        _emailActionMoreActionTile(context, presentationEmail, moreActions)
+        [],
+        itemActions: contextMenuActions,
+        onContextMenuActionClick: (menuAction) {
+          controller.handleEmailAction(
+            context,
+            presentationEmail,
+            menuAction.action,
+          );
+        },
       );
     } else {
       controller.openPopupMenuAction(
@@ -560,37 +575,6 @@ class EmailView extends GetWidget<SingleEmailController> {
         _popupMenuEmailActionTile(context, presentationEmail, moreActions)
       );
     }
-  }
-
-  List<Widget> _emailActionMoreActionTile(
-    BuildContext context,
-    PresentationEmail presentationEmail,
-    List<EmailActionType> actionTypes,
-  ) {
-    return actionTypes.map((action) {
-      return (EmailActionCupertinoActionSheetActionBuilder(
-        Key('${action.name}_action'),
-        SvgPicture.asset(
-          action.getIcon(controller.imagePaths),
-          width: 24,
-          height: 24,
-          fit: BoxFit.fill,
-          colorFilter: AppColor.colorTextButton.asFilter()
-        ),
-        action.getTitle(context),
-        presentationEmail,
-        iconLeftPadding: controller.responsiveUtils.isScreenWithShortestSide(context)
-          ? const EdgeInsetsDirectional.only(start: 12, end: 16)
-          : const EdgeInsetsDirectional.only(end: 12),
-        iconRightPadding: controller.responsiveUtils.isScreenWithShortestSide(context)
-          ? const EdgeInsetsDirectional.only(end: 12)
-          : EdgeInsets.zero
-      )
-      ..onActionClick((presentationEmail) {
-        popBack();
-        controller.handleEmailAction(context, presentationEmail, action);
-      })).build();
-    }).toList();
   }
 
   List<PopupMenuEntry> _popupMenuEmailActionTile(
@@ -604,7 +588,7 @@ class EmailView extends GetWidget<SingleEmailController> {
         padding: EdgeInsets.zero,
         child: PopupItemWidget(
           iconAction: action.getIcon(controller.imagePaths),
-          nameAction: action.getTitle(context),
+          nameAction: action.getTitle(AppLocalizations.of(context)),
           colorIcon: AppColor.colorTextButton,
           padding: const EdgeInsetsDirectional.only(start: 12),
           styleName: const TextStyle(
