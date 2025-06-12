@@ -1,4 +1,5 @@
 import 'package:core/presentation/extensions/color_extension.dart';
+import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:tmail_ui_user/features/composer/presentation/styles/composer_style.dart';
 
@@ -32,9 +33,8 @@ class TextFieldAutoCompleteEmailAddressWebStyles {
   static const Color suggestionBoxBackgroundColor = Colors.white;
   static const Color cursorColor = AppColor.primaryColor;
 
-  static const TextStyle textInputHintStyle = TextStyle(
-    fontSize: 16,
-    color: AppColor.colorHintSearchBar,
+  static TextStyle textInputHintStyle = ThemeUtils.textStyleBodyBody3(
+    color: AppColor.m3Tertiary,
   );
   static const TextStyle textInputTextStyle = TextStyle(
     fontSize: 16,
