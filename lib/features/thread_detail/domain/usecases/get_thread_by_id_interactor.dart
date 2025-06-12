@@ -20,6 +20,7 @@ class GetThreadByIdInteractor {
     AccountId accountId,
     MailboxId sentMailboxId,
     String ownEmailAddress, {
+    required EmailId? selectedEmailId,
     bool updateCurrentThreadDetail = false,
   }) async* {
     try {
@@ -32,6 +33,7 @@ class GetThreadByIdInteractor {
         accountId,
         sentMailboxId,
         ownEmailAddress,
+        selectedEmailId: selectedEmailId,
       );
 
       yield Right(GetThreadByIdSuccess(
@@ -48,6 +50,7 @@ class GetThreadByIdInteractor {
           accountId,
           sentMailboxId,
           ownEmailAddress,
+          selectedEmailId: selectedEmailId,
         ),
       ));
     }

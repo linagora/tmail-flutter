@@ -10,8 +10,9 @@ abstract class ThreadDetailRepository {
     Session session,
     AccountId accountId,
     MailboxId sentMailboxId,
-    String ownEmailAddress,
-  );
+    String ownEmailAddress, {
+    required EmailId? selectedEmailId,
+  });
 
   Future<List<Email>> getEmailsByIds(
     Session session,

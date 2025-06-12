@@ -166,6 +166,7 @@ class ThreadDetailController extends BaseController {
           accountId!,
           sentMailboxId!,
           ownEmailAddress!,
+          selectedEmailId: presentationEmail.id,
         ));
       }
     });
