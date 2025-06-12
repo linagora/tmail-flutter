@@ -242,6 +242,7 @@ class ThreadDetailController extends BaseController {
       handleGetThreadByIdFailure(failure);
     }
     if (failure is GetEmailsByIdsFailure) {
+      if (failure.updateCurrentThreadDetail) return;
       showRetryToast(failure);
       return;
     }

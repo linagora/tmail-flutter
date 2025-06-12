@@ -22,5 +22,14 @@ class GetThreadByIdSuccess extends UIState {
 }
 
 class GetThreadByIdFailure extends FeatureFailure {
-  GetThreadByIdFailure({super.exception, super.onRetry});
+  GetThreadByIdFailure({
+    super.exception,
+    super.onRetry,
+    required this.updateCurrentThreadDetail,
+  });
+
+  final bool updateCurrentThreadDetail;
+
+  @override
+  List<Object?> get props => [...super.props, updateCurrentThreadDetail];
 }

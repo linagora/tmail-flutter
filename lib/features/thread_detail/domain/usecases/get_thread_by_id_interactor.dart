@@ -52,6 +52,7 @@ class GetThreadByIdInteractor {
           ownEmailAddress,
           selectedEmailId: selectedEmailId,
         ),
+        updateCurrentThreadDetail: updateCurrentThreadDetail,
       ));
     }
   }

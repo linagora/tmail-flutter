@@ -38,6 +38,7 @@ extension InitializeThreadDetailEmails on ThreadDetailController {
     if (accountId == null || session == null) {
       consumeState(Stream.value(Left(GetEmailsByIdsFailure(
         exception: NotFoundSessionException(),
+        updateCurrentThreadDetail: false,
       ))));
       return;
     }
