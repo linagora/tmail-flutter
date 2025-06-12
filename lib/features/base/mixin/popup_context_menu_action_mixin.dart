@@ -4,6 +4,7 @@ import 'package:core/presentation/views/bottom_popup/cupertino_action_sheet_buil
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:tmail_ui_user/features/base/widget/context_menu/context_menu_dialog_view.dart';
 import 'package:tmail_ui_user/features/base/widget/context_menu/context_menu_item_action.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
@@ -41,12 +42,15 @@ mixin PopupContextMenuActionMixin {
         backgroundColor: Colors.white,
         barrierColor: Colors.black.withOpacity(0.2),
         builder: (_) {
-          return ColoredBox(
-            color: Colors.white,
-            child: ContextMenuDialogView(
-              actions: itemActions ?? [],
-              onContextMenuActionClick: (menuAction) =>
-                  onContextMenuActionClick?.call(menuAction),
+          return PointerInterceptor(
+            child: Container(
+              color: Colors.white,
+              padding: const EdgeInsetsDirectional.only(bottom: 24),
+              child: ContextMenuDialogView(
+                actions: itemActions ?? [],
+                onContextMenuActionClick: (menuAction) =>
+                    onContextMenuActionClick?.call(menuAction),
+              ),
             ),
           );
         },

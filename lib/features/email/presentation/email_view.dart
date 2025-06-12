@@ -561,6 +561,7 @@ class EmailView extends GetWidget<SingleEmailController> {
         [],
         itemActions: contextMenuActions,
         onContextMenuActionClick: (menuAction) {
+          popBack();
           controller.handleEmailAction(
             context,
             presentationEmail,

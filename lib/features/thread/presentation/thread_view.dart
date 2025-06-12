@@ -11,7 +11,7 @@ import 'package:tmail_ui_user/features/base/mixin/popup_menu_widget_mixin.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
 import 'package:tmail_ui_user/features/base/widget/compose_floating_button.dart';
 import 'package:tmail_ui_user/features/email/presentation/model/composer_arguments.dart';
-import 'package:tmail_ui_user/features/email/presentation/widgets/email_action_cupertino_action_sheet_action_builder.dart';
+import 'package:tmail_ui_user/features/email/presentation/model/context_item_email_action.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/clear_mailbox_state.dart';
 import 'package:tmail_ui_user/features/mailbox/domain/state/mark_as_mailbox_read_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/open_and_close_composer_extension.dart';
@@ -661,9 +661,41 @@ class ThreadView extends GetWidget<ThreadController>
     RelativeRect? position
   ) {
     if (controller.responsiveUtils.isScreenWithShortestSide(context)) {
+      final mailboxContain = presentationEmail.mailboxContain;
+
+      final listEmailActions = [
+        EmailActionType.openInNewTab,
+        if (mailboxContain?.isDrafts == false && mailboxContain?.isChildOfTeamMailboxes == false)
+          mailboxContain?.isSpam == true
+              ? EmailActionType.unSpam
+              : EmailActionType.moveToSpam,
+        if (mailboxContain?.isArchive == false)
+          EmailActionType.archiveMessage,
+        if (mailboxContain?.isDrafts == false && mailboxContain?.isTemplates == false)
+          EmailActionType.editAsNewEmail,
+      ];
+
+      if (listEmailActions.isEmpty) return;
+
+      final contextMenuActions = listEmailActions
+          .map((action) => ContextItemEmailAction(
+                action,
+                AppLocalizations.of(context),
+                controller.imagePaths,
+              ))
+          .toList();
+
       controller.openContextMenuAction(
         context,
-        _contextMenuActionTile(context, presentationEmail)
+        [],
+        itemActions: contextMenuActions,
+        onContextMenuActionClick: (menuAction) {
+          controller.handleEmailActionType(
+            menuAction.action,
+            presentationEmail,
+            mailboxContain: presentationEmail.mailboxContain,
+          );
+        },
       );
     } else {
       controller.openPopupMenuAction(
@@ -742,128 +774,6 @@ class ThreadView extends GetWidget<ThreadController>
         }
       }
     ));
-  }
-
-  List<Widget> _contextMenuActionTile(BuildContext context, PresentationEmail email) {
-    final mailboxContain = email.mailboxContain;
-
-    return <Widget>[
-      _openInNewTabContextMenuItemAction(context, email),
-      if (mailboxContain?.isDrafts == false && mailboxContain?.isChildOfTeamMailboxes == false)
-        _markAsEmailSpamOrUnSpamContextMenuItemAction(context, email, mailboxContain),
-      if (mailboxContain?.isArchive == false)
-        _archiveMessageContextMenuItemAction(context, email),
-      if (mailboxContain?.isDrafts == false && mailboxContain?.isTemplates == false)
-        _editAsNewEmailContextMenuItemAction(context, email),
-    ];
-  }
-
-  Widget _markAsEmailSpamOrUnSpamContextMenuItemAction(
-    BuildContext context,
-    PresentationEmail email,
-    PresentationMailbox? mailboxContain
-  ) {
-    return (EmailActionCupertinoActionSheetActionBuilder(
-        const Key('mark_as_spam_or_un_spam_action'),
-        SvgPicture.asset(
-          mailboxContain?.isSpam == true ? controller.imagePaths.icNotSpam : controller.imagePaths.icSpam,
-          width: 24,
-          height: 24,
-          fit: BoxFit.fill,
-          colorFilter: AppColor.colorTextButton.asFilter()),
-        mailboxContain?.isSpam == true
-          ? AppLocalizations.of(context).remove_from_spam
-          : AppLocalizations.of(context).mark_as_spam,
-        email,
-        iconLeftPadding: controller.responsiveUtils.isMobile(context)
-          ? const EdgeInsets.only(left: 12, right: 16)
-          : const EdgeInsets.only(right: 12),
-        iconRightPadding: controller.responsiveUtils.isMobile(context)
-          ? const EdgeInsets.only(right: 12)
-          : EdgeInsets.zero)
-      ..onActionClick((email) => controller.handleEmailActionType(
-        mailboxContain?.isSpam == true ? EmailActionType.unSpam : EmailActionType.moveToSpam,
-        email,
-        mailboxContain: mailboxContain,
-      ))
-    ).build();
-  }
-
-  Widget _openInNewTabContextMenuItemAction(BuildContext context, PresentationEmail email) {
-    return (EmailActionCupertinoActionSheetActionBuilder(
-      const Key('open_in_new_tab_action'),
-      SvgPicture.asset(
-        controller.imagePaths.icOpenInNewTab,
-        width: 24,
-        height: 24,
-        fit: BoxFit.fill,
-        colorFilter: AppColor.colorTextButton.asFilter()),
-      AppLocalizations.of(context).openInNewTab,
-      email,
-      iconLeftPadding: controller.responsiveUtils.isMobile(context)
-        ? const EdgeInsets.only(left: 12, right: 16)
-        : const EdgeInsets.only(right: 12),
-      iconRightPadding: controller.responsiveUtils.isMobile(context)
-        ? const EdgeInsets.only(right: 12)
-        : EdgeInsets.zero)
-      ..onActionClick((email) {
-        popBack();
-        controller.openEmailInNewTabAction(email);
-      })
-    ).build();
-  }
-
-  Widget _archiveMessageContextMenuItemAction(BuildContext context, PresentationEmail email) {
-    return (
-      EmailActionCupertinoActionSheetActionBuilder(
-        const Key('archive_message_action'),
-        SvgPicture.asset(
-          controller.imagePaths.icMailboxArchived,
-          width: 24,
-          height: 24,
-          fit: BoxFit.fill,
-          colorFilter: AppColor.colorTextButton.asFilter()
-        ),
-        AppLocalizations.of(context).archiveMessage,
-        email,
-        iconLeftPadding: controller.responsiveUtils.isMobile(context)
-          ? const EdgeInsetsDirectional.only(start: 12, end: 16)
-          : const EdgeInsetsDirectional.only(end: 12),
-        iconRightPadding: controller.responsiveUtils.isMobile(context)
-          ? const EdgeInsetsDirectional.only(start: 12)
-          : EdgeInsets.zero
-      )
-      ..onActionClick((email) => controller.archiveMessage(context, email))
-    ).build();
-  }
-
-  Widget _editAsNewEmailContextMenuItemAction(
-    BuildContext context,
-    PresentationEmail email,
-  ) {
-    return (
-      EmailActionCupertinoActionSheetActionBuilder(
-        const Key('edit_as_new_email_action'),
-        SvgPicture.asset(
-          controller.imagePaths.icEdit,
-          width: 24,
-          height: 24,
-          fit: BoxFit.fill,
-          colorFilter: AppColor.colorTextButton.asFilter()
-        ),
-        AppLocalizations.of(context).editAsNewEmail,
-        email,
-        iconLeftPadding: controller.responsiveUtils.isMobile(context)
-          ? const EdgeInsetsDirectional.only(start: 12, end: 16)
-          : const EdgeInsetsDirectional.only(end: 12),
-        iconRightPadding: controller.responsiveUtils.isMobile(context)
-          ? const EdgeInsetsDirectional.only(start: 12)
-          : EdgeInsets.zero)
-      ..onActionClick((email) {
-        popBack();
-        controller.editAsNewEmail(email);
-      })
-    ).build();
   }
 
   List<PopupMenuEntry> _popupMenuActionTile(BuildContext context, PresentationEmail email) {
