@@ -1,6 +1,7 @@
 import 'package:core/presentation/extensions/color_extension.dart';
 import 'package:core/presentation/views/list/sliver_grid_delegate_fixed_height.dart';
 import 'package:core/utils/app_logger.dart';
+import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
@@ -10,7 +11,10 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/domain/linagora_ecosyst
 extension OpenAppGridExtension on MailboxController {
   void openAppGrid(List<AppLinagoraEcosystem> linagoraApps) {
     log('OpenAppGridExtension::openAppGrid: length of linagoraApps = ${linagoraApps.length}');
-    mailboxDashBoardController.isAppGridDialogDisplayed.value = true;
+    if (PlatformInfo.isWeb) {
+      mailboxDashBoardController.isAppGridDialogDisplayed.value = true;
+    }
+
     Get.dialog(
       Center(
         child: Dialog(
@@ -56,8 +60,11 @@ extension OpenAppGridExtension on MailboxController {
         ),
       ),
       barrierColor: AppColor.blackAlpha20,
-    ).whenComplete(() =>
-        mailboxDashBoardController.isAppGridDialogDisplayed.value = false);
+    ).whenComplete(() {
+      if (PlatformInfo.isWeb) {
+        mailboxDashBoardController.isAppGridDialogDisplayed.value = false;
+      }
+    });
   }
 
   Future<void> _handleOpenApp(AppLinagoraEcosystem app) async {
