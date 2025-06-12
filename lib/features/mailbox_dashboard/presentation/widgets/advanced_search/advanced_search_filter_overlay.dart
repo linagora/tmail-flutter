@@ -17,8 +17,7 @@ class AdvancedSearchFilterOverlay extends StatelessWidget {
           constraints: BoxConstraints(
             maxHeight: _getHeightOverlay(context),
           ),
-          margin: const EdgeInsetsDirectional.only(top: 4, bottom: 16),
-          padding: const EdgeInsets.symmetric(horizontal: 8),
+          margin: const EdgeInsetsDirectional.only(top: 2, bottom: 16),
           decoration: const BoxDecoration(
             color: Colors.white,
             borderRadius: BorderRadius.all(Radius.circular(16)),
@@ -34,7 +33,7 @@ class AdvancedSearchFilterOverlay extends StatelessWidget {
             ]
           ),
           child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+            padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 32),
             child: AdvancedSearchInputForm(),
           ),
         ),

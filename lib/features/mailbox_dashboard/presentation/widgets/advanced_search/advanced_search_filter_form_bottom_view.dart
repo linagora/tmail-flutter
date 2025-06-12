@@ -21,21 +21,18 @@ class AdvancedSearchFilterFormBottomView extends GetWidget<AdvancedFilterControl
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: !controller.responsiveUtils.isWebDesktop(context) ? 8 : 20),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Transform(
-            transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
-            child: _buildCheckboxHasAttachment(
-              context,
-              currentFocusNode: focusManager.attachmentCheckboxFocusNode,
-              nextFocusNode: focusManager.searchButtonFocusNode),
-          ),
-          _buildListButton(context, controller.responsiveUtils),
-        ],
-      ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Transform(
+          transform: Matrix4.translationValues(-8.0, 0.0, 0.0),
+          child: _buildCheckboxHasAttachment(
+            context,
+            currentFocusNode: focusManager.attachmentCheckboxFocusNode,
+            nextFocusNode: focusManager.searchButtonFocusNode),
+        ),
+        _buildListButton(context, controller.responsiveUtils),
+      ],
     );
   }
 
