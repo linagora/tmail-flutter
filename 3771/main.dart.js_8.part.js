@@ -82,7 +82,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         ++currentSearchLevel;
       }
       lastBlockquote = blockquotes.$ti._precomputed1._as(C.NodeList_methods.get$last(blockquotes._nodeList));
-      buttonElement = new DOMParser().parseFromString('      <button class="quote-toggle-button collapsed" style="cursor: pointer; border: 1px solid #9fa2a4; height: 10px; border-radius: 5px; background-color: transparent;">\n          <p style="line-height: 0; margin-top: 0px;">...</p>\n      </button>', _s9_).querySelector(".quote-toggle-button");
+      buttonElement = new DOMParser().parseFromString('      <button class="quote-toggle-button collapsed" title="Show trimmed content">\n          <span class="dot"></span>\n          <span class="dot"></span>\n          <span class="dot"></span>\n      </button>', _s9_).querySelector(".quote-toggle-button");
       t1 = lastBlockquote.parentNode;
       if (t1 != null && buttonElement != null)
         t1.insertBefore(buttonElement, lastBlockquote).toString;
@@ -263,9 +263,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t2 = _this.minHeight;
       t9 = _this._widget;
       t10 = t9.enableQuoteToggle;
-      t11 = t10 ? "    <style>\n      .quote-toggle-button + blockquote {\n        display: block; /* Default display */\n      }\n      .quote-toggle-button.collapsed + blockquote {\n        display: none;\n      }\n    </style>" : "";
+      t11 = t10 ? "    <style>\n      .quote-toggle-button + blockquote {\n        display: block; /* Default display */\n      }\n      .quote-toggle-button.collapsed + blockquote {\n        display: none;\n      }\n      .quote-toggle-button {\n        display: flex;\n        align-items: center;\n        gap: 2px;\n        background-color: #e8eaed;\n        padding: 4px 8px;\n        margin: 8px 0;\n        border-radius: 9999px;\n        transition: background-color 0.2s ease-in-out;\n        border: none;\n        cursor: pointer;\n        -webkit-appearance: none;\n        -moz-appearance: none;\n        appearance: none;\n        -webkit-user-select: none; /* Safari */\n        -moz-user-select: none; /* Firefox */\n        -ms-user-select: none; /* IE 10+ */\n        user-select: none; /* Standard syntax */\n        -webkit-user-drag: none; /* Prevent dragging on WebKit browsers (e.g., Chrome, Safari) */\n      }\n      .quote-toggle-button:hover {\n        background-color: #cdcdcd !important;\n      }\n      .dot {\n        width: 4px;\n        height: 4px;\n        background-color: #4b5563;\n        border-radius: 9999px;\n      }\n    </style>" : "";
       t12 = t9.widthContent;
-      t10 = t10 ? "    <script>\n      document.addEventListener('DOMContentLoaded', function() {\n        const buttons = document.querySelectorAll('.quote-toggle-button');\n        buttons.forEach(button => {\n          button.onclick = function() {\n            const blockquote = this.nextElementSibling;\n            if (blockquote && blockquote.tagName === 'BLOCKQUOTE') {\n              this.classList.toggle('collapsed');\n            }\n          };\n        });\n      });\n    </script>" : "";
+      t10 = t10 ? "    <script>\n      document.addEventListener('DOMContentLoaded', function() {\n        const buttons = document.querySelectorAll('.quote-toggle-button');\n        buttons.forEach(button => {\n          button.onclick = function() {\n            const blockquote = this.nextElementSibling;\n            if (blockquote && blockquote.tagName === 'BLOCKQUOTE') {\n              this.classList.toggle('collapsed');\n              if (this.classList.contains('collapsed')) {\n                this.title = 'Show trimmed content';\n              } else {\n                this.title = 'Hide expanded content';\n              }\n            }\n          };\n        });\n      });\n    </script>" : "";
       t13 = t9.direction;
       t14 = t9.contentPadding;
       t9 = t9.useDefaultFont;
@@ -412,5 +412,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_8", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "F0ipfA8r7/H1qD1IVoKU9Q71dxM=");
+})($__dart_deferred_initializers__, "e4nYMuWEnZl9WBfIfyZPWe8LCGQ=");
 ;
