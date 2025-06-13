@@ -7,7 +7,6 @@ import 'package:get/get.dart';
 import 'package:model/extensions/presentation_mailbox_extension.dart';
 import 'package:model/extensions/session_extension.dart';
 import 'package:tmail_ui_user/features/base/widget/clean_messages_banner.dart';
-import 'package:tmail_ui_user/features/base/widget/popup_item_no_icon_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_menu/popup_menu_item_action_widget.dart';
 import 'package:tmail_ui_user/features/base/widget/scrollbar_list_view.dart';
 import 'package:tmail_ui_user/features/composer/presentation/view/web/composer_overlay_view.dart';
@@ -40,6 +39,8 @@ import 'package:tmail_ui_user/features/manage_account/presentation/extensions/va
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/styles/vacation_notification_message_widget_style.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/vacation/widgets/vacation_notification_message_widget.dart';
 import 'package:tmail_ui_user/features/quotas/presentation/widget/quotas_banner_widget.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/model/popup_menu_item_date_filter_action.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/model/popup_menu_item_sort_order_type_action.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_view.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_view.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
@@ -636,6 +637,13 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         buttonPadding = MailboxDashboardViewWebStyle.getSearchFilterButtonPadding(isSelected);
       }
 
+      final isFilterApplied = listAddressOfFrom.isNotEmpty ||
+          listAddressOfTo.isNotEmpty ||
+          startDate != null ||
+          endDate != null ||
+          receiveTimeType != EmailReceiveTimeType.allTime ||
+          mailbox != null;
+
       return SearchFilterButton(
         key: Key('${searchFilter.name}_search_filter_button'),
         searchFilter: searchFilter,
@@ -650,6 +658,8 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
         listAddressOfTo: listAddressOfTo,
         mailbox: mailbox,
         buttonPadding: buttonPadding,
+        isContextMenuAlignEndButton: isFilterApplied ||
+            searchFilter == QuickSearchFilter.sortBy,
         onSelectSearchFilterAction: _onSelectSearchFilterAction,
         onDeleteSearchFilterAction: controller.onDeleteSearchFilterAction,
       );
@@ -693,66 +703,50 @@ class MailboxDashBoardView extends BaseMailboxDashBoardView {
     }
   }
 
-  List<PopupMenuEntry> popupMenuEmailReceiveTimeType(
-    BuildContext context,
-    EmailReceiveTimeType? receiveTimeSelected,
-    {Function(EmailReceiveTimeType)? onCallBack}
-  ) {
-    return EmailReceiveTimeType.values
-      .map((receiveTime) => PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: PopupItemNoIconWidget(
-          receiveTime.getTitle(context),
-          svgIconSelected: controller.imagePaths.icFilterSelected,
-          maxWidth: 320,
-          isSelected: receiveTimeSelected == receiveTime,
-          onCallbackAction: () => onCallBack?.call(receiveTime),
-        )))
-      .toList();
-  }
-
-  List<PopupMenuEntry> popupMenuEmailSortOrderType(
-    BuildContext context,
-    EmailSortOrderType? sortOrderSelected,
-    {Function(EmailSortOrderType)? onCallBack}
-  ) {
-    return EmailSortOrderType.values
-      .map((sortType) => PopupMenuItem(
-        padding: EdgeInsets.zero,
-        child: PopupItemNoIconWidget(
-          sortType.getTitle(context),
-          svgIconSelected: controller.imagePaths.icFilterSelected,
-          maxWidth: 332,
-          isSelected: sortOrderSelected == sortType,
-          onCallbackAction: () => onCallBack?.call(sortType),
-        )))
-      .toList();
-  }
-
   void _openPopupMenuDateFilter(BuildContext context, RelativeRect position) {
-    controller.openPopupMenuAction(
-      context,
-      position,
-      popupMenuEmailReceiveTimeType(
-        context,
-        controller.searchController.receiveTimeFiltered,
-        onCallBack: (receiveTime) => controller.selectReceiveTimeQuickSearchFilter(
-          context,
-          receiveTime
-        )
-      )
-    );
+    final popupMenuItems = EmailReceiveTimeType.values.map((timeType) {
+      return PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupMenuItemActionWidget(
+          menuAction: PopupMenuItemDateFilterAction(
+            timeType,
+            controller.searchController.receiveTimeFiltered,
+            AppLocalizations.of(context),
+            controller.imagePaths,
+          ),
+          menuActionClick: (menuAction) {
+            popBack();
+            controller.selectReceiveTimeQuickSearchFilter(
+              context,
+              menuAction.action,
+            );
+          },
+        ),
+      );
+    }).toList();
+
+    controller.openPopupMenuAction(context, position, popupMenuItems);
   }
 
   void _openPopupMenuSortFilter(BuildContext context, RelativeRect position) {
-    controller.openPopupMenuAction(
-      context,
-      position,
-      popupMenuEmailSortOrderType(
-        context,
-        controller.searchController.sortOrderFiltered,
-        onCallBack: controller.selectSortOrderQuickSearchFilter
-      )
-    );
+    final popupMenuItems = EmailSortOrderType.values.map((sortType) {
+      return PopupMenuItem(
+        padding: EdgeInsets.zero,
+        child: PopupMenuItemActionWidget(
+          menuAction: PopupMenuItemSortOrderTypeAction(
+            sortType,
+            controller.searchController.sortOrderFiltered,
+            AppLocalizations.of(context),
+            controller.imagePaths,
+          ),
+          menuActionClick: (menuAction) {
+            popBack();
+            controller.selectSortOrderQuickSearchFilter(menuAction.action);
+          },
+        ),
+      );
+    }).toList();
+
+    controller.openPopupMenuAction(context, position, popupMenuItems);
   }
 }
