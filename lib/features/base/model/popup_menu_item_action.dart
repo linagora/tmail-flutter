@@ -14,11 +14,6 @@ abstract class PopupMenuItemAction<T> with EquatableMixin {
 
   String get actionName;
 
-  String getActionNameWithLimitation({int limitCharacters = 22}) =>
-      actionName.length > limitCharacters
-          ? '${actionName.substring(0, limitCharacters)}...'
-          : actionName;
-
   Color get actionNameColor => Colors.black;
 
   void onClick(OnPopupMenuActionClick callback) => callback(this);

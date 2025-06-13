@@ -1158,7 +1158,7 @@ class ThreadController extends BaseController with EmailActionController {
     EmailActionType actionType,
     PresentationEmail selectedEmail,
     {
-      PresentationMailbox? mailboxContain,
+      required PresentationMailbox? mailboxContain,
     }
   ) {
     switch(actionType) {
@@ -1198,11 +1198,9 @@ class ThreadController extends BaseController with EmailActionController {
         }
         break;
       case EmailActionType.moveToSpam:
-        popBack();
         moveToSpam(selectedEmail, mailboxContain: mailboxContain);
         break;
       case EmailActionType.unSpam:
-        popBack();
         unSpam(selectedEmail);
         break;
       case EmailActionType.openInNewTab:
