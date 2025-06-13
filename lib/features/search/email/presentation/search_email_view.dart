@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/qu
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/email_quick_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/quick_search/recent_search_item_tile_widget.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/search_filters/search_filter_button.dart';
+import 'package:tmail_ui_user/features/search/email/presentation/extensions/handle_email_action_extension.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/model/search_more_state.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/search_email_controller.dart';
 import 'package:tmail_ui_user/features/search/email/presentation/styles/search_email_view_style.dart';
@@ -668,16 +669,17 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                     );
                   },
                   onMoreActionClick: (email, position) {
-                    if (controller.responsiveUtils.isScreenWithShortestSide(context)) {
+                    if (controller.responsiveUtils.isScreenWithShortestSide(context) ||
+                        position == null) {
                       controller.openContextMenuAction(
                         context,
                         _contextMenuActionTile(context, email)
                       );
                     } else {
-                      controller.openPopupMenuAction(
+                      controller.handleEmailMoreActionClick(
                         context,
                         position,
-                        _popupMenuActionTile(context, email)
+                        email,
                       );
                     }
                   },
@@ -721,16 +723,16 @@ class SearchEmailView extends GetWidget<SearchEmailController>
                     );
                   },
                   onMoreActionClick: (email, position) {
-                    if (controller.responsiveUtils.isScreenWithShortestSide(context)) {
+                    if (controller.responsiveUtils.isScreenWithShortestSide(context) || position == null) {
                       controller.openContextMenuAction(
                         context,
                         _contextMenuActionTile(context, email)
                       );
                     } else {
-                      controller.openPopupMenuAction(
+                      controller.handleEmailMoreActionClick(
                         context,
                         position,
-                        _popupMenuActionTile(context, email)
+                        email,
                       );
                     }
                   },
@@ -781,11 +783,17 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         iconRightPadding: controller.responsiveUtils.isMobile(context)
             ? const EdgeInsets.only(right: 12)
             : EdgeInsets.zero)
-      ..onActionClick((email) => controller.pressEmailAction(context,
-          mailboxContain?.isSpam == true
-              ? EmailActionType.unSpam
-              : EmailActionType.moveToSpam,
-          email)))
+      ..onActionClick((email) {
+          popBack();
+          controller.pressEmailAction(
+            context,
+            mailboxContain?.isSpam == true
+                ? EmailActionType.unSpam
+                : EmailActionType.moveToSpam,
+            email,
+            mailboxContain: mailboxContain,
+          );
+      }))
       .build();
   }
 
@@ -816,18 +824,6 @@ class SearchEmailView extends GetWidget<SearchEmailController>
         controller.editAsNewEmail(email);
       })
     ).build();
-  }
-
-  List<PopupMenuEntry> _popupMenuActionTile(BuildContext context, PresentationEmail email) {
-    return [
-      PopupMenuItem(
-          padding: const EdgeInsets.symmetric(horizontal: 8),
-          child: _markAsEmailSpamOrUnSpamAction(context, email)),
-      if (email.mailboxContain?.isDrafts == false)
-        PopupMenuItem(
-            padding: const EdgeInsets.symmetric(horizontal: 8),
-            child: _editAsNewEmailContextMenuItemAction(context, email)),
-    ];
   }
 
   Widget _buildLoadingViewLoadMore() {

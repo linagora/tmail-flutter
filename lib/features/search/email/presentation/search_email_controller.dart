@@ -846,7 +846,7 @@ class SearchEmailController extends BaseController
       BuildContext context,
       EmailActionType actionType,
       PresentationEmail selectedEmail,
-      {PresentationMailbox? mailboxContain}
+      {required PresentationMailbox? mailboxContain}
   ) {
     switch(actionType) {
       case EmailActionType.preview:
@@ -881,12 +881,13 @@ class SearchEmailController extends BaseController
         deleteEmailPermanently(context, selectedEmail);
         break;
       case EmailActionType.moveToSpam:
-        popBack();
         moveToSpam(selectedEmail, mailboxContain: mailboxContain);
         break;
       case EmailActionType.unSpam:
-        popBack();
         unSpam(selectedEmail);
+        break;
+      case EmailActionType.editAsNewEmail:
+        editAsNewEmail(selectedEmail);
         break;
       default:
         break;

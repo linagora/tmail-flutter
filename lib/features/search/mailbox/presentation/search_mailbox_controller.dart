@@ -273,12 +273,7 @@ class SearchMailboxController extends BaseMailboxController with MailboxActionHa
     BuildContext context,
     MailboxActions actions,
     PresentationMailbox mailbox,
-    {bool isFocusedMenu = false}
   ) {
-    if (!isFocusedMenu) {
-      popBack();
-    }
-
     switch(actions) {
       case MailboxActions.openInNewTab:
         openMailboxInNewTabAction(mailbox);

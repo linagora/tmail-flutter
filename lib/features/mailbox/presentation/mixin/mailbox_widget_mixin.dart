@@ -11,6 +11,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_action
 import 'package:tmail_ui_user/features/mailbox/presentation/model/popup_menu_item_mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/widgets/mailbox_bottom_sheet_action_tile_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 mixin MailboxWidgetMixin {
 
@@ -150,7 +151,10 @@ mixin MailboxWidgetMixin {
           color: contextMenuItem.action.getContextMenuTitleColor(),
           fontWeight: FontWeight.w500
       ))
-      ..onActionClick((mailbox) => handleMailboxAction(context, contextMenuItem.action, mailbox))
+      ..onActionClick((mailbox) {
+        popBack();
+        handleMailboxAction(context, contextMenuItem.action, mailbox);
+      })
     ).build();
   }
 

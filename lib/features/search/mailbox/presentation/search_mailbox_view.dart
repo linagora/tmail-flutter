@@ -22,6 +22,7 @@ import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.
 import 'package:tmail_ui_user/features/search/mailbox/presentation/search_mailbox_controller.dart';
 import 'package:tmail_ui_user/features/search/mailbox/presentation/widgets/mailbox_searched_item_builder.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 class SearchMailboxView extends GetWidget<SearchMailboxController>
   with AppLoaderMixin,
@@ -229,7 +230,6 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
         context,
         contextMenuItem.action,
         mailbox,
-        isFocusedMenu: true
       ),
       title: Expanded(
         child: AbsorbPointer(
@@ -312,6 +312,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
           child: PopupMenuItemActionWidget(
             menuAction: menuAction,
             menuActionClick: (menuAction) {
+              popBack();
               controller.handleMailboxAction(
                 context,
                 menuAction.action,
