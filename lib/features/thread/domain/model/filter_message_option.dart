@@ -79,16 +79,16 @@ extension FilterMessageOptionExtension on FilterMessageOption {
     }
   }
 
-  String getName(BuildContext context) {
+  String getName(AppLocalizations appLocalizations) {
     switch(this) {
       case FilterMessageOption.all:
         return '';
       case FilterMessageOption.unread:
-        return AppLocalizations.of(context).unread;
+        return appLocalizations.unread;
       case FilterMessageOption.attachments:
-        return AppLocalizations.of(context).with_attachments;
+        return appLocalizations.with_attachments;
       case FilterMessageOption.starred:
-        return AppLocalizations.of(context).starred;
+        return appLocalizations.starred;
     }
   }
 

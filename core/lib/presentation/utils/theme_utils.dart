@@ -234,10 +234,10 @@ class ThemeUtils {
     color: Colors.black,
   );
 
-  static TextStyle textStyleInter400() => const TextStyle(
+  static const TextStyle textStyleInter400 = TextStyle(
     fontFamily: ConstantsUI.fontApp,
     fontWeight: FontWeight.normal,
-    letterSpacing: 0.01,
+    letterSpacing: -0.13,
     fontSize: 13,
     height: 16 / 13,
     color: Colors.black,

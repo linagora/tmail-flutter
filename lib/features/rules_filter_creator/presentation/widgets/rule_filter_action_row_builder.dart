@@ -40,7 +40,7 @@ class RuleFilterActionRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final supportedAction = actionList.where((action) => action.getSupported() == true).toList();
+    final supportedAction = actionList.where((action) => action.isSupported).toList();
     return Row(
       crossAxisAlignment: actionSelected == EmailRuleFilterAction.moveMessage ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 enum EmailRuleFilterAction {
@@ -9,24 +8,22 @@ enum EmailRuleFilterAction {
   markAsSpam,
   forwardTo;
 
-  String getTitle(BuildContext context) {
+  String getTitle(AppLocalizations appLocalizations) {
     switch(this) {
       case EmailRuleFilterAction.moveMessage:
-        return AppLocalizations.of(context).moveMessage;
+        return appLocalizations.moveMessage;
       case EmailRuleFilterAction.maskAsSeen:
-        return AppLocalizations.of(context).maskAsSeen;
+        return appLocalizations.maskAsSeen;
       case EmailRuleFilterAction.starIt:
-        return AppLocalizations.of(context).starIt;
+        return appLocalizations.starIt;
       case EmailRuleFilterAction.rejectIt:
-        return AppLocalizations.of(context).rejectIt;
+        return appLocalizations.rejectIt;
       case EmailRuleFilterAction.markAsSpam:
-        return AppLocalizations.of(context).markAsSpam;
+        return appLocalizations.markAsSpam;
       case EmailRuleFilterAction.forwardTo:
-        return AppLocalizations.of(context).forwardTo;
+        return appLocalizations.forwardTo;
     }
   }
 
-  bool getSupported() {
-    return this != EmailRuleFilterAction.forwardTo;
-  }
+  bool get isSupported => this != EmailRuleFilterAction.forwardTo;
 }

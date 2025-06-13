@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:tmail_ui_user/features/thread/domain/model/filter_message_option.dart';
+import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 
 mixin FilterEmailPopupMenuMixin {
   final _imagePaths = Get.find<ImagePaths>();
@@ -68,7 +69,7 @@ mixin FilterEmailPopupMenuMixin {
                       : null),
               const SizedBox(width: 12),
               Expanded(child: Text(
-                  option.getName(context),
+                  option.getName(AppLocalizations.of(context)),
                   style: const TextStyle(
                       fontSize: 15,
                       color: Colors.black,

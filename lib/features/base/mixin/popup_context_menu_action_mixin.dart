@@ -4,23 +4,64 @@ import 'package:core/presentation/views/bottom_popup/cupertino_action_sheet_buil
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
+import 'package:tmail_ui_user/features/base/widget/context_menu/context_menu_dialog_view.dart';
+import 'package:tmail_ui_user/features/base/widget/context_menu/context_menu_item_action.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/controller/mailbox_dashboard_controller.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
 import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 mixin PopupContextMenuActionMixin {
-
-  void openContextMenuAction(
+  Future<void> openContextMenuAction(
     BuildContext context,
     List<Widget> actionTiles,
-    {
-      Widget? cancelButton,
-      Key? key,
-    }
   ) async {
-    await (CupertinoActionSheetBuilder(context, key: key)
-        ..addTiles(actionTiles)
-        ..addCancelButton(cancelButton ?? buildCancelButton(context)))
-      .show();
+    await (CupertinoActionSheetBuilder(context)
+          ..addTiles(actionTiles)
+          ..addCancelButton(buildCancelButton(context)))
+        .show();
+  }
+
+  Future<void> openBottomSheetContextMenuAction({
+    required BuildContext context,
+    required List<ContextMenuItemAction> itemActions,
+    required OnContextMenuActionClick onContextMenuActionClick,
+    Key? key,
+  }) async {
+    if (PlatformInfo.isWeb) {
+      getBinding<MailboxDashBoardController>()?.isContextMenuOpened.value = true;
+    }
+    await showModalBottomSheet(
+      context: context,
+      showDragHandle: true,
+      useSafeArea: true,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(16.0),
+          topRight: Radius.circular(16.0),
+        ),
+      ),
+      backgroundColor: Colors.white,
+      barrierColor: Colors.black.withOpacity(0.2),
+      builder: (_) {
+        return PointerInterceptor(
+          child: Container(
+            key: key,
+            color: Colors.white,
+            padding: const EdgeInsetsDirectional.only(bottom: 24),
+            child: ContextMenuDialogView(
+              actions: itemActions,
+              onContextMenuActionClick: onContextMenuActionClick,
+            ),
+          ),
+        );
+      },
+    ).whenComplete(() {
+      if (PlatformInfo.isWeb) {
+        getBinding<MailboxDashBoardController>()?.isContextMenuOpened.value = false;
+      }
+    });
   }
 
   void openPopupMenuAction(
