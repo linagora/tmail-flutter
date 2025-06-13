@@ -38,7 +38,7 @@ mixin PopupContextMenuActionMixin {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.all(Radius.circular(6)),
       ),
-      constraints: const BoxConstraints(maxWidth: 300),
+      constraints: const BoxConstraints(maxWidth: 300, minWidth: 178),
       items: popupMenuItems,
     );
   }

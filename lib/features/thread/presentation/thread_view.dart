@@ -365,7 +365,10 @@ class ThreadView extends GetWidget<ThreadController>
                 width: 20,
                 height: 20,
                 fit: BoxFit.fill))
-        ..onActionClick(controller.filterMessagesAction))
+        ..onActionClick((filterOption) {
+          popBack();
+          controller.filterMessagesAction(filterOption);
+        }))
       .build()).toList();
   }
 

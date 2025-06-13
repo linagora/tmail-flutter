@@ -633,8 +633,6 @@ class SearchEmailController extends BaseController
   }
 
   void selectReceiveTimeQuickSearchFilter(BuildContext context, EmailReceiveTimeType emailReceiveTimeType) {
-    popBack();
-
     if (emailReceiveTimeType == EmailReceiveTimeType.customRange) {
       showMultipleViewDateRangePicker(
         context,
@@ -664,7 +662,6 @@ class SearchEmailController extends BaseController
   }
 
   void selectSortOrderQuickSearchFilter(BuildContext context, EmailSortOrderType sortOrderType) {
-    popBack();
     emailSortOrderType.value = sortOrderType;
     _updateSimpleSearchFilter(sortOrderTypeOption: Some(sortOrderType));
     _searchEmailAction(context);
