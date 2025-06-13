@@ -11,6 +11,8 @@ extension ListEmailExtension on List<Email> {
 
   List<EmailId> get listEmailIds => map((email) => email.id).whereNotNull().toList();
 
+  List<ThreadId> get listThreadIds => map((email) => email.threadId).whereNotNull().toList();
+
   Email? findEmailById(EmailId emailId) {
     try {
       return firstWhere((email) => email.id == emailId);
