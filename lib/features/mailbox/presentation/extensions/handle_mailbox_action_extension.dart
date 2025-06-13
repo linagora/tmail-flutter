@@ -9,6 +9,7 @@ import 'package:tmail_ui_user/features/home/domain/extensions/session_extensions
 import 'package:tmail_ui_user/features/mailbox/presentation/mailbox_controller.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/utils/mailbox_utils.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/main/routes/route_navigation.dart';
 
 extension HandleMailboxActionExtension on MailboxController {
 
@@ -111,6 +112,7 @@ extension HandleMailboxActionExtension on MailboxController {
           child: PopupMenuItemActionWidget(
             menuAction: menuAction,
             menuActionClick: (menuAction) {
+              popBack();
               handleMailboxAction(context, menuAction.action, mailbox);
             },
           ),

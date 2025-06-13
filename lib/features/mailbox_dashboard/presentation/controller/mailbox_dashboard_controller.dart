@@ -2044,8 +2044,6 @@ class MailboxDashBoardController extends ReloadableController
 
   void selectReceiveTimeQuickSearchFilter(BuildContext context, EmailReceiveTimeType receiveTime) {
     log('MailboxDashBoardController::selectReceiveTimeQuickSearchFilter():receiveTime: $receiveTime');
-    popBack();
-
     if (receiveTime == EmailReceiveTimeType.customRange) {
       searchController.showMultipleViewDateRangePicker(
         context,
@@ -2074,7 +2072,6 @@ class MailboxDashBoardController extends ReloadableController
 
   void selectSortOrderQuickSearchFilter(EmailSortOrderType sortOrder) {
     log('MailboxDashBoardController::selectSortOrderQuickSearchFilter():sortOrder: $sortOrder');
-    popBack();
     searchController.updateFilterEmail(sortOrderTypeOption: Some(sortOrder));
     dispatchAction(StartSearchEmailAction());
   }
