@@ -41,7 +41,7 @@ class PopupMenuItemActionWidget extends StatelessWidget {
           child: Container(
             height: 48,
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: menuAction.itemPadding,
             child: Row(
               children: [
                 if (iconWidget != null) iconWidget,

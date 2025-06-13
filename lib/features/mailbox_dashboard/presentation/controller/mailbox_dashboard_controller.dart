@@ -112,7 +112,6 @@ import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/reopen_composer_cache_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/set_error_extension.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/extensions/update_current_emails_flags_extension.dart';
-import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/mixin/user_setting_popup_menu_mixin.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/dashboard_routes.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/download/download_task_state.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/draggable_app_state.dart';
@@ -190,7 +189,7 @@ import 'package:server_settings/server_settings/tmail_server_settings_extension.
 import 'package:uuid/uuid.dart';
 
 class MailboxDashBoardController extends ReloadableController
-    with UserSettingPopupMenuMixin, ContactSupportMixin {
+    with ContactSupportMixin {
 
   final RemoveEmailDraftsInteractor _removeEmailDraftsInteractor = Get.find<RemoveEmailDraftsInteractor>();
   final EmailReceiveManager _emailReceiveManager = Get.find<EmailReceiveManager>();
@@ -3146,29 +3145,6 @@ class MailboxDashBoardController extends ReloadableController
   }
 
   List<Identity> get listIdentities => _identities ?? [];
-
-  void handleClickAvatarAction(BuildContext context, RelativeRect position) {
-    openPopupMenuAction(
-      context,
-      position,
-      popupMenuUserSettingActionTile(
-        context,
-        sessionCurrent?.getOwnEmailAddressOrEmpty(),
-        onLogoutAction: () {
-          popBack();
-          logout(
-            context,
-            sessionCurrent,
-            accountId.value
-          );
-        },
-        onSettingAction: () {
-          popBack();
-          goToSettings();
-        }
-      )
-    );
-  }
 
   bool validateNoEmailsInTrashAndSpamFolder() {
     return selectedMailbox.value != null

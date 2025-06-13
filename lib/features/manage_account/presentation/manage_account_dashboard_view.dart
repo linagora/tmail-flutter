@@ -1,11 +1,13 @@
 import 'package:core/presentation/extensions/color_extension.dart';
-import 'package:core/presentation/extensions/string_extension.dart';
 import 'package:core/presentation/utils/responsive_utils.dart';
 import 'package:core/presentation/views/responsive/responsive_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_portal/flutter_portal.dart';
 import 'package:get/get.dart';
+import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/model/profile_setting/profile_setting_action_type.dart';
 import 'package:tmail_ui_user/features/mailbox_dashboard/presentation/widgets/navigation_bar/navigation_bar_widget.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/email_rules/email_rules_view.dart';
+import 'package:tmail_ui_user/features/manage_account/presentation/extensions/handle_profile_setting_action_type_click_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/extensions/vacation_response_extension.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/forward/forward_view.dart';
 import 'package:tmail_ui_user/features/manage_account/presentation/language_and_region/language_and_region_view.dart';
@@ -25,73 +27,79 @@ class ManageAccountDashBoardView extends GetWidget<ManageAccountDashBoardControl
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: controller.responsiveUtils.isWebDesktop(context)
-          ? AppColor.colorBgDesktop
-          : Colors.white,
-      drawerEnableOpenDragGesture: false,
-      body: GestureDetector(
-        onTap: () => FocusScope.of(context).unfocus(),
-        child: ResponsiveWidget(
-            responsiveUtils: controller.responsiveUtils,
-            desktop: Column(children: [
-              Obx(() => NavigationBarWidget(
-                imagePaths: controller.imagePaths,
-                accountId: controller.accountId.value,
-                avatarUserName: controller.getOwnEmailAddress().firstCharacterToUpperCase,
-                onTapApplicationLogoAction: () =>
-                    controller.backToMailboxDashBoard(context: context),
-                onTapAvatarAction: (position) =>
-                    controller.handleClickAvatarAction(context, position),
-              )),
-              Expanded(child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(
-                    width: ResponsiveUtils.defaultSizeMenu,
-                    child: ManageAccountMenuView()
-                  ),
-                  Expanded(child: ColoredBox(
-                    color: AppColor.colorBgDesktop,
-                    child: Column(children: [
-                      Obx(() {
-                        if (controller.vacationResponse.value?.vacationResponderIsValid == true) {
-                          return VacationNotificationMessageWidget(
-                            margin: const EdgeInsetsDirectional.only(top: 16, start: 16, end: 16),
-                            fromAccountDashBoard: true,
-                            vacationResponse: controller.vacationResponse.value!,
-                            actionGotoVacationSetting: !controller.inVacationSettings()
-                              ? () => controller.selectAccountMenuItem(AccountMenuItem.vacation)
-                              : null,
-                            actionEndNow: controller.disableVacationResponder);
-                        } else if ((controller.vacationResponse.value?.vacationResponderIsWaiting == true
-                            || controller.vacationResponse.value?.vacationResponderIsStopped == true)
-                            && controller.accountMenuItemSelected.value == AccountMenuItem.vacation) {
-                          return VacationNotificationMessageWidget(
-                            margin: const EdgeInsetsDirectional.only(top: 16, start: 16, end: 16),
-                            fromAccountDashBoard: true,
-                            vacationResponse: controller.vacationResponse.value!,
-                            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
-                            leadingIcon: const Padding(
-                              padding: EdgeInsetsDirectional.only(end: 12),
-                              child: Icon(Icons.timer, size: 20),
-                            )
-                          );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      }),
-                      Expanded(child: _viewDisplayedOfAccountMenuItem())
-                    ]),
-                  ))
-                ],
-              ))
-            ]),
-            mobile: SafeArea(
-              child: SettingsView(
-                closeAction: () =>
-                  controller.backToMailboxDashBoard(context: context)),
-            )
+    return Portal(
+      child: Scaffold(
+        backgroundColor: controller.responsiveUtils.isWebDesktop(context)
+            ? AppColor.colorBgDesktop
+            : Colors.white,
+        drawerEnableOpenDragGesture: false,
+        body: GestureDetector(
+          onTap: () => FocusScope.of(context).unfocus(),
+          child: ResponsiveWidget(
+              responsiveUtils: controller.responsiveUtils,
+              desktop: Column(children: [
+                Obx(() => NavigationBarWidget(
+                  imagePaths: controller.imagePaths,
+                  accountId: controller.accountId.value,
+                  ownEmailAddress: controller.getOwnEmailAddress(),
+                  onTapApplicationLogoAction: () =>
+                      controller.backToMailboxDashBoard(context: context),
+                  settingActionTypes: const [ProfileSettingActionType.signOut],
+                  onProfileSettingActionTypeClick: (actionType) =>
+                    controller.handleProfileSettingActionTypeClick(
+                      context: context,
+                      actionType: actionType,
+                    ),
+                )),
+                Expanded(child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(
+                      width: ResponsiveUtils.defaultSizeMenu,
+                      child: ManageAccountMenuView()
+                    ),
+                    Expanded(child: ColoredBox(
+                      color: AppColor.colorBgDesktop,
+                      child: Column(children: [
+                        Obx(() {
+                          if (controller.vacationResponse.value?.vacationResponderIsValid == true) {
+                            return VacationNotificationMessageWidget(
+                              margin: const EdgeInsetsDirectional.only(top: 16, start: 16, end: 16),
+                              fromAccountDashBoard: true,
+                              vacationResponse: controller.vacationResponse.value!,
+                              actionGotoVacationSetting: !controller.inVacationSettings()
+                                ? () => controller.selectAccountMenuItem(AccountMenuItem.vacation)
+                                : null,
+                              actionEndNow: controller.disableVacationResponder);
+                          } else if ((controller.vacationResponse.value?.vacationResponderIsWaiting == true
+                              || controller.vacationResponse.value?.vacationResponderIsStopped == true)
+                              && controller.accountMenuItemSelected.value == AccountMenuItem.vacation) {
+                            return VacationNotificationMessageWidget(
+                              margin: const EdgeInsetsDirectional.only(top: 16, start: 16, end: 16),
+                              fromAccountDashBoard: true,
+                              vacationResponse: controller.vacationResponse.value!,
+                              padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 16),
+                              leadingIcon: const Padding(
+                                padding: EdgeInsetsDirectional.only(end: 12),
+                                child: Icon(Icons.timer, size: 20),
+                              )
+                            );
+                          } else {
+                            return const SizedBox.shrink();
+                          }
+                        }),
+                        Expanded(child: _viewDisplayedOfAccountMenuItem())
+                      ]),
+                    ))
+                  ],
+                ))
+              ]),
+              mobile: SafeArea(
+                child: SettingsView(
+                  closeAction: () =>
+                    controller.backToMailboxDashBoard(context: context)),
+              )
+          ),
         ),
       ),
     );

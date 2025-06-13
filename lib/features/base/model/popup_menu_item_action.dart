@@ -16,6 +16,9 @@ abstract class PopupMenuItemAction<T> with EquatableMixin {
 
   Color get actionNameColor => Colors.black;
 
+  EdgeInsetsGeometry get itemPadding =>
+      const EdgeInsets.symmetric(horizontal: 12);
+
   void onClick(OnPopupMenuActionClick callback) => callback(this);
 }
 
