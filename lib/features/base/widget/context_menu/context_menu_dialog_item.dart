@@ -16,75 +16,62 @@ class ContextMenuDialogItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    SvgPicture? icon;
-    SvgPicture? selectedIcon;
+    Widget? iconWidget;
+    Widget? selectedIconWidget;
     bool isSelected = false;
 
     if (menuAction is ContextMenuItemActionRequiredIcon) {
       final specificMenuAction =
           menuAction as ContextMenuItemActionRequiredIcon;
-      icon = SvgPicture.asset(
-        specificMenuAction.actionIcon,
-        width: 20,
-        height: 20,
-        colorFilter: specificMenuAction.actionIconColor.asFilter(),
-        fit: BoxFit.fill,
+      iconWidget = Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: SvgPicture.asset(
+          specificMenuAction.actionIcon,
+          width: 20,
+          height: 20,
+          colorFilter: specificMenuAction.actionIconColor.asFilter(),
+          fit: BoxFit.fill,
+        ),
       );
     } else if (menuAction is ContextMenuItemActionRequiredSelectedIcon) {
       final specificMenuAction =
           menuAction as ContextMenuItemActionRequiredSelectedIcon;
-      selectedIcon = SvgPicture.asset(
-        specificMenuAction.selectedIcon,
-        width: 20,
-        height: 20,
-        colorFilter: specificMenuAction.selectedIconColor.asFilter(),
-        fit: BoxFit.fill,
+      selectedIconWidget = Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: SvgPicture.asset(
+          specificMenuAction.selectedIcon,
+          width: 20,
+          height: 20,
+          colorFilter: specificMenuAction.selectedIconColor.asFilter(),
+          fit: BoxFit.fill,
+        ),
       );
       isSelected = specificMenuAction.selectedAction == menuAction.action;
     } else if (menuAction is ContextMenuItemActionRequiredFull) {
       final specificMenuAction =
           menuAction as ContextMenuItemActionRequiredFull;
-
-      icon = SvgPicture.asset(
-        specificMenuAction.actionIcon,
-        width: 20,
-        height: 20,
-        colorFilter: specificMenuAction.actionIconColor.asFilter(),
-        fit: BoxFit.fill,
+      iconWidget = Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: SvgPicture.asset(
+          specificMenuAction.actionIcon,
+          width: 20,
+          height: 20,
+          colorFilter: specificMenuAction.actionIconColor.asFilter(),
+          fit: BoxFit.fill,
+        ),
       );
-      selectedIcon = SvgPicture.asset(
-        specificMenuAction.selectedIcon,
-        width: 20,
-        height: 20,
-        colorFilter: specificMenuAction.selectedIconColor.asFilter(),
-        fit: BoxFit.fill,
+      selectedIconWidget = Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24),
+        child: SvgPicture.asset(
+          specificMenuAction.selectedIcon,
+          width: 20,
+          height: 20,
+          colorFilter: specificMenuAction.selectedIconColor.asFilter(),
+          fit: BoxFit.fill,
+        ),
       );
       isSelected = specificMenuAction.selectedAction == menuAction.action;
     }
-
-    Widget? iconWidget = icon != null
-        ? Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Container(
-              height: 32,
-              width: 32,
-              alignment: Alignment.center,
-              child: icon,
-            ),
-          )
-        : null;
-
-    Widget? selectedIconWidget = selectedIcon != null
-        ? Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24),
-            child: Container(
-              height: 32,
-              width: 32,
-              alignment: Alignment.center,
-              child: selectedIcon,
-            ),
-          )
-        : null;
 
     return Material(
       type: MaterialType.transparency,
