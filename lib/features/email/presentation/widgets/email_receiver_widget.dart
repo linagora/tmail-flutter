@@ -293,7 +293,7 @@ class _EmailReceiverWidgetState extends State<EmailReceiverWidget> {
         responsiveUtils: _responsiveUtils,
       ),
       ..._buildRecipientsTag(listEmailAddress: listEmailAddress).map(
-        (child) => Align(alignment: Alignment.topLeft, child: child),
+        (child) => Align(alignment: AlignmentDirectional.topStart, child: child),
       ),
     ];
   }
