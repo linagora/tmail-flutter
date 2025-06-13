@@ -5,7 +5,7 @@
   s[d][e].push({p: "main.dart.js_6", e: "beginPart"});
 })(self, "$__dart_deferred_initializers__", "eventLog");
 $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersList, $) {
-  var J, A, B, E, F,
+  var J, A, B, E,
   C = {
     ElevatedButton_ElevatedButton$icon(icon, label, onPressed, style) {
       var _null = null;
@@ -87,8 +87,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _._needsSemanticsUpdate = true;
       _._semantics = null;
     },
-    LauncherApplicationMixin: function LauncherApplicationMixin() {
-    },
     PopupMenuWidgetMixin: function PopupMenuWidgetMixin() {
     },
     CircleLoadingWidget0: function CircleLoadingWidget0(t0, t1, t2) {
@@ -118,18 +116,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _.overflow = t6;
       _.softWrap = t7;
       _.key = t8;
-    },
-    UserInformationWidget$(border, onSubtitleClick, padding, subtitle, titlePadding, userName) {
-      return new C.UserInformationWidget(userName, subtitle, onSubtitleClick, padding, border, null);
-    },
-    UserInformationWidget: function UserInformationWidget(t0, t1, t2, t3, t4, t5) {
-      var _ = this;
-      _.userName = t0;
-      _.subtitle = t1;
-      _.onSubtitleClick = t2;
-      _.padding = t3;
-      _.border = t4;
-      _.key = t5;
     },
     AppGridDashboardIcon: function AppGridDashboardIcon(t0, t1, t2) {
       this.imagePaths = t0;
@@ -236,8 +222,20 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     Aligned$(follower, offset, target) {
       return new A.Aligned(null, null, follower, target, B.Alignment_0_0, B.C_AxisFlag, B.C_AxisFlag, offset, null);
     },
-    ApplicationVersionWidget$(padding, title) {
-      return new E.ApplicationVersionWidget(padding, title, null);
+    ApplicationVersionWidget$(textStyle, title) {
+      return new E.ApplicationVersionWidget(null, title, textStyle, null);
+    },
+    SessionExtensions_getContactSupportCapability(_this, accountId) {
+      var contactSupportCapability, e, exception;
+      try {
+        contactSupportCapability = A.SessionExtension_getCapabilityProperties(_this, accountId, $.$get$SessionExtensions_linagoraContactSupportCapability(), type$.ContactSupportCapability);
+        A.log("SessionExtensions::getContactSupportCapability:contactSupportCapability = " + A.S(contactSupportCapability), B.Level_3);
+        return contactSupportCapability;
+      } catch (exception) {
+        e = A.unwrapException(exception);
+        A.log("SessionExtensions::getContactSupportCapability():[Exception] " + A.S(e), B.Level_1);
+        return null;
+      }
     },
     VacationResponseExtension_get_vacationResponderIsReady(_this) {
       var t1, t2, startDate;
@@ -307,9 +305,8 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
   J = holdersList[1];
   A = holdersList[0];
   B = holdersList[2];
-  E = holdersList[11];
-  F = holdersList[17];
-  C = hunkHelpers.updateHolder(holdersList[10], C);
+  E = holdersList[10];
+  C = hunkHelpers.updateHolder(holdersList[9], C);
   D = holdersList[19];
   C._ElevatedButtonWithIcon.prototype = {
     defaultStyleOf$1(context) {
@@ -429,84 +426,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       return this.super$RenderProxyBoxMixin$hitTestChildren(result, position);
     }
   };
-  C.LauncherApplicationMixin.prototype = {
-    launchApplication$4$androidPackageId$iosScheme$iosStoreLink$uri(androidPackageId, iosScheme, iosStoreLink, uri) {
-      return this.launchApplication$body$LauncherApplicationMixin(androidPackageId, iosScheme, iosStoreLink, uri);
-    },
-    launchApplication$1$uri(uri) {
-      return this.launchApplication$4$androidPackageId$iosScheme$iosStoreLink$uri(null, null, null, uri);
-    },
-    launchApplication$body$LauncherApplicationMixin(androidPackageId, iosScheme, iosStoreLink, uri) {
-      var $async$goto = 0,
-        $async$completer = A._makeAsyncAwaitCompleter(type$.void),
-        $async$handler = 1, $async$currentError, $async$self = this, e, exception, $async$exception;
-      var $async$launchApplication$4$androidPackageId$iosScheme$iosStoreLink$uri = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
-        if ($async$errorCode === 1) {
-          $async$currentError = $async$result;
-          $async$goto = $async$handler;
-        }
-        while (true)
-          switch ($async$goto) {
-            case 0:
-              // Function start
-              $async$handler = 3;
-              $async$goto = 6;
-              return A._asyncAwait($async$self.openWebApplication$1(uri), $async$launchApplication$4$androidPackageId$iosScheme$iosStoreLink$uri);
-            case 6:
-              // returning from await.
-              $async$handler = 1;
-              // goto after finally
-              $async$goto = 5;
-              break;
-            case 3:
-              // catch
-              $async$handler = 2;
-              $async$exception = $async$currentError;
-              e = A.unwrapException($async$exception);
-              A.log1("LauncherApplicationMixin::launchApplication:Exception = " + A.S(e), B.Level_10);
-              // goto after finally
-              $async$goto = 5;
-              break;
-            case 2:
-              // uncaught
-              // goto rethrow
-              $async$goto = 1;
-              break;
-            case 5:
-              // after finally
-              // implicit return
-              return A._asyncReturn(null, $async$completer);
-            case 1:
-              // rethrow
-              return A._asyncRethrow($async$currentError, $async$completer);
-          }
-      });
-      return A._asyncStartSync($async$launchApplication$4$androidPackageId$iosScheme$iosStoreLink$uri, $async$completer);
-    },
-    openWebApplication$1(uri) {
-      return this.openWebApplication$body$LauncherApplicationMixin(uri);
-    },
-    openWebApplication$body$LauncherApplicationMixin(uri) {
-      var $async$goto = 0,
-        $async$completer = A._makeAsyncAwaitCompleter(type$.void);
-      var $async$openWebApplication$1 = A._wrapJsFunctionForAsync(function($async$errorCode, $async$result) {
-        if ($async$errorCode === 1)
-          return A._asyncRethrow($async$result, $async$completer);
-        while (true)
-          switch ($async$goto) {
-            case 0:
-              // Function start
-              $async$goto = 2;
-              return A._asyncAwait(A.launchUrl(uri, B.LaunchMode_0, null), $async$openWebApplication$1);
-            case 2:
-              // returning from await.
-              // implicit return
-              return A._asyncReturn(null, $async$completer);
-          }
-      });
-      return A._asyncStartSync($async$openWebApplication$1, $async$completer);
-    }
-  };
   C.PopupMenuWidgetMixin.prototype = {
     popupItem$5$colorIcon$onCallbackAction$styleName(iconAction, nameAction, colorIcon, onCallbackAction, styleName) {
       var _null = null,
@@ -531,30 +450,6 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       var _this = this, _null = null,
         t1 = A.BorderRadius$circular(_this.borderRadius);
       return A.Material$(B.Duration_200000, true, _null, A.InkWell$(false, _null, true, new A.Padding(_this.padding, A.Text$(_this.label, _null, _null, _null, _this.overflow, _null, _null, _this.softWrap, _null, _this.customStyle, _null, _null, _null, _null, _null), _null), new A.RoundedRectangleBorder(t1, B.BorderSide_Q1M), true, _null, _null, _null, _null, _null, _null, _null, _null, _null, _null, _this.onLongPress, _this.onTap, _null, _null, _null, _null, _null, _null, _null), B.Clip_0, B.Color_0, 0, _null, _null, _null, _null, _null, B.MaterialType_0);
-    }
-  };
-  C.UserInformationWidget.prototype = {
-    build$1(context) {
-      var t2, t3, t4, t5, _this = this, _null = null,
-        t1 = _this.padding;
-      if (t1 == null)
-        t1 = D.EdgeInsetsDirectional_16_16_4_16;
-      t2 = new A.AvatarBuilder();
-      t3 = _this.userName;
-      t2._avatar_builder$_text = t3.length !== 0 ? t3[0].toUpperCase() : "";
-      t2._bgColor = B.Color_4294967295;
-      t2._textColor = B.Color_4278190080;
-      t2._boxShadows = A._setArrayType([D.BoxShadow_NMc], type$.JSArray_BoxShadow);
-      t2._avatar_builder$_size = 48;
-      t2 = t2.build$0();
-      t4 = type$.JSArray_Widget;
-      t3 = A._setArrayType([A.SelectableText$(t3, 1, D.TextStyle_69t18, _null)], t4);
-      if (_this.subtitle != null) {
-        t5 = A.Matrix4_Matrix4$translationValues(-8, 0, 0);
-        A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-        t3.push(new A.Padding(D.EdgeInsetsDirectional_0_10_0_0, A.Transform$(_null, C.MaterialTextButton$(20, F.TextStyle_OkG0, A.Intl__message("Manage account", _null, "manage_account", _null, _null), _null, _this.onSubtitleClick, _null, B.EdgeInsetsDirectional_8_8_8_8, _null), _null, t5, true), _null));
-      }
-      return A.Container$(_null, A.Row$(A._setArrayType([t2, B.SizedBox_16_null_null_null, A.Expanded$(A.Column$(t3, B.CrossAxisAlignment_0, B.MainAxisAlignment_0, B.MainAxisSize_1, B.VerticalDirection_1), 1), B.SizedBox_16_null_null_null], t4), B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null), B.Clip_0, _null, _null, new A.BoxDecoration(_null, _null, _this.border, _null, _null, _null, _null, B.BoxShape_0), _null, _null, _null, _null, t1, _null, _null, _null);
     }
   };
   C.AppGridDashboardIcon.prototype = {
@@ -627,9 +522,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t2.push(A.Expanded$(new A.LayoutBuilder(new C.NavigationBarWidget_build_closure(_this), _null), 1));
       else {
         t1 = A._setArrayType([B.Spacer_null], t1);
-        if (_this.contactSupportCapability != null) {
+        t3 = _this.contactSupportCapability;
+        if ((t3 == null ? _null : t3.get$isAvailable()) === true) {
           A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-          t1.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build_closure0(_this), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null)));
+          t1.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build_closure0(_this), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null), _null));
         }
         if (_this.appGridController != null)
           t1.push(new A.Obx(new C.NavigationBarWidget_build_closure1(_this), _null));
@@ -836,7 +732,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     call$2(context, $function) {
       return this.$this.child;
     },
-    $signature: 1867
+    $signature: 1899
   };
   C._AppGridDashboardIconState_build_closure.prototype = {
     call$3(context, isExpanded, child) {
@@ -850,9 +746,9 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       t1 = t1._widget;
       t6 = t1.linagoraApps;
       t1 = t1.imagePaths;
-      return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
+      return A.PortalTarget$(B.C_Filled, A.PortalTarget$(t5, A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, "assets/images/ic_app_dashboard.svg", _null, 30, _null, _null, 1 / 0, _null, t2, B.EdgeInsets_6_6_6_6, _null, _null), new C.AppDashboardOverlay(t6, t1, _null), isExpanded), t3, isExpanded);
     },
-    $signature: 1868
+    $signature: 1900
   };
   C.AppGridDashboardItem_build_closure.prototype = {
     call$0() {
@@ -882,7 +778,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
         t3 = t1.contactSupportCapability;
       if ((t3 == null ? _null : t3.get$isAvailable()) === true) {
         A.Localizations_of(context, B.Type_AppLocalizations_CTL, type$.AppLocalizations).toString;
-        t2.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build__closure(t1), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null)));
+        t2.push(A.TMailButtonWidget_TMailButtonWidget$fromIcon(B.Color_0, 20, _null, _null, "assets/images/ic_help.svg", B.Color_4287405231, _null, _null, B.EdgeInsetsDirectional_0_0_8_0, 1 / 0, _null, new C.NavigationBarWidget_build__closure(t1), _null, A.Intl__message("Get help or report a bug", _null, "getHelpOrReportABug", _null, _null), _null));
       }
       if (t1.appGridController != null)
         t2.push(new A.Obx(new C.NavigationBarWidget_build__closure0(t1), _null));
@@ -900,7 +796,7 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       }
       return A.Row$(t2, B.CrossAxisAlignment_2, _null, B.MainAxisAlignment_0, B.MainAxisSize_1, _null);
     },
-    $signature: 350
+    $signature: 373
   };
   C.NavigationBarWidget_build__closure.prototype = {
     call$0() {
@@ -971,10 +867,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
       _inherit = hunkHelpers.inherit,
       _inheritMany = hunkHelpers.inheritMany;
     _inherit(C._ElevatedButtonWithIcon, A.ElevatedButton);
-    _inheritMany(A.StatelessWidget, [C._ElevatedButtonWithIconChild, C.CircleLoadingWidget0, C.LinkBrowserWidget, C.MaterialTextButton, C.UserInformationWidget, C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin, C.AppDashboardOverlay, C.NavigationBarWidget, C.VacationNotificationMessageWidget, C.Link, C.DefaultLinkDelegate]);
+    _inheritMany(A.StatelessWidget, [C._ElevatedButtonWithIconChild, C.CircleLoadingWidget0, C.LinkBrowserWidget, C.MaterialTextButton, C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin, C.AppDashboardOverlay, C.NavigationBarWidget, C.VacationNotificationMessageWidget, C.Link, C.DefaultLinkDelegate]);
     _inheritMany(A.StatefulWidget, [C.Portal, C.AppGridDashboardIcon]);
     _inheritMany(A.State0, [C._PortalState, C._AppGridDashboardIconState]);
-    _inheritMany(A.Object, [C.PortalLink, C.LauncherApplicationMixin, C.PopupMenuWidgetMixin]);
+    _inheritMany(A.Object, [C.PortalLink, C.PopupMenuWidgetMixin]);
     _inherit(C.PortalLinkScope, A.InheritedWidget);
     _inherit(C.PortalTheater, A.SingleChildRenderObjectWidget);
     _inherit(C.RenderPortalTheater, A.RenderProxyBox);
@@ -983,15 +879,16 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     _inherit(C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin_ImageLoaderMixin, C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin);
     _inherit(C.AppGridDashboardItem, C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin_ImageLoaderMixin);
     _inheritMany(A.Closure0Args, [C.AppGridDashboardItem_build_closure, C.AppDashboardOverlay_build_closure0, C.NavigationBarWidget_build__closure, C.NavigationBarWidget_build__closure0, C.NavigationBarWidget_build_closure0, C.NavigationBarWidget_build_closure1, C.DefaultLinkDelegate_build_closure]);
-    _mixin(C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin, C.LauncherApplicationMixin);
+    _mixin(C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin, A.LauncherApplicationMixin);
     _mixin(C._AppGridDashboardItem_StatelessWidget_LauncherApplicationMixin_ImageLoaderMixin, E.ImageLoaderMixin);
   })();
-  A._Universe_addRules(init.typeUniverse, JSON.parse('{"_ElevatedButtonWithIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ElevatedButtonWithIconChild":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"CircleLoadingWidget0":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LinkBrowserWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"UserInformationWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppGridDashboardIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AppGridDashboardIconState":{"State0":["AppGridDashboardIcon"]},"AppGridDashboardItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppDashboardOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"NavigationBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DefaultLinkDelegate":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Link":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[],"LinkInfo":[]}}'));
+  A._Universe_addRules(init.typeUniverse, JSON.parse('{"_ElevatedButtonWithIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_ElevatedButtonWithIconChild":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Portal":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_PortalState":{"State0":["Portal"]},"PortalLinkScope":{"InheritedWidget":[],"ProxyWidget":[],"Widget":[],"DiagnosticableTree":[]},"PortalTheater":{"SingleChildRenderObjectWidget":[],"RenderObjectWidget":[],"Widget":[],"DiagnosticableTree":[]},"RenderPortalTheater":{"RenderBox":[],"RenderObjectWithChildMixin":["RenderBox"],"RenderObject":[],"DiagnosticableTree":[],"HitTestTarget":[]},"CircleLoadingWidget0":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"LinkBrowserWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"MaterialTextButton":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppGridDashboardIcon":{"StatefulWidget":[],"Widget":[],"DiagnosticableTree":[]},"_AppGridDashboardIconState":{"State0":["AppGridDashboardIcon"]},"AppGridDashboardItem":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"AppDashboardOverlay":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"NavigationBarWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"VacationNotificationMessageWidget":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"DefaultLinkDelegate":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[]},"Link":{"StatelessWidget":[],"Widget":[],"DiagnosticableTree":[],"LinkInfo":[]}}'));
   var type$ = (function rtii() {
     var findType = A.findType;
     return {
       AppLocalizations: findType("AppLocalizations"),
       BoxConstraints: findType("BoxConstraints"),
+      ContactSupportCapability: findType("ContactSupportCapability"),
       ContainerLayer: findType("ContainerLayer0"),
       JSArray_BoxShadow: findType("JSArray<BoxShadow>"),
       JSArray_Object: findType("JSArray<Object>"),
@@ -1012,13 +909,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.Offset_UrS1 = new A.Offset(0, 0.5);
     D.BoxShadow_NMc = new A.BoxShadow(1, B.BlurStyle_0, B.Color_335544320, D.Offset_UrS1, 1);
     D.Color_4291217096 = new A.Color(4291217096);
-    D.Divider_0 = new A.Divider(1, null, null, null, D.Color_4291217096, null);
-    D.EdgeInsetsDirectional_0_10_0_0 = new A.EdgeInsetsDirectional(0, 10, 0, 0);
+    D.Divider_ouN = new A.Divider(1, null, null, D.Color_4291217096, null);
+    D.EdgeInsetsDirectional_10_0_0_0 = new A.EdgeInsetsDirectional(10, 0, 0, 0);
     D.EdgeInsetsDirectional_10_14_10_14 = new A.EdgeInsetsDirectional(10, 14, 10, 14);
-    D.EdgeInsetsDirectional_12_0_16_0 = new A.EdgeInsetsDirectional(12, 0, 16, 0);
     D.EdgeInsetsDirectional_12_8_12_0 = new A.EdgeInsetsDirectional(12, 8, 12, 0);
-    D.EdgeInsetsDirectional_16_16_0_16 = new A.EdgeInsetsDirectional(16, 16, 0, 16);
-    D.EdgeInsetsDirectional_16_16_4_16 = new A.EdgeInsetsDirectional(16, 16, 4, 16);
     D.EdgeInsetsDirectional_30_0_30_0 = new A.EdgeInsetsDirectional(30, 0, 30, 0);
     D.EdgeInsetsDirectional_4_0_6_0 = new A.EdgeInsetsDirectional(4, 0, 6, 0);
     D.EdgeInsetsDirectional_8_0_12_0 = new A.EdgeInsetsDirectional(8, 0, 12, 0);
@@ -1028,13 +922,10 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
     D.EdgeInsets_0_5_0_5 = new A.EdgeInsets(0, 5, 0, 5);
     D.EdgeInsets_0_6_0_0 = new A.EdgeInsets(0, 6, 0, 0);
     D.EdgeInsets_12_5_12_5 = new A.EdgeInsets(12, 5, 12, 5);
-    D.EdgeInsets_32_16_32_16 = new A.EdgeInsets(32, 16, 32, 16);
     D.EdgeInsets_8_5_8_5 = new A.EdgeInsets(8, 5, 8, 5);
     D.PageStorageKey_mailbox_list = new A.PageStorageKey("mailbox_list", A.findType("PageStorageKey<String>"));
     D.SizedBox_24_null_null_null = new A.SizedBox(24, null, null, null);
     D.SizedBox_32_null_null_null = new A.SizedBox(32, null, null, null);
-    D.TextStyle_69t19 = new A.TextStyle(true, B.Color_4278190080, null, null, null, null, 17, B.FontWeight_4_500, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
-    D.TextStyle_69t18 = new A.TextStyle(true, B.Color_4278190080, null, null, null, null, 17, B.FontWeight_5_600, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
     D.TextStyle_e3y0 = new A.TextStyle(true, B.Color_4286680217, null, null, null, null, 16, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
   })();
   (function lazyInitializers() {
@@ -1046,5 +937,5 @@ $__dart_deferred_initializers__.current = function(hunkHelpers, init, holdersLis
 ((d, h) => {
   d[h] = d.current;
   d.eventLog.push({p: "main.dart.js_6", e: "endPart", h: h});
-})($__dart_deferred_initializers__, "mVCnFQg7rTrJKyKvTGdA+vJB2H4=");
+})($__dart_deferred_initializers__, "V84MMr4uhMZThEBP+C42Jxh3184=");
 ;
