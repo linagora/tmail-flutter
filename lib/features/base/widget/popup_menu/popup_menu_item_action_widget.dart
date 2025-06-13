@@ -18,6 +18,8 @@ class PopupMenuItemActionWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Widget? iconWidget;
+    Widget? selectedIconWidget;
+    bool isSelected = false;
 
     if (menuAction is PopupMenuItemActionRequiredIcon) {
       final specificMenuAction = menuAction as PopupMenuItemActionRequiredIcon;
@@ -31,6 +33,42 @@ class PopupMenuItemActionWidget extends StatelessWidget {
           fit: BoxFit.fill,
         ),
       );
+    } else if (menuAction is PopupMenuItemActionRequiredSelectedIcon) {
+      final specificMenuAction = menuAction as PopupMenuItemActionRequiredSelectedIcon;
+      selectedIconWidget = Padding(
+        padding: const EdgeInsetsDirectional.only(start: 16),
+        child: SvgPicture.asset(
+          specificMenuAction.selectedIcon,
+          width: specificMenuAction.selectedIconSize,
+          height: specificMenuAction.selectedIconSize,
+          colorFilter: specificMenuAction.selectedIconColor.asFilter(),
+          fit: BoxFit.fill,
+        ),
+      );
+      isSelected = specificMenuAction.selectedAction == menuAction.action;
+    } else if (menuAction is PopupMenuItemActionRequiredFull) {
+      final specificMenuAction = menuAction as PopupMenuItemActionRequiredFull;
+      iconWidget = Padding(
+        padding: const EdgeInsetsDirectional.only(end: 16),
+        child: SvgPicture.asset(
+          specificMenuAction.actionIcon,
+          width: specificMenuAction.actionIconSize,
+          height: specificMenuAction.actionIconSize,
+          colorFilter: specificMenuAction.actionIconColor.asFilter(),
+          fit: BoxFit.fill,
+        ),
+      );
+      selectedIconWidget = Padding(
+        padding: const EdgeInsetsDirectional.only(start: 16),
+        child: SvgPicture.asset(
+          specificMenuAction.selectedIcon,
+          width: specificMenuAction.selectedIconSize,
+          height: specificMenuAction.selectedIconSize,
+          colorFilter: specificMenuAction.selectedIconColor.asFilter(),
+          fit: BoxFit.fill,
+        ),
+      );
+      isSelected = specificMenuAction.selectedAction == menuAction.action;
     }
 
     return PointerInterceptor(
@@ -55,6 +93,8 @@ class PopupMenuItemActionWidget extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                 ),
+                if (isSelected && selectedIconWidget != null)
+                  selectedIconWidget,
               ],
             ),
           ),

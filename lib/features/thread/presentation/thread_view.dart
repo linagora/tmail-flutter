@@ -29,6 +29,7 @@ import 'package:tmail_ui_user/features/thread/domain/state/empty_spam_folder_sta
 import 'package:tmail_ui_user/features/thread/domain/state/empty_trash_folder_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/get_all_email_state.dart';
 import 'package:tmail_ui_user/features/thread/domain/state/search_email_state.dart';
+import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_open_context_menu_filter_email_action_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/extensions/handle_pull_to_refresh_list_email_extension.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/delete_action_type.dart';
 import 'package:tmail_ui_user/features/thread/presentation/model/loading_more_status.dart';
@@ -92,15 +93,7 @@ class ThreadView extends GetWidget<ThreadController>
                                   )
                                 : null,
                               onPopupMenuFilterEmailAction: !controller.responsiveUtils.isScreenWithShortestSide(context)
-                                ? (filterOption, position) => controller.openPopupMenuAction(
-                                    context,
-                                    position,
-                                    popupMenuFilterEmailActionTile(
-                                      context,
-                                      filterOption,
-                                      controller.filterMessagesAction
-                                    )
-                                  )
+                                ? (filterOption, position) => controller.handleOpenContextMenuFilterEmailAction(context, position, filterOption)
                                 : null
                             );
                           }),
@@ -361,7 +354,7 @@ class ThreadView extends GetWidget<ThreadController>
                 colorFilter: filter == FilterMessageOption.attachments
                   ? AppColor.colorTextButton.asFilter()
                   : null),
-            filter.getName(context),
+            filter.getName(AppLocalizations.of(context)),
             filter,
             optionCurrent: optionCurrent,
             iconLeftPadding: controller.responsiveUtils.isMobile(context)

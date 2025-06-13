@@ -30,7 +30,29 @@ mixin OptionalPopupIcon {
   double get actionIconSize => 20.0;
 }
 
-abstract class PopupMenuItemActionRequiredIcon<T>
-    extends PopupMenuItemAction<T> with OptionalPopupIcon {
+mixin OptionalPopupSelectedIcon<T> {
+  String get selectedIcon;
+
+  Color get selectedIconColor => AppColor.primaryMain;
+
+  double get selectedIconSize => 16.0;
+}
+
+abstract class PopupMenuItemActionRequiredIcon<T> extends PopupMenuItemAction<T>
+    with OptionalPopupIcon {
   PopupMenuItemActionRequiredIcon(super.action);
+}
+
+abstract class PopupMenuItemActionRequiredSelectedIcon<T>
+    extends PopupMenuItemAction<T> with OptionalPopupSelectedIcon<T> {
+  final T? selectedAction;
+
+  PopupMenuItemActionRequiredSelectedIcon(super.action, this.selectedAction);
+}
+
+abstract class PopupMenuItemActionRequiredFull<T> extends PopupMenuItemAction<T>
+    with OptionalPopupIcon, OptionalPopupSelectedIcon<T> {
+  final T selectedAction;
+
+  PopupMenuItemActionRequiredFull(super.action, this.selectedAction);
 }
