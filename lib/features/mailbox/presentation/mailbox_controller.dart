@@ -1196,8 +1196,6 @@ class MailboxController extends BaseMailboxController
       MailboxActions actions,
       PresentationMailbox mailbox
   ) {
-    popBack();
-
     switch(actions) {
       case MailboxActions.delete:
         openConfirmationDialogDeleteMailboxAction(

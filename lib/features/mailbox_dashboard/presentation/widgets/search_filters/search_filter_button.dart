@@ -31,6 +31,7 @@ class SearchFilterButton extends StatefulWidget {
   final PresentationMailbox? mailbox;
   final Color? backgroundColor;
   final EdgeInsetsGeometry? buttonPadding;
+  final bool isContextMenuAlignEndButton;
   final OnSelectSearchFilterAction? onSelectSearchFilterAction;
   final OnDeleteSearchFilterAction? onDeleteSearchFilterAction;
 
@@ -40,6 +41,7 @@ class SearchFilterButton extends StatefulWidget {
     required this.imagePaths,
     required this.responsiveUtils,
     this.isSelected = false,
+    this.isContextMenuAlignEndButton = true,
     this.receiveTimeType,
     this.sortOrderType,
     this.startDate,
@@ -228,10 +230,13 @@ class _SearchFilterButtonState extends State<SearchFilterButton> {
         ancestor: overlayBox,
       );
       final buttonSize = buttonBox.size;
+      final dX = widget.isContextMenuAlignEndButton
+        ? buttonPosition.dx + buttonSize.width
+        : buttonPosition.dx;
 
       position = RelativeRect.fromRect(
         Rect.fromLTWH(
-          buttonPosition.dx + buttonSize.width,
+          dX,
           buttonPosition.dy + buttonSize.height + 8,
           0,
           0,
