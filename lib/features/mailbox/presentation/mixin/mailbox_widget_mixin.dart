@@ -2,12 +2,13 @@ import 'package:core/presentation/resources/image_paths.dart';
 import 'package:core/presentation/utils/theme_utils.dart';
 import 'package:core/utils/platform_info.dart';
 import 'package:flutter/material.dart';
-import 'package:model/extensions/presentation_mailbox_extension.dart';
-import 'package:model/mailbox/presentation_mailbox.dart';
+import 'package:model/model.dart';
+import 'package:tmail_ui_user/features/base/model/popup_menu_item_action.dart';
 import 'package:tmail_ui_user/features/base/widget/popup_item_widget.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/context_item_mailbox_action.dart';
 import 'package:tmail_ui_user/features/mailbox/presentation/model/mailbox_actions.dart';
 import 'package:tmail_ui_user/main/localizations/app_localizations.dart';
+import 'package:tmail_ui_user/features/mailbox/presentation/model/popup_menu_item_mailbox_action.dart';
 
 mixin MailboxWidgetMixin {
 
@@ -131,6 +132,32 @@ mixin MailboxWidgetMixin {
     return listContextMenuItemAction;
   }
 
+  List<PopupMenuItemAction> getListPopupMenuItemAction(
+    AppLocalizations appLocalizations,
+    ImagePaths imagePaths,
+    PresentationMailbox presentationMailbox,
+    bool spamReportEnabled,
+    bool deletedMessageVaultSupported,
+    bool isSubAddressingSupported,
+  ) {
+    final mailboxActionsSupported = _listActionForAllMailboxType(
+      presentationMailbox,
+      spamReportEnabled,
+      deletedMessageVaultSupported,
+      isSubAddressingSupported,
+    );
+
+    final popupMenuActions = mailboxActionsSupported
+      .map((action) => PopupMenuItemMailboxAction(
+        action,
+        appLocalizations,
+        imagePaths,
+      ))
+      .toList();
+
+    return popupMenuActions;
+  }
+
   List<PopupMenuEntry> popupMenuMailboxActionTiles(
     BuildContext context,
     ImagePaths imagePaths,
@@ -164,7 +191,7 @@ mixin MailboxWidgetMixin {
       padding: EdgeInsets.zero,
       child: PopupItemWidget(
         iconAction: contextMenuItem.action.getContextMenuIcon(imagePaths),
-        nameAction: contextMenuItem.action.getTitleContextMenu(AppLocalizations.of(context)),
+        nameAction: contextMenuItem.action.getContextMenuTitle(AppLocalizations.of(context)),
         colorIcon: contextMenuItem.action.getPopupMenuIconColor(),
         padding: const EdgeInsetsDirectional.symmetric(horizontal: 12),
         styleName: ThemeUtils.textStyleBodyBody3(

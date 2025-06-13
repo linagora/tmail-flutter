@@ -243,7 +243,7 @@ class SearchMailboxView extends GetWidget<SearchMailboxController>
           ),
           const SizedBox(width: 12),
           Expanded(child: Text(
-            contextMenuItem.action.getTitleContextMenu(AppLocalizations.of(context)),
+            contextMenuItem.action.getContextMenuTitle(AppLocalizations.of(context)),
             style: TextStyle(
               fontWeight: FontWeight.w500,
               fontSize: 16,

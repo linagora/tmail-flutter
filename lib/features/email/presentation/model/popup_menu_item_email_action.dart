@@ -1,4 +1,5 @@
 import 'package:core/presentation/resources/image_paths.dart';
+import 'package:flutter/material.dart';
 import 'package:model/email/email_action_type.dart';
 import 'package:tmail_ui_user/features/base/model/popup_menu_item_action.dart';
 import 'package:tmail_ui_user/features/composer/presentation/extensions/email_action_type_extension.dart';
@@ -20,4 +21,10 @@ class PopupMenuItemEmailAction
 
   @override
   String get actionName => action.getTitle(appLocalizations);
+
+  @override
+  Color get actionIconColor => action.getPopupMenuIconColor();
+
+  @override
+  Color get actionNameColor => action.getPopupMenuTitleColor();
 }

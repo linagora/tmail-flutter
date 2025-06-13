@@ -661,7 +661,7 @@ class ThreadView extends GetWidget<ThreadController>
         },
       );
     } else {
-      final popupMenuActions = listEmailActions.map((actionType) {
+      final popupMenuItems = listEmailActions.map((actionType) {
         return PopupMenuItem(
           padding: EdgeInsets.zero,
           child: PopupMenuItemActionWidget(
@@ -682,11 +682,7 @@ class ThreadView extends GetWidget<ThreadController>
         );
       }).toList();
 
-      controller.openPopupMenuAction(
-        context,
-        position,
-        popupMenuActions,
-      );
+      controller.openPopupMenuAction(context, position, popupMenuItems);
     }
   }
 

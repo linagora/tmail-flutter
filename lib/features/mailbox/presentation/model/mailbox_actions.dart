@@ -45,7 +45,7 @@ extension MailboxActionsExtension on MailboxActions {
     }
   }
 
-  String getTitleContextMenu(AppLocalizations appLocalizations) {
+  String getContextMenuTitle(AppLocalizations appLocalizations) {
     switch(this) {
       case MailboxActions.openInNewTab:
         return appLocalizations.openInNewTab;
